@@ -43,15 +43,15 @@
  * with nobody having to describe it.
  */
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { collectTools, readBlock, readStringLiteral, repoRoot } from './lib/api-surface.mjs';
 import { fail, info, ok, step } from './lib/gate-log.mjs';
 import { readNamespace, SOURCE_LOCALE } from './lib/i18n-catalog.mjs';
+import { collectScreens } from './lib/web-screens.mjs';
 
 const REGISTRY_DIR = join(repoRoot, 'packages/features/src/features');
-const WEB_APP_DIR = join(repoRoot, 'apps/web/src/app');
 const AUTOMATION_CONTRACT = join(repoRoot, 'packages/contracts/src/automations.ts');
 
 /**
@@ -79,33 +79,6 @@ const SCREEN_EXEMPT = [
 // ---------------------------------------------------------------------------
 // The inventories
 // ---------------------------------------------------------------------------
-
-/** Every `page.tsx` under the app router, as the path a person's browser shows. */
-function collectScreens() {
-  const screens = new Map();
-  const walk = (dir) => {
-    for (const entry of readdirSync(dir)) {
-      const abs = join(dir, entry);
-      if (statSync(abs).isDirectory()) {
-        walk(abs);
-        continue;
-      }
-      if (entry !== 'page.tsx') continue;
-      const segments = relative(WEB_APP_DIR, abs)
-        .replace(/\/?page\.tsx$/, '')
-        .split('/')
-        .filter((segment) => segment.length > 0)
-        // `(app)` and `(auth)` group files without appearing in the address.
-        .filter((segment) => !/^\(.*\)$/.test(segment))
-        // `[workspaceId]` is `:x`, the spelling the capability matrix uses:
-        // which parameter it is belongs to the route, not to the capability.
-        .map((segment) => (/^\[.*\]$/.test(segment) ? ':x' : segment));
-      screens.set(`/${segments.join('/')}`, relative(repoRoot, abs));
-    }
-  };
-  walk(WEB_APP_DIR);
-  return screens;
-}
 
 /** The members of one `z.enum([...])` in the automation contract. */
 function enumMembers(name) {

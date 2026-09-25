@@ -113,6 +113,17 @@ file is the contract for automated sessions. Read it before changing code.
     that date is what tells every reader it is new to them (ADR-040). The gate
     counts, it cannot read: an entry that is complete and wrong passes, which
     is why the summary is written for the person and not for the counter.
+16. **A place or an action a person looks for belongs in the command palette.**
+    `Strg + K` is a way into the whole application, not a side feature kept
+    up afterwards (issue #148). A feature that brings a screen, a settings
+    group, a frequent action, a function hidden in a menu or actions that
+    depend on the open page brings its palette commands in the same commit
+    series, registered in `apps/web/src/components/palette`, with search words
+    in the catalogue. `scripts/check-palette-coverage.mjs` goes red for a
+    screen no command opens and no reason excuses, for a command opening a
+    screen that is gone, and for a settings group without search words; the
+    rest is the recipe in `docs/command-palette.md`. Editor formatting stays in
+    the slash menu.
 
 ## The design skills, and which one answers what
 
@@ -208,10 +219,10 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the thirteen hard gates that have no
+`build.sh` is the one to reach for: it runs the fourteen hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, semantic
 colours, MCP catalogue completeness, capability parity, feature registry
-coverage, documentation currency, the unit/integration test split, typecheck
+coverage, command palette coverage, documentation currency, the unit/integration test split, typecheck
 coverage, migration reproducibility, message catalogue parity, the inline
 text ratchet) as well as the checks below, in the right order and without
 racing the live units for memory. `deploy/README.md` explains what each step does.
@@ -651,6 +662,7 @@ Each of these has a step-by-step recipe:
 | overview pages, digests, composition prompts             | `docs/overview-pages.md`    |
 | new page template placeholder, template UI               | `docs/templates.md`         |
 | new feature entry, the help page, the coverage gate      | `docs/features.md`          |
+| new palette command, place, settings group in `Strg + K` | `docs/command-palette.md`   |
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 

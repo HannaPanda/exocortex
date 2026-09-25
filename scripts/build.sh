@@ -123,6 +123,7 @@ run_gate "semantic colours"     node scripts/check-semantic-colours.mjs
 run_gate "MCP catalogue"        node scripts/check-mcp-catalog.mjs
 run_gate "capability parity"    node scripts/check-capability-parity.mjs
 run_gate "feature registry"     node scripts/check-feature-coverage.mjs
+run_gate "command palette"      node scripts/check-palette-coverage.mjs
 run_gate "documentation"        node scripts/check-docs-current.mjs
 run_gate "test split"           node scripts/check-test-split.mjs
 run_gate "typecheck coverage"   node scripts/check-typecheck-coverage.mjs

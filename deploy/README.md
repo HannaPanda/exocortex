@@ -305,21 +305,22 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 3. **Prisma client**, before anything type-checks against it.
 4. **The hard gates.** Always on, no bypass, roughly six seconds together:
 
-   | Gate                               | Catches                                                                                                                                   |
-   | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                                                       |
-   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                                                            |
-   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                                                              |
-   | `check-semantic-colours.mjs`       | a literal colour in the interface instead of a token (rule 9, `DESIGN.md` §7, issue #128)                                                 |
-   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)                                           |
-   | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025)                                       |
-   | `check-feature-coverage.mjs`       | a tool, screen or automation trigger the feature registry does not describe, and a claim that matches nothing (rule 15, ADR-040)          |
-   | `check-docs-current.mjs`           | a package, queue, maintenance task, compose service or unit no central document names, and claims the tree disproves (rule 13, issue #58) |
-   | `check-test-split.mjs`             | a unit test that opens a database, and a workspace whose tests no CI run executes (issue #93)                                             |
-   | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, tests included, and a project file nothing runs (issue #95, issue #99)                          |
-   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                       |
-   | `check-i18n.mjs`                   | a locale missing a key German has, a translation whose ICU arguments or plural categories drifted, a stale machine translation (ADR-062)  |
-   | `check-i18n-literals.mjs`          | a file that gained inline German interface text, and a baseline left looser than the code it describes (issue #98)                        |
+   | Gate                               | Catches                                                                                                                                          |
+   | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                                                              |
+   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                                                                   |
+   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                                                                     |
+   | `check-semantic-colours.mjs`       | a literal colour in the interface instead of a token (rule 9, `DESIGN.md` §7, issue #128)                                                        |
+   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)                                                  |
+   | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025)                                              |
+   | `check-feature-coverage.mjs`       | a tool, screen or automation trigger the feature registry does not describe, and a claim that matches nothing (rule 15, ADR-040)                 |
+   | `check-palette-coverage.mjs`       | a screen the command palette cannot open and no reason excuses, a command opening a gone screen, a settings group without search words (rule 16) |
+   | `check-docs-current.mjs`           | a package, queue, maintenance task, compose service or unit no central document names, and claims the tree disproves (rule 13, issue #58)        |
+   | `check-test-split.mjs`             | a unit test that opens a database, and a workspace whose tests no CI run executes (issue #93)                                                    |
+   | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, tests included, and a project file nothing runs (issue #95, issue #99)                                 |
+   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                              |
+   | `check-i18n.mjs`                   | a locale missing a key German has, a translation whose ICU arguments or plural categories drifted, a stale machine translation (ADR-062)         |
+   | `check-i18n-literals.mjs`          | a file that gained inline German interface text, and a baseline left looser than the code it describes (issue #98)                               |
 
    Each one prints its findings and one sentence on how to fix them. The
    migration gate replays the whole history onto a throwaway Postgres container

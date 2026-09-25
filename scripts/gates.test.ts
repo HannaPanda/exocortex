@@ -723,6 +723,42 @@ describe('feature registry coverage (check-feature-coverage.mjs)', () => {
   });
 });
 
+describe('command palette coverage (check-palette-coverage.mjs)', () => {
+  const NAVIGATION = 'apps/web/src/components/palette/navigation-commands.tsx';
+
+  it('is green: every place can be opened by name', () => {
+    expect(gate('check-palette-coverage.mjs').status).toBe(0);
+  });
+
+  it('goes red for a screen no command opens', () => {
+    writeProbe(
+      'apps/web/src/app/(app)/__palette_probe__/page.tsx',
+      ['export default function PaletteProbePage() {', '  return null;', '}', ''].join('\n'),
+    );
+    const result = gate('check-palette-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('no palette command opens the screen /__palette_probe__');
+  });
+
+  it('goes red for a command that opens a screen which is gone', () => {
+    editFile(NAVIGATION, (source) =>
+      source.replace("screen: '/entitaeten'", "screen: '/entitaeten-alt'"),
+    );
+    const result = gate('check-palette-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('opens a screen that does not exist: /entitaeten-alt');
+  });
+
+  it('goes red for a settings group without search words', () => {
+    editFile('packages/i18n/src/messages/de/settings.json', (source) =>
+      source.replace('"groups": {', '"groups": {\n    "paletteProbe": "Probe",'),
+    );
+    const result = gate('check-palette-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('`paletteProbe` has no palette search words');
+  });
+});
+
 describe('documentation currency (check-docs-current.mjs)', () => {
   it('is green: the central documents name every moving part', () => {
     expect(gate('check-docs-current.mjs').status).toBe(0);

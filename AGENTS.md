@@ -75,14 +75,17 @@ same commit series**:
 | where a kind of behaviour is tested, a new test suite                            | `docs/local-development.md`                                                                               |
 | a decision that contradicts an ADR                                               | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                                 |
 | what the product can and cannot do                                               | the "What works today" and "Not built" sections of `README.md`                                            |
+| a screen, a settings group, a frequent or hidden action                          | a command in `apps/web/src/components/palette`, `docs/command-palette.md`                                 |
 
-Three of these are enforced and cannot be forgotten:
+Four of these are enforced and cannot be forgotten:
 `scripts/check-capability-parity.mjs` and `scripts/check-feature-coverage.mjs`
 for the first row -- the one asks whether all three clients reach the
 capability, the other whether anybody described it in a person's words -- and
 `scripts/check-docs-current.mjs` for the inventories (packages, queues,
 maintenance tasks, compose services, systemd units, the documents under `docs/`)
-plus a short list of claims the tree disproves. The rest is this table.
+plus a short list of claims the tree disproves, and
+`scripts/check-palette-coverage.mjs` for the palette row: a screen no command
+opens, or a settings group without search words. The rest is this table.
 
 A document that describes a feature as planned, deferred or unimplemented is a
 claim about today, and it ages worse than anything else in the repository.

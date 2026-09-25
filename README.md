@@ -85,6 +85,10 @@ What is deliberately still missing is listed under
   where to find it, marks what is newer than the reader's own marker, and is
   kept complete by a hard gate that refuses a tool, screen or automation
   trigger nobody described (ADR-040)
+- a command palette: `Strg + K` searches pages and saved searches and opens
+  every place by name, from the chats to a single settings group, with
+  generous search words ("modell", "connector", "sprache"); a hard gate
+  refuses a screen nobody can open from it (issue #148)
 - sharing a single page outward (ADR-044): an unguessable read-only link, or a
   grant to another account that reads or writes without becoming a member of
   anything, for one page or the branch below it, optionally with an expiry and
@@ -317,6 +321,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/saved-queries.md`](docs/saved-queries.md)                       | saved searches, smart views, query blocks, the query model              |
 | [`docs/sharing.md`](docs/sharing.md)                                   | page shares, public links, page-scoped tokens                           |
 | [`docs/features.md`](docs/features.md)                                 | the feature registry, the coverage gate, writing an entry               |
+| [`docs/command-palette.md`](docs/command-palette.md)                   | `Strg + K`: the command registry, contexts, the coverage gate           |
 | [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |
 | [`docs/deviations.md`](docs/deviations.md)                             | where the implementation deviates from the brief and why                |
 | [`docs/design-review-2026-09-20.md`](docs/design-review-2026-09-20.md) | a dated snapshot: where the interface drifts from its own design system |
