@@ -37,6 +37,9 @@ capability: a German title and summary, where to find it (screen, shortcut,
 tools, settings), the day it went live, and what it accounts for in the
 inventories. It is data with no dependencies but the wire contract, so the API
 serves it and the browser renders it without either of them owning the text.
+Since issue #98 the entry's words (title, summary, paragraphs, the sentence
+saying where) live in the message catalogue instead, namespace `features`, and
+the registry keeps the facts; see the amendment below.
 
 It is served three ways, which is rule 12 applied to the registry itself:
 `/hilfe` in the browser, `GET /api/features` for anything else, and
@@ -92,6 +95,29 @@ an older date is still counted as seen.
 full parity. Marking it read is a statement about a human's attention, and an
 agent calling it would silently clear somebody's badge; the exemption is
 written next to the route in `scripts/check-mcp-catalog.mjs`.
+
+## Amendment: the words moved into the message catalogue (2026-09-25, issue #98)
+
+The interface got more than one language (ADR-062), and a registry written in
+German inside TypeScript could only ever answer in German. So the human half of
+every entry moved, verbatim, into `packages/i18n/src/messages/de/features.json`
+under the entry's id: `<id>.title`, `<id>.summary`, `<id>.details.p1` onwards
+(the catalogue holds no arrays) and `<id>.where`. German stays the source and
+the other locales are translated from it like every other namespace.
+`packages/features` keeps what a translation cannot change: id, area, `since`,
+references, `ui.path`, shortcuts, settings, tools and claims, with `ui: {}`
+marking a door in the browser that has no link.
+
+`GET /api/features` puts the halves together per request in the reader's
+language and orders the entries of one area and one day by the rendered title,
+collated for that language; it also sends each area's heading from
+`help.areas`, so `exo_features` prints headings without a catalogue of its own.
+The gate grew the matching checks: every registry entry needs a title, a
+summary and at least two paragraphs of more than a teaser in the German
+catalogue, a `ui` needs its `where` and only a `ui` has one, and words for an
+id the registry no longer has are an orphan. The rule the unit test used to
+enforce about paragraph length moved into the gate with them, because the
+registry package no longer sees the prose.
 
 ## Alternatives considered
 

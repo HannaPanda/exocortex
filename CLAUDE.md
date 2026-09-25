@@ -100,12 +100,15 @@ file is the contract for automated sessions. Read it before changing code.
     `CONTRIBUTING.md`, which is what keeps relicensing possible at all.
     Individual exceptions live in `LICENSE-GRANTS.md`, never in `LICENSE`.
 15. **A capability a person cannot discover is a capability nobody has.**
-    `packages/features` is the registry of what this deployment can do, written
-    in the words somebody would use to ask for it, and it is what `/hilfe` and
-    `exo_features` serve. Every MCP tool, every screen in `apps/web` and every
+    `packages/features` is the registry of what this deployment can do, and
+    its words (title, summary, paragraphs, where to find it) are written in
+    the `features` namespace of the German message catalogue under the entry's
+    id, in the words somebody would use to ask for it; `/hilfe` and
+    `exo_features` serve both halves in the reader's language. Every MCP tool, every screen in `apps/web` and every
     automation trigger has to be claimed by an entry, or
     `scripts/check-feature-coverage.mjs` goes red; a claim that no longer
-    matches anything goes red too. So a feature change adds or amends an entry
+    matches anything goes red too, and so do an entry without its words and
+    words for an id that is gone. So a feature change adds or amends an entry
     in the same commit series, and `since` is the day it goes live, because
     that date is what tells every reader it is new to them (ADR-040). The gate
     counts, it cannot read: an entry that is complete and wrong passes, which
@@ -398,7 +401,8 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   row properties travel only within one database, and `renderTitlePattern` is
   the one function both the API and the browser build the new title with.
 - ADR-040: the feature registry is written by hand and counted by a gate. What
-  a person can do here is a German sentence in `packages/features`, not a route
+  a person can do here is a German sentence in the `features` message
+  namespace, keyed by an entry in `packages/features`, not a route
   in the matrix or a tool description; three inventories (tools, screens,
   automation triggers) have to be claimed by an entry or the build goes red,
   and a claim that matches nothing goes red too. Discovery is a per-person
@@ -558,8 +562,10 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   rather than arguments, so a run waiting on a build is never refused, and no
   list of pollable tools has to be kept right. `ai_tool_limit_exceeded` reads
   out the tally -- tools, calls, characters, repeats -- and that diagnosis is
-  stored in `AiRun.errorDetail` in German, beside the English `message` the
-  log keeps.
+  stored as facts (`AiRun.errorDetailKey` and `errorDetailArgs`, a key of the
+  `diagnostics` namespace) that every reader renders in its own reader's
+  language, with the German rendering kept in `errorDetail` for old rows and
+  readers, beside the English `message` the log keeps.
 - ADR-060: the built-in loop is offered the tools its task needs, not the whole
   catalogue. Every tool declares a `domain` (required, so the compiler is the
   coverage gate); the domains are picked from the user's own words with no model

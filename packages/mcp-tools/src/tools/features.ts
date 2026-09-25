@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
-import {
-  FEATURE_AREA_DESCRIPTIONS,
-  FEATURE_AREA_LABELS,
-  type FeatureArea,
-  featureListResponseSchema,
-} from '@exocortex/contracts';
+import { type FeatureArea, featureListResponseSchema } from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
@@ -73,14 +68,16 @@ export const featuresTool: AnyToolDefinition = defineTool({
     // characters of context nobody asked for.
     const detailed = input.detailed ?? matching.length <= 3;
 
+    // The headings come with the list, in the caller's language, like the rest.
+    const areaInfo = new Map(result.areas.map((info) => [info.id, info]));
     const lines = [];
     let area: FeatureArea | null = null;
     for (const feature of matching) {
       if (feature.area !== area) {
         area = feature.area;
-        lines.push('', `## ${FEATURE_AREA_LABELS[feature.area] ?? feature.area}`, '');
-        const description = FEATURE_AREA_DESCRIPTIONS[feature.area];
-        if (description !== undefined) lines.push(description, '');
+        const info = areaInfo.get(feature.area);
+        lines.push('', `## ${info?.label ?? feature.area}`, '');
+        if (info !== undefined) lines.push(info.description, '');
       }
       lines.push(`### ${feature.title} (seit ${feature.since})`);
       lines.push(feature.summary);

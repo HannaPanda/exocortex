@@ -671,6 +671,48 @@ describe('feature registry coverage (check-feature-coverage.mjs)', () => {
     expect(result.output).toContain('exo_search_renamed_away');
   });
 
+  /**
+   * The words live in the German catalogue (issue #98), so the two halves can
+   * drift apart: an entry the catalogue has no sentence for, and a sentence
+   * for an entry that is gone.
+   */
+  const FEATURE_WORDS = 'packages/i18n/src/messages/de/features.json';
+  const editWords = (edit: (words: Record<string, Record<string, unknown>>) => void) =>
+    editFile(FEATURE_WORDS, (source) => {
+      const words = JSON.parse(source) as Record<string, Record<string, unknown>>;
+      edit(words);
+      return `${JSON.stringify(words, null, 2)}\n`;
+    });
+
+  it('goes red for an entry whose title and paragraphs are missing from the catalogue', () => {
+    editWords((words) => {
+      delete words['seiten-editor']!.title;
+      words['seiten-editor']!.details = {};
+    });
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('de/features.json seiten-editor: no title');
+    expect(result.output).toContain('de/features.json seiten-editor: no details.p1');
+  });
+
+  it('goes red for a door in the browser without its sentence', () => {
+    editWords((words) => {
+      delete words['seiten-editor']!.where;
+    });
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('seiten-editor: the entry has a door in the browser');
+  });
+
+  it('goes red for words in the catalogue that no registry entry has', () => {
+    editWords((words) => {
+      words['gate-probe-orphan'] = { title: 'Probe', summary: 'Probe.', details: { p1: 'P.' } };
+    });
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('gate-probe-orphan');
+  });
+
   it('goes red for an automation trigger nobody describes', () => {
     editFile('packages/contracts/src/automations.ts', (source) =>
       source.replace("  'SCHEDULE',\n]", "  'SCHEDULE',\n  'GATE_PROBE',\n]"),

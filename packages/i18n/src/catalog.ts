@@ -1,6 +1,6 @@
-import { DEFAULT_LOCALE, type Locale } from '@exocortex/contracts';
-
 import { createTranslator } from 'use-intl/core';
+
+import { DEFAULT_LOCALE, type Locale } from '@exocortex/contracts';
 
 import { CATALOG, NAMESPACES } from './catalog.generated.js';
 

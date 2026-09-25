@@ -18,6 +18,10 @@ const areaOrder = new Map<FeatureArea, number>(FEATURE_AREAS.map((area, index) =
  * somebody opens this list is usually "what is here that I have not seen".
  * The help page's "new for you" filter answers that precisely; this ordering
  * answers it for the reader who is only browsing.
+ *
+ * Ties on the same day are broken by id here, which only keeps the order
+ * stable. The API breaks them again by the title it rendered, collated in the
+ * reader's language, because the title is not known until the locale is.
  */
 export const FEATURES: readonly RegisteredFeature[] = Object.freeze(
   [
@@ -31,7 +35,7 @@ export const FEATURES: readonly RegisteredFeature[] = Object.freeze(
     const byArea = (areaOrder.get(a.area) ?? 0) - (areaOrder.get(b.area) ?? 0);
     if (byArea !== 0) return byArea;
     if (a.since !== b.since) return a.since < b.since ? 1 : -1;
-    return a.title.localeCompare(b.title, 'de');
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   }),
 );
 

@@ -1,4 +1,4 @@
-import { type Feature, type FeatureArea } from '@exocortex/contracts';
+import { type FeatureArea } from '@exocortex/contracts';
 
 /**
  * What an entry accounts for in the inventories `check-feature-coverage.mjs`
@@ -29,29 +29,48 @@ export interface FeatureClaims {
  * A registry entry before the API computes `isNew` for the reader in front of
  * it. Everything usually absent is optional, so an entry reads as the handful
  * of facts it has rather than as four empty arrays.
+ *
+ * The words are not here. The title, the summary, the paragraphs of the long
+ * form and the sentence saying where in the browser live in the message
+ * catalogue, namespace `features`, under the entry's id
+ * (`packages/i18n/src/messages/de/features.json`), so the API can answer in the
+ * reader's language (issue #98, ADR-062). This file keeps the facts a
+ * translation cannot change: the id, the area, the date, the doors.
  */
 export interface FeatureEntry {
   id: string;
   area: FeatureArea;
-  title: string;
-  summary: string;
-  /**
-   * The long form, one string per paragraph. Required, because an entry that
-   * only teases is the thing this registry was supposed to replace.
-   */
-  details: readonly string[];
   since: string;
   references?: readonly string[];
-  /** Where in the browser. `path` only when a link can be written for it. */
-  ui?: { where: string; path?: string };
+  /**
+   * A door in the browser. The sentence saying where is `<id>.where` in the
+   * catalogue; `path` only when a link can be written for it, so an entry
+   * without one says `ui: {}`.
+   */
+  ui?: { path?: string };
   shortcuts?: readonly string[];
   settings?: readonly string[];
   tools?: readonly string[];
   claims?: Partial<FeatureClaims>;
 }
 
-/** A catalogue entry: the wire shape plus what it accounts for. */
-export type RegisteredFeature = Omit<Feature, 'isNew'> & { readonly claims: FeatureClaims };
+/**
+ * A catalogue entry: the wire shape without the words and without what the API
+ * computes per reader, plus what it accounts for.
+ */
+export interface RegisteredFeature {
+  readonly id: string;
+  readonly area: FeatureArea;
+  readonly since: string;
+  readonly references: readonly string[];
+  readonly access: {
+    readonly ui: { readonly path: string | null } | null;
+    readonly shortcuts: readonly string[];
+    readonly settings: readonly string[];
+    readonly tools: readonly string[];
+  };
+  readonly claims: FeatureClaims;
+}
 
 const frozen = (values: readonly string[] | undefined): readonly string[] =>
   Object.freeze([...(values ?? [])]);
@@ -64,16 +83,10 @@ const frozen = (values: readonly string[] | undefined): readonly string[] =>
  * everybody, and the day that happens is not the day anybody debugs it.
  */
 export function defineFeature(entry: FeatureEntry): RegisteredFeature {
-  const ui =
-    entry.ui === undefined
-      ? null
-      : Object.freeze({ where: entry.ui.where, path: entry.ui.path ?? null });
+  const ui = entry.ui === undefined ? null : Object.freeze({ path: entry.ui.path ?? null });
   return Object.freeze({
     id: entry.id,
     area: entry.area,
-    title: entry.title,
-    summary: entry.summary,
-    details: frozen(entry.details),
     since: entry.since,
     references: frozen(entry.references),
     access: Object.freeze({
@@ -87,5 +100,5 @@ export function defineFeature(entry: FeatureEntry): RegisteredFeature {
       automationTriggers: frozen(entry.claims?.automationTriggers),
       automationActions: frozen(entry.claims?.automationActions),
     }),
-  }) as RegisteredFeature;
+  });
 }

@@ -5,17 +5,9 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'pdf-veroeffentlichen',
     area: 'veroeffentlichen',
-    title: 'Eine Seite als PDF setzen lassen',
-    summary:
-      'Eine Seite geht durch Pandoc und xelatex und kommt als gesetztes PDF zurück, das als ganz normaler Anhang an der Seite hängt. Ändert sich die Seite, zeigt das PDF, dass es veraltet ist; ändert sich nichts, kostet ein erneuter Aufruf nichts.',
-    details: [
-      'Über das Seitenmenü stößt du die Veröffentlichung an, der Satz läuft im Hintergrund auf dem Server, und du bekommst ein PDF, das nach Buch aussieht und nicht nach Bildschirmausdruck: richtige Absatzumbrüche, Silbentrennung, Kopfzeilen, Inhaltsverzeichnis, Formeln im Satz statt als Bild.',
-      'Das fertige PDF hängt als gewöhnlicher Anhang an der Seite. Das heißt: herunterladbar, löschbar, im Verlauf sichtbar, durchsuchbar wie jede andere Datei. Auch ein Agent kann es lesen, was der Weg ist, auf dem er prüft, ob sein Ergebnis wirklich so aussieht, wie es soll.',
-      'Aus dem Inhalt wird eine Prüfsumme gebildet, und die ist beides zugleich: Zwischenspeicher und Veraltet-Anzeige. Änderst du nichts, kostet ein zweiter Aufruf nichts und liefert dieselbe Datei. Änderst du die Seite, ist am PDF zu sehen, dass es nicht mehr zum Text passt. Ein Lauf lässt sich verfolgen, abbrechen und im Fehlerfall über sein Protokoll nachlesen.',
-    ],
     since: '2026-09-13',
     references: ['#44', 'ADR-026'],
-    ui: { where: 'Im Seitenmenü unter "Als PDF veröffentlichen".' },
+    ui: {},
     settings: ['render.enabled', 'render.image', 'render.timeoutSeconds'],
     tools: [
       'exo_render_start',
@@ -30,17 +22,9 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'render-vorlagen',
     area: 'veroeffentlichen',
-    title: 'Eigene Layouts für das PDF',
-    summary:
-      'Wie das PDF aussieht, steht in einer Vorlage, die sich anlegen und bearbeiten lässt: Schrift, Ränder, Kopfzeilen, Titelblatt. Damit sieht ein Brief anders aus als ein Bericht, ohne dass an der Seite selbst etwas anders ist.',
-    details: [
-      'Eine Vorlage ist die Satzanweisung für das PDF: Schriftart und -größe, Seitenränder, Kopf- und Fußzeilen, Titelblatt, Nummerierung, Sprache der Silbentrennung. Beim Veröffentlichen wählst du, welche benutzt wird, an der Seite selbst ändert sich dabei nichts.',
-      'Du legst so viele an, wie du Sorten Dokument hast. Ein Brief mit Anschriftenfeld, ein Bericht mit Deckblatt und Inhaltsverzeichnis, ein Handzettel ohne alles: dieselbe Seite, drei Ergebnisse. Vorlagen lassen sich bearbeiten und löschen, und Agenten können sie über die Werkzeuge verwalten.',
-      'Die Schriften müssen im Satz-Container vorhanden sein. Deshalb benutzt diese Installation ein eigenes Abbild mit den gewünschten Schriften; sonst fällt xelatex auf eine Ersatzschrift zurück, und das Ergebnis sieht anders aus, als die Vorlage sagt.',
-    ],
     since: '2026-09-13',
     references: ['#44'],
-    ui: { where: 'Verwaltung, Einstellungen, Abschnitt Veröffentlichen.' },
+    ui: {},
     tools: [
       'exo_render_template_create',
       'exo_render_template_read',
@@ -52,17 +36,9 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'projekte',
     area: 'veroeffentlichen',
-    title: 'LaTeX-Projekte mit echtem Dateibaum',
-    summary:
-      'Ein Projekt ist eine Seite, deren Inhalt kein Fließtext ist, sondern ein Dateibaum: .tex, .bib, Bilder, Unterordner. Bearbeitet wird im Browser, gemeinsam und in Echtzeit wie eine normale Seite.',
-    details: [
-      'Für eine Diplomarbeit, ein Buch oder einen Artikel mit Literaturverzeichnis reicht eine Seite nicht: da braucht es mehrere .tex-Dateien, eine .bib, Abbildungen und Unterordner. Ein Projekt ist genau das, und es liegt trotzdem im Baum wie jede andere Seite, mit denselben Rechten und derselben Suche.',
-      'Links steht der Dateibaum, rechts der Quelltext mit Syntaxhervorhebung, daneben das gebaute PDF. Bearbeitet wird gemeinsam und in Echtzeit, genau wie bei einer normalen Seite, denn darunter liegt derselbe Mechanismus. Dateien lassen sich anlegen, umbenennen, verschieben, löschen, und Bilder oder andere Beigaben lädst du dazu.',
-      'Agenten können denselben Baum bearbeiten, inklusive gezielter Änderungen an einzelnen Stellen einer Datei. Eine Änderung von außen geht dabei über denselben Weg wie das Tippen im Browser, damit sie sofort im offenen Editor steht und nicht nur in der Datenbank.',
-    ],
     since: '2026-09-13',
     references: ['#43', 'ADR-027'],
-    ui: { where: 'Neue Seite anlegen und als Projekt anlegen wählen.' },
+    ui: {},
     tools: [
       'exo_project_create',
       'exo_project_read',
@@ -81,17 +57,9 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'projekt-bauen',
     area: 'veroeffentlichen',
-    title: 'Bauen mit latexmk, samt Fehlerliste',
-    summary:
-      'Der Bau läuft mit latexmk in einem Container auf dem Server, ohne dass irgendetwas lokal installiert sein muss. Fehler und Warnungen kommen als Liste zurück statt als Logwüste, und ein Bau lässt sich abbrechen.',
-    details: [
-      'Ein Klick auf "Bauen" schickt das Projekt an latexmk in einem Container auf dem Server. Auf deinem Rechner muss nichts installiert sein, auch nicht die zwei Gigabyte TeX Live, und auf einem fremden Rechner funktioniert es genauso.',
-      'Zurück kommen das PDF und eine Liste von Fehlern und Warnungen mit Datei und Zeile, anklickbar. Das ist der praktische Unterschied zu einem Terminal: statt zweitausend Zeilen Protokoll nach der einen fehlenden Klammer zu durchsuchen, klickst du den Fehler an und landest an der Stelle.',
-      'Das vollständige Protokoll gibt es weiterhin, falls die Liste nicht reicht. Ein Bau lässt sich abbrechen, ältere Bauten bleiben mit ihren Ergebnissen abrufbar, und alles davon gibt es auch als Werkzeug, sodass ein Agent bauen, den Fehler lesen, ihn beheben und neu bauen kann.',
-    ],
     since: '2026-09-13',
     references: ['#43'],
-    ui: { where: 'Die Schaltfläche "Bauen" in der Projektansicht.' },
+    ui: {},
     tools: [
       'exo_project_build',
       'exo_project_build_status',
@@ -106,51 +74,25 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'synctex',
     area: 'veroeffentlichen',
-    title: 'Vom Quelltext ins PDF springen und zurück',
-    summary:
-      'Ein Klick im Quelltext springt an die passende Stelle im PDF, ein Klick im PDF zurück in den Quelltext. Bei einem langen Dokument ist das der Unterschied zwischen Suchen und Finden.',
-    details: [
-      'Doppelklick im Quelltext scrollt das PDF an die Stelle, die dieser Zeile entspricht, und hebt sie kurz hervor. Doppelklick im PDF öffnet die zugehörige Datei an der richtigen Zeile, auch wenn der Absatz aus einer eingebundenen Datei stammt, von der du gar nicht mehr wusstest, dass es sie gibt.',
-      'Die Zuordnung kommt aus der Karte, die der Satzlauf mitschreibt. Beide Richtungen gibt es auch als Werkzeug, ein Agent kann also fragen, wo eine Quelltextzeile im PDF landet oder welche Zeile hinter einer Stelle im PDF steckt.',
-      'Angezeigt wird das PDF im eingebauten Betrachter auf Basis von pdf.js. Einen fremden Betrachter einzubetten verbietet die Sicherheitsregel dieser Installation, und das ist auch gut so: so bleibt das PDF in derselben Seite und nicht in einem fremden Rahmen.',
-    ],
     since: '2026-09-17',
     references: ['#53', '#70'],
-    ui: { where: 'Doppelklick im Editor oder im PDF der Projektansicht.' },
+    ui: {},
     tools: ['exo_project_build_position_of', 'exo_project_build_source_at'],
   }),
   defineFeature({
     id: 'projekt-archive',
     area: 'veroeffentlichen',
-    title: 'Ein Projekt als ZIP ein- und ausspielen',
-    summary:
-      'Ein ganzes Projekt geht als ZIP heraus und kommt als ZIP wieder herein, zum Umziehen oder als Übergabe an jemanden ohne Zugang. Vorhandene Dateien werden dabei nur überschrieben, wenn du das ausdrücklich verlangst.',
-    details: [
-      'Der Export packt den ganzen Dateibaum in ein ZIP, mit Ordnern und Beigaben. Das ist der Weg nach draußen: an eine Verlagsredaktion schicken, in ein anderes System umziehen, oder einfach eine Kopie in die Hand nehmen, die ohne eXocortex funktioniert.',
-      'Der Import geht in dieselbe Richtung zurück und nimmt ein ZIP von woanders an, etwa eine Vorlage einer Hochschule. Die Dateien werden in einem Zug eingespielt, nicht einzeln, damit ein Abbruch nicht ein halbes Projekt hinterlässt.',
-      'Vorhandene Dateien werden dabei nicht angefasst, es sei denn, du verlangst das Überschreiben ausdrücklich. Die Bytes reisen als gewöhnlicher Anhang, es gibt also keinen zweiten Übertragungsweg neben dem, der für Dateien ohnehin da ist.',
-    ],
     since: '2026-09-17',
     references: ['#54'],
-    ui: { where: 'Das Menü der Projektansicht.' },
+    ui: {},
     tools: ['exo_project_export', 'exo_project_import'],
   }),
   defineFeature({
     id: 'seiten-teilen',
     area: 'veroeffentlichen',
-    title: 'Eine Seite nach außen freigeben',
-    summary:
-      'Eine Seite lässt sich einzeln weitergeben: als Adresse, die jeder öffnen kann, der sie hat, oder an ein bestimmtes Konto zum Lesen oder Bearbeiten. Wahlweise nur die Seite oder alles darunter, wahlweise befristet, jederzeit zurückziehbar.',
-    details: [
-      'Im Seitenmenü steht „Teilen …“. Dort entscheidest du zuerst den Umfang: nur diese Seite, oder sie mitsamt allem, was darunter hängt. Danach hast du zwei Wege. „An ein Konto“ gibt die Seite jemandem, der hier schon ein Konto hat, zum Lesen oder zum Bearbeiten; die Person muss dafür in keinem Arbeitsbereich Mitglied werden und sieht auch sonst nichts von ihm. „Link erzeugen“ macht eine Adresse, unter der die Seite ohne Anmeldung lesbar ist. Die Adresse steht danach mit einem Kopieren-Knopf in der Liste des Dialogs und unter „Freigaben“ im Kontomenü, solange der Link gilt. Sehen kann sie, wer im Arbeitsbereich Admin ist; alle anderen sehen nur ihre ersten Zeichen. Bei Links von vor dem 24.09.2026 ist die Adresse nicht gespeichert: dort bietet die Zeile an, einen neuen Link mit demselben Umfang zu erzeugen.',
-      'Ein Link ist immer nur lesend. Schreiben über eine Adresse, die jemand weiterreichen kann, gibt es hier nicht, und zwar nicht als Einstellung, sondern gar nicht. Eine Freigabe an ein Konto kann schreiben, weil dahinter eine angemeldete Person steht, die im Verlauf der Seite auftaucht wie jede andere.',
-      'Zurückziehen wirkt sofort, auch für jemanden, der die Seite gerade offen hat: die Verbindung wird neu geprüft und fällt weg. Was schon gelesen wurde, holt das nicht zurück, deshalb fragt eXocortex beim Erzeugen eines Links noch einmal nach. Eine Freigabe „mit allem darunter“ hängt an der Struktur, nicht an einer Liste: eine Seite, die du innerhalb des freigegebenen Bereichs verschiebst, bleibt freigegeben, und eine, die du herausschiebst, ist es nicht mehr.',
-      'Der umgekehrte Fall ist der gefährliche, deshalb sagt eXocortex ihn an: eine Seite in einen bereits freigegebenen Bereich zu verschieben, gibt sie mit frei. Beim Einsortieren steht eine Warnung, bevor verschoben wird, und eine Seite, die von weiter oben freigegeben ist, trägt oben das Kennzeichen „Geteilt“, auch wenn an ihr selbst nichts eingestellt wurde.',
-      'Wer eine Seite bekommt, erfährt es per E-Mail: beim Freigeben, wenn sich später ändert, was erlaubt ist, wie weit es reicht oder wie lange es gilt, und wenn du die Freigabe zurückziehst. In der Mail steht, wer geteilt hat, um welche Seite es geht und was damit erlaubt ist, dazu ein Link direkt dorthin. Die Mail zum Entzug nennt nur noch den Titel und führt auf die Liste dessen, was weiterhin geteilt ist, denn die Seite selbst ist ja zu. Keine Mail gibt es bei einem Link (der gehört niemandem) und beim Verschieben einer Seite in einen freigegebenen Bereich, sonst würde ein Aufräumen zu hundert Mails.',
-    ],
     since: '2026-09-20',
     references: ['#83', 'ADR-044'],
-    ui: { where: 'Seitenmenü oben rechts, „Teilen …“.' },
+    ui: {},
     tools: [
       'exo_share_create',
       'exo_share_list',
@@ -163,38 +105,18 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'freigaben-uebersicht',
     area: 'veroeffentlichen',
-    title: 'Was ist freigegeben, und was hat man mir gegeben',
-    summary:
-      'Zwei Listen: alle Freigaben eines Arbeitsbereichs an einer Stelle, zum Aufräumen, und die Seiten, die andere mit dir geteilt haben. Letztere stehen in keiner Navigation, weil du in dem Arbeitsbereich kein Mitglied bist.',
-    details: [
-      'In den Einstellungen eines Arbeitsbereichs führt „Freigaben öffnen“ auf die Liste dessen, was von hier nach außen gegeben ist: welche Seite, an wen oder als Link, lesend oder schreibend, wie weit, bis wann. Zurückgezogene Freigaben bleiben stehen statt zu verschwinden, weil „das war bis März offen“ zur Antwort gehört. Ohne diese Liste ist „was ist bei uns eigentlich öffentlich“ eine Frage, die nach einem Jahr niemand mehr beantworten kann.',
-      'Im Kontomenü oben rechts führt „Freigaben“, Reiter „Mit mir geteilt“, auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.',
-      'Was du über eine Freigabe erreichst, kannst du nicht weitergeben. Eine geteilte Seite hat keinen „Teilen“-Knopf: wer sie weiterreichen darf, ist eine Frage an den Arbeitsbereich, aus dem sie kommt.',
-    ],
     since: '2026-09-19',
     references: ['#83', 'ADR-044'],
-    ui: {
-      where:
-        'Kontomenü oben rechts, „Freigaben“, Reiter „Mit mir geteilt“; Arbeitsbereich-Einstellungen, „Freigaben öffnen“.',
-    },
+    ui: {},
     tools: ['exo_shared_with_me', 'exo_share_workspace_list'],
     claims: { screens: ['/geteilt', '/geteilt/:x', '/arbeitsbereich/:x/freigaben'] },
   }),
   defineFeature({
     id: 'von-mir-geteilt',
     area: 'veroeffentlichen',
-    title: 'Alles, was ich geteilt habe, an einer Stelle',
-    summary:
-      'Eine Liste aller Freigaben, die du selbst erteilt hast, über alle Arbeitsbereiche hinweg. Wenn du weißt, dass du etwas geteilt hast, aber nicht mehr, welche Seite es war, findest du es hier und ziehst es mit einem Klick und einer Rückfrage zurück.',
-    details: [
-      'Im Kontomenü oben rechts führt „Freigaben“ auf eine Seite mit zwei Reitern. „Von mir geteilt“ ist der erste: jede Zeile nennt die Seite, den Arbeitsbereich, in dem sie liegt, an wen sie ging oder ob es ein öffentlicher Link ist, ob gelesen oder bearbeitet werden darf, wie weit es reicht und bis wann. Ab sechs Freigaben gibt es darüber ein Filterfeld für Seitentitel, Arbeitsbereich und Adresse.',
-      'Gezeigt werden zuerst nur die Freigaben, die gerade gelten. Zurückgezogene und abgelaufene holt der Schalter „Beendete zeigen“ dazu, denn „das war bis März offen“ gehört zur Antwort. „Zurückziehen“ fragt vorher nach und sagt, was es kostet: ein öffentlicher Link ist danach für immer weg, eine Freigabe an ein Konto lässt sich im Teilen-Dialog der Seite neu erteilen.',
-      'Die Liste zeigt nur, was du selbst geteilt hast, und nur aus Arbeitsbereichen, in denen du noch Mitglied bist. Was andere in einem Arbeitsbereich freigegeben haben, steht in dessen Übersicht unter „Freigaben öffnen“. Zurückziehen darf nur, wer im jeweiligen Arbeitsbereich Admin ist; hast du diese Rolle dort nicht mehr, bleibt die Zeile stehen und sagt das, statt einen Knopf anzubieten, der scheitern würde.',
-    ],
     since: '2026-09-24',
     references: ['#83', 'ADR-044'],
     ui: {
-      where: 'Kontomenü oben rechts, „Freigaben“, Reiter „Von mir geteilt“.',
       path: '/geteilt',
     },
     tools: ['exo_share_mine'],

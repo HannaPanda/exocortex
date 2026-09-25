@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { FEATURE_AREAS, featureSchema } from '@exocortex/contracts';
+import { FEATURE_AREAS } from '@exocortex/contracts';
 
 import { FEATURES, findFeature, latestFeatureDate } from './catalog.js';
 
@@ -12,13 +12,15 @@ import { FEATURES, findFeature, latestFeatureDate } from './catalog.js';
  * not know whether an entry is well formed, because it reads the registry as
  * text and a scan strict enough to judge that would be a parser. So the shape
  * is checked here, where the types are real.
+ *
+ * The words are the exception. They live in the message catalogue, which this
+ * package does not import, so whether every entry has a title, a summary and
+ * more than a teaser of prose is the gate's question now: it reads the German
+ * catalogue as JSON beside the registry.
  */
 describe('the feature catalogue', () => {
-  it('matches the wire schema, apart from the field the API computes', () => {
-    for (const feature of FEATURES) {
-      const parsed = featureSchema.safeParse({ ...feature, isNew: false });
-      expect(parsed.success, `${feature.id}: ${parsed.error?.message ?? ''}`).toBe(true);
-    }
+  it('writes ids the help page can use as anchors', () => {
+    for (const feature of FEATURES) expect(feature.id).toMatch(/^[a-z0-9-]+$/);
   });
 
   it('gives every feature an id of its own', () => {
@@ -36,25 +38,6 @@ describe('the feature catalogue', () => {
         );
         owners.set(tool, feature.id);
       }
-    }
-  });
-
-  /**
-   * A length, because the failure this guards against is an entry written to
-   * satisfy the schema: one paragraph repeating the summary in other words.
-   * Two paragraphs of a few sentences is what "how it works, how you use it,
-   * where it stops" comes out at, and anything shorter than that is a teaser
-   * again. The gate cannot judge whether the prose is true; it can insist
-   * that somebody sat down and wrote some.
-   */
-  it('explains every feature in more than a teaser', () => {
-    for (const feature of FEATURES) {
-      expect(feature.details.length, `${feature.id} has too few paragraphs`).toBeGreaterThanOrEqual(
-        2,
-      );
-      const written = feature.details.join(' ');
-      expect(written.length, `${feature.id} says too little`).toBeGreaterThan(400);
-      expect(written, `${feature.id} repeats its summary verbatim`).not.toContain(feature.summary);
     }
   });
 
@@ -90,7 +73,7 @@ describe('the feature catalogue', () => {
 
   it('finds a feature by id and nothing by a wrong one', () => {
     const first = FEATURES[0]!;
-    expect(findFeature(first.id)?.title).toBe(first.title);
+    expect(findFeature(first.id)?.since).toBe(first.since);
     expect(findFeature('no-such-feature')).toBeNull();
   });
 });

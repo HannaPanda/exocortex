@@ -31,6 +31,13 @@
  * with a lie. Tools are held to "exactly one" instead, but by the catalogue's
  * own unit test rather than here, since that one needs the real types.
  *
+ * The words themselves live in the German message catalogue, namespace
+ * `features` (issue #98, ADR-062), keyed by the entry's id. So the gate reads
+ * that too and holds the two halves together: every entry has a title, a
+ * summary and a long form that is more than a teaser, a door in the browser
+ * has its sentence saying where and only such a door has one, and no
+ * catalogue entry is left over for an id the registry no longer has.
+ *
  * What it cannot do: judge whether a summary is true, current or useful. That
  * is what reading it is for. It guarantees only that no capability shipped
  * with nobody having to describe it.
@@ -41,6 +48,7 @@ import { join, relative } from 'node:path';
 
 import { collectTools, readBlock, readStringLiteral, repoRoot } from './lib/api-surface.mjs';
 import { fail, info, ok, step } from './lib/gate-log.mjs';
+import { readNamespace, SOURCE_LOCALE } from './lib/i18n-catalog.mjs';
 
 const REGISTRY_DIR = join(repoRoot, 'packages/features/src/features');
 const WEB_APP_DIR = join(repoRoot, 'apps/web/src/app');
@@ -141,6 +149,7 @@ function collectRegistry() {
       entries.push({
         id,
         where: `${rel}:${source.slice(0, match.index).split('\n').length}`,
+        hasUi: /\bui:\s*\{/.test(block),
         tools: stringArray(block, 'tools'),
         screens: stringArray(block, 'screens'),
         automationTriggers: stringArray(block, 'automationTriggers'),
@@ -209,6 +218,58 @@ function claimIndex(entries, field) {
     }
   }
   return claims;
+}
+
+// ---------------------------------------------------------------------------
+// The words
+// ---------------------------------------------------------------------------
+
+/**
+ * What an entry's words lack in the German catalogue, as findings.
+ *
+ * The length rule was the catalogue's own unit test while the prose sat in
+ * `packages/features`: an entry written to satisfy a schema is one paragraph
+ * repeating the summary in other words. Two paragraphs and more than 400
+ * characters is what "how it works, how you use it, where it stops" comes out
+ * at; the gate cannot judge whether the prose is true, it can insist that
+ * somebody sat down and wrote some.
+ *
+ * The paragraphs are `details.p1`, `details.p2` and on without a gap, because
+ * the API reads them in that order and stops at the first one missing.
+ */
+function wordFindings(entry, words) {
+  const where = `${SOURCE_LOCALE}/features.json ${entry.id}`;
+  if (words === undefined || words === null || typeof words !== 'object') {
+    return [`${entry.id} has no words in ${SOURCE_LOCALE}/features.json  (${entry.where})`];
+  }
+  const found = [];
+  const text = (value) => typeof value === 'string' && value.trim().length > 0;
+  if (!text(words.title)) found.push(`${where}: no title`);
+  if (!text(words.summary)) found.push(`${where}: no summary`);
+  const details = words.details !== null && typeof words.details === 'object' ? words.details : {};
+  const keys = Object.keys(details);
+  const paragraphs = [];
+  for (let index = 1; text(details[`p${index}`]); index += 1) {
+    paragraphs.push(details[`p${index}`]);
+  }
+  if (paragraphs.length === 0) found.push(`${where}: no details.p1`);
+  else if (paragraphs.length !== keys.length) {
+    found.push(`${where}: details has to be p1, p2, … without a gap, found ${keys.join(', ')}`);
+  } else {
+    const written = paragraphs.join(' ');
+    if (paragraphs.length < 2) found.push(`${where}: details has fewer than two paragraphs`);
+    if (written.length <= 400) found.push(`${where}: details says too little`);
+    if (text(words.summary) && written.includes(words.summary)) {
+      found.push(`${where}: details repeats the summary verbatim`);
+    }
+  }
+  if (entry.hasUi && !text(words.where)) {
+    found.push(`${where}: the entry has a door in the browser (\`ui\`) and no \`where\` sentence`);
+  }
+  if (!entry.hasUi && words.where !== undefined) {
+    found.push(`${where}: a \`where\` sentence for an entry without \`ui\``);
+  }
+  return found;
 }
 
 // ---------------------------------------------------------------------------
@@ -305,6 +366,26 @@ for (const comparison of comparisons) {
 for (const id of new Set(duplicateIds)) {
   findings.push(`two registry entries share the id \`${id}\``);
   hints.push('An id is the anchor on the help page and has to be unique. Rename one of them.');
+}
+
+const catalogue = readNamespace(SOURCE_LOCALE, 'features') ?? {};
+const registryIds = new Set(registry.map((entry) => entry.id));
+for (const entry of registry) {
+  const missing = wordFindings(entry, catalogue[entry.id]);
+  findings.push(...missing);
+  if (missing.length > 0) {
+    hints.push(
+      "An entry's title, summary, paragraphs (`details.p1` …) and `where` live in packages/i18n/src/messages/de/features.json under its id. Recipe: docs/features.md.",
+    );
+  }
+}
+for (const id of Object.keys(catalogue).filter((key) => !registryIds.has(key))) {
+  findings.push(
+    `${SOURCE_LOCALE}/features.json has words for \`${id}\`, which no registry entry has`,
+  );
+  hints.push(
+    'Delete the catalogue entry, or rename it with the registry entry it belongs to: words for an id nobody serves are a feature that was removed and is still being described.',
+  );
 }
 
 for (const exemption of SCREEN_EXEMPT) {

@@ -20,8 +20,10 @@ import { isoDateTimeSchema } from './primitives';
  * goes red. The prose is a human's job; not forgetting to write it is the
  * build's.
  *
- * The data lives in `@exocortex/features`. Only the wire shape is here, so the
- * browser can read it without importing the catalogue.
+ * The facts live in `@exocortex/features`, the words in the message catalogue
+ * (namespace `features`, German first), and the API puts the two together in
+ * the reader's language (issue #98, ADR-062). Only the wire shape is here, so
+ * the browser can read it without importing either.
  */
 
 /** The groups the help page shows, in the order it shows them. */
@@ -44,57 +46,6 @@ export const FEATURE_AREAS = [
 
 export const featureAreaSchema = z.enum(FEATURE_AREAS);
 export type FeatureArea = z.infer<typeof featureAreaSchema>;
-
-/** Area headings, German, because they are read by a person. */
-export const FEATURE_AREA_LABELS: Record<FeatureArea, string> = {
-  hilfe: 'Überblick',
-  seiten: 'Seiten und Editor',
-  struktur: 'Struktur, Ablage und Vorlagen',
-  suche: 'Suche und Verknüpfungen',
-  datenbanken: 'Datenbanken',
-  erfassen: 'Schnell erfassen',
-  zusammenarbeit: 'Zusammenarbeit und Verlauf',
-  dateien: 'Dateien und Texterkennung',
-  ki: 'Eingebaute KI',
-  automationen: 'Automationen',
-  gedaechtnis: 'Gedächtnis und Entitäten',
-  veroeffentlichen: 'Veröffentlichen und Projekte',
-  agenten: 'Zugang für Agenten',
-  verwaltung: 'Verwaltung',
-};
-
-/**
- * One sentence per area, shown über der Liste eines Bereichs.
- *
- * A heading like "Struktur, Ablage und Vorlagen" names a drawer; it does not
- * say what is in it or why somebody would open it. The sentence does, and it
- * is what makes the tab list readable as a table of contents rather than as
- * fourteen words.
- */
-export const FEATURE_AREA_DESCRIPTIONS: Record<FeatureArea, string> = {
-  hilfe: 'Wo du nachschlägst, was diese Installation kann, und was zuletzt dazugekommen ist.',
-  seiten:
-    'Der Editor selbst: woraus eine Seite besteht, wie du sie schreibst und wie sie aussieht.',
-  struktur:
-    'Wo eine Seite liegt, wie sie dorthin kommt, wie sie wieder verschwindet und wie du dieselbe Form mehrfach benutzt.',
-  suche: 'Etwas wiederfinden, auch wenn du die Wörter von damals nicht mehr weißt.',
-  datenbanken:
-    'Seiten als Tabelle: Spalten mit Typen, gespeicherte Ansichten und Zeilen, die vollwertige Seiten bleiben.',
-  erfassen: 'Der schnellste Weg von einem Gedanken oder einer Webseite nach eXocortex hinein.',
-  zusammenarbeit:
-    'Zu zweit an einer Seite, Gespräche im Text und der Nachweis, was wann von wem geändert wurde.',
-  dateien:
-    'Was du hochlädst: wo es liegt, wie es angezeigt wird und wie der Text aus einem PDF herauskommt.',
-  ki: 'Das eingebaute Modell: was es sieht, was es darf, was es kostet und wo die Grenzen liegen.',
-  automationen: 'Regeln, die ohne dich laufen, ausgelöst von einer Änderung oder von der Uhr.',
-  gedaechtnis:
-    'Was die Agenten über die Zeit behalten, und die Personen, Orte und Dinge, die in deinen Seiten immer wieder vorkommen.',
-  veroeffentlichen:
-    'Aus einer Seite oder einem Projekt wird eine Datei, die jemand ohne Zugang lesen kann.',
-  agenten:
-    'Wie Claude Code, Hermes, ChatGPT und andere Clients hier hereinkommen und was sie dürfen.',
-  verwaltung: 'Konten, Einstellungen, Modelle und Kosten dieser Installation.',
-};
 
 /**
  * Where a person finds the feature.
@@ -156,8 +107,24 @@ export const featureSchema = z.object({
 });
 export type Feature = z.infer<typeof featureSchema>;
 
+/**
+ * An area's heading and its one sentence, in the reader's language.
+ *
+ * On the wire because an agent reads the list through `exo_features` and has no
+ * catalogue of its own; the help page renders the same words from its own
+ * messages (`help.areas`), which is where the API takes them from too.
+ */
+export const featureAreaInfoSchema = z.object({
+  id: featureAreaSchema,
+  label: z.string().min(1),
+  description: z.string().min(1),
+});
+export type FeatureAreaInfo = z.infer<typeof featureAreaInfoSchema>;
+
 export const featureListResponseSchema = z.object({
   features: z.array(featureSchema),
+  /** Every area, in the order the help page shows them. */
+  areas: z.array(featureAreaInfoSchema),
   /** The day this reader last marked the list as read, or null if never. */
   seenUpTo: z
     .string()
