@@ -165,6 +165,7 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
       'Unter Einstellungen → Sprache wählst du, in welcher Sprache eXocortex mit dir spricht: Deutsch, Englisch, Spanisch, Französisch, Italienisch, Niederländisch, Polnisch oder brasilianisches Portugiesisch. Die Wahl gehört zu deinem Konto und gilt deshalb auf jedem Gerät.',
     details: [
       'Solange du nichts wählst, richtet sich eXocortex nach der Sprache deines Browsers und fällt auf Deutsch zurück, wenn der keine der angebotenen Sprachen verlangt. Wählst du selbst, gilt deine Wahl überall, auch auf einem Gerät, an dem du dich zum ersten Mal anmeldest: dort erscheint die erste Ansicht noch in der Browsersprache und wechselt, sobald dein Konto geladen ist.',
+      'Auch vor dem Anmelden lässt sich die Sprache umstellen: unter dem Anmeldeformular, beim Annehmen einer Einladung und auf der Seite „Passwort vergessen“. Diese Wahl merkt sich der Browser, bis dein Konto eine eigene hat.',
       'Übersetzt wird die Oberfläche, nie deine Inhalte. Seitentitel, Texte, Datenbankwerte und Kommentare bleiben so, wie sie geschrieben wurden.',
       'Die Oberfläche wird Bereich für Bereich umgestellt. Wo noch deutscher Text steht, ist dieser Bereich noch nicht übertragen; bis alles umgestellt ist, kann eine andere Sprache also an manchen Stellen deutsch bleiben.',
       'Agenten lesen und setzen die Sprache über exo_me_preferences und exo_me_preferences_set.',

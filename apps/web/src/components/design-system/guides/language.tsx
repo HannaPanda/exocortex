@@ -180,8 +180,8 @@ export function LanguageSection() {
           <li>
             <span className="font-medium">Fehler:</span>{' '}
             <span className="text-muted-foreground">
-              Was nicht ging, dann der nächste Schritt. Jeder API-Fehlercode hat einen deutschen
-              Satz in <DsSource path="apps/web/src/lib/api/error-messages.ts" />; ein lokales „…
+              Was nicht ging, dann der nächste Schritt. Jeder API-Fehlercode hat einen Satz in{' '}
+              <DsSource path="packages/i18n/src/messages/de/errors.json" />; ein lokales „…
               fehlgeschlagen.“ ist die Ausnahme, nicht die Regel.
             </span>
           </li>
