@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { type DocumentTreeNode } from '@exocortex/contracts';
 import {
@@ -44,6 +45,7 @@ export function MoveWorkspaceDialog({
   onTargetChange: (workspaceId: string) => void;
   activeDocumentId: string | undefined;
 }) {
+  const t = useTranslations('dialogs.moveWorkspace');
   const router = useRouter();
   const workspaces = useWorkspaces();
   const moveDocument = useMoveDocument(workspaceId);
@@ -57,12 +59,8 @@ export function MoveWorkspaceDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>In anderen Arbeitsbereich verschieben</DialogTitle>
-          <DialogDescription>
-            „{node?.title}“ wandert mit allen Unterseiten, Anhängen und eingebetteten Datenbanken in
-            den gewählten Arbeitsbereich. Inhalte, die bisher nur du gesehen hast, sind danach für
-            dessen Mitglieder sichtbar wie jede andere Seite dort auch.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description', { title: node?.title ?? '' })}</DialogDescription>
         </DialogHeader>
 
         {moveDocument.isError ? (
@@ -83,7 +81,7 @@ export function MoveWorkspaceDialog({
             <SelectValue>
               {() =>
                 workspaces.data?.find((option) => option.id === targetWorkspaceId)?.name ??
-                'Zielarbeitsbereich wählen'
+                t('targetPlaceholder')
               }
             </SelectValue>
           </SelectTrigger>
@@ -100,7 +98,7 @@ export function MoveWorkspaceDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             data-testid="move-workspace-submit"
@@ -124,7 +122,7 @@ export function MoveWorkspaceDialog({
                 });
             }}
           >
-            Verschieben
+            {t('submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

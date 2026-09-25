@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Avatar, AvatarFallback, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
@@ -17,13 +18,14 @@ export function PresenceAvatars() {
  * can draw it with people who are not there.
  */
 export function PresenceStack({ presence }: { presence: readonly PresenceUser[] }) {
+  const t = useTranslations('shell.presenceAvatars');
   if (presence.length === 0) return null;
 
   return (
     <div
       className="flex shrink-0 items-center -space-x-1.5"
       data-testid="presence-avatars"
-      aria-label={`${presence.length} Personen bearbeiten diese Seite`}
+      aria-label={t('label', { count: presence.length })}
     >
       {presence.slice(0, 5).map((user) => (
         <Tooltip key={user.clientId}>
@@ -40,7 +42,7 @@ export function PresenceStack({ presence }: { presence: readonly PresenceUser[] 
               </Avatar>
             }
           />
-          <TooltipContent>{user.self ? `${user.name} (du)` : user.name}</TooltipContent>
+          <TooltipContent>{user.self ? t('self', { name: user.name }) : user.name}</TooltipContent>
         </Tooltip>
       ))}
       {presence.length > 5 ? (

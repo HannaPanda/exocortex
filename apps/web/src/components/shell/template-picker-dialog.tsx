@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentTemplate } from '@exocortex/contracts';
@@ -51,6 +52,7 @@ export function TemplatePickerDialog({
   parentId?: string | null;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('dialogs.templatePicker');
   const router = useRouter();
   const [title, setTitle] = React.useState('');
   const templates = useTemplates(open ? workspaceId : undefined);
@@ -86,11 +88,8 @@ export function TemplatePickerDialog({
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent data-testid="template-picker">
         <DialogHeader>
-          <DialogTitle>Neue Seite aus Vorlage</DialogTitle>
-          <DialogDescription>
-            Der Inhalt der Vorlage wird kopiert. Die neue Seite ist danach eine gewöhnliche Seite
-            ohne Verbindung zur Vorlage.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {instantiate.isError ? (
@@ -104,25 +103,22 @@ export function TemplatePickerDialog({
         ) : null}
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="template-title">Titel (optional)</Label>
+          <Label htmlFor="template-title">{t('titleLabel')}</Label>
           <Input
             id="template-title"
             value={title}
-            placeholder="Sonst entscheidet das Titelmuster der Vorlage"
+            placeholder={t('titlePlaceholder')}
             data-testid="template-title"
             onChange={(event) => setTitle(event.target.value)}
           />
         </div>
 
         {templates.isPending ? (
-          <LoadingState variant="skeleton" rows={3} label="Vorlagen werden geladen" />
+          <LoadingState variant="skeleton" rows={3} label={t('loading')} />
         ) : templates.isError ? (
-          <ErrorState onRetry={() => void templates.refetch()} title="Vorlagen nicht geladen" />
+          <ErrorState onRetry={() => void templates.refetch()} title={t('loadError')} />
         ) : templates.data.templates.length === 0 ? (
-          <EmptyState
-            title="Noch keine Vorlagen"
-            description="Öffne eine Seite, die sich wiederholt, und markiere sie im Seitenmenü als Vorlage."
-          />
+          <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <ul className="flex flex-col gap-1" data-testid="template-list">
             {templates.data.templates.map((template) => (
@@ -149,7 +145,7 @@ export function TemplatePickerDialog({
                     )}
                     {template.targetParent === null ? null : (
                       <span className="truncate text-xs text-muted-foreground">
-                        Landet unter „{template.targetParent.title}“
+                        {t('targetParent', { title: template.targetParent.title })}
                       </span>
                     )}
                   </span>
@@ -161,7 +157,7 @@ export function TemplatePickerDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => changeOpen(false)}>
-            Schließen
+            {t('close')}
           </Button>
         </DialogFooter>
       </DialogContent>

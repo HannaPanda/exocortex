@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Laden …",
+    "errorTitle": "Er ging iets mis",
+    "errorDescription": "Probeer het opnieuw. Blijft het probleem bestaan, controleer dan de verbinding.",
+    "retry": "Opnieuw proberen"
+  },
+  "dialog": {
+    "close": "Dialoogvenster sluiten"
+  },
+  "sheet": {
+    "close": "Sluiten"
+  },
+  "commandPalette": {
+    "title": "Opdrachtenpalet",
+    "description": "Pagina’s zoeken en opdrachten uitvoeren",
+    "placeholder": "Zoeken of opdracht invoeren …",
+    "empty": "Geen resultaten"
+  },
+  "datePicker": {
+    "placeholder": "Datum kiezen",
+    "labelled": "{label}: {value}",
+    "today": "Vandaag",
+    "clear": "Wissen",
+    "time": "Tijd",
+    "labelledTime": "{label}, tijd"
+  }
+}

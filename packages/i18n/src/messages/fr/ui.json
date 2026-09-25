@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Chargement …",
+    "errorTitle": "Un problème est survenu",
+    "errorDescription": "Réessaie. Si le problème persiste, vérifie ta connexion.",
+    "retry": "Réessayer"
+  },
+  "dialog": {
+    "close": "Fermer la boîte de dialogue"
+  },
+  "sheet": {
+    "close": "Fermer"
+  },
+  "commandPalette": {
+    "title": "Palette de commandes",
+    "description": "Rechercher des pages et exécuter des commandes",
+    "placeholder": "Rechercher ou saisir une commande …",
+    "empty": "Aucun résultat"
+  },
+  "datePicker": {
+    "placeholder": "Choisir une date",
+    "labelled": "{label} : {value}",
+    "today": "Aujourd’hui",
+    "clear": "Effacer",
+    "time": "Heure",
+    "labelledTime": "{label}, heure"
+  }
+}

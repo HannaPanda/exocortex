@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Carregando…",
+    "errorTitle": "Algo deu errado",
+    "errorDescription": "Tente novamente. Se o problema persistir, verifique a conexão.",
+    "retry": "Tentar novamente"
+  },
+  "dialog": {
+    "close": "Fechar diálogo"
+  },
+  "sheet": {
+    "close": "Fechar"
+  },
+  "commandPalette": {
+    "title": "Paleta de comandos",
+    "description": "Buscar páginas e executar comandos",
+    "placeholder": "Buscar ou digitar um comando…",
+    "empty": "Nenhum resultado"
+  },
+  "datePicker": {
+    "placeholder": "Selecionar data",
+    "labelled": "{label}: {value}",
+    "today": "Hoje",
+    "clear": "Remover",
+    "time": "Horário",
+    "labelledTime": "{label}, horário"
+  }
+}

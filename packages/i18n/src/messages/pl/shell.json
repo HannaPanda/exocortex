@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex: twój wspólny zewnętrzny mózg."
+  },
+  "appShell": {
+    "navigationTitle": "Nawigacja",
+    "pageNavigation": "Nawigacja po stronach",
+    "navigationWidth": "Szerokość nawigacji",
+    "contextTitle": "Panel kontekstowy",
+    "contextWidth": "Szerokość panelu kontekstowego"
+  },
+  "topbar": {
+    "toggleNavigation": "Pokaż/ukryj nawigację",
+    "toggleNavigationTooltip": "Nawigacja (Ctrl + B)",
+    "search": "Szukaj",
+    "searchTooltip": "Szukaj (Ctrl + K)",
+    "searchPlaceholder": "Szukaj…",
+    "searchShortcut": "Ctrl K",
+    "capture": "Przechwyć",
+    "captureTooltip": "Przechwyć (Ctrl + E)",
+    "toggleContext": "Pokaż/ukryj panel kontekstowy",
+    "toggleContextTooltip": "Panel kontekstowy (Ctrl + .)",
+    "accountFallback": "Konto"
+  },
   "globalLinks": {
-    "language": "Język"
+    "help": "Pomoc i funkcje",
+    "helpWithNew": "{count, plural, one {Pomoc i funkcje (# nowa)} few {Pomoc i funkcje (# nowe)} many {Pomoc i funkcje (# nowych)} other {Pomoc i funkcje (# nowej)}}",
+    "chats": "Czaty",
+    "entities": "Encje",
+    "shares": "Udostępnienia",
+    "memory": "Pamięć",
+    "connections": "Połączenia",
+    "notifications": "Powiadomienia",
+    "language": "Język",
+    "admin": "Administracja",
+    "menuLabel": "Konto i obszary",
+    "menuLabelWithNew": "{count, plural, one {Konto i obszary (# nowa funkcja)} few {Konto i obszary (# nowe funkcje)} many {Konto i obszary (# nowych funkcji)} other {Konto i obszary (# nowej funkcji)}}",
+    "signOut": "Wyloguj: {name}"
+  },
+  "workspaceSwitcher": {
+    "choose": "Wybierz obszar roboczy",
+    "heading": "Obszary robocze",
+    "create": "Nowy obszar roboczy",
+    "nameLabel": "Nazwa obszaru roboczego",
+    "cancel": "Anuluj",
+    "submit": "Utwórz"
+  },
+  "workspaceLanding": {
+    "loading": "Wczytywanie obszarów roboczych…",
+    "emptyTitle": "Nie ma jeszcze obszaru roboczego",
+    "emptyDescription": "Obszar roboczy gromadzi strony, członków i pliki.",
+    "defaultName": "Mój obszar roboczy",
+    "create": "Utwórz obszar roboczy",
+    "opening": "Otwieranie obszaru roboczego …"
+  },
+  "workspaceOverview": {
+    "title": "Przegląd",
+    "pulsePages": "{count, plural, one {# strona} few {# strony} many {# stron} other {# stron}}",
+    "pulseDatabases": "{count, plural, one {# baza danych} few {# bazy danych} many {# baz danych} other {# baz danych}}",
+    "pulseEditedThisWeek": "{count, plural, one {# edytowana w tym tygodniu} few {# edytowane w tym tygodniu} many {# edytowanych w tym tygodniu} other {# edytowanych w tym tygodniu}}",
+    "lastEditedBy": "Ostatnia edycja: {name}",
+    "settingsLabel": "Ustawienia obszaru roboczego",
+    "settings": "Ustawienia",
+    "createPage": "Nowa strona",
+    "untitledPage": "Strona bez tytułu",
+    "loading": "Ładowanie przeglądu …",
+    "emptyTitle": "Brak stron",
+    "emptyDescription": "Utwórz swoją pierwszą stronę. Cała reszta powstanie na niej.",
+    "emptyAction": "Utwórz stronę",
+    "recent": "Kontynuuj",
+    "attention": "Niedokończone",
+    "openComments": "{count, plural, one {<number>#</number> otwarty komentarz} few {<number>#</number> otwarte komentarze} many {<number>#</number> otwartych komentarzy} other {<number>#</number> otwartych komentarzy}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> zerwany odnośnik} few {<number>#</number> zerwane odnośniki} many {<number>#</number> zerwanych odnośników} other {<number>#</number> zerwanych odnośników}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> tekst jeszcze nieodczytany} few {<number>#</number> teksty jeszcze nieodczytane} many {<number>#</number> tekstów jeszcze nieodczytanych} other {<number>#</number> tekstów jeszcze nieodczytanych}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> tytuł powtórzony jako nagłówek} few {<number>#</number> tytuły powtórzone jako nagłówki} many {<number>#</number> tytułów powtórzonych jako nagłówki} other {<number>#</number> tytułów powtórzonych jako nagłówki}}",
+    "databases": "Bazy danych",
+    "sections": "Sekcje"
+  },
+  "pageTreeHeader": {
+    "title": "Strony",
+    "create": "Utwórz",
+    "createPage": "Utwórz stronę",
+    "createFromTemplate": "Strona z szablonu",
+    "createDatabase": "Utwórz bazę danych",
+    "createProject": "Utwórz projekt LaTeX"
+  },
+  "pageTree": {
+    "untitledDatabase": "Baza danych bez tytułu",
+    "untitledPage": "Strona bez tytułu",
+    "untitledProject": "Projekt bez tytułu",
+    "loading": "Ładowanie stron",
+    "loadError": "Nie udało się załadować drzewa stron",
+    "emptyTitle": "Brak stron",
+    "emptyDescription": "Utwórz pierwszą stronę, aby rozpocząć.",
+    "emptyAction": "Utwórz stronę",
+    "treeLabel": "Strony",
+    "rootDrop": "Upuść tutaj: najwyższy poziom",
+    "trash": "Kosz"
+  },
+  "pageTreeRow": {
+    "collapse": "Zwiń podstrony",
+    "expand": "Rozwiń podstrony",
+    "changeIconOf": "Zmień ikonę „{title}”",
+    "createChildIn": "Utwórz podstronę w „{title}”",
+    "actionsFor": "Akcje dla „{title}”",
+    "changeIcon": "Zmień ikonę …",
+    "moveUp": "W górę",
+    "moveDown": "W dół",
+    "indent": "Pod stronę powyżej",
+    "outdent": "Poziom wyżej",
+    "createChild": "Utwórz podstronę",
+    "createDatabase": "Utwórz bazę danych",
+    "createProject": "Utwórz projekt LaTeX",
+    "suggestParent": "Zaproponuj odpowiednie miejsce …",
+    "moveWorkspace": "Przenieś do innego obszaru roboczego …",
+    "archive": "Do kosza"
+  },
+  "smartViews": {
+    "moveUp": "„{name}” w górę",
+    "moveDown": "„{name}” w dół",
+    "openSearch": "Wyszukiwanie i zapisane wyszukiwania"
+  },
+  "connectionStatus": {
+    "offlineShort": "offline",
+    "offline": "Offline: zmiany są zapisywane lokalnie",
+    "connected": "Połączono",
+    "disconnectedShort": "rozłączono",
+    "disconnected": "Połączenie przerwane, ponawianie próby",
+    "connecting": "Nawiązywanie połączenia …",
+    "pendingSync": "zmiany offline"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# osoba edytuje tę stronę} few {# osoby edytują tę stronę} many {# osób edytuje tę stronę} other {# osoby edytuje tę stronę}}",
+    "self": "{name} (ty)"
+  },
+  "paletteCommands": {
+    "capture": "Zanotuj coś",
+    "captureHint": "Ctrl + E",
+    "captureKeywords": "skrzynka odbiorcza notatka szybko inbox",
+    "hideSidebar": "Ukryj nawigację",
+    "showSidebar": "Pokaż nawigację",
+    "sidebarHint": "Ctrl + B",
+    "sidebarKeywords": "pasek boczny drzewo stron sidebar",
+    "hideContext": "Ukryj panel kontekstowy",
+    "showContext": "Pokaż panel kontekstowy",
+    "contextHint": "Ctrl + .",
+    "contextKeywords": "ai komentarze panel odnośniki",
+    "openTrash": "Otwórz kosz",
+    "trashKeywords": "usunięte archiwum przywróć"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "Reguła AI",
+    "aiRuleOnDemand": "Reguła AI (na żądanie)",
+    "shared": "Udostępniono",
+    "file": "Przenieś do …",
+    "restore": "Przywróć",
+    "actions": "Działania na stronie",
+    "properties": "Właściwości strony …",
+    "template": "Szablon …",
+    "share": "Udostępnij …",
+    "exportMarkdown": "Eksportuj jako Markdown",
+    "render": "Opublikuj jako PDF …",
+    "importMarkdown": "Importuj Markdown",
+    "archive": "Do kosza"
+  },
+  "documentTitleInput": {
+    "label": "Tytuł strony",
+    "placeholder": "Strona bez tytułu"
+  },
+  "contextPanel": {
+    "aiTab": "AI",
+    "propertiesTab": "Właściwości",
+    "commentsTab": "Komentarze",
+    "backlinksTab": "Odnośniki",
+    "activityTab": "Aktywność",
+    "aiErrorTitle": "Panel AI jest niedostępny",
+    "aiErrorDescription": "Nie udało się wyświetlić czatu. Trwające zadanie AI działa dalej; po odświeżeniu historia będzie kompletna.",
+    "propertiesErrorTitle": "Właściwości są niedostępne",
+    "propertiesErrorDescription": "Nie udało się wyświetlić właściwości.",
+    "commentsErrorTitle": "Komentarze są niedostępne",
+    "commentsErrorDescription": "Nie udało się wyświetlić komentarzy. Nie ma to wpływu na treść strony.",
+    "backlinksErrorTitle": "Odnośniki są niedostępne",
+    "backlinksErrorDescription": "Nie udało się wyświetlić indeksu odnośników. Same odnośniki nadal znajdują się w tekście strony.",
+    "activityErrorTitle": "Aktywność jest niedostępna",
+    "activityErrorDescription": "Nie udało się wyświetlić historii tej strony."
+  },
+  "adminLayout": {
+    "title": "Administracja",
+    "intro": "Ustawienia, modele AI i zarządzanie użytkownikami tej instalacji."
   }
 }

@@ -1,0 +1,1 @@
+The shared components of the design system, used on every screen: the loading, error and empty states, the close buttons of dialogs and side sheets (read by screen readers), the command palette opened with Ctrl+K, and the date picker with its "today" and "remove" buttons. Short, neutral words that fit any screen they appear on.

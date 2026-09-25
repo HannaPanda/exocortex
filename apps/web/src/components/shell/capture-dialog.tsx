@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon, InboxIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type CaptureResponse } from '@exocortex/contracts';
@@ -45,6 +46,7 @@ export function CaptureDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('dialogs.capture');
   const [text, setText] = React.useState('');
   const [sourceUrl, setSourceUrl] = React.useState('');
   const [last, setLast] = React.useState<CaptureResponse | null>(null);
@@ -89,10 +91,8 @@ export function CaptureDialog({
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent data-testid="capture-dialog">
         <DialogHeader>
-          <DialogTitle>Erfassen</DialogTitle>
-          <DialogDescription>
-            Landet im Eingang. Die erste Zeile wird zum Titel, einsortiert wird später.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {capture.isError ? (
@@ -109,8 +109,8 @@ export function CaptureDialog({
             autoFocus
             rows={6}
             value={text}
-            placeholder="Was willst du dir merken?"
-            aria-label="Notiz"
+            placeholder={t('textPlaceholder')}
+            aria-label={t('textLabel')}
             data-testid="capture-text"
             onChange={(event) => setText(event.target.value)}
             onKeyDown={(event) => {
@@ -121,7 +121,7 @@ export function CaptureDialog({
             }}
           />
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="capture-source">Quelle (optional)</Label>
+            <Label htmlFor="capture-source">{t('sourceLabel')}</Label>
             <Input
               id="capture-source"
               type="url"
@@ -137,14 +137,14 @@ export function CaptureDialog({
         {last === null ? null : (
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <InboxIcon className="size-4 shrink-0" />
-            <span className="truncate">Erfasst: {last.document.title}</span>
+            <span className="truncate">{t('captured', { title: last.document.title })}</span>
             <Link
               href={`/arbeitsbereich/${workspaceId}/seite/${last.document.id}`}
               className="ml-auto flex shrink-0 items-center gap-1 text-foreground hover:underline"
               data-testid="capture-open"
               onClick={() => changeOpen(false)}
             >
-              Öffnen <ArrowRightIcon className="size-3.5" />
+              {t('open')} <ArrowRightIcon className="size-3.5" />
             </Link>
           </p>
         )}
@@ -152,8 +152,9 @@ export function CaptureDialog({
         <DialogFooter>
           <span className="mr-auto flex items-center gap-3 text-xs text-muted-foreground">
             <span>
-              Speichern mit <kbd className="exocortex-numeric">Strg</kbd> +{' '}
-              <kbd className="exocortex-numeric">Enter</kbd>
+              {t.rich('saveShortcut', {
+                kbd: (chunks) => <kbd className="exocortex-numeric">{chunks}</kbd>,
+              })}
             </span>
             {/* The one place where somebody is already thinking about capture,
                 which is the only moment a browser bookmarklet sounds useful. */}
@@ -163,18 +164,18 @@ export function CaptureDialog({
               data-testid="open-clipper"
               onClick={() => changeOpen(false)}
             >
-              Web Clipper
+              {t('webClipper')}
             </Link>
           </span>
           <Button variant="ghost" onClick={() => changeOpen(false)}>
-            Schließen
+            {t('close')}
           </Button>
           <Button
             onClick={submit}
             disabled={text.trim().length === 0 || capture.isPending}
             data-testid="capture-submit"
           >
-            Erfassen
+            {t('submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

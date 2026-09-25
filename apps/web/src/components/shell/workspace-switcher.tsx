@@ -2,6 +2,7 @@
 
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -24,6 +25,7 @@ import {
 import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
 export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: string | null }) {
+  const t = useTranslations('shell.workspaceSwitcher');
   const router = useRouter();
   const workspaces = useWorkspaces();
   const createWorkspace = useCreateWorkspace();
@@ -73,7 +75,7 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
               className="min-w-0 max-w-24 shrink justify-between gap-1 min-[380px]:max-w-52"
               data-testid="workspace-switcher"
             >
-              <span className="truncate">{active?.name ?? 'Arbeitsbereich wählen'}</span>
+              <span className="truncate">{active?.name ?? t('choose')}</span>
               <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
             </Button>
           }
@@ -86,7 +88,7 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
           that is not a workspace.
         */}
           <DropdownMenuGroup className="min-h-0 flex-1 overflow-y-auto">
-            <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('heading')}</DropdownMenuLabel>
             {(workspaces.data ?? []).map((workspace) => (
               <DropdownMenuItem
                 key={workspace.id}
@@ -101,7 +103,7 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setCreating(true)} data-testid="workspace-create">
-            <PlusIcon /> Neuer Arbeitsbereich
+            <PlusIcon /> {t('create')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -120,16 +122,16 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Neuer Arbeitsbereich</DialogTitle>
+            <DialogTitle>{t('create')}</DialogTitle>
           </DialogHeader>
           <label htmlFor="workspace-create-name" className="sr-only">
-            Name des Arbeitsbereichs
+            {t('nameLabel')}
           </label>
           <Input
             id="workspace-create-name"
             autoFocus
             value={name}
-            placeholder="Name des Arbeitsbereichs"
+            placeholder={t('nameLabel')}
             onChange={(event) => setName(event.target.value)}
             onKeyDown={(event) => {
               if (event.key !== 'Enter') return;
@@ -140,14 +142,14 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
           />
           <DialogFooter>
             <Button variant="ghost" onClick={() => setCreating(false)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               onClick={() => void create()}
               disabled={name.trim().length === 0 || createWorkspace.isPending}
               data-testid="workspace-create-submit"
             >
-              Anlegen
+              {t('submit')}
             </Button>
           </DialogFooter>
         </DialogContent>

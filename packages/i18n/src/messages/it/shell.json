@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex: il tuo cervello esterno condiviso."
+  },
+  "appShell": {
+    "navigationTitle": "Navigazione",
+    "pageNavigation": "Navigazione delle pagine",
+    "navigationWidth": "Larghezza della navigazione",
+    "contextTitle": "Pannello contestuale",
+    "contextWidth": "Larghezza del pannello contestuale"
+  },
+  "topbar": {
+    "toggleNavigation": "Mostra/nascondi navigazione",
+    "toggleNavigationTooltip": "Navigazione (Ctrl + B)",
+    "search": "Cerca",
+    "searchTooltip": "Cerca (Ctrl + K)",
+    "searchPlaceholder": "Cerca …",
+    "searchShortcut": "Ctrl K",
+    "capture": "Cattura",
+    "captureTooltip": "Cattura (Ctrl + E)",
+    "toggleContext": "Mostra/nascondi pannello contestuale",
+    "toggleContextTooltip": "Pannello contestuale (Ctrl + .)",
+    "accountFallback": "Account"
+  },
   "globalLinks": {
-    "language": "Lingua"
+    "help": "Guida e funzioni",
+    "helpWithNew": "{count, plural, one {Guida e funzioni (# nuova)} many {Guida e funzioni (# nuove)} other {Guida e funzioni (# nuove)}}",
+    "chats": "Chat",
+    "entities": "Entità",
+    "shares": "Condivisioni",
+    "memory": "Memoria",
+    "connections": "Connessioni",
+    "notifications": "Notifiche",
+    "language": "Lingua",
+    "admin": "Amministrazione",
+    "menuLabel": "Account e aree",
+    "menuLabelWithNew": "{count, plural, one {Account e aree (# nuova funzione)} many {Account e aree (# nuove funzioni)} other {Account e aree (# nuove funzioni)}}",
+    "signOut": "Disconnetti {name}"
+  },
+  "workspaceSwitcher": {
+    "choose": "Seleziona area di lavoro",
+    "heading": "Aree di lavoro",
+    "create": "Nuova area di lavoro",
+    "nameLabel": "Nome dell’area di lavoro",
+    "cancel": "Annulla",
+    "submit": "Crea"
+  },
+  "workspaceLanding": {
+    "loading": "Caricamento delle aree di lavoro …",
+    "emptyTitle": "Ancora nessuna area di lavoro",
+    "emptyDescription": "Un’area di lavoro riunisce pagine, membri e file.",
+    "defaultName": "La mia area di lavoro",
+    "create": "Crea area di lavoro",
+    "opening": "Apertura dell’area di lavoro …"
+  },
+  "workspaceOverview": {
+    "title": "Panoramica",
+    "pulsePages": "{count, plural, one {# pagina} many {# pagine} other {# pagine}}",
+    "pulseDatabases": "{count, plural, one {# database} many {# database} other {# database}}",
+    "pulseEditedThisWeek": "{count, plural, one {# modificata questa settimana} many {# modificate questa settimana} other {# modificate questa settimana}}",
+    "lastEditedBy": "Ultima modifica di {name}",
+    "settingsLabel": "Impostazioni dell’area di lavoro",
+    "settings": "Impostazioni",
+    "createPage": "Nuova pagina",
+    "untitledPage": "Pagina senza titolo",
+    "loading": "Caricamento della panoramica …",
+    "emptyTitle": "Ancora nessuna pagina",
+    "emptyDescription": "Crea la tua prima pagina. Tutto il resto crescerà da lì.",
+    "emptyAction": "Crea pagina",
+    "recent": "Continua",
+    "attention": "In sospeso",
+    "openComments": "{count, plural, one {<number>#</number> commento aperto} many {<number>#</number> commenti aperti} other {<number>#</number> commenti aperti}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> link interrotto} many {<number>#</number> link interrotti} other {<number>#</number> link interrotti}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> testo non ancora letto} many {<number>#</number> testi non ancora letti} other {<number>#</number> testi non ancora letti}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> titolo ripetuto come intestazione} many {<number>#</number> titoli ripetuti come intestazione} other {<number>#</number> titoli ripetuti come intestazione}}",
+    "databases": "Database",
+    "sections": "Sezioni"
+  },
+  "pageTreeHeader": {
+    "title": "Pagine",
+    "create": "Crea",
+    "createPage": "Crea pagina",
+    "createFromTemplate": "Pagina da modello",
+    "createDatabase": "Crea database",
+    "createProject": "Crea progetto LaTeX"
+  },
+  "pageTree": {
+    "untitledDatabase": "Database senza titolo",
+    "untitledPage": "Pagina senza titolo",
+    "untitledProject": "Progetto senza titolo",
+    "loading": "Caricamento delle pagine",
+    "loadError": "Struttura delle pagine non caricata",
+    "emptyTitle": "Ancora nessuna pagina",
+    "emptyDescription": "Crea la tua prima pagina per iniziare.",
+    "emptyAction": "Crea pagina",
+    "treeLabel": "Pagine",
+    "rootDrop": "Qui: livello principale",
+    "trash": "Cestino"
+  },
+  "pageTreeRow": {
+    "collapse": "Comprimi sottopagine",
+    "expand": "Espandi le sottopagine",
+    "changeIconOf": "Cambia l’icona di “{title}”",
+    "createChildIn": "Crea una sottopagina in “{title}”",
+    "actionsFor": "Azioni per “{title}”",
+    "changeIcon": "Cambia icona…",
+    "moveUp": "Sposta in alto",
+    "moveDown": "Sposta in basso",
+    "indent": "Sotto la pagina precedente",
+    "outdent": "Un livello più in alto",
+    "createChild": "Crea sottopagina",
+    "createDatabase": "Crea database",
+    "createProject": "Crea progetto LaTeX",
+    "suggestParent": "Suggerisci posizione adatta…",
+    "moveWorkspace": "Sposta in un’altra area di lavoro…",
+    "archive": "Nel cestino"
+  },
+  "smartViews": {
+    "moveUp": "Sposta “{name}” in alto",
+    "moveDown": "Sposta “{name}” in basso",
+    "openSearch": "Ricerca e ricerche salvate"
+  },
+  "connectionStatus": {
+    "offlineShort": "offline",
+    "offline": "Offline: le modifiche vengono salvate localmente",
+    "connected": "Connesso",
+    "disconnectedShort": "disconnesso",
+    "disconnected": "Connessione interrotta, nuovo tentativo in corso",
+    "connecting": "Connessione in corso…",
+    "pendingSync": "modifiche offline"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# persona sta modificando questa pagina} many {# persone stanno modificando questa pagina} other {# persone stanno modificando questa pagina}}",
+    "self": "{name} (tu)"
+  },
+  "paletteCommands": {
+    "capture": "Cattura qualcosa",
+    "captureHint": "Ctrl + E",
+    "captureKeywords": "posta in arrivo nota veloce inbox",
+    "hideSidebar": "Nascondi navigazione",
+    "showSidebar": "Mostra navigazione",
+    "sidebarHint": "Ctrl + B",
+    "sidebarKeywords": "barra laterale albero pagine sidebar",
+    "hideContext": "Nascondi pannello contestuale",
+    "showContext": "Mostra pannello contestuale",
+    "contextHint": "Ctrl + .",
+    "contextKeywords": "ia commenti pannello riferimenti",
+    "openTrash": "Apri cestino",
+    "trashKeywords": "eliminato archivio ripristina"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "Regola IA",
+    "aiRuleOnDemand": "Regola IA (su richiesta)",
+    "shared": "Condiviso",
+    "file": "Sposta …",
+    "restore": "Ripristina",
+    "actions": "Azioni della pagina",
+    "properties": "Proprietà della pagina …",
+    "template": "Modello …",
+    "share": "Condividi …",
+    "exportMarkdown": "Esporta come Markdown",
+    "render": "Pubblica come PDF …",
+    "importMarkdown": "Importa Markdown",
+    "archive": "Sposta nel cestino"
+  },
+  "documentTitleInput": {
+    "label": "Titolo della pagina",
+    "placeholder": "Pagina senza titolo"
+  },
+  "contextPanel": {
+    "aiTab": "IA",
+    "propertiesTab": "Proprietà",
+    "commentsTab": "Commenti",
+    "backlinksTab": "Riferimenti",
+    "activityTab": "Attività",
+    "aiErrorTitle": "Pannello IA non disponibile",
+    "aiErrorDescription": "Impossibile visualizzare la chat. Un’elaborazione IA in corso continuerà a funzionare; dopo la ricarica la cronologia sarà completa.",
+    "propertiesErrorTitle": "Proprietà non disponibili",
+    "propertiesErrorDescription": "Impossibile visualizzare le proprietà.",
+    "commentsErrorTitle": "Commenti non disponibili",
+    "commentsErrorDescription": "Impossibile visualizzare i commenti. Il testo della pagina non ne risente.",
+    "backlinksErrorTitle": "Riferimenti non disponibili",
+    "backlinksErrorDescription": "Impossibile visualizzare l’indice dei riferimenti. I riferimenti stessi restano nel testo della pagina.",
+    "activityErrorTitle": "Attività non disponibile",
+    "activityErrorDescription": "Impossibile visualizzare la cronologia di questa pagina."
+  },
+  "adminLayout": {
+    "title": "Amministrazione",
+    "intro": "Impostazioni, modelli IA e gestione utenti di questa installazione."
   }
 }

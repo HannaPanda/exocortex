@@ -3,6 +3,7 @@
 import { useRender } from '@base-ui/react/use-render';
 import { SearchIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../../lib/utils';
 
@@ -74,10 +75,11 @@ export function CommandPalette({
   query,
   onQueryChange,
   items,
-  placeholder = 'Suchen oder Befehl eingeben …',
-  emptyLabel = 'Keine Treffer',
+  placeholder,
+  emptyLabel,
   footer,
 }: CommandPaletteProps) {
+  const t = useTranslations('ui.commandPalette');
   // The active item is tracked by id, not by index: when the result list changes
   // the id simply stops matching and the first item becomes active again. That
   // keeps the state derived instead of resetting it from an effect.
@@ -130,10 +132,8 @@ export function CommandPalette({
         className="top-24 max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
         showCloseButton={false}
       >
-        <DialogTitle className="exocortex-sr-only">Befehlspalette</DialogTitle>
-        <DialogDescription className="exocortex-sr-only">
-          Seiten suchen und Befehle ausführen
-        </DialogDescription>
+        <DialogTitle className="exocortex-sr-only">{t('title')}</DialogTitle>
+        <DialogDescription className="exocortex-sr-only">{t('description')}</DialogDescription>
 
         <div className="flex items-center gap-2 border-b border-border px-3">
           <SearchIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
@@ -149,14 +149,16 @@ export function CommandPalette({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            placeholder={placeholder ?? t('placeholder')}
             className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
         </div>
 
         <ul id={listId} role="listbox" className="max-h-80 overflow-y-auto p-1">
           {flat.length === 0 ? (
-            <li className="px-3 py-6 text-center text-sm text-muted-foreground">{emptyLabel}</li>
+            <li className="px-3 py-6 text-center text-sm text-muted-foreground">
+              {emptyLabel ?? t('empty')}
+            </li>
           ) : (
             groups.map(([group, groupItems]) => (
               <li key={group} role="presentation">

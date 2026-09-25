@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -63,6 +64,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function AppShellInner({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('shell.appShell');
+  const tCommands = useTranslations('shell.paletteCommands');
   const router = useRouter();
   const params = useParams<{ workspaceId?: string; documentId?: string }>();
   const session = useSessionQuery();
@@ -229,8 +232,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         onToggleSidebar: () => setSidebarOpen(!sidebarOpen),
         onToggleContext: () => setContextOpen(!contextOpen),
         onOpenTrash: () => setTrashOpen(true),
+        t: tCommands,
       }),
-    [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, workspaceId],
+    [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, tCommands, workspaceId],
   );
 
   // Global keyboard shortcuts.
@@ -302,8 +306,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           isMobile ? (
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetContent side="left" data-testid="sidebar">
-                <SheetTitle className="exocortex-sr-only">Navigation</SheetTitle>
-                <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
+                <SheetTitle className="exocortex-sr-only">{t('navigationTitle')}</SheetTitle>
+                <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
                   <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
                 </nav>
               </SheetContent>
@@ -315,11 +319,11 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
               handle="right"
               minWidth={200}
               maxWidth={420}
-              label="Breite der Navigation"
+              label={t('navigationWidth')}
               className="border-r border-border bg-surface"
               data-testid="sidebar"
             >
-              <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
+              <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
                 <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
               </nav>
             </ResizablePanel>
@@ -331,8 +335,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         {isMobile ? (
           <Sheet open={contextOpen} onOpenChange={setContextOpen}>
             <SheetContent side="right" data-testid="context-panel">
-              <SheetTitle className="exocortex-sr-only">Kontextbereich</SheetTitle>
-              <aside aria-label="Kontextbereich" className="flex min-h-0 flex-1 flex-col">
+              <SheetTitle className="exocortex-sr-only">{t('contextTitle')}</SheetTitle>
+              <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
                 <ContextPanel workspaceId={workspaceId} documentId={documentId} />
               </aside>
             </SheetContent>
@@ -344,11 +348,11 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             handle="left"
             minWidth={260}
             maxWidth={520}
-            label="Breite des Kontextbereichs"
+            label={t('contextWidth')}
             className={cn('border-l border-border bg-surface')}
             data-testid="context-panel"
           >
-            <aside aria-label="Kontextbereich" className="flex min-h-0 flex-1 flex-col">
+            <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
               <ContextPanel workspaceId={workspaceId} documentId={documentId} />
             </aside>
           </ResizablePanel>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -30,6 +31,7 @@ export function MarkdownImportDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('dialogs.markdownImport');
   const router = useRouter();
   const importMarkdown = useImportMarkdown(workspaceId);
   const [importText, setImportText] = React.useState('');
@@ -47,11 +49,8 @@ export function MarkdownImportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Markdown importieren</DialogTitle>
-          <DialogDescription>
-            Der Inhalt wird als neue Seite angelegt. Frontmatter, Aufgabenlisten, Tabellen,
-            Wiki-Links und Callouts werden übernommen.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <Textarea
           rows={12}
@@ -61,19 +60,19 @@ export function MarkdownImportDialog({
           // No `# Meine Seite` here: the title belongs in the frontmatter, and
           // an example that shows it twice is an example of the duplicate
           // heading this import strips out again.
-          placeholder={'---\ntitle: Meine Seite\n---\n\nErster Absatz.\n'}
+          placeholder={t('placeholder')}
           className="font-mono text-xs"
         />
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             data-testid="import-submit"
             disabled={importMarkdown.isPending || importText.trim().length === 0}
             onClick={() => void importAsNewPage()}
           >
-            Importieren
+            {t('submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

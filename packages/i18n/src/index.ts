@@ -5,6 +5,7 @@
  */
 export type { Messages, Namespace } from './catalog.js';
 export { type LocaleSources, matchLocale, negotiateLocale, resolveLocale } from './negotiate.js';
+export { DEFAULT_TIME_ZONE, TIME_ZONE_COOKIE, validTimeZone } from './time-zone.js';
 export {
   DEFAULT_LOCALE,
   isLocale,

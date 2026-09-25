@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { FolderTreeIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -55,6 +56,7 @@ export function SuggestParentDialog({
   node: Pick<DocumentTreeNode, 'id' | 'title' | 'parentId'> | null;
   onClose: () => void;
 }) {
+  const t = useTranslations('dialogs.suggestParent');
   const suggestions = useSuggestParent(workspaceId, node?.id, node !== null);
   const moveDocument = useMoveDocument(workspaceId);
 
@@ -123,11 +125,8 @@ export function SuggestParentDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Passenden Ort vorschlagen</DialogTitle>
-          <DialogDescription>
-            Für „{node?.title}“ gesucht: die Seiten, die inhaltlich am nächsten liegen.
-            Vorgeschlagen wird, wo die meisten davon bereits hängen.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description', { title: node?.title ?? '' })}</DialogDescription>
         </DialogHeader>
 
         {moveDocument.isError ? (
@@ -143,20 +142,21 @@ export function SuggestParentDialog({
         {warning !== null ? (
           <Alert data-testid="suggest-parent-share-warning">
             <AlertDescription>
-              „{warning.target.title}“ ist nach außen freigegeben, mitsamt allem darunter. Wenn „
-              {node?.title}“ dort landet, ist sie damit auch freigegeben:
+              {t('shareWarning', { target: warning.target.title, title: node?.title ?? '' })}
               <ul className="mt-2 list-disc pl-4">
                 {warning.shares.map((share) => (
                   <li key={share.id}>
                     {share.kind === 'PUBLIC_LINK'
-                      ? 'Öffentlicher Link (jeder mit der Adresse liest mit)'
-                      : `Freigegeben an ${share.grantee?.email ?? 'ein Konto'}`}
+                      ? t('sharePublicLink')
+                      : share.grantee === null
+                        ? t('shareGranteeUnknown')
+                        : t('shareGrantee', { email: share.grantee.email })}
                   </li>
                 ))}
               </ul>
               <span className="mt-2 flex gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setWarning(null)}>
-                  Abbrechen
+                  {t('cancel')}
                 </Button>
                 <Button
                   size="sm"
@@ -168,7 +168,7 @@ export function SuggestParentDialog({
                     move(target);
                   }}
                 >
-                  Trotzdem verschieben
+                  {t('moveAnyway')}
                 </Button>
               </span>
             </AlertDescription>
@@ -176,14 +176,11 @@ export function SuggestParentDialog({
         ) : null}
 
         {suggestions.isPending ? (
-          <LoadingState variant="skeleton" rows={3} label="Vorschläge werden gesucht" />
+          <LoadingState variant="skeleton" rows={3} label={t('loading')} />
         ) : suggestions.isError ? (
-          <ErrorState onRetry={() => void suggestions.refetch()} title="Vorschläge nicht geladen" />
+          <ErrorState onRetry={() => void suggestions.refetch()} title={t('loadError')} />
         ) : suggestions.data.suggestions.length === 0 ? (
-          <EmptyState
-            title="Kein Vorschlag"
-            description="Es gibt keine Seiten, die dieser hier inhaltlich nahe genug sind. Verschieb sie im Seitenbaum von Hand."
-          />
+          <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <ul className="flex flex-col gap-1" data-testid="suggest-parent-list">
             {suggestions.data.suggestions.map((suggestion) => (
@@ -202,7 +199,7 @@ export function SuggestParentDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Schließen
+            {t('close')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -222,9 +219,10 @@ function SuggestionRow({
   current: boolean;
   onMove: () => void;
 }) {
+  const t = useTranslations('dialogs.suggestParent');
   const location =
     suggestion.path.length === 0
-      ? 'oberste Ebene'
+      ? t('topLevel')
       : suggestion.path.map((entry) => entry.title).join(' › ');
 
   return (
@@ -233,11 +231,13 @@ function SuggestionRow({
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate text-sm font-medium">{suggestion.title}</span>
         <span className="truncate text-xs text-muted-foreground">
-          {location} · {suggestion.childCount} Unterseiten
+          {t('location', { location, count: suggestion.childCount })}
         </span>
         {suggestion.matches.length > 0 ? (
           <span className="line-clamp-2 text-xs text-muted-foreground">
-            Dort liegen bereits: {suggestion.matches.map((match) => match.title).join(', ')}
+            {t('matches', {
+              titles: suggestion.matches.map((match) => match.title).join(', '),
+            })}
           </span>
         ) : null}
       </div>
@@ -248,7 +248,7 @@ function SuggestionRow({
         onClick={onMove}
         data-testid={`suggest-parent-move-${suggestion.parentId ?? 'root'}`}
       >
-        {current ? 'Liegt hier' : 'Hierhin'}
+        {current ? t('currentPlace') : t('moveHere')}
       </Button>
     </li>
   );

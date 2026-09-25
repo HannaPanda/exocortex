@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Alert, AlertDescription, Button, Card, CardContent, Input, Label } from '@exocortex/ui';
 
 import { getSession, signIn } from '@/lib/auth/client';
-import { signInErrorMessage } from '@/lib/auth/sign-in-error';
+import { signInErrorKey } from '@/lib/auth/sign-in-error';
 
 /**
  * The OAuth authorization endpoint sends a signed-out visitor here with the
@@ -23,6 +24,7 @@ function oauthContinuation(params: URLSearchParams): string | null {
 }
 
 export function SignInForm() {
+  const t = useTranslations('auth.signIn');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = React.useState('');
@@ -46,7 +48,7 @@ export function SignInForm() {
       if (session === null || session === undefined) {
         // The status, not a fixed sentence: a refusal the server made without
         // looking at the credentials must not be reported as wrong credentials.
-        setError(signInErrorMessage(result.error.status));
+        setError(t(signInErrorKey(result.error.status)));
         setPending(false);
         return;
       }
@@ -67,8 +69,8 @@ export function SignInForm() {
       <CardContent className="pt-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="flex flex-col gap-1.5">
-            <h1 className="exocortex-page-title">Anmelden</h1>
-            <p className="text-sm text-muted-foreground">Willkommen zurück.</p>
+            <h1 className="exocortex-page-title">{t('title')}</h1>
+            <p className="text-sm text-muted-foreground">{t('welcome')}</p>
           </div>
 
           {error !== null ? (
@@ -78,7 +80,7 @@ export function SignInForm() {
           ) : null}
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="email">E-Mail-Adresse</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input
               id="email"
               name="email"
@@ -92,12 +94,12 @@ export function SignInForm() {
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Link
                 href="/passwort-vergessen"
                 className="text-xs text-muted-foreground underline-offset-2 hover:underline"
               >
-                Vergessen?
+                {t('forgotPassword')}
               </Link>
             </div>
             <Input
@@ -112,7 +114,7 @@ export function SignInForm() {
           </div>
 
           <Button type="submit" disabled={pending} data-testid="signin-submit">
-            {pending ? 'Wird angemeldet …' : 'Anmelden'}
+            {pending ? t('submitting') : t('submit')}
           </Button>
         </form>
       </CardContent>

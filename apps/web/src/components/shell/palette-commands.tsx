@@ -1,6 +1,7 @@
 'use client';
 
 import { InboxIcon, PanelLeftIcon, PanelRightIcon, Trash2Icon } from 'lucide-react';
+import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
 /** One thing the shell can do, offered by name in the command palette. */
@@ -16,6 +17,11 @@ export interface PaletteCommand {
 }
 
 const ICON = 'size-4 text-muted-foreground';
+
+/** Search words live in one message each, separated by spaces. */
+function keywordsOf(text: string): readonly string[] {
+  return text.split(/\s+/).filter((word) => word.length > 0);
+}
 
 /**
  * The shell's own commands, for the palette (issue #115).
@@ -38,6 +44,7 @@ export function shellCommands({
   onToggleSidebar,
   onToggleContext,
   onOpenTrash,
+  t,
 }: {
   hasWorkspace: boolean;
   sidebarOpen: boolean;
@@ -46,16 +53,17 @@ export function shellCommands({
   onToggleSidebar: () => void;
   onToggleContext: () => void;
   onOpenTrash: () => void;
+  t: ReturnType<typeof useTranslations<'shell.paletteCommands'>>;
 }): PaletteCommand[] {
   const commands: PaletteCommand[] = [];
 
   if (hasWorkspace) {
     commands.push({
       id: 'command-capture',
-      label: 'Etwas erfassen',
-      hint: 'Strg + E',
+      label: t('capture'),
+      hint: t('captureHint'),
       icon: <InboxIcon className={ICON} />,
-      keywords: ['eingang', 'notiz', 'schnell', 'inbox'],
+      keywords: keywordsOf(t('captureKeywords')),
       run: onOpenCapture,
     });
   }
@@ -69,29 +77,29 @@ export function shellCommands({
   if (hasWorkspace) {
     commands.push({
       id: 'command-sidebar',
-      label: sidebarOpen ? 'Navigation ausblenden' : 'Navigation einblenden',
-      hint: 'Strg + B',
+      label: sidebarOpen ? t('hideSidebar') : t('showSidebar'),
+      hint: t('sidebarHint'),
       icon: <PanelLeftIcon className={ICON} />,
-      keywords: ['seitenleiste', 'seitenbaum', 'sidebar'],
+      keywords: keywordsOf(t('sidebarKeywords')),
       run: onToggleSidebar,
     });
   }
 
   commands.push({
     id: 'command-context',
-    label: contextOpen ? 'Kontextbereich ausblenden' : 'Kontextbereich einblenden',
-    hint: 'Strg + .',
+    label: contextOpen ? t('hideContext') : t('showContext'),
+    hint: t('contextHint'),
     icon: <PanelRightIcon className={ICON} />,
-    keywords: ['ki', 'kommentare', 'panel', 'verweise'],
+    keywords: keywordsOf(t('contextKeywords')),
     run: onToggleContext,
   });
 
   if (hasWorkspace) {
     commands.push({
       id: 'command-trash',
-      label: 'Papierkorb öffnen',
+      label: t('openTrash'),
       icon: <Trash2Icon className={ICON} />,
-      keywords: ['gelöscht', 'archiv', 'wiederherstellen'],
+      keywords: keywordsOf(t('trashKeywords')),
       run: onOpenTrash,
     });
   }

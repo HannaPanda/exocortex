@@ -7,6 +7,7 @@ import {
   SettingsIcon,
   SparklesIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -80,6 +81,7 @@ function ContextTab({
  * filter them out every time.
  */
 export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
+  const t = useTranslations('shell.contextPanel');
   const [tab, setTab] = React.useState('ai');
   const { request: commentRequest } = useCommentAnchor();
 
@@ -98,10 +100,7 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
   if (documentId === null) {
     return (
       <div className="flex min-h-0 flex-1 flex-col pt-2">
-        <PanelErrorBoundary
-          title="KI-Panel nicht verfügbar"
-          description="Der Chat konnte nicht angezeigt werden. Ein laufender KI-Lauf arbeitet weiter; nach dem Neuladen ist der Verlauf vollständig."
-        >
+        <PanelErrorBoundary title={t('aiErrorTitle')} description={t('aiErrorDescription')}>
           <AiPanel workspaceId={workspaceId} documentId={null} />
         </PanelErrorBoundary>
       </div>
@@ -119,42 +118,44 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
             `ContextTab`); the panel is resizable down to 260px
             (`app-shell.tsx`), where five labelled tabs never fit. */}
         <TabsList className="@container">
-          <ContextTab value="ai" icon={<SparklesIcon />} label="KI" data-testid="context-tab-ai" />
+          <ContextTab
+            value="ai"
+            icon={<SparklesIcon />}
+            label={t('aiTab')}
+            data-testid="context-tab-ai"
+          />
           <ContextTab
             value="properties"
             icon={<SettingsIcon />}
-            label="Eigenschaften"
+            label={t('propertiesTab')}
             data-testid="context-tab-properties"
           />
           <ContextTab
             value="comments"
             icon={<MessageSquareIcon />}
-            label="Kommentare"
+            label={t('commentsTab')}
             data-testid="context-tab-comments"
           />
-          <ContextTab value="backlinks" icon={<LinkIcon />} label="Verweise" />
+          <ContextTab value="backlinks" icon={<LinkIcon />} label={t('backlinksTab')} />
           <ContextTab
             value="activity"
             icon={<ActivityIcon />}
-            label="Aktivität"
+            label={t('activityTab')}
             data-testid="context-tab-activity"
           />
         </TabsList>
       </div>
 
       <TabsContent value="ai" className="flex min-h-0 flex-col">
-        <PanelErrorBoundary
-          title="KI-Panel nicht verfügbar"
-          description="Der Chat konnte nicht angezeigt werden. Ein laufender KI-Lauf arbeitet weiter; nach dem Neuladen ist der Verlauf vollständig."
-        >
+        <PanelErrorBoundary title={t('aiErrorTitle')} description={t('aiErrorDescription')}>
           <AiPanel workspaceId={workspaceId} documentId={documentId} />
         </PanelErrorBoundary>
       </TabsContent>
 
       <TabsContent value="properties" className="overflow-y-auto p-3">
         <PanelErrorBoundary
-          title="Eigenschaften nicht verfügbar"
-          description="Die Eigenschaften konnten nicht angezeigt werden."
+          title={t('propertiesErrorTitle')}
+          description={t('propertiesErrorDescription')}
         >
           <PropertiesPanel workspaceId={workspaceId} documentId={documentId} />
         </PanelErrorBoundary>
@@ -162,8 +163,8 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
 
       <TabsContent value="comments" className="overflow-y-auto p-3">
         <PanelErrorBoundary
-          title="Kommentare nicht verfügbar"
-          description="Die Kommentare konnten nicht angezeigt werden. Der Text der Seite ist davon unberührt."
+          title={t('commentsErrorTitle')}
+          description={t('commentsErrorDescription')}
         >
           <CommentsPanel workspaceId={workspaceId} documentId={documentId} />
         </PanelErrorBoundary>
@@ -171,8 +172,8 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
 
       <TabsContent value="backlinks" className="overflow-y-auto p-3">
         <PanelErrorBoundary
-          title="Verweise nicht verfügbar"
-          description="Der Verweisindex konnte nicht angezeigt werden. Die Verweise selbst stehen weiterhin im Text der Seite."
+          title={t('backlinksErrorTitle')}
+          description={t('backlinksErrorDescription')}
         >
           <BacklinksPanel workspaceId={workspaceId} documentId={documentId} />
         </PanelErrorBoundary>
@@ -180,8 +181,8 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
 
       <TabsContent value="activity" className="overflow-y-auto p-3">
         <PanelErrorBoundary
-          title="Aktivität nicht verfügbar"
-          description="Der Verlauf dieser Seite konnte nicht angezeigt werden."
+          title={t('activityErrorTitle')}
+          description={t('activityErrorDescription')}
         >
           <ActivityPanel workspaceId={workspaceId} documentId={documentId} />
         </PanelErrorBoundary>

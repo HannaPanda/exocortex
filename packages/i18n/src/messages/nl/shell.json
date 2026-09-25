@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex: je gedeelde externe brein."
+  },
+  "appShell": {
+    "navigationTitle": "Navigatie",
+    "pageNavigation": "Paginanavigatie",
+    "navigationWidth": "Breedte van de navigatie",
+    "contextTitle": "Contextpaneel",
+    "contextWidth": "Breedte van het contextpaneel"
+  },
+  "topbar": {
+    "toggleNavigation": "Navigatie in-/uitklappen",
+    "toggleNavigationTooltip": "Navigatie (Ctrl + B)",
+    "search": "Zoeken",
+    "searchTooltip": "Zoeken (Ctrl + K)",
+    "searchPlaceholder": "Zoeken …",
+    "searchShortcut": "Ctrl K",
+    "capture": "Vastleggen",
+    "captureTooltip": "Vastleggen (Ctrl + E)",
+    "toggleContext": "Contextpaneel in-/uitklappen",
+    "toggleContextTooltip": "Contextpaneel (Ctrl + .)",
+    "accountFallback": "Account"
+  },
   "globalLinks": {
-    "language": "Taal"
+    "help": "Help en functies",
+    "helpWithNew": "{count, plural, one {Help en functies (# nieuw)} other {Help en functies (# nieuw)}}",
+    "chats": "Chats",
+    "entities": "Entiteiten",
+    "shares": "Delingen",
+    "memory": "Geheugen",
+    "connections": "Verbindingen",
+    "notifications": "Meldingen",
+    "language": "Taal",
+    "admin": "Beheer",
+    "menuLabel": "Account en ruimtes",
+    "menuLabelWithNew": "{count, plural, one {Account en ruimtes (# nieuwe functie)} other {Account en ruimtes (# nieuwe functies)}}",
+    "signOut": "{name} afmelden"
+  },
+  "workspaceSwitcher": {
+    "choose": "Werkruimte kiezen",
+    "heading": "Werkruimtes",
+    "create": "Nieuwe werkruimte",
+    "nameLabel": "Naam van de werkruimte",
+    "cancel": "Annuleren",
+    "submit": "Aanmaken"
+  },
+  "workspaceLanding": {
+    "loading": "Werkruimtes worden geladen …",
+    "emptyTitle": "Nog geen werkruimte",
+    "emptyDescription": "Een werkruimte bundelt pagina’s, leden en bestanden.",
+    "defaultName": "Mijn werkruimte",
+    "create": "Werkruimte aanmaken",
+    "opening": "Werkruimte wordt geopend …"
+  },
+  "workspaceOverview": {
+    "title": "Overzicht",
+    "pulsePages": "{count, plural, one {# pagina} other {# pagina’s}}",
+    "pulseDatabases": "{count, plural, one {# database} other {# databases}}",
+    "pulseEditedThisWeek": "{count, plural, one {# deze week bewerkt} other {# deze week bewerkt}}",
+    "lastEditedBy": "Laatst bewerkt door {name}",
+    "settingsLabel": "Werkruimte-instellingen",
+    "settings": "Instellingen",
+    "createPage": "Nieuwe pagina",
+    "untitledPage": "Naamloze pagina",
+    "loading": "Overzicht wordt geladen …",
+    "emptyTitle": "Nog geen pagina’s",
+    "emptyDescription": "Maak je eerste pagina aan. De rest groeit daaruit voort.",
+    "emptyAction": "Pagina aanmaken",
+    "recent": "Verdergaan",
+    "attention": "Blijven liggen",
+    "openComments": "{count, plural, one {<number>#</number> openstaande opmerking} other {<number>#</number> openstaande opmerkingen}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> verbroken verwijzing} other {<number>#</number> verbroken verwijzingen}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> tekst nog niet gelezen} other {<number>#</number> teksten nog niet gelezen}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> titel nogmaals als kop} other {<number>#</number> titels nogmaals als kop}}",
+    "databases": "Databases",
+    "sections": "Secties"
+  },
+  "pageTreeHeader": {
+    "title": "Pagina’s",
+    "create": "Aanmaken",
+    "createPage": "Pagina aanmaken",
+    "createFromTemplate": "Pagina uit sjabloon",
+    "createDatabase": "Database aanmaken",
+    "createProject": "LaTeX-project aanmaken"
+  },
+  "pageTree": {
+    "untitledDatabase": "Naamloze database",
+    "untitledPage": "Naamloze pagina",
+    "untitledProject": "Naamloos project",
+    "loading": "Pagina’s worden geladen",
+    "loadError": "Paginaboom niet geladen",
+    "emptyTitle": "Nog geen pagina’s",
+    "emptyDescription": "Maak je eerste pagina aan om te beginnen.",
+    "emptyAction": "Pagina aanmaken",
+    "treeLabel": "Pagina’s",
+    "rootDrop": "Hierheen: hoogste niveau",
+    "trash": "Prullenbak"
+  },
+  "pageTreeRow": {
+    "collapse": "Subpagina’s inklappen",
+    "expand": "Subpagina’s uitvouwen",
+    "changeIconOf": "Pictogram van „{title}“ wijzigen",
+    "createChildIn": "Subpagina in „{title}“ maken",
+    "actionsFor": "Acties voor „{title}“",
+    "changeIcon": "Pictogram wijzigen …",
+    "moveUp": "Omhoog",
+    "moveDown": "Omlaag",
+    "indent": "Onder de pagina erboven",
+    "outdent": "Een niveau hoger",
+    "createChild": "Subpagina maken",
+    "createDatabase": "Database maken",
+    "createProject": "LaTeX-project maken",
+    "suggestParent": "Geschikte plek voorstellen …",
+    "moveWorkspace": "Naar andere werkruimte verplaatsen …",
+    "archive": "Naar de prullenbak"
+  },
+  "smartViews": {
+    "moveUp": "„{name}“ omhoog",
+    "moveDown": "„{name}“ omlaag",
+    "openSearch": "Zoeken en opgeslagen zoekopdrachten"
+  },
+  "connectionStatus": {
+    "offlineShort": "offline",
+    "offline": "Offline: wijzigingen worden lokaal opgeslagen",
+    "connected": "Verbonden",
+    "disconnectedShort": "verbroken",
+    "disconnected": "Verbinding verbroken, probeert opnieuw",
+    "connecting": "Verbinding maken …",
+    "pendingSync": "offline wijzigingen"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# persoon bewerkt deze pagina} other {# personen bewerken deze pagina}}",
+    "self": "{name} (jij)"
+  },
+  "paletteCommands": {
+    "capture": "Iets vastleggen",
+    "captureHint": "Ctrl + E",
+    "captureKeywords": "inbox notitie snel vastleggen",
+    "hideSidebar": "Navigatie verbergen",
+    "showSidebar": "Navigatie tonen",
+    "sidebarHint": "Ctrl + B",
+    "sidebarKeywords": "zijbalk paginaboom navigatie sidebar",
+    "hideContext": "Contextpaneel verbergen",
+    "showContext": "Contextpaneel tonen",
+    "contextHint": "Ctrl + .",
+    "contextKeywords": "ai opmerkingen paneel verwijzingen",
+    "openTrash": "Prullenbak openen",
+    "trashKeywords": "verwijderd archief herstellen"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "AI-regel",
+    "aiRuleOnDemand": "AI-regel (op aanvraag)",
+    "shared": "Gedeeld",
+    "file": "Indelen …",
+    "restore": "Herstellen",
+    "actions": "Pagina-acties",
+    "properties": "Pagina-eigenschappen …",
+    "template": "Sjabloon …",
+    "share": "Delen …",
+    "exportMarkdown": "Exporteren als Markdown",
+    "render": "Publiceren als PDF …",
+    "importMarkdown": "Markdown importeren",
+    "archive": "Naar de prullenbak"
+  },
+  "documentTitleInput": {
+    "label": "Paginatitel",
+    "placeholder": "Naamloze pagina"
+  },
+  "contextPanel": {
+    "aiTab": "AI",
+    "propertiesTab": "Eigenschappen",
+    "commentsTab": "Opmerkingen",
+    "backlinksTab": "Verwijzingen",
+    "activityTab": "Activiteit",
+    "aiErrorTitle": "AI-paneel niet beschikbaar",
+    "aiErrorDescription": "De chat kon niet worden weergegeven. Een actieve AI-uitvoering gaat gewoon door; na het opnieuw laden is de geschiedenis compleet.",
+    "propertiesErrorTitle": "Eigenschappen niet beschikbaar",
+    "propertiesErrorDescription": "De eigenschappen konden niet worden weergegeven.",
+    "commentsErrorTitle": "Opmerkingen niet beschikbaar",
+    "commentsErrorDescription": "De opmerkingen konden niet worden weergegeven. De tekst van de pagina blijft onaangetast.",
+    "backlinksErrorTitle": "Verwijzingen niet beschikbaar",
+    "backlinksErrorDescription": "De verwijzingsindex kon niet worden weergegeven. De verwijzingen zelf staan nog steeds in de tekst van de pagina.",
+    "activityErrorTitle": "Activiteit niet beschikbaar",
+    "activityErrorDescription": "De geschiedenis van deze pagina kon niet worden weergegeven."
+  },
+  "adminLayout": {
+    "title": "Beheer",
+    "intro": "Instellingen, AI-modellen en gebruikersbeheer van deze installatie."
   }
 }

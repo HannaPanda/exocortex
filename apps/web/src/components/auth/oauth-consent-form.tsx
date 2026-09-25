@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Alert, AlertDescription, Button, Card, CardContent } from '@exocortex/ui';
@@ -20,18 +21,24 @@ interface ConsentResponse {
 }
 
 /**
- * German labels for the OAuth scopes this server issues. An unknown scope is
+ * Catalogue keys for the OAuth scopes this server issues. An unknown scope is
  * shown verbatim rather than hidden: a person cannot weigh what they are not
  * told about.
  */
-const SCOPE_LABELS: Record<string, string> = {
-  openid: 'Deine Identität bestätigen',
-  profile: 'Deinen Namen lesen',
-  email: 'Deine E-Mail-Adresse lesen',
-  offline_access: 'Verbunden bleiben, ohne dich erneut zu fragen',
-};
+const SCOPE_KEYS = {
+  openid: 'scopes.openid',
+  profile: 'scopes.profile',
+  email: 'scopes.email',
+  offline_access: 'scopes.offlineAccess',
+} as const;
+
+function scopeKey(scope: string): (typeof SCOPE_KEYS)[keyof typeof SCOPE_KEYS] | null {
+  return Object.hasOwn(SCOPE_KEYS, scope) ? SCOPE_KEYS[scope as keyof typeof SCOPE_KEYS] : null;
+}
 
 export function OAuthConsentForm() {
+  const t = useTranslations('auth.consent');
+  const format = useFormatter();
   const searchParams = useSearchParams();
   // The whole query, verbatim: the authorization server signs the parameters
   // it redirected here with, and the signature covers every one of them.
@@ -70,12 +77,7 @@ export function OAuthConsentForm() {
   }, [clientId]);
 
   const error =
-    decisionError ??
-    (incomplete
-      ? 'Diese Anfrage ist unvollständig. Starte die Verbindung in der App noch einmal.'
-      : lookupFailed
-        ? 'Diese Anwendung ist unbekannt. Erlaube den Zugriff nicht.'
-        : null);
+    decisionError ?? (incomplete ? t('incomplete') : lookupFailed ? t('unknownClient') : null);
 
   const decide = async (accept: boolean): Promise<void> => {
     setPending(accept ? 'accept' : 'deny');
@@ -89,7 +91,7 @@ export function OAuthConsentForm() {
       // navigation out of the site.
       window.location.assign(result.url);
     } catch {
-      setDecisionError('Die Anfrage ist abgelaufen. Starte die Verbindung in der App noch einmal.');
+      setDecisionError(t('expired'));
       setPending(null);
     }
   };
@@ -100,13 +102,13 @@ export function OAuthConsentForm() {
     <Card>
       <CardContent className="flex flex-col gap-4 pt-6">
         <div className="flex flex-col gap-1.5">
-          <h1 className="exocortex-page-title">Zugriff erlauben?</h1>
+          <h1 className="exocortex-page-title">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">
             {loading
-              ? 'Anwendung wird geprüft …'
+              ? t('checking')
               : client === null
-                ? 'Eine unbekannte Anwendung möchte auf dein eXocortex zugreifen.'
-                : `„${client.name}" möchte auf dein eXocortex zugreifen.`}
+                ? t('unknownClientRequest')
+                : t('clientRequest', { client: client.name })}
           </p>
         </div>
 
@@ -119,29 +121,31 @@ export function OAuthConsentForm() {
         {client !== null ? (
           <>
             <Alert>
-              <AlertDescription>
-                Die Anwendung darf danach deine Seiten lesen und schreiben, in allen
-                Arbeitsbereichen, in denen du Mitglied bist. Erlaube das nur, wenn du die Verbindung
-                gerade selbst eingerichtet hast.
-              </AlertDescription>
+              <AlertDescription>{t('warning')}</AlertDescription>
             </Alert>
 
             {scopes.length > 0 ? (
               <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
-                {scopes.map((entry) => (
-                  <li key={entry}>• {SCOPE_LABELS[entry] ?? entry}</li>
-                ))}
+                {scopes.map((entry) => {
+                  const key = scopeKey(entry);
+                  return <li key={entry}>• {key === null ? entry : t(key)}</li>;
+                })}
               </ul>
             ) : null}
 
             <dl className="flex flex-col gap-1 text-xs text-muted-foreground">
               <div className="flex gap-2">
-                <dt className="shrink-0">Weiterleitung an:</dt>
+                <dt className="shrink-0">{t('redirectsTo')}</dt>
                 <dd className="break-all">{client.redirectUrls.join(', ')}</dd>
               </div>
               <div className="flex gap-2">
-                <dt className="shrink-0">Registriert am:</dt>
-                <dd>{new Date(client.registeredAt).toLocaleString('de-DE')}</dd>
+                <dt className="shrink-0">{t('registeredAt')}</dt>
+                <dd>
+                  {format.dateTime(new Date(client.registeredAt), {
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })}
+                </dd>
               </div>
             </dl>
           </>
@@ -156,7 +160,7 @@ export function OAuthConsentForm() {
             onClick={() => void decide(false)}
             data-testid="consent-deny"
           >
-            {pending === 'deny' ? 'Wird abgelehnt …' : 'Ablehnen'}
+            {pending === 'deny' ? t('denying') : t('deny')}
           </Button>
           <Button
             type="button"
@@ -165,7 +169,7 @@ export function OAuthConsentForm() {
             onClick={() => void decide(true)}
             data-testid="consent-accept"
           >
-            {pending === 'accept' ? 'Wird erlaubt …' : 'Erlauben'}
+            {pending === 'accept' ? t('accepting') : t('accept')}
           </Button>
         </div>
       </CardContent>

@@ -157,7 +157,9 @@ test.describe('Topbar im Hochformat', () => {
       await expectInsideViewport(page.getByTestId('open-global-menu'), PHONE.width);
       await expect(page.getByTestId('open-global-menu')).toHaveAttribute(
         'aria-label',
-        `Konto und Bereiche (${newCount} neue Funktionen)`,
+        newCount === 1
+          ? 'Konto und Bereiche (1 neue Funktion)'
+          : `Konto und Bereiche (${newCount} neue Funktionen)`,
       );
     } else {
       // Nichts Neues heißt: kein Punkt, und das Etikett sagt es auch so.

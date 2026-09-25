@@ -1,6 +1,7 @@
 'use client';
 
 import { FolderCodeIcon, LayoutTemplateIcon, PlusIcon, TableIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import {
   Button,
@@ -29,6 +30,7 @@ export function PageTreeHeader({
   onCreateDatabase: () => void;
   onCreateProject: () => void;
 }) {
+  const t = useTranslations('shell.pageTreeHeader');
   return (
     // The component, not a copy of it. This header drew the square, the label
     // and the hairline by hand with the comment "the same mark the overview
@@ -43,7 +45,7 @@ export function PageTreeHeader({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label="Anlegen"
+                aria-label={t('create')}
                 data-testid="create-root-page"
               >
                 <PlusIcon />
@@ -52,25 +54,25 @@ export function PageTreeHeader({
           />
           <DropdownMenuContent align="end">
             <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
-              <PlusIcon /> Seite anlegen
+              <PlusIcon /> {t('createPage')}
             </DropdownMenuItem>
             <DropdownMenuItem
               data-testid="create-root-from-template"
               onClick={onCreateFromTemplate}
             >
-              <LayoutTemplateIcon /> Seite aus Vorlage
+              <LayoutTemplateIcon /> {t('createFromTemplate')}
             </DropdownMenuItem>
             <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
-              <TableIcon /> Datenbank anlegen
+              <TableIcon /> {t('createDatabase')}
             </DropdownMenuItem>
             <DropdownMenuItem data-testid="create-root-project" onClick={onCreateProject}>
-              <FolderCodeIcon /> LaTeX-Projekt anlegen
+              <FolderCodeIcon /> {t('createProject')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       }
     >
-      Seiten
+      {t('title')}
     </SectionRule>
   );
 }

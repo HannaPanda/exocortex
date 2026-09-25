@@ -2,6 +2,7 @@
 
 import { LayersIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
@@ -10,6 +11,7 @@ import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
 /** Resolves the workspace to open, or offers to create the first one. */
 export function WorkspaceLanding() {
+  const t = useTranslations('shell.workspaceLanding');
   const router = useRouter();
   const workspaces = useWorkspaces();
   const createWorkspace = useCreateWorkspace();
@@ -19,7 +21,7 @@ export function WorkspaceLanding() {
     if (first !== undefined) router.replace(`/arbeitsbereich/${first.id}`);
   }, [router, workspaces.data]);
 
-  if (workspaces.isPending) return <LoadingState label="Arbeitsbereiche werden geladen …" />;
+  if (workspaces.isPending) return <LoadingState label={t('loading')} />;
   if (workspaces.isError) return <ErrorState onRetry={() => void workspaces.refetch()} />;
 
   if (workspaces.data.length === 0) {
@@ -27,8 +29,8 @@ export function WorkspaceLanding() {
       <EmptyState
         className="flex-1"
         icon={LayersIcon}
-        title="Noch kein Arbeitsbereich"
-        description="Ein Arbeitsbereich bündelt Seiten, Mitglieder und Dateien."
+        title={t('emptyTitle')}
+        description={t('emptyDescription')}
       >
         <Button
           variant="outline"
@@ -37,15 +39,15 @@ export function WorkspaceLanding() {
           disabled={createWorkspace.isPending}
           onClick={() => {
             void createWorkspace
-              .mutateAsync('Mein Arbeitsbereich')
+              .mutateAsync(t('defaultName'))
               .then((workspace) => router.replace(`/arbeitsbereich/${workspace.id}`));
           }}
         >
-          Arbeitsbereich anlegen
+          {t('create')}
         </Button>
       </EmptyState>
     );
   }
 
-  return <LoadingState label="Arbeitsbereich wird geöffnet …" />;
+  return <LoadingState label={t('opening')} />;
 }

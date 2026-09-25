@@ -3,6 +3,7 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../../lib/utils';
 
@@ -38,6 +39,7 @@ function DialogContent({
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Popup> & { showCloseButton?: boolean }) {
+  const t = useTranslations('ui.dialog');
   return (
     <DialogPortal>
       <DialogBackdrop />
@@ -62,7 +64,7 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            aria-label="Dialog schließen"
+            aria-label={t('close')}
             className="absolute top-3 right-3 rounded-sm p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             <XIcon className="size-4" />

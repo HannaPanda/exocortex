@@ -2,6 +2,7 @@
 
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
+import { useFormatter, useTranslations } from 'use-intl';
 
 import { cn } from '../lib/utils';
 
@@ -41,12 +42,12 @@ export function formatDateValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-const BUTTON_LABEL = new Intl.DateTimeFormat('de-DE', {
+const BUTTON_LABEL = {
   weekday: 'short',
   day: '2-digit',
   month: '2-digit',
   year: 'numeric',
-});
+} as const satisfies Intl.DateTimeFormatOptions;
 
 /** How far the year dropdown reaches: a birthday back, a plan forward. */
 const START_MONTH = new Date(1900, 0);
@@ -97,7 +98,7 @@ export function DatePicker({
   value,
   onChange,
   clearable = false,
-  placeholder = 'Datum wählen',
+  placeholder: ownPlaceholder,
   disabled = false,
   readOnly = false,
   variant = 'outline',
@@ -109,6 +110,9 @@ export function DatePicker({
   'aria-invalid': ariaInvalid,
   'data-testid': testId,
 }: DatePickerProps) {
+  const t = useTranslations('ui.datePicker');
+  const format = useFormatter();
+  const placeholder = ownPlaceholder ?? t('placeholder');
   const [open, setOpen] = React.useState(false);
   // Shown at once, before the owner's own state or the server catches up; a
   // new value from outside replaces it, adjusted while rendering rather than
@@ -121,7 +125,7 @@ export function DatePicker({
   }
 
   const selected = parseDateValue(shown);
-  const label = selected === undefined ? null : BUTTON_LABEL.format(selected);
+  const label = selected === undefined ? null : format.dateTime(selected, BUTTON_LABEL);
 
   if (readOnly) {
     return (
@@ -147,7 +151,9 @@ export function DatePicker({
             variant={variant}
             disabled={disabled}
             aria-label={
-              ariaLabel === undefined ? undefined : `${ariaLabel}: ${label ?? placeholder}`
+              ariaLabel === undefined
+                ? undefined
+                : t('labelled', { label: ariaLabel, value: label ?? placeholder })
             }
             aria-labelledby={ariaLabelledBy}
             aria-invalid={ariaInvalid}
@@ -185,11 +191,11 @@ export function DatePicker({
             variant="ghost"
             onClick={() => commit(formatDateValue(new Date()))}
           >
-            Heute
+            {t('today')}
           </Button>
           {clearable && shown !== null ? (
             <Button type="button" size="sm" variant="ghost" onClick={() => commit(null)}>
-              Entfernen
+              {t('clear')}
             </Button>
           ) : null}
         </div>
@@ -224,8 +230,9 @@ export function DateTimePicker({
   'data-testid': testId,
   ...rest
 }: DateTimePickerProps) {
+  const t = useTranslations('ui.datePicker');
   const [day = null, time = null] = value === null ? [] : value.split('T');
-  const timeLabel = ariaLabel === undefined ? 'Uhrzeit' : `${ariaLabel}, Uhrzeit`;
+  const timeLabel = ariaLabel === undefined ? t('time') : t('labelledTime', { label: ariaLabel });
 
   if (readOnly) {
     return (

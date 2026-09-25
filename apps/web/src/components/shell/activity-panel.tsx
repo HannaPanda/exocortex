@@ -13,6 +13,7 @@ import {
   Share2Icon,
   Undo2Icon,
 } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentActivityEntry } from '@exocortex/contracts';
@@ -42,23 +43,14 @@ import { useDocumentActivity, useRestoreSnapshot } from '@/lib/api/snapshot-quer
 
 import { type DiffableSnapshot, SnapshotDiffDialog } from './snapshot-diff-dialog';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
-const timeFormat = new Intl.DateTimeFormat('de-DE', { timeStyle: 'short' });
-const dayFormat = new Intl.DateTimeFormat('de-DE', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-});
-const dayWithYearFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
+type Formatter = ReturnType<typeof useFormatter>;
+type Translate = ReturnType<typeof useTranslations<'dialogs.activity'>>;
 
-function formatDateTime(iso: string): string {
-  return dateTimeFormat.format(new Date(iso));
+function formatDateTime(format: Formatter, iso: string): string {
+  return format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' });
 }
-function formatTime(iso: string): string {
-  return timeFormat.format(new Date(iso));
+function formatTime(format: Formatter, iso: string): string {
+  return format.dateTime(new Date(iso), { timeStyle: 'short' });
 }
 
 /** Local calendar day, which is what a reader means by "the same day". */
@@ -75,13 +67,15 @@ function dayKey(iso: string): string {
  * "Mittwoch" places a change in memory in a way "17.09." does not. Only once
  * the year differs does the year become worth its width.
  */
-function dayHeading(iso: string, now: Date): string {
+function dayHeading(iso: string, now: Date, t: Translate, format: Formatter): string {
   const date = new Date(iso);
-  if (dayKey(iso) === dayKey(now.toISOString())) return 'Heute';
+  if (dayKey(iso) === dayKey(now.toISOString())) return t('today');
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  if (dayKey(iso) === dayKey(yesterday.toISOString())) return 'Gestern';
-  if (date.getFullYear() !== now.getFullYear()) return dayWithYearFormat.format(date);
-  return dayFormat.format(date);
+  if (dayKey(iso) === dayKey(yesterday.toISOString())) return t('yesterday');
+  if (date.getFullYear() !== now.getFullYear()) {
+    return format.dateTime(date, { dateStyle: 'long' });
+  }
+  return format.dateTime(date, { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
 /** When an entry happened; an editing session is filed under the day it ended. */
@@ -89,18 +83,15 @@ function entryTimestamp(entry: DocumentActivityEntry): string {
   return entry.type === 'editingSession' ? entry.endedAt : entry.occurredAt;
 }
 
-/** German label for a snapshot's `reason`. */
-const SNAPSHOT_REASON_LABEL: Record<
-  Extract<DocumentActivityEntry, { type: 'snapshot' }>['reason'],
-  string
-> = {
-  manual: 'Manuell gesichert',
-  scheduled: 'Automatisch gesichert',
-  pre_restore: 'Vor einer Wiederherstellung gesichert',
-  import: 'Beim Import gesichert',
-  restore: 'Wiederherstellung',
-  api_write: 'Von außen geschrieben',
-};
+/** Message key of the label for a snapshot's `reason`. */
+const SNAPSHOT_REASON_LABEL = {
+  manual: 'snapshotReason.manual',
+  scheduled: 'snapshotReason.scheduled',
+  pre_restore: 'snapshotReason.preRestore',
+  import: 'snapshotReason.import',
+  restore: 'snapshotReason.restore',
+  api_write: 'snapshotReason.apiWrite',
+} as const satisfies Record<Extract<DocumentActivityEntry, { type: 'snapshot' }>['reason'], string>;
 
 type SnapshotEntry = Extract<DocumentActivityEntry, { type: 'snapshot' }>;
 
@@ -206,17 +197,22 @@ function ActivityEntryRow({
   onRequestRestore: (entry: SnapshotEntry) => void;
   onRequestCompare: (entry: SnapshotEntry) => void;
 }) {
-  const who = entry.actorName ?? 'Unbekannt';
-  const at = `${formatTime(entryTimestamp(entry))} · ${who}`;
+  const t = useTranslations('dialogs.activity');
+  const format = useFormatter();
+  const who = entry.actorName ?? t('unknownActor');
+  const at = t('meta', { time: formatTime(format, entryTimestamp(entry)), who });
 
   switch (entry.type) {
     case 'created':
-      return <Row type={entry.type} title="Seite angelegt" meta={at} />;
+      return <Row type={entry.type} title={t('created')} meta={at} />;
     case 'renamed':
       return (
         <Row
           type={entry.type}
-          title={`Umbenannt: „${entry.previousTitle ?? '?'}“ → „${entry.nextTitle ?? '?'}“`}
+          title={t('renamed', {
+            previous: entry.previousTitle ?? '?',
+            next: entry.nextTitle ?? '?',
+          })}
           meta={at}
         />
       );
@@ -224,16 +220,16 @@ function ActivityEntryRow({
       return (
         <Row
           type={entry.type}
-          title={entry.acrossWorkspace ? 'In anderen Arbeitsbereich verschoben' : 'Verschoben'}
+          title={entry.acrossWorkspace ? t('movedAcrossWorkspace') : t('moved')}
           meta={at}
         />
       );
     case 'archived':
-      return <Row type={entry.type} title="In den Papierkorb gelegt" meta={at} />;
+      return <Row type={entry.type} title={t('archived')} meta={at} />;
     case 'restored':
-      return <Row type={entry.type} title="Wiederhergestellt" meta={at} />;
+      return <Row type={entry.type} title={t('restored')} meta={at} />;
     case 'snapshotRestored':
-      return <Row type={entry.type} title="Auf einen früheren Stand zurückgesetzt" meta={at} />;
+      return <Row type={entry.type} title={t('snapshotRestored')} meta={at} />;
     case 'shared':
       return (
         <Row
@@ -241,11 +237,11 @@ function ActivityEntryRow({
           title={
             entry.kind === 'PUBLIC_LINK'
               ? entry.revoked
-                ? 'Öffentlicher Link zurückgezogen'
-                : 'Öffentlicher Link erzeugt'
+                ? t('publicLinkRevoked')
+                : t('publicLinkCreated')
               : entry.revoked
-                ? 'Freigabe an ein Konto zurückgezogen'
-                : 'An ein Konto freigegeben'
+                ? t('grantRevoked')
+                : t('granted')
           }
           meta={at}
         />
@@ -256,8 +252,11 @@ function ActivityEntryRow({
           type={entry.type}
           title={
             entry.startedAt === entry.endedAt
-              ? 'Bearbeitet'
-              : `Bearbeitet ${formatTime(entry.startedAt)} bis ${formatTime(entry.endedAt)}`
+              ? t('edited')
+              : t('editedBetween', {
+                  from: formatTime(format, entry.startedAt),
+                  to: formatTime(format, entry.endedAt),
+                })
           }
           meta={at}
         />
@@ -266,7 +265,7 @@ function ActivityEntryRow({
       return (
         <Row
           type={entry.type}
-          title={SNAPSHOT_REASON_LABEL[entry.reason]}
+          title={t(SNAPSHOT_REASON_LABEL[entry.reason])}
           meta={at}
           /*
            * Comparing is the row's own action, and it is offered to readers
@@ -276,7 +275,7 @@ function ActivityEntryRow({
            * menu and behind a confirmation after that.
            */
           onActivate={() => onRequestCompare(entry)}
-          activateLabel={`Stand vom ${formatDateTime(entry.occurredAt)} vergleichen`}
+          activateLabel={t('compareSnapshot', { date: formatDateTime(format, entry.occurredAt) })}
           actions={
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -285,7 +284,9 @@ function ActivityEntryRow({
                     variant="ghost"
                     size="icon-sm"
                     className="mt-1 shrink-0"
-                    aria-label={`Aktionen für den Stand vom ${formatDateTime(entry.occurredAt)}`}
+                    aria-label={t('snapshotActions', {
+                      date: formatDateTime(format, entry.occurredAt),
+                    })}
                     data-testid="activity-entry-menu"
                   >
                     <EllipsisIcon />
@@ -297,14 +298,14 @@ function ActivityEntryRow({
                   data-testid="activity-compare-item"
                   onClick={() => onRequestCompare(entry)}
                 >
-                  <GitCompareIcon /> Vergleichen
+                  <GitCompareIcon /> {t('compare')}
                 </DropdownMenuItem>
                 {readOnly ? null : (
                   <DropdownMenuItem
                     data-testid="activity-restore-item"
                     onClick={() => onRequestRestore(entry)}
                   >
-                    <RotateCcwIcon /> Wiederherstellen …
+                    <RotateCcwIcon /> {t('restoreEllipsis')}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -328,14 +329,18 @@ interface DayGroup {
  * list is the server's ordering, and quietly regrouping it here would hide a
  * sorting bug instead of showing it.
  */
-function groupByDay(entries: DocumentActivityEntry[], now: Date): DayGroup[] {
+function groupByDay(
+  entries: DocumentActivityEntry[],
+  now: Date,
+  heading: (iso: string, now: Date) => string,
+): DayGroup[] {
   const groups: DayGroup[] = [];
   for (const entry of entries) {
     const timestamp = entryTimestamp(entry);
     const key = dayKey(timestamp);
     const last = groups[groups.length - 1];
     if (last !== undefined && last.key === key) last.entries.push(entry);
-    else groups.push({ key, heading: dayHeading(timestamp, now), entries: [entry] });
+    else groups.push({ key, heading: heading(timestamp, now), entries: [entry] });
   }
   return groups;
 }
@@ -359,6 +364,8 @@ export interface ActivityPanelProps {
  * confirmation dialog rather than firing on a click.
  */
 export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
+  const t = useTranslations('dialogs.activity');
+  const format = useFormatter();
   const document = useDocument(documentId ?? undefined);
   const activity = useDocumentActivity(documentId ?? undefined);
   const restoreSnapshot = useRestoreSnapshot(documentId ?? undefined);
@@ -369,22 +376,22 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   if (documentId === null || workspaceId === null) {
     return (
       <EmptyState
-        title="Keine Seite geöffnet"
-        description="Öffne eine Seite, um ihre Aktivität zu sehen."
+        title={t('noPageTitle')}
+        description={t('noPageDescription')}
         icon={ActivityIcon}
       />
     );
   }
 
   if (activity.isPending || document.isPending) {
-    return <LoadingState variant="skeleton" rows={5} label="Aktivität wird geladen …" />;
+    return <LoadingState variant="skeleton" rows={5} label={t('loading')} />;
   }
 
   if (activity.isError) {
     return (
       <ErrorState
-        title="Aktivität nicht verfügbar"
-        description="Der Verlauf konnte nicht geladen werden."
+        title={t('unavailable')}
+        description={t('historyLoadError')}
         onRetry={() => void activity.refetch()}
       />
     );
@@ -392,8 +399,8 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   if (document.isError) {
     return (
       <ErrorState
-        title="Aktivität nicht verfügbar"
-        description="Die Seite konnte nicht geladen werden."
+        title={t('unavailable')}
+        description={t('pageLoadError')}
         onRetry={() => void document.refetch()}
       />
     );
@@ -404,17 +411,17 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const snapshots: DiffableSnapshot[] = entries
     .filter((entry): entry is SnapshotEntry => entry.type === 'snapshot')
     .map((entry) => ({ id: entry.id, createdAt: entry.occurredAt }));
-  const groups = groupByDay(entries, new Date());
+  const groups = groupByDay(entries, new Date(), (iso, now) => dayHeading(iso, now, t, format));
 
   return (
     <div className="flex flex-col gap-3" data-testid="activity-panel">
       <SectionRule as="h3" trailing={entries.length === 0 ? undefined : entries.length}>
-        Verlauf
+        {t('history')}
       </SectionRule>
       {entries.length === 0 ? (
         <EmptyState
-          title="Noch keine Aktivität"
-          description="Sobald sich an dieser Seite etwas ändert, erscheint es hier."
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
           icon={ActivityIcon}
         />
       ) : (
@@ -468,10 +475,12 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Auf diesen Stand zurücksetzen?</DialogTitle>
+            <DialogTitle>{t('restoreTitle')}</DialogTitle>
             <DialogDescription>
               {pendingRestore !== null
-                ? `Der Inhalt der Seite wird auf den Stand vom ${formatDateTime(pendingRestore.occurredAt)} zurückgesetzt. Der aktuelle Stand wird davor automatisch gesichert, die Wiederherstellung selbst lässt sich aber nicht rückgängig machen. Eine offen geöffnete Seite übernimmt die Änderung sofort.`
+                ? t('restoreDescription', {
+                    date: formatDateTime(format, pendingRestore.occurredAt),
+                  })
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -482,7 +491,7 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
           ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingRestore(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -496,12 +505,14 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
                     setRestoreError(null);
                   },
                   onError: (error) => {
-                    setRestoreError(error instanceof Error ? error.message : 'Unbekannter Fehler');
+                    setRestoreError(
+                      error instanceof Error ? error.message : t('restoreUnknownError'),
+                    );
                   },
                 });
               }}
             >
-              Wiederherstellen
+              {t('restore')}
             </Button>
           </DialogFooter>
         </DialogContent>

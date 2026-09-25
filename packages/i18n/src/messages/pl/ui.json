@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Ładowanie …",
+    "errorTitle": "Coś poszło nie tak",
+    "errorDescription": "Spróbuj ponownie. Jeśli problem nie ustąpi, sprawdź połączenie.",
+    "retry": "Spróbuj ponownie"
+  },
+  "dialog": {
+    "close": "Zamknij okno dialogowe"
+  },
+  "sheet": {
+    "close": "Zamknij"
+  },
+  "commandPalette": {
+    "title": "Paleta poleceń",
+    "description": "Szukaj stron i wykonuj polecenia",
+    "placeholder": "Szukaj lub wpisz polecenie …",
+    "empty": "Brak wyników"
+  },
+  "datePicker": {
+    "placeholder": "Wybierz datę",
+    "labelled": "{label}: {value}",
+    "today": "Dzisiaj",
+    "clear": "Wyczyść",
+    "time": "Godzina",
+    "labelledTime": "{label}, godzina"
+  }
+}

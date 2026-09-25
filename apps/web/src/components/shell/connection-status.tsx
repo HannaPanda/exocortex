@@ -1,6 +1,7 @@
 'use client';
 
 import { CloudOffIcon, RefreshCwIcon, SignalZeroIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { cn, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
@@ -25,6 +26,7 @@ import { useDocumentSession } from './document-session';
  * the tooltip and in the screen-reader label at all times.
  */
 export function ConnectionStatus() {
+  const t = useTranslations('shell.connectionStatus');
   const { status } = useRealtime();
   const { state } = useDocumentSession();
 
@@ -36,28 +38,28 @@ export function ConnectionStatus() {
       return {
         tone: 'broken' as const,
         icon: CloudOffIcon,
-        short: 'offline',
-        label: 'Offline: Änderungen werden lokal gespeichert',
+        short: t('offlineShort'),
+        label: t('offline'),
       };
     }
     if (status === 'connected' && (collaboration === 'connected' || state.documentId === null)) {
-      return { tone: 'resting' as const, icon: null, short: null, label: 'Verbunden' };
+      return { tone: 'resting' as const, icon: null, short: null, label: t('connected') };
     }
     if (status === 'disconnected' || collaboration === 'disconnected') {
       return {
         tone: 'broken' as const,
         icon: SignalZeroIcon,
-        short: 'getrennt',
-        label: 'Verbindung unterbrochen, wird erneut versucht',
+        short: t('disconnectedShort'),
+        label: t('disconnected'),
       };
     }
     return {
       tone: 'pending' as const,
       icon: RefreshCwIcon,
       short: null,
-      label: 'Verbindung wird aufgebaut …',
+      label: t('connecting'),
     };
-  }, [collaboration, offline, state.documentId, status]);
+  }, [collaboration, offline, state.documentId, status, t]);
 
   const Icon = connection.icon;
 
@@ -92,7 +94,7 @@ export function ConnectionStatus() {
             {connection.short === null ? null : <span>{connection.short}</span>}
             {state.pendingSync ? (
               <span className="text-nano" data-testid="pending-sync">
-                offline-Änderungen
+                {t('pendingSync')}
               </span>
             ) : null}
           </span>

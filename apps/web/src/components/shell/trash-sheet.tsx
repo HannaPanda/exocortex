@@ -2,6 +2,7 @@
 
 import { ExternalLinkIcon, RotateCcwIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type TrashEntry } from '@exocortex/contracts';
@@ -41,9 +42,6 @@ interface TrashSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const dayFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'full' });
-const timeFormat = new Intl.DateTimeFormat('de-DE', { timeStyle: 'short' });
-
 /** Groups an archive operation under the day it happened. */
 function dayKey(iso: string): string {
   return iso.slice(0, 10);
@@ -51,6 +49,25 @@ function dayKey(iso: string): string {
 
 function countEntries(entries: readonly TrashEntry[]): number {
   return entries.reduce((total, entry) => total + 1 + entry.descendantCount, 0);
+}
+
+/** What the permanent deletion takes with it, counted, with the number picking each form. */
+function describeDeletion(
+  totals: {
+    documents: number;
+    attachments: number;
+    links: number;
+  },
+  t: ReturnType<typeof useTranslations<'dialogs.trash'>>,
+): string {
+  return [
+    t('deletionPages', { count: totals.documents }),
+    totals.attachments === 0 ? null : t('deletionAttachments', { count: totals.attachments }),
+    totals.links === 0 ? null : t('deletionLinks', { count: totals.links }),
+    t('deletionIrreversible'),
+  ]
+    .filter((sentence) => sentence !== null)
+    .join(' ');
 }
 
 /**
@@ -67,41 +84,9 @@ function countEntries(entries: readonly TrashEntry[]): number {
  * A sheet rather than the sidebar: 145 nested rows with checkboxes do not fit
  * in a column that has to stay a navigation.
  */
-function archivedCount(count: number): string {
-  return count === 1 ? 'Eine Seite im Papierkorb' : `${count} Seiten im Papierkorb`;
-}
-
-/** What the permanent deletion takes with it, counted, with the number picking each form. */
-function describeDeletion(totals: {
-  documents: number;
-  attachments: number;
-  links: number;
-}): string {
-  const pages = totals.documents === 1 ? 'Eine Seite wird' : `${totals.documents} Seiten werden`;
-  const attachments =
-    totals.attachments === 0
-      ? ''
-      : ` Dazu ${totals.attachments === 1 ? 'ein Anhang' : `${totals.attachments} Anhänge`} samt Dateien.`;
-  const links =
-    totals.links === 0
-      ? ''
-      : totals.links === 1
-        ? ' Ein Verweis einer anderen Seite zeigt darauf und wird danach als unaufgelöst angezeigt.'
-        : ` ${totals.links} Verweise anderer Seiten zeigen darauf und werden danach als unaufgelöst angezeigt.`;
-  return (
-    `${pages} mit allem Inhalt, allen Versionsständen und allen Kommentaren gelöscht.` +
-    attachments +
-    links +
-    ' Das lässt sich nicht rückgängig machen, auch nicht über einen Versionsstand.'
-  );
-}
-
-/** „1 Seite“, „3 Seiten“: a count reads as a phrase, never as „Seite(n)“. */
-function pageCount(count: number): string {
-  return count === 1 ? '1 Seite' : `${count} Seiten`;
-}
-
 export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps) {
+  const t = useTranslations('dialogs.trash');
+  const format = useFormatter();
   const trash = useTrash(workspaceId, open);
   const workspace = useWorkspaceDetail(workspaceId);
   const restore = useRestoreDocument(workspaceId);
@@ -214,7 +199,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
               className="mt-1"
               checked={checked}
               disabled={covered}
-              aria-label={`„${entry.title}“ zum Löschen auswählen`}
+              aria-label={t('selectForDeletion', { title: entry.title })}
               onCheckedChange={(value) => toggle(entry.id, value === true)}
             />
           ) : null}
@@ -226,25 +211,25 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                 href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
                 onClick={() => changeOpen(false)}
                 className="min-w-0 flex-1 truncate text-sm hover:underline"
-                title="Schreibgeschützt ansehen"
+                title={t('viewReadOnly')}
               >
                 {entry.title}
               </Link>
               <ExternalLinkIcon className="size-3 shrink-0 text-muted-foreground" aria-hidden />
             </div>
             <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-              <span>{timeFormat.format(new Date(entry.archivedAt))} Uhr</span>
+              <span>
+                {t('archivedAt', {
+                  time: format.dateTime(new Date(entry.archivedAt), { timeStyle: 'short' }),
+                })}
+              </span>
               {entry.reason === 'cascade' ? (
                 <Badge variant="outline" className="font-normal">
-                  mitgegangen
+                  {t('cascade')}
                 </Badge>
               ) : null}
               {entry.descendantCount > 0 ? (
-                <span>
-                  {entry.descendantCount === 1
-                    ? '1 Unterseite'
-                    : `${entry.descendantCount} Unterseiten`}
-                </span>
+                <span>{t('descendants', { count: entry.descendantCount })}</span>
               ) : null}
             </p>
           </div>
@@ -252,7 +237,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={`„${entry.title}“ wiederherstellen`}
+            aria-label={t('restore', { title: entry.title })}
             disabled={restore.isPending}
             onClick={() => void restore.mutateAsync(entry.id)}
           >
@@ -270,28 +255,28 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
     <Sheet open={open} onOpenChange={changeOpen}>
       <SheetContent side="right" className="w-full max-w-xl" data-testid="trash-sheet">
         <SheetHeader className="border-b border-border pr-10">
-          <SheetTitle className="text-lg">Papierkorb</SheetTitle>
+          <SheetTitle className="text-lg">{t('title')}</SheetTitle>
           <SheetDescription>
             {trash.data === undefined
-              ? 'Seiten im Papierkorb'
-              : `${archivedCount(trash.data.totalCount)}. Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
+              ? t('descriptionLoading')
+              : t('description', { count: trash.data.totalCount })}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2">
-          {trash.isPending ? <LoadingState label="Papierkorb wird geladen" /> : null}
-          {trash.isError ? <ErrorState title="Papierkorb nicht lesbar" /> : null}
+          {trash.isPending ? <LoadingState label={t('loading')} /> : null}
+          {trash.isError ? <ErrorState title={t('loadError')} /> : null}
           {trash.data !== undefined && trash.data.totalCount === 0 ? (
-            <EmptyState
-              title="Der Papierkorb ist leer"
-              description="Was du in den Papierkorb legst, bleibt hier, bis es jemand wiederherstellt oder endgültig löscht."
-            />
+            <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
           ) : null}
 
           {groups.map(([day, dayEntries]) => (
             <section key={day} className="mb-3">
               <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
-                {dayFormat.format(new Date(day))} · {pageCount(countEntries(dayEntries))}
+                {t('dayHeading', {
+                  day: format.dateTime(new Date(day), { dateStyle: 'full' }),
+                  count: countEntries(dayEntries),
+                })}
               </h3>
               <ul>{dayEntries.map((entry) => renderEntry(entry, 0))}</ul>
             </section>
@@ -301,13 +286,11 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
         {canDelete && selectionRoots.length > 0 ? (
           <div className="flex items-center justify-between gap-2 border-t border-border p-3">
             <span className="text-sm text-muted-foreground">
-              {selectedPageCount === 1
-                ? '1 Seite ausgewählt'
-                : `${selectedPageCount} Seiten ausgewählt`}
+              {t('selectedCount', { count: selectedPageCount })}
             </span>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
-                Auswahl aufheben
+                {t('clearSelection')}
               </Button>
               <Button
                 variant="destructive"
@@ -315,7 +298,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                 onClick={openConfirmation}
                 data-testid="trash-delete"
               >
-                <Trash2Icon className="size-3.5" /> Endgültig löschen
+                <Trash2Icon className="size-3.5" /> {t('deletePermanently')}
               </Button>
             </div>
           </div>
@@ -324,11 +307,9 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
         <Dialog open={confirming} onOpenChange={(value) => !value && setConfirming(false)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Endgültig löschen?</DialogTitle>
+              <DialogTitle>{t('confirmTitle')}</DialogTitle>
               <DialogDescription>
-                {previews.isPending
-                  ? 'Wird geprüft, was dabei mitgeht …'
-                  : describeDeletion(previewTotals)}
+                {previews.isPending ? t('confirmChecking') : describeDeletion(previewTotals, t)}
               </DialogDescription>
             </DialogHeader>
 
@@ -337,14 +318,14 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                 <AlertDescription>
                   {remove.error instanceof ApiError
                     ? messageForCode(remove.error.code)
-                    : 'Löschen fehlgeschlagen.'}
+                    : t('deleteFailed')}
                 </AlertDescription>
               </Alert>
             ) : null}
 
             <DialogFooter>
               <Button variant="outline" onClick={() => setConfirming(false)}>
-                Abbrechen
+                {t('cancel')}
               </Button>
               <Button
                 variant="destructive"
@@ -359,7 +340,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                 }}
                 data-testid="trash-delete-confirm"
               >
-                <Trash2Icon className={cn('size-3.5')} /> Endgültig löschen
+                <Trash2Icon className={cn('size-3.5')} /> {t('deletePermanently')}
               </Button>
             </DialogFooter>
           </DialogContent>

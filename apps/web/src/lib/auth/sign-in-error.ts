@@ -1,5 +1,6 @@
 /**
- * The sentence a person reads when a sign-in was refused.
+ * Which sentence a person reads when a sign-in was refused, as a key under
+ * `auth.signIn` in the message catalogue.
  *
  * Every refusal used to read "E-Mail-Adresse oder Passwort ist falsch", which
  * is a claim about the credentials and is untrue whenever the server refused
@@ -16,13 +17,11 @@
  * vague about which half was wrong, which is the part that would enumerate
  * accounts.
  */
-export function signInErrorMessage(status: number | undefined): string {
-  if (status === 429) {
-    return 'Zu viele Anmeldeversuche. Bitte warte eine Minute und versuche es dann erneut.';
-  }
+export type SignInErrorKey = 'tooManyAttempts' | 'unavailable' | 'wrongCredentials';
+
+export function signInErrorKey(status: number | undefined): SignInErrorKey {
+  if (status === 429) return 'tooManyAttempts';
   // 0 is what the client reports when the request never arrived anywhere.
-  if (status === undefined || status === 0 || status >= 500) {
-    return 'Die Anmeldung ist gerade nicht möglich. Bitte versuche es gleich noch einmal.';
-  }
-  return 'E-Mail-Adresse oder Passwort ist falsch.';
+  if (status === undefined || status === 0 || status >= 500) return 'unavailable';
+  return 'wrongCredentials';
 }

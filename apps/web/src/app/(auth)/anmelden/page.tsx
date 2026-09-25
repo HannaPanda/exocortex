@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { SignInForm } from '@/components/auth/sign-in-form';
 
-export const metadata: Metadata = { title: 'Anmelden' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.signIn');
+  return { title: t('metaTitle') };
+}
 
 /**
  * The form reads the query string, because an OAuth authorization request

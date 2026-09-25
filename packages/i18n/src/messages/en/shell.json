@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex: your shared external brain."
+  },
+  "appShell": {
+    "navigationTitle": "Navigation",
+    "pageNavigation": "Page navigation",
+    "navigationWidth": "Navigation width",
+    "contextTitle": "Context panel",
+    "contextWidth": "Context panel width"
+  },
+  "topbar": {
+    "toggleNavigation": "Toggle navigation",
+    "toggleNavigationTooltip": "Navigation (Ctrl + B)",
+    "search": "Search",
+    "searchTooltip": "Search (Ctrl + K)",
+    "searchPlaceholder": "Search …",
+    "searchShortcut": "Ctrl K",
+    "capture": "Capture",
+    "captureTooltip": "Capture (Ctrl + E)",
+    "toggleContext": "Toggle context panel",
+    "toggleContextTooltip": "Context panel (Ctrl + .)",
+    "accountFallback": "Account"
+  },
   "globalLinks": {
-    "language": "Language"
+    "help": "Help and features",
+    "helpWithNew": "{count, plural, one {Help and features (# new)} other {Help and features (# new)}}",
+    "chats": "Chats",
+    "entities": "Entities",
+    "shares": "Shares",
+    "memory": "Memory",
+    "connections": "Connections",
+    "notifications": "Notifications",
+    "language": "Language",
+    "admin": "Administration",
+    "menuLabel": "Account and areas",
+    "menuLabelWithNew": "{count, plural, one {Account and areas (# new feature)} other {Account and areas (# new features)}}",
+    "signOut": "Sign out {name}"
+  },
+  "workspaceSwitcher": {
+    "choose": "Choose workspace",
+    "heading": "Workspaces",
+    "create": "New workspace",
+    "nameLabel": "Workspace name",
+    "cancel": "Cancel",
+    "submit": "Create"
+  },
+  "workspaceLanding": {
+    "loading": "Loading workspaces …",
+    "emptyTitle": "No workspace yet",
+    "emptyDescription": "A workspace brings together pages, members, and files.",
+    "defaultName": "My workspace",
+    "create": "Create workspace",
+    "opening": "Opening workspace …"
+  },
+  "workspaceOverview": {
+    "title": "Overview",
+    "pulsePages": "{count, plural, one {# page} other {# pages}}",
+    "pulseDatabases": "{count, plural, one {# database} other {# databases}}",
+    "pulseEditedThisWeek": "{count, plural, one {# edited this week} other {# edited this week}}",
+    "lastEditedBy": "Last edited by {name}",
+    "settingsLabel": "Workspace settings",
+    "settings": "Settings",
+    "createPage": "New page",
+    "untitledPage": "Untitled page",
+    "loading": "Loading overview …",
+    "emptyTitle": "No pages yet",
+    "emptyDescription": "Create your first page. Everything else grows from there.",
+    "emptyAction": "Create page",
+    "recent": "Continue",
+    "attention": "Loose ends",
+    "openComments": "{count, plural, one {<number>#</number> open comment} other {<number>#</number> open comments}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> broken link} other {<number>#</number> broken links}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> text not yet read} other {<number>#</number> texts not yet read}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> title repeated as heading} other {<number>#</number> titles repeated as heading}}",
+    "databases": "Databases",
+    "sections": "Sections"
+  },
+  "pageTreeHeader": {
+    "title": "Pages",
+    "create": "Create",
+    "createPage": "Create page",
+    "createFromTemplate": "Page from template",
+    "createDatabase": "Create database",
+    "createProject": "Create LaTeX project"
+  },
+  "pageTree": {
+    "untitledDatabase": "Untitled database",
+    "untitledPage": "Untitled page",
+    "untitledProject": "Untitled project",
+    "loading": "Loading pages",
+    "loadError": "Page tree not loaded",
+    "emptyTitle": "No pages yet",
+    "emptyDescription": "Create your first page to get started.",
+    "emptyAction": "Create page",
+    "treeLabel": "Pages",
+    "rootDrop": "Here: top level",
+    "trash": "Trash"
+  },
+  "pageTreeRow": {
+    "collapse": "Collapse subpages",
+    "expand": "Expand subpages",
+    "changeIconOf": "Change icon for “{title}”",
+    "createChildIn": "Create subpage in “{title}”",
+    "actionsFor": "Actions for “{title}”",
+    "changeIcon": "Change icon…",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "indent": "Indent under page above",
+    "outdent": "Outdent one level",
+    "createChild": "Create subpage",
+    "createDatabase": "Create database",
+    "createProject": "Create LaTeX project",
+    "suggestParent": "Suggest suitable location…",
+    "moveWorkspace": "Move to another workspace…",
+    "archive": "Move to trash"
+  },
+  "smartViews": {
+    "moveUp": "Move “{name}” up",
+    "moveDown": "Move “{name}” down",
+    "openSearch": "Search and saved searches"
+  },
+  "connectionStatus": {
+    "offlineShort": "offline",
+    "offline": "Offline: changes are saved locally",
+    "connected": "Connected",
+    "disconnectedShort": "disconnected",
+    "disconnected": "Connection interrupted, retrying",
+    "connecting": "Connecting…",
+    "pendingSync": "offline changes"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# person is editing this page} other {# people are editing this page}}",
+    "self": "{name} (you)"
+  },
+  "paletteCommands": {
+    "capture": "Capture something",
+    "captureHint": "Ctrl + E",
+    "captureKeywords": "inbox note quick capture",
+    "hideSidebar": "Hide navigation",
+    "showSidebar": "Show navigation",
+    "sidebarHint": "Ctrl + B",
+    "sidebarKeywords": "sidebar page tree navigation",
+    "hideContext": "Hide context panel",
+    "showContext": "Show context panel",
+    "contextHint": "Ctrl + .",
+    "contextKeywords": "ai comments panel references",
+    "openTrash": "Open trash",
+    "trashKeywords": "deleted archive restore trash"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "AI rule",
+    "aiRuleOnDemand": "AI rule (on demand)",
+    "shared": "Shared",
+    "file": "File …",
+    "restore": "Restore",
+    "actions": "Page actions",
+    "properties": "Page properties …",
+    "template": "Template …",
+    "share": "Share …",
+    "exportMarkdown": "Export as Markdown",
+    "render": "Publish as PDF …",
+    "importMarkdown": "Import Markdown",
+    "archive": "Move to trash"
+  },
+  "documentTitleInput": {
+    "label": "Page title",
+    "placeholder": "Untitled page"
+  },
+  "contextPanel": {
+    "aiTab": "AI",
+    "propertiesTab": "Properties",
+    "commentsTab": "Comments",
+    "backlinksTab": "Backlinks",
+    "activityTab": "Activity",
+    "aiErrorTitle": "AI panel unavailable",
+    "aiErrorDescription": "The chat could not be displayed. An ongoing AI run will continue; the history will be complete after reloading.",
+    "propertiesErrorTitle": "Properties unavailable",
+    "propertiesErrorDescription": "The properties could not be displayed.",
+    "commentsErrorTitle": "Comments unavailable",
+    "commentsErrorDescription": "The comments could not be displayed. The page’s text is unaffected.",
+    "backlinksErrorTitle": "Backlinks unavailable",
+    "backlinksErrorDescription": "The backlink index could not be displayed. The backlinks themselves remain in the page’s text.",
+    "activityErrorTitle": "Activity unavailable",
+    "activityErrorDescription": "The history of this page could not be displayed."
+  },
+  "adminLayout": {
+    "title": "Administration",
+    "intro": "Settings, AI models, and user management for this installation."
   }
 }

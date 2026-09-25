@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import type {
@@ -35,7 +36,6 @@ import {
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
-import { formatRelativeTime } from '@/lib/relative-time';
 
 /**
  * The landing view of a workspace.
@@ -46,18 +46,21 @@ import { formatRelativeTime } from '@/lib/relative-time';
  * around a list is a box around information that already had a shape.
  */
 
-const NUMBER = new Intl.NumberFormat('de-DE');
+type Formatter = ReturnType<typeof useFormatter>;
+type OverviewTranslator = ReturnType<typeof useTranslations<'shell.workspaceOverview'>>;
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${NUMBER.format(bytes)} B`;
-  const units = ['kB', 'MB', 'GB', 'TB'];
+const BYTE_UNITS = ['kilobyte', 'megabyte', 'gigabyte', 'terabyte'] as const;
+
+function formatBytes(bytes: number, format: Formatter): string {
+  const unitOptions = { style: 'unit', unitDisplay: 'short', maximumFractionDigits: 1 } as const;
+  if (bytes < 1024) return format.number(bytes, { ...unitOptions, unit: 'byte' });
   let value = bytes / 1024;
   let unit = 0;
-  while (value >= 1024 && unit < units.length - 1) {
+  while (value >= 1024 && unit < BYTE_UNITS.length - 1) {
     value /= 1024;
     unit += 1;
   }
-  return `${NUMBER.format(Math.round(value * 10) / 10)} ${units[unit]}`;
+  return format.number(value, { ...unitOptions, unit: BYTE_UNITS[unit] });
 }
 
 /**
@@ -67,15 +70,19 @@ function formatBytes(bytes: number): string {
  * that say nothing happened, and a readout that reports absences is noise a
  * reader has to filter every single time they open the workspace.
  */
-function formatPulse(stats: WorkspaceOverviewResponse['stats']): string {
-  const parts = [`${NUMBER.format(stats.pageCount)} Seiten`];
+function formatPulse(
+  stats: WorkspaceOverviewResponse['stats'],
+  t: OverviewTranslator,
+  format: Formatter,
+): string {
+  const parts = [t('pulsePages', { count: stats.pageCount })];
   if (stats.databaseCount > 0) {
-    parts.push(`${NUMBER.format(stats.databaseCount)} Datenbanken`);
+    parts.push(t('pulseDatabases', { count: stats.databaseCount }));
   }
   if (stats.editedThisWeek > 0) {
-    parts.push(`${NUMBER.format(stats.editedThisWeek)} diese Woche bearbeitet`);
+    parts.push(t('pulseEditedThisWeek', { count: stats.editedThisWeek }));
   }
-  if (stats.attachmentBytes > 0) parts.push(formatBytes(stats.attachmentBytes));
+  if (stats.attachmentBytes > 0) parts.push(formatBytes(stats.attachmentBytes, format));
   return parts.join(' · ');
 }
 
@@ -100,6 +107,9 @@ function RecentRow({
   workspaceId: string;
   document: WorkspaceOverviewResponse['recentlyEdited'][number];
 }) {
+  const t = useTranslations('shell.workspaceOverview');
+  const format = useFormatter();
+  const now = useNow();
   return (
     <li>
       <Link
@@ -124,11 +134,11 @@ function RecentRow({
               title={
                 document.editedByName === null
                   ? undefined
-                  : `Zuletzt bearbeitet von ${document.editedByName}`
+                  : t('lastEditedBy', { name: document.editedByName })
               }
               className="exocortex-numeric shrink-0 text-xs text-muted-foreground"
             >
-              {formatRelativeTime(document.editedAt)}
+              {format.relativeTime(new Date(document.editedAt), now)}
             </time>
           </span>
           <DocumentPath path={document.path} />
@@ -148,23 +158,28 @@ function RecentRow({
 function AttentionRow({
   workspaceId,
   icon: Icon,
-  label,
+  labelKey,
   item,
 }: {
   workspaceId: string;
   icon: LucideIcon;
-  label: string;
+  labelKey: 'openComments' | 'brokenLinks' | 'stalledAttachments' | 'duplicateTitleHeadings';
   item: AttentionItem;
 }) {
+  const t = useTranslations('shell.workspaceOverview');
   if (item.count === 0) return null;
   return (
     <li>
       <span className="flex items-center gap-2">
         <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-        <span className="exocortex-numeric text-sm font-medium text-primary-text">
-          {NUMBER.format(item.count)}
+        <span className="text-sm">
+          {t.rich(labelKey, {
+            count: item.count,
+            number: (chunks) => (
+              <span className="exocortex-numeric font-medium text-primary-text">{chunks}</span>
+            ),
+          })}
         </span>
-        <span className="text-sm">{label}</span>
       </span>
       <span className="mt-0.5 ml-6 flex flex-wrap gap-x-3 gap-y-0.5">
         {item.documents.map((document) => (
@@ -189,6 +204,7 @@ function DatabaseChip({
   workspaceId: string;
   database: WorkspaceOverviewResponse['databases'][number];
 }) {
+  const format = useFormatter();
   return (
     <Link
       href={documentHref(workspaceId, database.id)}
@@ -202,7 +218,7 @@ function DatabaseChip({
       />
       <span className="truncate text-sm font-medium">{database.title}</span>
       <span className="exocortex-numeric shrink-0 text-xs text-muted-foreground">
-        {NUMBER.format(database.rowCount)}
+        {format.number(database.rowCount)}
       </span>
     </Link>
   );
@@ -220,6 +236,7 @@ function SectionRow({
   workspaceId: string;
   section: WorkspaceOverviewResponse['sections'][number];
 }) {
+  const format = useFormatter();
   return (
     <li>
       <Link
@@ -235,7 +252,7 @@ function SectionRow({
         <span className="truncate text-sm">{section.title}</span>
         <Leader />
         <span className="exocortex-numeric shrink-0 text-xs text-muted-foreground">
-          {NUMBER.format(section.descendantCount)}
+          {format.number(section.descendantCount)}
         </span>
       </Link>
     </li>
@@ -243,15 +260,17 @@ function SectionRow({
 }
 
 export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('shell.workspaceOverview');
+  const format = useFormatter();
   const router = useRouter();
   const overview = useWorkspaceOverview(workspaceId);
   const createDocument = useCreateDocument(workspaceId);
 
   const createPage = React.useCallback(() => {
     void createDocument
-      .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
+      .mutateAsync({ title: t('untitledPage'), type: 'PAGE', parentId: null })
       .then((document) => router.push(documentHref(workspaceId, document.id)));
-  }, [createDocument, router, workspaceId]);
+  }, [createDocument, router, t, workspaceId]);
 
   if (overview.isError) {
     return (
@@ -272,12 +291,12 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
               would hide the end of the one word that says where you are. The
               wrapper keeps `min-w-0` so the wrap happens instead of pushing the
               actions off the row. */}
-          <h1 className="exocortex-page-title">{data?.workspaceName ?? 'Übersicht'}</h1>
+          <h1 className="exocortex-page-title">{data?.workspaceName ?? t('title')}</h1>
           {data === undefined ? (
             <Skeleton className="mt-2 h-4 w-72" />
           ) : (
             <p className="exocortex-numeric mt-1 text-xs text-muted-foreground">
-              {formatPulse(data.stats)}
+              {formatPulse(data.stats, t, format)}
             </p>
           )}
         </div>
@@ -288,7 +307,7 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="Arbeitsbereich-Einstellungen"
+                  aria-label={t('settingsLabel')}
                   data-testid="open-workspace-settings"
                   render={<Link href={`/arbeitsbereich/${workspaceId}/einstellungen`} />}
                 >
@@ -296,16 +315,16 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
                 </Button>
               }
             />
-            <TooltipContent>Einstellungen</TooltipContent>
+            <TooltipContent>{t('settings')}</TooltipContent>
           </Tooltip>
           <Button size="sm" data-testid="overview-create-page" onClick={createPage}>
-            <PlusIcon /> Neue Seite
+            <PlusIcon /> {t('createPage')}
           </Button>
         </div>
       </header>
 
       {data === undefined ? (
-        <div className="flex flex-col gap-3" role="status" aria-label="Übersicht wird geladen …">
+        <div className="flex flex-col gap-3" role="status" aria-label={t('loading')}>
           {Array.from({ length: 6 }, (_, index) => (
             <Skeleton key={index} className="h-8 w-full" />
           ))}
@@ -330,6 +349,7 @@ function WorkspaceOverviewBody({
   data: WorkspaceOverviewResponse;
   onCreatePage: () => void;
 }) {
+  const t = useTranslations('shell.workspaceOverview');
   const hasAttention =
     data.attention.openComments.count > 0 ||
     data.attention.brokenLinks.count > 0 ||
@@ -338,10 +358,10 @@ function WorkspaceOverviewBody({
   if (data.recentlyEdited.length === 0) {
     return (
       <EmptyState
-        title="Noch keine Seiten"
-        description="Lege deine erste Seite an. Alles Weitere wächst daran."
+        title={t('emptyTitle')}
+        description={t('emptyDescription')}
         icon={FileTextIcon}
-        action={{ label: 'Seite anlegen', onClick: onCreatePage }}
+        action={{ label: t('emptyAction'), onClick: onCreatePage }}
       />
     );
   }
@@ -361,7 +381,7 @@ function WorkspaceOverviewBody({
       >
         <section className="flex flex-col gap-3" aria-labelledby="overview-recent">
           <SectionRule>
-            <span id="overview-recent">Weitermachen</span>
+            <span id="overview-recent">{t('recent')}</span>
           </SectionRule>
           <ul className="flex flex-col">
             {data.recentlyEdited.map((document) => (
@@ -373,31 +393,31 @@ function WorkspaceOverviewBody({
         {hasAttention ? (
           <section className="flex flex-col gap-3" aria-labelledby="overview-attention">
             <SectionRule>
-              <span id="overview-attention">Liegen geblieben</span>
+              <span id="overview-attention">{t('attention')}</span>
             </SectionRule>
             <ul className="flex flex-col gap-3">
               <AttentionRow
                 workspaceId={workspaceId}
                 icon={MessageSquareIcon}
-                label="offene Kommentare"
+                labelKey="openComments"
                 item={data.attention.openComments}
               />
               <AttentionRow
                 workspaceId={workspaceId}
                 icon={Link2OffIcon}
-                label="Verweise ins Leere"
+                labelKey="brokenLinks"
                 item={data.attention.brokenLinks}
               />
               <AttentionRow
                 workspaceId={workspaceId}
                 icon={PaperclipIcon}
-                label="Texte noch nicht gelesen"
+                labelKey="stalledAttachments"
                 item={data.attention.stalledAttachments}
               />
               <AttentionRow
                 workspaceId={workspaceId}
                 icon={Heading1Icon}
-                label="Titel gleich nochmal als Überschrift"
+                labelKey="duplicateTitleHeadings"
                 item={data.attention.duplicateTitleHeadings}
               />
             </ul>
@@ -408,7 +428,7 @@ function WorkspaceOverviewBody({
       {data.databases.length > 0 ? (
         <section className="flex flex-col gap-3" aria-labelledby="overview-databases">
           <SectionRule>
-            <span id="overview-databases">Datenbanken</span>
+            <span id="overview-databases">{t('databases')}</span>
           </SectionRule>
           <div className="flex flex-wrap gap-2">
             {data.databases.map((database) => (
@@ -421,7 +441,7 @@ function WorkspaceOverviewBody({
       {data.sections.length > 0 ? (
         <section className="flex flex-col gap-3" aria-labelledby="overview-sections">
           <SectionRule>
-            <span id="overview-sections">Bereiche</span>
+            <span id="overview-sections">{t('sections')}</span>
           </SectionRule>
           <ul className="grid gap-x-8 sm:grid-cols-2">
             {data.sections.map((section) => (

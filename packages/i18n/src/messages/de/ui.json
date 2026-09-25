@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Wird geladen …",
+    "errorTitle": "Etwas ist schiefgelaufen",
+    "errorDescription": "Bitte versuche es erneut. Falls das Problem bleibt, prüfe die Verbindung.",
+    "retry": "Erneut versuchen"
+  },
+  "dialog": {
+    "close": "Dialog schließen"
+  },
+  "sheet": {
+    "close": "Schließen"
+  },
+  "commandPalette": {
+    "title": "Befehlspalette",
+    "description": "Seiten suchen und Befehle ausführen",
+    "placeholder": "Suchen oder Befehl eingeben …",
+    "empty": "Keine Treffer"
+  },
+  "datePicker": {
+    "placeholder": "Datum wählen",
+    "labelled": "{label}: {value}",
+    "today": "Heute",
+    "clear": "Entfernen",
+    "time": "Uhrzeit",
+    "labelledTime": "{label}, Uhrzeit"
+  }
+}

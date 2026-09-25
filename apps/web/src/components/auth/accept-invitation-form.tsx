@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AcceptInvitationResponse, type InvitationPreview } from '@exocortex/contracts';
@@ -38,6 +39,7 @@ const MIN_PASSWORD_LENGTH = 12;
  * why the token expires and works exactly once.
  */
 export function AcceptInvitationForm({ token }: { token: string }) {
+  const t = useTranslations('auth.invitation');
   const router = useRouter();
 
   const [preview, setPreview] = React.useState<InvitationPreview | null>(null);
@@ -98,33 +100,30 @@ export function AcceptInvitationForm({ token }: { token: string }) {
     return (
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          <h1 className="exocortex-page-title">Einladung nicht gültig</h1>
+          <h1 className="exocortex-page-title">{t('invalidTitle')}</h1>
           <Alert variant="destructive" data-testid="invitation-invalid">
             <AlertDescription>{lookupError}</AlertDescription>
           </Alert>
-          <p className="text-sm text-muted-foreground">
-            Falls du hier schon ein Konto hast, melde dich einfach an. Sonst bitte die Person, die
-            dich eingeladen hat, um eine neue Einladung.
-          </p>
-          <Button render={<Link href="/anmelden" />}>Zur Anmeldung</Button>
+          <p className="text-sm text-muted-foreground">{t('invalidHint')}</p>
+          <Button render={<Link href="/anmelden" />}>{t('toSignIn')}</Button>
         </CardContent>
       </Card>
     );
   }
 
   if (preview === null) {
-    return <LoadingState label="Einladung wird geprüft …" />;
+    return <LoadingState label={t('checking')} />;
   }
 
   if (preview.accountExists) {
     return (
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          <h1 className="exocortex-page-title">Konto besteht schon</h1>
+          <h1 className="exocortex-page-title">{t('accountExistsTitle')}</h1>
           <p className="text-sm text-muted-foreground">
-            Für {preview.email} gibt es hier bereits ein Konto. Melde dich damit an.
+            {t('accountExistsHint', { email: preview.email })}
           </p>
-          <Button render={<Link href="/anmelden" />}>Zur Anmeldung</Button>
+          <Button render={<Link href="/anmelden" />}>{t('toSignIn')}</Button>
         </CardContent>
       </Card>
     );
@@ -137,12 +136,14 @@ export function AcceptInvitationForm({ token }: { token: string }) {
       <CardContent className="pt-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="flex flex-col gap-1.5">
-            <h1 className="exocortex-page-title">Konto anlegen</h1>
+            <h1 className="exocortex-page-title">{t('title')}</h1>
             <p className="text-sm text-muted-foreground">
-              {preview.invitedByName} hat dich
               {preview.workspaceName === null
-                ? ' zu eXocortex eingeladen.'
-                : ` zum Arbeitsbereich „${preview.workspaceName}“ eingeladen.`}
+                ? t('invitedToApp', { inviter: preview.invitedByName })
+                : t('invitedToWorkspace', {
+                    inviter: preview.invitedByName,
+                    workspace: preview.workspaceName,
+                  })}
             </p>
           </div>
 
@@ -153,7 +154,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
           ) : null}
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="invitation-email">E-Mail-Adresse</Label>
+            <Label htmlFor="invitation-email">{t('email')}</Label>
             {/*
               Shown but not editable: the invitation decides the address. A field
               a person could change here would be a field the server has to
@@ -164,7 +165,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="invitation-name">Name</Label>
+            <Label htmlFor="invitation-name">{t('name')}</Label>
             <Input
               id="invitation-name"
               autoComplete="name"
@@ -176,7 +177,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="invitation-password">Passwort</Label>
+            <Label htmlFor="invitation-password">{t('password')}</Label>
             <Input
               id="invitation-password"
               type="password"
@@ -188,7 +189,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
               data-testid="invitation-password"
             />
             <p className="text-xs text-muted-foreground">
-              Mindestens {MIN_PASSWORD_LENGTH} Zeichen.
+              {t('passwordMinimum', { count: MIN_PASSWORD_LENGTH })}
             </p>
           </div>
 
@@ -197,11 +198,11 @@ export function AcceptInvitationForm({ token }: { token: string }) {
             disabled={pending || name.trim().length === 0 || password.length < MIN_PASSWORD_LENGTH}
             data-testid="accept-invitation-submit"
           >
-            {pending ? 'Konto wird angelegt …' : 'Konto anlegen'}
+            {pending ? t('submitting') : t('submit')}
           </Button>
 
           {passwordTooShort ? (
-            <p className="text-xs text-muted-foreground">Das Passwort ist noch zu kurz.</p>
+            <p className="text-xs text-muted-foreground">{t('passwordTooShort')}</p>
           ) : null}
         </form>
       </CardContent>

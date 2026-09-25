@@ -3,6 +3,7 @@
 import { ChevronDownIcon, ChevronUpIcon, ListFilterIcon, SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type SavedQuery } from '@exocortex/contracts';
@@ -30,6 +31,7 @@ import { useReorderSavedQuery, useSavedQueries } from '@/lib/api/saved-query-que
  * page tree needed a whole context menu to achieve.
  */
 export function SmartViews({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('shell.smartViews');
   const params = useParams<{ savedQueryId?: string }>();
   const savedQueries = useSavedQueries(workspaceId);
   const reorder = useReorderSavedQuery(workspaceId);
@@ -76,7 +78,7 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`„${view.name}“ nach oben`}
+                  aria-label={t('moveUp', { name: view.name })}
                   data-testid={`smart-view-up-${view.id}`}
                   disabled={index === 0 || reorder.isPending}
                   onClick={() => move(view, -1)}
@@ -86,7 +88,7 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`„${view.name}“ nach unten`}
+                  aria-label={t('moveDown', { name: view.name })}
                   data-testid={`smart-view-down-${view.id}`}
                   disabled={index === views.length - 1 || reorder.isPending}
                   onClick={() => move(view, 1)}
@@ -105,7 +107,7 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
         className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
       >
         <SearchIcon className="size-3.5" />
-        Suche und gespeicherte Suchen
+        {t('openSearch')}
       </Link>
     </div>
   );

@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "Please try again. If the problem persists, check your connection.",
+    "retry": "Try again"
+  },
+  "dialog": {
+    "close": "Close dialog"
+  },
+  "sheet": {
+    "close": "Close"
+  },
+  "commandPalette": {
+    "title": "Command palette",
+    "description": "Search pages and run commands",
+    "placeholder": "Search or type a command…",
+    "empty": "No results"
+  },
+  "datePicker": {
+    "placeholder": "Select date",
+    "labelled": "{label}: {value}",
+    "today": "Today",
+    "clear": "Remove",
+    "time": "Time",
+    "labelledTime": "{label}, time"
+  }
+}

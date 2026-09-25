@@ -1,5 +1,8 @@
+'use client';
+
 import { AlertTriangleIcon, InboxIcon, Loader2Icon, type LucideIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../lib/utils';
 
@@ -22,12 +25,14 @@ export interface LoadingStateProps extends React.ComponentPropsWithoutRef<'div'>
 }
 
 export function LoadingState({
-  label = 'Wird geladen …',
+  label: ownLabel,
   variant = 'spinner',
   rows = 3,
   className,
   ...props
 }: LoadingStateProps) {
+  const t = useTranslations('ui.states');
+  const label = ownLabel ?? t('loading');
   if (variant === 'skeleton') {
     return (
       <div
@@ -110,13 +115,8 @@ export interface ErrorStateProps extends React.ComponentPropsWithoutRef<'div'> {
   onRetry?: () => void;
 }
 
-export function ErrorState({
-  title = 'Etwas ist schiefgelaufen',
-  description = 'Bitte versuche es erneut. Falls das Problem bleibt, prüfe die Verbindung.',
-  onRetry,
-  className,
-  ...props
-}: ErrorStateProps) {
+export function ErrorState({ title, description, onRetry, className, ...props }: ErrorStateProps) {
+  const t = useTranslations('ui.states');
   return (
     <div
       className={cn(
@@ -127,11 +127,13 @@ export function ErrorState({
       {...props}
     >
       <AlertTriangleIcon className="size-6 text-destructive-text" aria-hidden />
-      <p className="text-sm font-medium">{title}</p>
-      <p className="max-w-sm text-xs text-muted-foreground">{description}</p>
+      <p className="text-sm font-medium">{title ?? t('errorTitle')}</p>
+      <p className="max-w-sm text-xs text-muted-foreground">
+        {description ?? t('errorDescription')}
+      </p>
       {onRetry !== undefined ? (
         <Button variant="outline" size="sm" className="mt-2" onClick={onRetry}>
-          Erneut versuchen
+          {t('retry')}
         </Button>
       ) : null}
     </div>

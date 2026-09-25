@@ -63,11 +63,15 @@ interface GlobalLink {
  * cannot deliver. The API refuses the route regardless (`AdminGuard`); this
  * only stops the promise being made.
  */
-function globalLinks(newCount: number, role: UserRole, languageLabel: string): GlobalLink[] {
+function globalLinks(
+  newCount: number,
+  role: UserRole,
+  t: ReturnType<typeof useTranslations<'shell.globalLinks'>>,
+): GlobalLink[] {
   const links: GlobalLink[] = [
     {
       href: '/hilfe',
-      label: newCount > 0 ? `Hilfe und Funktionen (${newCount} neu)` : 'Hilfe und Funktionen',
+      label: newCount > 0 ? t('helpWithNew', { count: newCount }) : t('help'),
       testId: 'open-features',
       // A question mark, because that is the shape people look for when they
       // are stuck. The sparkles this started with said "something AI happens
@@ -78,14 +82,14 @@ function globalLinks(newCount: number, role: UserRole, languageLabel: string): G
     },
     {
       href: '/chats',
-      label: 'Chats',
+      label: t('chats'),
       testId: 'open-chats',
       icon: MessagesSquareIcon,
       group: 'rooms',
     },
     {
       href: '/entitaeten',
-      label: 'Entitäten',
+      label: t('entities'),
       testId: 'open-entities',
       icon: NetworkIcon,
       group: 'rooms',
@@ -97,21 +101,21 @@ function globalLinks(newCount: number, role: UserRole, languageLabel: string): G
     // workspace.
     {
       href: '/geteilt',
-      label: 'Freigaben',
+      label: t('shares'),
       testId: 'open-shared',
       icon: Share2Icon,
       group: 'rooms',
     },
     {
       href: '/gedaechtnis',
-      label: 'Gedächtnis',
+      label: t('memory'),
       testId: 'open-memory',
       icon: BrainIcon,
       group: 'rooms',
     },
     {
       href: '/einstellungen/verbindungen',
-      label: 'Verbindungen',
+      label: t('connections'),
       testId: 'open-api-tokens',
       icon: KeyIcon,
       group: 'settings',
@@ -121,7 +125,7 @@ function globalLinks(newCount: number, role: UserRole, languageLabel: string): G
     // page is about programs one lets in.
     {
       href: '/einstellungen/benachrichtigungen',
-      label: 'Benachrichtigungen',
+      label: t('notifications'),
       testId: 'open-notifications',
       icon: BellIcon,
       group: 'settings',
@@ -131,7 +135,7 @@ function globalLinks(newCount: number, role: UserRole, languageLabel: string): G
     // is in a language they cannot read, so it is named in theirs first.
     {
       href: '/einstellungen/sprache',
-      label: languageLabel,
+      label: t('language'),
       testId: 'open-language',
       icon: LanguagesIcon,
       group: 'settings',
@@ -141,7 +145,7 @@ function globalLinks(newCount: number, role: UserRole, languageLabel: string): G
   if (role === 'admin') {
     links.push({
       href: '/admin',
-      label: 'Verwaltung',
+      label: t('admin'),
       testId: 'open-admin',
       icon: ShieldIcon,
       group: 'deployment',
@@ -188,7 +192,7 @@ export function GlobalLinks({
   const features = useFeatures();
   const newCount = features.data?.newCount ?? 0;
   const t = useTranslations('shell.globalLinks');
-  const links = globalLinks(newCount, role, t('language'));
+  const links = globalLinks(newCount, role, t);
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -204,11 +208,7 @@ export function GlobalLinks({
             variant="ghost"
             size="icon-sm"
             className="relative"
-            aria-label={
-              newCount > 0
-                ? `Konto und Bereiche (${newCount} neue Funktionen)`
-                : 'Konto und Bereiche'
-            }
+            aria-label={newCount > 0 ? t('menuLabelWithNew', { count: newCount }) : t('menuLabel')}
             data-testid="open-global-menu"
           >
             <UserRoundIcon />
@@ -238,7 +238,7 @@ export function GlobalLinks({
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem data-testid="menu-sign-out" onClick={onSignOut}>
-          <LogOutIcon /> {accountLabel} abmelden
+          <LogOutIcon /> {t('signOut', { name: accountLabel })}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

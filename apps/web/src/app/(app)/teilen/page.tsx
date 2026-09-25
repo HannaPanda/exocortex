@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { ClipForm } from '@/components/shell/clip-form';
 import { readShare } from '@/lib/share-target';
 
-export const metadata: Metadata = { title: 'Aufheben' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('dialogs.clip');
+  return { title: t('metaTitle') };
+}
 
 /**
  * Where a share lands (issue #72).

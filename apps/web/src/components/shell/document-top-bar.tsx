@@ -13,6 +13,7 @@ import {
   UploadIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentDetail } from '@exocortex/contracts';
@@ -37,10 +38,10 @@ import { ShareDialog } from './share-dialog';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplateSettingsDialog } from './template-settings-dialog';
 
-const AI_RULE_BADGE_LABEL: Record<'always' | 'on_demand', string> = {
-  always: 'KI-Regel',
-  on_demand: 'KI-Regel (auf Anfrage)',
-};
+const AI_RULE_BADGE_KEY = {
+  always: 'aiRuleAlways',
+  on_demand: 'aiRuleOnDemand',
+} as const satisfies Record<'always' | 'on_demand', string>;
 
 /** Breadcrumb, rule badge and the page's own actions. */
 export function DocumentTopBar({
@@ -62,6 +63,7 @@ export function DocumentTopBar({
   onExport: () => void;
   onOpenRender: () => void;
 }) {
+  const t = useTranslations('shell.documentTopBar');
   const router = useRouter();
   const archiveDocument = useArchiveDocument(workspaceId);
   const restoreDocument = useRestoreDocument(workspaceId);
@@ -97,13 +99,13 @@ export function DocumentTopBar({
 
       {detail.aiRuleMode !== 'off' ? (
         <Badge variant="muted" data-testid="ai-rule-badge">
-          {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
+          {t(AI_RULE_BADGE_KEY[detail.aiRuleMode])}
         </Badge>
       ) : null}
 
       {isShared ? (
         <Badge variant="outline" data-testid="share-badge">
-          <Share2Icon className="size-3" /> Geteilt
+          <Share2Icon className="size-3" /> {t('shared')}
         </Badge>
       ) : null}
 
@@ -117,7 +119,7 @@ export function DocumentTopBar({
             data-testid="file-from-inbox"
             onClick={() => setFiling(true)}
           >
-            <FolderTreeIcon /> Einsortieren …
+            <FolderTreeIcon /> {t('file')}
           </Button>
         ) : null}
 
@@ -128,7 +130,7 @@ export function DocumentTopBar({
             data-testid="restore-document"
             onClick={() => void restoreDocument.mutateAsync(documentId)}
           >
-            <RotateCcwIcon /> Wiederherstellen
+            <RotateCcwIcon /> {t('restore')}
           </Button>
         ) : null}
 
@@ -202,6 +204,7 @@ function PageActionsMenu({
   onOpenImport: () => void;
   onArchive: () => void;
 }) {
+  const t = useTranslations('shell.documentTopBar');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -209,7 +212,7 @@ function PageActionsMenu({
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label="Seitenaktionen"
+            aria-label={t('actions')}
             data-testid="document-actions"
           >
             <MoreHorizontalIcon />
@@ -218,25 +221,25 @@ function PageActionsMenu({
       />
       <DropdownMenuContent align="end">
         <DropdownMenuItem data-testid="open-page-properties" onClick={onOpenProperties}>
-          <SlidersHorizontalIcon /> Seiteneigenschaften …
+          <SlidersHorizontalIcon /> {t('properties')}
         </DropdownMenuItem>
         <DropdownMenuItem data-testid="open-template-settings" onClick={onOpenTemplateSettings}>
-          <LayoutTemplateIcon /> Vorlage …
+          <LayoutTemplateIcon /> {t('template')}
         </DropdownMenuItem>
         {canShare ? (
           <DropdownMenuItem data-testid="open-share" onClick={onOpenShare}>
-            <Share2Icon /> Teilen …
+            <Share2Icon /> {t('share')}
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
-          <DownloadIcon /> Als Markdown exportieren
+          <DownloadIcon /> {t('exportMarkdown')}
         </DropdownMenuItem>
         <DropdownMenuItem data-testid="open-render" onClick={onOpenRender}>
-          <FileTextIcon /> Als PDF veröffentlichen …
+          <FileTextIcon /> {t('render')}
         </DropdownMenuItem>
         <DropdownMenuItem data-testid="open-import" onClick={onOpenImport}>
-          <UploadIcon /> Markdown importieren
+          <UploadIcon /> {t('importMarkdown')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -245,7 +248,7 @@ function PageActionsMenu({
           data-testid="archive-document"
           onClick={onArchive}
         >
-          <TrashIcon /> In den Papierkorb
+          <TrashIcon /> {t('archive')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

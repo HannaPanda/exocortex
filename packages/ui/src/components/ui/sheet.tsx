@@ -3,6 +3,7 @@
 import { Dialog as SheetPrimitive } from '@base-ui/react/dialog';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../../lib/utils';
 
@@ -54,6 +55,7 @@ function SheetContent({
   side?: keyof typeof SIDE_STYLES;
   showCloseButton?: boolean;
 }) {
+  const t = useTranslations('ui.sheet');
   return (
     <SheetPortal>
       <SheetBackdrop />
@@ -71,7 +73,7 @@ function SheetContent({
         {showCloseButton ? (
           <SheetPrimitive.Close
             data-slot="sheet-close"
-            aria-label="Schließen"
+            aria-label={t('close')}
             className="absolute top-3 right-3 rounded-sm p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             <XIcon className="size-4" />

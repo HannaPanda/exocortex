@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { AcceptInvitationForm } from '@/components/auth/accept-invitation-form';
 
-export const metadata: Metadata = { title: 'Einladung annehmen' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.invitation');
+  return { title: t('metaTitle') };
+}
 
 /**
  * The page an invitation link opens.

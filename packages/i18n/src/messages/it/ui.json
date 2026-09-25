@@ -1,0 +1,28 @@
+{
+  "states": {
+    "loading": "Caricamento in corso…",
+    "errorTitle": "Qualcosa è andato storto",
+    "errorDescription": "Riprova. Se il problema persiste, controlla la connessione.",
+    "retry": "Riprova"
+  },
+  "dialog": {
+    "close": "Chiudi finestra di dialogo"
+  },
+  "sheet": {
+    "close": "Chiudi"
+  },
+  "commandPalette": {
+    "title": "Palette dei comandi",
+    "description": "Cerca pagine ed esegui comandi",
+    "placeholder": "Cerca o inserisci un comando…",
+    "empty": "Nessun risultato"
+  },
+  "datePicker": {
+    "placeholder": "Seleziona data",
+    "labelled": "{label}: {value}",
+    "today": "Oggi",
+    "clear": "Rimuovi",
+    "time": "Ora",
+    "labelledTime": "{label}, ora"
+  }
+}

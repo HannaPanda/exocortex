@@ -14,6 +14,7 @@ import {
   TrashIcon,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentTreeNode } from '@exocortex/contracts';
@@ -91,6 +92,7 @@ export function PageTreeRow({
   depth: number;
   context: PageTreeRowContext;
 }) {
+  const t = useTranslations('shell.pageTreeRow');
   const {
     workspaceId,
     activeDocumentId,
@@ -191,7 +193,7 @@ export function PageTreeRow({
               <button
                 type="button"
                 tabIndex={-1}
-                aria-label={isOpen ? 'Unterseiten einklappen' : 'Unterseiten ausklappen'}
+                aria-label={isOpen ? t('collapse') : t('expand')}
                 aria-expanded={isOpen}
                 onClick={() => toggle(node.id)}
                 className={cn(
@@ -217,7 +219,7 @@ export function PageTreeRow({
                   <button
                     type="button"
                     tabIndex={-1}
-                    aria-label={`Symbol von „${node.title}“ ändern`}
+                    aria-label={t('changeIconOf', { title: node.title })}
                     data-testid={`tree-icon-${node.id}`}
                     className="grid size-5 shrink-0 place-items-center rounded-sm hover:bg-accent-strong"
                   >
@@ -251,7 +253,7 @@ export function PageTreeRow({
               <button
                 type="button"
                 tabIndex={-1}
-                aria-label={`Unterseite in „${node.title}“ anlegen`}
+                aria-label={t('createChildIn', { title: node.title })}
                 onClick={() => createChild(node.id)}
                 // Revealed by the pointer, and by a coarse pointer
                 // permanently, because there is no hover to reveal it with.
@@ -272,7 +274,7 @@ export function PageTreeRow({
                     <button
                       type="button"
                       tabIndex={-1}
-                      aria-label={`Aktionen für „${node.title}“`}
+                      aria-label={t('actionsFor', { title: node.title })}
                       data-testid={`tree-actions-${node.id}`}
                       className="grid size-5 shrink-0 place-items-center rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground data-popup-open:opacity-100 pointer-coarse:opacity-100"
                     >
@@ -350,6 +352,7 @@ function PageTreeRowMenu({
   context: PageTreeRowContext;
   parts: MenuParts;
 }) {
+  const t = useTranslations('shell.pageTreeRow');
   const { Content, Item, Separator } = parts;
   const {
     canNudge,
@@ -364,7 +367,7 @@ function PageTreeRowMenu({
   return (
     <Content>
       <Item data-testid={`tree-change-icon-${node.id}`} onClick={() => setIconPickerFor(node.id)}>
-        <SmilePlusIcon /> Symbol ändern …
+        <SmilePlusIcon /> {t('changeIcon')}
       </Item>
       <Separator />
       {/* The keyboard half of dragging. Named with their shortcuts, because
@@ -374,7 +377,7 @@ function PageTreeRowMenu({
         data-testid={`tree-move-up-${node.id}`}
         onClick={() => nudge(node.id, 'up')}
       >
-        <ArrowUpIcon /> Nach oben
+        <ArrowUpIcon /> {t('moveUp')}
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ↑</span>
       </Item>
       <Item
@@ -382,7 +385,7 @@ function PageTreeRowMenu({
         data-testid={`tree-move-down-${node.id}`}
         onClick={() => nudge(node.id, 'down')}
       >
-        <ArrowDownIcon /> Nach unten
+        <ArrowDownIcon /> {t('moveDown')}
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ↓</span>
       </Item>
       <Item
@@ -390,7 +393,7 @@ function PageTreeRowMenu({
         data-testid={`tree-indent-${node.id}`}
         onClick={() => nudge(node.id, 'in')}
       >
-        <IndentIncreaseIcon /> Unter die Seite darüber
+        <IndentIncreaseIcon /> {t('indent')}
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt →</span>
       </Item>
       <Item
@@ -398,32 +401,32 @@ function PageTreeRowMenu({
         data-testid={`tree-outdent-${node.id}`}
         onClick={() => nudge(node.id, 'out')}
       >
-        <IndentDecreaseIcon /> Eine Ebene höher
+        <IndentDecreaseIcon /> {t('outdent')}
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ←</span>
       </Item>
       <Separator />
       <Item onClick={() => createChild(node.id)}>
-        <PlusIcon /> Unterseite anlegen
+        <PlusIcon /> {t('createChild')}
       </Item>
       <Item onClick={() => createChild(node.id, 'COLLECTION')}>
-        <TableIcon /> Datenbank anlegen
+        <TableIcon /> {t('createDatabase')}
       </Item>
       <Item onClick={() => createProject(node.id)}>
-        <FolderCodeIcon /> LaTeX-Projekt anlegen
+        <FolderCodeIcon /> {t('createProject')}
       </Item>
       <Separator />
       {/* Filing help rather than a move: the answer is a list of candidates
           with the pages that already live under them, and agreeing with one
           is a second click. */}
       <Item data-testid={`tree-suggest-parent-${node.id}`} onClick={() => suggestParent(node)}>
-        <FolderTreeIcon /> Passenden Ort vorschlagen …
+        <FolderTreeIcon /> {t('suggestParent')}
       </Item>
       <Item data-testid={`tree-move-workspace-${node.id}`} onClick={() => startWorkspaceMove(node)}>
-        <FolderInputIcon /> In anderen Arbeitsbereich verschieben …
+        <FolderInputIcon /> {t('moveWorkspace')}
       </Item>
       <Separator />
       <Item variant="destructive" onClick={() => archive(node.id)}>
-        <TrashIcon /> In den Papierkorb
+        <TrashIcon /> {t('archive')}
       </Item>
     </Content>
   );

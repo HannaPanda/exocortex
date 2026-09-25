@@ -2,6 +2,7 @@
 
 import { Trash2Icon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -69,6 +70,7 @@ interface PageTreeProps {
  * other half of the feature.
  */
 export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
+  const t = useTranslations('shell.pageTree');
   const params = useParams<{ documentId?: string }>();
   const router = useRouter();
   const tree = useDocumentTree(workspaceId);
@@ -148,7 +150,7 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     type: CreatableDocumentType = 'PAGE',
   ): Promise<void> => {
     const document = await createDocument.mutateAsync({
-      title: type === 'COLLECTION' ? 'Unbenannte Datenbank' : 'Unbenannte Seite',
+      title: type === 'COLLECTION' ? t('untitledDatabase') : t('untitledPage'),
       type,
       parentId,
     });
@@ -163,7 +165,7 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
    */
   const createProject = async (parentId: string | null): Promise<void> => {
     const { project } = await createProjectMutation.mutateAsync({
-      title: 'Unbenanntes Projekt',
+      title: t('untitledProject'),
       parentId,
     });
     if (parentId !== null) setExpanded({ ...expanded, [parentId]: true });
@@ -203,10 +205,9 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     },
   });
 
-  if (tree.isPending)
-    return <LoadingState variant="skeleton" rows={6} label="Seiten werden geladen" />;
+  if (tree.isPending) return <LoadingState variant="skeleton" rows={6} label={t('loading')} />;
   if (tree.isError) {
-    return <ErrorState onRetry={() => void tree.refetch()} title="Seitenbaum nicht geladen" />;
+    return <ErrorState onRetry={() => void tree.refetch()} title={t('loadError')} />;
   }
 
   const rowContext: PageTreeRowContext = {
@@ -253,12 +254,12 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
       <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2" clampContentWidth>
         {tree.data.nodes.length === 0 ? (
           <EmptyState
-            title="Noch keine Seiten"
-            description="Lege deine erste Seite an, um zu beginnen."
-            action={{ label: 'Seite anlegen', onClick: () => void createChild(null) }}
+            title={t('emptyTitle')}
+            description={t('emptyDescription')}
+            action={{ label: t('emptyAction'), onClick: () => void createChild(null) }}
           />
         ) : (
-          <ul ref={treeRef} role="tree" aria-label="Seiten" data-testid="page-tree">
+          <ul ref={treeRef} role="tree" aria-label={t('treeLabel')} data-testid="page-tree">
             {tree.data.nodes.map((node) => (
               <PageTreeRow key={node.id} node={node} depth={0} context={rowContext} />
             ))}
@@ -279,7 +280,7 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
                 : 'border-border text-muted-foreground',
             )}
           >
-            Hierher: oberste Ebene
+            {t('rootDrop')}
           </div>
         ) : null}
 
@@ -296,7 +297,7 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
             data-testid="toggle-trash"
           >
             <Trash2Icon className="size-3.5" />
-            Papierkorb
+            {t('trash')}
             <span className="exocortex-numeric ml-auto">{tree.data.archived.length}</span>
           </button>
         </div>

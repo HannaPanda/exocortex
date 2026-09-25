@@ -2,7 +2,11 @@ import { type ApiErrorResponse } from '@exocortex/contracts';
 
 import { messageForCode } from './error-messages';
 
-/** Error thrown by every failed API call. Carries the German message for the UI. */
+/**
+ * Error thrown by every failed API call. `message` is the sentence for the
+ * UI, read in the active language when it is read rather than when the call
+ * failed, so an error still on screen follows a change of language.
+ */
 export class ApiError extends Error {
   public readonly code: string;
   public readonly status: number;
@@ -10,12 +14,16 @@ export class ApiError extends Error {
   public readonly details: unknown;
 
   constructor(status: number, body: Partial<ApiErrorResponse> | null) {
-    super(messageForCode(body?.code));
+    super();
     this.name = 'ApiError';
     this.status = status;
     this.code = body?.code ?? 'internal_error';
     this.correlationId = body?.correlationId ?? null;
     this.details = body?.details;
+  }
+
+  override get message(): string {
+    return messageForCode(this.code);
   }
 }
 

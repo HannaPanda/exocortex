@@ -2,8 +2,14 @@
 
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
-import { type DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
-import { de } from 'react-day-picker/locale';
+import {
+  type DayButton,
+  DayPicker,
+  getDefaultClassNames,
+  type Locale as DayPickerLocale,
+} from 'react-day-picker';
+import { de, enUS, es, fr, it, nl, pl, ptBR } from 'react-day-picker/locale';
+import { useLocale } from 'use-intl';
 
 import { cn } from '../../lib/utils';
 
@@ -14,10 +20,23 @@ import { Button, buttonVariants } from './button';
  * `react-day-picker`, not Radix, so nothing needed adapting to Base UI —
  * only the import paths (relative, not the `@/` alias) and quote style.
  *
- * German by default (rule 8): the month names, the weekday row, the week
- * starting on Monday and the navigation's accessible names all come from the
- * `de` locale, so a caller cannot forget it.
+ * In the interface language by default (issue #98): the month names, the
+ * weekday row, the first day of the week and the navigation's accessible
+ * names all come from the active locale, so a caller cannot forget it. A
+ * language missing from `DAY_PICKER_LOCALES` falls back to German, the
+ * source language.
  */
+const DAY_PICKER_LOCALES: Readonly<Record<string, DayPickerLocale>> = {
+  de,
+  en: enUS,
+  es,
+  fr,
+  it,
+  nl,
+  pl,
+  'pt-BR': ptBR,
+};
+
 function Calendar({
   className,
   classNames,
@@ -26,12 +45,14 @@ function Calendar({
   buttonVariant = 'ghost',
   formatters,
   components,
-  locale = de,
+  locale: ownLocale,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>['variant'];
 }) {
   const defaultClassNames = getDefaultClassNames();
+  const active = useLocale();
+  const locale = ownLocale ?? DAY_PICKER_LOCALES[active] ?? de;
 
   return (
     <DayPicker
@@ -45,7 +66,7 @@ function Calendar({
       captionLayout={captionLayout}
       locale={locale}
       formatters={{
-        formatMonthDropdown: (date) => date.toLocaleString('de-DE', { month: 'short' }),
+        formatMonthDropdown: (date) => date.toLocaleString(active, { month: 'short' }),
         ...formatters,
       }}
       classNames={{

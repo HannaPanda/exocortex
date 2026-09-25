@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { cn } from '@exocortex/ui';
@@ -15,6 +16,7 @@ interface DocumentTitleInputProps {
  * document changes, so no effect has to copy server state into local state.
  */
 export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleInputProps) {
+  const t = useTranslations('shell.documentTitleInput');
   const [value, setValue] = React.useState(initialTitle);
 
   const commit = (): void => {
@@ -44,7 +46,7 @@ export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: Documen
       <textarea
         value={value}
         rows={1}
-        aria-label="Seitentitel"
+        aria-label={t('label')}
         data-testid="document-title"
         readOnly={readOnly}
         onChange={(event) => setValue(event.target.value.replace(/[\r\n]+/g, ' '))}
@@ -61,7 +63,7 @@ export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: Documen
           // The caret alone is too faint a focus mark on a heading this size.
           'rounded-sm focus-visible:ring-[3px] focus-visible:ring-ring/50',
         )}
-        placeholder="Unbenannte Seite"
+        placeholder={t('placeholder')}
       />
       <span aria-hidden className="col-start-1 row-start-1 invisible whitespace-pre-wrap">
         {/* The trailing space reserves room for the caret behind the last

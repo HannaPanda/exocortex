@@ -2,6 +2,7 @@
 
 import { ArrowRightIcon, BookmarkIcon, InboxIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type CaptureRequest, type CaptureResponse, type Workspace } from '@exocortex/contracts';
@@ -41,6 +42,7 @@ import { bookmarkletFor, type SharedContent } from '@/lib/share-target';
  * should not quietly start one.
  */
 export function ClipForm({ shared }: { shared: SharedContent }) {
+  const t = useTranslations('dialogs.clip');
   const workspaces = useWorkspaces();
   const [workspaceId, setWorkspaceId] = React.useState<string | null>(null);
   const [title, setTitle] = React.useState(shared.title ?? '');
@@ -81,16 +83,14 @@ export function ClipForm({ shared }: { shared: SharedContent }) {
     });
   };
 
-  if (workspaces.isPending) return <LoadingState label="Arbeitsbereiche werden geladen …" />;
+  if (workspaces.isPending) return <LoadingState label={t('loading')} />;
   if (workspaces.isError) return <ErrorState onRetry={() => void workspaces.refetch()} />;
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4 p-6" data-testid="clip-form">
       <div className="flex flex-col gap-1">
-        <h1 className="exocortex-page-title">{isClip ? 'Webseite aufheben' : 'Erfassen'}</h1>
-        <p className="text-sm text-muted-foreground">
-          Landet im Eingang des Arbeitsbereichs. Einsortiert wird später.
-        </p>
+        <h1 className="exocortex-page-title">{isClip ? t('titleClip') : t('titleCapture')}</h1>
+        <p className="text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {error === null ? null : (
@@ -125,12 +125,10 @@ export function ClipForm({ shared }: { shared: SharedContent }) {
 
       <div className="flex items-center gap-3">
         <Button onClick={save} disabled={pending || chosen === undefined} data-testid="clip-submit">
-          {isClip ? 'Aufheben' : 'Erfassen'}
+          {isClip ? t('submitClip') : t('submitCapture')}
         </Button>
         {fetchPage ? (
-          <span className="text-xs text-muted-foreground">
-            Die Seite wird dafür im Browser geladen, das dauert einen Moment.
-          </span>
+          <span className="text-xs text-muted-foreground">{t('fetchPageHint')}</span>
         ) : null}
       </div>
 
@@ -162,15 +160,16 @@ function WorkspacePicker({
   chosen: string | undefined;
   onChoose: (workspaceId: string) => void;
 }) {
+  const t = useTranslations('dialogs.clip');
   if (workspaces.length < 2) return null;
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor="clip-workspace">Arbeitsbereich</Label>
+      <Label htmlFor="clip-workspace">{t('workspaceLabel')}</Label>
       <Select value={chosen ?? ''} onValueChange={(next) => onChoose(next as string)}>
         <SelectTrigger id="clip-workspace" data-testid="clip-workspace">
           {/* Base UI shows the raw id without this. */}
           <SelectValue>
-            {() => workspaces.find((it) => it.id === chosen)?.name ?? 'Arbeitsbereich'}
+            {() => workspaces.find((it) => it.id === chosen)?.name ?? t('workspacePlaceholder')}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -202,26 +201,27 @@ function ClipFields({
   onText: (value: string) => void;
   onFetchPage: (value: boolean) => void;
 }) {
+  const t = useTranslations('dialogs.clip');
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="clip-title">Titel</Label>
+        <Label htmlFor="clip-title">{t('titleLabel')}</Label>
         <Input
           id="clip-title"
           value={title}
-          placeholder="Titel der Seite"
+          placeholder={t('titlePlaceholder')}
           data-testid="clip-title"
           onChange={(event) => onTitle(event.target.value)}
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="clip-text">{isClip ? 'Markierter Text' : 'Notiz'}</Label>
+        <Label htmlFor="clip-text">{isClip ? t('selectionLabel') : t('noteLabel')}</Label>
         <Textarea
           id="clip-text"
           rows={8}
           value={text}
-          placeholder={isClip ? 'Nichts markiert' : 'Was willst du dir merken?'}
+          placeholder={isClip ? t('selectionPlaceholder') : t('notePlaceholder')}
           data-testid="clip-text"
           onChange={(event) => onText(event.target.value)}
         />
@@ -234,7 +234,7 @@ function ClipFields({
             data-testid="clip-fetch"
             onCheckedChange={(checked) => onFetchPage(checked === true)}
           />
-          Ganze Seite lesen und mitschreiben
+          {t('fetchPage')}
         </label>
       ) : null}
     </>
@@ -248,19 +248,20 @@ function SavedNotice({
   saved: CaptureResponse | null;
   workspaceId: string;
 }) {
+  const t = useTranslations('dialogs.clip');
   if (saved === null) return null;
   return (
     <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
       <InboxIcon className="size-4 shrink-0" />
       <span className="truncate" data-testid="clip-saved">
-        Gespeichert: {saved.document.title}
+        {t('saved', { title: saved.document.title })}
       </span>
       <Link
         href={`/arbeitsbereich/${workspaceId}/seite/${saved.document.id}`}
         className="ml-auto flex shrink-0 items-center gap-1 text-foreground hover:underline"
         data-testid="clip-open"
       >
-        Öffnen <ArrowRightIcon className="size-3.5" />
+        {t('open')} <ArrowRightIcon className="size-3.5" />
       </Link>
     </p>
   );
@@ -274,6 +275,7 @@ function SavedNotice({
  * has to point at the deployment the person is actually looking at.
  */
 function BookmarkletCard() {
+  const t = useTranslations('dialogs.clip');
   const anchor = React.useRef<HTMLAnchorElement>(null);
 
   React.useEffect(() => {
@@ -285,20 +287,16 @@ function BookmarkletCard() {
   return (
     <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border p-4">
       <h2 className="flex items-center gap-2 text-sm font-semibold">
-        <BookmarkIcon className="size-4" /> Web Clipper einrichten
+        <BookmarkIcon className="size-4" /> {t('bookmarkletTitle')}
       </h2>
-      <p className="text-sm text-muted-foreground">
-        Zieh den Knopf in die Lesezeichenleiste. Ein Klick darauf schickt die offene Seite samt
-        markiertem Text hierher. Auf dem Handy geht es ohne: eXocortex installieren, dann steht es
-        im Teilen-Menü.
-      </p>
+      <p className="text-sm text-muted-foreground">{t('bookmarkletIntro')}</p>
       <a
         ref={anchor}
         data-testid="clip-bookmarklet"
         className="w-fit rounded-md border border-border bg-muted px-3 py-1.5 text-sm font-medium"
         onClick={(event) => event.preventDefault()}
       >
-        In eXocortex aufheben
+        {t('bookmarkletLink')}
       </a>
       <Button
         variant="ghost"
@@ -308,7 +306,7 @@ function BookmarkletCard() {
           void navigator.clipboard.writeText(bookmarkletFor(window.location.origin));
         }}
       >
-        Code kopieren
+        {t('copyCode')}
       </Button>
     </div>
   );

@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex: dein gemeinsames externes Gehirn."
+  },
+  "appShell": {
+    "navigationTitle": "Navigation",
+    "pageNavigation": "Seitennavigation",
+    "navigationWidth": "Breite der Navigation",
+    "contextTitle": "Kontextbereich",
+    "contextWidth": "Breite des Kontextbereichs"
+  },
+  "topbar": {
+    "toggleNavigation": "Navigation ein-/ausblenden",
+    "toggleNavigationTooltip": "Navigation (Strg + B)",
+    "search": "Suchen",
+    "searchTooltip": "Suchen (Strg + K)",
+    "searchPlaceholder": "Suchen …",
+    "searchShortcut": "Strg K",
+    "capture": "Erfassen",
+    "captureTooltip": "Erfassen (Strg + E)",
+    "toggleContext": "Kontextbereich ein-/ausblenden",
+    "toggleContextTooltip": "Kontextbereich (Strg + .)",
+    "accountFallback": "Konto"
+  },
   "globalLinks": {
-    "language": "Sprache"
+    "help": "Hilfe und Funktionen",
+    "helpWithNew": "{count, plural, one {Hilfe und Funktionen (# neu)} other {Hilfe und Funktionen (# neu)}}",
+    "chats": "Chats",
+    "entities": "Entitäten",
+    "shares": "Freigaben",
+    "memory": "Gedächtnis",
+    "connections": "Verbindungen",
+    "notifications": "Benachrichtigungen",
+    "language": "Sprache",
+    "admin": "Verwaltung",
+    "menuLabel": "Konto und Bereiche",
+    "menuLabelWithNew": "{count, plural, one {Konto und Bereiche (# neue Funktion)} other {Konto und Bereiche (# neue Funktionen)}}",
+    "signOut": "{name} abmelden"
+  },
+  "workspaceSwitcher": {
+    "choose": "Arbeitsbereich wählen",
+    "heading": "Arbeitsbereiche",
+    "create": "Neuer Arbeitsbereich",
+    "nameLabel": "Name des Arbeitsbereichs",
+    "cancel": "Abbrechen",
+    "submit": "Anlegen"
+  },
+  "workspaceLanding": {
+    "loading": "Arbeitsbereiche werden geladen …",
+    "emptyTitle": "Noch kein Arbeitsbereich",
+    "emptyDescription": "Ein Arbeitsbereich bündelt Seiten, Mitglieder und Dateien.",
+    "defaultName": "Mein Arbeitsbereich",
+    "create": "Arbeitsbereich anlegen",
+    "opening": "Arbeitsbereich wird geöffnet …"
+  },
+  "workspaceOverview": {
+    "title": "Übersicht",
+    "pulsePages": "{count, plural, one {# Seite} other {# Seiten}}",
+    "pulseDatabases": "{count, plural, one {# Datenbank} other {# Datenbanken}}",
+    "pulseEditedThisWeek": "{count, plural, one {# diese Woche bearbeitet} other {# diese Woche bearbeitet}}",
+    "lastEditedBy": "Zuletzt bearbeitet von {name}",
+    "settingsLabel": "Arbeitsbereich-Einstellungen",
+    "settings": "Einstellungen",
+    "createPage": "Neue Seite",
+    "untitledPage": "Unbenannte Seite",
+    "loading": "Übersicht wird geladen …",
+    "emptyTitle": "Noch keine Seiten",
+    "emptyDescription": "Lege deine erste Seite an. Alles Weitere wächst daran.",
+    "emptyAction": "Seite anlegen",
+    "recent": "Weitermachen",
+    "attention": "Liegen geblieben",
+    "openComments": "{count, plural, one {<number>#</number> offener Kommentar} other {<number>#</number> offene Kommentare}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> Verweis ins Leere} other {<number>#</number> Verweise ins Leere}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> Text noch nicht gelesen} other {<number>#</number> Texte noch nicht gelesen}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> Titel gleich nochmal als Überschrift} other {<number>#</number> Titel gleich nochmal als Überschrift}}",
+    "databases": "Datenbanken",
+    "sections": "Bereiche"
+  },
+  "pageTreeHeader": {
+    "title": "Seiten",
+    "create": "Anlegen",
+    "createPage": "Seite anlegen",
+    "createFromTemplate": "Seite aus Vorlage",
+    "createDatabase": "Datenbank anlegen",
+    "createProject": "LaTeX-Projekt anlegen"
+  },
+  "pageTree": {
+    "untitledDatabase": "Unbenannte Datenbank",
+    "untitledPage": "Unbenannte Seite",
+    "untitledProject": "Unbenanntes Projekt",
+    "loading": "Seiten werden geladen",
+    "loadError": "Seitenbaum nicht geladen",
+    "emptyTitle": "Noch keine Seiten",
+    "emptyDescription": "Lege deine erste Seite an, um zu beginnen.",
+    "emptyAction": "Seite anlegen",
+    "treeLabel": "Seiten",
+    "rootDrop": "Hierher: oberste Ebene",
+    "trash": "Papierkorb"
+  },
+  "pageTreeRow": {
+    "collapse": "Unterseiten einklappen",
+    "expand": "Unterseiten ausklappen",
+    "changeIconOf": "Symbol von „{title}“ ändern",
+    "createChildIn": "Unterseite in „{title}“ anlegen",
+    "actionsFor": "Aktionen für „{title}“",
+    "changeIcon": "Symbol ändern …",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "indent": "Unter die Seite darüber",
+    "outdent": "Eine Ebene höher",
+    "createChild": "Unterseite anlegen",
+    "createDatabase": "Datenbank anlegen",
+    "createProject": "LaTeX-Projekt anlegen",
+    "suggestParent": "Passenden Ort vorschlagen …",
+    "moveWorkspace": "In anderen Arbeitsbereich verschieben …",
+    "archive": "In den Papierkorb"
+  },
+  "smartViews": {
+    "moveUp": "„{name}“ nach oben",
+    "moveDown": "„{name}“ nach unten",
+    "openSearch": "Suche und gespeicherte Suchen"
+  },
+  "connectionStatus": {
+    "offlineShort": "offline",
+    "offline": "Offline: Änderungen werden lokal gespeichert",
+    "connected": "Verbunden",
+    "disconnectedShort": "getrennt",
+    "disconnected": "Verbindung unterbrochen, wird erneut versucht",
+    "connecting": "Verbindung wird aufgebaut …",
+    "pendingSync": "offline-Änderungen"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# Person bearbeitet diese Seite} other {# Personen bearbeiten diese Seite}}",
+    "self": "{name} (du)"
+  },
+  "paletteCommands": {
+    "capture": "Etwas erfassen",
+    "captureHint": "Strg + E",
+    "captureKeywords": "eingang notiz schnell inbox",
+    "hideSidebar": "Navigation ausblenden",
+    "showSidebar": "Navigation einblenden",
+    "sidebarHint": "Strg + B",
+    "sidebarKeywords": "seitenleiste seitenbaum sidebar",
+    "hideContext": "Kontextbereich ausblenden",
+    "showContext": "Kontextbereich einblenden",
+    "contextHint": "Strg + .",
+    "contextKeywords": "ki kommentare panel verweise",
+    "openTrash": "Papierkorb öffnen",
+    "trashKeywords": "gelöscht archiv wiederherstellen"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "KI-Regel",
+    "aiRuleOnDemand": "KI-Regel (auf Anfrage)",
+    "shared": "Geteilt",
+    "file": "Einsortieren …",
+    "restore": "Wiederherstellen",
+    "actions": "Seitenaktionen",
+    "properties": "Seiteneigenschaften …",
+    "template": "Vorlage …",
+    "share": "Teilen …",
+    "exportMarkdown": "Als Markdown exportieren",
+    "render": "Als PDF veröffentlichen …",
+    "importMarkdown": "Markdown importieren",
+    "archive": "In den Papierkorb"
+  },
+  "documentTitleInput": {
+    "label": "Seitentitel",
+    "placeholder": "Unbenannte Seite"
+  },
+  "contextPanel": {
+    "aiTab": "KI",
+    "propertiesTab": "Eigenschaften",
+    "commentsTab": "Kommentare",
+    "backlinksTab": "Verweise",
+    "activityTab": "Aktivität",
+    "aiErrorTitle": "KI-Panel nicht verfügbar",
+    "aiErrorDescription": "Der Chat konnte nicht angezeigt werden. Ein laufender KI-Lauf arbeitet weiter; nach dem Neuladen ist der Verlauf vollständig.",
+    "propertiesErrorTitle": "Eigenschaften nicht verfügbar",
+    "propertiesErrorDescription": "Die Eigenschaften konnten nicht angezeigt werden.",
+    "commentsErrorTitle": "Kommentare nicht verfügbar",
+    "commentsErrorDescription": "Die Kommentare konnten nicht angezeigt werden. Der Text der Seite ist davon unberührt.",
+    "backlinksErrorTitle": "Verweise nicht verfügbar",
+    "backlinksErrorDescription": "Der Verweisindex konnte nicht angezeigt werden. Die Verweise selbst stehen weiterhin im Text der Seite.",
+    "activityErrorTitle": "Aktivität nicht verfügbar",
+    "activityErrorDescription": "Der Verlauf dieser Seite konnte nicht angezeigt werden."
+  },
+  "adminLayout": {
+    "title": "Verwaltung",
+    "intro": "Einstellungen, KI-Modelle und Nutzerverwaltung dieser Installation."
   }
 }

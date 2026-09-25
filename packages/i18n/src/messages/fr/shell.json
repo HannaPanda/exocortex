@@ -1,5 +1,191 @@
 {
+  "metadata": {
+    "description": "eXocortex : ton cerveau externe partagé."
+  },
+  "appShell": {
+    "navigationTitle": "Navigation",
+    "pageNavigation": "Navigation des pages",
+    "navigationWidth": "Largeur de la navigation",
+    "contextTitle": "Panneau de contexte",
+    "contextWidth": "Largeur du panneau de contexte"
+  },
+  "topbar": {
+    "toggleNavigation": "Afficher/masquer la navigation",
+    "toggleNavigationTooltip": "Navigation (Ctrl + B)",
+    "search": "Rechercher",
+    "searchTooltip": "Rechercher (Ctrl + K)",
+    "searchPlaceholder": "Rechercher …",
+    "searchShortcut": "Ctrl K",
+    "capture": "Capturer",
+    "captureTooltip": "Capturer (Ctrl + E)",
+    "toggleContext": "Afficher/masquer le panneau de contexte",
+    "toggleContextTooltip": "Panneau de contexte (Ctrl + .)",
+    "accountFallback": "Compte"
+  },
   "globalLinks": {
-    "language": "Langue"
+    "help": "Aide et fonctionnalités",
+    "helpWithNew": "{count, plural, one {Aide et fonctionnalités (# nouveauté)} many {Aide et fonctionnalités (# nouveautés)} other {Aide et fonctionnalités (# nouveautés)}}",
+    "chats": "Discussions",
+    "entities": "Entités",
+    "shares": "Partages",
+    "memory": "Mémoire",
+    "connections": "Connexions",
+    "notifications": "Notifications",
+    "language": "Langue",
+    "admin": "Administration",
+    "menuLabel": "Compte et espaces",
+    "menuLabelWithNew": "{count, plural, one {Compte et espaces (# nouvelle fonctionnalité)} many {Compte et espaces (# nouvelles fonctionnalités)} other {Compte et espaces (# nouvelles fonctionnalités)}}",
+    "signOut": "Déconnecter {name}"
+  },
+  "workspaceSwitcher": {
+    "choose": "Choisir un espace de travail",
+    "heading": "Espaces de travail",
+    "create": "Nouvel espace de travail",
+    "nameLabel": "Nom de l’espace de travail",
+    "cancel": "Annuler",
+    "submit": "Créer"
+  },
+  "workspaceLanding": {
+    "loading": "Chargement des espaces de travail …",
+    "emptyTitle": "Pas encore d’espace de travail",
+    "emptyDescription": "Un espace de travail regroupe des pages, des membres et des fichiers.",
+    "defaultName": "Mon espace de travail",
+    "create": "Créer un espace de travail",
+    "opening": "Ouverture de l’espace de travail…"
+  },
+  "workspaceOverview": {
+    "title": "Vue d’ensemble",
+    "pulsePages": "{count, plural, one {# page} many {# pages} other {# pages}}",
+    "pulseDatabases": "{count, plural, one {# base de données} many {# bases de données} other {# bases de données}}",
+    "pulseEditedThisWeek": "{count, plural, one {# modifiée cette semaine} many {# modifiées cette semaine} other {# modifiées cette semaine}}",
+    "lastEditedBy": "Dernière modification par {name}",
+    "settingsLabel": "Paramètres de l’espace de travail",
+    "settings": "Paramètres",
+    "createPage": "Nouvelle page",
+    "untitledPage": "Page sans titre",
+    "loading": "Chargement de la vue d’ensemble…",
+    "emptyTitle": "Aucune page pour l’instant",
+    "emptyDescription": "Crée ta première page. Tout le reste se construira autour.",
+    "emptyAction": "Créer une page",
+    "recent": "Reprendre",
+    "attention": "En suspens",
+    "openComments": "{count, plural, one {<number>#</number> commentaire ouvert} many {<number>#</number> commentaires ouverts} other {<number>#</number> commentaires ouverts}}",
+    "brokenLinks": "{count, plural, one {<number>#</number> lien brisé} many {<number>#</number> liens brisés} other {<number>#</number> liens brisés}}",
+    "stalledAttachments": "{count, plural, one {<number>#</number> texte pas encore lu} many {<number>#</number> textes pas encore lus} other {<number>#</number> textes pas encore lus}}",
+    "duplicateTitleHeadings": "{count, plural, one {<number>#</number> titre répété en en-tête} many {<number>#</number> titres répétés en en-tête} other {<number>#</number> titres répétés en en-tête}}",
+    "databases": "Bases de données",
+    "sections": "Sections"
+  },
+  "pageTreeHeader": {
+    "title": "Pages",
+    "create": "Créer",
+    "createPage": "Créer une page",
+    "createFromTemplate": "Page à partir d’un modèle",
+    "createDatabase": "Créer une base de données",
+    "createProject": "Créer un projet LaTeX"
+  },
+  "pageTree": {
+    "untitledDatabase": "Base de données sans titre",
+    "untitledPage": "Page sans titre",
+    "untitledProject": "Projet sans titre",
+    "loading": "Chargement des pages",
+    "loadError": "Arborescence des pages non chargée",
+    "emptyTitle": "Aucune page pour l’instant",
+    "emptyDescription": "Crée ta première page pour commencer.",
+    "emptyAction": "Créer une page",
+    "treeLabel": "Pages",
+    "rootDrop": "Ici : premier niveau",
+    "trash": "Corbeille"
+  },
+  "pageTreeRow": {
+    "collapse": "Réduire les sous-pages",
+    "expand": "Déplier les sous-pages",
+    "changeIconOf": "Modifier l’icône de « {title} »",
+    "createChildIn": "Créer une sous-page dans « {title} »",
+    "actionsFor": "Actions pour « {title} »",
+    "changeIcon": "Modifier l’icône…",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "indent": "Placer sous la page du dessus",
+    "outdent": "Un niveau plus haut",
+    "createChild": "Créer une sous-page",
+    "createDatabase": "Créer une base de données",
+    "createProject": "Créer un projet LaTeX",
+    "suggestParent": "Suggérer un emplacement adapté…",
+    "moveWorkspace": "Déplacer vers un autre espace de travail…",
+    "archive": "Mettre dans la corbeille"
+  },
+  "smartViews": {
+    "moveUp": "Monter « {name} »",
+    "moveDown": "Descendre « {name} »",
+    "openSearch": "Recherche et recherches enregistrées"
+  },
+  "connectionStatus": {
+    "offlineShort": "hors ligne",
+    "offline": "Hors ligne : modifications enregistrées localement",
+    "connected": "Connecté",
+    "disconnectedShort": "déconnecté",
+    "disconnected": "Connexion interrompue, nouvelle tentative en cours",
+    "connecting": "Connexion en cours…",
+    "pendingSync": "modifications hors ligne"
+  },
+  "presenceAvatars": {
+    "label": "{count, plural, one {# personne modifie cette page} many {# personnes modifient cette page} other {# personnes modifient cette page}}",
+    "self": "{name} (toi)"
+  },
+  "paletteCommands": {
+    "capture": "Capturer quelque chose",
+    "captureHint": "Ctrl + E",
+    "captureKeywords": "boîte réception note rapide inbox capture",
+    "hideSidebar": "Masquer la navigation",
+    "showSidebar": "Afficher la navigation",
+    "sidebarHint": "Ctrl + B",
+    "sidebarKeywords": "barre latérale arborescence sidebar",
+    "hideContext": "Masquer le volet contextuel",
+    "showContext": "Afficher le volet contextuel",
+    "contextHint": "Ctrl + .",
+    "contextKeywords": "ia commentaires panneau volet références",
+    "openTrash": "Ouvrir la corbeille",
+    "trashKeywords": "supprimé corbeille archive restaurer"
+  },
+  "documentTopBar": {
+    "aiRuleAlways": "Règle IA",
+    "aiRuleOnDemand": "Règle IA (à la demande)",
+    "shared": "Partagé",
+    "file": "Classer…",
+    "restore": "Restaurer",
+    "actions": "Actions de la page",
+    "properties": "Propriétés de la page…",
+    "template": "Modèle…",
+    "share": "Partager…",
+    "exportMarkdown": "Exporter en Markdown",
+    "render": "Publier en PDF…",
+    "importMarkdown": "Importer du Markdown",
+    "archive": "Mettre à la corbeille"
+  },
+  "documentTitleInput": {
+    "label": "Titre de la page",
+    "placeholder": "Page sans titre"
+  },
+  "contextPanel": {
+    "aiTab": "IA",
+    "propertiesTab": "Propriétés",
+    "commentsTab": "Commentaires",
+    "backlinksTab": "Liens entrants",
+    "activityTab": "Activité",
+    "aiErrorTitle": "Volet IA non disponible",
+    "aiErrorDescription": "Le chat n’a pas pu être affiché. Un traitement IA en cours continue de s’exécuter ; après rechargement, l’historique sera complet.",
+    "propertiesErrorTitle": "Propriétés non disponibles",
+    "propertiesErrorDescription": "Les propriétés n’ont pas pu être affichées.",
+    "commentsErrorTitle": "Commentaires non disponibles",
+    "commentsErrorDescription": "Les commentaires n’ont pas pu être affichés. Le texte de la page n’est pas affecté.",
+    "backlinksErrorTitle": "Liens entrants non disponibles",
+    "backlinksErrorDescription": "L’index des liens n’a pas pu être affiché. Les liens eux-mêmes figurent toujours dans le texte de la page.",
+    "activityErrorTitle": "Activité non disponible",
+    "activityErrorDescription": "L’historique de cette page n’a pas pu être affiché."
+  },
+  "adminLayout": {
+    "title": "Administration",
+    "intro": "Paramètres, modèles IA et gestion des utilisateurs de cette installation."
   }
 }

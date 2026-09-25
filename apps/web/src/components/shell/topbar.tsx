@@ -1,6 +1,7 @@
 'use client';
 
 import { InboxIcon, PanelLeftIcon, PanelRightIcon, SearchIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -60,6 +61,7 @@ export function Topbar({
   onOpenCapture: () => void;
   onSignOut: () => void;
 }) {
+  const t = useTranslations('shell.topbar');
   const session = useSessionQuery();
 
   return (
@@ -97,7 +99,7 @@ export function Topbar({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label="Navigation ein-/ausblenden"
+                aria-label={t('toggleNavigation')}
                 aria-pressed={sidebarOpen}
                 data-testid="toggle-sidebar"
                 onClick={() => onSidebarOpenChange(!sidebarOpen)}
@@ -106,7 +108,7 @@ export function Topbar({
               </Button>
             }
           />
-          <TooltipContent>Navigation (Strg + B)</TooltipContent>
+          <TooltipContent>{t('toggleNavigationTooltip')}</TooltipContent>
         </Tooltip>
       )}
 
@@ -125,7 +127,7 @@ export function Topbar({
             <Button
               variant="outline"
               size="icon-sm"
-              aria-label="Suchen"
+              aria-label={t('search')}
               data-testid="open-search-compact"
               className="ml-1 shrink-0 sm:hidden"
               onClick={onOpenSearch}
@@ -134,7 +136,7 @@ export function Topbar({
             </Button>
           }
         />
-        <TooltipContent>Suchen (Strg + K)</TooltipContent>
+        <TooltipContent>{t('searchTooltip')}</TooltipContent>
       </Tooltip>
 
       <Button
@@ -150,9 +152,9 @@ export function Topbar({
         onClick={onOpenSearch}
       >
         <SearchIcon />
-        <span className="flex-1 truncate text-left">Suchen …</span>
+        <span className="flex-1 truncate text-left">{t('searchPlaceholder')}</span>
         <kbd className="exocortex-numeric rounded-sm border border-border px-1 text-nano">
-          Strg K
+          {t('searchShortcut')}
         </kbd>
       </Button>
 
@@ -170,7 +172,7 @@ export function Topbar({
                 variant="outline"
                 size="icon-sm"
                 className="shrink-0"
-                aria-label="Erfassen"
+                aria-label={t('capture')}
                 data-testid="open-capture"
                 onClick={onOpenCapture}
               >
@@ -178,7 +180,7 @@ export function Topbar({
               </Button>
             }
           />
-          <TooltipContent>Erfassen (Strg + E)</TooltipContent>
+          <TooltipContent>{t('captureTooltip')}</TooltipContent>
         </Tooltip>
       )}
 
@@ -194,7 +196,7 @@ export function Topbar({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label="Kontextbereich ein-/ausblenden"
+                aria-label={t('toggleContext')}
                 aria-pressed={contextOpen}
                 data-testid="toggle-context"
                 onClick={() => onContextOpenChange(!contextOpen)}
@@ -203,11 +205,11 @@ export function Topbar({
               </Button>
             }
           />
-          <TooltipContent>Kontextbereich (Strg + .)</TooltipContent>
+          <TooltipContent>{t('toggleContextTooltip')}</TooltipContent>
         </Tooltip>
 
         <GlobalLinks
-          accountLabel={session.data?.user?.name ?? 'Konto'}
+          accountLabel={session.data?.user?.name ?? t('accountFallback')}
           // Until the session answers, the menu is an ordinary account's. An
           // administration entry that appears a moment later is a menu growing
           // by one line; one that appeared and then vanished would be the
