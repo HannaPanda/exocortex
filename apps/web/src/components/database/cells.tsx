@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import {
   type DatabaseProperty,
@@ -9,7 +10,7 @@ import {
 } from '@exocortex/contracts';
 import { Checkbox } from '@exocortex/ui';
 
-import { DateCell, formatDateValue } from './date-cell';
+import { DateCell, useDateValueFormat } from './date-cell';
 import { MultiSelectCell, OptionBadge, SelectCell } from './option-cells';
 import {
   ARRAY_PROPERTY_TYPES,
@@ -77,12 +78,13 @@ export function PropertyCell({
 }
 
 function CheckboxCell({ value, onChange, readOnly }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   return (
     <div className="flex min-h-8 items-center px-1.5">
       <Checkbox
         checked={value === true}
         disabled={readOnly}
-        aria-label="Kontrollkästchen"
+        aria-label={t('checkbox')}
         onCheckedChange={(checked) => onChange(checked)}
       />
     </div>
@@ -106,11 +108,13 @@ export function PropertyValueDisplay({
   property: DatabaseProperty;
   value: CellValue;
 }) {
+  const t = useTranslations('database.cells');
+  const formatDateValue = useDateValueFormat();
   if (value === null || (Array.isArray(value) && value.length === 0)) return null;
 
   if (property.type === 'CHECKBOX') {
     return value === true ? (
-      <CheckIcon className="size-3.5 text-primary-text" aria-label="Erledigt" />
+      <CheckIcon className="size-3.5 text-primary-text" aria-label={t('checked')} />
     ) : null;
   }
   if (property.type === 'DATE') {

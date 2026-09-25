@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Nie wybrano jeszcze daty",
+    "noDateProperty": "Ta baza danych nie ma jeszcze właściwości typu „Data”.",
+    "chooseDateProperty": "Wybierz właściwość daty, według której mają być porządkowane wiersze.",
+    "propertyPlaceholder": "Wybierz właściwość"
+  },
+  "body": {
+    "incomplete": "Ten zakres zawiera więcej wpisów, niż jest tutaj widocznych. Wybierz krótszy zakres, aby zobaczyć wszystkie.",
+    "loading": "Wczytywanie terminów",
+    "loadFailed": "Nie udało się wczytać terminów"
+  },
+  "toolbar": {
+    "today": "Dzisiaj",
+    "jumpTo": "Przejdź do",
+    "modeSwitch": "Widok",
+    "weekWithinMonth": "{fromDay} do {to}",
+    "weekRange": "{from} do {to}"
+  },
+  "modes": {
+    "LIST": "Lista",
+    "DAY": "Dzień",
+    "WEEK": "Tydzień",
+    "MONTH": "Miesiąc",
+    "YEAR": "Rok"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Poprzedni miesiąc",
+      "next": "Następny miesiąc"
+    },
+    "DAY": {
+      "previous": "Poprzedni dzień",
+      "next": "Następny dzień"
+    },
+    "WEEK": {
+      "previous": "Poprzedni tydzień",
+      "next": "Następny tydzień"
+    },
+    "MONTH": {
+      "previous": "Poprzedni miesiąc",
+      "next": "Następny miesiąc"
+    },
+    "YEAR": {
+      "previous": "Poprzedni rok",
+      "next": "Następny rok"
+    }
+  },
+  "month": {
+    "openDay": "Otwórz dzień: {date}",
+    "more": "{count, plural, one {+# kolejny} few {+# kolejne} many {+# kolejnych} other {+# kolejnego}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# wpis} few {# wpisy} many {# wpisów} other {# wpisu}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nic w tym okresie",
+    "emptyDescription": "W tym miesiącu nie ma żadnych wpisów. Przejdź dalej lub zmień widok.",
+    "allDay": "Cały dzień",
+    "timeRange": "{from} do {to}"
+  },
+  "timeGrid": {
+    "allDay": "Cały dzień"
+  }
+}

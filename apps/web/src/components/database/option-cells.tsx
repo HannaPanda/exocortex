@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon, XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseProperty, type DatabasePropertyOption } from '@exocortex/contracts';
@@ -45,6 +46,7 @@ export function OptionBadge({
 }
 
 export function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   const [open, setOpen] = React.useState(false);
   const selected = typeof value === 'string' ? value : null;
 
@@ -67,7 +69,7 @@ export function SelectCell({ property, value, onChange, readOnly }: PropertyCell
             {selected !== null ? (
               <OptionBadge optionId={selected} property={property} />
             ) : (
-              <span className="text-sm text-muted-foreground">Leer</span>
+              <span className="text-sm text-muted-foreground">{t('empty')}</span>
             )}
           </button>
         }
@@ -81,7 +83,7 @@ export function SelectCell({ property, value, onChange, readOnly }: PropertyCell
             setOpen(false);
           }}
         >
-          <XIcon className="size-3.5 text-muted-foreground" /> Keine Auswahl
+          <XIcon className="size-3.5 text-muted-foreground" /> {t('noSelection')}
         </button>
         {property.options.map((option) => (
           <button
@@ -109,6 +111,7 @@ export function MultiSelectCell({
   readOnly,
   rowHeight = 'short',
 }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   const [open, setOpen] = React.useState(false);
   const selected = Array.isArray(value) ? value : [];
 
@@ -146,7 +149,7 @@ export function MultiSelectCell({
             {selected.length > 0 ? (
               badges
             ) : (
-              <span className="text-sm text-muted-foreground">Leer</span>
+              <span className="text-sm text-muted-foreground">{t('empty')}</span>
             )}
           </button>
         }

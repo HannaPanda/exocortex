@@ -2,6 +2,8 @@
 // the i18n gate fails when this file no longer matches the message files.
 
 import de_auth from './messages/de/auth.json';
+import de_calendar from './messages/de/calendar.json';
+import de_database from './messages/de/database.json';
 import de_dialogs from './messages/de/dialogs.json';
 import de_document from './messages/de/document.json';
 import de_editor from './messages/de/editor.json';
@@ -12,6 +14,8 @@ import de_shares from './messages/de/shares.json';
 import de_shell from './messages/de/shell.json';
 import de_ui from './messages/de/ui.json';
 import en_auth from './messages/en/auth.json';
+import en_calendar from './messages/en/calendar.json';
+import en_database from './messages/en/database.json';
 import en_dialogs from './messages/en/dialogs.json';
 import en_document from './messages/en/document.json';
 import en_editor from './messages/en/editor.json';
@@ -22,6 +26,8 @@ import en_shares from './messages/en/shares.json';
 import en_shell from './messages/en/shell.json';
 import en_ui from './messages/en/ui.json';
 import es_auth from './messages/es/auth.json';
+import es_calendar from './messages/es/calendar.json';
+import es_database from './messages/es/database.json';
 import es_dialogs from './messages/es/dialogs.json';
 import es_document from './messages/es/document.json';
 import es_editor from './messages/es/editor.json';
@@ -32,6 +38,8 @@ import es_shares from './messages/es/shares.json';
 import es_shell from './messages/es/shell.json';
 import es_ui from './messages/es/ui.json';
 import fr_auth from './messages/fr/auth.json';
+import fr_calendar from './messages/fr/calendar.json';
+import fr_database from './messages/fr/database.json';
 import fr_dialogs from './messages/fr/dialogs.json';
 import fr_document from './messages/fr/document.json';
 import fr_editor from './messages/fr/editor.json';
@@ -42,6 +50,8 @@ import fr_shares from './messages/fr/shares.json';
 import fr_shell from './messages/fr/shell.json';
 import fr_ui from './messages/fr/ui.json';
 import it_auth from './messages/it/auth.json';
+import it_calendar from './messages/it/calendar.json';
+import it_database from './messages/it/database.json';
 import it_dialogs from './messages/it/dialogs.json';
 import it_document from './messages/it/document.json';
 import it_editor from './messages/it/editor.json';
@@ -52,6 +62,8 @@ import it_shares from './messages/it/shares.json';
 import it_shell from './messages/it/shell.json';
 import it_ui from './messages/it/ui.json';
 import nl_auth from './messages/nl/auth.json';
+import nl_calendar from './messages/nl/calendar.json';
+import nl_database from './messages/nl/database.json';
 import nl_dialogs from './messages/nl/dialogs.json';
 import nl_document from './messages/nl/document.json';
 import nl_editor from './messages/nl/editor.json';
@@ -62,6 +74,8 @@ import nl_shares from './messages/nl/shares.json';
 import nl_shell from './messages/nl/shell.json';
 import nl_ui from './messages/nl/ui.json';
 import pl_auth from './messages/pl/auth.json';
+import pl_calendar from './messages/pl/calendar.json';
+import pl_database from './messages/pl/database.json';
 import pl_dialogs from './messages/pl/dialogs.json';
 import pl_document from './messages/pl/document.json';
 import pl_editor from './messages/pl/editor.json';
@@ -72,6 +86,8 @@ import pl_shares from './messages/pl/shares.json';
 import pl_shell from './messages/pl/shell.json';
 import pl_ui from './messages/pl/ui.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
+import pt_BR_calendar from './messages/pt-BR/calendar.json';
+import pt_BR_database from './messages/pt-BR/database.json';
 import pt_BR_dialogs from './messages/pt-BR/dialogs.json';
 import pt_BR_document from './messages/pt-BR/document.json';
 import pt_BR_editor from './messages/pt-BR/editor.json';
@@ -82,11 +98,13 @@ import pt_BR_shares from './messages/pt-BR/shares.json';
 import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 
-export const NAMESPACES = ["auth","dialogs","document","editor","errors","search","settings","shares","shell","ui"] as const;
+export const NAMESPACES = ["auth","calendar","database","dialogs","document","editor","errors","search","settings","shares","shell","ui"] as const;
 
 export const CATALOG = {
   'de': {
     "auth": de_auth,
+    "calendar": de_calendar,
+    "database": de_database,
     "dialogs": de_dialogs,
     "document": de_document,
     "editor": de_editor,
@@ -99,6 +117,8 @@ export const CATALOG = {
   },
   'en': {
     "auth": en_auth,
+    "calendar": en_calendar,
+    "database": en_database,
     "dialogs": en_dialogs,
     "document": en_document,
     "editor": en_editor,
@@ -111,6 +131,8 @@ export const CATALOG = {
   },
   'es': {
     "auth": es_auth,
+    "calendar": es_calendar,
+    "database": es_database,
     "dialogs": es_dialogs,
     "document": es_document,
     "editor": es_editor,
@@ -123,6 +145,8 @@ export const CATALOG = {
   },
   'fr': {
     "auth": fr_auth,
+    "calendar": fr_calendar,
+    "database": fr_database,
     "dialogs": fr_dialogs,
     "document": fr_document,
     "editor": fr_editor,
@@ -135,6 +159,8 @@ export const CATALOG = {
   },
   'it': {
     "auth": it_auth,
+    "calendar": it_calendar,
+    "database": it_database,
     "dialogs": it_dialogs,
     "document": it_document,
     "editor": it_editor,
@@ -147,6 +173,8 @@ export const CATALOG = {
   },
   'nl': {
     "auth": nl_auth,
+    "calendar": nl_calendar,
+    "database": nl_database,
     "dialogs": nl_dialogs,
     "document": nl_document,
     "editor": nl_editor,
@@ -159,6 +187,8 @@ export const CATALOG = {
   },
   'pl': {
     "auth": pl_auth,
+    "calendar": pl_calendar,
+    "database": pl_database,
     "dialogs": pl_dialogs,
     "document": pl_document,
     "editor": pl_editor,
@@ -171,6 +201,8 @@ export const CATALOG = {
   },
   'pt-BR': {
     "auth": pt_BR_auth,
+    "calendar": pt_BR_calendar,
+    "database": pt_BR_database,
     "dialogs": pt_BR_dialogs,
     "document": pt_BR_document,
     "editor": pt_BR_editor,

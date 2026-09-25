@@ -1,6 +1,7 @@
 'use client';
 
 import { PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabasePropertyType } from '@exocortex/contracts';
@@ -27,7 +28,7 @@ import {
 import {
   CONFIGURED_PROPERTY_TYPE_SET,
   CREATABLE_PROPERTY_TYPES,
-  PROPERTY_TYPE_LABELS,
+  usePropertyTypeLabel,
 } from './property-types';
 
 export function AddPropertyButton({
@@ -37,6 +38,8 @@ export function AddPropertyButton({
   documentId: string;
   workspaceId: string;
 }) {
+  const t = useTranslations('database.addProperty');
+  const typeLabel = usePropertyTypeLabel();
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState('');
   const [type, setType] = React.useState<DatabasePropertyType>('TEXT');
@@ -66,7 +69,7 @@ export function AddPropertyButton({
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label="Eigenschaft hinzufügen"
+            aria-label={t('trigger')}
             data-testid="add-property"
           >
             <PlusIcon />
@@ -91,7 +94,7 @@ export function AddPropertyButton({
         >
           <Input
             autoFocus
-            placeholder="Name der Eigenschaft"
+            placeholder={t('namePlaceholder')}
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
@@ -105,12 +108,12 @@ export function AddPropertyButton({
             <SelectTrigger className="w-full" data-testid="property-type-select">
               {/* Without a render function Base UI shows the raw value, which
                   here would be the English type name. */}
-              <SelectValue>{() => PROPERTY_TYPE_LABELS[type]}</SelectValue>
+              <SelectValue>{() => typeLabel(type)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {CREATABLE_PROPERTY_TYPES.map((entry) => (
                 <SelectItem key={entry} value={entry}>
-                  {PROPERTY_TYPE_LABELS[entry]}
+                  {typeLabel(entry)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -125,7 +128,7 @@ export function AddPropertyButton({
             />
           ) : null}
           <Button type="submit" size="sm" disabled={!ready}>
-            Hinzufügen
+            {t('submit')}
           </Button>
         </form>
       </PopoverContent>

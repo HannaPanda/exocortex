@@ -1,12 +1,11 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type CalendarEntry, dayKey } from './entries';
 import { CalendarEntryLink } from './entry-link';
-import { addDays, MONTH_GRID_DAYS, monthGridStart } from './range';
-
-const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+import { addDays, calendarFormatter, MONTH_GRID_DAYS, monthGridStart, weekdayNames } from './range';
 
 /** How many entries a cell shows before it collapses the rest into one line. */
 const VISIBLE_PER_CELL = 3;
@@ -19,6 +18,9 @@ interface MonthViewProps {
 }
 
 export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: MonthViewProps) {
+  const t = useTranslations('calendar.month');
+  const locale = useLocale();
+  const weekdays = React.useMemo(() => weekdayNames(locale, 'weekdayShort'), [locale]);
   const month = anchor.getMonth();
   const start = monthGridStart(anchor.getFullYear(), month);
   const days = React.useMemo(
@@ -32,9 +34,9 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
       className="grid grid-cols-7 border-t border-l border-border text-xs"
       data-testid="calendar-month"
     >
-      {WEEKDAY_LABELS.map((label) => (
+      {weekdays.map((label, index) => (
         <div
-          key={label}
+          key={index}
           className="border-r border-b border-border bg-surface px-2 py-1 text-muted-foreground"
         >
           {label}
@@ -52,7 +54,9 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
           >
             <button
               type="button"
-              aria-label={`Tag öffnen: ${day.toLocaleDateString('de-DE')}`}
+              aria-label={t('openDay', {
+                date: calendarFormatter(locale, 'numericDate').format(day),
+              })}
               onClick={() => onOpenDay(day)}
               className={`self-start rounded-sm px-1 text-micro hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}
             >
@@ -72,7 +76,7 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
                 onClick={() => onOpenDay(day)}
                 className="self-start px-1 text-left text-micro text-muted-foreground hover:underline"
               >
-                +{hidden} weitere
+                {t('more', { count: hidden })}
               </button>
             ) : null}
           </div>

@@ -1,4 +1,4 @@
-import { type CalendarEntry } from './entries';
+import { type CalendarEntry, compareTitles } from './entries';
 import { addDays, startOfDay } from './range';
 
 export const MINUTES_PER_DAY = 1440;
@@ -54,9 +54,14 @@ function spanOf(entry: CalendarEntry): { start: number; end: number } | null {
  * Wall-clock minutes rather than elapsed time, so the boxes keep lining up
  * with the hour rules on the day a DST change makes 23 or 25 hours long. All-day
  * entries are not handled here: they belong in the band above the axis, where
- * they do not compete for width with a 14:00 appointment.
+ * they do not compete for width with a 14:00 appointment. `locale` orders
+ * the titles of two identical boxes.
  */
-export function layoutDay(entries: readonly CalendarEntry[], day: Date): PositionedEntry[] {
+export function layoutDay(
+  entries: readonly CalendarEntry[],
+  day: Date,
+  locale: string,
+): PositionedEntry[] {
   const dayStart = startOfDay(day).getTime();
   const dayEnd = addDays(startOfDay(day), 1).getTime();
 
@@ -95,7 +100,7 @@ export function layoutDay(entries: readonly CalendarEntry[], day: Date): Positio
     // The longer of two appointments starting together takes the left column,
     // so the shorter one is not buried behind it.
     if (left.endMinute !== right.endMinute) return right.endMinute - left.endMinute;
-    return left.entry.row.document.title.localeCompare(right.entry.row.document.title);
+    return compareTitles(locale, left.entry.row.document.title, right.entry.row.document.title);
   });
 
   // A cluster is a run of entries connected by overlap; width is divided within

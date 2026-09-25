@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Noch kein Datum gewählt",
+    "noDateProperty": "Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.",
+    "chooseDateProperty": "Wähle eine Datums-Eigenschaft, nach der die Zeilen einsortiert werden.",
+    "propertyPlaceholder": "Eigenschaft wählen"
+  },
+  "body": {
+    "incomplete": "Dieser Zeitraum enthält mehr Einträge, als hier gezeigt werden. Wähle einen kürzeren Zeitraum, um alle zu sehen.",
+    "loading": "Termine werden geladen",
+    "loadFailed": "Termine nicht geladen"
+  },
+  "toolbar": {
+    "today": "Heute",
+    "jumpTo": "Springen zu",
+    "modeSwitch": "Ansicht",
+    "weekWithinMonth": "{fromDay}. bis {to}",
+    "weekRange": "{from} bis {to}"
+  },
+  "modes": {
+    "LIST": "Liste",
+    "DAY": "Tag",
+    "WEEK": "Woche",
+    "MONTH": "Monat",
+    "YEAR": "Jahr"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Vorheriger Monat",
+      "next": "Nächster Monat"
+    },
+    "DAY": {
+      "previous": "Vorheriger Tag",
+      "next": "Nächster Tag"
+    },
+    "WEEK": {
+      "previous": "Vorherige Woche",
+      "next": "Nächste Woche"
+    },
+    "MONTH": {
+      "previous": "Vorheriger Monat",
+      "next": "Nächster Monat"
+    },
+    "YEAR": {
+      "previous": "Vorheriges Jahr",
+      "next": "Nächstes Jahr"
+    }
+  },
+  "month": {
+    "openDay": "Tag öffnen: {date}",
+    "more": "{count, plural, one {+# weiterer} other {+# weitere}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# Eintrag} other {# Einträge}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nichts in diesem Zeitraum",
+    "emptyDescription": "In diesem Monat liegt kein Eintrag. Blättere weiter oder wechsle die Ansicht.",
+    "allDay": "Ganztags",
+    "timeRange": "{from} bis {to}"
+  },
+  "timeGrid": {
+    "allDay": "Ganztags"
+  }
+}

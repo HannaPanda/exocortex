@@ -18,8 +18,8 @@ import {
 } from '@exocortex/ui';
 
 import { PropertyCell } from '@/components/database/cells';
-import { PROPERTY_TYPE_LABELS } from '@/components/database/property-types';
-import { VIEW_TYPE_LABELS } from '@/components/database/view-tabs';
+import { usePropertyTypeLabel } from '@/components/database/property-types';
+import { useViewTypeLabel } from '@/components/database/view-tabs';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker } from '@/components/document/page-icon-picker';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
@@ -419,6 +419,8 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
 /** Properties tab content for a database itself: a different question than a page's. */
 function CollectionProperties({ detail }: { detail: DocumentDetail }) {
   const t = useTranslations('document.propertiesPanel');
+  const typeLabel = usePropertyTypeLabel();
+  const viewTypeLabel = useViewTypeLabel();
   const properties = useDatabaseProperties(detail.id);
   const views = useDatabaseViews(detail.id);
 
@@ -435,7 +437,7 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
         className="flex items-center justify-between rounded-md border border-border px-2 py-1.5 text-xs"
       >
         <span>{property.name}</span>
-        <span className="text-muted-foreground">{PROPERTY_TYPE_LABELS[property.type]}</span>
+        <span className="text-muted-foreground">{typeLabel(property.type)}</span>
       </div>
     ))
   );
@@ -449,7 +451,7 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
   ) : (
     views.data.map((view) => (
       <div key={view.id} className="rounded-md border border-border px-2 py-1.5 text-xs">
-        {view.name} <span className="text-muted-foreground">· {VIEW_TYPE_LABELS[view.type]}</span>
+        {view.name} <span className="text-muted-foreground">· {viewTypeLabel(view.type)}</span>
       </div>
     ))
   );

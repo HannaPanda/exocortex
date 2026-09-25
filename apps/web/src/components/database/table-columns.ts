@@ -32,12 +32,6 @@ export const ROW_HEIGHT_BOX_CLAMP: Record<DatabaseRowHeight, string> = {
   tall: 'max-h-36',
 };
 
-export const ROW_HEIGHT_LABELS: Record<DatabaseRowHeight, string> = {
-  short: 'Kompakt',
-  medium: 'Mittel',
-  tall: 'Hoch',
-};
-
 export const ROW_HEIGHTS: DatabaseRowHeight[] = ['short', 'medium', 'tall'];
 
 export function rowHeightOf(view: DatabaseView): DatabaseRowHeight {

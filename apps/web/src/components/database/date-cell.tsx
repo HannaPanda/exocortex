@@ -1,3 +1,6 @@
+import { useFormatter, useTranslations } from 'next-intl';
+import * as React from 'react';
+
 import {
   type DatabaseProperty,
   type DatabaseRowPropertyValue,
@@ -60,27 +63,48 @@ function readDateValue(value: CellValue): DateCellValue {
 }
 
 /**
- * German rendering of a DATE value in either shape. A span on one day shows the
- * day once and both times, which is how an appointment is normally read; a span
- * across days shows both sides in full. Returns null for an empty value so a
- * caller can drop the element entirely.
+ * The reader's rendering of a DATE value in either shape. A span on one day
+ * shows the day once and both times, which is how an appointment is normally
+ * read; a span across days shows both sides in full. The returned function
+ * answers null for an empty value so a caller can drop the element entirely.
+ *
+ * A whole day is stored as UTC midnight, so it is formatted in UTC: in the
+ * reader's zone a reader west of Greenwich would see the day before.
  */
-export function formatDateValue(property: DatabaseProperty, value: CellValue): string | null {
-  const config = parseDatePropertyConfig(property.config);
-  const { start, end, allDay } = readDateValue(value);
-  if (start === null) return null;
+export function useDateValueFormat(): (
+  property: DatabaseProperty,
+  value: CellValue,
+) => string | null {
+  const t = useTranslations('database.cells');
+  const format = useFormatter();
+  return React.useCallback(
+    (property: DatabaseProperty, value: CellValue): string | null => {
+      const config = parseDatePropertyConfig(property.config);
+      const { start, end, allDay } = readDateValue(value);
+      if (start === null) return null;
 
-  const withTime = config.includeTime && !allDay;
-  const day = (iso: string) => new Date(iso).toLocaleDateString('de-DE');
-  const time = (iso: string) =>
-    new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  const full = (iso: string) => (withTime ? `${day(iso)}, ${time(iso)}` : day(iso));
+      const withTime = config.includeTime && !allDay;
+      const day = (iso: string) =>
+        format.dateTime(new Date(iso), {
+          dateStyle: 'medium',
+          ...(withTime ? {} : { timeZone: 'UTC' }),
+        });
+      const time = (iso: string) => format.dateTime(new Date(iso), { timeStyle: 'short' });
+      const full = (iso: string) =>
+        withTime
+          ? format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' })
+          : day(iso);
 
-  if (end === null) return full(start);
-  if (day(start) === day(end)) {
-    return withTime ? `${day(start)}, ${time(start)} bis ${time(end)}` : day(start);
-  }
-  return `${full(start)} bis ${full(end)}`;
+      if (end === null) return full(start);
+      if (day(start) === day(end)) {
+        return withTime
+          ? t('sameDayTimeRange', { day: day(start), start: time(start), end: time(end) })
+          : day(start);
+      }
+      return t('dateRange', { start: full(start), end: full(end) });
+    },
+    [t, format],
+  );
 }
 
 /** One day, with or without its time, as the cell's picker. */
@@ -125,6 +149,7 @@ function DateField({
 }
 
 export function DateCell({ property, value, onChange, readOnly }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   const config = parseDatePropertyConfig(property.config);
   const current = readDateValue(value);
   const includeTime = config.includeTime && !current.allDay;
@@ -160,7 +185,7 @@ export function DateCell({ property, value, onChange, readOnly }: PropertyCellPr
         iso={current.start}
         includeTime={includeTime}
         readOnly={readOnly}
-        label="Beginn"
+        label={t('rangeStart')}
         onPick={(start) =>
           // Clearing the start clears the whole span: an end without a
           // beginning is not a value the API accepts.
@@ -175,7 +200,7 @@ export function DateCell({ property, value, onChange, readOnly }: PropertyCellPr
         iso={current.end}
         includeTime={includeTime}
         readOnly={readOnly}
-        label="Ende"
+        label={t('rangeEnd')}
         onPick={(end) => emit({ ...current, end })}
       />
     </div>

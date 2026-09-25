@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon, Link2Icon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseProperty, parseRelationConfig } from '@exocortex/contracts';
@@ -29,6 +30,7 @@ import { ROW_HEIGHT_BOX_CLAMP } from './table-columns';
  * database sees the bare id instead of a name nobody showed them.
  */
 export function RelationCell({ property, value, onChange, readOnly }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   const config = parseRelationConfig(property.config);
   const selected = React.useMemo(() => (Array.isArray(value) ? value.map(String) : []), [value]);
   const targets = useRelationTargetRows(config?.targetCollectionId);
@@ -40,7 +42,7 @@ export function RelationCell({ property, value, onChange, readOnly }: PropertyCe
   if (config === null) {
     return (
       <span className="px-1.5 py-1.5 text-sm text-muted-foreground">
-        Diese Verknüpfung ist nicht eingerichtet.
+        {t('relationNotConfigured')}
       </span>
     );
   }
@@ -53,7 +55,7 @@ export function RelationCell({ property, value, onChange, readOnly }: PropertyCe
       )}
     >
       {selected.length === 0 ? (
-        <span className="text-sm text-muted-foreground">Leer</span>
+        <span className="text-sm text-muted-foreground">{t('empty')}</span>
       ) : (
         selected.map((id) => (
           <Badge key={id} variant="secondary" className="max-w-40 truncate">
@@ -106,13 +108,11 @@ export function RelationCell({ property, value, onChange, readOnly }: PropertyCe
               </Button>
             ))}
             {targets.data?.length === 0 ? (
-              <p className="px-2 py-3 text-sm text-muted-foreground">
-                Die verknüpfte Datenbank hat noch keine Zeilen.
-              </p>
+              <p className="px-2 py-3 text-sm text-muted-foreground">{t('relationTargetEmpty')}</p>
             ) : null}
             {(targets.data?.length ?? 0) >= RELATION_PICKER_LIMIT ? (
               <p className="px-2 py-2 text-xs text-muted-foreground">
-                Nur die ersten {RELATION_PICKER_LIMIT} Zeilen werden angeboten.
+                {t('relationLimit', { limit: RELATION_PICKER_LIMIT })}
               </p>
             ) : null}
           </div>

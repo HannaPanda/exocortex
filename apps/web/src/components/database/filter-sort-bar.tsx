@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowDownIcon, ArrowUpIcon, FilterIcon, XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -27,12 +28,7 @@ import {
 
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
 
-import {
-  FILTER_OPERATOR_LABELS,
-  filterValueChoices,
-  filterValueLabel,
-  operatorsForType,
-} from './property-types';
+import { operatorsForType, useFilterWording } from './property-types';
 import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
@@ -54,6 +50,8 @@ function leafConditions(view: DatabaseView): DatabaseFilterCondition[] {
 }
 
 export function FilterSortBar({ documentId, view, properties, readOnly }: FilterSortBarProps) {
+  const t = useTranslations('database.filters');
+  const wording = useFilterWording();
   const updateView = useUpdateDatabaseView(documentId);
   const conditions = leafConditions(view);
 
@@ -89,10 +87,9 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
     <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-1.5">
       {conditions.map((condition, index) => (
         <Badge key={`${condition.propertyId}-${index}`} variant="secondary" className="gap-1">
-          {propertyName(properties, condition.propertyId)}{' '}
-          {FILTER_OPERATOR_LABELS[condition.operator]}
+          {propertyName(properties, condition.propertyId)} {wording.operator(condition.operator)}
           {condition.value !== undefined
-            ? ` ${filterValueLabel(
+            ? ` ${wording.valueLabel(
                 properties.find((property) => property.id === condition.propertyId),
                 condition.value,
               )}`
@@ -100,7 +97,7 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
           {readOnly ? null : (
             <button
               type="button"
-              aria-label="Filter entfernen"
+              aria-label={t('removeFilter')}
               onClick={() => removeCondition(index)}
             >
               <XIcon className="size-3" />
@@ -117,11 +114,7 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
           )}
           {propertyName(properties, sort.propertyId)}
           {readOnly ? null : (
-            <button
-              type="button"
-              aria-label="Sortierung entfernen"
-              onClick={() => removeSort(index)}
-            >
+            <button type="button" aria-label={t('removeSort')} onClick={() => removeSort(index)}>
               <XIcon className="size-3" />
             </button>
           )}
@@ -147,9 +140,12 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
  * choice: an empty string would show an empty trigger and submit an id that
  * matches nothing. Free-text properties keep starting empty.
  */
-function defaultFilterValue(property: DatabaseProperty | undefined): string {
+function defaultFilterValue(
+  property: DatabaseProperty | undefined,
+  choices: (property: DatabaseProperty) => { value: string }[],
+): string {
   if (property === undefined) return '';
-  return filterValueChoices(property)[0]?.value ?? '';
+  return choices(property)[0]?.value ?? '';
 }
 
 function AddFilterPopover({
@@ -159,23 +155,27 @@ function AddFilterPopover({
   properties: DatabaseProperty[];
   onAdd: (condition: DatabaseFilterCondition) => void;
 }) {
+  const t = useTranslations('database.filters');
+  const wording = useFilterWording();
   const [open, setOpen] = React.useState(false);
   const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
   const property = properties.find((entry) => entry.id === propertyId) ?? properties[0];
   const operators = property === undefined ? [] : operatorsForType(property.type);
   const [operator, setOperator] = React.useState<DatabaseFilterOperator>(operators[0] ?? 'equals');
-  const [value, setValue] = React.useState(() => defaultFilterValue(properties[0]));
+  const [value, setValue] = React.useState(() =>
+    defaultFilterValue(properties[0], wording.choices),
+  );
 
   if (property === undefined) return null;
   const needsValue = operator !== 'is_empty' && operator !== 'is_not_empty';
-  const choices = filterValueChoices(property);
+  const choices = wording.choices(property);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
           <Button variant="ghost" size="sm" data-testid="add-filter">
-            <FilterIcon /> Filter
+            <FilterIcon /> {t('filter')}
           </Button>
         }
       />
@@ -193,7 +193,7 @@ function AddFilterPopover({
                   : value;
             onAdd({ propertyId: property.id, operator, value: parsedValue });
             setOpen(false);
-            setValue(defaultFilterValue(property));
+            setValue(defaultFilterValue(property, wording.choices));
           }}
         >
           <Select
@@ -207,7 +207,7 @@ function AddFilterPopover({
               // the old operator may no longer be valid for it.
               const nextProperty = properties.find((entry) => entry.id === id);
               setOperator(operatorsForType(nextProperty?.type ?? 'TEXT')[0] ?? 'equals');
-              setValue(defaultFilterValue(nextProperty));
+              setValue(defaultFilterValue(nextProperty, wording.choices));
             }}
           >
             <SelectTrigger className="w-full" data-testid="filter-property">
@@ -228,12 +228,12 @@ function AddFilterPopover({
             onValueChange={(next) => setOperator(next as DatabaseFilterOperator)}
           >
             <SelectTrigger className="w-full" data-testid="filter-operator">
-              <SelectValue>{() => FILTER_OPERATOR_LABELS[operator]}</SelectValue>
+              <SelectValue>{() => wording.operator(operator)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {operators.map((entry) => (
                 <SelectItem key={entry} value={entry}>
-                  {FILTER_OPERATOR_LABELS[entry]}
+                  {wording.operator(entry)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -255,7 +255,7 @@ function AddFilterPopover({
             </Select>
           ) : property.type === 'DATE' ? (
             <DatePicker
-              aria-label="Wert"
+              aria-label={t('value')}
               data-testid="filter-value"
               value={value.length === 0 ? null : value}
               onChange={(day) => setValue(day ?? '')}
@@ -265,13 +265,13 @@ function AddFilterPopover({
               autoFocus
               type={property.type === 'NUMBER' ? 'number' : 'text'}
               value={value}
-              placeholder="Wert"
+              placeholder={t('value')}
               data-testid="filter-value"
               onChange={(event) => setValue(event.target.value)}
             />
           )}
           <Button type="submit" size="sm">
-            Filter hinzufügen
+            {t('addFilter')}
           </Button>
         </form>
       </PopoverContent>
@@ -286,6 +286,7 @@ function AddSortPopover({
   properties: DatabaseProperty[];
   onAdd: (sort: DatabaseSort) => void;
 }) {
+  const t = useTranslations('database.filters');
   const [open, setOpen] = React.useState(false);
   const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
 
@@ -294,7 +295,7 @@ function AddSortPopover({
       <PopoverTrigger
         render={
           <Button variant="ghost" size="sm" data-testid="add-sort">
-            <ArrowUpIcon /> Sortieren
+            <ArrowUpIcon /> {t('sort')}
           </Button>
         }
       />
@@ -322,7 +323,7 @@ function AddSortPopover({
                 setOpen(false);
               }}
             >
-              <ArrowUpIcon /> Aufsteigend
+              <ArrowUpIcon /> {t('ascending')}
             </Button>
             <Button
               size="sm"
@@ -333,7 +334,7 @@ function AddSortPopover({
                 setOpen(false);
               }}
             >
-              <ArrowDownIcon /> Absteigend
+              <ArrowDownIcon /> {t('descending')}
             </Button>
           </div>
         </div>

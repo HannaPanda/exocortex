@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { ErrorState, LoadingState } from '@exocortex/ui';
@@ -52,6 +53,8 @@ export function DatabaseShell({
   onActiveViewChange,
   onActiveViewResolved,
 }: DatabaseShellProps) {
+  const t = useTranslations('database.shell');
+  const tViewTypes = useTranslations('database.viewTypes');
   const properties = useDatabaseProperties(documentId);
   const views = useDatabaseViews(documentId);
   const createView = useCreateDatabaseView(documentId);
@@ -69,8 +72,8 @@ export function DatabaseShell({
     if (readOnly || views.data === undefined || views.data.length > 0 || ensuredDefaultView.current)
       return;
     ensuredDefaultView.current = true;
-    createView.mutate({ type: 'TABLE', name: 'Tabelle' });
-  }, [readOnly, views.data, createView]);
+    createView.mutate({ type: 'TABLE', name: tViewTypes('TABLE') });
+  }, [readOnly, views.data, createView, tViewTypes]);
 
   // Derived the same way as `activeView` below, but readable before the early
   // returns so the effect that publishes it is not conditional.
@@ -82,12 +85,12 @@ export function DatabaseShell({
   }, [resolvedViewId, onActiveViewResolved]);
 
   if (properties.isPending || views.isPending) {
-    return <LoadingState variant="skeleton" rows={5} label="Datenbank wird geladen" />;
+    return <LoadingState variant="skeleton" rows={5} label={t('loading')} />;
   }
   if (properties.isError || views.isError) {
     return (
       <ErrorState
-        title="Datenbank nicht geladen"
+        title={t('loadFailed')}
         onRetry={() => {
           void properties.refetch();
           void views.refetch();
@@ -105,7 +108,7 @@ export function DatabaseShell({
       : undefined) ?? views.data[0];
 
   if (activeView === undefined) {
-    return <LoadingState variant="skeleton" rows={5} label="Ansicht wird angelegt" />;
+    return <LoadingState variant="skeleton" rows={5} label={t('creatingView')} />;
   }
 
   return (

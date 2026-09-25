@@ -2,6 +2,7 @@
 
 import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -12,7 +13,7 @@ import {
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@exocortex/ui';
 
 import { PropertyCell } from './cells';
-import { PROPERTY_TYPE_LABELS } from './property-types';
+import { usePropertyTypeLabel } from './property-types';
 
 interface RowPeekSheetProps {
   workspaceId: string;
@@ -42,6 +43,8 @@ export function RowPeekSheet({
   onOpenChange,
   onChange,
 }: RowPeekSheetProps) {
+  const t = useTranslations('database.peek');
+  const typeLabel = usePropertyTypeLabel();
   return (
     <Sheet open={row !== null} onOpenChange={onOpenChange}>
       {row === null ? null : (
@@ -54,24 +57,20 @@ export function RowPeekSheet({
                 className="inline-flex items-center gap-1 hover:text-foreground"
               >
                 <ExternalLinkIcon className="size-3.5" aria-hidden />
-                Als Seite öffnen
+                {t('openAsPage')}
               </Link>
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
             {properties.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Diese Datenbank hat noch keine Eigenschaften.
-              </p>
+              <p className="text-sm text-muted-foreground">{t('noProperties')}</p>
             ) : null}
             {properties.map((property) => (
               <div key={property.id} className="grid grid-cols-[9rem_1fr] items-start gap-2">
                 <div className="flex flex-col gap-0.5 pt-1.5">
                   <span className="text-sm font-medium break-words">{property.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {PROPERTY_TYPE_LABELS[property.type]}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{typeLabel(property.type)}</span>
                 </div>
                 <PropertyCell
                   property={property}

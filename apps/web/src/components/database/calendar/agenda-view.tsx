@@ -1,17 +1,12 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
+
 import { EmptyState } from '@exocortex/ui';
 
 import { type CalendarEntry, dayKey } from './entries';
 import { CalendarEntryLink } from './entry-link';
-import { addDays } from './range';
-
-const DAY_HEADING = new Intl.DateTimeFormat('de-DE', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-});
-const TIME_RANGE = new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' });
+import { addDays, calendarFormatter } from './range';
 
 interface AgendaViewProps {
   workspaceId: string;
@@ -28,6 +23,8 @@ interface AgendaViewProps {
  * list is, and the grids are there for anyone who wants to see the gaps.
  */
 export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewProps) {
+  const t = useTranslations('calendar.agenda');
+  const locale = useLocale();
   const days: { day: Date; entries: CalendarEntry[] }[] = [];
   for (let cursor = from; cursor < to; cursor = addDays(cursor, 1)) {
     const entries = entriesByDay.get(dayKey(cursor)) ?? [];
@@ -35,12 +32,7 @@ export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewPr
   }
 
   if (days.length === 0) {
-    return (
-      <EmptyState
-        title="Nichts in diesem Zeitraum"
-        description="In diesem Monat liegt kein Eintrag. Blättere weiter oder wechsle die Ansicht."
-      />
-    );
+    return <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />;
   }
 
   const todayKey = dayKey(new Date());
@@ -52,13 +44,16 @@ export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewPr
           <h3
             className={`text-xs font-medium capitalize ${dayKey(day) === todayKey ? 'text-primary-text' : 'text-muted-foreground'}`}
           >
-            {DAY_HEADING.format(day)}
+            {calendarFormatter(locale, 'dayHeading').format(day)}
           </h3>
           <ul className="flex flex-col divide-y divide-border border-t border-border">
             {entries.map((entry) => (
               <li key={entry.row.document.id} className="flex items-baseline gap-3 py-1.5">
                 <span className="w-28 shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {timeRangeOf(entry)}
+                  {timeRangeOf(entry, locale, {
+                    allDay: t('allDay'),
+                    range: (start, end) => t('timeRange', { from: start, to: end }),
+                  })}
                 </span>
                 <CalendarEntryLink
                   workspaceId={workspaceId}
@@ -75,12 +70,17 @@ export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewPr
   );
 }
 
-function timeRangeOf(entry: CalendarEntry): string {
-  if (entry.allDay) return 'Ganztags';
+function timeRangeOf(
+  entry: CalendarEntry,
+  locale: string,
+  wording: { allDay: string; range: (start: string, end: string) => string },
+): string {
+  if (entry.allDay) return wording.allDay;
   const start = new Date(entry.start);
   if (Number.isNaN(start.getTime())) return '';
-  if (entry.end === null) return TIME_RANGE.format(start);
+  const time = calendarFormatter(locale, 'time');
+  if (entry.end === null) return time.format(start);
   const end = new Date(entry.end);
-  if (Number.isNaN(end.getTime())) return TIME_RANGE.format(start);
-  return `${TIME_RANGE.format(start)} bis ${TIME_RANGE.format(end)}`;
+  if (Number.isNaN(end.getTime())) return time.format(start);
+  return wording.range(time.format(start), time.format(end));
 }

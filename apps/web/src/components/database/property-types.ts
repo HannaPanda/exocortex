@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl';
+import * as React from 'react';
+
 import {
   ARRAY_VALUED_PROPERTY_TYPES,
   CONFIGURED_PROPERTY_TYPES,
@@ -9,27 +12,14 @@ import {
   IMPLEMENTED_PROPERTY_TYPES,
 } from '@exocortex/contracts';
 
-/** German label for every implemented property type, shown in the "+ Eigenschaft" menu. */
-export const PROPERTY_TYPE_LABELS: Record<DatabasePropertyType, string> = {
-  TEXT: 'Text',
-  NUMBER: 'Zahl',
-  SELECT: 'Auswahl',
-  MULTI_SELECT: 'Mehrfachauswahl',
-  DATE: 'Datum',
-  CHECKBOX: 'Kontrollkästchen',
-  URL: 'URL',
-  EMAIL: 'E-Mail',
-  PHONE: 'Telefon',
-  PERSON: 'Person',
-  FILES: 'Dateien',
-  CREATED_TIME: 'Erstellt am',
-  UPDATED_TIME: 'Zuletzt bearbeitet am',
-  CREATED_BY: 'Erstellt von',
-  UPDATED_BY: 'Zuletzt bearbeitet von',
-  RELATION: 'Verknüpfung',
-  ROLLUP: 'Rollup',
-  FORMULA: 'Formel',
-};
+/**
+ * The name of a property type in the reader's language, as the "+ Eigenschaft"
+ * menu, the column menu and the row sheet show it.
+ */
+export function usePropertyTypeLabel(): (type: DatabasePropertyType) => string {
+  const t = useTranslations('database.propertyTypes');
+  return React.useCallback((type: DatabasePropertyType) => t(type), [t]);
+}
 
 /** Property types a user can add today. */
 export const CREATABLE_PROPERTY_TYPES = IMPLEMENTED_PROPERTY_TYPES;
@@ -59,30 +49,25 @@ export const ARRAY_PROPERTY_TYPES = new Set<DatabasePropertyType>(ARRAY_VALUED_P
 /** The subset of the above that carries `DatabasePropertyOption` rows. */
 export const OPTION_PROPERTY_TYPES = new Set<DatabasePropertyType>(['SELECT', 'MULTI_SELECT']);
 
-export const FILTER_OPERATOR_LABELS: Record<DatabaseFilterOperator, string> = {
-  equals: 'ist',
-  not_equals: 'ist nicht',
-  contains: 'enthält',
-  not_contains: 'enthält nicht',
-  is_empty: 'ist leer',
-  is_not_empty: 'ist nicht leer',
-  greater_than: 'größer als',
-  less_than: 'kleiner als',
-  on_or_after: 'ab',
-  on_or_before: 'bis',
-  overlaps: 'liegt im Zeitraum',
-};
+/** How the two sides of a checkbox read, handed in so these helpers stay pure. */
+export interface CheckboxWords {
+  checked: string;
+  unchecked: string;
+}
 
 /**
  * The values a filter for this property can take, when they are a closed set.
  * A select stores the option's *id*, never its label, so the picker offers the
  * label and hands the id to the filter. An empty list means "free text".
  */
-export function filterValueChoices(property: DatabaseProperty): { value: string; label: string }[] {
+export function filterValueChoices(
+  property: DatabaseProperty,
+  words: CheckboxWords,
+): { value: string; label: string }[] {
   if (property.type === 'CHECKBOX') {
     return [
-      { value: 'true', label: 'Angehakt' },
-      { value: 'false', label: 'Nicht angehakt' },
+      { value: 'true', label: words.checked },
+      { value: 'false', label: words.unchecked },
     ];
   }
   if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
@@ -92,16 +77,40 @@ export function filterValueChoices(property: DatabaseProperty): { value: string;
 }
 
 /** The chip's reading of a stored filter value: an option id becomes its label. */
-export function filterValueLabel(property: DatabaseProperty | undefined, value: unknown): string {
+export function filterValueLabel(
+  property: DatabaseProperty | undefined,
+  value: unknown,
+  words: CheckboxWords,
+): string {
   if (property !== undefined) {
     if (property.type === 'CHECKBOX')
-      return value === true || value === 'true' ? 'angehakt' : 'nicht angehakt';
+      return value === true || value === 'true' ? words.checked : words.unchecked;
     if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
       const option = property.options.find((entry) => entry.id === value);
       if (option !== undefined) return option.label;
     }
   }
   return String(value);
+}
+
+/**
+ * Everything a filter chip and a filter form say, in the reader's language:
+ * the operator, the closed value set to pick from, and a stored value read
+ * back. Shared by the database's filter bar and the saved-query builder, so
+ * the same condition reads the same in both.
+ */
+export function useFilterWording() {
+  const t = useTranslations('database.filters');
+  return React.useMemo(() => {
+    const choiceWords = { checked: t('checkedChoice'), unchecked: t('uncheckedChoice') };
+    const valueWords = { checked: t('checkedValue'), unchecked: t('uncheckedValue') };
+    return {
+      operator: (operator: DatabaseFilterOperator): string => t(`operators.${operator}`),
+      choices: (property: DatabaseProperty) => filterValueChoices(property, choiceWords),
+      valueLabel: (property: DatabaseProperty | undefined, value: unknown): string =>
+        filterValueLabel(property, value, valueWords),
+    };
+  }, [t]);
 }
 
 /** Which filter operators make sense for a given property type, in menu order. */
@@ -145,17 +154,11 @@ export const OPTION_COLORS: DatabaseOptionColor[] = [
   'red',
 ];
 
-export const OPTION_COLOR_LABELS: Record<DatabaseOptionColor, string> = {
-  gray: 'Grau',
-  brown: 'Braun',
-  orange: 'Orange',
-  yellow: 'Gelb',
-  green: 'Grün',
-  blue: 'Blau',
-  purple: 'Violett',
-  pink: 'Pink',
-  red: 'Rot',
-};
+/** The name of an option colour in the reader's language. */
+export function useOptionColorLabel(): (color: DatabaseOptionColor) => string {
+  const t = useTranslations('database.optionColors');
+  return React.useCallback((color: DatabaseOptionColor) => t(color), [t]);
+}
 
 /**
  * Tailwind classes per option colour, written out rather than interpolated:

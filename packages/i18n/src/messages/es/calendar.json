@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "No se ha seleccionado una fecha",
+    "noDateProperty": "Esta base de datos todavía no tiene ninguna propiedad de tipo «Fecha».",
+    "chooseDateProperty": "Elige una propiedad de fecha para ordenar las filas.",
+    "propertyPlaceholder": "Seleccionar propiedad"
+  },
+  "body": {
+    "incomplete": "Este periodo contiene más entradas de las que se muestran aquí. Elige un periodo más corto para verlas todas.",
+    "loading": "Cargando eventos",
+    "loadFailed": "No se han cargado los eventos"
+  },
+  "toolbar": {
+    "today": "Hoy",
+    "jumpTo": "Ir a",
+    "modeSwitch": "Vista",
+    "weekWithinMonth": "{fromDay} a {to}",
+    "weekRange": "{from} a {to}"
+  },
+  "modes": {
+    "LIST": "Lista",
+    "DAY": "Día",
+    "WEEK": "Semana",
+    "MONTH": "Mes",
+    "YEAR": "Año"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Mes anterior",
+      "next": "Mes siguiente"
+    },
+    "DAY": {
+      "previous": "Día anterior",
+      "next": "Día siguiente"
+    },
+    "WEEK": {
+      "previous": "Semana anterior",
+      "next": "Semana siguiente"
+    },
+    "MONTH": {
+      "previous": "Mes anterior",
+      "next": "Mes siguiente"
+    },
+    "YEAR": {
+      "previous": "Año anterior",
+      "next": "Año siguiente"
+    }
+  },
+  "month": {
+    "openDay": "Abrir día: {date}",
+    "more": "{count, plural, one {+# más} many {+# más} other {+# más}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# entrada} many {# entradas} other {# entradas}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nada en este periodo",
+    "emptyDescription": "No hay ninguna entrada en este mes. Desplázate o cambia de vista.",
+    "allDay": "Todo el día",
+    "timeRange": "{from} a {to}"
+  },
+  "timeGrid": {
+    "allDay": "Todo el día"
+  }
+}

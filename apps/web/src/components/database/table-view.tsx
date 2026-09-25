@@ -2,6 +2,7 @@
 
 import { Maximize2Icon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -59,6 +60,8 @@ interface TableViewProps {
 const TRAILING_COLUMN_WIDTH = 44;
 
 export function TableView({ workspaceId, documentId, view, properties, readOnly }: TableViewProps) {
+  const t = useTranslations('database.table');
+  const tRows = useTranslations('database.rows');
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
   const updateValues = useUpdateDatabaseRowValues(documentId);
@@ -91,10 +94,9 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
     });
   };
 
-  if (rowsQuery.isPending)
-    return <LoadingState variant="skeleton" rows={4} label="Zeilen werden geladen" />;
+  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError) {
-    return <ErrorState title="Zeilen nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
+    return <ErrorState title={t('loadFailed')} onRetry={() => void rowsQuery.refetch()} />;
   }
 
   const rows = rowsQuery.data.rows;
@@ -141,11 +143,11 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
               )}
             >
               <div className="flex items-center justify-between gap-1">
-                <span className="truncate">Name</span>
+                <span className="truncate">{t('nameColumn')}</span>
                 {readOnly ? null : (
                   <ColumnResizeHandle
                     width={widthOf(DATABASE_TITLE_COLUMN_KEY)}
-                    label="Spalte Name"
+                    label={t('resizeColumn', { name: t('nameColumn') })}
                     onDrag={(width) => setDraggedWidth({ key: DATABASE_TITLE_COLUMN_KEY, width })}
                     onCommit={(width) => commitWidth(DATABASE_TITLE_COLUMN_KEY, width)}
                   />
@@ -169,7 +171,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                   {readOnly ? null : (
                     <ColumnResizeHandle
                       width={widthOf(property.id)}
-                      label={`Spalte ${property.name}`}
+                      label={t('resizeColumn', { name: property.name })}
                       onDrag={(width) => setDraggedWidth({ key: property.id, width })}
                       onCommit={(width) => commitWidth(property.id, width)}
                     />
@@ -217,7 +219,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label="Zeile öffnen"
+                    aria-label={t('openRow')}
                     data-testid="open-row-peek"
                     className="shrink-0 opacity-0 focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100"
                     onClick={() => setPeekRowId(row.document.id)}
@@ -253,17 +255,14 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
           size="sm"
           className="ml-1 mt-1 text-muted-foreground"
           data-testid="add-row"
-          onClick={() => createRow.mutate({ title: 'Unbenannt', values: [] })}
+          onClick={() => createRow.mutate({ title: tRows('untitled'), values: [] })}
         >
-          <PlusIcon /> Neue Zeile
+          <PlusIcon /> {t('newRow')}
         </Button>
       )}
 
       {rows.length === 0 ? (
-        <EmptyState
-          title="Noch keine Zeilen"
-          description="Lege die erste Zeile für diese Datenbank an."
-        />
+        <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
       ) : null}
 
       <RowPeekSheet
@@ -284,6 +283,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
 
 interface ColumnResizeHandleProps {
   width: number;
+  /** The whole accessible name, naming the column and what dragging does. */
   label: string;
   onDrag: (width: number) => void;
   onCommit: (width: number) => void;
@@ -302,7 +302,7 @@ function ColumnResizeHandle({ width, label, onDrag, onCommit }: ColumnResizeHand
   return (
     <button
       type="button"
-      aria-label={`${label} breiter oder schmaler ziehen`}
+      aria-label={label}
       data-testid="column-resize"
       className={cn(
         'absolute inset-y-0 -right-px z-10 w-1.5 cursor-col-resize touch-none rounded-full',

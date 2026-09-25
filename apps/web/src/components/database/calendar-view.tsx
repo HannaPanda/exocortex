@@ -1,6 +1,7 @@
 'use client';
 
 import { CalendarDaysIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -55,6 +56,7 @@ export function CalendarView({
   properties,
   readOnly,
 }: CalendarViewProps) {
+  const t = useTranslations('calendar.setup');
   const dateProperties = properties.filter((property) => property.type === 'DATE');
   const updateView = useUpdateDatabaseView(documentId);
   const dateProperty = properties.find((property) => property.id === view.config.datePropertyId);
@@ -64,12 +66,8 @@ export function CalendarView({
       <EmptyState
         className="flex-1"
         icon={CalendarDaysIcon}
-        title="Noch kein Datum gewählt"
-        description={
-          dateProperties.length === 0
-            ? 'Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.'
-            : 'Wähle eine Datums-Eigenschaft, nach der die Zeilen einsortiert werden.'
-        }
+        title={t('title')}
+        description={dateProperties.length === 0 ? t('noDateProperty') : t('chooseDateProperty')}
       >
         {dateProperties.length === 0 ? null : (
           <Select
@@ -86,7 +84,7 @@ export function CalendarView({
               <SelectValue>
                 {(value: string | null) =>
                   value === null
-                    ? 'Eigenschaft wählen'
+                    ? t('propertyPlaceholder')
                     : dateProperties.find((p) => p.id === value)?.name
                 }
               </SelectValue>
@@ -128,6 +126,8 @@ function CalendarBody({
   datePropertyId: string;
   readOnly: boolean;
 }) {
+  const t = useTranslations('calendar.body');
+  const locale = useLocale();
   const updateView = useUpdateDatabaseView(documentId);
   // The stored mode is the starting point, not a controlled value: the switch
   // has to answer immediately, and the view's own refetch arrives later.
@@ -147,8 +147,8 @@ function CalendarBody({
   });
 
   const entriesByDay = React.useMemo(
-    () => groupEntriesByDay(toCalendarEntries(rowsQuery.data?.rows ?? [], datePropertyId)),
-    [rowsQuery.data, datePropertyId],
+    () => groupEntriesByDay(toCalendarEntries(rowsQuery.data?.rows ?? [], datePropertyId), locale),
+    [rowsQuery.data, datePropertyId, locale],
   );
 
   function changeMode(next: DatabaseCalendarMode) {
@@ -176,10 +176,7 @@ function CalendarBody({
 
       {rowsQuery.data?.complete === false ? (
         <Alert className="mb-2">
-          <AlertDescription>
-            Dieser Zeitraum enthält mehr Einträge, als hier gezeigt werden. Wähle einen kürzeren
-            Zeitraum, um alle zu sehen.
-          </AlertDescription>
+          <AlertDescription>{t('incomplete')}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -189,10 +186,10 @@ function CalendarBody({
 
   function renderBody() {
     if (rowsQuery.isPending) {
-      return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
+      return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
     }
     if (rowsQuery.isError) {
-      return <ErrorState title="Termine nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
+      return <ErrorState title={t('loadFailed')} onRetry={() => void rowsQuery.refetch()} />;
     }
     if (mode === 'DAY' || mode === 'WEEK') {
       // The only mode that scrolls itself: its axis is taller than the box, and

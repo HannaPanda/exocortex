@@ -9,6 +9,7 @@ import {
   TrashIcon,
   XIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -58,11 +59,11 @@ import {
 import {
   CONFIGURED_PROPERTY_TYPE_SET,
   OPTION_COLOR_BG_CLASS,
-  OPTION_COLOR_LABELS,
   OPTION_COLOR_TEXT_CLASS,
   OPTION_COLORS,
   OPTION_PROPERTY_TYPES,
-  PROPERTY_TYPE_LABELS,
+  useOptionColorLabel,
+  usePropertyTypeLabel,
 } from './property-types';
 import {
   columnMoveAfter,
@@ -90,6 +91,8 @@ export function PropertyMenu({
   columns,
   readOnly,
 }: PropertyMenuProps) {
+  const t = useTranslations('database.propertyMenu');
+  const typeLabel = usePropertyTypeLabel();
   const [renaming, setRenaming] = React.useState(false);
   const [managingOptions, setManagingOptions] = React.useState(false);
   const [editingDateFormat, setEditingDateFormat] = React.useState(false);
@@ -108,7 +111,7 @@ export function PropertyMenu({
     return (
       <span
         className="truncate text-xs font-medium text-muted-foreground"
-        title={PROPERTY_TYPE_LABELS[property.type]}
+        title={typeLabel(property.type)}
       >
         {property.name}
       </span>
@@ -131,29 +134,29 @@ export function PropertyMenu({
           }
         />
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => setRenaming(true)}>Umbenennen</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setRenaming(true)}>{t('rename')}</DropdownMenuItem>
           <DropdownMenuItem
             disabled={!move.can(property.id, 'left')}
             onClick={() => move.run(property.id, 'left')}
             data-testid={`property-move-left-${property.id}`}
           >
-            <ArrowLeftIcon /> Nach links
+            <ArrowLeftIcon /> {t('moveLeft')}
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!move.can(property.id, 'right')}
             onClick={() => move.run(property.id, 'right')}
             data-testid={`property-move-right-${property.id}`}
           >
-            <ArrowRightIcon /> Nach rechts
+            <ArrowRightIcon /> {t('moveRight')}
           </DropdownMenuItem>
           {hasOptions ? (
             <DropdownMenuItem onClick={() => setManagingOptions(true)}>
-              <SettingsIcon /> Optionen verwalten
+              <SettingsIcon /> {t('manageOptions')}
             </DropdownMenuItem>
           ) : null}
           {property.type === 'DATE' ? (
             <DropdownMenuItem onClick={() => setEditingDateFormat(true)}>
-              <SettingsIcon /> Datumsformat
+              <SettingsIcon /> {t('dateFormat')}
             </DropdownMenuItem>
           ) : null}
           {hasConfig ? (
@@ -161,12 +164,12 @@ export function PropertyMenu({
               onClick={() => setEditingConfig(true)}
               data-testid={`property-configure-${property.id}`}
             >
-              <SettingsIcon /> {PROPERTY_TYPE_LABELS[property.type]} einrichten
+              <SettingsIcon /> {t('configure', { type: typeLabel(property.type) })}
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive" onClick={() => setConfirmingDelete(true)}>
-            <TrashIcon /> Eigenschaft löschen
+            <TrashIcon /> {t('delete')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -190,7 +193,7 @@ export function PropertyMenu({
           >
             <Input autoFocus value={name} onChange={(event) => setName(event.target.value)} />
             <Button type="submit" size="sm">
-              Speichern
+              {t('save')}
             </Button>
           </form>
         </PopoverContent>
@@ -230,14 +233,12 @@ export function PropertyMenu({
       <Dialog open={confirmingDelete} onOpenChange={setConfirmingDelete}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eigenschaft „{property.name}“ löschen?</DialogTitle>
-            <DialogDescription>
-              Jede Zeile verliert damit unwiderruflich ihren Wert für diese Eigenschaft.
-            </DialogDescription>
+            <DialogTitle>{t('deleteTitle', { name: property.name })}</DialogTitle>
+            <DialogDescription>{t('deleteDescription')}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setConfirmingDelete(false)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -246,7 +247,7 @@ export function PropertyMenu({
                 setConfirmingDelete(false);
               }}
             >
-              Löschen
+              {t('confirmDelete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -306,6 +307,7 @@ function DateFormatEditor({
   documentId: string;
   property: DatabaseProperty;
 }) {
+  const t = useTranslations('database.propertyMenu');
   const updateProperty = useUpdateDatabaseProperty(documentId);
   const config = parseDatePropertyConfig(property.config);
 
@@ -322,7 +324,7 @@ function DateFormatEditor({
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <Label htmlFor={`date-time-${property.id}`} className="text-sm font-normal">
-          Uhrzeit
+          {t('includeTime')}
         </Label>
         <Switch
           id={`date-time-${property.id}`}
@@ -332,7 +334,7 @@ function DateFormatEditor({
       </div>
       <div className="flex items-center justify-between gap-3">
         <Label htmlFor={`date-range-${property.id}`} className="text-sm font-normal">
-          Enddatum
+          {t('isRange')}
         </Label>
         <Switch
           id={`date-range-${property.id}`}
@@ -340,10 +342,7 @@ function DateFormatEditor({
           onCheckedChange={(checked) => submit({ isRange: checked })}
         />
       </div>
-      <p className="text-xs text-muted-foreground">
-        Mit Enddatum wird aus der Eigenschaft ein Zeitraum. Erst dann kann eine Kalenderansicht
-        Termine über mehrere Tage zeigen.
-      </p>
+      <p className="text-xs text-muted-foreground">{t('rangeHint')}</p>
       {updateProperty.isError ? (
         <p role="alert" className="text-xs text-destructive-text">
           {updateProperty.error.message}
@@ -360,6 +359,8 @@ function OptionsManager({
   documentId: string;
   property: DatabaseProperty;
 }) {
+  const t = useTranslations('database.propertyMenu');
+  const colorLabel = useOptionColorLabel();
   const [label, setLabel] = React.useState('');
   const createOption = useCreateDatabasePropertyOption(documentId);
   const updateOption = useUpdateDatabasePropertyOption(documentId);
@@ -367,7 +368,7 @@ function OptionsManager({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-medium text-muted-foreground">Optionen</p>
+      <p className="text-xs font-medium text-muted-foreground">{t('options')}</p>
       <ul className="flex flex-col gap-1">
         {property.options.map((option) => (
           <li key={option.id} className="flex items-center gap-1">
@@ -384,7 +385,7 @@ function OptionsManager({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="icon-sm" aria-label="Farbe ändern">
+                  <Button variant="ghost" size="icon-sm" aria-label={t('changeColor')}>
                     <SettingsIcon className="size-3.5" />
                   </Button>
                 }
@@ -402,7 +403,7 @@ function OptionsManager({
                     }
                   >
                     <span className={cn('size-3 rounded-full', OPTION_COLOR_BG_CLASS[color])} />
-                    {OPTION_COLOR_LABELS[color]}
+                    {colorLabel(color)}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -410,7 +411,7 @@ function OptionsManager({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Option löschen"
+              aria-label={t('deleteOption')}
               onClick={() => deleteOption.mutate({ propertyId: property.id, optionId: option.id })}
             >
               <XIcon className="size-3.5" />
@@ -436,11 +437,11 @@ function OptionsManager({
       >
         <Input
           value={label}
-          placeholder="Neue Option"
+          placeholder={t('newOption')}
           className="h-8"
           onChange={(event) => setLabel(event.target.value)}
         />
-        <Button type="submit" size="icon-sm" aria-label="Option hinzufügen">
+        <Button type="submit" size="icon-sm" aria-label={t('addOption')}>
           <PlusIcon />
         </Button>
       </form>
@@ -466,6 +467,7 @@ function DerivedConfigEditor({
   property: DatabaseProperty;
   onDone: () => void;
 }) {
+  const t = useTranslations('database.propertyMenu');
   const [config, setConfig] = React.useState<PropertyConfig>(property.config);
   const updateProperty = useUpdateDatabaseProperty(documentId);
   const ready = isPropertyConfigComplete(property.type, config);
@@ -488,7 +490,7 @@ function DerivedConfigEditor({
         onChange={setConfig}
       />
       <Button type="submit" size="sm" disabled={!ready}>
-        Speichern
+        {t('save')}
       </Button>
     </form>
   );

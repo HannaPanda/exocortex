@@ -1,0 +1,243 @@
+{
+  "propertyTypes": {
+    "TEXT": "Testo",
+    "NUMBER": "Numero",
+    "SELECT": "Selezione",
+    "MULTI_SELECT": "Selezione multipla",
+    "DATE": "Data",
+    "CHECKBOX": "Casella di controllo",
+    "URL": "URL",
+    "EMAIL": "Email",
+    "PHONE": "Telefono",
+    "PERSON": "Persona",
+    "FILES": "File",
+    "CREATED_TIME": "Data di creazione",
+    "UPDATED_TIME": "Data dell’ultima modifica",
+    "CREATED_BY": "Creato da",
+    "UPDATED_BY": "Ultima modifica di",
+    "RELATION": "Relazione",
+    "ROLLUP": "Rollup",
+    "FORMULA": "Formula"
+  },
+  "optionColors": {
+    "gray": "Grigio",
+    "brown": "Marrone",
+    "orange": "Arancione",
+    "yellow": "Giallo",
+    "green": "Verde",
+    "blue": "Blu",
+    "purple": "Viola",
+    "pink": "Rosa",
+    "red": "Rosso"
+  },
+  "viewTypes": {
+    "TABLE": "Tabella",
+    "BOARD": "Bacheca",
+    "GALLERY": "Galleria",
+    "CALENDAR": "Calendario"
+  },
+  "rows": {
+    "untitled": "Senza titolo"
+  },
+  "shell": {
+    "loading": "Caricamento del database",
+    "loadFailed": "Database non caricato",
+    "creatingView": "Creazione della vista"
+  },
+  "views": {
+    "tabsLabel": "Viste",
+    "moveLeft": "Sposta a sinistra",
+    "moveRight": "Sposta a destra",
+    "delete": "Elimina vista",
+    "deleteTitle": "Eliminare la vista “{name}”?",
+    "deleteDescription": "I filtri, l’ordinamento e la larghezza delle colonne di questa vista andranno persi. Le righe del database rimarranno invariate.",
+    "actionsFor": "Azioni per la vista “{name}”",
+    "add": "Aggiungi vista",
+    "numberedName": "{type} {number}"
+  },
+  "viewOptions": {
+    "trigger": "Vista",
+    "rowHeight": "Altezza riga",
+    "rowHeights": {
+      "short": "Compatta",
+      "medium": "Media",
+      "tall": "Alta"
+    },
+    "columns": "Colonne",
+    "noProperties": "Ancora nessuna proprietà."
+  },
+  "filters": {
+    "operators": {
+      "equals": "è",
+      "not_equals": "non è",
+      "contains": "contiene",
+      "not_contains": "non contiene",
+      "is_empty": "è vuoto",
+      "is_not_empty": "non è vuoto",
+      "greater_than": "maggiore di",
+      "less_than": "minore di",
+      "on_or_after": "a partire da",
+      "on_or_before": "fino a",
+      "overlaps": "si sovrappone a"
+    },
+    "checkedChoice": "Spuntato",
+    "uncheckedChoice": "Non spuntato",
+    "checkedValue": "spuntato",
+    "uncheckedValue": "non spuntato",
+    "filter": "Filtro",
+    "removeFilter": "Rimuovi filtro",
+    "value": "Valore",
+    "addFilter": "Aggiungi filtro",
+    "sort": "Ordina",
+    "removeSort": "Rimuovi ordinamento",
+    "ascending": "Crescente",
+    "descending": "Decrescente"
+  },
+  "table": {
+    "loading": "Caricamento delle righe",
+    "loadFailed": "Impossibile caricare le righe",
+    "nameColumn": "Nome",
+    "resizeColumn": "Trascina per ridimensionare la colonna {name}",
+    "openRow": "Apri riga",
+    "newRow": "Nuova riga",
+    "emptyTitle": "Ancora nessuna riga",
+    "emptyDescription": "Crea la prima riga per questo database."
+  },
+  "board": {
+    "notGroupedTitle": "Non ancora raggruppato",
+    "noSelectProperty": "Questo database non ha ancora una proprietà di tipo “Selezione”.",
+    "chooseGroupProperty": "Scegli una proprietà di selezione per raggruppare le schede.",
+    "choosePropertyPlaceholder": "Scegli proprietà",
+    "loading": "Caricamento schede",
+    "loadFailed": "Schede non caricate",
+    "noValue": "Senza valore",
+    "moveCard": "Sposta scheda",
+    "moveTo": "Sposta in “{column}”",
+    "newCard": "Nuova scheda"
+  },
+  "gallery": {
+    "loading": "Caricamento schede",
+    "loadFailed": "Schede non caricate",
+    "emptyTitle": "Ancora nessuna riga",
+    "emptyDescription": "Crea la prima scheda per questa galleria.",
+    "newCard": "Nuova scheda"
+  },
+  "cells": {
+    "empty": "Vuoto",
+    "checkbox": "Casella di controllo",
+    "checked": "Completato",
+    "noSelection": "Nessuna selezione",
+    "commitHint": "Invio o Esc per confermare",
+    "commitHintMultiline": "Ctrl/Cmd + Invio o Esc per confermare",
+    "idListPlaceholder": "ID separati da virgola",
+    "yes": "Sì",
+    "no": "No",
+    "dateRange": "Da {start} a {end}",
+    "sameDayTimeRange": "{day}, da {start} a {end}",
+    "rangeStart": "Inizio",
+    "rangeEnd": "Fine",
+    "relationNotConfigured": "Questa relazione non è configurata.",
+    "relationTargetEmpty": "Il database collegato non ha ancora nessuna riga.",
+    "relationLimit": "Vengono mostrate solo le prime {limit} righe."
+  },
+  "addProperty": {
+    "trigger": "Aggiungi proprietà",
+    "namePlaceholder": "Nome della proprietà",
+    "submit": "Aggiungi"
+  },
+  "propertyMenu": {
+    "rename": "Rinomina",
+    "moveLeft": "Sposta a sinistra",
+    "moveRight": "Sposta a destra",
+    "manageOptions": "Gestisci opzioni",
+    "dateFormat": "Formato data",
+    "configure": "Configura {type}",
+    "delete": "Elimina proprietà",
+    "save": "Salva",
+    "deleteTitle": "Eliminare la proprietà «{name}»?",
+    "deleteDescription": "Ogni riga perderà definitivamente il proprio valore per questa proprietà.",
+    "cancel": "Annulla",
+    "confirmDelete": "Elimina",
+    "includeTime": "Ora",
+    "isRange": "Data di fine",
+    "rangeHint": "Con una data di fine, la proprietà diventa un intervallo. Solo così una vista calendario potrà mostrare eventi su più giorni.",
+    "options": "Opzioni",
+    "changeColor": "Cambia colore",
+    "deleteOption": "Elimina opzione",
+    "newOption": "Nuova opzione",
+    "addOption": "Aggiungi opzione"
+  },
+  "config": {
+    "relation": {
+      "target": "Database collegato",
+      "chooseDatabase": "Scegli database",
+      "thisDatabase": "{title} (questo)",
+      "hint": "Solo database di questa area di lavoro. È consentito lo stesso database, ad esempio per le sottoattività.",
+      "allowMultiple": "Consenti più righe"
+    },
+    "rollup": {
+      "relation": "Relazione",
+      "chooseColumn": "Scegli colonna",
+      "noRelation": "Questo database non ha ancora una colonna di relazione. Creane prima una.",
+      "aggregate": "Calcolo",
+      "aggregates": {
+        "count": "Numero di righe collegate",
+        "count_unique": "Numero di valori univoci",
+        "count_not_empty": "Numero di valori non vuoti",
+        "sum": "Somma",
+        "average": "Media",
+        "min": "Valore minimo",
+        "max": "Valore massimo",
+        "earliest": "Data più remota",
+        "latest": "Data più recente"
+      },
+      "target": "Colonna nel database collegato",
+      "columnWithType": "{name} ({type})"
+    },
+    "formula": {
+      "label": "Formula",
+      "placeholder": "prop(\"Prezzo\") * prop(\"Quantità\")",
+      "help": "Scrivi le colonne come <code>prop(\"Nome\")</code>. Esegui calcoli con {arithmetic}, confronta con {comparison}, combina con {logical}.",
+      "reference": "Colonne e funzioni",
+      "functions": {
+        "if": "if(condizione; allora; altrimenti)",
+        "not": "not(condizione)",
+        "and": "and(a; b)",
+        "or": "or(a; b)",
+        "empty": "empty(valore): la cella è vuota?",
+        "format": "format(valore): come testo",
+        "concat": "concat(a; b; …)",
+        "length": "length(testo)",
+        "upper": "upper(testo)",
+        "lower": "lower(testo)",
+        "contains": "contains(testo; parte)",
+        "abs": "abs(numero)",
+        "floor": "floor(numero)",
+        "ceil": "ceil(numero)",
+        "round": "round(numero; decimali)",
+        "min": "min(a; b; …)",
+        "max": "max(a; b; …)",
+        "now": "now(): adesso",
+        "dateAdd": "dateAdd(data; giorni)",
+        "dateDiffDays": "dateDiffDays(da; a): giorni di differenza",
+        "year": "year(data)",
+        "month": "month(data)",
+        "day": "day(data)"
+      }
+    }
+  },
+  "embed": {
+    "fallbackTitle": "Database",
+    "openOwnPage": "Apri nella propria pagina",
+    "switchDatabase": "Cambia database",
+    "noneTitle": "Nessun database selezionato",
+    "chooseDescription": "Scegli un database da incorporare qui.",
+    "notFoundDescription": "Questo database non è stato trovato. Potrebbe essere stato eliminato.",
+    "choose": "Seleziona database",
+    "loading": "Caricamento database"
+  },
+  "peek": {
+    "openAsPage": "Apri come pagina",
+    "noProperties": "Questo database non ha ancora proprietà."
+  }
+}

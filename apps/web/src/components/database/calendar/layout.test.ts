@@ -33,7 +33,7 @@ function only(result: readonly PositionedEntry[]): PositionedEntry {
 
 describe('layoutDay', () => {
   it('places an appointment on its wall-clock minutes', () => {
-    const placed = only(layoutDay([entry('Zahnarzt', at(9), at(10, 30))], day));
+    const placed = only(layoutDay([entry('Zahnarzt', at(9), at(10, 30))], day, 'de'));
     expect(placed.startMinute).toBe(9 * 60);
     expect(placed.endMinute).toBe(10 * 60 + 30);
     expect(placed.columns).toBe(1);
@@ -42,28 +42,32 @@ describe('layoutDay', () => {
   });
 
   it('gives an appointment without an end a default length', () => {
-    const placed = only(layoutDay([entry('Offen', at(9), null)], day));
+    const placed = only(layoutDay([entry('Offen', at(9), null)], day, 'de'));
     expect(placed.endMinute).toBe(10 * 60);
   });
 
   it('draws a very short appointment tall enough to read', () => {
-    const placed = only(layoutDay([entry('Kurz', at(9), at(9, 5))], day));
+    const placed = only(layoutDay([entry('Kurz', at(9), at(9, 5))], day, 'de'));
     expect(placed.endMinute).toBe(9 * 60 + 30);
   });
 
   it('skips all-day entries, which belong in the band above the axis', () => {
-    expect(layoutDay([entry('Geburtstag', at(0), at(0), true)], day)).toEqual([]);
+    expect(layoutDay([entry('Geburtstag', at(0), at(0), true)], day, 'de')).toEqual([]);
   });
 
   it('skips an appointment of a neighbouring day', () => {
     expect(
-      layoutDay([entry('Gestern', new Date(2026, 8, 17, 9), new Date(2026, 8, 17, 10))], day),
+      layoutDay([entry('Gestern', new Date(2026, 8, 17, 9), new Date(2026, 8, 17, 10))], day, 'de'),
     ).toEqual([]);
   });
 
   it('clamps a span that started yesterday and marks both edges', () => {
     const placed = only(
-      layoutDay([entry('Konferenz', new Date(2026, 8, 17, 9), new Date(2026, 8, 19, 17))], day),
+      layoutDay(
+        [entry('Konferenz', new Date(2026, 8, 17, 9), new Date(2026, 8, 19, 17))],
+        day,
+        'de',
+      ),
     );
     expect(placed.startMinute).toBe(0);
     expect(placed.endMinute).toBe(MINUTES_PER_DAY);
@@ -72,13 +76,19 @@ describe('layoutDay', () => {
   });
 
   it('ends an appointment at the bottom of the day, not at the top of it', () => {
-    const placed = only(layoutDay([entry('Nachtschicht', at(22), new Date(2026, 8, 19))], day));
+    const placed = only(
+      layoutDay([entry('Nachtschicht', at(22), new Date(2026, 8, 19))], day, 'de'),
+    );
     expect(placed.endMinute).toBe(MINUTES_PER_DAY);
     expect(placed.continuesAfter).toBe(false);
   });
 
   it('puts two overlapping appointments side by side', () => {
-    const result = layoutDay([entry('B', at(9, 30), at(10, 30)), entry('A', at(9), at(10))], day);
+    const result = layoutDay(
+      [entry('B', at(9, 30), at(10, 30)), entry('A', at(9), at(10))],
+      day,
+      'de',
+    );
     expect(titles(result)).toEqual(['A', 'B']);
     expect(result.map((item) => item.column)).toEqual([0, 1]);
     expect(result.map((item) => item.columns)).toEqual([2, 2]);
@@ -92,6 +102,7 @@ describe('layoutDay', () => {
         entry('Spät', at(10, 30), at(11)),
       ],
       day,
+      'de',
     );
     // "Spät" starts after "Früh" ends, so it takes the same second column
     // rather than opening a third one and making everything a third as wide.
@@ -112,6 +123,7 @@ describe('layoutDay', () => {
         entry('Nachmittag', at(15), at(16)),
       ],
       day,
+      'de',
     );
     const afternoon = result.find((item) => item.entry.row.document.title === 'Nachmittag');
     expect(afternoon?.columns).toBe(1);
@@ -119,12 +131,16 @@ describe('layoutDay', () => {
   });
 
   it('gives the longer of two appointments starting together the left column', () => {
-    const result = layoutDay([entry('Kurz', at(9), at(9, 45)), entry('Lang', at(9), at(12))], day);
+    const result = layoutDay(
+      [entry('Kurz', at(9), at(9, 45)), entry('Lang', at(9), at(12))],
+      day,
+      'de',
+    );
     expect(titles(result)).toEqual(['Lang', 'Kurz']);
   });
 
   it('ignores a value that is not a date', () => {
     const broken = { ...entry('Kaputt', at(9), null), start: 'irgendwann' };
-    expect(layoutDay([broken], day)).toEqual([]);
+    expect(layoutDay([broken], day, 'de')).toEqual([]);
   });
 });

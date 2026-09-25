@@ -10,6 +10,7 @@ import {
   startOfWeek,
   stepAnchor,
   toDateInputValue,
+  weekdayNames,
 } from './range';
 
 /** Local calendar parts, so an assertion says nothing about the runner's zone. */
@@ -86,19 +87,33 @@ describe('stepAnchor', () => {
 });
 
 describe('calendarLabel', () => {
+  // The German wording of `calendar.toolbar`, so the assertions read as the
+  // default locale does.
+  const wording = {
+    withinMonth: (fromDay: number, to: string) => `${fromDay}. bis ${to}`,
+    range: (from: string, to: string) => `${from} bis ${to}`,
+  };
+  const label = (mode: Parameters<typeof calendarLabel>[0], anchor: Date) =>
+    calendarLabel(mode, anchor, 'de', wording);
+
   it('names the day, the month and the year', () => {
-    expect(calendarLabel('DAY', new Date(2026, 8, 18))).toBe('Freitag, 18. September 2026');
-    expect(calendarLabel('MONTH', new Date(2026, 8, 18))).toBe('September 2026');
-    expect(calendarLabel('LIST', new Date(2026, 8, 18))).toBe('September 2026');
-    expect(calendarLabel('YEAR', new Date(2026, 8, 18))).toBe('2026');
+    expect(label('DAY', new Date(2026, 8, 18))).toBe('Freitag, 18. September 2026');
+    expect(label('MONTH', new Date(2026, 8, 18))).toBe('September 2026');
+    expect(label('LIST', new Date(2026, 8, 18))).toBe('September 2026');
+    expect(label('YEAR', new Date(2026, 8, 18))).toBe('2026');
   });
 
   it('names a week once when it stays in one month, twice when it does not', () => {
-    expect(calendarLabel('WEEK', new Date(2026, 8, 18))).toBe('14. bis 20. September 2026');
-    expect(calendarLabel('WEEK', new Date(2026, 8, 30))).toBe('28. September bis 4. Oktober 2026');
-    expect(calendarLabel('WEEK', new Date(2026, 11, 31))).toBe(
-      '28. Dezember 2026 bis 3. Januar 2027',
-    );
+    expect(label('WEEK', new Date(2026, 8, 18))).toBe('14. bis 20. September 2026');
+    expect(label('WEEK', new Date(2026, 8, 30))).toBe('28. September bis 4. Oktober 2026');
+    expect(label('WEEK', new Date(2026, 11, 31))).toBe('28. Dezember 2026 bis 3. Januar 2027');
+  });
+});
+
+describe('weekdayNames', () => {
+  it('names the days Monday first in the requested locale', () => {
+    expect(weekdayNames('de', 'weekdayNarrow')).toEqual(['M', 'D', 'M', 'D', 'F', 'S', 'S']);
+    expect(weekdayNames('en', 'weekdayNarrow')).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
   });
 });
 

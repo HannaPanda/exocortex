@@ -13,6 +13,9 @@ const options: DatabasePropertyOption[] = [
 
 const select = databaseProperty('p-select', { type: 'SELECT', options });
 
+// The words are handed in by `useFilterWording`; any pair shows they are used.
+const words = { checked: 'angehakt', unchecked: 'nicht angehakt' };
+
 describe('operatorsForType', () => {
   it('offers comparisons for numbers and dates, not "contains"', () => {
     expect(operatorsForType('NUMBER')).toContain('greater_than');
@@ -53,41 +56,41 @@ describe('operatorsForType', () => {
 
 describe('filterValueChoices', () => {
   it('offers the option labels and stores their ids', () => {
-    expect(filterValueChoices(select)).toEqual([
+    expect(filterValueChoices(select, words)).toEqual([
       { value: 'opt-1', label: 'Offen' },
       { value: 'opt-2', label: 'Erledigt' },
     ]);
   });
 
   it('spells out both sides of a checkbox', () => {
-    expect(filterValueChoices(databaseProperty('p', { type: 'CHECKBOX' }))).toHaveLength(2);
+    expect(filterValueChoices(databaseProperty('p', { type: 'CHECKBOX' }), words)).toHaveLength(2);
   });
 
   it('leaves free text free', () => {
-    expect(filterValueChoices(databaseProperty('p', { type: 'TEXT' }))).toEqual([]);
+    expect(filterValueChoices(databaseProperty('p', { type: 'TEXT' }), words)).toEqual([]);
   });
 });
 
 describe('filterValueLabel', () => {
   it('reads a stored option id back as its label', () => {
-    expect(filterValueLabel(select, 'opt-2')).toBe('Erledigt');
+    expect(filterValueLabel(select, 'opt-2', words)).toBe('Erledigt');
   });
 
   it('shows the raw value when the option is gone', () => {
     // A deleted option must leave the chip readable rather than empty, or a
     // filter nobody can see is a filter nobody can remove.
-    expect(filterValueLabel(select, 'opt-gone')).toBe('opt-gone');
+    expect(filterValueLabel(select, 'opt-gone', words)).toBe('opt-gone');
   });
 
   it('reads a checkbox in words, however the value was stored', () => {
     const checkbox = databaseProperty('p', { type: 'CHECKBOX' });
 
-    expect(filterValueLabel(checkbox, true)).toBe('angehakt');
-    expect(filterValueLabel(checkbox, 'true')).toBe('angehakt');
-    expect(filterValueLabel(checkbox, false)).toBe('nicht angehakt');
+    expect(filterValueLabel(checkbox, true, words)).toBe('angehakt');
+    expect(filterValueLabel(checkbox, 'true', words)).toBe('angehakt');
+    expect(filterValueLabel(checkbox, false, words)).toBe('nicht angehakt');
   });
 
   it('survives a filter whose property no longer exists', () => {
-    expect(filterValueLabel(undefined, 'Berlin')).toBe('Berlin');
+    expect(filterValueLabel(undefined, 'Berlin', words)).toBe('Berlin');
   });
 });

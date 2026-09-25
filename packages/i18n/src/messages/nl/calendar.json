@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Nog geen datum gekozen",
+    "noDateProperty": "Deze database heeft nog geen eigenschap van het type ‘Datum’.",
+    "chooseDateProperty": "Kies een datum-eigenschap om de rijen op in te delen.",
+    "propertyPlaceholder": "Eigenschap kiezen"
+  },
+  "body": {
+    "incomplete": "Deze periode bevat meer items dan hier worden getoond. Kies een kortere periode om alles te zien.",
+    "loading": "Afspraken worden geladen",
+    "loadFailed": "Afspraken niet geladen"
+  },
+  "toolbar": {
+    "today": "Vandaag",
+    "jumpTo": "Ga naar",
+    "modeSwitch": "Weergave",
+    "weekWithinMonth": "{fromDay} tot {to}",
+    "weekRange": "{from} tot {to}"
+  },
+  "modes": {
+    "LIST": "Lijst",
+    "DAY": "Dag",
+    "WEEK": "Week",
+    "MONTH": "Maand",
+    "YEAR": "Jaar"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Vorige maand",
+      "next": "Volgende maand"
+    },
+    "DAY": {
+      "previous": "Vorige dag",
+      "next": "Volgende dag"
+    },
+    "WEEK": {
+      "previous": "Vorige week",
+      "next": "Volgende week"
+    },
+    "MONTH": {
+      "previous": "Vorige maand",
+      "next": "Volgende maand"
+    },
+    "YEAR": {
+      "previous": "Vorig jaar",
+      "next": "Volgend jaar"
+    }
+  },
+  "month": {
+    "openDay": "Dag openen: {date}",
+    "more": "{count, plural, one {+# meer} other {+# meer}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# item} other {# items}}"
+  },
+  "agenda": {
+    "emptyTitle": "Niets in deze periode",
+    "emptyDescription": "Er staat geen item in deze maand. Blader verder of wissel van weergave.",
+    "allDay": "Hele dag",
+    "timeRange": "{from} tot {to}"
+  },
+  "timeGrid": {
+    "allDay": "Hele dag"
+  }
+}

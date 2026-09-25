@@ -13,30 +13,40 @@ export interface CalendarWindow {
   to: Date;
 }
 
-const DAY_LABEL = new Intl.DateTimeFormat('de-DE', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
-const MONTH_YEAR = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
-const MONTH_ONLY = new Intl.DateTimeFormat('de-DE', { month: 'long' });
-const DAY_MONTH = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long' });
-const DAY_MONTH_YEAR = new Intl.DateTimeFormat('de-DE', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
+/**
+ * Every date format the calendar draws, by role. The formatter is built once
+ * per locale and role and then reused: constructing an `Intl.DateTimeFormat`
+ * costs far more than formatting with one, and a month grid formats 42 cells.
+ */
+const DATE_FORMATS = {
+  day: { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
+  dayHeading: { weekday: 'long', day: 'numeric', month: 'long' },
+  dayMonth: { day: 'numeric', month: 'long' },
+  dayMonthYear: { day: 'numeric', month: 'long', year: 'numeric' },
+  monthYear: { month: 'long', year: 'numeric' },
+  month: { month: 'long' },
+  numericDate: { day: 'numeric', month: 'numeric', year: 'numeric' },
+  columnHeader: { weekday: 'short', day: 'numeric' },
+  weekdayShort: { weekday: 'short' },
+  weekdayNarrow: { weekday: 'narrow' },
+  time: { hour: '2-digit', minute: '2-digit' },
+} satisfies Record<string, Intl.DateTimeFormatOptions>;
 
-export const CALENDAR_MODE_LABELS: Record<DatabaseCalendarMode, string> = {
-  LIST: 'Liste',
-  DAY: 'Tag',
-  WEEK: 'Woche',
-  MONTH: 'Monat',
-  YEAR: 'Jahr',
-};
+export type CalendarDateFormat = keyof typeof DATE_FORMATS;
 
-/** Order of the mode switcher, coarse to fine is not it: a reader scans Liste, Tag, Woche, Monat, Jahr. */
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
+
+export function calendarFormatter(locale: string, format: CalendarDateFormat): Intl.DateTimeFormat {
+  const key = `${locale}|${format}`;
+  let formatter = formatterCache.get(key);
+  if (formatter === undefined) {
+    formatter = new Intl.DateTimeFormat(locale, DATE_FORMATS[format]);
+    formatterCache.set(key, formatter);
+  }
+  return formatter;
+}
+
+/** Order of the mode switcher, coarse to fine is not it: a reader scans list, day, week, month, year. */
 export const CALENDAR_MODES: DatabaseCalendarMode[] = ['LIST', 'DAY', 'WEEK', 'MONTH', 'YEAR'];
 
 export function startOfDay(date: Date): Date {
@@ -49,7 +59,11 @@ export function addDays(date: Date, days: number): Date {
   return next;
 }
 
-/** Monday of the week containing `date`. The week starts on Monday here, as it does in German calendars. */
+/**
+ * Monday of the week containing `date`. The week starts on Monday in every
+ * locale for now, as it does in German calendars; a start per locale would
+ * change the grids, the week window and the weekday header together.
+ */
 export function startOfWeek(date: Date): Date {
   const day = startOfDay(date);
   return addDays(day, -((day.getDay() + 6) % 7));
@@ -118,25 +132,42 @@ export function stepAnchor(mode: DatabaseCalendarMode, anchor: Date, direction: 
   }
 }
 
-export function calendarLabel(mode: DatabaseCalendarMode, anchor: Date): string {
+/**
+ * How the two ends of a week are joined into one label. The sentence belongs
+ * to the catalogue, so the caller words it; this module only decides which of
+ * the three shapes a week needs and formats the dates in `locale`.
+ */
+export interface WeekLabelWording {
+  /** Both ends in one month: the first day as a bare number, the last in full. */
+  withinMonth: (fromDay: number, to: string) => string;
+  range: (from: string, to: string) => string;
+}
+
+export function calendarLabel(
+  mode: DatabaseCalendarMode,
+  anchor: Date,
+  locale: string,
+  wording: WeekLabelWording,
+): string {
   const day = startOfDay(anchor);
   switch (mode) {
     case 'DAY':
-      return DAY_LABEL.format(day);
+      return calendarFormatter(locale, 'day').format(day);
     case 'WEEK': {
       const from = startOfWeek(day);
       const to = addDays(from, 6);
+      const full = calendarFormatter(locale, 'dayMonthYear');
       if (from.getFullYear() !== to.getFullYear()) {
-        return `${DAY_MONTH_YEAR.format(from)} bis ${DAY_MONTH_YEAR.format(to)}`;
+        return wording.range(full.format(from), full.format(to));
       }
       if (from.getMonth() !== to.getMonth()) {
-        return `${DAY_MONTH.format(from)} bis ${DAY_MONTH_YEAR.format(to)}`;
+        return wording.range(calendarFormatter(locale, 'dayMonth').format(from), full.format(to));
       }
-      return `${from.getDate()}. bis ${DAY_MONTH_YEAR.format(to)}`;
+      return wording.withinMonth(from.getDate(), full.format(to));
     }
     case 'MONTH':
     case 'LIST':
-      return MONTH_YEAR.format(day);
+      return calendarFormatter(locale, 'monthYear').format(day);
     case 'YEAR':
       return String(day.getFullYear());
   }
@@ -171,6 +202,16 @@ export function queryWindow(window: CalendarWindow): { from: string; to: string 
   };
 }
 
-export function monthName(month: number): string {
-  return MONTH_ONLY.format(new Date(2026, month, 1));
+export function monthName(month: number, locale: string): string {
+  return calendarFormatter(locale, 'month').format(new Date(2026, month, 1));
+}
+
+/**
+ * The seven weekday names of a grid header, Monday first, in `locale`. Read off
+ * a known Monday rather than a list, so every language names its own days.
+ */
+export function weekdayNames(locale: string, format: 'weekdayShort' | 'weekdayNarrow'): string[] {
+  const monday = new Date(2026, 8, 14);
+  const formatter = calendarFormatter(locale, format);
+  return Array.from({ length: 7 }, (_, index) => formatter.format(addDays(monday, index)));
 }

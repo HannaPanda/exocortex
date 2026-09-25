@@ -1,6 +1,7 @@
 'use client';
 
 import { Settings2Icon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseProperty, type DatabaseView } from '@exocortex/contracts';
@@ -17,7 +18,6 @@ import {
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
 
 import {
-  ROW_HEIGHT_LABELS,
   ROW_HEIGHTS,
   rowHeightOf,
   toggleColumnVisibility,
@@ -38,6 +38,7 @@ interface ViewOptionsMenuProps {
  * with four. Hiding a column never touches the property or its values.
  */
 export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMenuProps) {
+  const t = useTranslations('database.viewOptions');
   const updateView = useUpdateDatabaseView(documentId);
   const rowHeight = rowHeightOf(view);
   const visibleIds = new Set(visibleTableProperties(view, properties).map((entry) => entry.id));
@@ -47,13 +48,13 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
       <PopoverTrigger
         render={
           <Button variant="ghost" size="sm" data-testid="view-options">
-            <Settings2Icon /> Ansicht
+            <Settings2Icon /> {t('trigger')}
           </Button>
         }
       />
       <PopoverContent align="start" className="w-64 p-2">
-        <p className="px-1 pb-1 text-xs font-medium text-muted-foreground">Zeilenhöhe</p>
-        <div className="flex gap-1" role="group" aria-label="Zeilenhöhe">
+        <p className="px-1 pb-1 text-xs font-medium text-muted-foreground">{t('rowHeight')}</p>
+        <div className="flex gap-1" role="group" aria-label={t('rowHeight')}>
           {ROW_HEIGHTS.map((height) => (
             <Button
               key={height}
@@ -65,15 +66,15 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
                 updateView.mutate({ viewId: view.id, request: { config: { rowHeight: height } } })
               }
             >
-              {ROW_HEIGHT_LABELS[height]}
+              {t(`rowHeights.${height}`)}
             </Button>
           ))}
         </div>
 
-        <p className="px-1 pt-3 pb-1 text-xs font-medium text-muted-foreground">Spalten</p>
+        <p className="px-1 pt-3 pb-1 text-xs font-medium text-muted-foreground">{t('columns')}</p>
         <div className="flex max-h-64 flex-col gap-0.5 overflow-y-auto">
           {properties.length === 0 ? (
-            <p className="px-1 text-xs text-muted-foreground">Noch keine Eigenschaften.</p>
+            <p className="px-1 text-xs text-muted-foreground">{t('noProperties')}</p>
           ) : null}
           {properties.map((property) => {
             const checkboxId = `column-visible-${property.id}`;

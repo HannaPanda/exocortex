@@ -228,6 +228,918 @@
       "source": "6b1c2493eadc662d",
       "output": "3a7352938c2e3317"
     },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "34233e542b7b9a86"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "e1a0de4e70d49b2a"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "8bbd8fb1fd059ad3"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "ba318cc195ceff48"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "d17c3b2fc1c0b7f6"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "da1cec324919f834"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "93f170656f3efde2"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "8f2364e11b8be3ff"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "6f202f54a7b2d8fe"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "310ca503ef36f177"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "e78041ab51a818a2"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "89f6832560dec0b7"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "c3788e1699a03d25"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "fb125ac2b8c6a5ca"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "2e87cc8a941e661c"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "40a820ebc9f5b64a"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "b8c95ff4612679c1"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "b05ef75bf4308d21"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "2b6a38b89f9c7b30"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "e4a1e89ee1db53ce"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "74e53211fef4b4d4"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "6a2769502a5dda78"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "74e53211fef4b4d4"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "6a2769502a5dda78"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "21fbde19cfb095cd"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "c0f8bbcd417656cf"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "a21a5dc62ee1cde3"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "91e33e3ba5c1ca1a"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "34233e542b7b9a86"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "da7b17bfa93c7d6b"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "dcc839a4015c4b7d"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "2b065c7c9ce466e5"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "ba318cc195ceff48"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "0596a980dc5b88ec"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "2a41290e2528b549"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "366e5ff4c24ba3b9"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "9fd728c66c9a256b"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "49ddf7c4d21883b4"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "4cac12bacfb18574"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "b8c95ff4612679c1"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "efea5fcfeed19ddb"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "ca4d769d1b90f3d8"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "57782454cc76ce1a"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "1313ee12c804ee94"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "8d3efc397417cfd0"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "f5195bc09cd682e6"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "4fd0272a5628ce4f"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "b09e9bb4ef407be8"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "d103a1380b8c77c3"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "11a6767d5674c7e4"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "45d7e5fab552a33f"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "3e95e41335e37f86"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "c72e51fdcb01a621"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "c6c094bc0054f9cb"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "1cdc8c5cde70a568"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "211f6bbe2c56c016"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "f4db1e48476f6075"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "e4bb9f1ece9af926"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "145a143e69670aa4"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "ec6f2c2f65acc165"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "f08ac362fe9efebe"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "f364ccb0aa155412"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "85a39ab345d672ff"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "ddaf50399dfa36f6"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "02db60e73e6faa74"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "2fc31244ad7708cd"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "8e06081844fd2c87"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "e54dcf50ee27d070"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "3e936f6abf6aa694"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "a36207726f369e4d"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "6120a3289a504cbd"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "e87427f53d4c10d0"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "53a2ebf7a4f71606"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "597bf07617bcef6a"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "73f8ae3ae9177c04"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "fd5fa4ff3a493d43"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "2165da87e1103d19"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "b33ee1a24682215f"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "e48c1983870618d6"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "a78e5158796e80af"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "245d3bb66d44c861"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "c44c6f8ada22dacd"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "3cef6f98a33c69a0"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "0f19c6571a17a96f"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "cb452195a1377d0a"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "99d71c7956f906ac"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "974e2528f7cb10d1"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "f17da4250e1f46cf"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "a21d56d5189a3bf9"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "025194fba737d248"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "b38ae2c5b84529e8"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "e31e348fb1c9365b"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "bb91a9ca29f6d087"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "73c264b96d160d18"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "82a5aebc403cb8dc"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "a9de7221765f891e"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "1f22ea8dcd090935"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "6b5f1bfcb92c948b"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "a21d7df04c33f507"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "5a21391bcc74e9be"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "4cb506e81b580350"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "8444626645fa5275"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "97d87b988c8caba2"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "ff3e02ae162eac0c"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "fa7fe67124e94375"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "d57e293fb2adbad8"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "da66e8ba8923f0b2"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "576d623a580109ce"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "89e6b6416b8902f2"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "53676e8f20ba4cb6"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "e520df698000f85f"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "77184595bde3befc"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "0efd92a335901ac9"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "e61a3d78c65133c7"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "79479a6c76d8416a"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "638e249f4a15ebb8"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "beeb20fbd6769508"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "fa51fd49abf67705"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "f792652c06ffa9d7"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "86aaa00d0f0432e7"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "5a78c3a30610c2bc"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "59238e4f67ce8670"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "80ccd8c9b9af87ac"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "e1bf1560b1c24336"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "9049860eb6302ae7"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "ad8c71c50562e477"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "2db2772de5e147eb"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "23c5cdc6269ef451"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "d5001dd4aab39b12"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "bec69036aa27e7fa"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "33fddd0ed6c0d8f0"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "54bfa4373eaf9569"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "8e37953d23daca5f"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "23fba878d4e7be6f"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "33bcb7a31f051f16"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "efea5fcfeed19ddb"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "ca4d769d1b90f3d8"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "8d3efc397417cfd0"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "ec7d56a01607001e"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "18f285592896ec8e"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "0d5adda3cdccf937"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "d486dfbd5fb57834"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "78e7771b8b46e11d"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "bd38ed7732402b1a"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "7d465fb9b9314846"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "ba19e9c3d5f49882"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "19dd83f117525b93"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "b3dbb47f70eab5d8"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4027bd85e5e051b7"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "ffbcabd155ad0e68"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "e5515d759e3b96cd"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "e8f3fbc39e079a21"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "e2d0a54968ead24e"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "43123f5ccaa8e956"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "c3215c84aa6865e4"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "88b91ca9f0980caf"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "6095714905569c81"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "ee61b9551decab79"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "33b93476cf597a33"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "14303aa0c4a08d39"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "fea6bb10936fed92"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "6c94221edd26ec06"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "8d60decd44f3c39e"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "2ef459c3d0a3dbcb"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "d0db8b5e364b6989"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "6fd33256acfc6cdb"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "3064d79a295cefe4"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "1509f561f2416598"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "d103a1380b8c77c3"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "374cd9d220fbeb7a"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "adc31b5573d3f87e"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "99c40ab405926cb5"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "969ccbd3cf6300ec"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "abc7e9892806b047"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "e9f589e95e58f0cb"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "bd82cf16699be29e"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "6007db63e18e532c"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "63dceb8800b2dd4a"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "2a78025de6aae5e7"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "71988c4d8e0803ba"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "435a7cbf5ad4247e"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "60d4afd426a1045a"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "f59ab8d1331b7b16"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "4d18856079394155"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "d9231a7e62920d86"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "d57e293fb2adbad8"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "396f789230028176"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "33bcb7a31f051f16"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "d2c372d7815296b5"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "6f30f2b5ea9428c3"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "dcd1d5223f73b3a9"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "8ea6cab3dcce54fb"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "0f3c00487acaf2d4"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "99893d5ee8ae886a"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "53aade77cd69a77b"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "651c0a925aa4fafc"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "c7b72d82a31e60af"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "8e588cd187741f1c"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "99452646e34b6970"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "0eeb7800d4d0ed63"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "dcc839a4015c4b7d"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "4816cbfd74aa8297"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "d5d0a30b517e3bea"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "352cfc749e55222e"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "16d1c9050a0b32e8"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "626b84399f2a9486"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "3410034d1220d00b"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "0767ef858aa8f0ec"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "26b5c3f67e7f4ad3"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "17869a814b8445b1"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "6c94221edd26ec06"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "8d60decd44f3c39e"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "69c404591e99d86f"
+    },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
       "output": "a086066395cdb4b4"
@@ -5073,6 +5985,918 @@
     "auth.signIn.wrongCredentials": {
       "source": "6b1c2493eadc662d",
       "output": "213d1a51507d0c17"
+    },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "22765623c7a44b5d"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "54dada1504d75174"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "b204d3aabfdd18c2"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "2012768d17d2e931"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "2eee6f1322c07cd4"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "b6a7c561207c88a8"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "4c0f2ded700133ff"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "ffd6f24b18b1a9e7"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "5e77e1785d574f9b"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "024261f9bfbac9ed"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "51656a29fb46a0a1"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "9100502b8574b07b"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "6a68e002e8dd0861"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "acda968a3a9983b8"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "c928d5c1371f7471"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "d769acb61c4f2646"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "f301dcb6d01d896f"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "9e9dca5ca9b5af0b"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "0f0a1fce45d72e42"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "2f5f3f9f210d5802"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "833349835465410c"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "52ee5f657f3e5c56"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "833349835465410c"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "52ee5f657f3e5c56"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "bf1bae46352f6c64"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "8e258573d41c8a19"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "0fb593bc79227f5f"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "ab4c3106d8f4b49d"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "22765623c7a44b5d"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "8d11ba02dfea47a5"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "05df1c8dbf759907"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "55133d4e6eb6172a"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "2012768d17d2e931"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "6cc5a4161718d387"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "f1c43edf44cc41f3"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "afa8a11d18f038e1"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "7542a5e800f9280a"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "3596f448b0ef929a"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "ca71acd60442f8ca"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "8d2e9c5fe3d8fdcb"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "9b748feec14a8833"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "6d8a2167867f8030"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "ec60bb6f0e2a159d"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "0c1b0997349d04bf"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "d42bbea119c1d49f"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "647f92b57f33017a"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "4737853cfaa4fc55"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "8facfd0b09ce97a4"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "5df38ab3927c0df3"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "856641d2b3eef439"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "c69c917183d745f9"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "5435861485b865db"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "b46eb935f1b57a0c"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "d22e8689353545d8"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "86b96f2b25152719"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "80c93367384b7ed8"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "5a2af601e7a29281"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "58fcc9468fe1f607"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "a3f70c10c5487368"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "293135c3a65073e7"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "5f6822aeabdbd3a4"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "cdc028deffb2d6f1"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "739215889580345e"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "b42ff71dc228c74d"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "c54574d685583567"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "357cbbe805501c0c"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "b7ee4072d3e21d31"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "c94cbb854478cf5a"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "87c746f469176777"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "6ceeefe2ea07ec20"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "41d02559c9d06679"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "5467a32204a6221b"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "7d359cbd5395dc90"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "9fc211bbf2d1bed7"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "55a5f288a89ac720"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "52170300c6f52890"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "641fc458fc0338a6"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "12c0600932b52b8d"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "80aeba937399773e"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "f0512e03dfbfb039"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "bf0bb206282d306b"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "c295290d88bdaeee"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "6e425dd13fe3f0b4"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "3e28dee36941828b"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "06a46f001166e2b9"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "c662d9d83b7b1883"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "a1453027eecb2ffd"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "bd1e95cb25daaf64"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "60b8faa8ed7faf3d"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "b9e7d86f7afebca2"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "8810900c79569439"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "0dc966179c434689"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "ecf06dc07eae9684"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "ec500ed659e0b999"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "979c33084a42edc3"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "08a39aa03c5c791e"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "bd5fa136589f0a42"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "d79567c7194c134a"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "41ee6f59ca3f414a"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "ddd970f3230535ac"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "1b6857d6f98815f8"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "6638cd89f477b374"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "2fe17e8b13feed58"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "35e7b8b771b919ee"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "0b855a660c9d60ee"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "096e3b013afaca74"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "c8d306ff53824f98"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "a5c66dbd1947a710"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "d17f4386d1513e66"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "648836650d439722"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "8b21de054dafbacf"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "275565b4db1d5349"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "acd97185d0c9e16b"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "f948e59ec0e9c3f8"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "63675edea33d1b7a"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "c4132759d88a12c3"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "5184af9847a943c1"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "3a2b22a65bbe8602"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "c0bc1e08f9743b2d"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "93b2cab83ceac3f7"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "307c67c3c7c05320"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "8b7f81f0f46b2714"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "6e97e166da057fda"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "b9e8e6bc46c1a913"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "e6ac7634d5f9a3a0"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "30d12866589df24b"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "b513bb817ef5d4ec"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "c3e2d95bc60d1e18"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "be8e93de80995655"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "b12bf0cb4399eaa4"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "39f93451ee48b979"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "94c0f2b37de60770"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "b85362355b14f399"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "b2f530c46991311c"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "1f9d9aab6a78e318"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "451009e1420b811c"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "9b748feec14a8833"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "6d8a2167867f8030"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "d42bbea119c1d49f"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "b0bf526b23af1961"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "46d5664fccba625c"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "e8650efbfda55fe8"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "15263c30b9565395"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "b2a78cb479c54123"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "7069e90c206b0e2d"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "8a7ae3ac199faeda"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "f067c084da6130f7"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4f708f422bfbb432"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "7dd7985291ca12fc"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "078fa0b5b298bbb6"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "0a35875ad8242e64"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "c9894cf002f90bd0"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "39d54e1a498dbac4"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "bfa1df7b4cef0863"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "abcd7209c64f3adb"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "307fff2b5c632719"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "0270d5f7cf208171"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "503f312cde03e217"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "6dd391901ed3f66c"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "fcbf13a736f6d3f0"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "b2cfa21ce2116ffc"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "9be8ef45901da14a"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "4672c113ca36c7ea"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "81db3b5709d0ba95"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "a502b48b34cab240"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "dd7e82b29ac72f95"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "13e51a210f45ed1b"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "efecee523c3c2e4c"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "36adeaf8666874ee"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "1c0169f446d90359"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "93b2a9ef782cacd6"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "ec64dc30a483cdcf"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "f7b3eac1cf97193d"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "9844d3fecab7342c"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "67e494d69c2d20d0"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "31bdeef94e7d9a9c"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "f1186abd0b8bec58"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "6638cd89f477b374"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "ea18b0a3521ddfbb"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "6df3d6661c095ce7"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "49b60ac77291a643"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "a9b4855ea08c82c4"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "30d1a8cd45b235e9"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "8258401a72e176e3"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "65fe32ddb62417d6"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "c8d306ff53824f98"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "75fb7347243cdc11"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "451009e1420b811c"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "6c1f4632e6607f9e"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "09398c660e91eebd"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "562bb15757a8b593"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "9b7592103f494af5"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "72c917630086ad19"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "f80a81903edccf79"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "0be97d4a1a6b18c4"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "59652aa04a2b5047"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "363089e785cafbe2"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "d357175cfe8978d3"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "a2ca5e248c783538"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "05df1c8dbf759907"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "bd78738c12a5a8b0"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "68de201e0ef3fd85"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "817e9b1367d667ba"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "d5d08f4ef6ac8fb6"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "d4d2362bc1cdd87e"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "abf81dd6b783a343"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "636a7d4575d382fc"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "c368c5b3f11931d7"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "e0741cda8fb38f7b"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "b2cfa21ce2116ffc"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "9be8ef45901da14a"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "34ffd63c48729a30"
     },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
@@ -9920,6 +11744,918 @@
       "source": "6b1c2493eadc662d",
       "output": "0996dfc9adc4edce"
     },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "a0c9ab274df09d01"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "f25abc8c0c7aeb22"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "6fa466b0e8dcc323"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "d5ba6d6019cb28a4"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "060f26b530b23687"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "528e361cdcbf7cd9"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "907caba82c2cee73"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "3eb0f64015faca7b"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "7343841e724e8944"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "709ceef6d9f80871"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "0934d42938492db4"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "561408ffca77b32b"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "1bf5f71c2f7e48fa"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "f7686490b05b6cc5"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "f96521ee7cc3a9d5"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "84f0084d5a3809e9"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "ae10ad362fa62d2b"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "f8f82dbf6141ff91"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "b683efc4f9c2cdaa"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "e93422b5c31a3c54"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "2e82fa5d91f406fa"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "ce294cc82b5edf83"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "2e82fa5d91f406fa"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "ce294cc82b5edf83"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "fa063d47c1698955"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "514db0d41666fecc"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "b3cfd394eb9b1cad"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "686a27768e490948"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "a0c9ab274df09d01"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "615b02a6fef370c9"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "b111a2a2185caed7"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "f2de9e072a83f7c9"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "940befe930326095"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "9f579da658b41ab6"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "88d9699cfa3c452b"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "73cfdb6ceadb2432"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "00f9c5334547a30f"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "91ab0d619233f20d"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "4fa56638d77e9003"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "ae10ad362fa62d2b"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "830515db2955efc7"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "7c6469daf4f56136"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "2f63b64dfd439fd7"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "ff3802e63858049e"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "8f2f7f6a0856b60e"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "517fe97e5fa37698"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "4f316e39838dc515"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "c36a9295c871357e"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "04a65049814d5414"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "f28acc85bfcb0e7d"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "763421de56d74ada"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "26e4984314fde67a"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "1fbdd164277d7d94"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "b3dfe7b1e9a40a5f"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "55e1ebff3e210872"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "7f62496b0cb865f7"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "bc4a551b8d01cc6e"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "5a2af601e7a29281"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "3c48aa2bdf769fd3"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "9256717a114a46af"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "9efbf68b8dab7078"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "db7b9f0e69a4cf67"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "8241f0a128a60122"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "0a90407639c4155a"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "1e7a819bf3ad87a4"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "411176011d87ecc0"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "6a04dd15caf1cc56"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "839926da44321100"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "f1bb7247c5767b74"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "3e936f6abf6aa694"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "739d62b1727a8360"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "670e1c468fa848a2"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "aa253e78c48e7692"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "a6d029701a1eeab2"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "c5915b82150c6bf4"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "2a55dbe56a202ff5"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "fd5fa4ff3a493d43"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "2165da87e1103d19"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "cafed8d0b05490f7"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "b47085e37e168ef4"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "64c34ad173ebb5f4"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "245d3bb66d44c861"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "37ebd26393f7f7de"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "16db598290143166"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "d9fd3c2b3f187721"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "fb0c50c39f03095f"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "6596ddfaf2e3513a"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "727d512f6032f2d7"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "8c20f8c0d6722416"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "c18f5c30f62360dc"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "6158c2263b4388de"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "2aefe19b768a574b"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "95772b583c0df3e9"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "d0deab531bb45166"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "638bf2c8a1abd630"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "7fad82888c1b7705"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "c32ca33aba479ebe"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "bcbdc183f53a99b1"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "0c55e2bb2022bcaa"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "2c7495731cf482e0"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "193c1ce13ca65414"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "16d52f78b8afc23c"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "1e9f019ac2414d39"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "ad8e4d568e839ca7"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "1fdd53a851cdc719"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "2496bf94b4b43899"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "018d6ddff5c3af49"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "bd698232a99b7887"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "1f443ffb466a67cf"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "8693bbca2a8bcd5e"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "c081d9632cbdd1ca"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "2f882b9a7b9104f2"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "f7bf740c0c96de33"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "050d62df806b1b11"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "c511d8dce76d166d"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "951c6c43bdfc5d0f"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "ec16710e0e6cac43"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "331acb602b9c0deb"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "b6cf348bc9b1a71d"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "b1a2a796d784d41a"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "4a178aa4cf600f16"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "9aa3d999dbde5d4d"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "0ec49def8c06cef5"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "5ca351fc4f9fcaf5"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "fe74c0ea8dcfc974"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "abb9baca867fc36c"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "1d44f740f31e26e1"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "ac7032d403c17581"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "170701157d8c43e3"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "2c1d60b1e56c37a5"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "fa9a9adc0b0b88c9"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "b950162e930205aa"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "d97a7b807514277c"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "6e8f3132d8e2e2a8"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "47c9405f3dbd4a7b"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "efdb5be76676988c"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "830515db2955efc7"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "7c6469daf4f56136"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "8f2f7f6a0856b60e"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "573a30914f3e3150"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "cf43d022604e2545"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "e8650efbfda55fe8"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "ccd3bc7eac6cd282"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "78e7771b8b46e11d"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "e10d850954a8e611"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "2a36428839a37e68"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "31c2afaf8ba87d89"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "dea9f56b97dc3a87"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "24fd3983c0e70158"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "1e947d28ca52169b"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "fe53de84368498d3"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "ce0ad536ad46dced"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "ff7ba7571ba2ced0"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "5e5d0216ce0b5b9e"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "cc9bc9d6ca92ad00"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "97720e2e06cce00d"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "02f4a808cb614bff"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "4d6a4424453d1dae"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "6e19d3e4ce450f2a"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "56ff9400e9277cd2"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "b134aabee00369a5"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "0077a2de565da862"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "e9edf8cb9a691c92"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "b830ac266f089ad3"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "934e0fe576a8c71b"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "d0db8b5e364b6989"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "d3ae1df5eeb440bd"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "fe10a42ca0329bbb"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "71dc74873e23107d"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "04a65049814d5414"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "dc8805602c345b87"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "3e403102f64caee3"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "99c40ab405926cb5"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "c7c15a8a6469a3b8"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "94e2bc60ab71ffac"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "562bb15757a8b593"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "040db0d289e7fa3b"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "cc4c424b571fc354"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "051e522a6c091d9a"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "bbb0bd5ff551e76b"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "6c2f8c1f7f252102"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "de568062ff89805b"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "2c847c1c25d59e21"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "769b67d5de222c38"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "208a21076f79a70d"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "018d6ddff5c3af49"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "58ea4dbc4ca42c9d"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "efdb5be76676988c"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "cfb8e87ce8ca0142"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "29d0d3a0855ebcd5"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "b2c124536d218059"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "5466843202a8a661"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "543742e874517088"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "e4a0749dad1aa469"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "bd9a317f77ed0076"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "27270328f32fc1ad"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "04ff9920850f2829"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "2aefe19b768a574b"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "6bf2d3546642137a"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "9c3e565aa2f13df5"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "b111a2a2185caed7"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "b110b07e7d9f4344"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "b65d9008e899b623"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "7b27947821c85911"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "e86755d376aa8ebe"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "b4c7c4e9054be8ec"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "184d07d86e056c03"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "edab6be141daed68"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "79fef9e31e64ac39"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "def561532f306459"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "e9edf8cb9a691c92"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "b830ac266f089ad3"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "2470a94a94069cd0"
+    },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
       "output": "b58f45c732782cfa"
@@ -14765,6 +17501,918 @@
     "auth.signIn.wrongCredentials": {
       "source": "6b1c2493eadc662d",
       "output": "9f3ead5023b9bc68"
+    },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "68606946102f8a7b"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "defefdc7446d0c60"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "e1ed2060870f01d1"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "3987f699406141fe"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "d40fd6d6d263f4dd"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "6a226c4608862b4d"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "824f054a9c2edde6"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "da5f546d6d100fd2"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "19bd2d42dcfd8500"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "a2f5513a02b57fa1"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "4f29419d445dd888"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "132668b101f9c824"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "cea2da9777a8272c"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "5e0d6c7d0453d4ae"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "51f2fb491f059836"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "aaa255554df6d4cd"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "3ab2f70ee9e85e15"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "56a61186a80c9c64"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "a6176556829a3f1a"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "b2080792effa262e"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "b270ee0a1acd0e5d"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "04e26eb8410d68ec"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "b270ee0a1acd0e5d"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "04e26eb8410d68ec"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "84e8de9cf9cf5fb3"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "58a8daf714dcaeca"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "ee24aba2049a5350"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "5492909982457c85"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "68606946102f8a7b"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "232c2affd6ddae28"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "05df1c8dbf759907"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "1ad94eb3285832fe"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "3987f699406141fe"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "334b9d502d1792ec"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "7f661ecf534f5079"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "595c722e0d7a7ae4"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "84cbef7b19b823d9"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "aa3ad5704fecc086"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "ccc563a616b3c29e"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "a2a697d937827548"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "d94611bfb7071da7"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "08b19374ef8a2374"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "7f98d79d7d18efcd"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "1c8040607ac53ad9"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "3305fe3a5470074c"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "6d8d5c03f7225e2c"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "18d8dd6c136663a2"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "5b04b88b3aaeb6b6"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "47bb8d467238ce25"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "948d392455cc69c4"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "fc486534ffb3a069"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "c9d81c27a05e3cff"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "fe50beb2c8ea8184"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "5a3b84e90dbf7239"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "3080076f5faeb209"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "401102fe759f1e65"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "fa67303aecdafbdd"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "b86b1e4d16c35cf7"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "312d1d3da256224a"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "8ceaaeb81ac8b423"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "826f0b4e4b2db49f"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "8f56942951540aac"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "5209723fc252a013"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "925da98a47ba652c"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "d12fbb0213c7a178"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "54bba8501755728d"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "fd40543cc65ab51f"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "10581554077cf316"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "d1d24afe8f37bd6a"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "56df44db54a4a8c2"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "c119e648746a04bf"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "3f29d454db9f5a8a"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "e8f270d540da1664"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "93c571d1a35b7224"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "259f8d4f55a2106d"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "e2bcf3e83e4327cd"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "37d7a94a8b1b62d3"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "ebd06ed05d94a0f6"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "58b92bcc58b9fdb7"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "caabeddaa48dad00"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "a9636a471acd760f"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "884e031945ce1a72"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "5897f80933fe930d"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "05181ec6d9b8d91b"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "b2753d1440fb7cc0"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "bb775727c2726821"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "b8cd40cefe3a214a"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "776c34c58093549c"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "ffc6b527974a62a3"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "9e7a2f50ce83c991"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "d357175cfe8978d3"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "958923ffd5c67de1"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "59c3d4ecb5bd4254"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "f8d7f1d62172b3d0"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "7a071967d45340c8"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "f850837716edea1c"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "5afd6f8df9575511"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "3fec9ca816d4259d"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "786a4b9ed22d7e70"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "e909384f1d899e81"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "ebf6d0c13353c549"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "f3a8c5dde547b8ae"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "f1002e7200e9ae19"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "6d703d4b33c1bb8a"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "0dd4dc02ff7a4c17"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "fa7fe67124e94375"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "811a0c064e0c2d4e"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "c65e6f0c2380305e"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "0250de5a1e1ff390"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "939434734b3344ec"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "f88a53261529a619"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "b8a53064d4e85f42"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "67a398b360a215f3"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "2a56e287b7355207"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "230f062ce59299fa"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "6e9ed7660b8ae709"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "5184af9847a943c1"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "3a2b22a65bbe8602"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "97c916cd94785d7b"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "e409d91c15ae0872"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "7f927db6e03a342c"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "20f3bc7f54a8735c"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "88f4fbaf8500ffe0"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "790d111973fbb88f"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "12b5a91ebfafa9e0"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "71b9354353f1709a"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "68631a7f739920a7"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "94ae23fd822f7c13"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "d45b7cce7f6302a0"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "a54ad9eb0487ef21"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "e3eb32a752001be7"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "b6989d457640d66f"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "20cbb91b79f7f9d5"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "3b50ed0e6ec24418"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "71363030f59931aa"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "d613834d35673695"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "d94611bfb7071da7"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "08b19374ef8a2374"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "3305fe3a5470074c"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "be284ff59808c39f"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "bb63cb3b4fcbb66f"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "2d7a1404cb988089"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "88b03fc50fb24490"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "caeda42e92f6e40a"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "4b3b853599579fa0"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "464dabe236e57131"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "a4630bd6a4391c17"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "34988c9a8e86d0a4"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "0c9b551b15a6111e"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "51e734e26f4c5d84"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "7a64d3762c5c1257"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "7efe336bd548c1eb"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "f0be7c2df3a171c6"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "1cc35c2bde0ae613"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "854d5c604b3e5405"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "fe5a96f4c4a024b7"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "98c7469a50ec1a20"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "ae89c1f2c1781e29"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "3c2e0f2948f6a828"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "316f1fcd15440fb6"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "4e3ed5b5acfb24fd"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "1d91fd8877399797"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "30b4498029735d96"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "5131ebf79de0168d"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "a7899151698a498f"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "98b79b084f23dd93"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "c5997e85ae513c07"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "47bb8d467238ce25"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "92865a6ef1dcd782"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "62ee629f0318b487"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "969ccbd3cf6300ec"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "50009ce1da4d15e1"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "c77addedf9381aa3"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "ad14784441da3246"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "31bdeef94e7d9a9c"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "e85e0086c7aba547"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "f3a8c5dde547b8ae"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "ae3f45f98f6d29d5"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "ebb9e60cfec069e7"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "01c79ed60f813a61"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "012c95a86f53bf2c"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "bc0274205537c131"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "df816eca356662ef"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "351c9591d166606d"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "2e1fd48a92b3981a"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "42a849bfe725a51a"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "d613834d35673695"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "f05e29f72945fe2b"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "fd349c6d6416d11e"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "5086900635fec3ef"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "394608997440d86d"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "a6cac75da92efd61"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "8a811b2dc4386234"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "543718c57fac927d"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "08f397fb0f220283"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "f4bbc96d8a9d3d1e"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "d357175cfe8978d3"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "79a4b01760a3aa84"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "05df1c8dbf759907"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "2fd0e91194ca4c4b"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "68de201e0ef3fd85"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "432c54244b5c1fe6"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "47237a550cefcbc4"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "73a6a13c214068d5"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "331d703ec9005b50"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "2d5d113cb5f5fbd8"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "f8e44df338ba853a"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "a7f5d7ed70bc8d24"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "4e3ed5b5acfb24fd"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "1d91fd8877399797"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "368802fd88e77d11"
     },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
@@ -19612,6 +23260,918 @@
       "source": "6b1c2493eadc662d",
       "output": "6e2f288693fbf753"
     },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "c42e9c5ab51f73a1"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "1df9d096f3e14845"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "c95b199fd9ca2f7e"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "2c3618f3a1eac7dd"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "495e0c15e61d1658"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "13a12493a30ee4c1"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "195f56d9e73233da"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "fd43f8cd2456d2f7"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "c675af4689f52ab6"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "cd5638cae9a81107"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "e78041ab51a818a2"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "5ddd8c4a0dba3b3e"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "0e3964188e53b413"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "f014ba0980f26507"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "e9f3bf79f2c68c2c"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "acc80d4caff9daeb"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "fdb791d42a19c57d"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "d2394d3276dde522"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "e1974f78e8e0449f"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "be7e296082b77618"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "2ed86f076a8b0101"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "b4559cc070f84665"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "2ed86f076a8b0101"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "b4559cc070f84665"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "49d6c9762dbedd36"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "dadf8cca97b0b991"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "ae0f845ca6cebc9a"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "58364eb25ae5b95c"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "c42e9c5ab51f73a1"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "2d0cf06dc29b1da2"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "f91962419f4ebaae"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "45b2178cf6e1e33e"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "2c3618f3a1eac7dd"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "195b583a45a60f99"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "1eb9964e951859b5"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "c84368a3ddc6474d"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "f993e2f49b3c68f1"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "9d4a11516ec42cae"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "b4ed67a07829398b"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "fdb791d42a19c57d"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "7d5258f66211617b"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "d0169d1620b09249"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "8f00a75c68cf1908"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "546afc3b9829ef5e"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "9e3d165407f26a91"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "9d539828bb2d965c"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "c9952db8c17379ae"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "95dfcd221c152532"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "29c556a4ec1d8334"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "ca53207fe79a3392"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "6a8a79bc675323cd"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "dbf9337b6e2067f4"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "0c163a3294412a2f"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "bb445a7af4b2cef3"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "8a2bddfa63c53c0b"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "bec455afe13123ea"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "b1b9fdd27a363aec"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "8845cb2a8caf8bf5"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "09b538d1d0faee75"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "3f4e33c262687fd4"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "ee019c51a1c7ac49"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "af3eb82635b8924a"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "42ff64e36837689d"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "cde9e58a9a4e1f36"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "bb4c386c99b2c65d"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "599b51e5e2e2747b"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "905277feae06a8e0"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "a0189ac0bf54f592"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "f7b7ab7912d62a85"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "a600ebcd65c486c6"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "03e4bd6b16b6bc74"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "9e58587192e6e4d3"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "a6e63804389c0372"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "fe14386173efcf96"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "1c34c215f2851862"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "1cd28169d2b21c16"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "467bd2830f6b0978"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "a7f430f6e7d16d47"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "a72744a6ce04c949"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "8981ee1d85695114"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "38bcd88b86fedac3"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "a3aaba222c783375"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "509441e820d2a34d"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "4575fc042302bf1e"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "23a3b715382adf70"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "ca843200f23896d0"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "8916022205d538d7"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "3c9b99840d435b55"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "a06c0bee900ecc3c"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "32c08dfc78ee3023"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "fc4ab02e51faeb7f"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "b04689d995eabdf7"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "b0698c709d0f77f6"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "299f12fc2aaf621f"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "47d8bc609527176f"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "82b32a9775f195b5"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "8f38e84eabd5faa0"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "1d2f0d3836f48f4f"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "68d993feb36fc7ad"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "a11f1b879793136e"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "e65e369862ba8422"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "60d7c2a2a3de0938"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "a458bb1637e7d631"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "c5d6a26c7fabcc7d"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "85591d18a0c7b45b"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "f03ece0b381755be"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "fa7fe67124e94375"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "c510caf9dbeadfec"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "d40caceedc622e39"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "16d54fb97c331b41"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "fa1ef6d85d2614b7"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "f24d61dace268da0"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "73a3ab0c88e53ddf"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "01fc822b52b8a04c"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "7928427c990d486b"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "80baa5ab46ca1a39"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "21877b0689a69c12"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "638e249f4a15ebb8"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "9a32e0f464c53ce9"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "fa51fd49abf67705"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "e9e8cb69dc08e828"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "60dd1319c7a73b78"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "b3f6de9ba1df40c4"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "07775db2708d7e9a"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "75470d263b45e823"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "e5ebbe706273fc91"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "fd5b04ba7341e670"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "c4536157b1cc313f"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "52fc851671b90bec"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "072b6e5fc6ca39b5"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "f40bd809bc4f276c"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "5d300cba40ba3b7e"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "6703757cbdeacf1e"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "5631e4bb5bf6e2f9"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "2bea5ab708c74ff9"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "ea83032e6a45349c"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "cf6611aef768e081"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "7d5258f66211617b"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "d0169d1620b09249"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "9e3d165407f26a91"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "8d62fc0ef5579dd2"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "de608b67854475a9"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "84c06341796659fa"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "f65563753a672e07"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "b015c89d8fe6644f"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "b19aadc6238ecded"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "8b358118e156fa4e"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "8ceda96681d3f60d"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "7e80575c49f94971"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "d57d1c477df7678d"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "0a6e150bca0101d6"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "afd62fd4cc4eb5aa"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "0d28be001ba2121d"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "2134b831b40391d5"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "d6c44c3e95df5008"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "b8d75e9acee7a46a"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "70a4227fd6393c84"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "86bfd69e3251c745"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "e68be0c744fc2f6b"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "6668026b67109094"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "7f45f58e8654aae3"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "aec80eb95cfc611c"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "b76624f521a10147"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "9b4158ccedcaa530"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "4fde16e0cab1473a"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "e26190cab21fca85"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "451511d12695d5be"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "ebae784918d0bc56"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "c854b6515d41784e"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "3caa6d88a258af55"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "29c556a4ec1d8334"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "a5420826eea39c4c"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "aa19f19ef46faa9b"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "9135882d323cd839"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "6067a9a877375a28"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "ef05c8de677b15d1"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "60f3211112a258df"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "fd29001560056f0c"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "5d54efb51f2c6aec"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "efdc10902d2247a5"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "69726e706b72407e"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "5d07abcd8c8c6459"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "fdd75cf492e18d4d"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "01df5a4b1feb4062"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "c8cede0af6281136"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "b251af191796caaf"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "47ba61ccedb7813c"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "c510caf9dbeadfec"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "464d99f1038e439a"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "cf6611aef768e081"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "4424a061b58cec2a"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "bc9656c331d53655"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "eca46fcab2ab68be"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "38c1ad85670b873e"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "85d9ebbf346f60a7"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "ef6bfbca4e55ec89"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "5e7279c175fc671c"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "c816723530b23b1b"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "58bd55c324393606"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "11f5825da5484061"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "99452646e34b6970"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "906360eedddf52fc"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "f91962419f4ebaae"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "9f70574a391fd6aa"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "36f1504f51182fee"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "f9e6737fe0dbdeab"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "f355e93858ed5fad"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "3c95fedec367f29d"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "6a63d673c0fb66f1"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "3578458e26480b1e"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "b45b909b2c6b944f"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "1fe9277fc0a6edc1"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "9b4158ccedcaa530"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "4fde16e0cab1473a"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "aaef668843d6c94b"
+    },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
       "output": "ef17b6daec5bd40e"
@@ -24458,6 +29018,918 @@
       "source": "6b1c2493eadc662d",
       "output": "21aae39ff34c21fb"
     },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "0e2b0a2f8907c25f"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "1f39aa173ca91b3d"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "a7a8834fb77e0362"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "220ce299a21305a9"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "fc92231bb94a80fc"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "a8516117570141a6"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "b519c012f713b94f"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "35dc4642c5004164"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "5e77e1785d574f9b"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "f6722408c1382329"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "5158e386a464ddba"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "d83bbdc2bfce918c"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "715cdbb779cd3e78"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "7672fbe2a397f0eb"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "833c8f46aae8a6eb"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "a493a41992445d77"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "a4ed96fbf874332b"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "263b186b41d9b48a"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "f8a8669daaacbfe4"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "8c6da7e8f4a30ab5"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "27c8fdc4929d7c2e"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "cd7b3e1e47431ef3"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "27c8fdc4929d7c2e"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "cd7b3e1e47431ef3"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "ca62f8d0b58d99d6"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "31c03c3505366e4e"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "8aa9bd5ecf83c0ef"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "0ee32bd6789f4a33"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "0e2b0a2f8907c25f"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "0c40817b79eedad4"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "3fbb2d88fb9a5dd1"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "99abf2c2397d64b7"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "220ce299a21305a9"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "4b3e86e1f4346460"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "c1859983650f8d48"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "0b6da46a31d9af07"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "6caa5f4498e5bfc1"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "f82f28dad418bd90"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "73ed2c61643a70ff"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "a4ed96fbf874332b"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "f10e630e31df5bfb"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "18650838925aa9f3"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "d439faf2f1cb468d"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "7dc053bc48c6bf8f"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "844bcb30af76a4bb"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "711955e4b7f8cfad"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "1c09bcbb8bd597de"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "0a6e92935bc31111"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "c1155404fe3bcef3"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "85030e6799f0b878"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "b3c8f2502d44bcf2"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "4b7ec86e2727a1cb"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "60dd033bd5f4d6ad"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "524f25243c2c3728"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "26e39e8b1f54d135"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "c38811a58a4b777b"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "51fb11be957f1dd8"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "65384996ee350819"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "a960befc32976411"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "401d24632383e09c"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "231eaabf0ffb3ef6"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "af22e6449a56ab1c"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "4f6d3cd7f6f6eea5"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "dae91306c776f85d"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "2232a9f86ed7954b"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "30730135ab20a656"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "e223bb33b25d0c89"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "9fb4517691eb73cf"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "f15c400981786800"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "d1d24afe8f37bd6a"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "20f643f8ca1c26a0"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "12de6e037fa7c6fc"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "8c8378103d91e8d8"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "1410a8ccffbbe207"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "1c34c215f2851862"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "1cd28169d2b21c16"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "e2bcf3e83e4327cd"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "15240f81f49346e2"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "826c50f707db5928"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "4155740d3206e2ef"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "38bcd88b86fedac3"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "a9636a471acd760f"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "602ba6b3dc603437"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "7f1cd6c5029c8963"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "6e084659d1a2bfe6"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "32d7f7968ee2060b"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "78ccc6be01e41d65"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "a99c7a29780c84a9"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "3169d4657a66efcb"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "b95d80b97e784195"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "5261034db3abb390"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "81a5f7b9a8964684"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "b3ebda56ddb31b83"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "27d8376e0298563b"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "8d7e31dc8651796b"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "84fc2c35667131cb"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "ac7c1c0e1607f49a"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "96e7c0d9a43dbbc9"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "d2616ac656d6f1bf"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "01a0888207026da3"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "41ee6f59ca3f414a"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "b0a329fb2dd29134"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "0e0ecdf047b739d3"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "207810fcfcbd5a58"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "81d02908a7e8fabe"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "a99c7a29780c84a9"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "eb119b4763b01e31"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "25d381ef52c4acb8"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "491f3b068402d978"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "ed74406c9ad2973e"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "a305fbe4d3f28eb4"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "ba12c90179a60eb5"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "fc96131f89e86537"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "a125da12cec272ff"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "3590463acaa89dda"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "9189051f83bae14d"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "9a061afc526bcdfa"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "9c20d52cff935380"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "00d2699826a81c79"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "6c8a51b339c4a3e7"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "663ea1bfffe5038f"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "0c98a63b581fe175"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "4d2d93d0f75582c0"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "7f47ce9b705e1bd9"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "b3c5d0744ae0a04e"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "961f82cbd8907fb8"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "ca3cb878c23fb9d6"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "32f30ea0e83c41a3"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "ac0b52a2ae6ef999"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "f6cad6c017bd4fb7"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "5db59d9a7d16c268"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "c4cadfaf2cf4ffc0"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "9fdfc3450def1e4d"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "f0c16d5e8fc8748d"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "cadfe1a847162562"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "373e115458ae4b6a"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "8bdce1755e5196fd"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "aba91ec71c1ef42a"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "f10e630e31df5bfb"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "18650838925aa9f3"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "844bcb30af76a4bb"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "3c5cc4457ac63c50"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "e16cc3ee7a1f15ea"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "aa1f055d056bdd5e"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "904fc77b881c205a"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "bfb4a9d806c658ea"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "a1efdf4c1f9dcb82"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "5f80602d4cc4ff08"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "110b498c062e1aea"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "822b9d465c5b26b7"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "1db6edfdf7e0b0a5"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "1a45557677bb70b5"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "505b5ded059fe76d"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "97ca5549aedfc462"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "fd5a5bc2cf1bb383"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "ae2d7e6c046a5b00"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "b05ebef94c85a8a1"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "4fbfe8d4ad8a1c0a"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "ba6e1cc694c0ba98"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "936b1a7e021c52fe"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "9ac621c5da8e3c85"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "71b0911a0345b75d"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "f67299fa12a5c4f0"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "d512c25501e51e19"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "3160d131f4bbfcec"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "8a9fd6c37b2555ea"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "7bec4e3d1fa3a816"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "d86ff26305294dbd"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "a72b78a567cef1f6"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "093e1b05f7094309"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "b6a0c0c469c5b62d"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "c1155404fe3bcef3"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "2284870167d5d8e5"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "546893f9c044fb24"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "98175ca9c90f16d1"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "7f1cd6c5029c8963"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "ea1b2b56b2fca236"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "44a1de83dbb0e15b"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "49afd3b1bdac430b"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "fa6906d76ee94d4e"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "84c6e84df48ff6b6"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "21db2efa91f8acbe"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "5d07abcd8c8c6459"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "bc595e9ed531f391"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "ba4f0c4c5145e7d0"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "5604e5096a53eba8"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "e5173e7be9fe6180"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "1646e4a05939a43f"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "491f3b068402d978"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "25ffa305d9915eac"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "aba91ec71c1ef42a"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "9bee7616be55d136"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "a4d5d0e8e0435439"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "34b875358adda283"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "236862cc13b3e9c5"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "a1c8b56060ed916d"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "d8dda462cd6421e3"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "c59dc403f6ca9737"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "a634bc799411a374"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "48253340f360ab1b"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "b3ebda56ddb31b83"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "c44d4242d08a2c72"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "1e15e3959ebf5c83"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "3fbb2d88fb9a5dd1"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "8b5798a1a6b9cc62"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "9098b20a1bff50f9"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "6660507dd6461e01"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "5d3015b63d8af4f4"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "ffa01294bbdb63c2"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "417e1e36534bcaa3"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "ec54695dce04423b"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "35880ebef475caa8"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "4c75abc653455d31"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "3160d131f4bbfcec"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "8a9fd6c37b2555ea"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "692f128ba7db5472"
+    },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",
       "output": "a8d261dcc9955d7b"
@@ -29303,6 +34775,918 @@
     "auth.signIn.wrongCredentials": {
       "source": "6b1c2493eadc662d",
       "output": "e08785630e20b81a"
+    },
+    "calendar.agenda.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "61c19b1057e5920b"
+    },
+    "calendar.agenda.emptyDescription": {
+      "source": "04575a02befa0b2b",
+      "output": "ff31dd08e2e4cb90"
+    },
+    "calendar.agenda.emptyTitle": {
+      "source": "3ec3716b679845e6",
+      "output": "2151c3f94154b20c"
+    },
+    "calendar.agenda.timeRange": {
+      "source": "066595cb67cce09b",
+      "output": "ac3eb0d9881c0ea5"
+    },
+    "calendar.body.incomplete": {
+      "source": "1a6db32bcb73ab09",
+      "output": "aa3e01bab67acbb1"
+    },
+    "calendar.body.loadFailed": {
+      "source": "01ce31be087212a6",
+      "output": "f737b4688e8babcc"
+    },
+    "calendar.body.loading": {
+      "source": "93a8975fb8189d16",
+      "output": "3905e43d1af331dc"
+    },
+    "calendar.modes.DAY": {
+      "source": "1503916a2ab2b0fd",
+      "output": "8ed570950d8312cd"
+    },
+    "calendar.modes.LIST": {
+      "source": "7343841e724e8944",
+      "output": "5e77e1785d574f9b"
+    },
+    "calendar.modes.MONTH": {
+      "source": "2933070469a218e3",
+      "output": "1322ff5dab6d43ea"
+    },
+    "calendar.modes.WEEK": {
+      "source": "8a2727c044bcb220",
+      "output": "51656a29fb46a0a1"
+    },
+    "calendar.modes.YEAR": {
+      "source": "ed1ad93b89670bc9",
+      "output": "1c5b7004153d4a6b"
+    },
+    "calendar.month.more": {
+      "source": "277902b36bb25e94",
+      "output": "8ad732a1d3ee473d"
+    },
+    "calendar.month.openDay": {
+      "source": "c95d4ca83349df6c",
+      "output": "0df03bfaba515963"
+    },
+    "calendar.setup.chooseDateProperty": {
+      "source": "6cb9bead62290b43",
+      "output": "118d62ca972aa856"
+    },
+    "calendar.setup.noDateProperty": {
+      "source": "4c8bb476a97ddcd3",
+      "output": "a05d4e085e90b08b"
+    },
+    "calendar.setup.propertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "38a4f7a56f599633"
+    },
+    "calendar.setup.title": {
+      "source": "63be95a0456f8aad",
+      "output": "8361654dc833276d"
+    },
+    "calendar.steps.DAY.next": {
+      "source": "db77948456379956",
+      "output": "5bfa2f48482395bb"
+    },
+    "calendar.steps.DAY.previous": {
+      "source": "83f3833efa18a4bc",
+      "output": "5d8af33d4a042d0e"
+    },
+    "calendar.steps.LIST.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "11ffd0b40c5b69a7"
+    },
+    "calendar.steps.LIST.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "9ee0365093c1b8b3"
+    },
+    "calendar.steps.MONTH.next": {
+      "source": "4e9ac155ff93bc51",
+      "output": "11ffd0b40c5b69a7"
+    },
+    "calendar.steps.MONTH.previous": {
+      "source": "907bc90e20355fe7",
+      "output": "9ee0365093c1b8b3"
+    },
+    "calendar.steps.WEEK.next": {
+      "source": "a8d906761dfae46a",
+      "output": "f086b3378e9cc802"
+    },
+    "calendar.steps.WEEK.previous": {
+      "source": "4607d2549b9dc4ae",
+      "output": "8e258573d41c8a19"
+    },
+    "calendar.steps.YEAR.next": {
+      "source": "c93c28f435a27d55",
+      "output": "12aa1d033ae304db"
+    },
+    "calendar.steps.YEAR.previous": {
+      "source": "54dbdf341a12116a",
+      "output": "b5a373baca68767f"
+    },
+    "calendar.timeGrid.allDay": {
+      "source": "1271fd18e61d0a8a",
+      "output": "61c19b1057e5920b"
+    },
+    "calendar.toolbar.jumpTo": {
+      "source": "f8babb7253357da4",
+      "output": "99970c27f61fddc9"
+    },
+    "calendar.toolbar.modeSwitch": {
+      "source": "a6d6105cf99c1b52",
+      "output": "a691db0557a4ae2b"
+    },
+    "calendar.toolbar.today": {
+      "source": "46ea2fff7a5bad32",
+      "output": "a46d7cd01bd9005a"
+    },
+    "calendar.toolbar.weekRange": {
+      "source": "066595cb67cce09b",
+      "output": "ac3eb0d9881c0ea5"
+    },
+    "calendar.toolbar.weekWithinMonth": {
+      "source": "781591bf1487ef22",
+      "output": "ee7596b2554be80c"
+    },
+    "calendar.year.entryCount": {
+      "source": "0025448f1947a11d",
+      "output": "bc4be58329e103a8"
+    },
+    "database.addProperty.namePlaceholder": {
+      "source": "11a1bcaa2dfa5db2",
+      "output": "7ec425c4bd95bbf0"
+    },
+    "database.addProperty.submit": {
+      "source": "cbb95cf02b7d0216",
+      "output": "967bcf34a9138e10"
+    },
+    "database.addProperty.trigger": {
+      "source": "165b0a5acd381ac6",
+      "output": "cf19ae407725cf37"
+    },
+    "database.board.chooseGroupProperty": {
+      "source": "e5b414d9288ce8ce",
+      "output": "b31168a2e6fe1661"
+    },
+    "database.board.choosePropertyPlaceholder": {
+      "source": "cb4be4eae1f558c5",
+      "output": "778fe5a250766acf"
+    },
+    "database.board.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "778a904172b97773"
+    },
+    "database.board.loading": {
+      "source": "276c24838728105f",
+      "output": "702ea4868a89fa6d"
+    },
+    "database.board.moveCard": {
+      "source": "304569e8c4076777",
+      "output": "ed8b33537aef4bfc"
+    },
+    "database.board.moveTo": {
+      "source": "3da84fe5c7a25db0",
+      "output": "d20bba9e6a941acb"
+    },
+    "database.board.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "be0f1a50f0f07453"
+    },
+    "database.board.noSelectProperty": {
+      "source": "c3effa9f2d5ec823",
+      "output": "bd660544d7c3e2e3"
+    },
+    "database.board.noValue": {
+      "source": "36bac45262c85bf0",
+      "output": "6d47c638b676f823"
+    },
+    "database.board.notGroupedTitle": {
+      "source": "ecb5a567bb430d41",
+      "output": "ee07917f51328605"
+    },
+    "database.cells.checkbox": {
+      "source": "d8624ded712e9b2e",
+      "output": "577731f8d7513360"
+    },
+    "database.cells.checked": {
+      "source": "467e01ba533e1a45",
+      "output": "2801cb53f1fa6f08"
+    },
+    "database.cells.commitHint": {
+      "source": "73b9591ea3d7faea",
+      "output": "c8330c6ce25803be"
+    },
+    "database.cells.commitHintMultiline": {
+      "source": "34c5e44ec9963d62",
+      "output": "04c57170c0639521"
+    },
+    "database.cells.dateRange": {
+      "source": "155ecda4d82d1a84",
+      "output": "4bd47781a02d4734"
+    },
+    "database.cells.empty": {
+      "source": "f4e0ac08042c987a",
+      "output": "86d77436c31a50ce"
+    },
+    "database.cells.idListPlaceholder": {
+      "source": "99039481ac1d8060",
+      "output": "f093748dfb829425"
+    },
+    "database.cells.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "9bc947e58b62b2fe"
+    },
+    "database.cells.noSelection": {
+      "source": "146bfc6e39ed61f2",
+      "output": "ef5471c38af1b737"
+    },
+    "database.cells.rangeEnd": {
+      "source": "2ddcd606c872894d",
+      "output": "672ff2e837d34fd7"
+    },
+    "database.cells.rangeStart": {
+      "source": "0d95fd6a769f3f68",
+      "output": "325dfc37c9ba0aaa"
+    },
+    "database.cells.relationLimit": {
+      "source": "ab782d93ea454a6b",
+      "output": "55435a600d19f76f"
+    },
+    "database.cells.relationNotConfigured": {
+      "source": "7a9a00a4103c230c",
+      "output": "0956dd582748c9bf"
+    },
+    "database.cells.relationTargetEmpty": {
+      "source": "2c5246c9e0a60218",
+      "output": "2302bc6ec2da02d1"
+    },
+    "database.cells.sameDayTimeRange": {
+      "source": "6620a340fc9566d0",
+      "output": "5ac707097e13a5a9"
+    },
+    "database.cells.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "9313455e45aa2243"
+    },
+    "database.config.formula.functions.abs": {
+      "source": "0dda0bca98c55a88",
+      "output": "b42ff71dc228c74d"
+    },
+    "database.config.formula.functions.and": {
+      "source": "723aee23217da97a",
+      "output": "723aee23217da97a"
+    },
+    "database.config.formula.functions.ceil": {
+      "source": "aa7d9849205a5147",
+      "output": "c54574d685583567"
+    },
+    "database.config.formula.functions.concat": {
+      "source": "6f08a492fcf1f239",
+      "output": "6f08a492fcf1f239"
+    },
+    "database.config.formula.functions.contains": {
+      "source": "53e2f603c9c72011",
+      "output": "a5ae195ed20c8834"
+    },
+    "database.config.formula.functions.dateAdd": {
+      "source": "7b987964bd71108d",
+      "output": "7b133d8d23986d20"
+    },
+    "database.config.formula.functions.dateDiffDays": {
+      "source": "f87f8d721f667288",
+      "output": "94740b9b1a4757df"
+    },
+    "database.config.formula.functions.day": {
+      "source": "261d8ce8676d757d",
+      "output": "d1d24afe8f37bd6a"
+    },
+    "database.config.formula.functions.empty": {
+      "source": "6939c60df6902ff8",
+      "output": "ee8878938c39f3f7"
+    },
+    "database.config.formula.functions.floor": {
+      "source": "764d8ca6b5c3e918",
+      "output": "41d02559c9d06679"
+    },
+    "database.config.formula.functions.format": {
+      "source": "012c3c696db1e256",
+      "output": "5467a32204a6221b"
+    },
+    "database.config.formula.functions.if": {
+      "source": "1ccaa04489412726",
+      "output": "11a53f05affa671b"
+    },
+    "database.config.formula.functions.length": {
+      "source": "145218a1c7ff0c03",
+      "output": "9fc211bbf2d1bed7"
+    },
+    "database.config.formula.functions.lower": {
+      "source": "fafdfb54caba974b",
+      "output": "55a5f288a89ac720"
+    },
+    "database.config.formula.functions.max": {
+      "source": "65922880807f981a",
+      "output": "65922880807f981a"
+    },
+    "database.config.formula.functions.min": {
+      "source": "124296b6cca49dcd",
+      "output": "124296b6cca49dcd"
+    },
+    "database.config.formula.functions.month": {
+      "source": "78f6d263af8d5963",
+      "output": "e2bcf3e83e4327cd"
+    },
+    "database.config.formula.functions.not": {
+      "source": "4a6cbe0eb0344608",
+      "output": "b5dd1072a22910dd"
+    },
+    "database.config.formula.functions.now": {
+      "source": "4852735617fce213",
+      "output": "7c84be90907e20d1"
+    },
+    "database.config.formula.functions.or": {
+      "source": "e2a9cb41eea1f600",
+      "output": "e2a9cb41eea1f600"
+    },
+    "database.config.formula.functions.round": {
+      "source": "fbfdbd669ed7155d",
+      "output": "7818475dd0209637"
+    },
+    "database.config.formula.functions.upper": {
+      "source": "c833ddbc01c42ec9",
+      "output": "f0512e03dfbfb039"
+    },
+    "database.config.formula.functions.year": {
+      "source": "8a7f24602fc66ed4",
+      "output": "a9636a471acd760f"
+    },
+    "database.config.formula.help": {
+      "source": "f4e727e3e355f1c6",
+      "output": "980ad615d0e2bd7b"
+    },
+    "database.config.formula.label": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.config.formula.placeholder": {
+      "source": "39616961ca44a8ba",
+      "output": "765af2832975a746"
+    },
+    "database.config.formula.reference": {
+      "source": "7f665e7edf8cadf4",
+      "output": "cd1dec82527f99f8"
+    },
+    "database.config.relation.allowMultiple": {
+      "source": "1c22ba3ee5377acb",
+      "output": "b0505a408051d846"
+    },
+    "database.config.relation.chooseDatabase": {
+      "source": "c7cf02eb65fc5dd8",
+      "output": "5a78d7cb6872af8b"
+    },
+    "database.config.relation.hint": {
+      "source": "3f56c8a4d8b040fc",
+      "output": "34e169b8a0761f07"
+    },
+    "database.config.relation.target": {
+      "source": "2b0b4aeb62e8d955",
+      "output": "adb04a01ed6798f4"
+    },
+    "database.config.relation.thisDatabase": {
+      "source": "9f4e28eee9318241",
+      "output": "187a1a53614b013e"
+    },
+    "database.config.rollup.aggregate": {
+      "source": "77557654bae91e7a",
+      "output": "b9e7d86f7afebca2"
+    },
+    "database.config.rollup.aggregates.average": {
+      "source": "64e948bb3999049a",
+      "output": "4304ccfa3f662ac5"
+    },
+    "database.config.rollup.aggregates.count": {
+      "source": "b97969eadd33f848",
+      "output": "fae8f576292a6542"
+    },
+    "database.config.rollup.aggregates.count_not_empty": {
+      "source": "7edf96983a4be7f9",
+      "output": "8b979276c04de3f8"
+    },
+    "database.config.rollup.aggregates.count_unique": {
+      "source": "69485cd8129d3e17",
+      "output": "7cb41985b957e9ba"
+    },
+    "database.config.rollup.aggregates.earliest": {
+      "source": "f0728319fe7ccaf3",
+      "output": "a9de776d807e548f"
+    },
+    "database.config.rollup.aggregates.latest": {
+      "source": "bf576956e399f25a",
+      "output": "59d8553c70df6b46"
+    },
+    "database.config.rollup.aggregates.max": {
+      "source": "820c397da4cf1b01",
+      "output": "bd5fa136589f0a42"
+    },
+    "database.config.rollup.aggregates.min": {
+      "source": "82ce97e72b809836",
+      "output": "d79567c7194c134a"
+    },
+    "database.config.rollup.aggregates.sum": {
+      "source": "b2616c8db04a5e49",
+      "output": "ba18a3bd10773e02"
+    },
+    "database.config.rollup.chooseColumn": {
+      "source": "d4461275e054954b",
+      "output": "3071141e14d2088c"
+    },
+    "database.config.rollup.columnWithType": {
+      "source": "bd0aa116c5c6bdd3",
+      "output": "bd0aa116c5c6bdd3"
+    },
+    "database.config.rollup.noRelation": {
+      "source": "f20a0ebedbc69936",
+      "output": "a730bc9d0a56d87e"
+    },
+    "database.config.rollup.relation": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "eb85a833076682d2"
+    },
+    "database.config.rollup.target": {
+      "source": "39057052d5912dfc",
+      "output": "026b289c783a47a7"
+    },
+    "database.embed.choose": {
+      "source": "5906ce15e9ee2c78",
+      "output": "610b9cd4fafcb9ac"
+    },
+    "database.embed.chooseDescription": {
+      "source": "269ed01f914ff2fb",
+      "output": "36dd634d3f5ac73b"
+    },
+    "database.embed.fallbackTitle": {
+      "source": "4cc80701da55c69a",
+      "output": "a640e78f99b22645"
+    },
+    "database.embed.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "9bcfd6cac78a4068"
+    },
+    "database.embed.noneTitle": {
+      "source": "7a1257e96b837292",
+      "output": "9708da2fd52569fb"
+    },
+    "database.embed.notFoundDescription": {
+      "source": "e069df7cea7cb85b",
+      "output": "c74b9bfba867d452"
+    },
+    "database.embed.openOwnPage": {
+      "source": "0c43cc91d9aa4382",
+      "output": "16a2287acd53ea47"
+    },
+    "database.embed.switchDatabase": {
+      "source": "63cabd69ac7667f1",
+      "output": "f7b9498a8c038e77"
+    },
+    "database.filters.addFilter": {
+      "source": "0ebbc437d9f377d3",
+      "output": "90086102a30daaeb"
+    },
+    "database.filters.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "67a398b360a215f3"
+    },
+    "database.filters.checkedChoice": {
+      "source": "7a9dd317c04a85bf",
+      "output": "f948e59ec0e9c3f8"
+    },
+    "database.filters.checkedValue": {
+      "source": "fcd8918c35de68a4",
+      "output": "63675edea33d1b7a"
+    },
+    "database.filters.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "6e9ed7660b8ae709"
+    },
+    "database.filters.filter": {
+      "source": "638e249f4a15ebb8",
+      "output": "5184af9847a943c1"
+    },
+    "database.filters.operators.contains": {
+      "source": "9eaeecae4e65cf69",
+      "output": "c4fd09db022e9e32"
+    },
+    "database.filters.operators.equals": {
+      "source": "1da8321dcc9a00ab",
+      "output": "4a99557e4033c353"
+    },
+    "database.filters.operators.greater_than": {
+      "source": "a325a5fbe3fecdac",
+      "output": "54ce18bc08903e3b"
+    },
+    "database.filters.operators.is_empty": {
+      "source": "5bde1182b8f654e3",
+      "output": "1a0bdb5fbbd18ae4"
+    },
+    "database.filters.operators.is_not_empty": {
+      "source": "de931e0acdf9950f",
+      "output": "5493f09910ba0fb1"
+    },
+    "database.filters.operators.less_than": {
+      "source": "5584f8d869dece42",
+      "output": "6e97e166da057fda"
+    },
+    "database.filters.operators.not_contains": {
+      "source": "e60807d1bc76b9e7",
+      "output": "d8e5a8a286421033"
+    },
+    "database.filters.operators.not_equals": {
+      "source": "4c3905176d1a9c79",
+      "output": "c72de8dd37a1f38e"
+    },
+    "database.filters.operators.on_or_after": {
+      "source": "fb8e20fc2e4c3f24",
+      "output": "30d12866589df24b"
+    },
+    "database.filters.operators.on_or_before": {
+      "source": "96147cdbfd6955d7",
+      "output": "6dd87bda8f552941"
+    },
+    "database.filters.operators.overlaps": {
+      "source": "4a1ec52dfa098632",
+      "output": "242bc5da64646c69"
+    },
+    "database.filters.removeFilter": {
+      "source": "2fb0556b006fad01",
+      "output": "dca74592532003cf"
+    },
+    "database.filters.removeSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "6cc893fcf5762b34"
+    },
+    "database.filters.sort": {
+      "source": "61192695b8811678",
+      "output": "39f93451ee48b979"
+    },
+    "database.filters.uncheckedChoice": {
+      "source": "aa5f03b01360a9c8",
+      "output": "73c91a77322ad885"
+    },
+    "database.filters.uncheckedValue": {
+      "source": "38f7d8304081b01a",
+      "output": "e5b901d34f686c6b"
+    },
+    "database.filters.value": {
+      "source": "7e347daa5ec7fbe8",
+      "output": "b2f530c46991311c"
+    },
+    "database.gallery.emptyDescription": {
+      "source": "bf231d3672361880",
+      "output": "49f41ac17f8a84d0"
+    },
+    "database.gallery.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "693b3b6b82071202"
+    },
+    "database.gallery.loadFailed": {
+      "source": "5122e8d57601e05d",
+      "output": "778a904172b97773"
+    },
+    "database.gallery.loading": {
+      "source": "276c24838728105f",
+      "output": "702ea4868a89fa6d"
+    },
+    "database.gallery.newCard": {
+      "source": "a2d3641399ae1aac",
+      "output": "be0f1a50f0f07453"
+    },
+    "database.optionColors.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "b0bf526b23af1961"
+    },
+    "database.optionColors.brown": {
+      "source": "8a446a936d39871c",
+      "output": "6c4eae2375dcf642"
+    },
+    "database.optionColors.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "1a31c2cb1e4bc436"
+    },
+    "database.optionColors.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "database.optionColors.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "2b2b4ad00333d993"
+    },
+    "database.optionColors.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "database.optionColors.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "57a73ede5f6fcfde"
+    },
+    "database.optionColors.red": {
+      "source": "2207deb65b865e54",
+      "output": "6741b8b5e1c22dad"
+    },
+    "database.optionColors.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "1875203bcdcc507d"
+    },
+    "database.peek.noProperties": {
+      "source": "764fe3ee6066a634",
+      "output": "8b4569cea9fdfd26"
+    },
+    "database.peek.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4f708f422bfbb432"
+    },
+    "database.propertyMenu.addOption": {
+      "source": "f95c8f4fc95f757c",
+      "output": "a3c8b441e95771f6"
+    },
+    "database.propertyMenu.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.propertyMenu.changeColor": {
+      "source": "8d4b9525a10f8cb5",
+      "output": "d00b8c836a620460"
+    },
+    "database.propertyMenu.configure": {
+      "source": "06d16499af7ca9db",
+      "output": "0a35875ad8242e64"
+    },
+    "database.propertyMenu.confirmDelete": {
+      "source": "6c2d352161df5809",
+      "output": "8b19518ff49b2e29"
+    },
+    "database.propertyMenu.dateFormat": {
+      "source": "a7a3e92ae44d0b27",
+      "output": "4fea57562a8b4fd7"
+    },
+    "database.propertyMenu.delete": {
+      "source": "3e2ffbe710d29840",
+      "output": "add1ac53b767aeb9"
+    },
+    "database.propertyMenu.deleteDescription": {
+      "source": "ee770a2fb90850a2",
+      "output": "656d404e51d077db"
+    },
+    "database.propertyMenu.deleteOption": {
+      "source": "d48f4abd71f5c655",
+      "output": "d011ad2f590d9721"
+    },
+    "database.propertyMenu.deleteTitle": {
+      "source": "0bdd38ceb8950f4d",
+      "output": "1098c9130ec05d54"
+    },
+    "database.propertyMenu.includeTime": {
+      "source": "317f0a69e9cc6367",
+      "output": "9e7e28fffd0d3aee"
+    },
+    "database.propertyMenu.isRange": {
+      "source": "ebd9aa50c1bd3965",
+      "output": "4516f5ad4dffd65e"
+    },
+    "database.propertyMenu.manageOptions": {
+      "source": "41880fc9bd63b1e7",
+      "output": "3684f51c1e03a7d1"
+    },
+    "database.propertyMenu.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "34be91afda13e4e7"
+    },
+    "database.propertyMenu.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "da62c64c2f508379"
+    },
+    "database.propertyMenu.newOption": {
+      "source": "faa63f7d62bd364c",
+      "output": "c93889809dedd019"
+    },
+    "database.propertyMenu.options": {
+      "source": "f1daae3521fedae5",
+      "output": "eadb377837ef0a0e"
+    },
+    "database.propertyMenu.rangeHint": {
+      "source": "a7a88c00ee1769b0",
+      "output": "47cb2c70aa8bd571"
+    },
+    "database.propertyMenu.rename": {
+      "source": "83e07ed1f359d9be",
+      "output": "48eadfc22613de84"
+    },
+    "database.propertyMenu.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "aef7cd5b2081351d"
+    },
+    "database.propertyTypes.CHECKBOX": {
+      "source": "d8624ded712e9b2e",
+      "output": "577731f8d7513360"
+    },
+    "database.propertyTypes.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "d47c097c0a3c77b1"
+    },
+    "database.propertyTypes.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "f6d7d1b50677930a"
+    },
+    "database.propertyTypes.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.propertyTypes.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.propertyTypes.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "c11445cb4fe129bf"
+    },
+    "database.propertyTypes.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.propertyTypes.MULTI_SELECT": {
+      "source": "1d8a827eb8696360",
+      "output": "c7a478574b94c7e8"
+    },
+    "database.propertyTypes.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "67e494d69c2d20d0"
+    },
+    "database.propertyTypes.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "1aa0b2d780d00837"
+    },
+    "database.propertyTypes.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "2f151735cce73ad3"
+    },
+    "database.propertyTypes.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "eb85a833076682d2"
+    },
+    "database.propertyTypes.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.propertyTypes.SELECT": {
+      "source": "e8b7adc30ad3f4e8",
+      "output": "3432adc0ee0d64b3"
+    },
+    "database.propertyTypes.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "6df3d6661c095ce7"
+    },
+    "database.propertyTypes.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "416f8b3f3eaa70a4"
+    },
+    "database.propertyTypes.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "fc8d321ac28fdec6"
+    },
+    "database.propertyTypes.URL": {
+      "source": "e7a241debad56609",
+      "output": "e7a241debad56609"
+    },
+    "database.rows.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "9469c6553b7543ea"
+    },
+    "database.shell.creatingView": {
+      "source": "45d924e7a76c4e7f",
+      "output": "191562eea319e861"
+    },
+    "database.shell.loadFailed": {
+      "source": "d8c658e17137dc3a",
+      "output": "48dcd520b3d53c3e"
+    },
+    "database.shell.loading": {
+      "source": "93a39d63d84a9928",
+      "output": "9bcfd6cac78a4068"
+    },
+    "database.table.emptyDescription": {
+      "source": "377bb1ffe6a7e9e4",
+      "output": "64e8ff26342a7f02"
+    },
+    "database.table.emptyTitle": {
+      "source": "ca07196489b17872",
+      "output": "693b3b6b82071202"
+    },
+    "database.table.loadFailed": {
+      "source": "d2af4dfc82055270",
+      "output": "8ddc34abc243977b"
+    },
+    "database.table.loading": {
+      "source": "611bd2111d5e778e",
+      "output": "002b328f9ae3faab"
+    },
+    "database.table.nameColumn": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "5086900635fec3ef"
+    },
+    "database.table.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "e6a8ded996cbf4a2"
+    },
+    "database.table.openRow": {
+      "source": "c0864170fbb55ed0",
+      "output": "a6fff41f8422f6f4"
+    },
+    "database.table.resizeColumn": {
+      "source": "54a1ad67225d1283",
+      "output": "4111c41807355abd"
+    },
+    "database.viewOptions.columns": {
+      "source": "b9d473f90e0b9347",
+      "output": "dbcb93af7bcc8b96"
+    },
+    "database.viewOptions.noProperties": {
+      "source": "84f56d677026ef81",
+      "output": "a6e014b2c3ade179"
+    },
+    "database.viewOptions.rowHeight": {
+      "source": "b1ce852924fbc881",
+      "output": "2eab54ace6bced73"
+    },
+    "database.viewOptions.rowHeights.medium": {
+      "source": "6604277e642c958b",
+      "output": "4304ccfa3f662ac5"
+    },
+    "database.viewOptions.rowHeights.short": {
+      "source": "e7cc39b47178d8db",
+      "output": "a2ca5e248c783538"
+    },
+    "database.viewOptions.rowHeights.tall": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "database.viewOptions.trigger": {
+      "source": "a6d6105cf99c1b52",
+      "output": "a691db0557a4ae2b"
+    },
+    "database.viewTypes.BOARD": {
+      "source": "4816cbfd74aa8297",
+      "output": "38b526eea8ab3fa8"
+    },
+    "database.viewTypes.CALENDAR": {
+      "source": "36f1504f51182fee",
+      "output": "b667fcdd17dac311"
+    },
+    "database.viewTypes.GALLERY": {
+      "source": "7b27947821c85911",
+      "output": "6660507dd6461e01"
+    },
+    "database.viewTypes.TABLE": {
+      "source": "c2b21ddfbab9ad00",
+      "output": "5d3015b63d8af4f4"
+    },
+    "database.views.actionsFor": {
+      "source": "85c092ff95f65e24",
+      "output": "19e53e685a916643"
+    },
+    "database.views.add": {
+      "source": "5889fe9b39842aab",
+      "output": "6d1f7b9fa58f78af"
+    },
+    "database.views.delete": {
+      "source": "5179a61c0aa5a386",
+      "output": "ceea4e66ca357a25"
+    },
+    "database.views.deleteDescription": {
+      "source": "9537fba4a108ed6f",
+      "output": "d0f9d4992e4c1cc1"
+    },
+    "database.views.deleteTitle": {
+      "source": "cb34a4bd8092c725",
+      "output": "8e86705a27e13eca"
+    },
+    "database.views.moveLeft": {
+      "source": "fb428940e9aa5441",
+      "output": "925568a9a0a940d2"
+    },
+    "database.views.moveRight": {
+      "source": "a27cdfd043939fcc",
+      "output": "fdac84a66e4a7d77"
+    },
+    "database.views.numberedName": {
+      "source": "a8de328749af143c",
+      "output": "a8de328749af143c"
+    },
+    "database.views.tabsLabel": {
+      "source": "4ed4ed7757b5e0d4",
+      "output": "6e1d44603f867d2c"
     },
     "dialogs.activity.archived": {
       "source": "7e2d64b45937ca64",

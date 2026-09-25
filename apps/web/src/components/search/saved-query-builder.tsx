@@ -33,12 +33,7 @@ import {
   ToggleGroup,
 } from '@exocortex/ui';
 
-import {
-  FILTER_OPERATOR_LABELS,
-  filterValueChoices,
-  filterValueLabel,
-  operatorsForType,
-} from '@/components/database/property-types';
+import { operatorsForType, useFilterWording } from '@/components/database/property-types';
 import { useDatabaseProperties } from '@/lib/api/database-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 import { useEntities } from '@/lib/api/entity-queries';
@@ -441,6 +436,7 @@ function PropertyFilterEditor({
   onChange: (next: readonly DatabaseFilterCondition[]) => void;
 }) {
   const t = useTranslations('search.builder');
+  const wording = useFilterWording();
   if (properties.length === 0) {
     return <p className="text-xs text-muted-foreground">{t('noProperties')}</p>;
   }
@@ -454,10 +450,10 @@ function PropertyFilterEditor({
       <div className="flex flex-wrap items-center gap-1.5">
         {conditions.map((condition, index) => (
           <Badge key={`${condition.propertyId}-${index}`} variant="secondary" className="gap-1">
-            {nameOf(condition.propertyId)} {FILTER_OPERATOR_LABELS[condition.operator]}
+            {nameOf(condition.propertyId)} {wording.operator(condition.operator)}
             {condition.value === undefined
               ? ''
-              : ` ${filterValueLabel(
+              : ` ${wording.valueLabel(
                   properties.find((property) => property.id === condition.propertyId),
                   condition.value,
                 )}`}
@@ -487,6 +483,7 @@ function AddConditionPopover({
   onAdd: (condition: DatabaseFilterCondition) => void;
 }) {
   const t = useTranslations('search.builder');
+  const wording = useFilterWording();
   const [open, setOpen] = React.useState(false);
   const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
   const property = properties.find((entry) => entry.id === propertyId) ?? properties[0];
@@ -496,7 +493,7 @@ function AddConditionPopover({
 
   if (property === undefined) return null;
   const needsValue = operator !== 'is_empty' && operator !== 'is_not_empty';
-  const choices = filterValueChoices(property);
+  const choices = wording.choices(property);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -518,9 +515,7 @@ function AddConditionPopover({
               chosenProperty === undefined ? [] : operatorsForType(chosenProperty.type);
             setOperator(available[0] ?? 'equals');
             setValue(
-              chosenProperty === undefined
-                ? ''
-                : (filterValueChoices(chosenProperty)[0]?.value ?? ''),
+              chosenProperty === undefined ? '' : (wording.choices(chosenProperty)[0]?.value ?? ''),
             );
           }}
         >
@@ -541,12 +536,12 @@ function AddConditionPopover({
           onValueChange={(next) => setOperator((next ?? 'equals') as DatabaseFilterOperator)}
         >
           <SelectTrigger>
-            <SelectValue>{() => FILTER_OPERATOR_LABELS[operator]}</SelectValue>
+            <SelectValue>{() => wording.operator(operator)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {operators.map((entry) => (
               <SelectItem key={entry} value={entry}>
-                {FILTER_OPERATOR_LABELS[entry]}
+                {wording.operator(entry)}
               </SelectItem>
             ))}
           </SelectContent>

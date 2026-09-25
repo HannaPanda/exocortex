@@ -1,11 +1,10 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type CalendarEntry, dayKey } from './entries';
-import { addDays, MONTH_GRID_DAYS, monthGridStart, monthName } from './range';
-
-const WEEKDAY_INITIALS = ['M', 'D', 'M', 'D', 'F', 'S', 'S'];
+import { addDays, MONTH_GRID_DAYS, monthGridStart, monthName, weekdayNames } from './range';
 
 interface YearViewProps {
   anchor: Date;
@@ -58,6 +57,9 @@ function MiniMonth({
   onOpenDay: (day: Date) => void;
   onOpenMonth: (day: Date) => void;
 }) {
+  const t = useTranslations('calendar.year');
+  const locale = useLocale();
+  const weekdays = React.useMemo(() => weekdayNames(locale, 'weekdayNarrow'), [locale]);
   const start = monthGridStart(year, month);
   const days = React.useMemo(
     () => Array.from({ length: MONTH_GRID_DAYS }, (_, index) => addDays(start, index)),
@@ -71,10 +73,10 @@ function MiniMonth({
         onClick={() => onOpenMonth(new Date(year, month, 1))}
         className="mb-1 w-full text-left text-xs font-medium capitalize hover:underline"
       >
-        {monthName(month)}
+        {monthName(month, locale)}
       </button>
       <div className="grid grid-cols-7 gap-px text-center">
-        {WEEKDAY_INITIALS.map((label, index) => (
+        {weekdays.map((label, index) => (
           <span key={index} className="text-nano text-muted-foreground">
             {label}
           </span>
@@ -88,7 +90,7 @@ function MiniMonth({
               key={key}
               type="button"
               onClick={() => onOpenDay(day)}
-              title={count === 0 ? undefined : `${count} Einträge`}
+              title={count === 0 ? undefined : t('entryCount', { count })}
               className={`rounded-sm text-nano leading-5 hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : ''} ${busyClass(count)}`}
             >
               {day.getDate()}

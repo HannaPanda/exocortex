@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Nessuna data ancora selezionata",
+    "noDateProperty": "Questo database non ha ancora una proprietà di tipo “Data”.",
+    "chooseDateProperty": "Scegli una proprietà data in base alla quale ordinare le righe.",
+    "propertyPlaceholder": "Seleziona proprietà"
+  },
+  "body": {
+    "incomplete": "Questo periodo contiene più voci di quante ne vengano mostrate qui. Scegli un periodo più breve per visualizzarle tutte.",
+    "loading": "Caricamento eventi",
+    "loadFailed": "Eventi non caricati"
+  },
+  "toolbar": {
+    "today": "Oggi",
+    "jumpTo": "Vai a",
+    "modeSwitch": "Vista",
+    "weekWithinMonth": "{fromDay} fino a {to}",
+    "weekRange": "{from} fino a {to}"
+  },
+  "modes": {
+    "LIST": "Elenco",
+    "DAY": "Giorno",
+    "WEEK": "Settimana",
+    "MONTH": "Mese",
+    "YEAR": "Anno"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Mese precedente",
+      "next": "Mese successivo"
+    },
+    "DAY": {
+      "previous": "Giorno precedente",
+      "next": "Giorno successivo"
+    },
+    "WEEK": {
+      "previous": "Settimana precedente",
+      "next": "Settimana successiva"
+    },
+    "MONTH": {
+      "previous": "Mese precedente",
+      "next": "Mese successivo"
+    },
+    "YEAR": {
+      "previous": "Anno precedente",
+      "next": "Anno successivo"
+    }
+  },
+  "month": {
+    "openDay": "Apri giorno: {date}",
+    "more": "{count, plural, one {+# altro} many {+# altri} other {+# altri}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# voce} many {# voci} other {# voci}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nulla in questo periodo",
+    "emptyDescription": "Non ci sono voci in questo mese. Scorri in avanti o cambia vista.",
+    "allDay": "Tutto il giorno",
+    "timeRange": "{from} fino a {to}"
+  },
+  "timeGrid": {
+    "allDay": "Tutto il giorno"
+  }
+}

@@ -4,6 +4,7 @@ import { type NodeViewProps } from '@tiptap/core';
 import { NodeViewWrapper } from '@tiptap/react';
 import { ExternalLinkIcon, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Button, EmptyState, LoadingState } from '@exocortex/ui';
@@ -35,6 +36,7 @@ export function DatabaseEmbedNodeView({
   const viewId = typeof node.attrs.viewId === 'string' ? node.attrs.viewId : undefined;
   const frozenTitle = typeof node.attrs.title === 'string' ? node.attrs.title : '';
 
+  const t = useTranslations('database.embed');
   const doc = useDocument(documentId.length > 0 ? documentId : undefined);
   const askDatabase = React.useContext(DatabaseEmbedPromptContext);
   const editable = editor.isEditable;
@@ -45,7 +47,7 @@ export function DatabaseEmbedNodeView({
     updateAttributes({ documentId: picked.documentId, title: picked.title, viewId: null });
   };
 
-  const title = doc.data?.title ?? (frozenTitle.length > 0 ? frozenTitle : 'Datenbank');
+  const title = doc.data?.title ?? (frozenTitle.length > 0 ? frozenTitle : t('fallbackTitle'));
   const missing = documentId.length === 0 || doc.isError;
 
   return (
@@ -59,7 +61,7 @@ export function DatabaseEmbedNodeView({
               className="embed-action"
             >
               <ExternalLinkIcon aria-hidden />
-              In eigener Seite öffnen
+              {t('openOwnPage')}
             </Link>
           )}
           {editable ? (
@@ -70,7 +72,7 @@ export function DatabaseEmbedNodeView({
               onClick={() => void pickDatabase()}
             >
               <RefreshCwIcon aria-hidden />
-              Datenbank wechseln
+              {t('switchDatabase')}
             </Button>
           ) : null}
         </div>
@@ -78,20 +80,12 @@ export function DatabaseEmbedNodeView({
 
       {missing ? (
         <EmptyState
-          title="Keine Datenbank ausgewählt"
-          description={
-            documentId.length === 0
-              ? 'Wähle eine Datenbank, die hier eingebettet werden soll.'
-              : 'Diese Datenbank wurde nicht gefunden. Sie wurde möglicherweise gelöscht.'
-          }
-          action={
-            editable
-              ? { label: 'Datenbank auswählen', onClick: () => void pickDatabase() }
-              : undefined
-          }
+          title={t('noneTitle')}
+          description={documentId.length === 0 ? t('chooseDescription') : t('notFoundDescription')}
+          action={editable ? { label: t('choose'), onClick: () => void pickDatabase() } : undefined}
         />
       ) : doc.isPending ? (
-        <LoadingState variant="skeleton" rows={3} label="Datenbank wird geladen" />
+        <LoadingState variant="skeleton" rows={3} label={t('loading')} />
       ) : (
         <DatabaseShell
           workspaceId={workspaceId}

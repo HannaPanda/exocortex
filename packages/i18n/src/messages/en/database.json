@@ -1,0 +1,243 @@
+{
+  "propertyTypes": {
+    "TEXT": "Text",
+    "NUMBER": "Number",
+    "SELECT": "Select",
+    "MULTI_SELECT": "Multi-select",
+    "DATE": "Date",
+    "CHECKBOX": "Checkbox",
+    "URL": "URL",
+    "EMAIL": "Email",
+    "PHONE": "Phone",
+    "PERSON": "Person",
+    "FILES": "Files",
+    "CREATED_TIME": "Created time",
+    "UPDATED_TIME": "Last edited time",
+    "CREATED_BY": "Created by",
+    "UPDATED_BY": "Last edited by",
+    "RELATION": "Relation",
+    "ROLLUP": "Rollup",
+    "FORMULA": "Formula"
+  },
+  "optionColors": {
+    "gray": "Gray",
+    "brown": "Brown",
+    "orange": "Orange",
+    "yellow": "Yellow",
+    "green": "Green",
+    "blue": "Blue",
+    "purple": "Purple",
+    "pink": "Pink",
+    "red": "Red"
+  },
+  "viewTypes": {
+    "TABLE": "Table",
+    "BOARD": "Board",
+    "GALLERY": "Gallery",
+    "CALENDAR": "Calendar"
+  },
+  "rows": {
+    "untitled": "Untitled"
+  },
+  "shell": {
+    "loading": "Loading database",
+    "loadFailed": "Database not loaded",
+    "creatingView": "Creating view"
+  },
+  "views": {
+    "tabsLabel": "Views",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "delete": "Delete view",
+    "deleteTitle": "Delete view “{name}”?",
+    "deleteDescription": "Filters, sorting, and column widths for this view will be gone. The database rows will stay as they are.",
+    "actionsFor": "Actions for view “{name}”",
+    "add": "Add view",
+    "numberedName": "{type} {number}"
+  },
+  "viewOptions": {
+    "trigger": "View",
+    "rowHeight": "Row height",
+    "rowHeights": {
+      "short": "Compact",
+      "medium": "Medium",
+      "tall": "Tall"
+    },
+    "columns": "Columns",
+    "noProperties": "No properties yet."
+  },
+  "filters": {
+    "operators": {
+      "equals": "is",
+      "not_equals": "is not",
+      "contains": "contains",
+      "not_contains": "does not contain",
+      "is_empty": "is empty",
+      "is_not_empty": "is not empty",
+      "greater_than": "greater than",
+      "less_than": "less than",
+      "on_or_after": "on or after",
+      "on_or_before": "on or before",
+      "overlaps": "overlaps"
+    },
+    "checkedChoice": "Checked",
+    "uncheckedChoice": "Unchecked",
+    "checkedValue": "checked",
+    "uncheckedValue": "unchecked",
+    "filter": "Filter",
+    "removeFilter": "Remove filter",
+    "value": "Value",
+    "addFilter": "Add filter",
+    "sort": "Sort",
+    "removeSort": "Remove sort",
+    "ascending": "Ascending",
+    "descending": "Descending"
+  },
+  "table": {
+    "loading": "Loading rows",
+    "loadFailed": "Failed to load rows",
+    "nameColumn": "Name",
+    "resizeColumn": "Drag column {name} wider or narrower",
+    "openRow": "Open row",
+    "newRow": "New row",
+    "emptyTitle": "No rows yet",
+    "emptyDescription": "Create the first row for this database."
+  },
+  "board": {
+    "notGroupedTitle": "Not grouped yet",
+    "noSelectProperty": "This database does not have a “Select” property yet.",
+    "chooseGroupProperty": "Choose a select property to group cards by.",
+    "choosePropertyPlaceholder": "Choose property",
+    "loading": "Loading cards",
+    "loadFailed": "Cards not loaded",
+    "noValue": "No value",
+    "moveCard": "Move card",
+    "moveTo": "Move to “{column}”",
+    "newCard": "New card"
+  },
+  "gallery": {
+    "loading": "Loading cards",
+    "loadFailed": "Cards not loaded",
+    "emptyTitle": "No rows yet",
+    "emptyDescription": "Create the first card for this gallery.",
+    "newCard": "New card"
+  },
+  "cells": {
+    "empty": "Empty",
+    "checkbox": "Checkbox",
+    "checked": "Done",
+    "noSelection": "No selection",
+    "commitHint": "Enter or Esc to save",
+    "commitHintMultiline": "Ctrl/Cmd + Enter or Esc to save",
+    "idListPlaceholder": "IDs, comma-separated",
+    "yes": "Yes",
+    "no": "No",
+    "dateRange": "{start} to {end}",
+    "sameDayTimeRange": "{day}, {start} to {end}",
+    "rangeStart": "Start",
+    "rangeEnd": "End",
+    "relationNotConfigured": "This relation is not configured.",
+    "relationTargetEmpty": "The related database has no rows yet.",
+    "relationLimit": "Only the first {limit} rows are shown."
+  },
+  "addProperty": {
+    "trigger": "Add property",
+    "namePlaceholder": "Property name",
+    "submit": "Add"
+  },
+  "propertyMenu": {
+    "rename": "Rename",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "manageOptions": "Manage options",
+    "dateFormat": "Date format",
+    "configure": "Configure {type}",
+    "delete": "Delete property",
+    "save": "Save",
+    "deleteTitle": "Delete property “{name}”?",
+    "deleteDescription": "Every row will permanently lose its value for this property.",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete",
+    "includeTime": "Time",
+    "isRange": "End date",
+    "rangeHint": "With an end date, the property becomes a date range. Only then can a calendar view show events spanning multiple days.",
+    "options": "Options",
+    "changeColor": "Change color",
+    "deleteOption": "Delete option",
+    "newOption": "New option",
+    "addOption": "Add option"
+  },
+  "config": {
+    "relation": {
+      "target": "Linked database",
+      "chooseDatabase": "Choose database",
+      "thisDatabase": "{title} (this one)",
+      "hint": "Only databases from this workspace. The same database is allowed, for example for subtasks.",
+      "allowMultiple": "Allow multiple rows"
+    },
+    "rollup": {
+      "relation": "Relation",
+      "chooseColumn": "Choose column",
+      "noRelation": "This database doesn’t have a relation column yet. Create one first.",
+      "aggregate": "Calculation",
+      "aggregates": {
+        "count": "Number of linked rows",
+        "count_unique": "Number of unique values",
+        "count_not_empty": "Number of filled values",
+        "sum": "Sum",
+        "average": "Average",
+        "min": "Lowest value",
+        "max": "Highest value",
+        "earliest": "Earliest date",
+        "latest": "Latest date"
+      },
+      "target": "Column in the linked database",
+      "columnWithType": "{name} ({type})"
+    },
+    "formula": {
+      "label": "Formula",
+      "placeholder": "prop(\"Price\") * prop(\"Quantity\")",
+      "help": "Write columns as <code>prop(\"Name\")</code>. Calculate with {arithmetic}, compare with {comparison}, combine with {logical}.",
+      "reference": "Columns and functions",
+      "functions": {
+        "if": "if(condition; then; else)",
+        "not": "not(condition)",
+        "and": "and(a; b)",
+        "or": "or(a; b)",
+        "empty": "empty(value): is the cell empty?",
+        "format": "format(value): as text",
+        "concat": "concat(a; b; …)",
+        "length": "length(text)",
+        "upper": "upper(text)",
+        "lower": "lower(text)",
+        "contains": "contains(text; substring)",
+        "abs": "abs(number)",
+        "floor": "floor(number)",
+        "ceil": "ceil(number)",
+        "round": "round(number; decimals)",
+        "min": "min(a; b; …)",
+        "max": "max(a; b; …)",
+        "now": "now(): now",
+        "dateAdd": "dateAdd(date; days)",
+        "dateDiffDays": "dateDiffDays(from; to): days in between",
+        "year": "year(date)",
+        "month": "month(date)",
+        "day": "day(date)"
+      }
+    }
+  },
+  "embed": {
+    "fallbackTitle": "Database",
+    "openOwnPage": "Open in its own page",
+    "switchDatabase": "Switch database",
+    "noneTitle": "No database selected",
+    "chooseDescription": "Choose a database to embed here.",
+    "notFoundDescription": "This database could not be found. It may have been deleted.",
+    "choose": "Select database",
+    "loading": "Loading database"
+  },
+  "peek": {
+    "openAsPage": "Open as page",
+    "noProperties": "This database has no properties yet."
+  }
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { cn, Input, Popover, PopoverContent, PopoverTrigger, Textarea } from '@exocortex/ui';
@@ -50,7 +51,7 @@ function ExpandableTextCell({
   format,
   parse = (raw) => (raw.trim().length === 0 ? null : raw.trim()),
   monospace = false,
-  placeholder = 'Leer',
+  placeholder,
 }: PropertyCellProps & {
   multiline: boolean;
   inputType?: 'text' | 'email' | 'url';
@@ -65,6 +66,8 @@ function ExpandableTextCell({
   // cell on its committed value, so a server-driven change (this mutation's own
   // success, another user's edit) remounts the cell instead (same pattern as
   // `DocumentTitleInput` in document-title-input.tsx).
+  const t = useTranslations('database.cells');
+  const shownPlaceholder = placeholder ?? t('empty');
   const committed = format(value);
   const [draft, setDraft] = React.useState(committed);
   const [open, setOpen] = React.useState(false);
@@ -87,7 +90,7 @@ function ExpandableTextCell({
         {committed}
       </span>
     ) : (
-      <span className="text-muted-foreground">{placeholder}</span>
+      <span className="text-muted-foreground">{shownPlaceholder}</span>
     );
 
   if (readOnly) {
@@ -124,7 +127,7 @@ function ExpandableTextCell({
             autoFocus
             value={draft}
             rows={4}
-            placeholder={placeholder}
+            placeholder={shownPlaceholder}
             className={cn('max-h-[40vh] resize-none text-sm', monospace && 'font-mono text-xs')}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={(event) => {
@@ -137,7 +140,7 @@ function ExpandableTextCell({
             autoFocus
             type={inputType}
             value={draft}
-            placeholder={placeholder}
+            placeholder={shownPlaceholder}
             className={cn('text-sm', monospace && 'font-mono text-xs')}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={(event) => {
@@ -146,7 +149,7 @@ function ExpandableTextCell({
           />
         )}
         <p className="px-1 pt-1 text-micro text-muted-foreground">
-          {multiline ? 'Strg/Cmd + Enter oder Esc übernimmt' : 'Enter oder Esc übernimmt'}
+          {multiline ? t('commitHintMultiline') : t('commitHint')}
         </p>
       </PopoverContent>
     </Popover>
@@ -170,6 +173,7 @@ export function TextCell(props: PropertyCellProps) {
 }
 
 export function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   const [draft, setDraft] = React.useState(typeof value === 'number' ? String(value) : '');
 
   return (
@@ -177,7 +181,7 @@ export function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
       type="number"
       value={draft}
       readOnly={readOnly}
-      placeholder="Leer"
+      placeholder={t('empty')}
       className="h-8 border-transparent bg-transparent px-1.5 text-right shadow-none hover:border-input"
       onChange={(event) => setDraft(event.target.value)}
       {...commitOnEnterOrBlur(() => {
@@ -199,12 +203,13 @@ export function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
  * list, so the property round-trips completely through the API.
  */
 export function IdListCell(props: PropertyCellProps) {
+  const t = useTranslations('database.cells');
   return (
     <ExpandableTextCell
       {...props}
       multiline={false}
       monospace
-      placeholder="IDs, durch Komma getrennt"
+      placeholder={t('idListPlaceholder')}
       format={(value) => (Array.isArray(value) ? value.join(', ') : '')}
       parse={(raw) => {
         const next = raw

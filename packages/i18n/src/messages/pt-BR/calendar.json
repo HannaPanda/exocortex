@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Nenhuma data selecionada ainda",
+    "noDateProperty": "Este banco de dados ainda não tem uma propriedade do tipo “Data”.",
+    "chooseDateProperty": "Escolha uma propriedade de data para organizar as linhas.",
+    "propertyPlaceholder": "Selecionar propriedade"
+  },
+  "body": {
+    "incomplete": "Este período contém mais registros do que os exibidos aqui. Escolha um período mais curto para ver todos.",
+    "loading": "Carregando eventos",
+    "loadFailed": "Eventos não carregados"
+  },
+  "toolbar": {
+    "today": "Hoje",
+    "jumpTo": "Ir para",
+    "modeSwitch": "Visualização",
+    "weekWithinMonth": "{fromDay} até {to}",
+    "weekRange": "{from} até {to}"
+  },
+  "modes": {
+    "LIST": "Lista",
+    "DAY": "Dia",
+    "WEEK": "Semana",
+    "MONTH": "Mês",
+    "YEAR": "Ano"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Mês anterior",
+      "next": "Próximo mês"
+    },
+    "DAY": {
+      "previous": "Dia anterior",
+      "next": "Próximo dia"
+    },
+    "WEEK": {
+      "previous": "Semana anterior",
+      "next": "Próxima semana"
+    },
+    "MONTH": {
+      "previous": "Mês anterior",
+      "next": "Próximo mês"
+    },
+    "YEAR": {
+      "previous": "Ano anterior",
+      "next": "Próximo ano"
+    }
+  },
+  "month": {
+    "openDay": "Abrir dia: {date}",
+    "more": "{count, plural, one {+# outro} many {+# outros} other {+# outros}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# registro} many {# registros} other {# registros}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nada neste período",
+    "emptyDescription": "Não há nenhum registro neste mês. Avance ou mude a visualização.",
+    "allDay": "Dia inteiro",
+    "timeRange": "{from} até {to}"
+  },
+  "timeGrid": {
+    "allDay": "Dia inteiro"
+  }
+}

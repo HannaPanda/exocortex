@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -26,7 +27,7 @@ import {
 import { useDatabaseProperties } from '@/lib/api/database-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
-import { PROPERTY_TYPE_LABELS } from './property-types';
+import { usePropertyTypeLabel } from './property-types';
 
 /**
  * The form behind RELATION, ROLLUP and FORMULA (issue #76).
@@ -37,18 +38,6 @@ import { PROPERTY_TYPE_LABELS } from './property-types';
  * therefore appears twice -- inside "+ Eigenschaft" before the column exists,
  * and in the column menu to change it later.
  */
-
-export const ROLLUP_AGGREGATE_LABELS: Record<DatabaseRollupAggregate, string> = {
-  count: 'Anzahl verknüpfter Zeilen',
-  count_unique: 'Anzahl verschiedener Werte',
-  count_not_empty: 'Anzahl gefüllter Werte',
-  sum: 'Summe',
-  average: 'Durchschnitt',
-  min: 'Kleinster Wert',
-  max: 'Größter Wert',
-  earliest: 'Frühestes Datum',
-  latest: 'Spätestes Datum',
-};
 
 export type PropertyConfig = Record<string, unknown> | null;
 
@@ -100,11 +89,12 @@ function RelationConfigEditor({ documentId, workspaceId, config, onChange }: Edi
   const current = parseRelationConfig(config);
   const targetCollectionId = current?.targetCollectionId ?? '';
   const allowMultiple = current?.allowMultiple ?? true;
+  const t = useTranslations('database.config.relation');
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
-        <Label>Verknüpfte Datenbank</Label>
+        <Label>{t('target')}</Label>
         <Select
           value={targetCollectionId}
           onValueChange={(next) => onChange({ targetCollectionId: String(next), allowMultiple })}
@@ -113,25 +103,22 @@ function RelationConfigEditor({ documentId, workspaceId, config, onChange }: Edi
             <SelectValue>
               {() =>
                 collections.find((entry) => entry.id === targetCollectionId)?.title ??
-                'Datenbank wählen'
+                t('chooseDatabase')
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {collections.map((entry) => (
               <SelectItem key={entry.id} value={entry.id}>
-                {entry.id === documentId ? `${entry.title} (diese)` : entry.title}
+                {entry.id === documentId ? t('thisDatabase', { title: entry.title }) : entry.title}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">
-          Nur Datenbanken aus diesem Arbeitsbereich. Dieselbe Datenbank ist erlaubt, etwa für
-          Unteraufgaben.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('hint')}</p>
       </div>
       <label className="flex items-center justify-between gap-2 text-sm">
-        Mehrere Zeilen erlauben
+        {t('allowMultiple')}
         <Switch
           checked={allowMultiple}
           onCheckedChange={(next) => onChange({ targetCollectionId, allowMultiple: next })}
@@ -162,6 +149,10 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
       property.type !== 'ROLLUP' && property.type !== 'FORMULA' && property.type !== 'RELATION',
   );
   const targetPropertyId = current?.targetPropertyId ?? null;
+  const t = useTranslations('database.config.rollup');
+  const typeLabel = usePropertyTypeLabel();
+  const columnWithType = (property: { name: string; type: DatabasePropertyType }): string =>
+    t('columnWithType', { name: property.name, type: typeLabel(property.type) });
 
   const update = (
     patch: Partial<{
@@ -174,7 +165,7 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
-        <Label>Verknüpfung</Label>
+        <Label>{t('relation')}</Label>
         <Select
           value={relationPropertyId}
           onValueChange={(next) =>
@@ -184,7 +175,8 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
           <SelectTrigger className="w-full" data-testid="rollup-relation-select">
             <SelectValue>
               {() =>
-                relations.find((entry) => entry.id === relationPropertyId)?.name ?? 'Spalte wählen'
+                relations.find((entry) => entry.id === relationPropertyId)?.name ??
+                t('chooseColumn')
               }
             </SelectValue>
           </SelectTrigger>
@@ -197,25 +189,23 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
           </SelectContent>
         </Select>
         {relations.length === 0 ? (
-          <p className="text-xs text-muted-foreground">
-            Diese Datenbank hat noch keine Verknüpfungsspalte. Lege zuerst eine an.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('noRelation')}</p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Berechnung</Label>
+        <Label>{t('aggregate')}</Label>
         <Select
           value={aggregate}
           onValueChange={(next) => update({ aggregate: next as DatabaseRollupAggregate })}
         >
           <SelectTrigger className="w-full" data-testid="rollup-aggregate-select">
-            <SelectValue>{() => ROLLUP_AGGREGATE_LABELS[aggregate]}</SelectValue>
+            <SelectValue>{() => t(`aggregates.${aggregate}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {DATABASE_ROLLUP_AGGREGATES.map((entry) => (
               <SelectItem key={entry} value={entry}>
-                {ROLLUP_AGGREGATE_LABELS[entry]}
+                {t(`aggregates.${entry}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -224,7 +214,7 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
 
       {aggregate === 'count' ? null : (
         <div className="flex flex-col gap-1.5">
-          <Label>Spalte in der verknüpften Datenbank</Label>
+          <Label>{t('target')}</Label>
           <Select
             value={targetPropertyId ?? ''}
             onValueChange={(next) => update({ targetPropertyId: String(next) })}
@@ -233,16 +223,14 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
               <SelectValue>
                 {() => {
                   const chosen = targetChoices.find((entry) => entry.id === targetPropertyId);
-                  return chosen === undefined
-                    ? 'Spalte wählen'
-                    : `${chosen.name} (${PROPERTY_TYPE_LABELS[chosen.type]})`;
+                  return chosen === undefined ? t('chooseColumn') : columnWithType(chosen);
                 }}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {targetChoices.map((entry) => (
                 <SelectItem key={entry.id} value={entry.id}>
-                  {entry.name} ({PROPERTY_TYPE_LABELS[entry.type]})
+                  {columnWithType(entry)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -257,34 +245,81 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
 // FORMULA
 // ---------------------------------------------------------------------------
 
+/**
+ * The functions whose one-line help lives in `database.config.formula.functions`.
+ * The catalogue in `packages/contracts` keeps its German `hint`, because the
+ * formula checker on the server quotes it in its errors; a function missing
+ * here (added to the catalogue but not yet to the messages) keeps that hint.
+ */
+const TRANSLATED_FORMULA_FUNCTIONS = [
+  'if',
+  'not',
+  'and',
+  'or',
+  'empty',
+  'format',
+  'concat',
+  'length',
+  'upper',
+  'lower',
+  'contains',
+  'abs',
+  'floor',
+  'ceil',
+  'round',
+  'min',
+  'max',
+  'now',
+  'dateAdd',
+  'dateDiffDays',
+  'year',
+  'month',
+  'day',
+] as const;
+
+type TranslatedFormulaFunction = (typeof TRANSLATED_FORMULA_FUNCTIONS)[number];
+
+function isTranslatedFormulaFunction(name: string): name is TranslatedFormulaFunction {
+  return (TRANSLATED_FORMULA_FUNCTIONS as readonly string[]).includes(name);
+}
+
 function FormulaConfigEditor({ documentId, config, onChange }: EditorProps) {
   const own = useDatabaseProperties(documentId);
   const expression = parseFormulaConfig(config)?.expression ?? '';
+  const t = useTranslations('database.config.formula');
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="formula-expression">Formel</Label>
+      <Label htmlFor="formula-expression">{t('label')}</Label>
       <Textarea
         id="formula-expression"
         rows={3}
         className="font-mono text-xs"
-        placeholder={'prop("Preis") * prop("Menge")'}
+        placeholder={t('placeholder')}
         value={expression}
         onChange={(event) => onChange({ expression: event.target.value })}
         data-testid="formula-expression"
       />
       <p className="text-xs text-muted-foreground">
-        Spalten schreibst du als <code>prop(&quot;Name&quot;)</code>. Rechnen mit + - * / %,
-        vergleichen mit == != &lt; &gt;, verknüpfen mit and / or.
+        {/* The operators are the formula language itself, the same in every
+            locale, so they are arguments rather than part of the sentence. */}
+        {t.rich('help', {
+          code: (chunks) => <code>{chunks}</code>,
+          arithmetic: '+ - * / %',
+          comparison: '== != < >',
+          logical: 'and / or',
+        })}
       </p>
       <details className="text-xs text-muted-foreground">
-        <summary className="cursor-pointer">Spalten und Funktionen</summary>
+        <summary className="cursor-pointer">{t('reference')}</summary>
         <p className="mt-1 break-words">
           {(own.data ?? []).map((property) => `prop("${property.name}")`).join(' · ')}
         </p>
         <p className="mt-1 break-words">
-          {Object.values(FORMULA_FUNCTIONS)
-            .map((spec) => spec.hint)
+          {Object.entries(FORMULA_FUNCTIONS)
+            .map(([name, spec]) =>
+              isTranslatedFormulaFunction(name) ? t(`functions.${name}`) : spec.hint,
+            )
             .join(' · ')}
         </p>
       </details>

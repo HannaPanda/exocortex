@@ -1,10 +1,12 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type CalendarEntry, dayKey } from './entries';
 import { CalendarEntryLink } from './entry-link';
 import { layoutDay, MINUTES_PER_DAY } from './layout';
+import { calendarFormatter } from './range';
 
 /** CSS pixels per hour. Below this two half-hour appointments have no room for a title. */
 const HOUR_HEIGHT = 48;
@@ -13,8 +15,6 @@ const DAY_HEIGHT = 24 * HOUR_HEIGHT;
 
 /** Where the axis is scrolled on a day that is not today: the working morning, not midnight. */
 const DEFAULT_SCROLL_HOUR = 8;
-
-const COLUMN_HEADER = new Intl.DateTimeFormat('de-DE', { weekday: 'short', day: 'numeric' });
 
 interface TimeGridViewProps {
   workspaceId: string;
@@ -31,6 +31,8 @@ interface TimeGridViewProps {
  * over the whole column or squeeze the appointments that do have a time.
  */
 export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewProps) {
+  const t = useTranslations('calendar.timeGrid');
+  const locale = useLocale();
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const now = useNow();
   const todayKey = dayKey(now ?? new Date());
@@ -63,14 +65,16 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
               key={dayKey(day)}
               className={`flex-1 border-l border-border px-2 py-1 text-xs capitalize ${dayKey(day) === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'}`}
             >
-              {COLUMN_HEADER.format(day)}
+              {calendarFormatter(locale, 'columnHeader').format(day)}
             </div>
           ))}
         </div>
 
         {hasAllDay ? (
           <div className="flex border-b border-border">
-            <div className="w-14 shrink-0 px-2 py-1 text-micro text-muted-foreground">Ganztags</div>
+            <div className="w-14 shrink-0 px-2 py-1 text-micro text-muted-foreground">
+              {t('allDay')}
+            </div>
             {allDayByColumn.map((column) => (
               <div
                 key={dayKey(column.day)}
@@ -106,7 +110,9 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                     className="absolute right-2 -translate-y-1/2 text-micro text-muted-foreground"
                     style={{ top: hour * HOUR_HEIGHT }}
                   >
-                    {hour === 0 ? '' : `${String(hour).padStart(2, '0')}:00`}
+                    {hour === 0
+                      ? ''
+                      : calendarFormatter(locale, 'time').format(new Date(2026, 0, 1, hour))}
                   </span>
                 ))}
               </div>
@@ -117,6 +123,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                   day={day}
                   entries={entriesByDay.get(dayKey(day)) ?? []}
                   now={dayKey(day) === todayKey ? now : null}
+                  locale={locale}
                 />
               ))}
             </div>
@@ -132,13 +139,15 @@ function DayColumn({
   day,
   entries,
   now,
+  locale,
 }: {
   workspaceId: string;
   day: Date;
   entries: CalendarEntry[];
   now: Date | null;
+  locale: string;
 }) {
-  const placed = layoutDay(entries, day);
+  const placed = layoutDay(entries, day, locale);
 
   return (
     <div className="relative flex-1 border-l border-border">

@@ -2,6 +2,7 @@
 
 import { ImageIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseProperty, type DatabaseView } from '@exocortex/contracts';
@@ -32,13 +33,14 @@ export function GalleryView({
   properties,
   readOnly,
 }: GalleryViewProps) {
+  const t = useTranslations('database.gallery');
+  const tRows = useTranslations('database.rows');
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
 
-  if (rowsQuery.isPending)
-    return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
+  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError)
-    return <ErrorState title="Karten nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
+    return <ErrorState title={t('loadFailed')} onRetry={() => void rowsQuery.refetch()} />;
 
   const coverProperty = properties.find((property) => property.id === view.config.coverPropertyId);
   const otherProperties = properties
@@ -92,10 +94,7 @@ export function GalleryView({
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState
-          title="Noch keine Zeilen"
-          description="Lege die erste Karte für diese Galerie an."
-        />
+        <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
       ) : null}
 
       {readOnly ? null : (
@@ -103,9 +102,9 @@ export function GalleryView({
           variant="ghost"
           size="sm"
           className="mt-2 text-muted-foreground"
-          onClick={() => createRow.mutate({ title: 'Unbenannt', values: [] })}
+          onClick={() => createRow.mutate({ title: tRows('untitled'), values: [] })}
         >
-          <PlusIcon /> Neue Karte
+          <PlusIcon /> {t('newCard')}
         </Button>
       )}
     </div>

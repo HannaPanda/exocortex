@@ -1,15 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 import { type CalendarEntry } from './entries';
+import { calendarFormatter } from './range';
 
-const TIME_FORMATTER = new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-export function entryTime(entry: CalendarEntry): string | null {
+export function entryTime(entry: CalendarEntry, locale: string): string | null {
   if (entry.allDay) return null;
   const date = new Date(entry.start);
-  return Number.isNaN(date.getTime()) ? null : TIME_FORMATTER.format(date);
+  return Number.isNaN(date.getTime()) ? null : calendarFormatter(locale, 'time').format(date);
 }
 
 /**
@@ -27,7 +27,8 @@ export function CalendarEntryLink({
   className?: string;
   showTime?: boolean;
 }) {
-  const time = showTime ? entryTime(entry) : null;
+  const locale = useLocale();
+  const time = showTime ? entryTime(entry, locale) : null;
   return (
     <Link
       href={`/arbeitsbereich/${workspaceId}/seite/${entry.row.document.id}`}

@@ -65,6 +65,7 @@ describe('groupEntriesByDay', () => {
         ],
         'when',
       ),
+      'de',
     );
 
     expect(grouped.get('2026-09-18')?.map((entry) => entry.row.document.title)).toEqual([

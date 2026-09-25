@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "Pas encore de date sélectionnée",
+    "noDateProperty": "Cette base de données n’a pas encore de propriété de type « Date ».",
+    "chooseDateProperty": "Choisis une propriété de date pour classer les lignes.",
+    "propertyPlaceholder": "Choisir une propriété"
+  },
+  "body": {
+    "incomplete": "Cette période contient plus d’entrées que ce qui est affiché ici. Choisis une période plus courte pour toutes les voir.",
+    "loading": "Chargement des événements",
+    "loadFailed": "Événements non chargés"
+  },
+  "toolbar": {
+    "today": "Aujourd’hui",
+    "jumpTo": "Aller à",
+    "modeSwitch": "Vue",
+    "weekWithinMonth": "{fromDay} au {to}",
+    "weekRange": "{from} au {to}"
+  },
+  "modes": {
+    "LIST": "Liste",
+    "DAY": "Jour",
+    "WEEK": "Semaine",
+    "MONTH": "Mois",
+    "YEAR": "Année"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Mois précédent",
+      "next": "Mois suivant"
+    },
+    "DAY": {
+      "previous": "Jour précédent",
+      "next": "Jour suivant"
+    },
+    "WEEK": {
+      "previous": "Semaine précédente",
+      "next": "Semaine suivante"
+    },
+    "MONTH": {
+      "previous": "Mois précédent",
+      "next": "Mois suivant"
+    },
+    "YEAR": {
+      "previous": "Année précédente",
+      "next": "Année suivante"
+    }
+  },
+  "month": {
+    "openDay": "Ouvrir le jour : {date}",
+    "more": "{count, plural, one {+# autre} many {+# autres} other {+# autres}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# entrée} many {# d’entrées} other {# entrées}}"
+  },
+  "agenda": {
+    "emptyTitle": "Rien sur cette période",
+    "emptyDescription": "Aucune entrée ce mois-ci. Fais défiler ou change de vue.",
+    "allDay": "Toute la journée",
+    "timeRange": "{from} à {to}"
+  },
+  "timeGrid": {
+    "allDay": "Toute la journée"
+  }
+}

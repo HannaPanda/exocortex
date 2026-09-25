@@ -1,27 +1,19 @@
 'use client';
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseCalendarMode } from '@exocortex/contracts';
 import { Button, DatePicker, Toggle, ToggleGroup } from '@exocortex/ui';
 
 import {
-  CALENDAR_MODE_LABELS,
   CALENDAR_MODES,
   calendarLabel,
   fromDateInputValue,
   stepAnchor,
   toDateInputValue,
 } from './range';
-
-const STEP_LABELS: Record<DatabaseCalendarMode, { previous: string; next: string }> = {
-  LIST: { previous: 'Vorheriger Monat', next: 'Nächster Monat' },
-  DAY: { previous: 'Vorheriger Tag', next: 'Nächster Tag' },
-  WEEK: { previous: 'Vorherige Woche', next: 'Nächste Woche' },
-  MONTH: { previous: 'Vorheriger Monat', next: 'Nächster Monat' },
-  YEAR: { previous: 'Vorheriges Jahr', next: 'Nächstes Jahr' },
-};
 
 interface CalendarToolbarProps {
   mode: DatabaseCalendarMode;
@@ -43,18 +35,25 @@ export function CalendarToolbar({
   onModeChange,
   onAnchorChange,
 }: CalendarToolbarProps) {
-  const steps = STEP_LABELS[mode];
+  const t = useTranslations('calendar.toolbar');
+  const tModes = useTranslations('calendar.modes');
+  const tSteps = useTranslations('calendar.steps');
+  const locale = useLocale();
+  const period = calendarLabel(mode, anchor, locale, {
+    withinMonth: (fromDay, to) => t('weekWithinMonth', { fromDay, to }),
+    range: (from, to) => t('weekRange', { from, to }),
+  });
 
   return (
     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-1">
         <Button variant="outline" size="sm" onClick={() => onAnchorChange(new Date())}>
-          Heute
+          {t('today')}
         </Button>
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label={steps.previous}
+          aria-label={tSteps(`${mode}.previous`)}
           onClick={() => onAnchorChange(stepAnchor(mode, anchor, -1))}
         >
           <ChevronLeftIcon />
@@ -62,20 +61,20 @@ export function CalendarToolbar({
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label={steps.next}
+          aria-label={tSteps(`${mode}.next`)}
           onClick={() => onAnchorChange(stepAnchor(mode, anchor, 1))}
         >
           <ChevronRightIcon />
         </Button>
         <p className="ml-1 text-sm font-medium" data-testid="calendar-period">
-          {calendarLabel(mode, anchor)}
+          {period}
         </p>
       </div>
 
       <div className="flex items-center gap-2">
         <DatePicker
           size="sm"
-          aria-label="Springen zu"
+          aria-label={t('jumpTo')}
           value={toDateInputValue(anchor)}
           onChange={(value) => {
             const picked = value === null ? null : fromDateInputValue(value);
@@ -83,7 +82,7 @@ export function CalendarToolbar({
           }}
         />
         <ToggleGroup
-          aria-label="Ansicht"
+          aria-label={t('modeSwitch')}
           value={[mode]}
           onValueChange={(next: string[]) => {
             // Base UI reports an empty array when the active item is pressed
@@ -94,7 +93,7 @@ export function CalendarToolbar({
         >
           {CALENDAR_MODES.map((entry) => (
             <Toggle key={entry} value={entry} variant="outline" size="sm">
-              {CALENDAR_MODE_LABELS[entry]}
+              {tModes(entry)}
             </Toggle>
           ))}
         </ToggleGroup>

@@ -1,0 +1,243 @@
+{
+  "propertyTypes": {
+    "TEXT": "Tekst",
+    "NUMBER": "Getal",
+    "SELECT": "Selectie",
+    "MULTI_SELECT": "Meervoudige selectie",
+    "DATE": "Datum",
+    "CHECKBOX": "Selectievakje",
+    "URL": "URL",
+    "EMAIL": "E-mail",
+    "PHONE": "Telefoon",
+    "PERSON": "Persoon",
+    "FILES": "Bestanden",
+    "CREATED_TIME": "Gemaakt op",
+    "UPDATED_TIME": "Laatst bewerkt op",
+    "CREATED_BY": "Gemaakt door",
+    "UPDATED_BY": "Laatst bewerkt door",
+    "RELATION": "Relatie",
+    "ROLLUP": "Rollup",
+    "FORMULA": "Formule"
+  },
+  "optionColors": {
+    "gray": "Grijs",
+    "brown": "Bruin",
+    "orange": "Oranje",
+    "yellow": "Geel",
+    "green": "Groen",
+    "blue": "Blauw",
+    "purple": "Paars",
+    "pink": "Roze",
+    "red": "Rood"
+  },
+  "viewTypes": {
+    "TABLE": "Tabel",
+    "BOARD": "Bord",
+    "GALLERY": "Galerij",
+    "CALENDAR": "Kalender"
+  },
+  "rows": {
+    "untitled": "Naamloos"
+  },
+  "shell": {
+    "loading": "Database wordt geladen",
+    "loadFailed": "Database niet geladen",
+    "creatingView": "Weergave wordt gemaakt"
+  },
+  "views": {
+    "tabsLabel": "Weergaven",
+    "moveLeft": "Naar links",
+    "moveRight": "Naar rechts",
+    "delete": "Weergave verwijderen",
+    "deleteTitle": "Weergave “{name}” verwijderen?",
+    "deleteDescription": "Filters, sortering en kolombreedtes van deze weergave gaan hierna verloren. De rijen in de database blijven zoals ze zijn.",
+    "actionsFor": "Acties voor weergave “{name}”",
+    "add": "Weergave toevoegen",
+    "numberedName": "{type} {number}"
+  },
+  "viewOptions": {
+    "trigger": "Weergave",
+    "rowHeight": "Rijhoogte",
+    "rowHeights": {
+      "short": "Compact",
+      "medium": "Gemiddeld",
+      "tall": "Hoog"
+    },
+    "columns": "Kolommen",
+    "noProperties": "Nog geen eigenschappen."
+  },
+  "filters": {
+    "operators": {
+      "equals": "is",
+      "not_equals": "is niet",
+      "contains": "bevat",
+      "not_contains": "bevat niet",
+      "is_empty": "is leeg",
+      "is_not_empty": "is niet leeg",
+      "greater_than": "groter dan",
+      "less_than": "kleiner dan",
+      "on_or_after": "vanaf",
+      "on_or_before": "tot en met",
+      "overlaps": "valt binnen periode"
+    },
+    "checkedChoice": "Aangevinkt",
+    "uncheckedChoice": "Niet aangevinkt",
+    "checkedValue": "aangevinkt",
+    "uncheckedValue": "niet aangevinkt",
+    "filter": "Filter",
+    "removeFilter": "Filter verwijderen",
+    "value": "Waarde",
+    "addFilter": "Filter toevoegen",
+    "sort": "Sorteren",
+    "removeSort": "Sortering verwijderen",
+    "ascending": "Oplopend",
+    "descending": "Aflopend"
+  },
+  "table": {
+    "loading": "Rijen worden geladen",
+    "loadFailed": "Rijen niet geladen",
+    "nameColumn": "Naam",
+    "resizeColumn": "Kolom {name} breder of smaller slepen",
+    "openRow": "Rij openen",
+    "newRow": "Nieuwe rij",
+    "emptyTitle": "Nog geen rijen",
+    "emptyDescription": "Maak de eerste rij voor deze database aan."
+  },
+  "board": {
+    "notGroupedTitle": "Nog niet gegroepeerd",
+    "noSelectProperty": "Deze database heeft nog geen eigenschap van het type “Selectie”.",
+    "chooseGroupProperty": "Kies een selectie-eigenschap waarop de kaarten worden gegroepeerd.",
+    "choosePropertyPlaceholder": "Eigenschap kiezen",
+    "loading": "Kaarten worden geladen",
+    "loadFailed": "Kaarten niet geladen",
+    "noValue": "Zonder waarde",
+    "moveCard": "Kaart verplaatsen",
+    "moveTo": "Verplaatsen naar “{column}”",
+    "newCard": "Nieuwe kaart"
+  },
+  "gallery": {
+    "loading": "Kaarten worden geladen",
+    "loadFailed": "Kaarten niet geladen",
+    "emptyTitle": "Nog geen rijen",
+    "emptyDescription": "Maak de eerste kaart voor deze galerij aan.",
+    "newCard": "Nieuwe kaart"
+  },
+  "cells": {
+    "empty": "Leeg",
+    "checkbox": "Selectievakje",
+    "checked": "Voltooid",
+    "noSelection": "Geen selectie",
+    "commitHint": "Enter of Esc bevestigt",
+    "commitHintMultiline": "Ctrl/Cmd + Enter of Esc bevestigt",
+    "idListPlaceholder": "Id’s, gescheiden door komma’s",
+    "yes": "Ja",
+    "no": "Nee",
+    "dateRange": "{start} tot {end}",
+    "sameDayTimeRange": "{day}, {start} tot {end}",
+    "rangeStart": "Begin",
+    "rangeEnd": "Einde",
+    "relationNotConfigured": "Deze koppeling is niet ingesteld.",
+    "relationTargetEmpty": "De gekoppelde database heeft nog geen rijen.",
+    "relationLimit": "Alleen de eerste {limit} rijen worden getoond."
+  },
+  "addProperty": {
+    "trigger": "Eigenschap toevoegen",
+    "namePlaceholder": "Naam van eigenschap",
+    "submit": "Toevoegen"
+  },
+  "propertyMenu": {
+    "rename": "Naam wijzigen",
+    "moveLeft": "Naar links",
+    "moveRight": "Naar rechts",
+    "manageOptions": "Opties beheren",
+    "dateFormat": "Datumnotatie",
+    "configure": "{type} instellen",
+    "delete": "Eigenschap verwijderen",
+    "save": "Opslaan",
+    "deleteTitle": "Eigenschap “{name}” verwijderen?",
+    "deleteDescription": "Elke rij verliest hiermee definitief de waarde voor deze eigenschap.",
+    "cancel": "Annuleren",
+    "confirmDelete": "Verwijderen",
+    "includeTime": "Tijd",
+    "isRange": "Einddatum",
+    "rangeHint": "Met een einddatum wordt de eigenschap een periode. Pas dan kan een kalenderweergave afspraken over meerdere dagen tonen.",
+    "options": "Opties",
+    "changeColor": "Kleur wijzigen",
+    "deleteOption": "Optie verwijderen",
+    "newOption": "Nieuwe optie",
+    "addOption": "Optie toevoegen"
+  },
+  "config": {
+    "relation": {
+      "target": "Gekoppelde database",
+      "chooseDatabase": "Database kiezen",
+      "thisDatabase": "{title} (deze)",
+      "hint": "Alleen databases uit deze werkruimte. Dezelfde database is toegestaan, bijvoorbeeld voor subtaken.",
+      "allowMultiple": "Meerdere rijen toestaan"
+    },
+    "rollup": {
+      "relation": "Koppeling",
+      "chooseColumn": "Kolom kiezen",
+      "noRelation": "Deze database heeft nog geen koppelingskolom. Maak er eerst een aan.",
+      "aggregate": "Berekening",
+      "aggregates": {
+        "count": "Aantal gekoppelde rijen",
+        "count_unique": "Aantal unieke waarden",
+        "count_not_empty": "Aantal ingevulde waarden",
+        "sum": "Som",
+        "average": "Gemiddelde",
+        "min": "Kleinste waarde",
+        "max": "Grootste waarde",
+        "earliest": "Vroegste datum",
+        "latest": "Laatste datum"
+      },
+      "target": "Kolom in de gekoppelde database",
+      "columnWithType": "{name} ({type})"
+    },
+    "formula": {
+      "label": "Formule",
+      "placeholder": "prop(\"Prijs\") * prop(\"Aantal\")",
+      "help": "Kolommen schrijf je als <code>prop(\"Naam\")</code>. Rekenen met {arithmetic}, vergelijken met {comparison}, combineren met {logical}.",
+      "reference": "Kolommen en functies",
+      "functions": {
+        "if": "if(voorwaarde; dan; anders)",
+        "not": "not(voorwaarde)",
+        "and": "and(a; b)",
+        "or": "or(a; b)",
+        "empty": "empty(waarde): is de cel leeg?",
+        "format": "format(waarde): als tekst",
+        "concat": "concat(a; b; …)",
+        "length": "length(tekst)",
+        "upper": "upper(tekst)",
+        "lower": "lower(tekst)",
+        "contains": "contains(tekst; deel)",
+        "abs": "abs(getal)",
+        "floor": "floor(getal)",
+        "ceil": "ceil(getal)",
+        "round": "round(getal; decimalen)",
+        "min": "min(a; b; …)",
+        "max": "max(a; b; …)",
+        "now": "now(): nu",
+        "dateAdd": "dateAdd(datum; dagen)",
+        "dateDiffDays": "dateDiffDays(van; tot): dagen ertussen",
+        "year": "year(datum)",
+        "month": "month(datum)",
+        "day": "day(datum)"
+      }
+    }
+  },
+  "embed": {
+    "fallbackTitle": "Database",
+    "openOwnPage": "Op eigen pagina openen",
+    "switchDatabase": "Database wisselen",
+    "noneTitle": "Geen database geselecteerd",
+    "chooseDescription": "Kies een database om hier in te sluiten.",
+    "notFoundDescription": "Deze database is niet gevonden. Deze is mogelijk verwijderd.",
+    "choose": "Database selecteren",
+    "loading": "Database wordt geladen"
+  },
+  "peek": {
+    "openAsPage": "Als pagina openen",
+    "noProperties": "Deze database heeft nog geen eigenschappen."
+  }
+}

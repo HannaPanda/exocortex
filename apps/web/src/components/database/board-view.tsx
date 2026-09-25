@@ -2,6 +2,7 @@
 
 import { KanbanIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseProperty, type DatabaseRow, type DatabaseView } from '@exocortex/contracts';
@@ -54,17 +55,16 @@ export function BoardView({ workspaceId, documentId, view, properties, readOnly 
   const groupProperty = properties.find((property) => property.id === view.groupByPropertyId);
   const selectProperties = properties.filter((property) => property.type === 'SELECT');
   const updateView = useUpdateDatabaseView(documentId);
+  const t = useTranslations('database.board');
 
   if (groupProperty === undefined) {
     return (
       <EmptyState
         className="flex-1"
         icon={KanbanIcon}
-        title="Noch nicht gruppiert"
+        title={t('notGroupedTitle')}
         description={
-          selectProperties.length === 0
-            ? 'Diese Datenbank hat noch keine Eigenschaft vom Typ „Auswahl“.'
-            : 'Wähle eine Auswahl-Eigenschaft, nach der die Karten gruppiert werden.'
+          selectProperties.length === 0 ? t('noSelectProperty') : t('chooseGroupProperty')
         }
       >
         {selectProperties.length === 0 ? null : (
@@ -79,7 +79,7 @@ export function BoardView({ workspaceId, documentId, view, properties, readOnly 
               <SelectValue>
                 {(value: string | null) =>
                   value === null
-                    ? 'Eigenschaft wählen'
+                    ? t('choosePropertyPlaceholder')
                     : selectProperties.find((p) => p.id === value)?.name
                 }
               </SelectValue>
@@ -124,14 +124,15 @@ function BoardColumns({
   groupProperty: DatabaseProperty;
   readOnly: boolean;
 }) {
+  const t = useTranslations('database.board');
+  const tRows = useTranslations('database.rows');
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
   const updateValues = useUpdateDatabaseRowValues(documentId);
 
-  if (rowsQuery.isPending)
-    return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
+  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError)
-    return <ErrorState title="Karten nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
+    return <ErrorState title={t('loadFailed')} onRetry={() => void rowsQuery.refetch()} />;
 
   const otherProperties = properties
     .filter((property) => property.id !== groupProperty.id)
@@ -157,7 +158,7 @@ function BoardColumns({
       label: option.label,
       color: option.color,
     })),
-    { id: NO_VALUE_COLUMN, label: 'Ohne Wert', color: 'gray' as const },
+    { id: NO_VALUE_COLUMN, label: t('noValue'), color: 'gray' as const },
   ];
 
   const moveRow = (row: DatabaseRow, targetOptionId: string) => {
@@ -218,7 +219,7 @@ function BoardColumns({
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={
-                            <Button variant="ghost" size="icon-sm" aria-label="Karte verschieben">
+                            <Button variant="ghost" size="icon-sm" aria-label={t('moveCard')}>
                               <MoreHorizontalIcon className="size-3.5" />
                             </Button>
                           }
@@ -231,7 +232,7 @@ function BoardColumns({
                                 key={target.id}
                                 onClick={() => moveRow(row, target.id)}
                               >
-                                Verschieben nach „{target.label}“
+                                {t('moveTo', { column: target.label })}
                               </DropdownMenuItem>
                             ))}
                         </DropdownMenuContent>
@@ -255,7 +256,7 @@ function BoardColumns({
                   className="justify-start text-muted-foreground"
                   onClick={() =>
                     createRow.mutate({
-                      title: 'Unbenannt',
+                      title: tRows('untitled'),
                       values:
                         column.id === NO_VALUE_COLUMN
                           ? []
@@ -263,7 +264,7 @@ function BoardColumns({
                     })
                   }
                 >
-                  <PlusIcon /> Neue Karte
+                  <PlusIcon /> {t('newCard')}
                 </Button>
               )}
             </div>

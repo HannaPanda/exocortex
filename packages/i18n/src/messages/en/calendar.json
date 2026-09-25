@@ -1,0 +1,65 @@
+{
+  "setup": {
+    "title": "No date selected yet",
+    "noDateProperty": "This database doesn’t have a “Date” property yet.",
+    "chooseDateProperty": "Choose a date property to arrange the rows by.",
+    "propertyPlaceholder": "Choose property"
+  },
+  "body": {
+    "incomplete": "This period contains more entries than can be shown here. Choose a shorter period to see all of them.",
+    "loading": "Loading events",
+    "loadFailed": "Failed to load events"
+  },
+  "toolbar": {
+    "today": "Today",
+    "jumpTo": "Jump to",
+    "modeSwitch": "View",
+    "weekWithinMonth": "{fromDay} to {to}",
+    "weekRange": "{from} to {to}"
+  },
+  "modes": {
+    "LIST": "List",
+    "DAY": "Day",
+    "WEEK": "Week",
+    "MONTH": "Month",
+    "YEAR": "Year"
+  },
+  "steps": {
+    "LIST": {
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "DAY": {
+      "previous": "Previous day",
+      "next": "Next day"
+    },
+    "WEEK": {
+      "previous": "Previous week",
+      "next": "Next week"
+    },
+    "MONTH": {
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "YEAR": {
+      "previous": "Previous year",
+      "next": "Next year"
+    }
+  },
+  "month": {
+    "openDay": "Open day: {date}",
+    "more": "{count, plural, one {+# more} other {+# more}}"
+  },
+  "year": {
+    "entryCount": "{count, plural, one {# entry} other {# entries}}"
+  },
+  "agenda": {
+    "emptyTitle": "Nothing in this period",
+    "emptyDescription": "There are no entries in this month. Browse further or switch the view.",
+    "allDay": "All day",
+    "timeRange": "{from} to {to}"
+  },
+  "timeGrid": {
+    "allDay": "All day"
+  }
+}

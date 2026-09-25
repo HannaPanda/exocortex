@@ -1,0 +1,243 @@
+{
+  "propertyTypes": {
+    "TEXT": "Texte",
+    "NUMBER": "Nombre",
+    "SELECT": "Sélection",
+    "MULTI_SELECT": "Sélection multiple",
+    "DATE": "Date",
+    "CHECKBOX": "Case à cocher",
+    "URL": "URL",
+    "EMAIL": "E-mail",
+    "PHONE": "Téléphone",
+    "PERSON": "Personne",
+    "FILES": "Fichiers",
+    "CREATED_TIME": "Créé le",
+    "UPDATED_TIME": "Dernière modification le",
+    "CREATED_BY": "Créé par",
+    "UPDATED_BY": "Dernière modification par",
+    "RELATION": "Relation",
+    "ROLLUP": "Rollup",
+    "FORMULA": "Formule"
+  },
+  "optionColors": {
+    "gray": "Gris",
+    "brown": "Marron",
+    "orange": "Orange",
+    "yellow": "Jaune",
+    "green": "Vert",
+    "blue": "Bleu",
+    "purple": "Violet",
+    "pink": "Rose",
+    "red": "Rouge"
+  },
+  "viewTypes": {
+    "TABLE": "Tableau",
+    "BOARD": "Kanban",
+    "GALLERY": "Galerie",
+    "CALENDAR": "Calendrier"
+  },
+  "rows": {
+    "untitled": "Sans titre"
+  },
+  "shell": {
+    "loading": "Chargement de la base de données",
+    "loadFailed": "Base de données non chargée",
+    "creatingView": "Création de la vue"
+  },
+  "views": {
+    "tabsLabel": "Vues",
+    "moveLeft": "Vers la gauche",
+    "moveRight": "Vers la droite",
+    "delete": "Supprimer la vue",
+    "deleteTitle": "Supprimer la vue « {name} » ?",
+    "deleteDescription": "Les filtres, les tris et la largeur des colonnes de cette vue seront perdus. Les lignes de la base de données restent telles quelles.",
+    "actionsFor": "Actions pour la vue « {name} »",
+    "add": "Ajouter une vue",
+    "numberedName": "{type} {number}"
+  },
+  "viewOptions": {
+    "trigger": "Vue",
+    "rowHeight": "Hauteur de ligne",
+    "rowHeights": {
+      "short": "Compacte",
+      "medium": "Moyenne",
+      "tall": "Haute"
+    },
+    "columns": "Colonnes",
+    "noProperties": "Aucune propriété pour le moment."
+  },
+  "filters": {
+    "operators": {
+      "equals": "est",
+      "not_equals": "n’est pas",
+      "contains": "contient",
+      "not_contains": "ne contient pas",
+      "is_empty": "est vide",
+      "is_not_empty": "n’est pas vide",
+      "greater_than": "supérieur à",
+      "less_than": "inférieur à",
+      "on_or_after": "à partir de",
+      "on_or_before": "jusqu’à",
+      "overlaps": "chevauche la période"
+    },
+    "checkedChoice": "Coché",
+    "uncheckedChoice": "Non coché",
+    "checkedValue": "coché",
+    "uncheckedValue": "non coché",
+    "filter": "Filtrer",
+    "removeFilter": "Supprimer le filtre",
+    "value": "Valeur",
+    "addFilter": "Ajouter un filtre",
+    "sort": "Trier",
+    "removeSort": "Supprimer le tri",
+    "ascending": "Croissant",
+    "descending": "Décroissant"
+  },
+  "table": {
+    "loading": "Chargement des lignes",
+    "loadFailed": "Lignes non chargées",
+    "nameColumn": "Nom",
+    "resizeColumn": "Ajuster la largeur de la colonne {name}",
+    "openRow": "Ouvrir la ligne",
+    "newRow": "Nouvelle ligne",
+    "emptyTitle": "Pas encore de lignes",
+    "emptyDescription": "Crée la première ligne de cette base de données."
+  },
+  "board": {
+    "notGroupedTitle": "Pas encore groupé",
+    "noSelectProperty": "Cette base de données n’a pas encore de propriété de type « Sélection ».",
+    "chooseGroupProperty": "Choisis une propriété de sélection pour regrouper les cartes.",
+    "choosePropertyPlaceholder": "Choisir une propriété",
+    "loading": "Chargement des cartes",
+    "loadFailed": "Cartes non chargées",
+    "noValue": "Sans valeur",
+    "moveCard": "Déplacer la carte",
+    "moveTo": "Déplacer vers « {column} »",
+    "newCard": "Nouvelle carte"
+  },
+  "gallery": {
+    "loading": "Chargement des cartes",
+    "loadFailed": "Cartes non chargées",
+    "emptyTitle": "Pas encore de lignes",
+    "emptyDescription": "Crée la première carte pour cette galerie.",
+    "newCard": "Nouvelle carte"
+  },
+  "cells": {
+    "empty": "Vide",
+    "checkbox": "Case à cocher",
+    "checked": "Terminé",
+    "noSelection": "Aucune sélection",
+    "commitHint": "Entrée ou Échap pour valider",
+    "commitHintMultiline": "Ctrl/Cmd + Entrée ou Échap pour valider",
+    "idListPlaceholder": "ID, séparés par une virgule",
+    "yes": "Oui",
+    "no": "Non",
+    "dateRange": "{start} au {end}",
+    "sameDayTimeRange": "{day}, {start} à {end}",
+    "rangeStart": "Début",
+    "rangeEnd": "Fin",
+    "relationNotConfigured": "Cette relation n’est pas configurée.",
+    "relationTargetEmpty": "La base de données liée n’a pas encore de lignes.",
+    "relationLimit": "Seules les {limit} premières lignes sont proposées."
+  },
+  "addProperty": {
+    "trigger": "Ajouter une propriété",
+    "namePlaceholder": "Nom de la propriété",
+    "submit": "Ajouter"
+  },
+  "propertyMenu": {
+    "rename": "Renommer",
+    "moveLeft": "Vers la gauche",
+    "moveRight": "Vers la droite",
+    "manageOptions": "Gérer les options",
+    "dateFormat": "Format de date",
+    "configure": "Configurer {type}",
+    "delete": "Supprimer la propriété",
+    "save": "Enregistrer",
+    "deleteTitle": "Supprimer la propriété « {name} » ?",
+    "deleteDescription": "Chaque ligne perdra définitivement sa valeur pour cette propriété.",
+    "cancel": "Annuler",
+    "confirmDelete": "Supprimer",
+    "includeTime": "Heure",
+    "isRange": "Date de fin",
+    "rangeHint": "Avec une date de fin, la propriété devient une période. Une vue calendrier pourra alors afficher des événements sur plusieurs jours.",
+    "options": "Options",
+    "changeColor": "Changer la couleur",
+    "deleteOption": "Supprimer l’option",
+    "newOption": "Nouvelle option",
+    "addOption": "Ajouter une option"
+  },
+  "config": {
+    "relation": {
+      "target": "Base de données liée",
+      "chooseDatabase": "Choisir une base de données",
+      "thisDatabase": "{title} (celle-ci)",
+      "hint": "Uniquement les bases de données de cet espace de travail. La même base de données est autorisée, par exemple pour des sous-tâches.",
+      "allowMultiple": "Autoriser plusieurs lignes"
+    },
+    "rollup": {
+      "relation": "Relation",
+      "chooseColumn": "Choisir une colonne",
+      "noRelation": "Cette base de données n’a pas encore de colonne de relation. Crées-en une d’abord.",
+      "aggregate": "Calcul",
+      "aggregates": {
+        "count": "Nombre de lignes liées",
+        "count_unique": "Nombre de valeurs uniques",
+        "count_not_empty": "Nombre de valeurs non vides",
+        "sum": "Somme",
+        "average": "Moyenne",
+        "min": "Valeur minimale",
+        "max": "Valeur maximale",
+        "earliest": "Date la plus ancienne",
+        "latest": "Date la plus récente"
+      },
+      "target": "Colonne dans la base de données liée",
+      "columnWithType": "{name} ({type})"
+    },
+    "formula": {
+      "label": "Formule",
+      "placeholder": "prop(\"Prix\") * prop(\"Quantité\")",
+      "help": "Écris les colonnes sous la forme <code>prop(\"Nom\")</code>. Calcule avec {arithmetic}, compare avec {comparison}, combine avec {logical}.",
+      "reference": "Colonnes et fonctions",
+      "functions": {
+        "if": "if(condition; alors; sinon)",
+        "not": "not(condition)",
+        "and": "and(a; b)",
+        "or": "or(a; b)",
+        "empty": "empty(valeur) : la cellule est-elle vide ?",
+        "format": "format(valeur) : en texte",
+        "concat": "concat(a; b; …)",
+        "length": "length(texte)",
+        "upper": "upper(texte)",
+        "lower": "lower(texte)",
+        "contains": "contains(texte; sous-chaîne)",
+        "abs": "abs(nombre)",
+        "floor": "floor(nombre)",
+        "ceil": "ceil(nombre)",
+        "round": "round(nombre; décimales)",
+        "min": "min(a; b; …)",
+        "max": "max(a; b; …)",
+        "now": "now() : maintenant",
+        "dateAdd": "dateAdd(date; jours)",
+        "dateDiffDays": "dateDiffDays(de; à) : jours d’écart",
+        "year": "year(date)",
+        "month": "month(date)",
+        "day": "day(date)"
+      }
+    }
+  },
+  "embed": {
+    "fallbackTitle": "Base de données",
+    "openOwnPage": "Ouvrir dans sa propre page",
+    "switchDatabase": "Changer de base de données",
+    "noneTitle": "Aucune base de données sélectionnée",
+    "chooseDescription": "Choisis une base de données à intégrer ici.",
+    "notFoundDescription": "Cette base de données est introuvable. Elle a peut-être été supprimée.",
+    "choose": "Sélectionner une base de données",
+    "loading": "Chargement de la base de données"
+  },
+  "peek": {
+    "openAsPage": "Ouvrir en tant que page",
+    "noProperties": "Cette base de données n’a pas encore de propriétés."
+  }
+}

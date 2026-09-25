@@ -1,0 +1,243 @@
+{
+  "propertyTypes": {
+    "TEXT": "Text",
+    "NUMBER": "Zahl",
+    "SELECT": "Auswahl",
+    "MULTI_SELECT": "Mehrfachauswahl",
+    "DATE": "Datum",
+    "CHECKBOX": "Kontrollkästchen",
+    "URL": "URL",
+    "EMAIL": "E-Mail",
+    "PHONE": "Telefon",
+    "PERSON": "Person",
+    "FILES": "Dateien",
+    "CREATED_TIME": "Erstellt am",
+    "UPDATED_TIME": "Zuletzt bearbeitet am",
+    "CREATED_BY": "Erstellt von",
+    "UPDATED_BY": "Zuletzt bearbeitet von",
+    "RELATION": "Verknüpfung",
+    "ROLLUP": "Rollup",
+    "FORMULA": "Formel"
+  },
+  "optionColors": {
+    "gray": "Grau",
+    "brown": "Braun",
+    "orange": "Orange",
+    "yellow": "Gelb",
+    "green": "Grün",
+    "blue": "Blau",
+    "purple": "Violett",
+    "pink": "Pink",
+    "red": "Rot"
+  },
+  "viewTypes": {
+    "TABLE": "Tabelle",
+    "BOARD": "Board",
+    "GALLERY": "Galerie",
+    "CALENDAR": "Kalender"
+  },
+  "rows": {
+    "untitled": "Unbenannt"
+  },
+  "shell": {
+    "loading": "Datenbank wird geladen",
+    "loadFailed": "Datenbank nicht geladen",
+    "creatingView": "Ansicht wird angelegt"
+  },
+  "views": {
+    "tabsLabel": "Ansichten",
+    "moveLeft": "Nach links",
+    "moveRight": "Nach rechts",
+    "delete": "Ansicht löschen",
+    "deleteTitle": "Ansicht „{name}“ löschen?",
+    "deleteDescription": "Filter, Sortierung und Spaltenbreiten dieser Ansicht sind danach weg. Die Zeilen der Datenbank bleiben, wie sie sind.",
+    "actionsFor": "Aktionen für Ansicht „{name}“",
+    "add": "Ansicht hinzufügen",
+    "numberedName": "{type} {number}"
+  },
+  "viewOptions": {
+    "trigger": "Ansicht",
+    "rowHeight": "Zeilenhöhe",
+    "rowHeights": {
+      "short": "Kompakt",
+      "medium": "Mittel",
+      "tall": "Hoch"
+    },
+    "columns": "Spalten",
+    "noProperties": "Noch keine Eigenschaften."
+  },
+  "filters": {
+    "operators": {
+      "equals": "ist",
+      "not_equals": "ist nicht",
+      "contains": "enthält",
+      "not_contains": "enthält nicht",
+      "is_empty": "ist leer",
+      "is_not_empty": "ist nicht leer",
+      "greater_than": "größer als",
+      "less_than": "kleiner als",
+      "on_or_after": "ab",
+      "on_or_before": "bis",
+      "overlaps": "liegt im Zeitraum"
+    },
+    "checkedChoice": "Angehakt",
+    "uncheckedChoice": "Nicht angehakt",
+    "checkedValue": "angehakt",
+    "uncheckedValue": "nicht angehakt",
+    "filter": "Filter",
+    "removeFilter": "Filter entfernen",
+    "value": "Wert",
+    "addFilter": "Filter hinzufügen",
+    "sort": "Sortieren",
+    "removeSort": "Sortierung entfernen",
+    "ascending": "Aufsteigend",
+    "descending": "Absteigend"
+  },
+  "table": {
+    "loading": "Zeilen werden geladen",
+    "loadFailed": "Zeilen nicht geladen",
+    "nameColumn": "Name",
+    "resizeColumn": "Spalte {name} breiter oder schmaler ziehen",
+    "openRow": "Zeile öffnen",
+    "newRow": "Neue Zeile",
+    "emptyTitle": "Noch keine Zeilen",
+    "emptyDescription": "Lege die erste Zeile für diese Datenbank an."
+  },
+  "board": {
+    "notGroupedTitle": "Noch nicht gruppiert",
+    "noSelectProperty": "Diese Datenbank hat noch keine Eigenschaft vom Typ „Auswahl“.",
+    "chooseGroupProperty": "Wähle eine Auswahl-Eigenschaft, nach der die Karten gruppiert werden.",
+    "choosePropertyPlaceholder": "Eigenschaft wählen",
+    "loading": "Karten werden geladen",
+    "loadFailed": "Karten nicht geladen",
+    "noValue": "Ohne Wert",
+    "moveCard": "Karte verschieben",
+    "moveTo": "Verschieben nach „{column}“",
+    "newCard": "Neue Karte"
+  },
+  "gallery": {
+    "loading": "Karten werden geladen",
+    "loadFailed": "Karten nicht geladen",
+    "emptyTitle": "Noch keine Zeilen",
+    "emptyDescription": "Lege die erste Karte für diese Galerie an.",
+    "newCard": "Neue Karte"
+  },
+  "cells": {
+    "empty": "Leer",
+    "checkbox": "Kontrollkästchen",
+    "checked": "Erledigt",
+    "noSelection": "Keine Auswahl",
+    "commitHint": "Enter oder Esc übernimmt",
+    "commitHintMultiline": "Strg/Cmd + Enter oder Esc übernimmt",
+    "idListPlaceholder": "IDs, durch Komma getrennt",
+    "yes": "Ja",
+    "no": "Nein",
+    "dateRange": "{start} bis {end}",
+    "sameDayTimeRange": "{day}, {start} bis {end}",
+    "rangeStart": "Beginn",
+    "rangeEnd": "Ende",
+    "relationNotConfigured": "Diese Verknüpfung ist nicht eingerichtet.",
+    "relationTargetEmpty": "Die verknüpfte Datenbank hat noch keine Zeilen.",
+    "relationLimit": "Nur die ersten {limit} Zeilen werden angeboten."
+  },
+  "addProperty": {
+    "trigger": "Eigenschaft hinzufügen",
+    "namePlaceholder": "Name der Eigenschaft",
+    "submit": "Hinzufügen"
+  },
+  "propertyMenu": {
+    "rename": "Umbenennen",
+    "moveLeft": "Nach links",
+    "moveRight": "Nach rechts",
+    "manageOptions": "Optionen verwalten",
+    "dateFormat": "Datumsformat",
+    "configure": "{type} einrichten",
+    "delete": "Eigenschaft löschen",
+    "save": "Speichern",
+    "deleteTitle": "Eigenschaft „{name}“ löschen?",
+    "deleteDescription": "Jede Zeile verliert damit unwiderruflich ihren Wert für diese Eigenschaft.",
+    "cancel": "Abbrechen",
+    "confirmDelete": "Löschen",
+    "includeTime": "Uhrzeit",
+    "isRange": "Enddatum",
+    "rangeHint": "Mit Enddatum wird aus der Eigenschaft ein Zeitraum. Erst dann kann eine Kalenderansicht Termine über mehrere Tage zeigen.",
+    "options": "Optionen",
+    "changeColor": "Farbe ändern",
+    "deleteOption": "Option löschen",
+    "newOption": "Neue Option",
+    "addOption": "Option hinzufügen"
+  },
+  "config": {
+    "relation": {
+      "target": "Verknüpfte Datenbank",
+      "chooseDatabase": "Datenbank wählen",
+      "thisDatabase": "{title} (diese)",
+      "hint": "Nur Datenbanken aus diesem Arbeitsbereich. Dieselbe Datenbank ist erlaubt, etwa für Unteraufgaben.",
+      "allowMultiple": "Mehrere Zeilen erlauben"
+    },
+    "rollup": {
+      "relation": "Verknüpfung",
+      "chooseColumn": "Spalte wählen",
+      "noRelation": "Diese Datenbank hat noch keine Verknüpfungsspalte. Lege zuerst eine an.",
+      "aggregate": "Berechnung",
+      "aggregates": {
+        "count": "Anzahl verknüpfter Zeilen",
+        "count_unique": "Anzahl verschiedener Werte",
+        "count_not_empty": "Anzahl gefüllter Werte",
+        "sum": "Summe",
+        "average": "Durchschnitt",
+        "min": "Kleinster Wert",
+        "max": "Größter Wert",
+        "earliest": "Frühestes Datum",
+        "latest": "Spätestes Datum"
+      },
+      "target": "Spalte in der verknüpften Datenbank",
+      "columnWithType": "{name} ({type})"
+    },
+    "formula": {
+      "label": "Formel",
+      "placeholder": "prop(\"Preis\") * prop(\"Menge\")",
+      "help": "Spalten schreibst du als <code>prop(\"Name\")</code>. Rechnen mit {arithmetic}, vergleichen mit {comparison}, verknüpfen mit {logical}.",
+      "reference": "Spalten und Funktionen",
+      "functions": {
+        "if": "if(Bedingung; dann; sonst)",
+        "not": "not(Bedingung)",
+        "and": "and(a; b)",
+        "or": "or(a; b)",
+        "empty": "empty(Wert): ist die Zelle leer?",
+        "format": "format(Wert): als Text",
+        "concat": "concat(a; b; …)",
+        "length": "length(Text)",
+        "upper": "upper(Text)",
+        "lower": "lower(Text)",
+        "contains": "contains(Text; Teil)",
+        "abs": "abs(Zahl)",
+        "floor": "floor(Zahl)",
+        "ceil": "ceil(Zahl)",
+        "round": "round(Zahl; Nachkommastellen)",
+        "min": "min(a; b; …)",
+        "max": "max(a; b; …)",
+        "now": "now(): jetzt",
+        "dateAdd": "dateAdd(Datum; Tage)",
+        "dateDiffDays": "dateDiffDays(von; bis): Tage dazwischen",
+        "year": "year(Datum)",
+        "month": "month(Datum)",
+        "day": "day(Datum)"
+      }
+    }
+  },
+  "embed": {
+    "fallbackTitle": "Datenbank",
+    "openOwnPage": "In eigener Seite öffnen",
+    "switchDatabase": "Datenbank wechseln",
+    "noneTitle": "Keine Datenbank ausgewählt",
+    "chooseDescription": "Wähle eine Datenbank, die hier eingebettet werden soll.",
+    "notFoundDescription": "Diese Datenbank wurde nicht gefunden. Sie wurde möglicherweise gelöscht.",
+    "choose": "Datenbank auswählen",
+    "loading": "Datenbank wird geladen"
+  },
+  "peek": {
+    "openAsPage": "Als Seite öffnen",
+    "noProperties": "Diese Datenbank hat noch keine Eigenschaften."
+  }
+}

@@ -11,6 +11,7 @@ import {
   TableIcon,
   TrashIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DatabaseView, type DatabaseViewType } from '@exocortex/contracts';
@@ -38,13 +39,14 @@ import {
 
 import { type MoveDirection } from './table-columns';
 
-/** Also reused by the context panel's "Sammlung" tab (issue #17). */
-export const VIEW_TYPE_LABELS: Record<DatabaseViewType, string> = {
-  TABLE: 'Tabelle',
-  BOARD: 'Board',
-  GALLERY: 'Galerie',
-  CALENDAR: 'Kalender',
-};
+/**
+ * The name of a view type in the reader's language. Also reused by the
+ * context panel's "Sammlung" tab (issue #17).
+ */
+export function useViewTypeLabel(): (type: DatabaseViewType) => string {
+  const t = useTranslations('database.viewTypes');
+  return React.useCallback((type: DatabaseViewType) => t(type), [t]);
+}
 
 const VIEW_TYPE_ICONS: Record<DatabaseViewType, typeof TableIcon> = {
   TABLE: TableIcon,
@@ -68,6 +70,8 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
   const deleteView = useDeleteDatabaseView(documentId);
   const reorderView = useReorderDatabaseView(documentId);
   const confirmDialog = useDestructiveConfirmDialog();
+  const t = useTranslations('database.views');
+  const viewTypeLabel = useViewTypeLabel();
 
   /**
    * One step along the row of tabs. `afterViewId: null` is the front.
@@ -95,9 +99,8 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
 
   const removeView = async (view: DatabaseView): Promise<void> => {
     const confirmed = await confirmDialog.confirm({
-      title: `Ansicht „${view.name}“ löschen?`,
-      description:
-        'Filter, Sortierung und Spaltenbreiten dieser Ansicht sind danach weg. Die Zeilen der Datenbank bleiben, wie sie sind.',
+      title: t('deleteTitle', { name: view.name }),
+      description: t('deleteDescription'),
     });
     if (confirmed) deleteView.mutate(view.id);
   };
@@ -108,7 +111,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
   const actionsOf = (view: DatabaseView, index: number) => [
     {
       key: 'left',
-      label: 'Nach links',
+      label: t('moveLeft'),
       icon: ArrowLeftIcon,
       disabled: index === 0,
       destructive: false,
@@ -116,7 +119,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
     },
     {
       key: 'right',
-      label: 'Nach rechts',
+      label: t('moveRight'),
       icon: ArrowRightIcon,
       disabled: index === views.length - 1,
       destructive: false,
@@ -124,7 +127,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
     },
     {
       key: 'delete',
-      label: 'Ansicht löschen',
+      label: t('delete'),
       icon: TrashIcon,
       disabled: false,
       destructive: true,
@@ -141,7 +144,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
       <div
         className="flex min-w-0 items-center gap-1 overflow-x-auto"
         role="tablist"
-        aria-label="Ansichten"
+        aria-label={t('tabsLabel')}
       >
         {views.map((view, index) => {
           const Icon = VIEW_TYPE_ICONS[view.type];
@@ -193,7 +196,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Aktionen für Ansicht „${activeView.name}“`}
+                aria-label={t('actionsFor', { name: activeView.name })}
                 data-testid="view-actions"
               >
                 <MoreHorizontalIcon />
@@ -220,12 +223,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Ansicht hinzufügen"
-                data-testid="add-view"
-              >
+              <Button variant="ghost" size="icon-sm" aria-label={t('add')} data-testid="add-view">
                 <PlusIcon />
               </Button>
             }
@@ -241,15 +239,15 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
                     const sameType = views.filter((view) => view.type === type).length;
                     const name =
                       sameType === 0
-                        ? VIEW_TYPE_LABELS[type]
-                        : `${VIEW_TYPE_LABELS[type]} ${sameType + 1}`;
+                        ? viewTypeLabel(type)
+                        : t('numberedName', { type: viewTypeLabel(type), number: sameType + 1 });
                     createView.mutate(
                       { type, name },
                       { onSuccess: (created) => onSelect(created.id) },
                     );
                   }}
                 >
-                  <Icon /> {VIEW_TYPE_LABELS[type]}
+                  <Icon /> {viewTypeLabel(type)}
                 </DropdownMenuItem>
               );
             })}

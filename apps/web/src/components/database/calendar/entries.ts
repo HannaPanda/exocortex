@@ -98,11 +98,27 @@ export function toCalendarEntries(
   return entries;
 }
 
-/** Chronological, all-day first: the order a single day is read in. */
-export function compareEntries(left: CalendarEntry, right: CalendarEntry): number {
+const collators = new Map<string, Intl.Collator>();
+
+/** Titles in the reader's alphabetical order, one collator per locale. */
+export function compareTitles(locale: string, left: string, right: string): number {
+  let collator = collators.get(locale);
+  if (collator === undefined) {
+    collator = new Intl.Collator(locale);
+    collators.set(locale, collator);
+  }
+  return collator.compare(left, right);
+}
+
+/**
+ * Chronological, all-day first: the order a single day is read in. The start
+ * is an ISO timestamp and compares by code unit; only a tie falls back to the
+ * title, which is read alphabetically in `locale`.
+ */
+export function compareEntries(locale: string, left: CalendarEntry, right: CalendarEntry): number {
   if (left.allDay !== right.allDay) return left.allDay ? -1 : 1;
-  const byStart = left.start.localeCompare(right.start);
-  return byStart === 0 ? left.row.document.title.localeCompare(right.row.document.title) : byStart;
+  if (left.start !== right.start) return left.start < right.start ? -1 : 1;
+  return compareTitles(locale, left.row.document.title, right.row.document.title);
 }
 
 /**
@@ -110,7 +126,10 @@ export function compareEntries(left: CalendarEntry, right: CalendarEntry): numbe
  * not only the day it starts on: a three-day trip that appears in one cell
  * reads as a one-day trip.
  */
-export function groupEntriesByDay(entries: readonly CalendarEntry[]): Map<string, CalendarEntry[]> {
+export function groupEntriesByDay(
+  entries: readonly CalendarEntry[],
+  locale: string,
+): Map<string, CalendarEntry[]> {
   const byDay = new Map<string, CalendarEntry[]>();
   for (const entry of entries) {
     for (const key of coveredDayKeys(entry.start, entry.end, entry.allDay)) {
@@ -119,6 +138,7 @@ export function groupEntriesByDay(entries: readonly CalendarEntry[]): Map<string
       else list.push(entry);
     }
   }
-  for (const list of byDay.values()) list.sort(compareEntries);
+  for (const list of byDay.values())
+    list.sort((left, right) => compareEntries(locale, left, right));
   return byDay;
 }
