@@ -379,7 +379,8 @@ info "$PRUNED removed, kept: $(ls -1 "$RELEASES_DIR" | sort -r | tr '\n' ' ')"
 
 step "Done"
 ok "$SHORT is live. Finished $(date -u +%Y-%m-%dT%H:%M:%SZ)."
-# Expected, and not a failure: restarting the worker is where `reap-stale-ai-runs`
-# meets whatever the previous deploy left mid-flight, so a burst of
-# `ai_run_abandoned` in the journal right now is the reaper doing its job.
-info "A burst of ai_run_abandoned in the worker journal in the next minute is expected: the reaper is closing out runs the old process left behind."
+# The gate at the top keeps live runs out of a restart, so an
+# `ai_run_abandoned` now is either a run that had already lost its worker
+# (the reaper would have closed it anyway) or one that started in the seconds
+# between the last check and the worker restart. Worth a look, not an alarm.
+info "An ai_run_abandoned in the worker journal now is a run that was already dead, or one that started in the last seconds before the restart. Worth a look, not an alarm."

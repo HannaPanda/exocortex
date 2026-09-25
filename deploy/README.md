@@ -463,13 +463,13 @@ every deploy passes through anyway.
 
 ### Expected right after a deploy
 
-The worker restart is where `reap-stale-ai-runs` meets whatever the previous
-deployment left mid-flight. Every run still `RUNNING` from before has a stale or
-absent heartbeat, so the reaper — or the AI processor's own idempotency guard, if
-a job is still queued for it — closes all of them out as `ai_run_abandoned`
-within a minute. That is a burst of `ai.run.failed` events and it is not a
-failure. Count first if it matters:
-`SELECT status, count(*) FROM ai_run GROUP BY status;`.
+The deploy refuses while a run is alive (see above), so the worker restart
+no longer cuts a working run off. An `ai_run_abandoned` right after a deploy is
+one of two things: a run that had already lost its worker, which the reaper
+would have closed anyway, or one that started in the few seconds between the
+last check and the worker restart. Neither is a deploy failure, but the second
+one cost somebody an answer, so look at which it was:
+`SELECT id, status, "createdAt", "heartbeatAt", "errorCode" FROM ai_run WHERE "errorCode" = 'ai_run_abandoned' ORDER BY "createdAt" DESC LIMIT 5;`.
 
 ### When a build is killed rather than failing
 
