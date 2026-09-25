@@ -30,6 +30,7 @@ import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node-view';
 import { ImageLightboxArea } from '@/components/document/image-lightbox-area';
+import { AgentEditMarkers, createAgentEditMarkers } from '@/components/editor/agent-edit-markers';
 import { BlockHandle } from '@/components/editor/block-handle';
 import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
@@ -38,7 +39,6 @@ import {
   type Connection,
   useCollaborationConnection,
 } from '@/components/editor/collaboration-connection';
-import { AgentEditMarkers, createAgentEditMarkers } from '@/components/editor/agent-edit-markers';
 import { CommentMarkers, createCommentMarkers } from '@/components/editor/comment-markers';
 import {
   type AskDatabaseEmbed,
