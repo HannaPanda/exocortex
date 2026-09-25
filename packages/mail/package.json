@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@exocortex/contracts": "workspace:*",
+    "@exocortex/i18n": "workspace:*",
     "@exocortex/logger": "workspace:*",
     "nodemailer": "10.0.10"
   },

@@ -90,6 +90,9 @@ importers:
       '@exocortex/features':
         specifier: workspace:*
         version: link:../../packages/features
+      '@exocortex/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@exocortex/logger':
         specifier: workspace:*
         version: link:../../packages/logger
@@ -415,6 +418,9 @@ importers:
       '@exocortex/editor':
         specifier: workspace:*
         version: link:../../packages/editor
+      '@exocortex/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@exocortex/logger':
         specifier: workspace:*
         version: link:../../packages/logger
@@ -840,6 +846,9 @@ importers:
       '@exocortex/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@exocortex/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@exocortex/logger':
         specifier: workspace:*
         version: link:../logger

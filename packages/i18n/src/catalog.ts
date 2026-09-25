@@ -1,5 +1,7 @@
 import { DEFAULT_LOCALE, type Locale } from '@exocortex/contracts';
 
+import { createTranslator } from 'use-intl/core';
+
 import { CATALOG, NAMESPACES } from './catalog.generated.js';
 
 /**
@@ -65,4 +67,21 @@ export function pickMessages(locale: Locale, namespaces: readonly Namespace[]): 
   const picked: Partial<Record<Namespace, unknown>> = {};
   for (const namespace of namespaces) picked[namespace] = all[namespace];
   return picked as Partial<Messages>;
+}
+
+/**
+ * A translator for text the server renders: a mail, a push, a diagnosis, a
+ * help entry. Always the reader's locale (ADR-062), which for a mail or a push
+ * is the recipient's and not the requester's.
+ *
+ * `use-intl/core` is the engine `next-intl` runs in the browser, so the same
+ * ICU message formats identically on both sides.
+ */
+export function serverTranslator<N extends Namespace>(locale: Locale, namespace: N) {
+  return createTranslator<Messages, N>({
+    locale,
+    messages: messagesFor(locale),
+    namespace,
+    onError: () => undefined,
+  });
 }

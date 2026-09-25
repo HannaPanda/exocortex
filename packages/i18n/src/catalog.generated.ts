@@ -7,16 +7,21 @@ import de_ai from './messages/de/ai.json';
 import de_auth from './messages/de/auth.json';
 import de_automations from './messages/de/automations.json';
 import de_calendar from './messages/de/calendar.json';
+import de_commands from './messages/de/commands.json';
 import de_database from './messages/de/database.json';
+import de_diagnostics from './messages/de/diagnostics.json';
 import de_dialogs from './messages/de/dialogs.json';
 import de_document from './messages/de/document.json';
 import de_editor from './messages/de/editor.json';
 import de_entities from './messages/de/entities.json';
 import de_errors from './messages/de/errors.json';
+import de_features from './messages/de/features.json';
 import de_help from './messages/de/help.json';
 import de_invitations from './messages/de/invitations.json';
+import de_mail from './messages/de/mail.json';
 import de_memory from './messages/de/memory.json';
 import de_projects from './messages/de/projects.json';
+import de_push from './messages/de/push.json';
 import de_render from './messages/de/render.json';
 import de_search from './messages/de/search.json';
 import de_settings from './messages/de/settings.json';
@@ -29,16 +34,21 @@ import en_ai from './messages/en/ai.json';
 import en_auth from './messages/en/auth.json';
 import en_automations from './messages/en/automations.json';
 import en_calendar from './messages/en/calendar.json';
+import en_commands from './messages/en/commands.json';
 import en_database from './messages/en/database.json';
+import en_diagnostics from './messages/en/diagnostics.json';
 import en_dialogs from './messages/en/dialogs.json';
 import en_document from './messages/en/document.json';
 import en_editor from './messages/en/editor.json';
 import en_entities from './messages/en/entities.json';
 import en_errors from './messages/en/errors.json';
+import en_features from './messages/en/features.json';
 import en_help from './messages/en/help.json';
 import en_invitations from './messages/en/invitations.json';
+import en_mail from './messages/en/mail.json';
 import en_memory from './messages/en/memory.json';
 import en_projects from './messages/en/projects.json';
+import en_push from './messages/en/push.json';
 import en_render from './messages/en/render.json';
 import en_search from './messages/en/search.json';
 import en_settings from './messages/en/settings.json';
@@ -51,16 +61,21 @@ import es_ai from './messages/es/ai.json';
 import es_auth from './messages/es/auth.json';
 import es_automations from './messages/es/automations.json';
 import es_calendar from './messages/es/calendar.json';
+import es_commands from './messages/es/commands.json';
 import es_database from './messages/es/database.json';
+import es_diagnostics from './messages/es/diagnostics.json';
 import es_dialogs from './messages/es/dialogs.json';
 import es_document from './messages/es/document.json';
 import es_editor from './messages/es/editor.json';
 import es_entities from './messages/es/entities.json';
 import es_errors from './messages/es/errors.json';
+import es_features from './messages/es/features.json';
 import es_help from './messages/es/help.json';
 import es_invitations from './messages/es/invitations.json';
+import es_mail from './messages/es/mail.json';
 import es_memory from './messages/es/memory.json';
 import es_projects from './messages/es/projects.json';
+import es_push from './messages/es/push.json';
 import es_render from './messages/es/render.json';
 import es_search from './messages/es/search.json';
 import es_settings from './messages/es/settings.json';
@@ -73,16 +88,21 @@ import fr_ai from './messages/fr/ai.json';
 import fr_auth from './messages/fr/auth.json';
 import fr_automations from './messages/fr/automations.json';
 import fr_calendar from './messages/fr/calendar.json';
+import fr_commands from './messages/fr/commands.json';
 import fr_database from './messages/fr/database.json';
+import fr_diagnostics from './messages/fr/diagnostics.json';
 import fr_dialogs from './messages/fr/dialogs.json';
 import fr_document from './messages/fr/document.json';
 import fr_editor from './messages/fr/editor.json';
 import fr_entities from './messages/fr/entities.json';
 import fr_errors from './messages/fr/errors.json';
+import fr_features from './messages/fr/features.json';
 import fr_help from './messages/fr/help.json';
 import fr_invitations from './messages/fr/invitations.json';
+import fr_mail from './messages/fr/mail.json';
 import fr_memory from './messages/fr/memory.json';
 import fr_projects from './messages/fr/projects.json';
+import fr_push from './messages/fr/push.json';
 import fr_render from './messages/fr/render.json';
 import fr_search from './messages/fr/search.json';
 import fr_settings from './messages/fr/settings.json';
@@ -95,16 +115,21 @@ import it_ai from './messages/it/ai.json';
 import it_auth from './messages/it/auth.json';
 import it_automations from './messages/it/automations.json';
 import it_calendar from './messages/it/calendar.json';
+import it_commands from './messages/it/commands.json';
 import it_database from './messages/it/database.json';
+import it_diagnostics from './messages/it/diagnostics.json';
 import it_dialogs from './messages/it/dialogs.json';
 import it_document from './messages/it/document.json';
 import it_editor from './messages/it/editor.json';
 import it_entities from './messages/it/entities.json';
 import it_errors from './messages/it/errors.json';
+import it_features from './messages/it/features.json';
 import it_help from './messages/it/help.json';
 import it_invitations from './messages/it/invitations.json';
+import it_mail from './messages/it/mail.json';
 import it_memory from './messages/it/memory.json';
 import it_projects from './messages/it/projects.json';
+import it_push from './messages/it/push.json';
 import it_render from './messages/it/render.json';
 import it_search from './messages/it/search.json';
 import it_settings from './messages/it/settings.json';
@@ -117,16 +142,21 @@ import nl_ai from './messages/nl/ai.json';
 import nl_auth from './messages/nl/auth.json';
 import nl_automations from './messages/nl/automations.json';
 import nl_calendar from './messages/nl/calendar.json';
+import nl_commands from './messages/nl/commands.json';
 import nl_database from './messages/nl/database.json';
+import nl_diagnostics from './messages/nl/diagnostics.json';
 import nl_dialogs from './messages/nl/dialogs.json';
 import nl_document from './messages/nl/document.json';
 import nl_editor from './messages/nl/editor.json';
 import nl_entities from './messages/nl/entities.json';
 import nl_errors from './messages/nl/errors.json';
+import nl_features from './messages/nl/features.json';
 import nl_help from './messages/nl/help.json';
 import nl_invitations from './messages/nl/invitations.json';
+import nl_mail from './messages/nl/mail.json';
 import nl_memory from './messages/nl/memory.json';
 import nl_projects from './messages/nl/projects.json';
+import nl_push from './messages/nl/push.json';
 import nl_render from './messages/nl/render.json';
 import nl_search from './messages/nl/search.json';
 import nl_settings from './messages/nl/settings.json';
@@ -139,16 +169,21 @@ import pl_ai from './messages/pl/ai.json';
 import pl_auth from './messages/pl/auth.json';
 import pl_automations from './messages/pl/automations.json';
 import pl_calendar from './messages/pl/calendar.json';
+import pl_commands from './messages/pl/commands.json';
 import pl_database from './messages/pl/database.json';
+import pl_diagnostics from './messages/pl/diagnostics.json';
 import pl_dialogs from './messages/pl/dialogs.json';
 import pl_document from './messages/pl/document.json';
 import pl_editor from './messages/pl/editor.json';
 import pl_entities from './messages/pl/entities.json';
 import pl_errors from './messages/pl/errors.json';
+import pl_features from './messages/pl/features.json';
 import pl_help from './messages/pl/help.json';
 import pl_invitations from './messages/pl/invitations.json';
+import pl_mail from './messages/pl/mail.json';
 import pl_memory from './messages/pl/memory.json';
 import pl_projects from './messages/pl/projects.json';
+import pl_push from './messages/pl/push.json';
 import pl_render from './messages/pl/render.json';
 import pl_search from './messages/pl/search.json';
 import pl_settings from './messages/pl/settings.json';
@@ -161,16 +196,21 @@ import pt_BR_ai from './messages/pt-BR/ai.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
 import pt_BR_automations from './messages/pt-BR/automations.json';
 import pt_BR_calendar from './messages/pt-BR/calendar.json';
+import pt_BR_commands from './messages/pt-BR/commands.json';
 import pt_BR_database from './messages/pt-BR/database.json';
+import pt_BR_diagnostics from './messages/pt-BR/diagnostics.json';
 import pt_BR_dialogs from './messages/pt-BR/dialogs.json';
 import pt_BR_document from './messages/pt-BR/document.json';
 import pt_BR_editor from './messages/pt-BR/editor.json';
 import pt_BR_entities from './messages/pt-BR/entities.json';
 import pt_BR_errors from './messages/pt-BR/errors.json';
+import pt_BR_features from './messages/pt-BR/features.json';
 import pt_BR_help from './messages/pt-BR/help.json';
 import pt_BR_invitations from './messages/pt-BR/invitations.json';
+import pt_BR_mail from './messages/pt-BR/mail.json';
 import pt_BR_memory from './messages/pt-BR/memory.json';
 import pt_BR_projects from './messages/pt-BR/projects.json';
+import pt_BR_push from './messages/pt-BR/push.json';
 import pt_BR_render from './messages/pt-BR/render.json';
 import pt_BR_search from './messages/pt-BR/search.json';
 import pt_BR_settings from './messages/pt-BR/settings.json';
@@ -178,7 +218,7 @@ import pt_BR_shares from './messages/pt-BR/shares.json';
 import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 
-export const NAMESPACES = ["account","admin","ai","auth","automations","calendar","database","dialogs","document","editor","entities","errors","help","invitations","memory","projects","render","search","settings","shares","shell","ui"] as const;
+export const NAMESPACES = ["account","admin","ai","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui"] as const;
 
 export const CATALOG = {
   'de': {
@@ -188,16 +228,21 @@ export const CATALOG = {
     "auth": de_auth,
     "automations": de_automations,
     "calendar": de_calendar,
+    "commands": de_commands,
     "database": de_database,
+    "diagnostics": de_diagnostics,
     "dialogs": de_dialogs,
     "document": de_document,
     "editor": de_editor,
     "entities": de_entities,
     "errors": de_errors,
+    "features": de_features,
     "help": de_help,
     "invitations": de_invitations,
+    "mail": de_mail,
     "memory": de_memory,
     "projects": de_projects,
+    "push": de_push,
     "render": de_render,
     "search": de_search,
     "settings": de_settings,
@@ -212,16 +257,21 @@ export const CATALOG = {
     "auth": en_auth,
     "automations": en_automations,
     "calendar": en_calendar,
+    "commands": en_commands,
     "database": en_database,
+    "diagnostics": en_diagnostics,
     "dialogs": en_dialogs,
     "document": en_document,
     "editor": en_editor,
     "entities": en_entities,
     "errors": en_errors,
+    "features": en_features,
     "help": en_help,
     "invitations": en_invitations,
+    "mail": en_mail,
     "memory": en_memory,
     "projects": en_projects,
+    "push": en_push,
     "render": en_render,
     "search": en_search,
     "settings": en_settings,
@@ -236,16 +286,21 @@ export const CATALOG = {
     "auth": es_auth,
     "automations": es_automations,
     "calendar": es_calendar,
+    "commands": es_commands,
     "database": es_database,
+    "diagnostics": es_diagnostics,
     "dialogs": es_dialogs,
     "document": es_document,
     "editor": es_editor,
     "entities": es_entities,
     "errors": es_errors,
+    "features": es_features,
     "help": es_help,
     "invitations": es_invitations,
+    "mail": es_mail,
     "memory": es_memory,
     "projects": es_projects,
+    "push": es_push,
     "render": es_render,
     "search": es_search,
     "settings": es_settings,
@@ -260,16 +315,21 @@ export const CATALOG = {
     "auth": fr_auth,
     "automations": fr_automations,
     "calendar": fr_calendar,
+    "commands": fr_commands,
     "database": fr_database,
+    "diagnostics": fr_diagnostics,
     "dialogs": fr_dialogs,
     "document": fr_document,
     "editor": fr_editor,
     "entities": fr_entities,
     "errors": fr_errors,
+    "features": fr_features,
     "help": fr_help,
     "invitations": fr_invitations,
+    "mail": fr_mail,
     "memory": fr_memory,
     "projects": fr_projects,
+    "push": fr_push,
     "render": fr_render,
     "search": fr_search,
     "settings": fr_settings,
@@ -284,16 +344,21 @@ export const CATALOG = {
     "auth": it_auth,
     "automations": it_automations,
     "calendar": it_calendar,
+    "commands": it_commands,
     "database": it_database,
+    "diagnostics": it_diagnostics,
     "dialogs": it_dialogs,
     "document": it_document,
     "editor": it_editor,
     "entities": it_entities,
     "errors": it_errors,
+    "features": it_features,
     "help": it_help,
     "invitations": it_invitations,
+    "mail": it_mail,
     "memory": it_memory,
     "projects": it_projects,
+    "push": it_push,
     "render": it_render,
     "search": it_search,
     "settings": it_settings,
@@ -308,16 +373,21 @@ export const CATALOG = {
     "auth": nl_auth,
     "automations": nl_automations,
     "calendar": nl_calendar,
+    "commands": nl_commands,
     "database": nl_database,
+    "diagnostics": nl_diagnostics,
     "dialogs": nl_dialogs,
     "document": nl_document,
     "editor": nl_editor,
     "entities": nl_entities,
     "errors": nl_errors,
+    "features": nl_features,
     "help": nl_help,
     "invitations": nl_invitations,
+    "mail": nl_mail,
     "memory": nl_memory,
     "projects": nl_projects,
+    "push": nl_push,
     "render": nl_render,
     "search": nl_search,
     "settings": nl_settings,
@@ -332,16 +402,21 @@ export const CATALOG = {
     "auth": pl_auth,
     "automations": pl_automations,
     "calendar": pl_calendar,
+    "commands": pl_commands,
     "database": pl_database,
+    "diagnostics": pl_diagnostics,
     "dialogs": pl_dialogs,
     "document": pl_document,
     "editor": pl_editor,
     "entities": pl_entities,
     "errors": pl_errors,
+    "features": pl_features,
     "help": pl_help,
     "invitations": pl_invitations,
+    "mail": pl_mail,
     "memory": pl_memory,
     "projects": pl_projects,
+    "push": pl_push,
     "render": pl_render,
     "search": pl_search,
     "settings": pl_settings,
@@ -356,16 +431,21 @@ export const CATALOG = {
     "auth": pt_BR_auth,
     "automations": pt_BR_automations,
     "calendar": pt_BR_calendar,
+    "commands": pt_BR_commands,
     "database": pt_BR_database,
+    "diagnostics": pt_BR_diagnostics,
     "dialogs": pt_BR_dialogs,
     "document": pt_BR_document,
     "editor": pt_BR_editor,
     "entities": pt_BR_entities,
     "errors": pt_BR_errors,
+    "features": pt_BR_features,
     "help": pt_BR_help,
     "invitations": pt_BR_invitations,
+    "mail": pt_BR_mail,
     "memory": pt_BR_memory,
     "projects": pt_BR_projects,
+    "push": pt_BR_push,
     "render": pt_BR_render,
     "search": pt_BR_search,
     "settings": pt_BR_settings,
