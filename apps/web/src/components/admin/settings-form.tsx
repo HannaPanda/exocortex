@@ -43,6 +43,7 @@ import {
 } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useRequestedState } from '@/lib/use-requested-state';
 
 /**
  * What the alert beside the save button says.
@@ -65,7 +66,7 @@ function changedSettingKeys(draft: Settings | null, stored: Settings | undefined
   return SETTING_KEYS.filter((key) => !sameSettingValue(draft[key], stored[key]));
 }
 
-export function SettingsForm() {
+export function SettingsForm({ requestedGroup = null }: { requestedGroup?: string | null }) {
   const settingsQuery = useAdminSettings();
   const modelsQuery = useAdminAiModels();
   const updateSettings = useUpdateAdminSettings();
@@ -83,7 +84,8 @@ export function SettingsForm() {
   // Which group of rows is on screen. Over a hundred rows in one column is a
   // scroll nobody reads to the end of; the draft lives above this, so switching
   // groups never loses an edit and one save covers all of them.
-  const [group, setGroup] = React.useState<string | null>(null);
+  // `?gruppe=` opens a group and moves it on when the address changes.
+  const [group, setGroup] = useRequestedState<string | null>(requestedGroup, null);
 
   // Initialise the draft once the query resolves. Setting state directly
   // during render (guarded so it only fires once) is the pattern React

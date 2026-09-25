@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ia comentários painel referências",
     "openTrash": "Abrir lixeira",
-    "trashKeywords": "excluído arquivo restaurar"
+    "trashKeywords": "excluído arquivo restaurar",
+    "navigation": {
+      "help": {
+        "label": "Abrir ajuda e recursos",
+        "keywords": "ajuda help recursos novo tutorial o que faz"
+      },
+      "chats": {
+        "label": "Abrir chats",
+        "keywords": "chat conversa bate-papo ia assistente histórico"
+      },
+      "entities": {
+        "label": "Abrir entidades",
+        "keywords": "entidade pessoas locais organizações menções"
+      },
+      "shares": {
+        "label": "Abrir compartilhamentos",
+        "keywords": "compartilhamento compartilhado compartilhar comigo por mim link"
+      },
+      "memory": {
+        "label": "Abrir memória",
+        "keywords": "memória memory agentes fatos lembranças"
+      },
+      "connections": {
+        "label": "Abrir conexões",
+        "keywords": "conexão conector plugin integração mcp token api chave claude chatgpt"
+      },
+      "notifications": {
+        "label": "Configurar notificações",
+        "keywords": "notificação email push aviso configurações"
+      },
+      "language": {
+        "label": "Alterar idioma",
+        "keywords": "idioma language tradução configurações português english"
+      },
+      "workspaces": {
+        "label": "Mostrar todos os espaços de trabalho",
+        "keywords": "espaço de trabalho workspace alternar visão geral lista"
+      },
+      "workspaceHome": {
+        "label": "Início do espaço de trabalho",
+        "keywords": "início home visão geral espaço de trabalho workspace"
+      },
+      "workspaceSearch": {
+        "label": "Busca avançada com filtros",
+        "keywords": "encontrar busca pesquisa filtros buscar texto completo"
+      },
+      "workspaceShares": {
+        "label": "Compartilhamentos deste espaço de trabalho",
+        "keywords": "compartilhamento compartilhado link espaço de trabalho workspace"
+      },
+      "automations": {
+        "label": "Abrir automações",
+        "keywords": "automação regra agendamento gatilho workflow"
+      },
+      "templates": {
+        "label": "Abrir modelos",
+        "keywords": "modelo template padrão"
+      },
+      "workspaceSettings": {
+        "label": "Configurações do espaço de trabalho",
+        "keywords": "espaço de trabalho workspace configurações renomear nome settings"
+      },
+      "admin": {
+        "label": "Abrir administração",
+        "keywords": "administração admin instalação visão geral"
+      },
+      "adminSettings": {
+        "label": "Configurações da instalação",
+        "keywords": "administração admin configurações settings configuração"
+      },
+      "adminModels": {
+        "label": "Gerenciar modelos de IA",
+        "keywords": "modelo model llm provider provedor openrouter ia administração"
+      },
+      "adminUsage": {
+        "label": "Uso de IA e custos",
+        "keywords": "uso custos consumo tokens usage administração"
+      },
+      "adminUsers": {
+        "label": "Gerenciar pessoas usuárias",
+        "keywords": "usuário usuária usuários contas pessoas user bloquear administração"
+      },
+      "adminAgents": {
+        "label": "Ver sessões de agentes",
+        "keywords": "agentes sessões mcp claude codex hermes administração"
+      },
+      "designSystem": {
+        "label": "Abrir design system",
+        "keywords": "design system guia de estilo componentes tokens"
+      }
+    },
+    "settings": {
+      "adminGroup": "Configurações: {group}",
+      "adminHint": "Administração",
+      "adminKeywords": "configurações settings administração admin configuração",
+      "groups": {
+        "ai": "ia modelo model llm prompt prompt do sistema openrouter resposta",
+        "memory": "memória memory agentes fatos consolidação",
+        "entities": "entidade pessoas locais reconhecimento",
+        "search": "busca semântica embedding vetor texto completo",
+        "mcp": "mcp conector plugin integração interface",
+        "calendar": "calendário evento lembrete ical",
+        "notifications": "notificação e-mail push",
+        "activity": "atividade histórico registro",
+        "automations": "automação regra agendamento webhook",
+        "overview": "página de visão geral resumo digest",
+        "render": "publicar pdf exportação pandoc",
+        "projects": "projeto latex build compilar",
+        "agents": "agentes sessão caixa de entrada"
+      },
+      "workspaceMembers": "Gerenciar membros",
+      "workspaceMembersKeywords": "membros convidar pessoas funções acesso espaço de trabalho workspace",
+      "workspaceAi": "Configurações de IA do espaço de trabalho",
+      "workspaceAiKeywords": "ia chave api key própria byok openrouter espaço de trabalho workspace",
+      "workspaceOverrides": "Configurações personalizadas do espaço de trabalho",
+      "workspaceOverridesKeywords": "configurações sobrescrever settings espaço de trabalho workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "Regra de IA",

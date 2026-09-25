@@ -142,6 +142,14 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_search'],
   }),
   defineFeature({
+    id: 'befehlspalette',
+    area: 'suche',
+    since: '2026-09-25',
+    references: ['#115', '#148'],
+    ui: {},
+    shortcuts: ['Strg+K'],
+  }),
+  defineFeature({
     id: 'kontext-zusammenstellen',
     area: 'suche',
     since: '2026-09-24',

@@ -21,6 +21,8 @@ import {
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { LocaleSync } from '@/components/locale-sync';
+import { usePaletteCommands } from '@/components/palette/registry';
+import { shellCommands } from '@/components/palette/shell-commands';
 import { SearchCommand } from '@/components/search/search-command';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
@@ -34,7 +36,6 @@ import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
-import { shellCommands } from './palette-commands';
 import {
   CONTEXT_DEFAULT,
   CONTEXT_STORAGE_KEY,
@@ -222,7 +223,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   // What the palette can do besides finding a page. Built here because this is
   // where the panels and the dialogs live; the palette only lists them.
-  const paletteCommands = React.useMemo(
+  const shellPaletteCommands = React.useMemo(
     () =>
       shellCommands({
         hasWorkspace: workspaceId !== null,
@@ -236,6 +237,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       }),
     [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, tCommands, workspaceId],
   );
+  const paletteCommands = usePaletteCommands({
+    workspaceId,
+    documentId,
+    role: session.data?.user?.role ?? 'user',
+    shell: shellPaletteCommands,
+  });
 
   // Global keyboard shortcuts.
   React.useEffect(() => {

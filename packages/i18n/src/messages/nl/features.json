@@ -211,6 +211,16 @@
     },
     "where": "Het vergrootglas bovenaan in de navigatie."
   },
+  "befehlspalette": {
+    "title": "Elke locatie en elke instelling openen met Strg+K",
+    "summary": "Strg+K zoekt niet alleen pagina’s, maar opent ook elk onderdeel van de applicatie op naam: chats, geheugen, delingen, verbindingen, het beheer en elke afzonderlijke instellingengroep. Je hoeft niet te weten in welk menu iets staat.",
+    "details": {
+      "p1": "Typ gewoon waar het om gaat. „model” leidt naar de AI-modellen, „connector” of „mcp” naar de verbindingen, „taal” naar de taalinstelling, „kalender” naar de kalenderinstellingen. Elke opdracht kent meerdere zoekwoorden, ook Engelse, en de woorden mogen in willekeurige volgorde en afgekort worden ingevoerd: „inst ai” vindt de AI-instellingen.",
+      "p2": "De resultaten staan onder eigen koppen: Acties, Weergave, Ga naar en Instellingen, gevolgd door de opgeslagen zoekopdrachten en de pagina’s. Alleen wat op dat moment relevant is, wordt getoond. Zonder geopende werkruimte ontbreken de opdrachten daarvan, het beheer is alleen zichtbaar voor wie toegang heeft, en „Leden beheren” verschijnt alleen voor wie leden mag bewerken.",
+      "p3": "Zonder invoer blijft het palet rustig: bovenaan de laatst bewerkte pagina’s, daaronder slechts een handvol veelvoorkomende opdrachten zoals Vastleggen of het uitgebreide zoeken. Al het andere verschijnt zodra je ernaar vraagt. Een locatie opent als een echte link, dus je kunt hem ook in een nieuw tabblad openen. Een instellingengroep heeft een eigen adres, zoals /admin/einstellungen?gruppe=ai, dat je als bladwijzer kunt opslaan."
+    },
+    "where": "Strg+K op elke plek, of het vergrootglas bovenin de navigatie."
+  },
   "datenbank-verknuepfungen": {
     "title": "Koppeling, Rollup en formule",
     "summary": "Een kolom kan naar rijen van een andere database verwijzen (koppeling), berekeningen uitvoeren over die rijen (Rollup: aantal, som, gemiddelde, kleinste en grootste waarde, vroegste en laatste datum) of een waarde berekenen uit de eigen kolommen (formule). Op alle drie kun je filteren en sorteren, net als bij elke andere kolom.",

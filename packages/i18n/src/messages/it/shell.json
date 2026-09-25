@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ia commenti pannello riferimenti",
     "openTrash": "Apri cestino",
-    "trashKeywords": "eliminato archivio ripristina"
+    "trashKeywords": "eliminato archivio ripristina",
+    "navigation": {
+      "help": {
+        "label": "Apri guida e funzionalità",
+        "keywords": "guida help funzionalità novità istruzioni cosa fa"
+      },
+      "chats": {
+        "label": "Apri chat",
+        "keywords": "chat conversazione discussione ia assistente cronologia"
+      },
+      "entities": {
+        "label": "Apri entità",
+        "keywords": "entità persone luoghi organizzazioni menzioni"
+      },
+      "shares": {
+        "label": "Apri condivisioni",
+        "keywords": "condivisione condiviso condividi con me da me link"
+      },
+      "memory": {
+        "label": "Apri memoria",
+        "keywords": "memoria memory agenti fatti ricordi"
+      },
+      "connections": {
+        "label": "Apri connessioni",
+        "keywords": "connessione connettore plugin integrazione mcp token api chiave claude chatgpt"
+      },
+      "notifications": {
+        "label": "Imposta notifiche",
+        "keywords": "notifica notificazione mail push avviso impostazioni"
+      },
+      "language": {
+        "label": "Cambia lingua",
+        "keywords": "lingua language traduzione impostazioni italiano english"
+      },
+      "workspaces": {
+        "label": "Mostra tutte le aree di lavoro",
+        "keywords": "area di lavoro workspace cambia panoramica elenco lista"
+      },
+      "workspaceHome": {
+        "label": "Pagina iniziale dell’area di lavoro",
+        "keywords": "inizio home panoramica area di lavoro workspace"
+      },
+      "workspaceSearch": {
+        "label": "Ricerca avanzata con filtri",
+        "keywords": "trova cerca filtri cercare testo completo"
+      },
+      "workspaceShares": {
+        "label": "Condivisioni di quest’area di lavoro",
+        "keywords": "condivisione condiviso link area di lavoro workspace"
+      },
+      "automations": {
+        "label": "Apri automazioni",
+        "keywords": "automazione regola pianificazione trigger workflow"
+      },
+      "templates": {
+        "label": "Apri modelli",
+        "keywords": "modello template schema"
+      },
+      "workspaceSettings": {
+        "label": "Impostazioni dell’area di lavoro",
+        "keywords": "area di lavoro workspace impostazioni rinomina nome settings"
+      },
+      "admin": {
+        "label": "Apri amministrazione",
+        "keywords": "amministrazione admin panoramica installazione"
+      },
+      "adminSettings": {
+        "label": "Impostazioni dell’installazione",
+        "keywords": "amministrazione admin impostazioni settings configurazione"
+      },
+      "adminModels": {
+        "label": "Gestisci modelli di IA",
+        "keywords": "modello model llm provider fornitore openrouter ia amministrazione"
+      },
+      "adminUsage": {
+        "label": "Uso di IA e costi",
+        "keywords": "uso costi consumo token usage amministrazione"
+      },
+      "adminUsers": {
+        "label": "Gestisci utenti",
+        "keywords": "utenti utente account persone user blocca amministrazione"
+      },
+      "adminAgents": {
+        "label": "Vedi sessioni agente",
+        "keywords": "agenti sessioni mcp claude codex hermes amministrazione"
+      },
+      "designSystem": {
+        "label": "Apri design system",
+        "keywords": "design system styleguide componenti token"
+      }
+    },
+    "settings": {
+      "adminGroup": "Impostazioni: {group}",
+      "adminHint": "Amministrazione",
+      "adminKeywords": "impostazioni settings amministrazione admin configurazione",
+      "groups": {
+        "ai": "ia modello model llm prompt systemprompt openrouter risposta",
+        "memory": "memoria memory agenti fatti consolidamento",
+        "entities": "entità persone luoghi rilevamento",
+        "search": "ricerca semantica embedding vettore testo completo",
+        "mcp": "mcp connettore plugin integrazione interfaccia",
+        "calendar": "calendario evento promemoria ical",
+        "notifications": "notifica email push",
+        "activity": "attività cronologia registro",
+        "automations": "automazione regola pianificazione webhook",
+        "overview": "panoramica riepilogo digest",
+        "render": "pubblica pdf esporta pandoc",
+        "projects": "progetto latex build compila",
+        "agents": "agenti sessione casella di posta"
+      },
+      "workspaceMembers": "Gestisci membri",
+      "workspaceMembersKeywords": "membri invita persone ruoli accesso area di lavoro workspace",
+      "workspaceAi": "Impostazioni IA dell’area di lavoro",
+      "workspaceAiKeywords": "ia chiave api key propria byok openrouter area di lavoro workspace",
+      "workspaceOverrides": "Impostazioni personalizzate dell’area di lavoro",
+      "workspaceOverridesKeywords": "impostazioni sovrascrivi settings area di lavoro workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "Regola IA",

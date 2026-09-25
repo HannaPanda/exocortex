@@ -31,7 +31,7 @@ export function useSettingCopy(): (key: SettingKey) => SettingCopy {
 }
 
 /** The groups the settings fall into (the part of a key before the dot). */
-const GROUPS = [
+export const SETTING_GROUPS = [
   'ai',
   'memory',
   'entities',
@@ -47,10 +47,10 @@ const GROUPS = [
   'agents',
 ] as const;
 
-type SettingGroup = (typeof GROUPS)[number];
+export type SettingGroup = (typeof SETTING_GROUPS)[number];
 
-function isSettingGroup(group: string): group is SettingGroup {
-  return (GROUPS as readonly string[]).includes(group);
+export function isSettingGroup(group: string): group is SettingGroup {
+  return (SETTING_GROUPS as readonly string[]).includes(group);
 }
 
 /**

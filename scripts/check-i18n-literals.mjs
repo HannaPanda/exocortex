@@ -196,9 +196,10 @@ const GERMAN = new RegExp(
 /**
  * A route is an address, not a sentence: `/einstellungen/benachrichtigungen`
  * stays German in every locale, because a language is a property of the
- * person and never of the URL (ADR-062).
+ * person and never of the URL (ADR-062). A route pattern (`/arbeitsbereich/:x`)
+ * and a query string (`?gruppe=ai`) are addresses too.
  */
-const ROUTE_LITERAL = /(['"`])\/[\w\-/[\]${}.]*\1/g;
+const ROUTE_LITERAL = /(['"`])\/[\w\-/[\]${}.:?=&]*\1/g;
 
 /**
  * The source with every comment blanked out, newlines kept, so a German

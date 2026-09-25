@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ia comentarios panel referencias",
     "openTrash": "Abrir papelera",
-    "trashKeywords": "eliminado archivo restaurar papelera"
+    "trashKeywords": "eliminado archivo restaurar papelera",
+    "navigation": {
+      "help": {
+        "label": "Abrir ayuda y funciones",
+        "keywords": "ayuda help funciones nuevo guía tutorial qué puede hacer"
+      },
+      "chats": {
+        "label": "Abrir chats",
+        "keywords": "chat conversación diálogo ia asistente historial"
+      },
+      "entities": {
+        "label": "Abrir entidades",
+        "keywords": "entidad personas lugares organizaciones menciones"
+      },
+      "shares": {
+        "label": "Abrir uso compartido",
+        "keywords": "uso compartido compartido compartir conmigo por mí enlace"
+      },
+      "memory": {
+        "label": "Abrir memoria",
+        "keywords": "memoria memory agentes hechos recuerdos"
+      },
+      "connections": {
+        "label": "Abrir conexiones",
+        "keywords": "conexión conector plugin integración mcp token api clave claude chatgpt"
+      },
+      "notifications": {
+        "label": "Configurar notificaciones",
+        "keywords": "notificación correo push aviso ajustes configuración"
+      },
+      "language": {
+        "label": "Cambiar idioma",
+        "keywords": "idioma language traducción ajustes configuración español inglés deutsch english"
+      },
+      "workspaces": {
+        "label": "Mostrar todos los espacios de trabajo",
+        "keywords": "espacio de trabajo workspace cambiar resumen lista"
+      },
+      "workspaceHome": {
+        "label": "Inicio del espacio de trabajo",
+        "keywords": "inicio home resumen espacio de trabajo workspace"
+      },
+      "workspaceSearch": {
+        "label": "Búsqueda avanzada con filtros",
+        "keywords": "encontrar buscar filtros búsqueda texto completo"
+      },
+      "workspaceShares": {
+        "label": "Uso compartido de este espacio de trabajo",
+        "keywords": "uso compartido compartido enlace espacio de trabajo workspace"
+      },
+      "automations": {
+        "label": "Abrir automatizaciones",
+        "keywords": "automatización regla programación disparador workflow flujo de trabajo"
+      },
+      "templates": {
+        "label": "Abrir plantillas",
+        "keywords": "plantilla template modelo"
+      },
+      "workspaceSettings": {
+        "label": "Ajustes del espacio de trabajo",
+        "keywords": "espacio de trabajo workspace ajustes renombrar nombre settings configuración"
+      },
+      "admin": {
+        "label": "Abrir administración",
+        "keywords": "administración admin instalador instalación resumen"
+      },
+      "adminSettings": {
+        "label": "Ajustes de la instalación",
+        "keywords": "administración admin ajustes settings configuración"
+      },
+      "adminModels": {
+        "label": "Gestionar modelos de IA",
+        "keywords": "modelo model llm proveedor provider openrouter ia administración"
+      },
+      "adminUsage": {
+        "label": "Uso de IA y costes",
+        "keywords": "uso costes consumo tokens usage administración"
+      },
+      "adminUsers": {
+        "label": "Gestionar usuarios",
+        "keywords": "usuario usuarios cuentas personas user bloquear administración"
+      },
+      "adminAgents": {
+        "label": "Ver sesiones de agentes",
+        "keywords": "agente sesiones mcp claude codex hermes administración"
+      },
+      "designSystem": {
+        "label": "Abrir sistema de diseño",
+        "keywords": "diseño sistema guía de estilo componentes tokens"
+      }
+    },
+    "settings": {
+      "adminGroup": "Ajustes: {group}",
+      "adminHint": "Administración",
+      "adminKeywords": "ajustes configuración administración admin opciones",
+      "groups": {
+        "ai": "ia modelo llm prompt systemprompt openrouter respuesta",
+        "memory": "memoria agentes hechos consolidación",
+        "entities": "entidad personas lugares reconocimiento",
+        "search": "búsqueda semántica embedding vector texto completo",
+        "mcp": "mcp conector plugin integración interfaz",
+        "calendar": "calendario evento recordatorio ical",
+        "notifications": "notificación correo push",
+        "activity": "actividad historial registro",
+        "automations": "automatización regla programación webhook",
+        "overview": "página de resumen resumen digest",
+        "render": "publicar pdf exportación pandoc",
+        "projects": "proyecto latex build compilar",
+        "agents": "agente sesión buzón"
+      },
+      "workspaceMembers": "Gestionar miembros",
+      "workspaceMembersKeywords": "miembros invitar personas roles acceso espacio de trabajo workspace",
+      "workspaceAi": "Ajustes de IA del espacio de trabajo",
+      "workspaceAiKeywords": "ia clave api key propia byok openrouter espacio de trabajo workspace",
+      "workspaceOverrides": "Ajustes específicos del espacio de trabajo",
+      "workspaceOverridesKeywords": "ajustes sobrescribir opciones espacio de trabajo workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "Regla de IA",

@@ -211,6 +211,16 @@
     },
     "where": "La lente di ingrandimento in alto nella navigazione."
   },
+  "befehlspalette": {
+    "title": "Apri qualsiasi posizione e impostazione con Strg+K",
+    "summary": "Strg+K non cerca solo le pagine, ma apre anche ogni sezione dell’applicazione cercandola per nome: chat, memoria, condivisioni, connessioni, l’amministrazione e ogni singolo gruppo di impostazioni. Non serve sapere in quale menu si trovi qualcosa.",
+    "details": {
+      "p1": "Digita semplicemente l’argomento. „modello” porta ai modelli IA, „connector” o „mcp” alle connessioni, „lingua” alle impostazioni della lingua, „calendario” alle impostazioni del calendario. Ogni comando riconosce diverse parole chiave di ricerca, anche in inglese, e le parole possono essere scritte in qualsiasi ordine e abbreviate: „imp ia” trova le impostazioni dell’IA.",
+      "p2": "I risultati sono organizzati sotto intestazioni dedicate: Azioni, Visualizza, Vai a e Impostazioni, seguite dalle ricerche salvate e dalle pagine. Viene mostrato solo ciò che è pertinente al momento: senza un’area di lavoro aperta i suoi comandi non compaiono, l’amministrazione è visibile solo a chi ha i permessi di accesso, e „Gestisci membri” appare solo a chi può modificare i membri.",
+      "p3": "Senza digitare nulla, la tavolozza rimane essenziale: in alto le pagine modificate di recente, sotto solo una manciata di comandi frequenti come Acquisisci o la ricerca avanzata. Tutto il resto appare non appena lo cerchi. Una posizione si apre come un vero link, quindi puoi aprirla anche in una nuova scheda. Un gruppo di impostazioni ha un proprio indirizzo, ad esempio /admin/einstellungen?gruppe=ai, che puoi salvare tra i preferiti."
+    },
+    "where": "Strg+K in qualsiasi punto, oppure l’icona della lente di ingrandimento in alto nella navigazione."
+  },
   "datenbank-verknuepfungen": {
     "title": "Collegamento, Rollup e formula",
     "summary": "Una colonna può puntare a righe di un altro database (collegamento), calcolare valori su tali righe (Rollup: conteggio, somma, media, valore minimo e massimo, data più recente e meno recente) oppure calcolare un valore a partire dalle proprie colonne (formula). Tutte e tre le opzioni consentono di filtrare e ordinare come qualsiasi altra colonna.",

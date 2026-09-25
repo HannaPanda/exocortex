@@ -153,7 +153,123 @@
     "contextHint": "Strg + .",
     "contextKeywords": "ki kommentare panel verweise",
     "openTrash": "Papierkorb öffnen",
-    "trashKeywords": "gelöscht archiv wiederherstellen"
+    "trashKeywords": "gelöscht archiv wiederherstellen",
+    "navigation": {
+      "help": {
+        "label": "Hilfe und Funktionen öffnen",
+        "keywords": "hilfe help funktionen neu anleitung was kann"
+      },
+      "chats": {
+        "label": "Chats öffnen",
+        "keywords": "chat unterhaltung gespräch ki assistent verlauf"
+      },
+      "entities": {
+        "label": "Entitäten öffnen",
+        "keywords": "entität personen orte organisationen erwähnungen"
+      },
+      "shares": {
+        "label": "Freigaben öffnen",
+        "keywords": "freigabe geteilt teilen mit mir von mir link"
+      },
+      "memory": {
+        "label": "Gedächtnis öffnen",
+        "keywords": "gedächtnis memory agenten fakten erinnerungen"
+      },
+      "connections": {
+        "label": "Verbindungen öffnen",
+        "keywords": "verbindung connector plugin integration mcp token api schlüssel claude chatgpt"
+      },
+      "notifications": {
+        "label": "Benachrichtigungen einstellen",
+        "keywords": "benachrichtigung mail push hinweis einstellungen"
+      },
+      "language": {
+        "label": "Sprache ändern",
+        "keywords": "sprache language übersetzung einstellungen deutsch english"
+      },
+      "workspaces": {
+        "label": "Alle Arbeitsbereiche anzeigen",
+        "keywords": "arbeitsbereich workspace wechseln übersicht liste"
+      },
+      "workspaceHome": {
+        "label": "Startseite des Arbeitsbereichs",
+        "keywords": "start home übersicht arbeitsbereich workspace"
+      },
+      "workspaceSearch": {
+        "label": "Erweiterte Suche mit Filtern",
+        "keywords": "finden suche filter durchsuchen volltext"
+      },
+      "workspaceShares": {
+        "label": "Freigaben dieses Arbeitsbereichs",
+        "keywords": "freigabe geteilt link arbeitsbereich workspace"
+      },
+      "automations": {
+        "label": "Automationen öffnen",
+        "keywords": "automation regel zeitplan auslöser workflow"
+      },
+      "templates": {
+        "label": "Vorlagen öffnen",
+        "keywords": "vorlage template muster"
+      },
+      "workspaceSettings": {
+        "label": "Einstellungen des Arbeitsbereichs",
+        "keywords": "arbeitsbereich workspace einstellungen umbenennen name settings"
+      },
+      "admin": {
+        "label": "Verwaltung öffnen",
+        "keywords": "verwaltung admin administration installation übersicht"
+      },
+      "adminSettings": {
+        "label": "Einstellungen der Installation",
+        "keywords": "verwaltung admin einstellungen settings konfiguration"
+      },
+      "adminModels": {
+        "label": "KI-Modelle verwalten",
+        "keywords": "modell model llm provider anbieter openrouter ki verwaltung"
+      },
+      "adminUsage": {
+        "label": "KI-Nutzung und Kosten",
+        "keywords": "nutzung kosten verbrauch tokens usage verwaltung"
+      },
+      "adminUsers": {
+        "label": "Nutzer verwalten",
+        "keywords": "nutzer benutzer konten personen user sperren verwaltung"
+      },
+      "adminAgents": {
+        "label": "Agentensitzungen ansehen",
+        "keywords": "agenten sitzungen mcp claude codex hermes verwaltung"
+      },
+      "designSystem": {
+        "label": "Design-System öffnen",
+        "keywords": "design system styleguide komponenten tokens"
+      }
+    },
+    "settings": {
+      "adminGroup": "Einstellungen: {group}",
+      "adminHint": "Verwaltung",
+      "adminKeywords": "einstellungen settings verwaltung admin konfiguration",
+      "groups": {
+        "ai": "ki modell model llm prompt systemprompt openrouter antwort",
+        "memory": "gedächtnis memory agenten fakten konsolidierung",
+        "entities": "entität personen orte erkennung",
+        "search": "suche semantisch embedding vektor volltext",
+        "mcp": "mcp connector plugin integration schnittstelle",
+        "calendar": "kalender termin erinnerung ical",
+        "notifications": "benachrichtigung mail push",
+        "activity": "aktivität verlauf protokoll",
+        "automations": "automation regel zeitplan webhook",
+        "overview": "übersichtsseite zusammenfassung digest",
+        "render": "veröffentlichen pdf export pandoc",
+        "projects": "projekt latex build kompilieren",
+        "agents": "agenten sitzung postfach"
+      },
+      "workspaceMembers": "Mitglieder verwalten",
+      "workspaceMembersKeywords": "mitglieder einladen personen rollen zugriff arbeitsbereich workspace",
+      "workspaceAi": "KI-Einstellungen des Arbeitsbereichs",
+      "workspaceAiKeywords": "ki schlüssel api key eigener byok openrouter arbeitsbereich workspace",
+      "workspaceOverrides": "Abweichende Einstellungen des Arbeitsbereichs",
+      "workspaceOverridesKeywords": "einstellungen überschreiben settings arbeitsbereich workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "KI-Regel",

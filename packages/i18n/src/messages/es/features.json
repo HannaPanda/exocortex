@@ -211,6 +211,16 @@
     },
     "where": "La lupa arriba en la navegación."
   },
+  "befehlspalette": {
+    "title": "Abre cualquier lugar y ajuste con Strg+K",
+    "summary": "Strg+K no solo busca páginas, sino que también abre cualquier sección de la aplicación por su nombre: chats, memoria, uso compartido, conexiones, la administración y cada grupo de ajustes individual. No hace falta saber en qué menú se encuentra cada cosa.",
+    "details": {
+      "p1": "Simplemente escribe de qué se trata. «modelo» te lleva a los modelos de IA, «connector» o «mcp» a las conexiones, «idioma» al ajuste de idioma, «calendario» a los ajustes del calendario. Cada comando reconoce varias palabras de búsqueda, incluso en inglés, y las palabras pueden estar en cualquier orden y abreviadas: «ajust ia» encuentra los ajustes de IA.",
+      "p2": "Los resultados aparecen bajo encabezados propios: Acciones, Vista, Ir a y Ajustes, seguidos de las búsquedas guardadas y las páginas. Solo se ofrece lo que encaja en cada momento. Sin un espacio de trabajo abierto faltan sus comandos, la administración solo la ve quien tiene permiso para acceder a ella y «Gestionar miembros» solo aparece para quienes pueden modificar miembros.",
+      "p3": "Sin escribir nada, la paleta se mantiene despejada: arriba las páginas editadas recientemente y, debajo, solo un puñado de comandos frecuentes como Capturar o la búsqueda avanzada. Todo lo demás aparece en cuanto lo buscas. Los lugares se abren como enlaces reales, por lo que también puedes abrirlos en una pestaña nueva. Cada grupo de ajustes tiene su propia dirección, como /admin/einstellungen?gruppe=ai, que puedes guardar en marcadores."
+    },
+    "where": "Strg+K en cualquier lugar, o la lupa en la barra de navegación superior."
+  },
   "datenbank-verknuepfungen": {
     "title": "Relación, Rollup y fórmula",
     "summary": "Una columna puede apuntar a filas de otra base de datos (relación), realizar cálculos sobre esas filas (Rollup: recuento, suma, promedio, valor mínimo y máximo, fecha más temprana y más tardía) o calcular un valor a partir de sus propias columnas (fórmula). Las tres se pueden filtrar y ordenar como cualquier otra columna.",

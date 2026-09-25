@@ -4,24 +4,9 @@ import { InboxIcon, PanelLeftIcon, PanelRightIcon, Trash2Icon } from 'lucide-rea
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
-/** One thing the shell can do, offered by name in the command palette. */
-export interface PaletteCommand {
-  id: string;
-  label: string;
-  /** The keystroke that does the same thing, where there is one. */
-  hint?: string;
-  icon: React.ReactNode;
-  /** Words somebody might type instead of the label. */
-  keywords: readonly string[];
-  run: () => void;
-}
+import { keywordsOf, type PaletteCommand } from './palette-command';
 
 const ICON = 'size-4 text-muted-foreground';
-
-/** Search words live in one message each, separated by spaces. */
-function keywordsOf(text: string): readonly string[] {
-  return text.split(/\s+/).filter((word) => word.length > 0);
-}
 
 /**
  * The shell's own commands, for the palette (issue #115).
@@ -60,6 +45,8 @@ export function shellCommands({
   if (hasWorkspace) {
     commands.push({
       id: 'command-capture',
+      group: 'actions',
+      idle: true,
       label: t('capture'),
       hint: t('captureHint'),
       icon: <InboxIcon className={ICON} />,
@@ -77,6 +64,8 @@ export function shellCommands({
   if (hasWorkspace) {
     commands.push({
       id: 'command-sidebar',
+      group: 'view',
+      idle: true,
       label: sidebarOpen ? t('hideSidebar') : t('showSidebar'),
       hint: t('sidebarHint'),
       icon: <PanelLeftIcon className={ICON} />,
@@ -87,6 +76,8 @@ export function shellCommands({
 
   commands.push({
     id: 'command-context',
+    group: 'view',
+    idle: true,
     label: contextOpen ? t('hideContext') : t('showContext'),
     hint: t('contextHint'),
     icon: <PanelRightIcon className={ICON} />,
@@ -97,6 +88,8 @@ export function shellCommands({
   if (hasWorkspace) {
     commands.push({
       id: 'command-trash',
+      group: 'actions',
+      idle: true,
       label: t('openTrash'),
       icon: <Trash2Icon className={ICON} />,
       keywords: keywordsOf(t('trashKeywords')),

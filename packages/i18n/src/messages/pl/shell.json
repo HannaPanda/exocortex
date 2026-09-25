@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ai komentarze panel odnośniki",
     "openTrash": "Otwórz kosz",
-    "trashKeywords": "usunięte archiwum przywróć"
+    "trashKeywords": "usunięte archiwum przywróć",
+    "navigation": {
+      "help": {
+        "label": "Otwórz pomoc i funkcje",
+        "keywords": "pomoc help funkcje nowości instrukcja co potrafi"
+      },
+      "chats": {
+        "label": "Otwórz czaty",
+        "keywords": "czat chat rozmowa konwersacja ai asystent historia"
+      },
+      "entities": {
+        "label": "Otwórz encje",
+        "keywords": "encja osoby miejsca organizacje wzmianki"
+      },
+      "shares": {
+        "label": "Otwórz udostępnienia",
+        "keywords": "udostępnienie udostępnione podziel się ze mną ode mnie link"
+      },
+      "memory": {
+        "label": "Otwórz pamięć",
+        "keywords": "pamięć memory agenci fakty wspomnienia"
+      },
+      "connections": {
+        "label": "Otwórz połączenia",
+        "keywords": "połączenie konektor wtyczka integracja mcp token klucz api claude chatgpt"
+      },
+      "notifications": {
+        "label": "Ustaw powiadomienia",
+        "keywords": "powiadomienie powiadomienia mail push alert ustawienia"
+      },
+      "language": {
+        "label": "Zmień język",
+        "keywords": "język language tłumaczenie ustawienia polski english"
+      },
+      "workspaces": {
+        "label": "Pokaż wszystkie obszary robocze",
+        "keywords": "obszar roboczy workspace przełącz przegląd lista"
+      },
+      "workspaceHome": {
+        "label": "Strona główna obszaru roboczego",
+        "keywords": "start home przegląd obszar roboczy workspace"
+      },
+      "workspaceSearch": {
+        "label": "Wyszukiwanie zaawansowane z filtrami",
+        "keywords": "znajdź szukaj filtry przeszukaj pełnotekstowe"
+      },
+      "workspaceShares": {
+        "label": "Udostępnienia tego obszaru roboczego",
+        "keywords": "udostępnienie udostępnione link obszar roboczy workspace"
+      },
+      "automations": {
+        "label": "Otwórz automatyzacje",
+        "keywords": "automatyzacja reguła harmonogram wyzwalacz workflow"
+      },
+      "templates": {
+        "label": "Otwórz szablony",
+        "keywords": "szablon template wzorzec"
+      },
+      "workspaceSettings": {
+        "label": "Ustawienia obszaru roboczego",
+        "keywords": "obszar roboczy workspace ustawienia zmień nazwę nazwa settings"
+      },
+      "admin": {
+        "label": "Otwórz administrację",
+        "keywords": "administracja admin instalacja przegląd"
+      },
+      "adminSettings": {
+        "label": "Ustawienia instalacji",
+        "keywords": "administracja admin ustawienia settings konfiguracja"
+      },
+      "adminModels": {
+        "label": "Zarządzaj modelami AI",
+        "keywords": "model llm dostawca provider OpenRouter ai administracja"
+      },
+      "adminUsage": {
+        "label": "Użycie AI i koszty",
+        "keywords": "użycie koszty zużycie tokeny usage administracja"
+      },
+      "adminUsers": {
+        "label": "Zarządzaj użytkownikami",
+        "keywords": "użytkownicy użytkownik konta osoby user blokada administracja"
+      },
+      "adminAgents": {
+        "label": "Zobacz sesje agentów",
+        "keywords": "agenci sesje mcp claude codex hermes administracja"
+      },
+      "designSystem": {
+        "label": "Otwórz system projektowania",
+        "keywords": "design system styleguide komponenty tokeny"
+      }
+    },
+    "settings": {
+      "adminGroup": "Ustawienia: {group}",
+      "adminHint": "Administracja",
+      "adminKeywords": "ustawienia settings administracja admin konfiguracja",
+      "groups": {
+        "ai": "ai sztuczna inteligencja model llm prompt system prompt openrouter odpowiedź",
+        "memory": "pamięć memory agenci fakty konsolidacja",
+        "entities": "encja osoby miejsca rozpoznawanie",
+        "search": "szukaj szukanie semantyczne embedding wektor pełnotekstowe",
+        "mcp": "mcp connector wtyczka integracja interfejs",
+        "calendar": "kalendarz termin przypomnienie ical",
+        "notifications": "powiadomienie e-mail push",
+        "activity": "aktywność historia dziennik",
+        "automations": "automatyzacja reguła harmonogram webhook",
+        "overview": "strona przeglądu podsumowanie digest",
+        "render": "publikowanie pdf eksport pandoc",
+        "projects": "projekt latex build kompilacja",
+        "agents": "agenci sesja skrzynka"
+      },
+      "workspaceMembers": "Zarządzaj członkami",
+      "workspaceMembersKeywords": "członkowie zaproś osoby role dostęp obszar roboczy workspace",
+      "workspaceAi": "Ustawienia AI obszaru roboczego",
+      "workspaceAiKeywords": "ai klucz api key własny byok openrouter obszar roboczy workspace",
+      "workspaceOverrides": "Niestandardowe ustawienia obszaru roboczego",
+      "workspaceOverridesKeywords": "ustawienia nadpisz settings obszar roboczy workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "Reguła AI",

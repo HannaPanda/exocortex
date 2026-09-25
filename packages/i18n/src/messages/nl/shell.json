@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ai opmerkingen paneel verwijzingen",
     "openTrash": "Prullenbak openen",
-    "trashKeywords": "verwijderd archief herstellen"
+    "trashKeywords": "verwijderd archief herstellen",
+    "navigation": {
+      "help": {
+        "label": "Hulp en functies openen",
+        "keywords": "hulp help functies nieuw handleiding wat kan"
+      },
+      "chats": {
+        "label": "Chats openen",
+        "keywords": "chat gesprek ai assistent geschiedenis"
+      },
+      "entities": {
+        "label": "Entiteiten openen",
+        "keywords": "entiteit personen plaatsen organisaties vermeldingen"
+      },
+      "shares": {
+        "label": "Delingen openen",
+        "keywords": "deling gedeeld delen met mij door mij link"
+      },
+      "memory": {
+        "label": "Geheugen openen",
+        "keywords": "geheugen memory agenten feiten herinneringen"
+      },
+      "connections": {
+        "label": "Verbindingen openen",
+        "keywords": "verbinding connector plugin integratie mcp token api sleutel claude chatgpt"
+      },
+      "notifications": {
+        "label": "Meldingen instellen",
+        "keywords": "melding mail push bericht instellingen"
+      },
+      "language": {
+        "label": "Taal wijzigen",
+        "keywords": "taal language vertaling instellingen nederlands english"
+      },
+      "workspaces": {
+        "label": "Alle werkruimten weergeven",
+        "keywords": "werkruimte workspace wisselen overzicht lijst"
+      },
+      "workspaceHome": {
+        "label": "Startpagina van de werkruimte",
+        "keywords": "start home overzicht werkruimte workspace"
+      },
+      "workspaceSearch": {
+        "label": "Uitgebreid zoeken met filters",
+        "keywords": "vinden zoeken filters doorzoeken volledige tekst"
+      },
+      "workspaceShares": {
+        "label": "Delingen van deze werkruimte",
+        "keywords": "deling gedeeld link werkruimte workspace"
+      },
+      "automations": {
+        "label": "Automatiseringen openen",
+        "keywords": "automatisering regel schema trigger workflow"
+      },
+      "templates": {
+        "label": "Sjablonen openen",
+        "keywords": "sjabloon template model"
+      },
+      "workspaceSettings": {
+        "label": "Instellingen van de werkruimte",
+        "keywords": "werkruimte workspace instellingen hernoemen naam settings"
+      },
+      "admin": {
+        "label": "Beheer openen",
+        "keywords": "beheer admin administratie installatie overzicht"
+      },
+      "adminSettings": {
+        "label": "Instellingen van de installatie",
+        "keywords": "beheer admin instellingen settings configuratie"
+      },
+      "adminModels": {
+        "label": "AI-modellen beheren",
+        "keywords": "model llm provider aanbieder openrouter ai beheer"
+      },
+      "adminUsage": {
+        "label": "AI-gebruik en kosten",
+        "keywords": "gebruik kosten verbruik tokens usage beheer"
+      },
+      "adminUsers": {
+        "label": "Gebruikers beheren",
+        "keywords": "gebruikers accounts personen user blokkeren beheer"
+      },
+      "adminAgents": {
+        "label": "Agentsessies bekijken",
+        "keywords": "agenten sessies mcp claude codex hermes beheer"
+      },
+      "designSystem": {
+        "label": "Designsystem openen",
+        "keywords": "design system styleguide componenten tokens"
+      }
+    },
+    "settings": {
+      "adminGroup": "Instellingen: {group}",
+      "adminHint": "Beheer",
+      "adminKeywords": "instellingen settings beheer admin configuratie",
+      "groups": {
+        "ai": "ai model llm prompt systeemprompt openrouter antwoord",
+        "memory": "geheugen memory agenten feiten consolidatie",
+        "entities": "entiteit personen plaatsen herkenning",
+        "search": "zoeken semantisch embedding vector volledige tekst",
+        "mcp": "mcp connector plugin integratie koppeling",
+        "calendar": "agenda afspraak herinnering ical",
+        "notifications": "melding e-mail push",
+        "activity": "activiteit geschiedenis logboek",
+        "automations": "automatisering regel planning webhook",
+        "overview": "overzichtspagina samenvatting digest",
+        "render": "publiceren pdf export pandoc",
+        "projects": "project latex build compileren",
+        "agents": "agenten sessie postvak"
+      },
+      "workspaceMembers": "Leden beheren",
+      "workspaceMembersKeywords": "leden uitnodigen personen rollen toegang werkruimte workspace",
+      "workspaceAi": "AI-instellingen van werkruimte",
+      "workspaceAiKeywords": "ai sleutel api key eigen byok openrouter werkruimte workspace",
+      "workspaceOverrides": "Afwijkende instellingen van werkruimte",
+      "workspaceOverridesKeywords": "instellingen overschrijven settings werkruimte workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "AI-regel",

@@ -6,7 +6,6 @@
   "apps/web/src/components/document/icon-search.ts": 8,
   "apps/web/src/components/help/help-page.tsx": 1,
   "apps/web/src/components/shell/shares-page.tsx": 5,
-  "apps/web/src/components/shell/workspace-settings.tsx": 2,
   "apps/web/src/lib/emoji-catalog.ts": 9,
   "apps/web/src/lib/emoji-data.generated.ts": 1,
   "packages/editor/src/block-catalog.ts": 16,

@@ -211,6 +211,16 @@
     },
     "where": "A lupa no topo da navegação."
   },
+  "befehlspalette": {
+    "title": "Abrir qualquer lugar e configuração com Strg+K",
+    "summary": "O atalho Strg+K não só pesquisa páginas, mas também abre qualquer área do aplicativo pelo nome: conversas, memória, compartilhamentos, conexões, a administração e cada grupo de configurações. Você não precisa saber em qual menu algo está escondido.",
+    "details": {
+      "p1": "Basta digitar o que procura. „modelo“ leva aos modelos de IA, „connector“ ou „mcp“ às conexões, „idioma“ às configurações de idioma, „calendário“ às configurações de calendário. Cada comando reconhece várias palavras de busca, inclusive em inglês, e os termos podem vir em qualquer ordem ou abreviados: „conf ia“ encontra as configurações de IA.",
+      "p2": "Os resultados são agrupados sob títulos próprios: Ações, Visualização, Ir para e Configurações, seguidos pelas buscas salvas e pelas páginas. Apenas opções pertinentes no momento são exibidas. Sem um espaço de trabalho aberto, seus comandos não aparecem; a administração só fica visível para quem tem permissão de acesso, e „Gerenciar membros“ surge apenas para quem pode alterar membros.",
+      "p3": "Sem nenhuma digitação, a paleta permanece discreta: no topo ficam as páginas editadas recentemente e, abaixo, apenas alguns comandos frequentes, como Capturar ou a busca avançada. Todo o resto aparece assim que você pesquisar. Cada local abre como um link de verdade, permitindo abrir também em uma nova aba. Cada grupo de configurações possui um endereço próprio, como /admin/einstellungen?gruppe=ai, que pode ser salvo como favorito."
+    },
+    "where": "Strg+K em qualquer lugar ou o ícone de lupa na barra de navegação superior."
+  },
   "datenbank-verknuepfungen": {
     "title": "Relação, Rollup e fórmula",
     "summary": "Uma coluna pode apontar para linhas de outro banco de dados (relação), fazer cálculos sobre essas linhas (Rollup: contagem, soma, média, valores mínimo e máximo, datas inicial e final) ou calcular um valor a partir de suas próprias colunas (fórmula). As três podem ser filtradas e ordenadas como qualquer outra coluna.",

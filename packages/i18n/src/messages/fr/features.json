@@ -211,6 +211,16 @@
     },
     "where": "La loupe en haut de la navigation."
   },
+  "befehlspalette": {
+    "title": "Ouvrir chaque lieu et chaque paramètre avec Strg+K",
+    "summary": "Strg+K ne cherche pas seulement des pages, mais ouvre aussi chaque recoin de l’application par son nom : discussions, mémoire, partages, connexions, administration et chaque groupe de paramètres individuel. Tu n’as pas besoin de savoir dans quel menu se cache une option.",
+    "details": {
+      "p1": "Tape simplement ce que tu cherches. « modèle » mène aux modèles d’IA, « connector » ou « mcp » aux connexions, « langue » aux paramètres de langue, « calendrier » aux paramètres de calendrier. Chaque commande reconnaît plusieurs mots-clés, y compris en anglais, et les mots peuvent être saisis dans n’importe quel ordre ou abrégés : « param ia » trouve les paramètres d’IA.",
+      "p2": "Les résultats sont regroupés sous leurs propres rubriques : Actions, Affichage, Aller à et Paramètres, suivis des recherches enregistrées et des pages. Seul ce qui est pertinent s’affiche. Sans espace de travail ouvert, ses commandes sont masquées, l’administration n’apparaît que pour les personnes autorisées, et « Gérer les membres » ne s’affiche que si tu as le droit de modifier les membres.",
+      "p3": "Sans saisie, la palette reste discrète : en haut les dernières pages modifiées, en dessous seulement quelques commandes fréquentes comme Capturer ou la recherche avancée. Tout le reste s’affiche dès que tu le demandes. Un lieu s’ouvre comme un véritable lien, tu peux donc aussi l’ouvrir dans un nouvel onglet. Un groupe de paramètres possède sa propre adresse, par exemple /admin/einstellungen?gruppe=ai, que tu peux enregistrer dans tes favoris."
+    },
+    "where": "Strg+K depuis n’importe où, ou la loupe en haut de la navigation."
+  },
   "datenbank-verknuepfungen": {
     "title": "Relation, Rollup et formule",
     "summary": "Une colonne peut pointer vers des lignes d’une autre base de données (relation), faire des calculs sur ces lignes (Rollup : nombre, somme, moyenne, valeur minimale et maximale, date la plus ancienne et la plus récente) ou calculer une valeur à partir de ses propres colonnes (formule). Les trois peuvent être filtrées et triées comme n’importe quelle autre colonne.",

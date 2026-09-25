@@ -211,6 +211,16 @@
     },
     "where": "Die Lupe oben in der Navigation."
   },
+  "befehlspalette": {
+    "title": "Jeden Ort und jede Einstellung mit Strg+K öffnen",
+    "summary": "Strg+K sucht nicht nur Seiten, sondern öffnet auch jeden Bereich der Anwendung beim Namen: Chats, Gedächtnis, Freigaben, Verbindungen, die Verwaltung und jede einzelne Einstellungsgruppe. Du musst nicht wissen, in welchem Menü etwas steckt.",
+    "details": {
+      "p1": "Tipp einfach, worum es geht. „modell“ führt zu den KI-Modellen, „connector“ oder „mcp“ zu den Verbindungen, „sprache“ zur Spracheinstellung, „kalender“ zu den Kalendereinstellungen. Jeder Befehl kennt mehrere Suchwörter, auch englische, und die Wörter dürfen in beliebiger Reihenfolge und abgekürzt stehen: „einst ki“ findet die KI-Einstellungen.",
+      "p2": "Die Treffer stehen unter eigenen Überschriften: Aktionen, Ansicht, Gehe zu und Einstellungen, danach die gespeicherten Suchen und die Seiten. Angeboten wird nur, was gerade passt. Ohne geöffneten Arbeitsbereich fehlen dessen Befehle, die Verwaltung sieht nur, wer sie betreten darf, und „Mitglieder verwalten“ erscheint nur für die, die Mitglieder ändern dürfen.",
+      "p3": "Ohne Eingabe bleibt die Palette ruhig: oben die zuletzt bearbeiteten Seiten, darunter nur eine Handvoll häufiger Befehle wie Erfassen oder die erweiterte Suche. Alles andere erscheint, sobald du danach fragst. Ein Ort öffnet sich als echter Link, du kannst ihn also auch in einem neuen Tab öffnen. Eine Einstellungsgruppe hat eine eigene Adresse, etwa /admin/einstellungen?gruppe=ai, die sich als Lesezeichen speichern lässt."
+    },
+    "where": "Strg+K an jeder Stelle, oder die Lupe oben in der Navigation."
+  },
   "datenbank-verknuepfungen": {
     "title": "Verknüpfung, Rollup und Formel",
     "summary": "Eine Spalte kann auf Zeilen einer anderen Datenbank zeigen (Verknüpfung), über diese Zeilen rechnen (Rollup: Anzahl, Summe, Durchschnitt, kleinster und größter Wert, frühestes und spätestes Datum) oder aus den eigenen Spalten einen Wert berechnen (Formel). Alle drei lassen sich filtern und sortieren wie jede andere Spalte.",

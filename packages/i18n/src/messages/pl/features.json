@@ -211,6 +211,16 @@
     },
     "where": "Ikona lupy u góry w nawigacji."
   },
+  "befehlspalette": {
+    "title": "Otwieraj dowolne miejsce i ustawienie za pomocą Strg+K",
+    "summary": "Strg+K nie tylko wyszukuje strony, ale też otwiera każdy obszar aplikacji po nazwie: czaty, pamięć, udostępnienia, połączenia, administrację oraz każdą grupę ustawień. Nie musisz wiedzieć, w którym menu coś się znajduje.",
+    "details": {
+      "p1": "Po prostu wpisz to, o co chodzi. „model” prowadzi do modeli AI, „connector” lub „mcp” do połączeń, „język” do ustawień języka, a „kalendarz” do ustawień kalendarza. Każde polecenie rozpoznaje wiele słów kluczowych, także po angielsku, a słowa mogą być wpisane w dowolnej kolejności i skrócone: „ustaw ai” znajdzie ustawienia AI.",
+      "p2": "Wyniki są pogrupowane pod własnymi nagłówkami: Akcje, Widok, Przejdź do i Ustawienia, a dalej zapisane wyszukiwania oraz strony. Pokazywane jest tylko to, co ma w danym momencie sens. Bez otwartego obszaru roboczego brak jego poleceń, administrację widzi tylko ten, kto ma do niej dostęp, a „Zarządzaj członkami” pojawia się tylko dla osób z uprawnieniami do zmiany członków.",
+      "p3": "Bez wprowadzania tekstu paleta pozostaje przejrzysta: na górze ostatnio edytowane strony, a poniżej garść częstych poleceń, takich jak przechwytywanie czy wyszukiwanie zaawansowane. Wszystko inne pojawia się, gdy o to zapytasz. Dane miejsce otwiera się jako prawdziwy link, więc możesz otworzyć je również w nowej karcie. Grupa ustawień ma własny adres, na przykład /admin/einstellungen?gruppe=ai, który można dodać do zakładek."
+    },
+    "where": "Strg+K w dowolnym miejscu lub ikona lupy u góry na pasku nawigacji."
+  },
   "datenbank-verknuepfungen": {
     "title": "Powiązanie, Rollup i formuła",
     "summary": "Kolumna może wskazywać na wiersze innej bazy danych (powiązanie), wykonywać obliczenia na tych wierszach (Rollup: liczba, suma, średnia, wartość najmniejsza i największa, najwcześniejsza i najpóźniejsza data) lub obliczać wartość z własnych kolumn (formuła). Wszystkie trzy można filtrować i sortować tak samo jak każdą inną kolumnę.",

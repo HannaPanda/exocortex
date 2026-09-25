@@ -1,6 +1,6 @@
 'use client';
 
-import { ClockIcon, ListFilterIcon, PlusIcon, SlidersHorizontalIcon } from 'lucide-react';
+import { ClockIcon, ListFilterIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -10,7 +10,12 @@ import { type SearchResult } from '@exocortex/contracts';
 import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { type PaletteCommand } from '@/components/shell/palette-commands';
+import {
+  isLinkCommand,
+  type PaletteCommand,
+  type PaletteGroup,
+  paletteMatcher,
+} from '@/components/palette/palette-command';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
 import { useSearch } from '@/lib/api/search-queries';
@@ -21,7 +26,7 @@ export interface SearchCommandProps {
   workspaceId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** The shell's own commands, so the palette is one (issue #115). */
+  /** Everything the palette can do or open (issues #115, #148). */
   commands: readonly PaletteCommand[];
 }
 
@@ -35,13 +40,6 @@ export interface SearchCommandProps {
 function withSection(section: SearchResult['section'], snippet: string): string {
   const heading = section?.path[section.path.length - 1];
   return heading === undefined ? snippet : `${heading} · ${snippet}`;
-}
-
-/** Whether a row answers what has been typed. An empty field matches all. */
-function matcher(query: string): (...haystack: readonly string[]) => boolean {
-  const needle = query.trim().toLowerCase();
-  if (needle === '') return () => true;
-  return (...haystack) => haystack.some((text) => text.toLowerCase().includes(needle));
 }
 
 /**
@@ -89,7 +87,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
   const typed = query.trim().length > 0;
 
   const items = React.useMemo<CommandItem[]>(() => {
-    const matches = matcher(query);
+    const matches = paletteMatcher(query);
     const go = (href: string): void => {
       onOpenChange(false);
       router.push(href);
@@ -112,32 +110,43 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
           },
         });
       }
-      if (matches(t('openSearchPage'), ...t('openSearchPageKeywords').split(' '))) {
-        const href = `/arbeitsbereich/${workspaceId}/suche`;
-        actions.push({
-          id: 'action-open-search-page',
-          group: t('groupActions'),
-          label: t('openSearchPage'),
-          icon: <SlidersHorizontalIcon className="size-4 text-muted-foreground" />,
-          link: <Link href={href} />,
-          onSelect: () => go(href),
-        });
-      }
     }
 
-    for (const command of commands) {
-      if (!matches(command.label, ...command.keywords)) continue;
-      actions.push({
+    const groupLabel: Record<PaletteGroup, string> = {
+      actions: t('groupActions'),
+      view: t('groupView'),
+      navigation: t('groupNavigation'),
+      settings: t('groupSettings'),
+    };
+    // Grouped by heading in this order whatever order the providers listed
+    // them in, because `CommandPalette` draws a heading where its first row is.
+    const ordered = (['actions', 'view', 'navigation', 'settings'] as const).flatMap((group) =>
+      commands.filter((command) => command.group === group),
+    );
+    for (const command of ordered) {
+      // Before a key is pressed only the handful marked for it; the rest
+      // wait to be asked for by name.
+      if (!typed && command.idle !== true) continue;
+      if (!matches(command.label, groupLabel[command.group], ...command.keywords)) continue;
+      const base = {
         id: command.id,
-        group: t('groupActions'),
+        group: groupLabel[command.group],
         label: command.label,
         hint: command.hint,
         icon: command.icon,
-        onSelect: () => {
-          onOpenChange(false);
-          command.run();
-        },
-      });
+      };
+      if (isLinkCommand(command)) {
+        const href = command.href;
+        actions.push({ ...base, link: <Link href={href} />, onSelect: () => go(href) });
+      } else {
+        actions.push({
+          ...base,
+          onSelect: () => {
+            onOpenChange(false);
+            command.run();
+          },
+        });
+      }
     }
 
     // The stored questions, so a saved search is reachable by name from the

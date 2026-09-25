@@ -43,6 +43,7 @@ import {
 import { AiRulesPanel } from '@/components/ai/ai-rules-panel';
 import { InvitationTable } from '@/components/invitations/invitation-table';
 import { InviteDialog } from '@/components/invitations/invite-dialog';
+import { isWorkspaceSettingsTab } from '@/components/palette/settings-addresses';
 import { WorkspaceCredentialsForm } from '@/components/settings/workspace-credentials-form';
 import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-form';
 import { ApiError } from '@/lib/api/client';
@@ -50,6 +51,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 import { useRemoveWorkspaceMember, useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/workspace-queries';
+import { useRequestedState } from '@/lib/use-requested-state';
 
 const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
 
@@ -62,14 +64,24 @@ const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
  * one page several screens tall in which the thing you came for was always
  * below the fold. The tabs are those four errands; nothing was removed.
  */
-export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
+export function WorkspaceSettings({
+  workspaceId,
+  requestedTab = null,
+}: {
+  workspaceId: string;
+  /** From `?tab=`; anything that is not a tab opens the first one. */
+  requestedTab?: string | null;
+}) {
   const detail = useWorkspaceDetail(workspaceId);
   const updateWorkspace = useUpdateWorkspace();
   const t = useTranslations('settings.workspace');
 
   const [name, setName] = React.useState<string | null>(null);
   const [nameSaved, setNameSaved] = React.useState(false);
-  const [tab, setTab] = React.useState('allgemein');
+  const [tab, setTab] = useRequestedState<string>(
+    requestedTab !== null && isWorkspaceSettingsTab(requestedTab) ? requestedTab : null,
+    'general',
+  );
 
   // Initialise the draft once the query resolves (see SettingsForm for why
   // this runs during render rather than in an effect).
@@ -103,29 +115,29 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
 
       <Tabs
         value={tab}
-        onValueChange={(next) => setTab(typeof next === 'string' ? next : 'allgemein')}
+        onValueChange={(next) => setTab(typeof next === 'string' ? next : 'general')}
         className="mt-6 flex flex-col gap-8"
       >
         {/* `min-h-10`, not `h-10`: a fixed height would keep the row from
             wrapping on a phone, which is the whole point of the wrap. */}
         <TabsList className="min-h-10 gap-1 p-1" data-testid="workspace-settings-tabs">
-          <TabsTrigger value="allgemein" className="py-1.5 text-sm">
+          <TabsTrigger value="general" className="py-1.5 text-sm">
             {t('tabs.general')}
           </TabsTrigger>
           {canEdit ? (
-            <TabsTrigger value="mitglieder" className="py-1.5 text-sm">
+            <TabsTrigger value="members" className="py-1.5 text-sm">
               {t('tabs.members')}
             </TabsTrigger>
           ) : null}
-          <TabsTrigger value="ki" className="py-1.5 text-sm">
+          <TabsTrigger value="ai" className="py-1.5 text-sm">
             {t('tabs.ai')}
           </TabsTrigger>
-          <TabsTrigger value="einstellungen" className="py-1.5 text-sm">
+          <TabsTrigger value="overrides" className="py-1.5 text-sm">
             {t('tabs.settings')}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="allgemein" className="flex flex-col gap-8">
+        <TabsContent value="general" className="flex flex-col gap-8">
           {!canEdit ? (
             <Alert data-testid="workspace-settings-readonly">
               <AlertDescription>{t('readOnly')}</AlertDescription>
@@ -175,7 +187,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
         </TabsContent>
 
         {canEdit ? (
-          <TabsContent value="mitglieder">
+          <TabsContent value="members">
             <MembersSection workspace={original} />
           </TabsContent>
         ) : null}
@@ -184,7 +196,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
             terms does the assistant run here". A key is not a preference
             though (ADR-023) -- it is stored encrypted, in its own table, and
             it is the owner's to enter because it is the owner who pays. */}
-        <TabsContent value="ki" className="flex flex-col gap-10">
+        <TabsContent value="ai" className="flex flex-col gap-10">
           <section className="flex flex-col gap-4">
             <div>
               <h2 className="text-base font-semibold">{t('aiKey.title')}</h2>
@@ -216,7 +228,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
             model this workspace runs under is not a secret from the people
             working in it, and a configuration nobody can see is one nobody can
             explain. Editing stays behind the same bar as the rest. */}
-        <TabsContent value="einstellungen" className="flex flex-col gap-4">
+        <TabsContent value="overrides" className="flex flex-col gap-4">
           <div>
             <h2 className="text-base font-semibold">{t('config.title')}</h2>
             <p className="mt-1 max-w-measure text-sm text-muted-foreground">

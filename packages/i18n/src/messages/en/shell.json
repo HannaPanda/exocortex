@@ -153,7 +153,123 @@
     "contextHint": "Ctrl + .",
     "contextKeywords": "ai comments panel references",
     "openTrash": "Open trash",
-    "trashKeywords": "deleted archive restore trash"
+    "trashKeywords": "deleted archive restore trash",
+    "navigation": {
+      "help": {
+        "label": "Open help and features",
+        "keywords": "help features new guide what can"
+      },
+      "chats": {
+        "label": "Open chats",
+        "keywords": "chat conversation ai assistant history"
+      },
+      "entities": {
+        "label": "Open entities",
+        "keywords": "entity people places organizations mentions"
+      },
+      "shares": {
+        "label": "Open shares",
+        "keywords": "share shared with me by me link"
+      },
+      "memory": {
+        "label": "Open memory",
+        "keywords": "memory agents facts reminders"
+      },
+      "connections": {
+        "label": "Open connections",
+        "keywords": "connection connector plugin integration mcp token api key claude chatgpt"
+      },
+      "notifications": {
+        "label": "Configure notifications",
+        "keywords": "notification mail push alert settings"
+      },
+      "language": {
+        "label": "Change language",
+        "keywords": "language translation settings german english"
+      },
+      "workspaces": {
+        "label": "Show all workspaces",
+        "keywords": "workspace switch overview list"
+      },
+      "workspaceHome": {
+        "label": "Workspace home",
+        "keywords": "start home overview workspace"
+      },
+      "workspaceSearch": {
+        "label": "Advanced search with filters",
+        "keywords": "find search filter browse fulltext"
+      },
+      "workspaceShares": {
+        "label": "Shares in this workspace",
+        "keywords": "share shared link workspace"
+      },
+      "automations": {
+        "label": "Open automations",
+        "keywords": "automation rule schedule trigger workflow"
+      },
+      "templates": {
+        "label": "Open templates",
+        "keywords": "template pattern"
+      },
+      "workspaceSettings": {
+        "label": "Workspace settings",
+        "keywords": "workspace settings rename name"
+      },
+      "admin": {
+        "label": "Open administration",
+        "keywords": "administration admin installation overview"
+      },
+      "adminSettings": {
+        "label": "Installation settings",
+        "keywords": "administration admin settings configuration"
+      },
+      "adminModels": {
+        "label": "Manage AI models",
+        "keywords": "model llm provider OpenRouter ai administration"
+      },
+      "adminUsage": {
+        "label": "AI usage and costs",
+        "keywords": "usage costs consumption tokens administration"
+      },
+      "adminUsers": {
+        "label": "Manage users",
+        "keywords": "users accounts people suspend administration"
+      },
+      "adminAgents": {
+        "label": "View agent sessions",
+        "keywords": "agents sessions mcp claude codex hermes administration"
+      },
+      "designSystem": {
+        "label": "Open design system",
+        "keywords": "design system styleguide components tokens"
+      }
+    },
+    "settings": {
+      "adminGroup": "Settings: {group}",
+      "adminHint": "Administration",
+      "adminKeywords": "settings administration admin configuration",
+      "groups": {
+        "ai": "ai model llm prompt system prompt openrouter response",
+        "memory": "memory agents facts consolidation",
+        "entities": "entity people places recognition",
+        "search": "search semantic embedding vector fulltext",
+        "mcp": "mcp connector plugin integration interface",
+        "calendar": "calendar event reminder ical",
+        "notifications": "notifications mail push",
+        "activity": "activity history log",
+        "automations": "automation rule schedule webhook",
+        "overview": "overview page summary digest",
+        "render": "publish pdf export pandoc",
+        "projects": "project latex build compile",
+        "agents": "agents session inbox"
+      },
+      "workspaceMembers": "Manage members",
+      "workspaceMembersKeywords": "members invite people roles access workspace",
+      "workspaceAi": "Workspace AI settings",
+      "workspaceAiKeywords": "ai key api key custom byok openrouter workspace",
+      "workspaceOverrides": "Workspace overrides",
+      "workspaceOverridesKeywords": "settings override workspace"
+    }
   },
   "documentTopBar": {
     "aiRuleAlways": "AI rule",
