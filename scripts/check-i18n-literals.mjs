@@ -46,8 +46,70 @@ const EXEMPT = [
   },
 ];
 
+/**
+ * The small words count in both spellings: a label starts with a capital
+ * ("Kein Zugriff", "Neue Regel", "Alle"), and before these were matched
+ * capitalised too, about sixty such lines went uncounted.
+ */
+const SMALL_WORDS = [
+  'und',
+  'oder',
+  'nicht',
+  'kein',
+  'keine',
+  'keinen',
+  'der',
+  'die',
+  'das',
+  'dem',
+  'den',
+  'des',
+  'ist',
+  'sind',
+  'wird',
+  'werden',
+  'wurde',
+  'kann',
+  'können',
+  'ein',
+  'eine',
+  'einen',
+  'einem',
+  'mit',
+  'für',
+  'auf',
+  'aus',
+  'bei',
+  'nach',
+  'noch',
+  'schon',
+  'dein',
+  'deine',
+  'deinen',
+  'dich',
+  'dir',
+  'du',
+  'hier',
+  'alle',
+  'neu',
+  'neue',
+];
+const NOUNS = [
+  'Seite',
+  'Seiten',
+  'Arbeitsbereich',
+  'Speichern',
+  'Abbrechen',
+  'Schließen',
+  'Bitte',
+  'Zurück',
+  'Weiter',
+  'Fehler',
+  'Einstellungen',
+];
+const capitalised = (word) => word[0].toUpperCase() + word.slice(1);
 const GERMAN = new RegExp(
-  '[äöüÄÖÜß]|\\b(?:und|oder|nicht|kein|keine|keinen|der|die|das|dem|den|des|ist|sind|wird|werden|wurde|kann|können|ein|eine|einen|einem|mit|für|auf|aus|bei|nach|noch|schon|dein|deine|deinen|dich|dir|du|hier|alle|neu|neue|Seite|Seiten|Arbeitsbereich|Speichern|Abbrechen|Schließen|Bitte|Zurück|Weiter|Fehler|Einstellungen)\\b',
+  `[äöüÄÖÜß]|\\b(?:${[...SMALL_WORDS, ...SMALL_WORDS.map(capitalised), ...NOUNS].join('|')})\\b`,
 );
 
 /**

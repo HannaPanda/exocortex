@@ -1033,6 +1033,13 @@ describe('inline text ratchet (check-i18n-literals.mjs)', () => {
     expect(result.output).toContain(screen);
   });
 
+  it('counts a label that starts with a capitalised small word', () => {
+    editFile(screen, (source) => `${source}\nexport const probe = 'Kein Zugriff';\n`);
+    const result = gate('check-i18n-literals.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(screen);
+  });
+
   it('does not count German in a comment', () => {
     editFile(screen, (source) => `${source}\n// Das ist ein deutscher Kommentar für dich.\n`);
     expect(gate('check-i18n-literals.mjs').status).toBe(0);
