@@ -39,6 +39,14 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/seite/:x'] },
   }),
   defineFeature({
+    id: 'bild-vergroessern',
+    area: 'seiten',
+    since: '2026-09-25',
+    references: ['#134'],
+    ui: {},
+    shortcuts: ['+ und - zoomen, 0 passt das Bild ein, Pfeiltasten verschieben, Escape schließt'],
+  }),
+  defineFeature({
     id: 'seiten-layout',
     area: 'seiten',
     since: '2026-08-05',

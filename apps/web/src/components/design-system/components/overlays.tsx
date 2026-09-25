@@ -36,6 +36,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  ImageLightbox,
   Input,
   Label,
   Popover,
@@ -181,6 +182,7 @@ export function DialogsSection() {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
 
   const items: CommandItem[] = PALETTE_PAGES.filter((title) =>
     title.toLowerCase().includes(query.toLowerCase()),
@@ -289,6 +291,28 @@ export function DialogsSection() {
           items={items}
           placeholder="Seite suchen …"
           emptyLabel="Keine Treffer"
+        />
+      </DsExample>
+
+      <DsExample
+        id="bild-lightbox"
+        title="Bild vergrößern"
+        source="packages/ui/src/components/image-lightbox.tsx"
+        note="Passt zuerst in den Bildschirm, ohne kleine Bilder aufzublasen. Zoom über Plus und Minus, Mausrad, Trackpad oder zwei Finger; ist das Bild größer als der Bildschirm, lässt es sich ziehen, aber nie aus dem Blick. 0 passt es wieder ein, Escape, das Kreuz oder ein Klick daneben schließen. Im Produkt öffnet ImageLightboxArea jedes eingebettete Bild so."
+      >
+        <button
+          type="button"
+          aria-label="Bild vergrößern: eXocortex-Zeichen"
+          className="cursor-zoom-in rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          onClick={() => setLightboxOpen(true)}
+        >
+          {/* oxlint-disable-next-line nextjs/no-img-element --
+              the component under demonstration draws a plain img too. */}
+          <img src="/icons/icon-512.png" alt="eXocortex-Zeichen" className="size-24 rounded-md" />
+        </button>
+        <ImageLightbox
+          image={lightboxOpen ? { src: '/icons/icon-512.png', alt: 'eXocortex-Zeichen' } : null}
+          onClose={() => setLightboxOpen(false)}
         />
       </DsExample>
     </DsSection>

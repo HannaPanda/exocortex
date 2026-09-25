@@ -260,19 +260,20 @@ owns the code and nothing is fetched at runtime.
 
 ## What is where
 
-| Path                             | Contents                                                                                        |
-| -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `src/tokens.css`                 | semantic tokens                                                                                 |
-| `src/styles.css`                 | Tailwind theme mapping, base layer, focus and scrollbar styles                                  |
-| `src/components/ui/*`            | installed and adapted shadcn components                                                         |
-| `src/components/ui/toolbar.tsx`  | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI                           |
-| `src/components/layout.tsx`      | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink` |
-| `src/components/date-picker.tsx` | `DatePicker`, `DateTimePicker`: the one date entry, `Calendar` in a `Popover`                   |
-| `src/components/instrument.tsx`  | `SectionRule` (the section mark), `Leader` (the dotted leader)                                  |
-| `src/components/states.tsx`      | `LoadingState`, `EmptyState`, `ErrorState`                                                      |
-| `src/components/logo.tsx`        | `ExocortexLogo` (square mark), `ExocortexWordmark` (full lockup)                                |
-| `src/assets/*.svg`               | the brand assets the two components are inlined from                                            |
-| `src/lib/utils.ts`               | `cn()`                                                                                          |
+| Path                                | Contents                                                                                                                         |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `src/tokens.css`                    | semantic tokens                                                                                                                  |
+| `src/styles.css`                    | Tailwind theme mapping, base layer, focus and scrollbar styles                                                                   |
+| `src/components/ui/*`               | installed and adapted shadcn components                                                                                          |
+| `src/components/ui/toolbar.tsx`     | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI                                                            |
+| `src/components/layout.tsx`         | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink`                                  |
+| `src/components/date-picker.tsx`    | `DatePicker`, `DateTimePicker`: the one date entry, `Calendar` in a `Popover`                                                    |
+| `src/components/image-lightbox.tsx` | `ImageLightbox`: an image over the page with zoom, pan and pinch; `ImageLightboxArea` in `apps/web` decides which click opens it |
+| `src/components/instrument.tsx`     | `SectionRule` (the section mark), `Leader` (the dotted leader)                                                                   |
+| `src/components/states.tsx`         | `LoadingState`, `EmptyState`, `ErrorState`                                                                                       |
+| `src/components/logo.tsx`           | `ExocortexLogo` (square mark), `ExocortexWordmark` (full lockup)                                                                 |
+| `src/assets/*.svg`                  | the brand assets the two components are inlined from                                                                             |
+| `src/lib/utils.ts`                  | `cn()`                                                                                                                           |
 
 Domain components (page tree, document view, AI panel) live in
 `apps/web/src/components`. `packages/ui` must not collect domain components.
