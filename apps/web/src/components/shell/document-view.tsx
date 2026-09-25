@@ -16,9 +16,9 @@ import { useDocument, useUpdateDocument } from '@/lib/api/document-queries';
 import { useExportMarkdown } from '@/lib/api/markdown-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 
+import { useDocumentSession } from './document-session';
 import { DocumentTitleInput } from './document-title-input';
 import { DocumentTopBar } from './document-top-bar';
-import { useDocumentSession } from './document-session';
 import { MarkdownImportDialog } from './markdown-import-dialog';
 
 interface DocumentViewProps {
