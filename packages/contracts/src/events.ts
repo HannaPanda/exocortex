@@ -70,13 +70,32 @@ const envelope = <TType extends ApplicationEventType, TPayload extends z.ZodType
     payload,
   });
 
+/**
+ * The steps a job reports to the browser, as codes the browser words in its
+ * reader's language (`shell.jobProgress.steps`, ADR-062). Only the
+ * materialization reports progress over the socket today, so these are its
+ * steps; a queue that starts forwarding progress adds its own here.
+ */
+export const JOB_PROGRESS_STEPS = [
+  'loading',
+  'upToDate',
+  'readingProject',
+  'projectDone',
+  'readingContent',
+  'storing',
+  'collectingLinks',
+  'done',
+  'failed',
+] as const;
+export type JobProgressStep = (typeof JOB_PROGRESS_STEPS)[number];
+
 export const jobProgressPayloadSchema = z.object({
   jobId: z.string(),
   queue: z.enum(['document-materialization', 'search-indexing', 'ai', 'maintenance']),
   /** 0..100 */
   progress: z.number().min(0).max(100),
-  /** Short German label shown in the UI. */
-  label: z.string(),
+  /** The step reached, a code; never a sentence. */
+  step: z.enum(JOB_PROGRESS_STEPS),
   documentId: idSchema.nullable().optional(),
 });
 export type JobProgressPayload = z.infer<typeof jobProgressPayloadSchema>;
@@ -86,7 +105,7 @@ export const jobResultPayloadSchema = jobProgressPayloadSchema.extend({
 });
 
 export const jobFailurePayloadSchema = jobProgressPayloadSchema.extend({
-  /** Developer-facing English reason. The UI shows a generic German message. */
+  /** Developer-facing English reason. The UI shows a generic message of its own. */
   reason: z.string(),
   attemptsMade: z.number().int().nonnegative(),
   willRetry: z.boolean(),

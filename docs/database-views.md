@@ -45,9 +45,11 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    table cell is a form control, a card summary is read-only text, and a
    `<input type="date" readOnly>` still shows browser date-picker chrome that
    a plain formatted string does not.
-5. Add a German label in `PROPERTY_TYPE_LABELS`
-   (`apps/web/src/components/database/property-types.ts`) and, if it should
-   be filterable, entries in `FILTER_OPERATOR_LABELS`/`operatorsForType`.
+5. Add its name under `propertyTypes` in the German `database` message
+   namespace (`packages/i18n/src/messages/de/database.json`, read by
+   `usePropertyTypeLabel` in `apps/web/src/components/database/property-types.ts`)
+   and, if it should be filterable, its operators in `operatorsForType` with
+   their words under `filters`.
 
 ## Dates: point in time or span
 

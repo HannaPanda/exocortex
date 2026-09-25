@@ -762,8 +762,13 @@ so. See `docs/mail.md`.
   - outbox dispatch sets `processedAt` and increments `attempts`
   - attachment text extraction returns immediately once `textStatus` is
     `READY`, so a retried job never re-extracts
-- **Progress reporting.** `reportProgress(percent, germanLabel)` updates the BullMQ
-  job and publishes a `job.progress` event, which the UI renders.
+- **Progress reporting.** `reportProgress(percent, step)` updates the BullMQ
+  job and, for the materialization, publishes a `job.progress` event. The step
+  is an English code, never a sentence: the browser words it in its reader's
+  language from `shell.jobProgress.steps` (ADR-062). A queue that starts
+  forwarding progress to the browser adds its steps to `JOB_PROGRESS_STEPS`
+  in `packages/contracts/src/events.ts` and narrows its handler to
+  `JobContext<Queue, JobProgressStep>`, so a code without words cannot compile.
 - **Correlation ids.** Every payload carries one; it flows from the HTTP request
   through the queue into the worker log lines.
 - **Graceful shutdown.** `SIGTERM` closes all five workers (waiting for

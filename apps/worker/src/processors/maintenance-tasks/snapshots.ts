@@ -58,7 +58,7 @@ export function pruneSnapshotIds(
 /** Thins the stored versions of every page down to the configured tiers. */
 export const pruneSnapshots: MaintenanceTask = async (context) => {
   const { prisma, payload, logger, reportProgress } = context;
-  await reportProgress(10, 'Alte Versionen werden aufgeräumt');
+  await reportProgress(10, 'pruningSnapshots');
   const settings = await context.settings();
   const fullDays = settings['activity.snapshotRetentionFullDays'];
   const dailyDays = settings['activity.snapshotRetentionDailyDays'];
@@ -95,7 +95,7 @@ export const pruneSnapshots: MaintenanceTask = async (context) => {
       removed += result.count;
     }
   }
-  await reportProgress(100, 'Versionen aufgeräumt');
+  await reportProgress(100, 'done');
   logger.info('Snapshots pruned', { removed, candidates, dryRun, documents: documents.length });
 };
 

@@ -18,7 +18,7 @@ const INVITATION_RETENTION_MS = 30 * DAY_MS;
 /** Removes cover images that no page points at any more. */
 export const collectOrphanedCovers: MaintenanceTask = async (context) => {
   const { prisma, storage, payload, logger, reportProgress } = context;
-  await reportProgress(10, 'Ersetzte Titelbilder werden aufgeräumt');
+  await reportProgress(10, 'pruningCovers');
   // Only files uploaded *as* a cover are collected. Replacing a cover
   // leaves the previous image behind with nothing pointing at it, and
   // nothing else ever will: the cover upload route stores its own copy.
@@ -58,7 +58,7 @@ export const collectOrphanedCovers: MaintenanceTask = async (context) => {
     }
     if (!failed) removed += 1;
   }
-  await reportProgress(100, 'Titelbilder aufgeräumt');
+  await reportProgress(100, 'done');
   logger.info('Orphaned covers collected', { removed, candidates: orphans.length });
 };
 
@@ -166,14 +166,14 @@ export const pruneMemories: MaintenanceTask = async (context) => {
   const workspaceIds = await memoryWorkspaceIds(context.prisma);
   if (workspaceIds.length === 0) return;
 
-  await context.reportProgress(10, 'Altes Gedächtnis wird aufgeräumt');
+  await context.reportProgress(10, 'pruningMemory');
   for (const workspaceId of workspaceIds) {
     const settings = await context.settings(workspaceId);
     const retentionDays = settings['memory.retentionDays'];
     if (retentionDays === 0) continue;
     await pruneOneMemory({ context, workspaceId, retentionDays });
   }
-  await context.reportProgress(100, 'Gedächtnis aufgeräumt');
+  await context.reportProgress(100, 'done');
 };
 
 /** The sweep itself, for one memory area. */
@@ -263,13 +263,13 @@ async function pruneOneMemory(input: {
  * running whether the invitation was revoked or not.
  */
 export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, reportProgress }) => {
-  await reportProgress(10, 'Alte Einladungen werden aufgeräumt');
+  await reportProgress(10, 'pruningInvitations');
   const cutoff = new Date(Date.now() - INVITATION_RETENTION_MS);
   const removed = await prisma.invitation.deleteMany({
     where: { acceptedAt: null, expiresAt: { lt: cutoff } },
   });
 
-  await reportProgress(100, 'Einladungen aufgeräumt');
+  await reportProgress(100, 'done');
   if (removed.count > 0) {
     logger.info('Expired invitations pruned', { removed: removed.count });
   }
@@ -291,12 +291,12 @@ export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, report
  * at it.
  */
 export const pruneAgentMessages: MaintenanceTask = async ({ prisma, logger, reportProgress }) => {
-  await reportProgress(10, 'Abgelaufene Nachrichten werden entfernt');
+  await reportProgress(10, 'pruningMessages');
   const removed = await prisma.agentMessage.deleteMany({
     where: { expiresAt: { lt: new Date() } },
   });
 
-  await reportProgress(100, 'Nachrichten aufgeräumt');
+  await reportProgress(100, 'done');
   if (removed.count > 0) {
     logger.info('Expired agent messages pruned', { removed: removed.count });
   }
@@ -327,7 +327,7 @@ export const pruneAiRunPayloads: MaintenanceTask = async (context) => {
   const retentionDays = (await context.settings())['ai.runPayloadRetentionDays'];
   if (retentionDays === 0) return;
 
-  await reportProgress(10, 'Alte KI-Texte werden aufgeräumt');
+  await reportProgress(10, 'pruningAiText');
   const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
   const pruned = await prisma.aiRun.updateMany({
     where: {
@@ -345,7 +345,7 @@ export const pruneAiRunPayloads: MaintenanceTask = async (context) => {
     },
   });
 
-  await reportProgress(100, 'KI-Texte aufgeräumt');
+  await reportProgress(100, 'done');
   if (pruned.count > 0) {
     logger.info('AI run payloads pruned', { pruned: pruned.count, retentionDays });
   }
@@ -369,7 +369,7 @@ export const pruneAgentJournal: MaintenanceTask = async (context) => {
   const retentionDays = (await context.settings())['agents.journalRetentionDays'];
   if (retentionDays === 0) return;
 
-  await reportProgress(10, 'Agenten-Journal wird aufgeräumt');
+  await reportProgress(10, 'pruningAgentJournal');
   const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
   const removedWrites = await prisma.agentWriteJournal.deleteMany({
     where: { createdAt: { lt: cutoff } },
@@ -378,7 +378,7 @@ export const pruneAgentJournal: MaintenanceTask = async (context) => {
     where: { lastSeenAt: { lt: cutoff }, writes: { none: {} } },
   });
 
-  await reportProgress(100, 'Agenten-Journal aufgeräumt');
+  await reportProgress(100, 'done');
   if (removedWrites.count > 0 || removedSessions.count > 0) {
     logger.info('Agent write journal pruned', {
       writes: removedWrites.count,
@@ -405,11 +405,11 @@ export const pruneAutomationRuns: MaintenanceTask = async (context) => {
   const retentionDays = (await context.settings())['automations.runRetentionDays'];
   if (retentionDays === 0) return;
 
-  await reportProgress(10, 'Automationsprotokoll wird aufgeräumt');
+  await reportProgress(10, 'pruningAutomationRuns');
   const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
   const removed = await prisma.automationRun.deleteMany({ where: { createdAt: { lt: cutoff } } });
 
-  await reportProgress(100, 'Automationsprotokoll aufgeräumt');
+  await reportProgress(100, 'done');
   if (removed.count > 0) {
     logger.info('Automation runs pruned', { runs: removed.count, retentionDays });
   }
@@ -429,7 +429,7 @@ export const reapRenderJobs: MaintenanceTask = async (context) => {
   const { prisma, logger, reportProgress } = context;
   const settings = await context.settings();
 
-  await reportProgress(10, 'Bau-Protokoll wird aufgeräumt');
+  await reportProgress(10, 'pruningBuildLogs');
   const abandonedBefore = new Date(Date.now() - RENDER_HEARTBEAT_STALE_MS);
   const abandoned = await prisma.renderJob.updateMany({
     where: {
@@ -453,7 +453,7 @@ export const reapRenderJobs: MaintenanceTask = async (context) => {
           },
         });
 
-  await reportProgress(100, 'Bau-Protokoll aufgeräumt');
+  await reportProgress(100, 'done');
   if (abandoned.count > 0 || removed.count > 0) {
     logger.info('Render jobs reaped', { abandoned: abandoned.count, removed: removed.count });
   }
@@ -480,7 +480,7 @@ export const reapProjectBuilds: MaintenanceTask = async (context) => {
   const { prisma, logger, reportProgress } = context;
   const settings = await context.settings();
 
-  await reportProgress(10, 'Projekt-Bauten werden aufgeräumt');
+  await reportProgress(10, 'pruningBuilds');
   const abandonedBefore = new Date(Date.now() - RENDER_HEARTBEAT_STALE_MS);
   const abandoned = await prisma.projectBuild.updateMany({
     where: {
@@ -504,7 +504,7 @@ export const reapProjectBuilds: MaintenanceTask = async (context) => {
           },
         });
 
-  await reportProgress(100, 'Projekt-Bauten aufgeräumt');
+  await reportProgress(100, 'done');
   if (abandoned.count > 0 || removed.count > 0) {
     logger.info('Project builds reaped', { abandoned: abandoned.count, removed: removed.count });
   }

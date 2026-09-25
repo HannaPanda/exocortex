@@ -279,7 +279,7 @@ describe('createTypedWorker', () => {
         logger,
         prefix,
         handler: async ({ payload, reportProgress }) => {
-          await reportProgress(50, 'Seite wird verarbeitet');
+          await reportProgress(50, 'processing');
           progress.push(50);
           // Closing from inside the handler would deadlock; hand the result out
           // and let the assertions below tear the worker down.
@@ -379,7 +379,7 @@ describe('RedisEventBus', () => {
         jobId: '1',
         queue: QUEUE_NAMES.documentMaterialization,
         progress: 42,
-        label: 'Seite wird verarbeitet',
+        step: 'readingContent',
       },
     };
     await publisher.publish(event);

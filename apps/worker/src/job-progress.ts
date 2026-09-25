@@ -1,4 +1,4 @@
-import { type QUEUE_NAMES } from '@exocortex/contracts';
+import { type JobProgressStep, type QUEUE_NAMES } from '@exocortex/contracts';
 import { type RedisEventBus } from '@exocortex/queue';
 
 /**
@@ -52,7 +52,7 @@ export interface JobProgressEvent {
   correlationId: string;
   jobId: string;
   progress: number;
-  label: string;
+  step: JobProgressStep;
   documentId: string | null;
 }
 
@@ -61,13 +61,13 @@ export function createProgressPublisher(
   bus: RedisEventBus,
 ): (event: JobProgressEvent) => Promise<void> {
   return async (event) => {
-    const { queue, workspaceId, correlationId, jobId, progress, label, documentId } = event;
+    const { queue, workspaceId, correlationId, jobId, progress, step, documentId } = event;
     await bus.publish({
       type: 'job.progress',
       workspaceId,
       correlationId,
       emittedAt: new Date().toISOString(),
-      payload: { jobId, queue, progress, label, documentId },
+      payload: { jobId, queue, progress, step, documentId },
     });
   };
 }

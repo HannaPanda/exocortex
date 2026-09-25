@@ -22,7 +22,7 @@ export const consolidateMemories: MaintenanceTask = async (context) => {
   const workspaceIds = await memoryWorkspaceIds(context.prisma);
   if (workspaceIds.length === 0) return;
 
-  await context.reportProgress(10, 'Projekte mit neuen Notizen werden gesucht');
+  await context.reportProgress(10, 'findingProjects');
   for (const workspaceId of workspaceIds) {
     const settings = await context.settings(workspaceId);
     if (!settings['memory.enabled'] || !settings['memory.consolidationEnabled']) continue;
@@ -33,7 +33,7 @@ export const consolidateMemories: MaintenanceTask = async (context) => {
       projectsPerRun: settings['memory.consolidationProjectsPerRun'],
     });
   }
-  await context.reportProgress(100, 'Verdichtung angestoßen');
+  await context.reportProgress(100, 'done');
 };
 
 /** The fan-out for one memory area. */
@@ -109,7 +109,7 @@ export const decayMemoryFacts: MaintenanceTask = async (context) => {
   const workspaceIds = await memoryWorkspaceIds(context.prisma);
   if (workspaceIds.length === 0) return;
 
-  await context.reportProgress(10, 'Fakten werden gewichtet');
+  await context.reportProgress(10, 'decayingFacts');
   for (const workspaceId of workspaceIds) {
     const settings = await context.settings(workspaceId);
     const halfLifeDays = settings['memory.factHalfLifeDays'];
@@ -121,7 +121,7 @@ export const decayMemoryFacts: MaintenanceTask = async (context) => {
       floor: settings['memory.factConfidenceFloor'],
     });
   }
-  await context.reportProgress(100, 'Fakten gewichtet');
+  await context.reportProgress(100, 'done');
 };
 
 /** Decay and archival for one memory area. */
@@ -146,7 +146,7 @@ async function decayOneMemory(input: {
       AND "lastConfirmedAt" < ${cutoff}
   `;
 
-  await input.context.reportProgress(60, 'Verklungene Fakten werden weggeräumt');
+  await input.context.reportProgress(60, 'archivingFacts');
 
   const sunk = await prisma.memoryFact.findMany({
     where: {

@@ -201,7 +201,7 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
     const pending = await readBatch();
     if (pending.length === 0) break;
     if (!progressed) {
-      await reportProgress(10, 'Bedeutungen werden nachgetragen');
+      await reportProgress(10, 'backfillingEmbeddings');
       progressed = true;
     }
     seen += pending.length;
@@ -232,6 +232,6 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
   }
   if (!progressed) return;
 
-  await reportProgress(100, 'Bedeutungen nachgetragen');
+  await reportProgress(100, 'done');
   logger.info('Embeddings backfilled', { embedded, seen, model: semantic.model });
 };

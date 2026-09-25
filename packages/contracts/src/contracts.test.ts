@@ -106,10 +106,26 @@ describe('application events', () => {
         jobId: '42',
         queue: 'document-materialization',
         progress: 50,
-        label: 'Seite wird verarbeitet',
+        step: 'readingContent',
       },
     });
     expect(event.type).toBe('job.progress');
+  });
+
+  it('refuses a progress event that carries a sentence instead of a step (issue #98)', () => {
+    const result = applicationEventSchema.safeParse({
+      type: 'job.progress',
+      workspaceId: 'workspace_abcdefgh',
+      emittedAt: '2026-08-04T10:00:00.000Z',
+      correlationId: 'corr-1',
+      payload: {
+        jobId: '42',
+        queue: 'document-materialization',
+        progress: 50,
+        step: 'Seite wird verarbeitet',
+      },
+    });
+    expect(result.success).toBe(false);
   });
 
   it('validates a run phase event and carries nothing but the phase (issue #6)', () => {

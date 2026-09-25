@@ -192,5 +192,19 @@
     "local": "lokal gesichert",
     "saved": "gesichert",
     "savedAt": "gesichert <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Hintergrundaufgabe fehlgeschlagen",
+    "steps": {
+      "loading": "Seite wird geladen",
+      "upToDate": "Bereits aktuell",
+      "readingProject": "Projektdateien werden ausgewertet",
+      "projectDone": "Projekt verarbeitet",
+      "readingContent": "Inhalt wird ausgewertet",
+      "storing": "Abgeleitete Daten werden gespeichert",
+      "collectingLinks": "Verweise werden erfasst",
+      "done": "Seite verarbeitet",
+      "failed": "Seite konnte nicht verarbeitet werden"
+    }
   }
 }

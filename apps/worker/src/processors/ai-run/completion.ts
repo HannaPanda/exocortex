@@ -233,7 +233,7 @@ export async function writeSuccess(input: {
     payload: { runId: run.id, status: 'completed', text: outcome.text, usage: outcome.usage },
   });
 
-  await reportProgress(100, 'Antwort fertig');
+  await reportProgress(100, 'done');
   logger.info('AI run completed', {
     runId: run.id,
     provider: run.provider,

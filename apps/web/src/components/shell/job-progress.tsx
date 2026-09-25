@@ -1,7 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type JobProgressStep } from '@exocortex/contracts';
 import { Progress } from '@exocortex/ui';
 
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
@@ -13,7 +15,8 @@ const FAILED_VISIBLE_MS = 2_500;
 
 interface ActiveJob {
   jobId: string;
-  label: string;
+  /** A step code while running; a failure has no step worth naming. */
+  step: JobProgressStep | null;
   progress: number;
   state: 'running' | 'failed';
 }
@@ -31,6 +34,7 @@ interface ActiveJob {
  * immediately and linger for `FAILED_VISIBLE_MS`, unchanged from before.
  */
 export function JobProgressIndicator() {
+  const t = useTranslations('shell.jobProgress');
   const [jobs, setJobs] = React.useState<Record<string, ActiveJob>>({});
 
   // Bookkeeping lives in refs, not state: it must survive across renders
@@ -137,7 +141,7 @@ export function JobProgressIndicator() {
   useRealtimeEvent('job.progress', (event) => {
     handleRunning({
       jobId: event.payload.jobId,
-      label: event.payload.label,
+      step: event.payload.step,
       progress: event.payload.progress,
       state: 'running',
     });
@@ -150,7 +154,7 @@ export function JobProgressIndicator() {
   useRealtimeEvent('job.failed', (event) => {
     handleFailed({
       jobId: event.payload.jobId,
-      label: 'Hintergrundaufgabe fehlgeschlagen',
+      step: null,
       progress: 100,
       state: 'failed',
     });
@@ -165,16 +169,19 @@ export function JobProgressIndicator() {
       data-testid="job-progress"
       aria-live="polite"
     >
-      {active.map((job) => (
-        <div
-          key={job.jobId}
-          className="rounded-md border border-border bg-popover p-2 shadow-md"
-          data-job-state={job.state}
-        >
-          <p className="mb-1 truncate text-xs text-muted-foreground">{job.label}</p>
-          <Progress value={job.progress} label={job.label} />
-        </div>
-      ))}
+      {active.map((job) => {
+        const label = job.step === null ? t('failed') : t(`steps.${job.step}`);
+        return (
+          <div
+            key={job.jobId}
+            className="rounded-md border border-border bg-popover p-2 shadow-md"
+            data-job-state={job.state}
+          >
+            <p className="mb-1 truncate text-xs text-muted-foreground">{label}</p>
+            <Progress value={job.progress} label={label} />
+          </div>
+        );
+      })}
     </div>
   );
 }

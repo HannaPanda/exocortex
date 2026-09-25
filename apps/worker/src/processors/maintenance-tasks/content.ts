@@ -52,7 +52,7 @@ export const rematerializeStaleContent: MaintenanceTask = async (context) => {
   });
   if (stale.length === 0) return;
 
-  await reportProgress(10, 'Seiten werden neu abgeleitet');
+  await reportProgress(10, 'rematerializing');
   for (const row of stale) {
     await queues.enqueue(QUEUE_NAMES.documentMaterialization, {
       correlationId: createCorrelationId(),
@@ -62,7 +62,7 @@ export const rematerializeStaleContent: MaintenanceTask = async (context) => {
       reason: 'manual',
     });
   }
-  await reportProgress(100, 'Seiten neu abgeleitet');
+  await reportProgress(100, 'done');
   // At info: a number that stays above zero run after run means the jobs are
   // being enqueued and are not finishing, which no other line would show.
   logger.info('Stale content handed back to materialization', {

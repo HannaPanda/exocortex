@@ -1,4 +1,9 @@
-import { type MaterializeDocumentJob, QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  type JobProgressStep,
+  type MaterializeDocumentJob,
+  QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 import { materializeYjsState } from '@exocortex/editor';
 import { createCorrelationId } from '@exocortex/logger';
@@ -33,9 +38,9 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
     payload,
     logger,
     reportProgress,
-  }: JobContext<typeof QUEUE_NAMES.documentMaterialization>): Promise<void> => {
+  }: JobContext<typeof QUEUE_NAMES.documentMaterialization, JobProgressStep>): Promise<void> => {
     const job: MaterializeDocumentJob = payload;
-    await reportProgress(5, 'Seite wird geladen');
+    await reportProgress(5, 'loading');
 
     const content = await prisma.documentContent.findUnique({
       where: { documentId: job.documentId },
@@ -63,12 +68,12 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       logger.debug('Skipping materialization: derived data already current', {
         documentId: job.documentId,
       });
-      await reportProgress(100, 'Bereits aktuell');
+      await reportProgress(100, 'upToDate');
       return;
     }
 
     if (content.document.type === 'PROJECT') {
-      await reportProgress(30, 'Projektdateien werden ausgewertet');
+      await reportProgress(30, 'readingProject');
       const materializedAt = new Date();
       const project = await materializeProject(prisma, {
         documentId: job.documentId,
@@ -86,7 +91,7 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
         emittedAt: materializedAt.toISOString(),
         payload: { projectId: job.documentId, paths: project.paths },
       });
-      await reportProgress(100, 'Projekt verarbeitet');
+      await reportProgress(100, 'projectDone');
       logger.info('Project materialized', {
         documentId: job.documentId,
         textFiles: project.textFiles,
@@ -96,10 +101,10 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       return;
     }
 
-    await reportProgress(30, 'Inhalt wird ausgewertet');
+    await reportProgress(30, 'readingContent');
     const materialized = materializeYjsState(content.yjsState);
 
-    await reportProgress(70, 'Abgeleitete Daten werden gespeichert');
+    await reportProgress(70, 'storing');
     const materializedAt = new Date();
     await prisma.documentContent.update({
       where: { documentId: job.documentId },
@@ -116,7 +121,7 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
     // derived from the same content in the same way Markdown and the plain
     // text are, and one place that turns content into derived data is the
     // whole point of ADR-007.
-    await reportProgress(85, 'Verweise werden erfasst');
+    await reportProgress(85, 'collectingLinks');
     const linkCount = await replaceDocumentLinks(prisma, {
       documentId: job.documentId,
       workspaceId: job.workspaceId,
@@ -176,7 +181,7 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       },
     });
 
-    await reportProgress(100, 'Seite verarbeitet');
+    await reportProgress(100, 'done');
     logger.info('Document materialized', {
       documentId: job.documentId,
       plainTextLength: materialized.plainText.length,

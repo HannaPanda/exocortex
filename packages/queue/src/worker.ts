@@ -6,21 +6,28 @@ import { type Logger, withSpan } from '@exocortex/logger';
 import { createRedisConnection, type Redis } from './connection';
 import { DEFAULT_QUEUE_PREFIX } from './registry';
 
-export interface JobContext<TName extends QueueName> {
+export interface JobContext<TName extends QueueName, TStep extends string = string> {
   payload: JobPayloadMap[TName];
   job: Job<JobPayloadMap[TName]>;
   logger: Logger;
-  /** Reports progress in percent; forwarded to clients as a `job.progress` event. */
-  reportProgress(progress: number, label: string): Promise<void>;
+  /**
+   * Reports progress in percent, and the step it has reached as an English
+   * code, never a sentence: whoever shows it to a person words it in their
+   * language (ADR-062). A worker that forwards progress to the browser narrows
+   * `TStep` to the codes the browser has words for.
+   */
+  reportProgress(progress: number, step: TStep): Promise<void>;
 }
 
-export type JobHandler<TName extends QueueName> = (context: JobContext<TName>) => Promise<void>;
+export type JobHandler<TName extends QueueName, TStep extends string = string> = (
+  context: JobContext<TName, TStep>,
+) => Promise<void>;
 
-export interface CreateWorkerOptions<TName extends QueueName> {
+export interface CreateWorkerOptions<TName extends QueueName, TStep extends string = string> {
   name: TName;
   redisUrl: string;
   logger: Logger;
-  handler: JobHandler<TName>;
+  handler: JobHandler<TName, TStep>;
   /**
    * Redis key namespace. Must match the producer's, or this worker polls a
    * namespace nobody writes to. Defaults to `DEFAULT_QUEUE_PREFIX`.
@@ -35,7 +42,7 @@ export interface CreateWorkerOptions<TName extends QueueName> {
   onProgress?: (
     payload: JobPayloadMap[TName],
     progress: number,
-    label: string,
+    step: TStep,
     job: Job<JobPayloadMap[TName]>,
   ) => void | Promise<void>;
   onCompleted?: (
@@ -64,8 +71,8 @@ export class InvalidJobPayloadError extends Error {
  * Failures are always logged and rethrown so BullMQ can apply the retry policy;
  * a job is never silently dropped.
  */
-export function createTypedWorker<TName extends QueueName>(
-  options: CreateWorkerOptions<TName>,
+export function createTypedWorker<TName extends QueueName, TStep extends string = string>(
+  options: CreateWorkerOptions<TName, TStep>,
 ): { worker: Worker<JobPayloadMap[TName]>; connection: Redis } {
   const connection = createRedisConnection(options.redisUrl);
   const baseLogger = options.logger.child({ queue: options.name });
@@ -104,10 +111,10 @@ export function createTypedWorker<TName extends QueueName>(
         correlationId: payload.correlationId,
       });
 
-      const reportProgress = async (progress: number, label: string): Promise<void> => {
+      const reportProgress = async (progress: number, step: TStep): Promise<void> => {
         const clamped = Math.max(0, Math.min(100, Math.round(progress)));
         await job.updateProgress(clamped);
-        await options.onProgress?.(payload, clamped, label, job);
+        await options.onProgress?.(payload, clamped, step, job);
       };
 
       logger.debug('Job started');

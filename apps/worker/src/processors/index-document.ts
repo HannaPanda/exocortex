@@ -25,7 +25,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
     logger,
     reportProgress,
   }: JobContext<typeof QUEUE_NAMES.searchIndexing>): Promise<void> => {
-    await reportProgress(10, 'Suchindex wird aktualisiert');
+    await reportProgress(10, 'indexing');
 
     const document = await prisma.document.findUnique({
       where: { id: payload.documentId },
@@ -50,7 +50,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       logger.info('Removed search projection for a deleted document', {
         documentId: payload.documentId,
       });
-      await reportProgress(100, 'Suchindex bereinigt');
+      await reportProgress(100, 'removed');
       return;
     }
 
@@ -71,7 +71,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       ),
     });
 
-    await reportProgress(100, 'Suchindex aktualisiert');
+    await reportProgress(100, 'done');
     logger.debug('Search projection updated', {
       documentId: document.id,
       reason: payload.reason,

@@ -55,7 +55,7 @@ export const backfillLinks: MaintenanceTask = async (context) => {
   });
   if (pending.length === 0) return;
 
-  await reportProgress(10, 'Verweise werden nachgetragen');
+  await reportProgress(10, 'backfillingLinks');
   const now = new Date();
   let indexed = 0;
   for (const row of pending) {
@@ -77,6 +77,6 @@ export const backfillLinks: MaintenanceTask = async (context) => {
     });
     indexed += 1;
   }
-  await reportProgress(100, 'Verweise nachgetragen');
+  await reportProgress(100, 'done');
   logger.info('Document links backfilled', { indexed, batch: pending.length });
 };

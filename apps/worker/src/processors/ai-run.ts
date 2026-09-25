@@ -330,7 +330,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         usedOwnKey: key.usedOwnKey,
       },
     });
-    await reportProgress(5, 'Antwort wird erzeugt');
+    await reportProgress(5, 'generating');
 
     // The span that holds the whole answer together (issue #57): the turns,
     // the tool calls and the provider requests underneath it are what turn
