@@ -349,10 +349,10 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
 - ADR-032: a request goes only to the providers that can serve it. The registry
   keeps one row per provider per model (`AiModelEndpoint`), the model's window
   is the largest of them, and eligibility is re-planned before every turn and
-  handed to OpenRouter as `provider.only` plus `allow_fallbacks` -- never a
-  `sort` or an order, because ranking inside the eligible set stays the
-  provider's job. Compaction answers "can anyone still serve this", and only
-  runs when a smaller prompt would change the answer.
+  handed to OpenRouter as `provider.only` plus `allow_fallbacks`. The plan
+  itself never ranks; a `sort` or an order comes only from configuration
+  (ADR-063). Compaction answers "can anyone still serve this", and only runs
+  when a smaller prompt would change the answer.
 - ADR-033: web research is two REST calls, never an MCP client in the worker.
   Search (SearXNG) and fetching (Steel) are separate tools because the choice
   between them is what research costs; the address check in
@@ -592,6 +592,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   translation is never silently overwritten. Text rendered for somebody else
   (a mail, a push, a diagnosis) follows the reader's locale, not the
   requester's. Technical orderings stay locale-free.
+- ADR-063: how OpenRouter chooses among the eligible providers is
+  configuration, never code. `ai.providerRouting` is its `provider` object for
+  every request and `AiModel.providerRouting` overrides single keys (absent
+  inherits, a value replaces, `null` removes); unknown keys pass through, so no
+  provider or model is named in the request code. `only` and `ignore` narrow
+  the endpoint snapshot before eligibility is planned, and a plan's list then
+  replaces a configured `only`. The adapter asks `providerRoutingFor(model)`
+  per request, so every caller is routed alike; the empty object is the
+  default and changes nothing.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -128,6 +128,10 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
+- provider routing as configuration: a request only goes to the providers
+  whose window can take it (ADR-032), and among those OpenRouter sorts by
+  throughput, latency or price, skips or insists on providers, as one
+  deployment-wide setting that each model can override key by key (ADR-063)
 - a `/chats` area that finds a conversation again: full-text search over the
   messages, a reading view of the transcript, continuing it in the panel, and
   saving it as an ordinary page

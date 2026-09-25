@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  type SettingKey,
   type Settings,
   updateWorkspaceSettingsRequestSchema,
   type WorkspaceSettingKey,
@@ -123,7 +124,7 @@ export function WorkspaceSettingsForm({
   // the save button below covers every group at once.
   const pending = new Set([...changed, ...reset].map((key) => groupOf(key)));
 
-  function updateField(key: WorkspaceSettingKey, value: Settings[WorkspaceSettingKey]): void {
+  function updateField(key: WorkspaceSettingKey, value: Settings[SettingKey]): void {
     setDraft((previous) =>
       previous === null ? previous : ({ ...previous, [key]: value } as Settings),
     );

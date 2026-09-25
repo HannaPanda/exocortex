@@ -1024,6 +1024,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "908e212ce72a2b00"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "c5fc0e508452dde8"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "0e04a3cf953713f2"
@@ -1071,6 +1075,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "6018d32729f226dd"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "c084a26c920da63f"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "63491e47b450505e"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -8184,6 +8196,30 @@
       "source": "1271b57393f88b34",
       "output": "03dfddb690f58983"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "cd5e0bf39204dadf"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "21a6641f7b15a860"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "7bb13e81a12370bd"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "3dadad33de66126b"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "ca91333b12193655"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "aa6a77a34a2d3df7"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "4b7b42b82a7a2cd9"
@@ -9361,8 +9397,8 @@
       "output": "2893ae6d0b4926fa"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "18b6f411e24fa12d"
+      "source": "c9c2fe78836bce38",
+      "output": "d343dc216ea4724f"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -12620,6 +12656,14 @@
       "source": "d1fed0ac4445c652",
       "output": "b9031a8591122118"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "6f6d3378edcd63ca"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "a7fc4cb707e0748a"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "699611dc38007e3e"
@@ -13243,6 +13287,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "7dced41a6a9aa252"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "bc53299aab6c65fd"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -15662,6 +15710,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "da487878448a00bc"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "a123ab308e7b7c91"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "22d74f21b798a251"
@@ -15709,6 +15761,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "63ded2d2a2b9f41c"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "7174d17887f89eeb"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "8f419c354207e062"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -22822,6 +22882,30 @@
       "source": "1271b57393f88b34",
       "output": "96855ebe6ea320e2"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "4d07ecee3a3b3180"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "9cd601736b0051ab"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "5b882511e61e57a8"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "224b4f763fc66448"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "95ce54692ec6f3ea"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "9d5010a91d4aeda3"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "f6835e0ba2aeeeb2"
@@ -23999,8 +24083,8 @@
       "output": "97e754faf1ed6122"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "bf7603e87acb336a"
+      "source": "c9c2fe78836bce38",
+      "output": "1a572b0c08ad26a4"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -27258,6 +27342,14 @@
       "source": "d1fed0ac4445c652",
       "output": "6f2fa5ddd1bad2c1"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "08591ce626fbd34c"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "51a57ed796dd5644"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "adcd5717133641a6"
@@ -27881,6 +27973,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "472b9d15b02afeea"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "ccc30c9e4ffa5f7c"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -30300,6 +30396,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "3bf1e01fcf2bde1d"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "54ed8c0ee07b731a"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "9a50bf83a999310d"
@@ -30347,6 +30447,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "730c389d6dc95bd5"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "820b859974faf3a3"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "446adfa7f3390e4e"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -37460,6 +37568,30 @@
       "source": "1271b57393f88b34",
       "output": "58db0a5be26fd0f2"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "4fa822caaecc313a"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "51f63efa5a1f2662"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "27677096ba424d77"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "fa9ca5977bc51bd5"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "f34d830d46efc439"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "55ec910dc9133437"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "a5ef8957ec4527a3"
@@ -38637,8 +38769,8 @@
       "output": "4da5a358a43f5d1b"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "38758dc74bae3294"
+      "source": "c9c2fe78836bce38",
+      "output": "76bd83b8af68d08a"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -41896,6 +42028,14 @@
       "source": "d1fed0ac4445c652",
       "output": "ad07888010ed73cb"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "aa438f34deb333f2"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "3829cdcb740f51fe"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "38d6aad047379bb2"
@@ -42519,6 +42659,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "a5d6133e6f53b2ba"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "5fc6cca5f7b3ff87"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -44938,6 +45082,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "de1a310bb5221e88"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "bb44250b462ad911"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "aeea7626d43a694a"
@@ -44985,6 +45133,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "4b8bdc9dcb98b6ed"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "0ced8c699234acb7"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "499c93ac439fb55e"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -52098,6 +52254,30 @@
       "source": "1271b57393f88b34",
       "output": "5298f92e313c7d25"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "fc2bb2941f974ae2"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "6800a551f5a7b92d"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "6efc0229955639bc"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "837c88e70c348bb5"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "920497cd14f0fe42"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "7c2d1e220446f023"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "84ea0f6244f31ba1"
@@ -53275,8 +53455,8 @@
       "output": "1550f575b00a4012"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "5f41e2b5dfead656"
+      "source": "c9c2fe78836bce38",
+      "output": "88b582fad6d3d939"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -56534,6 +56714,14 @@
       "source": "d1fed0ac4445c652",
       "output": "e82249ff929e21ec"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "380afbb4169cfc1f"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "c5d64b30ec74e238"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "eb42c6f462cce12c"
@@ -57157,6 +57345,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "0cc6d8a037133d5e"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "9a820a01c4bb29f9"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -59576,6 +59768,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "7c1245df481de629"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "9bd389e0d904f3da"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "c1938271122dd04a"
@@ -59623,6 +59819,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "e16be55405ea32e4"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "ec8a70b79f2e9784"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "93d1a2e7d4da14b9"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -66736,6 +66940,30 @@
       "source": "1271b57393f88b34",
       "output": "b47fbfeb5d03fb38"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "2979feb468198ea9"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "5199a5c4eefe2637"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "800ac0a5344c724b"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "fc00e03cf540c964"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "24e3c02e45661a7a"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "30bb039c61577d5c"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "6c0228696eca8cc7"
@@ -67913,8 +68141,8 @@
       "output": "bd75c7f8a7f480e5"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "1a282070c8aaf8fb"
+      "source": "c9c2fe78836bce38",
+      "output": "abb657c1c1000ad6"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -71172,6 +71400,14 @@
       "source": "d1fed0ac4445c652",
       "output": "d6e1d28ceaa19c09"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "105cf77591521f76"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "7e500b588012f1b7"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "0fd7a3a30b849f2d"
@@ -71795,6 +72031,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "991ac8ab60e86032"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "302f6c824fc622e3"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -74214,6 +74454,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "23b42f9218d6db73"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "40ddb67b7ca33d7f"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "216d2cacba14660b"
@@ -74261,6 +74505,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "0ca5069dc237419b"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "3c1c47202b42ffb2"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "96e995ae1a87f0d2"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -81374,6 +81626,30 @@
       "source": "1271b57393f88b34",
       "output": "a57a38fced1c3db0"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "8672d359324bbeaf"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "5fd701a2e720ceb4"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "dc24b8c941fcd1fe"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "356039c16b9d6522"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "e5b90bfe4b3cca80"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "8abba8ffbd074a29"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "b774ba3e2b79f020"
@@ -82551,8 +82827,8 @@
       "output": "a3ee2b3c9071f002"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "9c8e7c067f63c974"
+      "source": "c9c2fe78836bce38",
+      "output": "e7e25c5b2d3b39b2"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -85810,6 +86086,14 @@
       "source": "d1fed0ac4445c652",
       "output": "0b37c709026ea483"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "220885f5d9e90563"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "80dacff1bf83dd14"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "5dd514d44ebd140c"
@@ -86433,6 +86717,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "74a773f3e9544510"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "fe85628ff82e7b9a"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
@@ -88852,6 +89140,10 @@
       "source": "ce92a5035d1ae67d",
       "output": "72680385804fb417"
     },
+    "admin.modelDialog.errors.providerRoutingInvalid": {
+      "source": "6461efe1632b25fc",
+      "output": "bc956ca1e6c44580"
+    },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
       "output": "5c5c5949a4b41006"
@@ -88899,6 +89191,14 @@
     "admin.modelDialog.fields.outputPrice": {
       "source": "a77cc35b25222be5",
       "output": "7c278d244b60cd47"
+    },
+    "admin.modelDialog.fields.providerRouting": {
+      "source": "4242a82b1257a46f",
+      "output": "885dedeeec079fe7"
+    },
+    "admin.modelDialog.fields.providerRoutingHelp": {
+      "source": "58769d255a6976da",
+      "output": "90d49a64be87e082"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -96012,6 +96312,30 @@
       "source": "1271b57393f88b34",
       "output": "e144f0b48b62ee26"
     },
+    "features.anbieter-routing.details.p1": {
+      "source": "7e27e66f0a765c08",
+      "output": "de5d46cad000644c"
+    },
+    "features.anbieter-routing.details.p2": {
+      "source": "9d759f70ebe1898e",
+      "output": "800e66924bf81f68"
+    },
+    "features.anbieter-routing.details.p3": {
+      "source": "8129cf64f4c74d55",
+      "output": "b0460d8889128d14"
+    },
+    "features.anbieter-routing.summary": {
+      "source": "2d298712f9d7a3ed",
+      "output": "9cae23b4bcac1813"
+    },
+    "features.anbieter-routing.title": {
+      "source": "f48b01409cb02340",
+      "output": "c2a13200b03940e6"
+    },
+    "features.anbieter-routing.where": {
+      "source": "c507b6d3b621cc4e",
+      "output": "c5bd882e79fa3fcb"
+    },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
       "output": "4d340390652126f5"
@@ -97189,8 +97513,8 @@
       "output": "f595ff337cb1e638"
     },
     "features.modell-registry.details.p2": {
-      "source": "30dedcf3c7751bb9",
-      "output": "b02162b3fb3bfca4"
+      "source": "c9c2fe78836bce38",
+      "output": "c6432e607cbf1a20"
     },
     "features.modell-registry.details.p3": {
       "source": "8c7f80ee563b623b",
@@ -100448,6 +100772,14 @@
       "source": "d1fed0ac4445c652",
       "output": "1204d606ead75a6e"
     },
+    "settings.keys.ai.providerRouting.help": {
+      "source": "987c094d5744226a",
+      "output": "1bc9d1e58743b5cc"
+    },
+    "settings.keys.ai.providerRouting.label": {
+      "source": "c6d5227eeb35a6b9",
+      "output": "551f6367ed29bf5a"
+    },
     "settings.keys.ai.runPayloadRetentionDays.help": {
       "source": "96faeb672633eadc",
       "output": "5a1bff04bb1ba422"
@@ -101071,6 +101403,10 @@
     "settings.row.invalidWithRange": {
       "source": "5f5acf828ad49fff",
       "output": "1b22b8ac76638e27"
+    },
+    "settings.row.jsonInvalid": {
+      "source": "0a98f06d2c120478",
+      "output": "c402f856a3d6286d"
     },
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",

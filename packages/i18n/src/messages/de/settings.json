@@ -106,6 +106,10 @@
         "label": "Modell für Zusammenfassungen",
         "help": "Automatisch verwendet dasselbe Modell wie der Chat."
       },
+      "providerRouting": {
+        "label": "Anbieter-Routing bei OpenRouter",
+        "help": "Gilt für jede Anfrage an OpenRouter, als JSON im Format des Felds „provider“: etwa sort mit throughput, latency oder price, ignore und only mit Anbieternamen. Leer lässt OpenRouter frei wählen. Einzelne Modelle überschreiben Werte daraus in der Modellverwaltung."
+      },
       "runPayloadRetentionDays": {
         "label": "KI-Texte aufbewahren (Tage)",
         "help": "Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Chats bleiben davon unberührt."
@@ -471,7 +475,8 @@
         "deny": "Nie: die KI darf in keinem Lauf etwas verändern",
         "allow": "Immer erlaubt, auch nach Fremdinhalten"
       }
-    }
+    },
+    "jsonInvalid": "Das ist so kein gültiger Wert. Gespeichert wird der zuletzt gültige Stand."
   },
   "groupNav": {
     "rejected": "abgelehnter Wert",

@@ -810,10 +810,20 @@
     "summary": "Available models are listed with pricing and context window size per provider. A request only goes to providers that can actually serve it, rather than just the next best one.",
     "details": {
       "p1": "The same model is often offered by multiple providers, at different prices and with different context window sizes. The registry therefore maintains one row per provider and model, with price, window size, and capabilities like image understanding or tool calls.",
-      "p2": "Before every request, the system re-evaluates which providers can actually serve it, and only those are considered. A conversation that is too long for the small window of a cheap provider will never end up there and won’t fail halfway through. Which of the eligible providers ultimately handles it is decided by routing.",
+      "p2": "Before each request, a fresh decision is made about which providers can serve it at all, and only those are considered. A conversation that is too long for the small window of a cheap provider will therefore not end up there and fail halfway through. Which of the suitable providers ultimately handles it is decided by routing, unless you specify an order.",
       "p3": "In administration, you define which models exist at all, which one is the default, and which are used for special tasks such as summaries, embeddings, or images. You can see what a model cost in the usage overview."
     },
     "where": "Administration, AI models."
+  },
+  "anbieter-routing": {
+    "title": "Prefer fast providers, exclude slow ones",
+    "summary": "You decide how OpenRouter chooses among the providers of a model: by throughput, latency, or price, with providers that are never picked or the only ones allowed. Each model can override individual preferences for itself.",
+    "details": {
+      "p1": "The same model runs across multiple providers, and their speeds vary greatly. For a long response, the generation speed is the main factor determining how long you wait: nearly ten thousand tokens take well over five minutes at 32 tokens per second, but just over one minute at 150. Without a preference, routing chooses on its own and sometimes ends up with the slowest one.",
+      "p2": "The settings therefore contain a default for all requests, in the format that OpenRouter itself understands: sort by throughput, latency, or price, exclude providers, or only allow specific ones. Whatever OpenRouter adds in the future can be configured there as well.",
+      "p3": "A model can change individual values without losing the rest: if it only changes the sorting, excluded providers remain excluded. Which providers can serve a request at all because their context window is large enough is still checked before each request, and sorting only applies among those."
+    },
+    "where": "Administration, Settings, AI group, and per model in Administration, AI models, when editing."
   },
   "kosten": {
     "title": "What AI cost",

@@ -1,6 +1,6 @@
 # ADR-032: A request is routed to the providers that can serve it
 
-- Status: accepted
+- Status: accepted, amended by ADR-063 (configured provider preferences)
 - Date: 2026-09-16
 
 ## Context

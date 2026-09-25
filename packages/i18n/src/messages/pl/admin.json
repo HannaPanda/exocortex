@@ -128,7 +128,8 @@
       "contextWindowPositive": "Okno kontekstu musi być liczbą dodatnią.",
       "inputPriceNumber": "Cena za wejście musi być liczbą.",
       "outputPriceNumber": "Cena za wyjście musi być liczbą.",
-      "reasoningRequired": "Musisz wybrać co najmniej jeden poziom myślenia."
+      "reasoningRequired": "Musisz wybrać co najmniej jeden poziom myślenia.",
+      "providerRoutingInvalid": "Routing dostawców nie jest prawidłowym obiektem JSON z wartościami rozpoznawanymi przez OpenRouter."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Cena za wyjście (µUSD / mln tokenów)",
       "companion": "Model towarzyszący do wizji",
       "companionNone": "Brak",
-      "sortOrder": "Sortowanie"
+      "sortOrder": "Sortowanie",
+      "providerRouting": "Routing dostawców dla tego modelu",
+      "providerRoutingHelp": "Tylko podane tutaj klucze zastępują ustawienie „Routing dostawców w OpenRouter”. Klucz z wartością null usuwa wartość globalną dla tego modelu. Pozostawienie pustego pola zachowuje ustawienie bez zmian."
     },
     "cancel": "Anuluj",
     "save": "Zapisz",

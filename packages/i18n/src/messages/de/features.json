@@ -810,10 +810,20 @@
     "summary": "Welche Modelle es gibt, steht in einer Liste, die pro Anbieter Preis und Fenstergröße kennt. Eine Anfrage geht nur an die Anbieter, die sie auch bedienen können, statt an den nächstbesten.",
     "details": {
       "p1": "Dasselbe Modell wird oft von mehreren Anbietern bereitgestellt, zu unterschiedlichen Preisen und mit unterschiedlich großem Fenster. Die Registrierung hält deshalb eine Zeile pro Anbieter und Modell, mit Preis, Fenstergröße und Fähigkeiten wie Bildverständnis oder Werkzeugaufrufen.",
-      "p2": "Vor jeder Anfrage wird neu entschieden, welche Anbieter sie überhaupt bedienen können, und nur diese kommen in Frage. Ein Gespräch, das zu lang für das kleine Fenster eines billigen Anbieters ist, landet also nicht dort und scheitert nicht auf halbem Weg. Welcher der geeigneten Anbieter es am Ende macht, entscheidet die Vermittlung.",
+      "p2": "Vor jeder Anfrage wird neu entschieden, welche Anbieter sie überhaupt bedienen können, und nur diese kommen in Frage. Ein Gespräch, das zu lang für das kleine Fenster eines billigen Anbieters ist, landet also nicht dort und scheitert nicht auf halbem Weg. Welcher der geeigneten Anbieter es am Ende macht, entscheidet die Vermittlung, außer du gibst ihr eine Reihenfolge vor.",
       "p3": "In der Verwaltung legst du fest, welche Modelle es überhaupt gibt, welches der Standard ist und welche für Sonderaufgaben benutzt werden, etwa für Zusammenfassungen, Einbettungen oder Bilder. Was ein Modell gekostet hat, siehst du in der Nutzungsübersicht."
     },
     "where": "Verwaltung, KI-Modelle."
+  },
+  "anbieter-routing": {
+    "title": "Schnelle Anbieter bevorzugen, langsame ausschließen",
+    "summary": "Du legst fest, wie OpenRouter unter den Anbietern eines Modells wählt: nach Durchsatz, Antwortzeit oder Preis, mit Anbietern, die nie oder als einzige drankommen. Jedes Modell kann einzelne dieser Vorgaben für sich ändern.",
+    "details": {
+      "p1": "Dasselbe Modell läuft bei mehreren Anbietern, und die sind sehr unterschiedlich schnell. Bei einer langen Antwort entscheidet vor allem die Schreibgeschwindigkeit, wie lange du wartest: knapp zehntausend Tokens dauern bei 32 Tokens pro Sekunde gut fünf Minuten, bei 150 gut eine. Ohne Vorgabe wählt die Vermittlung selbst und landet dabei manchmal beim langsamsten.",
+      "p2": "In den Einstellungen steht deshalb eine Vorgabe für alle Anfragen, im Format, das OpenRouter selbst versteht: sortieren nach Durchsatz, Antwortzeit oder Preis, Anbieter ausschließen oder nur bestimmte zulassen. Was OpenRouter später dazulernt, lässt sich dort ebenfalls eintragen.",
+      "p3": "Ein Modell kann einzelne Werte davon ändern, ohne den Rest zu verlieren: stellt es nur die Sortierung um, bleiben die ausgeschlossenen Anbieter ausgeschlossen. Welche Anbieter eine Anfrage überhaupt bedienen können, weil ihr Fenster groß genug ist, wird weiterhin vor jeder Anfrage geprüft, und nur unter diesen wird sortiert."
+    },
+    "where": "Verwaltung, Einstellungen, Gruppe KI, und je Modell in Verwaltung, KI-Modelle, beim Bearbeiten."
   },
   "kosten": {
     "title": "Was die KI gekostet hat",

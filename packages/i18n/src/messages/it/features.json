@@ -810,10 +810,20 @@
     "summary": "I modelli disponibili sono elencati in un registro che tiene traccia di prezzo e dimensione del contesto per ciascun provider. Una richiesta viene inviata solo ai provider effettivamente in grado di gestirla, non al primo che capita.",
     "details": {
       "p1": "Lo stesso modello viene spesso offerto da diversi provider, a prezzi differenti e con finestre di contesto diverse. Il registro mantiene quindi una riga per provider e modello, con prezzo, dimensione della finestra e capacità come la comprensione delle immagini o le chiamate di strumenti.",
-      "p2": "Prima di ogni richiesta viene determinato da capo quali provider possono gestirla, e solo questi vengono presi in considerazione. Una conversazione troppo lunga per la finestra ristretta di un provider economico non finirà lì, evitando fallimenti a metà strada. Quale tra i provider idonei eseguirà l’operazione viene deciso dal meccanismo di routing.",
+      "p2": "Prima di ogni richiesta viene ridefinito quali provider possono effettivamente gestirla, e solo questi vengono presi in considerazione. Una conversazione troppo lunga per la finestra ridotta di un provider economico non finirà quindi lì e non fallirà a metà strada. Quale tra i provider idonei la gestirà alla fine viene deciso dall’intermediazione, a meno che tu non stabilisca un ordine.",
       "p3": "Nell’amministrazione stabilisci quali modelli esistono, qual è quello predefinito e quali vengono usati per compiti specifici, come riassunti, embedding o immagini. Puoi vedere quanto è costato un modello nella panoramica dell’utilizzo."
     },
     "where": "Amministrazione, Modelli IA."
+  },
+  "anbieter-routing": {
+    "title": "Preferire i provider veloci ed escludere i lenti",
+    "summary": "Stabilisci come OpenRouter sceglie tra i provider di un modello: in base al throughput, al tempo di risposta o al prezzo, con provider che non vengono mai usati o che sono gli unici ammessi. Ciascun modello può modificare singole preferenze per conto proprio.",
+    "details": {
+      "p1": "Lo stesso modello è disponibile presso diversi provider, e la loro velocità varia notevolmente. Con una risposta lunga, è soprattutto la velocità di scrittura a determinare quanto tempo aspetterai: quasi diecimila token richiedono abbondanti cinque minuti a 32 token al secondo, e poco più di uno a 150. Senza preferenze, l’intermediazione sceglie autonomamente e a volte finisce per affidarsi al più lento.",
+      "p2": "Nelle impostazioni trovi perciò una configurazione predefinita per tutte le richieste, nel formato compreso da OpenRouter stesso: ordinare per throughput, tempo di risposta o prezzo, escludere provider o consentire solo determinati provider. Anche le novità che OpenRouter integrerà in futuro potranno essere inserite lì.",
+      "p3": "Un modello può modificare singoli valori senza perdere il resto: se cambia solo l’ordinamento, i provider esclusi rimangono esclusi. Prima di ogni richiesta viene comunque verificato quali provider possono effettivamente gestirla grazie a una finestra sufficientemente ampia, e l’ordinamento avviene solo tra questi."
+    },
+    "where": "Amministrazione, Impostazioni, gruppo IA, e per ciascun modello in Amministrazione, Modelli IA, durante la modifica."
   },
   "kosten": {
     "title": "Quanto è costata l’IA",

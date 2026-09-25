@@ -144,6 +144,14 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/admin/ki-modelle'] },
   }),
   defineFeature({
+    id: 'anbieter-routing',
+    area: 'verwaltung',
+    since: '2026-09-25',
+    references: ['#135', 'ADR-063'],
+    ui: {},
+    settings: ['ai.providerRouting'],
+  }),
+  defineFeature({
     id: 'eigene-schluessel',
     area: 'verwaltung',
     since: '2026-09-12',

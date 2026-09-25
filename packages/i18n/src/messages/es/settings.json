@@ -106,6 +106,10 @@
         "label": "Modelo para resúmenes",
         "help": "En modo automático, se utiliza el mismo modelo que en el chat."
       },
+      "providerRouting": {
+        "label": "Enrutamiento de proveedores en OpenRouter",
+        "help": "Se aplica a cada solicitud a OpenRouter, como JSON en el formato del campo «provider»: por ejemplo, sort con throughput, latency o price, e ignore y only con nombres de proveedores. Si se deja vacío, OpenRouter elige libremente. Los modelos individuales pueden sobrescribir estos valores en la administración de modelos."
+      },
       "runPayloadRetentionDays": {
         "label": "Conservar textos de IA (días)",
         "help": "En las ejecuciones de IA más antiguas, la pregunta y la respuesta se borran, pero se mantienen las cifras para la vista de uso. 0 significa: no limpiar nunca. Los historiales de chat no se ven afectados."
@@ -471,7 +475,8 @@
         "deny": "Nunca: la IA no puede modificar nada en ninguna ejecución",
         "allow": "Permitido siempre, incluso tras leer contenido externo"
       }
-    }
+    },
+    "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido."
   },
   "groupNav": {
     "rejected": "valor rechazado",

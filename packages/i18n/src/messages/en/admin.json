@@ -128,7 +128,8 @@
       "contextWindowPositive": "The context window must be a positive number.",
       "inputPriceNumber": "The input price must be a number.",
       "outputPriceNumber": "The output price must be a number.",
-      "reasoningRequired": "At least one reasoning level must be selected."
+      "reasoningRequired": "At least one reasoning level must be selected.",
+      "providerRoutingInvalid": "Provider routing is not a valid JSON object with values recognized by OpenRouter."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Output price (µUSD / million tokens)",
       "companion": "Vision companion model",
       "companionNone": "None",
-      "sortOrder": "Sort order"
+      "sortOrder": "Sort order",
+      "providerRouting": "Provider routing for this model",
+      "providerRoutingHelp": "Only the keys listed here override the “Provider routing on OpenRouter” setting. A key set to null removes the global value for this model. Leaving it empty keeps the setting unchanged."
     },
     "cancel": "Cancel",
     "save": "Save",

@@ -128,7 +128,8 @@
       "contextWindowPositive": "La fenêtre de contexte doit être un nombre positif.",
       "inputPriceNumber": "Le prix d’entrée doit être un nombre.",
       "outputPriceNumber": "Le prix de sortie doit être un nombre.",
-      "reasoningRequired": "Au moins un niveau de raisonnement doit être sélectionné."
+      "reasoningRequired": "Au moins un niveau de raisonnement doit être sélectionné.",
+      "providerRoutingInvalid": "Le routage des fournisseurs n’est pas un objet JSON valide contenant des valeurs reconnues par OpenRouter."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Prix de sortie (µUSD / million de tokens)",
       "companion": "Modèle compagnon de vision",
       "companionNone": "Aucun",
-      "sortOrder": "Ordre de tri"
+      "sortOrder": "Ordre de tri",
+      "providerRouting": "Routage des fournisseurs pour ce modèle",
+      "providerRoutingHelp": "Seules les clés indiquées ici remplacent le paramètre « Routage des fournisseurs chez OpenRouter ». Une clé avec null supprime la valeur globale pour ce modèle. Laisser vide conserve le paramètre tel quel."
     },
     "cancel": "Annuler",
     "save": "Enregistrer",

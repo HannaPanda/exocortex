@@ -106,6 +106,10 @@
         "label": "Model voor samenvattingen",
         "help": "Automatisch gebruikt hetzelfde model als de chat."
       },
+      "providerRouting": {
+        "label": "Provider-routing bij OpenRouter",
+        "help": "Geldt voor elk verzoek aan OpenRouter, als JSON in het formaat van het veld „provider”: bijvoorbeeld sort met throughput, latency of price, ignore en only met namen van providers. Leeg laat OpenRouter vrij kiezen. Individuele modellen overschrijven waarden hieruit in het modelbeheer."
+      },
       "runPayloadRetentionDays": {
         "label": "AI-teksten bewaren (dagen)",
         "help": "Bij oudere AI-runs worden vraag en antwoord gewist; de cijfers voor het gebruiksoverzicht blijven behouden. 0 betekent: nooit opruimen. Geschiedenis in chats blijft onaangetast."
@@ -471,7 +475,8 @@
         "deny": "Nooit: de AI mag bij geen enkele run iets wijzigen",
         "allow": "Altijd toegestaan, ook na externe inhoud"
       }
-    }
+    },
+    "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen."
   },
   "groupNav": {
     "rejected": "geweigerde waarde",

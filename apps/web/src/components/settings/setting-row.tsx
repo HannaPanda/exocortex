@@ -9,6 +9,7 @@ import {
   SETTING_NUMBER_RANGES,
   type SettingKey,
   type Settings,
+  settingsSchema,
 } from '@exocortex/contracts';
 import {
   cn,
@@ -134,9 +135,14 @@ export function fieldErrorsFromDetails(
   for (const entry of details) {
     if (typeof entry !== 'object' || entry === null || !('path' in entry)) continue;
     const path = (entry as { path: unknown }).path;
-    // Every setting is a scalar, so the issue path is the setting key itself.
-    if (typeof path !== 'string' || !(SETTING_KEYS as readonly string[]).includes(path)) continue;
-    errors[path as SettingKey] = message(path as SettingKey);
+    // An issue inside an object setting names the path below it
+    // (`ai.providerRouting.sort`), so the key is the longest known prefix.
+    if (typeof path !== 'string') continue;
+    const key = SETTING_KEYS.find(
+      (candidate) => path === candidate || path.startsWith(`${candidate}.`),
+    );
+    if (key === undefined) continue;
+    errors[key] = message(key);
   }
   return errors;
 }
@@ -149,6 +155,97 @@ export function fieldErrorsFromDetails(
  */
 export const SETTING_LIST_CLASS =
   'flex flex-col gap-4 max-sm:gap-0 max-sm:divide-y max-sm:divide-border';
+
+/**
+ * Whether two values of one setting say the same thing.
+ *
+ * Every setting used to be a scalar and `!==` was enough. An object setting
+ * (`ai.providerRouting`) is rebuilt on every keystroke, so identity would call
+ * it changed after it was typed back to what is stored.
+ */
+export function sameSettingValue(a: Settings[SettingKey], b: Settings[SettingKey]): boolean {
+  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return a === b;
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+/** What an object setting's text field shows as its example, when it is empty. */
+const JSON_SETTING_PLACEHOLDERS: Partial<Record<SettingKey, string>> = {
+  'ai.providerRouting': '{ "sort": "throughput", "ignore": ["relace"] }',
+};
+
+/**
+ * An object-valued setting, edited as JSON.
+ *
+ * The text is the field's own state, because half-typed JSON is not a value
+ * yet: only text that parses and passes the setting's schema reaches the
+ * draft. Until it does, the field says so, and the draft keeps the last
+ * value that was valid.
+ */
+function JsonSettingField({
+  settingKey,
+  value,
+  onChange,
+  described,
+  id,
+}: {
+  settingKey: SettingKey;
+  value: Settings[SettingKey];
+  onChange: (value: Settings[SettingKey]) => void;
+  described: { 'aria-describedby': string; 'aria-invalid': boolean };
+  id: string;
+}) {
+  const t = useTranslations('settings.row');
+  const [text, setText] = React.useState(() =>
+    Object.keys(value ?? {}).length === 0 ? '' : JSON.stringify(value, null, 2),
+  );
+  const [invalid, setInvalid] = React.useState(false);
+  const invalidId = `${id}-json-invalid`;
+
+  function handleChange(next: string): void {
+    setText(next);
+    let candidate: unknown = {};
+    if (next.trim().length > 0) {
+      try {
+        candidate = JSON.parse(next);
+      } catch {
+        setInvalid(true);
+        return;
+      }
+    }
+    const parsed = settingsSchema.shape[settingKey].safeParse(candidate);
+    setInvalid(!parsed.success);
+    if (parsed.success) onChange(parsed.data);
+  }
+
+  return (
+    <>
+      <Textarea
+        id={id}
+        name={settingKey}
+        rows={4}
+        spellCheck={false}
+        className="font-mono text-xs"
+        placeholder={JSON_SETTING_PLACEHOLDERS[settingKey]}
+        value={text}
+        {...described}
+        aria-invalid={described['aria-invalid'] || invalid}
+        aria-describedby={
+          invalid ? `${described['aria-describedby']} ${invalidId}` : described['aria-describedby']
+        }
+        onChange={(event) => handleChange(event.target.value)}
+      />
+      {invalid ? (
+        <p
+          id={invalidId}
+          className="text-xs text-destructive-text"
+          data-testid={`${id}-json-invalid`}
+        >
+          {t('jsonInvalid')}
+        </p>
+      ) : null}
+    </>
+  );
+}
 
 export interface SettingRowProps {
   settingKey: SettingKey;
@@ -238,6 +335,16 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
           const next = Number(event.target.value);
           if (!Number.isNaN(next)) onChange(next);
         }}
+      />
+    );
+  } else if (typeof value === 'object' && value !== null) {
+    control = (
+      <JsonSettingField
+        settingKey={settingKey}
+        value={value}
+        onChange={onChange}
+        described={described}
+        id={id}
       />
     );
   } else if (settingKey.endsWith('ModelSlug')) {

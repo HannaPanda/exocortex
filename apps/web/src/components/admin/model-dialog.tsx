@@ -7,6 +7,8 @@ import {
   type AiModel,
   type AiReasoningLevel,
   type CreateAiModelRequest,
+  providerRoutingOverrideSchema,
+  type ProviderRoutingOverride,
   type UpdateAiModelRequest,
 } from '@exocortex/contracts';
 import {
@@ -27,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
+  Textarea,
   Toggle,
   ToggleGroup,
 } from '@exocortex/ui';
@@ -52,7 +55,8 @@ type FieldErrorKey =
   | 'contextWindowPositive'
   | 'inputPriceNumber'
   | 'outputPriceNumber'
-  | 'reasoningRequired';
+  | 'reasoningRequired'
+  | 'providerRoutingInvalid';
 
 /** Sentinel for "no vision companion"; distinct from every real slug. */
 const NO_COMPANION = '__none__';
@@ -71,6 +75,28 @@ interface ModelFormState {
   visionCompanionSlug: string;
   enabled: boolean;
   sortOrder: string;
+  /** The override as JSON text; empty means "inherit the setting" (ADR-063). */
+  providerRouting: string;
+}
+
+/** What the routing field shows while it is empty: an override of one key. */
+const PROVIDER_ROUTING_PLACEHOLDER = '{ "sort": "latency" }';
+
+/**
+ * The override the text describes, `null` for an empty field, `undefined` for
+ * text that is not one.
+ */
+function parseProviderRouting(text: string): ProviderRoutingOverride | null | undefined {
+  if (text.trim().length === 0) return null;
+  let candidate: unknown;
+  try {
+    candidate = JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+  const parsed = providerRoutingOverrideSchema.safeParse(candidate);
+  if (!parsed.success) return undefined;
+  return Object.keys(parsed.data).length === 0 ? null : parsed.data;
 }
 
 function emptyForm(): ModelFormState {
@@ -88,6 +114,7 @@ function emptyForm(): ModelFormState {
     visionCompanionSlug: NO_COMPANION,
     enabled: true,
     sortOrder: '100',
+    providerRouting: '',
   };
 }
 
@@ -106,6 +133,8 @@ function formFromModel(model: AiModel): ModelFormState {
     visionCompanionSlug: model.visionCompanionSlug ?? NO_COMPANION,
     enabled: model.enabled,
     sortOrder: String(model.sortOrder),
+    providerRouting:
+      model.providerRouting === null ? '' : JSON.stringify(model.providerRouting, null, 2),
   };
 }
 
@@ -188,6 +217,10 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
     if (form.reasoningLevels.length === 0) {
       errors.push('reasoningRequired');
     }
+    const providerRouting = parseProviderRouting(form.providerRouting);
+    if (providerRouting === undefined) {
+      errors.push('providerRoutingInvalid');
+    }
 
     if (errors.length > 0) {
       setFieldErrors(errors);
@@ -213,6 +246,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         form.visionCompanionSlug === NO_COMPANION ? null : form.visionCompanionSlug,
       enabled: form.enabled,
       sortOrder,
+      providerRouting: providerRouting ?? null,
     };
 
     if (isEdit && model !== undefined) {
@@ -421,6 +455,26 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
               onChange={(event) => setForm((prev) => ({ ...prev, sortOrder: event.target.value }))}
             />
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="model-provider-routing">{t('fields.providerRouting')}</Label>
+          <Textarea
+            id="model-provider-routing"
+            rows={3}
+            spellCheck={false}
+            className="font-mono text-xs"
+            placeholder={PROVIDER_ROUTING_PLACEHOLDER}
+            aria-describedby="model-provider-routing-help"
+            aria-invalid={fieldErrors.includes('providerRoutingInvalid')}
+            value={form.providerRouting}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, providerRouting: event.target.value }))
+            }
+          />
+          <p id="model-provider-routing-help" className="text-xs text-muted-foreground">
+            {t('fields.providerRoutingHelp')}
+          </p>
         </div>
 
         <DialogFooter>

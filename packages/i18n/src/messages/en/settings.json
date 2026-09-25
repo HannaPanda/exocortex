@@ -106,6 +106,10 @@
         "label": "Model for summaries",
         "help": "Automatic uses the same model as the chat."
       },
+      "providerRouting": {
+        "label": "Provider routing on OpenRouter",
+        "help": "Applies to every request to OpenRouter, as JSON in the format of the “provider” field: for example sort with throughput, latency or price, ignore and only with provider names. Leaving it empty lets OpenRouter choose freely. Individual models override these values in model administration."
+      },
       "runPayloadRetentionDays": {
         "label": "Retain AI text (days)",
         "help": "For older AI runs, the question and answer are cleared, while the numbers for the usage view remain. 0 means: never clean up. Chat histories remain unaffected."
@@ -471,7 +475,8 @@
         "deny": "Never: the AI may not make changes in any run",
         "allow": "Always allowed, even after untrusted content"
       }
-    }
+    },
+    "jsonInvalid": "This is not a valid value. The last valid state will be saved."
   },
   "groupNav": {
     "rejected": "rejected value",

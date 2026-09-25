@@ -810,10 +810,20 @@
     "summary": "Dostępne modele znajdują się na liście zawierającej cenę i rozmiar okna dla każdego dostawcy. Żądanie trafia tylko do tych dostawców, którzy rzeczywiście mogą je obsłużyć, a nie do pierwszego lepszego.",
     "details": {
       "p1": "Ten sam model jest często udostępniany przez wielu dostawców, po różnych cenach i z różną wielkością okna kontekstu. Rejestr zawiera zatem jeden wiersz na dostawcę i model, z ceną, rozmiarem okna oraz możliwościami, takimi jak rozpoznawanie obrazu czy wywoływanie narzędzi.",
-      "p2": "Przed każdym żądaniem na nowo zapada decyzja, którzy dostawcy w ogóle mogą je obsłużyć, i tylko oni są brani pod uwagę. Rozmowa, która jest zbyt długa na małe okno taniego dostawcy, nie trafi więc do niego i nie zakończy się błędem w połowie. O tym, który z odpowiednich dostawców ostatecznie wykona zadanie, decyduje routing.",
+      "p2": "Przed każdym zapytaniem na nowo zapada decyzja, którzy dostawcy w ogóle mogą je obsłużyć, i tylko oni są brani pod uwagę. Rozmowa, która jest zbyt długa na małe okno taniego dostawcy, nie trafi więc do niego i nie zakończy się błędem w połowie drogi. O tym, który z odpowiednich dostawców ostatecznie zrealizuje zapytanie, decyduje routing, chyba że określisz własną kolejność.",
       "p3": "W administracji określasz, jakie modele są w ogóle dostępne, który jest domyślny, a które służą do zadań specjalnych, takich jak podsumowania, osadzenia (embeddings) czy obrazy. Informację o kosztach danego modelu znajdziesz w podsumowaniu użycia."
     },
     "where": "Administracja, Modele AI."
+  },
+  "anbieter-routing": {
+    "title": "Faworyzowanie szybkich dostawców, wykluczanie wolnych",
+    "summary": "Określasz, jak OpenRouter wybiera spośród dostawców danego modelu: według przepustowości, czasu odpowiedzi lub ceny, wskazując dostawców, którzy nigdy lub jako jedyni mają być brani pod uwagę. Każdy model może zmienić poszczególne z tych reguł dla siebie.",
+    "details": {
+      "p1": "Ten sam model działa u wielu dostawców, a ich prędkości bardzo się różnią. Przy długiej odpowiedzi o czasie oczekiwania decyduje przede wszystkim prędkość generowania tekstu: niespełna dziesięć tysięcy tokenów przy 32 tokenach na sekundę zajmuje dobre pięć minut, a przy 150 – nieco ponad minutę. Bez reguł routing wybiera sam i czasami trafia na najwolniejszego.",
+      "p2": "W ustawieniach znajduje się dlatego domyślna reguła dla wszystkich zapytań, w formacie rozumianym bezpośrednio przez OpenRouter: sortowanie według przepustowości, czasu odpowiedzi lub ceny, wykluczanie dostawców lub dopuszczanie tylko wybranych. Nowe funkcje, które OpenRouter doda w przyszłości, również można tam wpisać.",
+      "p3": "Model może zmienić poszczególne z tych wartości bez utraty pozostałych: jeśli zmieni tylko sortowanie, wykluczeni dostawcy nadal pozostaną wykluczeni. To, którzy dostawcy w ogóle mogą obsłużyć zapytanie ze względu na wystarczająco duże okno, jest nadal sprawdzane przed każdym zapytaniem – i tylko spośród nich odbywa się sortowanie."
+    },
+    "where": "administracja, Ustawienia, grupa AI, a dla każdego modelu w: administracja, Modele AI, podczas edycji."
   },
   "kosten": {
     "title": "Koszty korzystania ze sztucznej inteligencji",

@@ -529,9 +529,9 @@ before every turn:
    usable window takes the estimated prompt plus the reserved answer, whose own
    input and output caps allow it, and which support what the run needs (tools,
    effort levels). The usable share is `ai.compactionThresholdPercent`.
-2. The keys go out as `provider.only` with `allow_fallbacks: true`. No `sort`
-   and no fixed order: ranking inside the eligible set, and failover between
-   them, stay OpenRouter's job.
+2. The keys go out as `provider.only` with `allow_fallbacks: true`. The plan
+   itself ranks nothing; any `sort` or `order` comes from the configuration
+   below (ADR-063), and without one ranking and failover stay OpenRouter's job.
 3. Nothing eligible means the run compacts and re-plans -- but only when a
    smaller prompt would change the answer (`couldCompactionHelp`). A refusal
    caused by a missing capability is not a size problem.
@@ -540,6 +540,37 @@ before every turn:
 
 A model without a snapshot sends no provider preference at all, which is what
 every request did before this existed.
+
+### Configured preferences (ADR-063)
+
+How OpenRouter chooses among the eligible providers is configuration: the
+setting `ai.providerRouting` is its `provider` object for every request, and
+`AiModel.providerRouting` overrides single keys of it per model (absent
+inherits, a value replaces, `null` removes). Example for issue #135:
+
+```json
+// ai.providerRouting
+{ "sort": "throughput", "ignore": ["relace"] }
+// deepseek/deepseek-v4.1-flash, providerRouting
+{ "sort": "latency" }
+// effective request
+{ "provider": { "sort": "latency", "ignore": ["relace"], "only": [...planned], "allow_fallbacks": true } }
+```
+
+- `only` and `ignore` narrow the endpoint snapshot (`restrictEndpoints`)
+  before the budget and every plan are computed, so the plan never names a
+  provider the configuration excludes. A provider name matches an endpoint by
+  its tag or by the part before the slash, ignoring case.
+- Every other key is passed through verbatim, so a new OpenRouter option
+  needs no code.
+- `OpenRouterProvider` asks `providerRoutingFor(model)` on every request, so
+  compaction, memory capture, overviews and automations are routed the same
+  way as a chat turn. The worker and the API build it with
+  `createProviderRoutingResolver`, cached per model for 15 seconds; a failed
+  lookup sends the request without preferences.
+- Each request shaped by configured preferences logs
+  `OpenRouter provider preferences for request` with the `provider` object and
+  the correlation id.
 
 ## Auto-compaction
 

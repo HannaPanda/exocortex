@@ -128,7 +128,8 @@
       "contextWindowPositive": "Het contextvenster moet een positief getal zijn.",
       "inputPriceNumber": "De invoerprijs moet een getal zijn.",
       "outputPriceNumber": "De uitvoerprijs moet een getal zijn.",
-      "reasoningRequired": "Er moet ten minste één redeneerniveau zijn geselecteerd."
+      "reasoningRequired": "Er moet ten minste één redeneerniveau zijn geselecteerd.",
+      "providerRoutingInvalid": "De provider-routing is geen geldig JSON-object met waarden die OpenRouter kent."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Uitvoerprijs (µUSD / mln. tokens)",
       "companion": "Vision-begeleidend model",
       "companionNone": "Geen",
-      "sortOrder": "Volgorde"
+      "sortOrder": "Volgorde",
+      "providerRouting": "Provider-routing voor dit model",
+      "providerRoutingHelp": "Alleen de sleutels die hier staan, vervangen de instelling „Provider-routing bij OpenRouter”. Een sleutel met null verwijdert de globale waarde voor dit model. Leeg laten neemt de instelling ongewijzigd over."
     },
     "cancel": "Annuleren",
     "save": "Opslaan",

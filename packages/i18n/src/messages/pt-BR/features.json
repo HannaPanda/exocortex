@@ -810,10 +810,20 @@
     "summary": "Os modelos disponíveis ficam em uma lista que detalha preço e tamanho de janela por provedor. As requisições são encaminhadas apenas aos provedores que realmente conseguem atendê-las, em vez de cair na primeira opção disponível.",
     "details": {
       "p1": "O mesmo modelo costuma ser disponibilizado por vários provedores, com preços e tamanhos de janela distintos. Por isso, o registro mantém uma linha para cada provedor e modelo, com preço, tamanho da janela de contexto e capacidades como visão computacional ou chamadas de ferramentas.",
-      "p2": "Antes de cada requisição, o sistema avalia quais provedores conseguem atendê-la de fato, e apenas esses entram na seleção. Uma conversa longa demais para a janela pequena de um provedor barato não é enviada para ele, evitando falhas no meio do processo. Quem escolhe o provedor ideal entre os qualificados é o roteamento.",
+      "p2": "Antes de cada solicitação, é feita uma nova avaliação de quais provedores conseguem atendê-la, e apenas esses são considerados. Assim, uma conversa longa demais para a janela pequena de um provedor mais barato não vai parar nele nem falha pelo caminho. A intermediação decide qual dos provedores adequados fará o atendimento, a menos que você defina uma ordem prévia.",
       "p3": "Na administração, você define quais modelos estão disponíveis, qual é o padrão e quais serão usados para tarefas específicas, como resumos, embeddings ou imagens. O custo de cada modelo pode ser consultado na visão geral de uso."
     },
     "where": "Administração, Modelos de IA."
+  },
+  "anbieter-routing": {
+    "title": "Priorizar provedores rápidos, excluir lentos",
+    "summary": "Você define como o OpenRouter escolhe entre os provedores de um modelo: por taxa de transferência, tempo de resposta ou preço, com provedores que nunca ou apenas serão chamados. Cada modelo pode personalizar essas diretrizes.",
+    "details": {
+      "p1": "O mesmo modelo é executado em vários provedores, e a velocidade varia muito entre eles. Em uma resposta longa, a velocidade de escrita é o principal fator no seu tempo de espera: quase dez mil tokens levam cerca de cinco minutos a 32 tokens por segundo, mas apenas um a 150. Sem uma diretriz, a própria intermediação escolhe e às vezes opta pelo mais lento.",
+      "p2": "Por isso, nas configurações há um padrão para todas as solicitações, no formato que o próprio OpenRouter entende: ordenar por taxa de transferência, tempo de resposta ou preço, excluir provedores ou permitir apenas determinados. Novos recursos que o OpenRouter adicionar no futuro também podem ser inseridos ali.",
+      "p3": "Um modelo pode alterar valores individuais sem perder os demais: se mudar apenas a ordenação, os provedores excluídos continuam excluídos. A checagem de quais provedores conseguem atender a uma solicitação por terem uma janela grande o suficiente continua sendo feita antes de cada envio, e a ordenação ocorre apenas entre eles."
+    },
+    "where": "Administração, Configurações, grupo IA, e para cada modelo em Administração, Modelos de IA, ao editar."
   },
   "kosten": {
     "title": "Quanto custou a IA",

@@ -810,10 +810,20 @@
     "summary": "Welke modellen er zijn, staat in een lijst die per provider de prijs en venstergrootte bijhoudt. Een verzoek gaat alleen naar providers die het daadwerkelijk aankunnen, in plaats van naar de eerste de beste.",
     "details": {
       "p1": "Hetzelfde model wordt vaak door meerdere providers aangeboden, tegen verschillende prijzen en met een verschillende venstergrootte. Het register bevat daarom één regel per provider en model, met prijs, venstergrootte en mogelijkheden zoals beeldherkenning of tool calls.",
-      "p2": "Vóór elk verzoek wordt opnieuw bepaald welke providers het überhaupt kunnen afhandelen, en alleen die komen in aanmerking. Een gesprek dat te lang is voor het kleine venster van een goedkope provider belandt daar dus niet en loopt niet halverwege vast. Welke van de geschikte providers het uiteindelijk uitvoert, bepaalt de routering.",
+      "p2": "Vóór elk verzoek wordt opnieuw bepaald welke providers het überhaupt kunnen afhandelen, en alleen die komen in aanmerking. Een gesprek dat te lang is voor het kleine venster van een goedkope provider, komt daar dus niet terecht en strandt niet halverwege. Welke van de geschikte providers het uiteindelijk doet, bepaalt de routing, tenzij je zelf een volgorde opgeeft.",
       "p3": "In het beheer stel je in welke modellen er überhaupt beschikbaar zijn, welk model de standaard is en welke voor speciale taken worden gebruikt, zoals samenvattingen, embeddings of afbeeldingen. Wat een model heeft gekost, zie je in het gebruiksoverzicht."
     },
     "where": "Beheer, AI-modellen."
+  },
+  "anbieter-routing": {
+    "title": "Snelle providers verkiezen, langzame uitsluiten",
+    "summary": "Je bepaalt hoe OpenRouter kiest tussen de providers van een model: op doorvoer, responstijd of prijs, met providers die nooit of juist als enige aan bod komen. Elk model kan afzonderlijke instellingen hiervan voor zichzelf aanpassen.",
+    "details": {
+      "p1": "Hetzelfde model draait bij meerdere providers, en die verschillen enorm in snelheid. Bij een lang antwoord bepaalt vooral de schrijfsnelheid hoelang je wacht: bijna tienduizend tokens duren bij 32 tokens per seconde ruim vijf minuten, bij 150 ruim één. Zonder voorkeur kiest de routing zelf en komt daarbij soms bij de langzaamste uit.",
+      "p2": "In de instellingen staat daarom een standaard voor alle verzoeken, in de indeling die OpenRouter zelf begrijpt: sorteren op doorvoer, responstijd of prijs, providers uitsluiten of alleen specifieke toestaan. Nieuwe functies die OpenRouter later toevoegt, kunnen daar ook worden ingevuld.",
+      "p3": "Een model kan afzonderlijke waarden hiervan aanpassen zonder de rest kwijt te raken: past het alleen de sortering aan, dan blijven de uitgesloten providers uitgesloten. Welke providers een verzoek überhaupt kunnen afhandelen omdat hun venster groot genoeg is, wordt nog steeds vóór elk verzoek gecontroleerd, en alleen tussen die providers wordt gesorteerd."
+    },
+    "where": "Beheer, Instellingen, groep AI, en per model in Beheer, AI-modellen, tijdens het bewerken."
   },
   "kosten": {
     "title": "Wat de AI heeft gekost",

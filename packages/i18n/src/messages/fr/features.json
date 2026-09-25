@@ -810,10 +810,20 @@
     "summary": "Les modèles disponibles figurent dans une liste qui connaît le prix et la taille de fenêtre pour chaque fournisseur. Une requête n’est envoyée qu’aux fournisseurs capables d’y répondre, et non au premier venu.",
     "details": {
       "p1": "Le même modèle est souvent mis à disposition par plusieurs fournisseurs, à des prix différents et avec une taille de fenêtre variable. Le registre conserve donc une ligne par fournisseur et par modèle, avec le prix, la taille de fenêtre et les capacités telles que la vision ou les appels d’outils.",
-      "p2": "Avant chaque requête, le système détermine à nouveau quels fournisseurs sont réellement capables de la traiter, et seuls ceux-ci sont retenus. Une conversation trop longue pour la petite fenêtre d’un fournisseur économique n’atterrit donc pas chez lui et n’échoue pas en cours de route. La médiation décide enfin qui s’en charge parmi les fournisseurs adaptés.",
+      "p2": "Avant chaque requête, le système réévalue quels fournisseurs sont réellement capables de la traiter, et seuls ceux-ci sont pris en compte. Une conversation trop longue pour la petite fenêtre d’un fournisseur bon marché n’atterrit donc pas chez lui et n’échoue pas à mi-chemin. La médiation choisit lequel des fournisseurs adéquats s’en charge au final, sauf si tu lui imposes un ordre de priorité.",
       "p3": "Dans l’administration, tu définis les modèles disponibles, celui utilisé par défaut et ceux dédiés aux tâches particulières, comme les résumés, les plongements ou les images. Ce qu’un modèle a coûté apparaît dans l’aperçu de l’utilisation."
     },
     "where": "Administration, Modèles IA."
+  },
+  "anbieter-routing": {
+    "title": "Privilégier les fournisseurs rapides, exclure les lents",
+    "summary": "Tu détermines comment OpenRouter choisit parmi les fournisseurs d’un modèle : par débit, temps de réponse ou prix, avec des fournisseurs à ignorer ou à utiliser exclusivement. Chaque modèle peut adapter individuellement certaines de ces préférences.",
+    "details": {
+      "p1": "Le même modèle est proposé par plusieurs fournisseurs, et leurs vitesses varient considérablement. Pour une réponse longue, c’est surtout la vitesse d’écriture qui détermine ton temps d’attente : près de dix mille tokens prennent facilement cinq minutes à 32 tokens par seconde, contre une minute à peine à 150. Sans consigne, la médiation choisit d’elle-même et tombe parfois sur le plus lent.",
+      "p2": "Les paramètres contiennent donc une règle par défaut pour toutes les requêtes, dans le format compris directement par OpenRouter : trier par débit, temps de réponse ou prix, exclure des fournisseurs ou n’en autoriser que certains. Les futures options ajoutées par OpenRouter peuvent également y être renseignées.",
+      "p3": "Un modèle peut modifier certaines de ces valeurs sans perdre le reste : s’il ne change que l’ordre de tri, les fournisseurs exclus restent exclus. La capacité des fournisseurs à traiter une requête grâce à une fenêtre assez large est toujours vérifiée avant chaque appel, et le tri ne s’applique qu’entre eux."
+    },
+    "where": "Administration, Paramètres, groupe IA, et pour chaque modèle dans Administration, Modèles d’IA, lors de la modification."
   },
   "kosten": {
     "title": "Ce que l’IA a coûté",

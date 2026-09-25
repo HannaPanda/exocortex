@@ -128,7 +128,8 @@
       "contextWindowPositive": "A janela de contexto deve ser um número positivo.",
       "inputPriceNumber": "O preço de entrada deve ser um número.",
       "outputPriceNumber": "O preço de saída deve ser um número.",
-      "reasoningRequired": "Pelo menos um nível de raciocínio deve ser selecionado."
+      "reasoningRequired": "Pelo menos um nível de raciocínio deve ser selecionado.",
+      "providerRoutingInvalid": "O roteamento de provedores não é um objeto JSON válido com valores reconhecidos pelo OpenRouter."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Preço de saída (µUSD / milhão de tokens)",
       "companion": "Modelo complementar de visão",
       "companionNone": "Nenhum",
-      "sortOrder": "Ordenação"
+      "sortOrder": "Ordenação",
+      "providerRouting": "Roteamento de provedores para este modelo",
+      "providerRoutingHelp": "Apenas as chaves definidas aqui substituem a configuração „Roteamento de provedores no OpenRouter“. Uma chave com null remove o valor global para este modelo. Deixar em branco mantém a configuração inalterada."
     },
     "cancel": "Cancelar",
     "save": "Salvar",

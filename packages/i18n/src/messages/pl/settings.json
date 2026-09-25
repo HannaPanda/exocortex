@@ -106,6 +106,10 @@
         "label": "Model do podsumowań",
         "help": "W trybie automatycznym używany jest ten sam model co w czacie."
       },
+      "providerRouting": {
+        "label": "Routing dostawców w OpenRouter",
+        "help": "Dotyczy każdego zapytania do OpenRouter, jako JSON w formacie pola „provider”: na przykład sort z throughput, latency lub price, ignore oraz only z nazwami dostawców. Pozostawienie pustego pola pozwala OpenRouter wybrać dowolnie. Poszczególne modele mogą nadpisywać te wartości w administracji modeli."
+      },
       "runPayloadRetentionDays": {
         "label": "Przechowywanie tekstów SI (dni)",
         "help": "W przypadku starszych uruchomień SI pytanie i odpowiedź są usuwane, a wartości liczbowe w widoku użycia pozostają. 0 oznacza: nigdy nie usuwaj. Nie wpływa to na historię czatów."
@@ -471,7 +475,8 @@
         "deny": "Nigdy: AI nie może niczego zmieniać w żadnym przebiegu",
         "allow": "Zawsze dozwolone, również po treściach zewnętrznych"
       }
-    }
+    },
+    "jsonInvalid": "To nie jest prawidłowa wartość. Zostanie zapisany ostatni poprawny stan."
   },
   "groupNav": {
     "rejected": "odrzucona wartość",

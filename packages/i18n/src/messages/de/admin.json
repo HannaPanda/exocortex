@@ -128,7 +128,8 @@
       "contextWindowPositive": "Das Kontextfenster muss eine positive Zahl sein.",
       "inputPriceNumber": "Der Eingabepreis muss eine Zahl sein.",
       "outputPriceNumber": "Der Ausgabepreis muss eine Zahl sein.",
-      "reasoningRequired": "Mindestens eine Denkstufe muss ausgewählt sein."
+      "reasoningRequired": "Mindestens eine Denkstufe muss ausgewählt sein.",
+      "providerRoutingInvalid": "Das Anbieter-Routing ist kein gültiges JSON-Objekt mit Werten, die OpenRouter kennt."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Ausgabepreis (µUSD / Mio. Tokens)",
       "companion": "Vision-Begleitmodell",
       "companionNone": "Keines",
-      "sortOrder": "Sortierung"
+      "sortOrder": "Sortierung",
+      "providerRouting": "Anbieter-Routing für dieses Modell",
+      "providerRoutingHelp": "Nur die Schlüssel, die hier stehen, ersetzen die Einstellung „Anbieter-Routing bei OpenRouter“. Ein Schlüssel mit null nimmt den globalen Wert für dieses Modell weg. Leer übernimmt die Einstellung unverändert."
     },
     "cancel": "Abbrechen",
     "save": "Speichern",

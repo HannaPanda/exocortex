@@ -128,7 +128,8 @@
       "contextWindowPositive": "La ventana de contexto debe ser un número positivo.",
       "inputPriceNumber": "El precio de entrada debe ser un número.",
       "outputPriceNumber": "El precio de salida debe ser un número.",
-      "reasoningRequired": "Debes seleccionar al menos un nivel de razonamiento."
+      "reasoningRequired": "Debes seleccionar al menos un nivel de razonamiento.",
+      "providerRoutingInvalid": "El enrutamiento de proveedores no es un objeto JSON válido con valores que OpenRouter reconozca."
     },
     "fields": {
       "slug": "Slug",
@@ -145,7 +146,9 @@
       "outputPrice": "Precio de salida (µUSD / millón de tokens)",
       "companion": "Modelo complementario de visión",
       "companionNone": "Ninguno",
-      "sortOrder": "Orden"
+      "sortOrder": "Orden",
+      "providerRouting": "Enrutamiento de proveedores para este modelo",
+      "providerRoutingHelp": "Solo las claves que pongas aquí sustituyen el ajuste «Enrutamiento de proveedores en OpenRouter». Una clave con null elimina el valor global para este modelo. Si se deja en blanco, se mantiene el ajuste sin cambios."
     },
     "cancel": "Cancelar",
     "save": "Guardar",

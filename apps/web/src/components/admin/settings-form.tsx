@@ -26,6 +26,7 @@ import {
   fieldErrorsFromDetails,
   groupOf,
   inputId,
+  sameSettingValue,
   SETTING_LIST_CLASS,
   SettingRow,
   useSettingMessages,
@@ -61,7 +62,7 @@ function refusalSummary(
 /** The settings whose draft value differs from the one on the server. */
 function changedSettingKeys(draft: Settings | null, stored: Settings | undefined): SettingKey[] {
   if (draft === null || stored === undefined) return [];
-  return SETTING_KEYS.filter((key) => draft[key] !== stored[key]);
+  return SETTING_KEYS.filter((key) => !sameSettingValue(draft[key], stored[key]));
 }
 
 export function SettingsForm() {
@@ -178,7 +179,7 @@ export function SettingsForm() {
   function handleSave(): void {
     const changed: Partial<Settings> = {};
     for (const key of SETTING_KEYS) {
-      if (currentDraft[key] !== original[key]) {
+      if (!sameSettingValue(currentDraft[key], original[key])) {
         (changed as Record<SettingKey, unknown>)[key] = currentDraft[key];
       }
     }
