@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Zu dieser Adresse gibt es hier kein Konto.",
     "share_grantee_is_member": "Diese Person kommt schon an die Seite: sie ist Mitglied dieses Arbeitsbereichs.",
     "token_scope_exceeded": "Dieses Token gilt nur für bestimmte Seiten und darf hier nicht zugreifen."
+  },
+  "boundary": {
+    "pageTitle": "Diese Seite konnte nicht geladen werden",
+    "pageBody": "Der Rest der Anwendung läuft weiter. Ein gestarteter KI-Lauf arbeitet im Hintergrund weiter; sein Verlauf steht nach dem Neuladen vollständig im Chat.",
+    "viewTitle": "Diese Ansicht konnte nicht geladen werden",
+    "viewBody": "Bitte versuche es erneut. Wenn das Problem bleibt, prüfe deine Verbindung. Ein gestarteter KI-Lauf arbeitet im Hintergrund weiter; sein Verlauf steht nach dem Neuladen vollständig im Chat.",
+    "retry": "Erneut versuchen"
   }
 }

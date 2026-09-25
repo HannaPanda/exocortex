@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../lib/utils';
 
@@ -192,12 +193,13 @@ export function ResizablePanel({
 
 /** Skip link so keyboard users can jump past the navigation. */
 export function SkipToContentLink() {
+  const t = useTranslations('ui.layout');
   return (
     <a
       href="#exocortex-main"
       className="exocortex-sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-md focus:bg-popover focus:px-3 focus:py-2 focus:text-sm"
     >
-      Zum Inhalt springen
+      {t('skipToContent')}
     </a>
   );
 }
