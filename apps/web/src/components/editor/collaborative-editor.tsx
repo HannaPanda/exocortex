@@ -47,6 +47,7 @@ import {
   DestructiveConfirmProvider,
   useDestructiveConfirmDialog,
 } from '@/components/editor/destructive-confirm';
+import { useEditorWords } from '@/components/editor/editor-words';
 import { type FollowLink, FollowLinkContext } from '@/components/editor/follow-link-context';
 import { LinkBubble } from '@/components/editor/link-bubble';
 import { useLinkNavigation } from '@/components/editor/link-navigation';
@@ -299,6 +300,9 @@ function EditorSurface({
   breadcrumb,
 }: EditorSurfaceProps) {
   const t = useTranslations('editor.surface');
+  const tNodeViews = useTranslations('editor.nodeViews');
+  // The words of the node views `packages/editor` draws itself.
+  const words = useEditorWords();
   // One catalog for the slash menu, the turn-into menu and the block menu, with
   // the block names in the reader's language.
   const catalog = useLocalizedBlockCatalog();
@@ -317,8 +321,12 @@ function EditorSurface({
   );
   // Marks the blocks that carry an open comment thread. Stateless and stable,
   // like the suggestion plugins above: which blocks are marked is pushed in
-  // from `CommentMarkers` in the chrome, never read here.
-  const commentMarkers = React.useMemo(() => createCommentMarkers(), []);
+  // from `CommentMarkers` in the chrome, never read here. Rebuilt only when
+  // the language changes, like the editor itself.
+  const commentMarkers = React.useMemo(
+    () => createCommentMarkers((count) => tNodeViews('commentCount', { count })),
+    [tNodeViews],
+  );
   // Marks the `[[Titel]]` references whose target does not exist. Same shape as
   // the comment markers: stateless here, fed from `WikiLinkMarkers` in the
   // chrome.
@@ -401,6 +409,7 @@ function EditorSurface({
         // Lets the file and PDF blocks show what is inside them. The editor
         // package knows no routes, so the API side is injected here.
         mediaInfo: attachmentMediaInfoResolver,
+        words,
         // Four nodes whose schema lives in `packages/editor` and whose drawing
         // cannot: a database, a saved query, a transcluded fragment (ADR-045,
         // read here as this reader) and a link to a page with its resolution
@@ -498,6 +507,7 @@ function EditorSurface({
       wikiLinkMarkers,
       placeholder,
       contentLabel,
+      words,
     ],
   );
 

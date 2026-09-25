@@ -1,4 +1,9 @@
-import { type Extensions, mergeAttributes, type NodeViewRenderer } from '@tiptap/core';
+import {
+  type AnyExtension,
+  type Extensions,
+  mergeAttributes,
+  type NodeViewRenderer,
+} from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { Code } from '@tiptap/extension-code';
@@ -57,6 +62,7 @@ import {
   databaseEmbedMarkdownAdapter,
   databaseEmbedPlainTextAdapter,
 } from './database-embed';
+import { type EditorWords } from './editor-words';
 import {
   EMBED_EXTENSIONS,
   embedBlocks,
@@ -111,6 +117,7 @@ import {
 import {
   TOGGLE_EXTENSIONS,
   toggleBlocks,
+  toggleButtonRenderer,
   toggleMarkdownAdapter,
   togglePlainTextAdapter,
 } from './toggle';
@@ -395,10 +402,30 @@ export interface BuildEditorExtensionsOptions {
    * both (issue #114).
    */
   nodeViews?: Readonly<Record<string, NodeViewRenderer>>;
+  /**
+   * The words the hand-built node views show, in the reader's language
+   * (issue #98). Without them they speak the German source, which is what a
+   * server-side render and the tests see.
+   */
+  words?: EditorWords;
 }
 
 /** Names of the nodes built from `MEDIA_KINDS`; see `media.ts`. */
 const MEDIA_NODE_NAMES = new Set(['fileAttachment', 'video', 'audio', 'pdf']);
+
+/** Nodes whose own options carry `words`; see `editor-words.ts`. */
+const WORDED_NODE_NAMES = new Set([...MEDIA_NODE_NAMES, 'breadcrumb', 'tableOfContents', 'embed']);
+
+/** Hands the reader's words to the extension that shows them, if it shows any. */
+function withWords(extension: AnyExtension, words: EditorWords | undefined): AnyExtension {
+  if (words === undefined) return extension;
+  if (WORDED_NODE_NAMES.has(extension.name)) return extension.configure({ words });
+  // Tiptap's own `Details` takes a render function, not words.
+  if (extension.name === 'details') {
+    return extension.configure({ renderToggleButton: toggleButtonRenderer(words.toggle) });
+  }
+  return extension;
+}
 
 /** Flattens the registry into the array Tiptap expects. */
 export function buildEditorExtensions(options: BuildEditorExtensionsOptions = {}): Extensions {
@@ -408,10 +435,12 @@ export function buildEditorExtensions(options: BuildEditorExtensionsOptions = {}
     ...EXOCORTEX_EDITOR_EXTENSIONS.flatMap((entry) => entry.extensions).map((extension) => {
       // `configure` changes options only, never the schema, so the document
       // model stays identical whether or not a resolver was supplied.
-      const configured =
+      const configured = withWords(
         mediaInfo !== undefined && MEDIA_NODE_NAMES.has(extension.name)
           ? extension.configure({ mediaInfo })
-          : extension;
+          : extension,
+        options.words,
+      );
       // Same for a node view: it decides how a node is drawn, never what the
       // node is, so the canonical schema is untouched either way.
       const nodeView = nodeViews[extension.name];

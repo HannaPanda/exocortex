@@ -40,7 +40,10 @@ export interface MediaDocumentCorrection {
 export interface MediaDocumentInfo {
   status: 'not_applicable' | 'pending' | 'ready' | 'failed';
   metadata: MediaDocumentMetadata | null;
+  /** The English detail of a failed read, kept for rows from before `errorCode`. */
   error: string | null;
+  /** Why the read failed, as a code the host's words turn into a sentence (issue #98). */
+  errorCode: string | null;
   /**
    * The stored file name, used when the block has none of its own.
    *

@@ -19,6 +19,7 @@ import {
   type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
   documentTextMetadataSchema,
+  isAttachmentTextErrorCode,
   QUEUE_NAMES,
   type UploadAttachmentFromUrlRequest,
   type UploadAttachmentResponse,
@@ -463,7 +464,7 @@ export class AttachmentsService {
     // Reading it is the request to try (again).
     await this.prisma.attachment.update({
       where: { id: attachmentId },
-      data: { textStatus: 'PENDING', textExtractionError: null },
+      data: { textStatus: 'PENDING', textExtractionError: null, textErrorCode: null },
     });
     await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
       correlationId,
@@ -521,7 +522,7 @@ export class AttachmentsService {
 
     await this.prisma.attachment.update({
       where: { id: attachmentId },
-      data: { textStatus: 'PENDING', textExtractionError: null },
+      data: { textStatus: 'PENDING', textExtractionError: null, textErrorCode: null },
     });
     await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
       correlationId,
@@ -654,6 +655,7 @@ export class AttachmentsService {
       truncated: attachment.textTruncated,
       extractedAt: null,
       error: null,
+      errorCode: null,
     };
 
     if (attachment.textStatus === 'READY') {
@@ -674,7 +676,14 @@ export class AttachmentsService {
     if (attachment.textStatus === 'FAILED') {
       return {
         attachment,
-        projected: { ...base, status: 'failed', error: attachment.textExtractionError },
+        projected: {
+          ...base,
+          status: 'failed',
+          error: attachment.textExtractionError,
+          errorCode: isAttachmentTextErrorCode(attachment.textErrorCode)
+            ? attachment.textErrorCode
+            : null,
+        },
       };
     }
 

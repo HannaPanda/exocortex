@@ -152,6 +152,32 @@ export const uploadAttachmentFromUrlRequestSchema = z.object({
 });
 export type UploadAttachmentFromUrlRequest = z.infer<typeof uploadAttachmentFromUrlRequestSchema>;
 
+/**
+ * Why an attachment's text could not be read, as a code each reader words in
+ * its own language (issue #98): the engine is switched off, the file is over
+ * the size limit, it has no text, or the office converter refused it for a
+ * reason that names the file. `failed` is a job that ran out of retries.
+ */
+export const ATTACHMENT_TEXT_ERROR_CODES = [
+  'pdfDisabled',
+  'officeDisabled',
+  'tooLarge',
+  'noTextLayer',
+  'empty',
+  'unsupported',
+  'malformed',
+  'encrypted',
+  'missingPart',
+  'resourceLimit',
+  'needsOcr',
+  'failed',
+] as const;
+export type AttachmentTextErrorCode = (typeof ATTACHMENT_TEXT_ERROR_CODES)[number];
+
+export function isAttachmentTextErrorCode(value: unknown): value is AttachmentTextErrorCode {
+  return (ATTACHMENT_TEXT_ERROR_CODES as readonly unknown[]).includes(value);
+}
+
 /** State machine for the cached text extraction of an attachment (D6). */
 export const attachmentTextStatusSchema = z.enum(['not_applicable', 'pending', 'ready', 'failed']);
 export type AttachmentTextStatus = z.infer<typeof attachmentTextStatusSchema>;
@@ -249,7 +275,10 @@ export const attachmentTextResponseSchema = z.object({
   /** Null until an extraction succeeded, and for engines that report nothing. */
   metadata: documentTextMetadataSchema.nullable(),
   extractedAt: isoDateTimeSchema.nullable(),
+  /** The English detail of a failure, for a log or a person debugging it. */
   error: z.string().nullable(),
+  /** Why it failed, as a code to word; null for a row from before the codes. */
+  errorCode: z.enum(ATTACHMENT_TEXT_ERROR_CODES).nullable(),
 });
 export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
 

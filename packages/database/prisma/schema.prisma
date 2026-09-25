@@ -1495,6 +1495,11 @@ model Attachment {
   textStatus          AttachmentTextStatus @default(NOT_APPLICABLE)
   textExtractedAt     DateTime?
   textExtractionError String?
+  /// Why the text could not be read, as one of `ATTACHMENT_TEXT_ERROR_CODES`,
+  /// which every reader words in its own language (issue #98).
+  /// `textExtractionError` beside it is the English detail for the log; null
+  /// here with a detail there is a row from before the codes.
+  textErrorCode       String?
   /// What the extraction engines could tell about the document: the PDF's own
   /// title, author and dates plus page, table and picture counts. Shaped by
   /// `pdfMetadataSchema`; a Json column because the fields are engine-reported

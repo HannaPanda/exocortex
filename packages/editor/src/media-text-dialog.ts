@@ -1,4 +1,5 @@
-import { formatDay } from './media-describe';
+import { type EditorWords } from './editor-words';
+import { describeTextError } from './media-describe';
 import {
   type MediaDocumentDetail,
   type MediaDocumentInfo,
@@ -27,6 +28,7 @@ export function createTextDialog(
   src: string,
   fallbackTitle: string,
   onChange: (info: MediaDocumentInfo) => void,
+  words: EditorWords['media'],
 ): TextDialogController {
   const dialog = window.document.createElement('dialog');
   dialog.className = 'exocortex-media-text-dialog';
@@ -45,19 +47,19 @@ export function createTextDialog(
   const discardButton = window.document.createElement('button');
   discardButton.type = 'button';
   discardButton.className = 'exocortex-media-text-dialog-discard';
-  discardButton.textContent = 'Korrektur verwerfen';
+  discardButton.textContent = words.dialog.discard;
   discardButton.hidden = true;
 
   const saveButton = window.document.createElement('button');
   saveButton.type = 'button';
   saveButton.className = 'exocortex-media-text-dialog-save';
-  saveButton.textContent = 'Speichern';
+  saveButton.textContent = words.dialog.save;
   saveButton.hidden = resolver.correctText === undefined;
 
   const closeButton = window.document.createElement('button');
   closeButton.type = 'button';
   closeButton.className = 'exocortex-media-text-dialog-close';
-  closeButton.textContent = 'Schließen';
+  closeButton.textContent = words.dialog.close;
   closeButton.addEventListener('click', () => closeDialog(dialog));
 
   const actions = window.document.createElement('div');
@@ -74,13 +76,11 @@ export function createTextDialog(
 
     const notices: string[] = [];
     if (detail.correction !== null) {
-      const day = formatDay(detail.correction.editedAt);
-      notices.push(day === null ? 'Von Hand korrigiert.' : `Von Hand korrigiert am ${day}.`);
+      notices.push(words.dialog.corrected(words.day(detail.correction.editedAt)));
     }
-    if (detail.truncated) {
-      notices.push('Der ausgelesene Text wurde gekürzt und ist nicht vollständig.');
-    }
-    if (detail.error !== null) notices.push(`Fehler bei der letzten Auslesung: ${detail.error}`);
+    if (detail.truncated) notices.push(words.dialog.truncated);
+    const reason = describeTextError(detail, words);
+    if (reason !== null) notices.push(words.dialog.lastError(reason));
     notice.textContent = notices.join(' ');
     notice.hidden = notices.length === 0;
 
@@ -101,7 +101,7 @@ export function createTextDialog(
       },
       () => {
         button.disabled = false;
-        errorLine.textContent = 'Das hat nicht geklappt. Bitte erneut versuchen.';
+        errorLine.textContent = words.dialog.failed;
         errorLine.hidden = false;
       },
     );

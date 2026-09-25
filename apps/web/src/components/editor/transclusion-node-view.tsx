@@ -29,6 +29,7 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
+import { useEditorWords } from '@/components/editor/editor-words';
 import { useDocumentFragment } from '@/lib/api/transclusion-queries';
 
 import { PageLinkPromptContext } from './page-link-context';
@@ -231,14 +232,16 @@ function TransclusionBody({
  * leaves for later.
  */
 function ReadOnlyFragment({ content }: { content: unknown }) {
+  // A transcluded PDF or table of contents speaks the reader's language too.
+  const words = useEditorWords();
   const editor = useEditor(
     {
       immediatelyRender: false,
       editable: false,
-      extensions: buildEditorExtensions(),
+      extensions: buildEditorExtensions({ words }),
       content: content as object,
     },
-    [],
+    [words],
   );
 
   React.useEffect(() => {

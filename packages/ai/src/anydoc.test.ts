@@ -80,10 +80,10 @@ describe('createAnydocExtractor', () => {
   });
 
   it.each([
-    ['encrypted', 'passwortgeschützt'],
-    ['malformed', 'beschädigt'],
-    ['unsupported', 'kann nicht gelesen werden'],
-    ['missingPart', 'fehlt ein Teil'],
+    ['encrypted', 'password protected'],
+    ['malformed', 'damaged'],
+    ['unsupported', 'cannot be read'],
+    ['missingPart', 'lacks a part'],
   ])('turns a %s document into a settled refusal a reader can act on', async (code, phrase) => {
     const { extractor } = extractorRejecting(Object.assign(new Error('raw'), { code }));
 
@@ -93,6 +93,8 @@ describe('createAnydocExtractor', () => {
     await expect(extractor.extract({ ...input, mimeType: DOCX })).rejects.toThrow(
       new RegExp(phrase),
     );
+    // The code is what the row stores and what a reader sees worded (issue #98).
+    await expect(extractor.extract({ ...input, mimeType: DOCX })).rejects.toMatchObject({ code });
   });
 
   it('rethrows anything that is not about this document', async () => {

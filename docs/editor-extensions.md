@@ -319,7 +319,11 @@ The `callout` node is the reference implementation. To add, for example, a
 
 The real `toggle` unit is `packages/editor/src/toggle.ts`; `columns.ts` is the
 reference for a node with its own commands, `table-of-contents.ts` for one with a
-plain-DOM node view.
+plain-DOM node view. A plain-DOM node view never writes a sentence of its own:
+it reads `this.options.words` (German by default), the node's name goes into
+`WORDED_NODE_NAMES` in `extensions.ts`, and the text is a field of
+`EditorWords` that `useEditorWords` in `apps/web` fills from `editor.nodeViews`
+(docs/i18n.md).
 
 ## Page references and their identity
 

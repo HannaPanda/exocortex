@@ -36,6 +36,7 @@ function toInfo(response: AttachmentTextInfoResponse | AttachmentTextResponse): 
     status: response.status,
     metadata: response.metadata,
     error: response.error,
+    errorCode: response.errorCode,
     filename: response.filename,
     // What separates "an image has no text" from "nobody has read this
     // document yet", which the API reports with the same status. The same

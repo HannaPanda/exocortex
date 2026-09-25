@@ -2,6 +2,7 @@ import { mergeAttributes, Node } from '@tiptap/core';
 
 import { type BlockCatalogEntry } from './block-catalog';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -60,11 +61,15 @@ function isCrumb(value: unknown): value is BreadcrumbCrumb {
  * Like the table of contents this is derived content: an empty atom in the
  * document, resolved at render time.
  */
-export const Breadcrumb = Node.create({
+export const Breadcrumb = Node.create<{ words: EditorWords }>({
   name: 'breadcrumb',
   group: 'block',
   atom: true,
   selectable: true,
+
+  addOptions() {
+    return { words: GERMAN_EDITOR_WORDS };
+  },
 
   parseHTML() {
     return [{ tag: 'nav[data-breadcrumb-block]' }];
@@ -76,7 +81,7 @@ export const Breadcrumb = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-breadcrumb-block': '',
         class: 'exocortex-breadcrumb',
-        'aria-label': 'Navigationspfad',
+        'aria-label': this.options.words.breadcrumb.label,
       }),
     ];
   },
@@ -91,11 +96,12 @@ export const Breadcrumb = Node.create({
   },
 
   addNodeView() {
+    const words = this.options.words.breadcrumb;
     return () => {
       const dom = window.document.createElement('nav');
       dom.className = 'exocortex-breadcrumb';
       dom.setAttribute('data-breadcrumb-block', '');
-      dom.setAttribute('aria-label', 'Navigationspfad');
+      dom.setAttribute('aria-label', words.label);
       dom.contentEditable = 'false';
 
       const render = (): void => {
@@ -104,7 +110,7 @@ export const Breadcrumb = Node.create({
         if (path.length === 0) {
           const empty = window.document.createElement('span');
           empty.className = 'exocortex-breadcrumb-empty';
-          empty.textContent = 'Diese Seite hat keine übergeordneten Seiten.';
+          empty.textContent = words.empty;
           dom.append(empty);
           return;
         }

@@ -1,4 +1,9 @@
-import { describeCorrectionAndTruncation, describeDocument, STATUS_NOTES } from './media-describe';
+import { type EditorWords } from './editor-words';
+import {
+  describeCorrectionAndTruncation,
+  describeDocument,
+  describeTextError,
+} from './media-describe';
 import { type MediaDocumentInfo, type MediaInfoResolver } from './media-info';
 import { createTextDialog, type TextDialogController } from './media-text-dialog';
 
@@ -48,10 +53,11 @@ function applyLabel(kind: DocumentMediaName, element: HTMLElement, label: string
 export function attachDocumentDetails(
   kind: DocumentMediaName,
   element: HTMLElement,
-  src: string,
-  name: string,
+  file: { src: string; name: string },
   resolver: MediaInfoResolver | null,
+  words: EditorWords['media'],
 ): { cancel: () => void } | null {
+  const { src, name } = file;
   if (resolver === null || src.length === 0) return null;
 
   const bar = window.document.createElement('div');
@@ -86,27 +92,29 @@ export function attachDocumentDetails(
       return;
     }
 
-    for (const chip of describeDocument(info.metadata)) bar.append(buildChip(chip));
+    for (const chip of describeDocument(info.metadata, words)) bar.append(buildChip(chip));
 
-    const note = STATUS_NOTES[info.status];
-    if (note !== null) {
-      const noteChip = buildChip(note);
-      noteChip.classList.add(`exocortex-media-chip-${info.status}`);
-      // The reason a document could not be read is worth having, but not worth
-      // a second line in a header.
-      if (info.error !== null) noteChip.title = info.error;
-      bar.append(noteChip);
-    }
+    // `not_applicable` only ever reaches this point for a file that *could* be
+    // read, because the silent case returned above: it means nobody has asked
+    // yet. `ready` says so too, which is what gives "Ansehen" somewhere to sit
+    // (issue #2).
+    const noteChip = buildChip(words.status[info.status]);
+    noteChip.classList.add(`exocortex-media-chip-${info.status}`);
+    // The reason a document could not be read is worth having, but not worth
+    // a second line in a header.
+    const reason = describeTextError(info, words);
+    if (reason !== null) noteChip.title = reason;
+    bar.append(noteChip);
 
-    for (const chip of describeCorrectionAndTruncation(info)) bar.append(buildChip(chip));
+    for (const chip of describeCorrectionAndTruncation(info, words)) bar.append(buildChip(chip));
 
     // Both offer the same action, but they are not the same situation: one
     // failed, the other was never asked.
     const retryAction =
       info.status === 'failed'
-        ? buildActionButton('Erneut versuchen', 'exocortex-media-retry', resolver.request)
+        ? buildActionButton(words.retry, 'exocortex-media-retry', resolver.request)
         : info.status === 'not_applicable'
-          ? buildActionButton('Text auslesen', 'exocortex-media-retry', resolver.request)
+          ? buildActionButton(words.extract, 'exocortex-media-retry', resolver.request)
           : null;
     if (retryAction !== null) bar.append(retryAction);
 
@@ -115,7 +123,7 @@ export function attachDocumentDetails(
     // "no, really, again" (issue #2).
     const forceAction =
       info.status === 'ready'
-        ? buildActionButton('Erneut auslesen', 'exocortex-media-force', resolver.forceReextract)
+        ? buildActionButton(words.reextract, 'exocortex-media-force', resolver.forceReextract)
         : null;
     if (forceAction !== null) bar.append(forceAction);
 
@@ -158,7 +166,7 @@ export function attachDocumentDetails(
     const button = window.document.createElement('button');
     button.type = 'button';
     button.className = 'exocortex-media-view';
-    button.textContent = 'Ansehen';
+    button.textContent = words.view;
     button.addEventListener('click', () => {
       if (resolver.readText === undefined) return;
       button.disabled = true;
@@ -166,7 +174,7 @@ export function attachDocumentDetails(
         (detail) => {
           button.disabled = false;
           if (detail === null) return;
-          dialog ??= createTextDialog(resolver, src, name.length > 0 ? name : src, render);
+          dialog ??= createTextDialog(resolver, src, name.length > 0 ? name : src, render, words);
           dialog.open(detail);
         },
         () => {

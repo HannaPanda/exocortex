@@ -1,29 +1,27 @@
+import { type EditorWords } from './editor-words';
 import { type MediaDocumentInfo, type MediaDocumentMetadata } from './media-info';
 
 /**
- * What a media block says about its file, as short German labels.
+ * What a media block says about its file, as short labels in the words the
+ * host handed in (`EditorWords`, issue #98).
  *
  * Pure functions, no DOM: the meta bar and the text dialog both render from
  * these, and neither needs the other to do it (issue #97).
  */
 
-/** `2026-04-26T11:56:10.000Z` as `26.04.2026`, without depending on a locale. */
-export function formatDay(iso: string): string | null {
-  const parsed = new Date(iso);
-  if (Number.isNaN(parsed.getTime())) return null;
-  const day = String(parsed.getUTCDate()).padStart(2, '0');
-  const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
-  return `${day}.${month}.${parsed.getUTCFullYear()}`;
-}
+type MediaWords = EditorWords['media'];
 
 /**
- * The document's facts as short German labels.
+ * The document's facts as short labels.
  *
  * Only what is actually known is listed. A null means no source could tell, not
  * zero, so "0 Tabellen" would be a claim nobody made -- and a row of "unbekannt"
  * would be noise in a header that has to stay one line.
  */
-export function describeDocument(metadata: MediaDocumentMetadata | null): string[] {
+export function describeDocument(
+  metadata: MediaDocumentMetadata | null,
+  words: MediaWords,
+): string[] {
   if (metadata === null) return [];
 
   const chips: string[] = [];
@@ -36,37 +34,29 @@ export function describeDocument(metadata: MediaDocumentMetadata | null): string
   if (metadata.title === null && metadata.author === null && metadata.creator !== null) {
     chips.push(metadata.creator);
   }
-  if (metadata.pageCount !== null) {
-    chips.push(metadata.pageCount === 1 ? '1 Seite' : `${metadata.pageCount} Seiten`);
-  }
+  if (metadata.pageCount !== null) chips.push(words.pages(metadata.pageCount));
   if (metadata.tableCount !== null && metadata.tableCount > 0) {
-    chips.push(metadata.tableCount === 1 ? '1 Tabelle' : `${metadata.tableCount} Tabellen`);
+    chips.push(words.tables(metadata.tableCount));
   }
   if (metadata.pictureCount !== null && metadata.pictureCount > 0) {
-    chips.push(metadata.pictureCount === 1 ? '1 Bild' : `${metadata.pictureCount} Bilder`);
+    chips.push(words.pictures(metadata.pictureCount));
   }
   if (metadata.createdAt !== null) {
-    const day = formatDay(metadata.createdAt);
+    const day = words.day(metadata.createdAt);
     if (day !== null) chips.push(day);
   }
-  if (metadata.ocrUsed === true) chips.push('per Texterkennung gelesen');
+  if (metadata.ocrUsed === true) chips.push(words.ocrUsed);
   return chips;
 }
 
 /**
- * `not_applicable` only ever reaches this point for a file that *could* be
- * read, because the silent case returns earlier: it means nobody has asked yet.
- *
- * `ready` used to be `null`, i.e. silent: a successfully read PDF said nothing
- * at all, which left no visible way to get to the text (issue #2). Saying so
- * is also what gives the "Ansehen" action somewhere to sit.
+ * Why the last read failed, in the reader's words when the row carries a code
+ * and in the stored English detail when it is older than the codes.
  */
-export const STATUS_NOTES: Record<MediaDocumentInfo['status'], string | null> = {
-  not_applicable: 'Noch nicht ausgelesen',
-  pending: 'Text wird ausgelesen …',
-  ready: 'Text gelesen',
-  failed: 'Kein Text lesbar',
-};
+export function describeTextError(info: MediaDocumentInfo, words: MediaWords): string | null {
+  if (info.errorCode !== null) return words.textError(info.errorCode);
+  return info.error;
+}
 
 /**
  * Independent of `status`: a correction can exist on a `failed` or even a
@@ -74,9 +64,12 @@ export const STATUS_NOTES: Record<MediaDocumentInfo['status'], string | null> = 
  * automatic extraction is switched off), and a truncation is a fact about the
  * last successful read, not about the current one.
  */
-export function describeCorrectionAndTruncation(info: MediaDocumentInfo): string[] {
+export function describeCorrectionAndTruncation(
+  info: MediaDocumentInfo,
+  words: MediaWords,
+): string[] {
   const chips: string[] = [];
-  if (info.correction !== null) chips.push('Von Hand korrigiert');
-  if (info.truncated) chips.push('Gekürzt');
+  if (info.correction !== null) chips.push(words.corrected);
+  if (info.truncated) chips.push(words.truncated);
   return chips;
 }

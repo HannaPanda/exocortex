@@ -69,7 +69,9 @@ interface AnydocModule {
 
 /**
  * Error codes the library rejects with that describe the document rather than
- * the run, mapped to what a person reading the file's text bar should be told.
+ * the run, with the English detail for the log. The code itself is what is
+ * stored and what a reader sees worded in their language
+ * (`ATTACHMENT_TEXT_ERROR_CODES`, issue #98).
  *
  * Everything not named here -- a broken binding, an out-of-memory -- is left to
  * throw, so the job retries instead of the attachment being written off. The
@@ -77,17 +79,17 @@ interface AnydocModule {
  * a `null` text is a settled "there is nothing to read", a throw is "ask again".
  */
 const SETTLED_ERROR_MESSAGES: Readonly<Record<string, string>> = {
-  unsupported: 'Dieses Dateiformat kann nicht gelesen werden',
-  malformed: 'Die Datei ist beschädigt und enthält keinen lesbaren Text',
-  encrypted: 'Die Datei ist passwortgeschützt',
-  missingPart: 'Der Datei fehlt ein Teil, ohne den sie keinen Text ergibt',
-  resourceLimit: 'Die Datei überschreitet eine Sicherheitsgrenze des Konverters',
+  unsupported: 'The file format cannot be read',
+  malformed: 'The file is damaged and holds no readable text',
+  encrypted: 'The file is password protected',
+  missingPart: 'The file lacks a part without which it yields no text',
+  resourceLimit: 'The file exceeds a safety limit of the converter',
   // Only reachable for a PDF, which never gets here -- named so a future
   // routing change fails loudly in review rather than silently at runtime.
-  needsOcr: 'Die Datei besteht aus Bildern und bräuchte Texterkennung',
+  needsOcr: 'The file consists of images and would need OCR',
 };
 
-/** A settled refusal carries the sentence a reader sees instead of text. */
+/** A settled refusal: `code` is what a reader is told, the message what the log keeps. */
 export class OfficeExtractionRefused extends Error {
   constructor(
     readonly code: string,

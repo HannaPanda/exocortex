@@ -32,7 +32,10 @@ const COUNT_ICON_PATH =
  * the block itself is what a click opens, and the comments panel is the
  * keyboard's way to the thread.
  */
-function renderCount(count: number): HTMLElement {
+/** The screen reader's noun after the count, in the reader's language. */
+export type CommentCountLabel = (count: number) => string;
+
+function renderCount(count: number, label: CommentCountLabel): HTMLElement {
   const badge = document.createElement('span');
   badge.className = 'exocortex-comment-count';
   badge.contentEditable = 'false';
@@ -42,10 +45,10 @@ function renderCount(count: number): HTMLElement {
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.setAttribute('d', COUNT_ICON_PATH);
   svg.append(path);
-  const label = document.createElement('span');
-  label.className = 'exocortex-sr-only';
-  label.textContent = count === 1 ? ' Kommentar' : ' Kommentare';
-  badge.append(svg, String(count), label);
+  const noun = document.createElement('span');
+  noun.className = 'exocortex-sr-only';
+  noun.textContent = ` ${label(count)}`;
+  badge.append(svg, String(count), noun);
   return badge;
 }
 
@@ -62,7 +65,7 @@ function renderCount(count: number): HTMLElement {
  * The set of marked blocks is pushed in from outside through a transaction
  * meta, because the extension has no business knowing how comments are fetched.
  */
-export function createCommentMarkers(): Extension {
+export function createCommentMarkers(label: CommentCountLabel): Extension {
   return Extension.create({
     name: 'exocortexCommentMarkers',
 
@@ -97,7 +100,7 @@ export function createCommentMarkers(): Extension {
                   // count; its wash alone marks it.
                   if (!node.isLeaf) {
                     decorations.push(
-                      Decoration.widget(position + 1, () => renderCount(count), {
+                      Decoration.widget(position + 1, () => renderCount(count, label), {
                         side: -1,
                         key: `comment-count-${id}-${count}`,
                         ignoreSelection: true,

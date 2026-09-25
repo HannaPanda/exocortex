@@ -12,30 +12,90 @@
     "unknownUser": "Unbekannt"
   },
   "blocks": {
-    "paragraph": { "label": "Text", "description": "Ein normaler Absatz" },
-    "heading-1": { "label": "Überschrift 1", "description": "Abschnittstitel der Ebene 1" },
-    "heading-2": { "label": "Überschrift 2", "description": "Abschnittstitel der Ebene 2" },
-    "heading-3": { "label": "Überschrift 3", "description": "Abschnittstitel der Ebene 3" },
-    "blockquote": { "label": "Zitat", "description": "Hervorgehobenes Zitat" },
-    "code-block": { "label": "Codeblock", "description": "Code mit Syntaxhervorhebung" },
+    "paragraph": {
+      "label": "Text",
+      "description": "Ein normaler Absatz"
+    },
+    "heading-1": {
+      "label": "Überschrift 1",
+      "description": "Abschnittstitel der Ebene 1"
+    },
+    "heading-2": {
+      "label": "Überschrift 2",
+      "description": "Abschnittstitel der Ebene 2"
+    },
+    "heading-3": {
+      "label": "Überschrift 3",
+      "description": "Abschnittstitel der Ebene 3"
+    },
+    "blockquote": {
+      "label": "Zitat",
+      "description": "Hervorgehobenes Zitat"
+    },
+    "code-block": {
+      "label": "Codeblock",
+      "description": "Code mit Syntaxhervorhebung"
+    },
     "horizontal-rule": {
       "label": "Trennlinie",
       "description": "Waagerechte Linie zwischen Abschnitten"
     },
-    "bullet-list": { "label": "Aufzählung", "description": "Liste mit Punkten" },
-    "ordered-list": { "label": "Nummerierte Liste", "description": "Liste mit Zahlen" },
-    "task-list": { "label": "Aufgabenliste", "description": "Liste mit Kontrollkästchen" },
-    "image": { "label": "Bild", "description": "Bild hochladen" },
-    "table": { "label": "Tabelle", "description": "Tabelle mit Kopfzeile" },
-    "callout-info": { "label": "Hinweis", "description": "Hervorgehobener Kasten (hinweis)" },
-    "callout-note": { "label": "Notiz", "description": "Hervorgehobener Kasten (notiz)" },
-    "callout-success": { "label": "Erfolg", "description": "Hervorgehobener Kasten (erfolg)" },
-    "callout-warning": { "label": "Warnung", "description": "Hervorgehobener Kasten (warnung)" },
-    "callout-danger": { "label": "Gefahr", "description": "Hervorgehobener Kasten (gefahr)" },
-    "file": { "label": "Datei", "description": "Datei zum Herunterladen" },
-    "video": { "label": "Video", "description": "Video im Player abspielen" },
-    "audio": { "label": "Audio", "description": "Audiodatei abspielen" },
-    "pdf": { "label": "PDF", "description": "PDF eingebettet anzeigen" },
+    "bullet-list": {
+      "label": "Aufzählung",
+      "description": "Liste mit Punkten"
+    },
+    "ordered-list": {
+      "label": "Nummerierte Liste",
+      "description": "Liste mit Zahlen"
+    },
+    "task-list": {
+      "label": "Aufgabenliste",
+      "description": "Liste mit Kontrollkästchen"
+    },
+    "image": {
+      "label": "Bild",
+      "description": "Bild hochladen"
+    },
+    "table": {
+      "label": "Tabelle",
+      "description": "Tabelle mit Kopfzeile"
+    },
+    "callout-info": {
+      "label": "Hinweis",
+      "description": "Hervorgehobener Kasten (hinweis)"
+    },
+    "callout-note": {
+      "label": "Notiz",
+      "description": "Hervorgehobener Kasten (notiz)"
+    },
+    "callout-success": {
+      "label": "Erfolg",
+      "description": "Hervorgehobener Kasten (erfolg)"
+    },
+    "callout-warning": {
+      "label": "Warnung",
+      "description": "Hervorgehobener Kasten (warnung)"
+    },
+    "callout-danger": {
+      "label": "Gefahr",
+      "description": "Hervorgehobener Kasten (gefahr)"
+    },
+    "file": {
+      "label": "Datei",
+      "description": "Datei zum Herunterladen"
+    },
+    "video": {
+      "label": "Video",
+      "description": "Video im Player abspielen"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Audiodatei abspielen"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "PDF eingebettet anzeigen"
+    },
     "page-link": {
       "label": "Seitenlink",
       "description": "Verweis auf eine andere Seite als eigener Block"
@@ -44,13 +104,22 @@
       "label": "Navigationspfad",
       "description": "Pfad zu dieser Seite in der Hierarchie"
     },
-    "toggle": { "label": "Umschaltliste", "description": "Klappbarer Abschnitt" },
-    "columns": { "label": "Spalten", "description": "Inhalte nebeneinander anordnen" },
+    "toggle": {
+      "label": "Umschaltliste",
+      "description": "Klappbarer Abschnitt"
+    },
+    "columns": {
+      "label": "Spalten",
+      "description": "Inhalte nebeneinander anordnen"
+    },
     "database-embed": {
       "label": "Datenbank einbetten",
       "description": "Ansicht einer bestehenden Datenbank direkt in dieser Seite"
     },
-    "block-math": { "label": "Formel", "description": "LaTeX-Formel als eigener Block" },
+    "block-math": {
+      "label": "Formel",
+      "description": "LaTeX-Formel als eigener Block"
+    },
     "saved-query": {
       "label": "Gespeicherte Suche einbetten",
       "description": "Lebende Trefferliste einer gespeicherten Suche in dieser Seite"
@@ -59,7 +128,10 @@
       "label": "Einbettung",
       "description": "Externen Inhalt einbetten (YouTube, Figma, …)"
     },
-    "bookmark": { "label": "Lesezeichen", "description": "Vorschaukarte für einen Link" },
+    "bookmark": {
+      "label": "Lesezeichen",
+      "description": "Vorschaukarte für einen Link"
+    },
     "transclusion": {
       "label": "Inhalt einbetten",
       "description": "Zeigt Text einer anderen Seite, ohne ihn zu kopieren"
@@ -301,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "„{title}“ gibt es in diesem Arbeitsbereich nicht"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Öffnen",
+      "download": "Herunterladen",
+      "pages": "{count, plural, one {# Seite} other {# Seiten}}",
+      "tables": "{count, plural, one {# Tabelle} other {# Tabellen}}",
+      "pictures": "{count, plural, one {# Bild} other {# Bilder}}",
+      "ocrUsed": "per Texterkennung gelesen",
+      "status": {
+        "notApplicable": "Noch nicht ausgelesen",
+        "pending": "Text wird ausgelesen …",
+        "ready": "Text gelesen",
+        "failed": "Kein Text lesbar"
+      },
+      "corrected": "Von Hand korrigiert",
+      "truncated": "Gekürzt",
+      "retry": "Erneut versuchen",
+      "extract": "Text auslesen",
+      "reextract": "Erneut auslesen",
+      "view": "Ansehen",
+      "textErrors": {
+        "pdfDisabled": "Das Auslesen von PDFs ist in dieser Installation abgeschaltet.",
+        "officeDisabled": "Das Auslesen von Office-Dateien ist in dieser Installation abgeschaltet.",
+        "tooLarge": "Die Datei ist größer als die Grenze, bis zu der Dateien ausgelesen werden.",
+        "noTextLayer": "Die PDF hat keine lesbare Textebene.",
+        "empty": "Die Datei enthält keinen Text.",
+        "unsupported": "Dieses Dateiformat kann nicht gelesen werden.",
+        "malformed": "Die Datei ist beschädigt und enthält keinen lesbaren Text.",
+        "encrypted": "Die Datei ist passwortgeschützt.",
+        "missingPart": "Der Datei fehlt ein Teil, ohne den sie keinen Text ergibt.",
+        "resourceLimit": "Die Datei überschreitet eine Sicherheitsgrenze des Konverters.",
+        "needsOcr": "Die Datei besteht aus Bildern und bräuchte Texterkennung.",
+        "failed": "Das Auslesen ist mehrmals fehlgeschlagen.",
+        "unknown": "Der Text der Datei konnte nicht gelesen werden."
+      },
+      "dialog": {
+        "discard": "Korrektur verwerfen",
+        "save": "Speichern",
+        "close": "Schließen",
+        "corrected": "Von Hand korrigiert.",
+        "correctedOn": "Von Hand korrigiert am {day}.",
+        "truncated": "Der ausgelesene Text wurde gekürzt und ist nicht vollständig.",
+        "lastError": "Fehler bei der letzten Auslesung: {reason}",
+        "failed": "Das hat nicht geklappt. Bitte erneut versuchen."
+      }
+    },
+    "breadcrumb": {
+      "label": "Navigationspfad",
+      "empty": "Diese Seite hat keine übergeordneten Seiten."
+    },
+    "tableOfContents": {
+      "label": "Inhaltsverzeichnis",
+      "empty": "Noch keine Überschriften auf dieser Seite."
+    },
+    "toggle": {
+      "collapse": "Abschnitt einklappen",
+      "expand": "Abschnitt ausklappen"
+    },
+    "embed": {
+      "frameTitle": "Eingebetteter Inhalt"
+    },
+    "commentCount": "{count, plural, one {Kommentar} other {Kommentare}}"
   }
 }

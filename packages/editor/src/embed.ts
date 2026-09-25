@@ -2,6 +2,7 @@ import { mergeAttributes, Node } from '@tiptap/core';
 
 import { type BlockCatalogEntry } from './block-catalog';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
 
 /**
  * Hosts an `embed` block may load an iframe from.
@@ -94,12 +95,16 @@ function stringAttribute(value: unknown): string {
  * `sandbox` is set without `allow-same-origin`, so framed content cannot reach
  * this origin's cookies or storage even if the host is later compromised.
  */
-export const Embed = Node.create({
+export const Embed = Node.create<{ words: EditorWords }>({
   name: 'embed',
   group: 'block',
   atom: true,
   selectable: true,
   draggable: true,
+
+  addOptions() {
+    return { words: GERMAN_EDITOR_WORDS };
+  },
 
   addAttributes() {
     return {
@@ -129,7 +134,7 @@ export const Embed = Node.create({
               referrerpolicy: 'no-referrer',
               sandbox: 'allow-scripts allow-popups allow-presentation',
               allowfullscreen: 'true',
-              title: 'Eingebetteter Inhalt',
+              title: this.options.words.embed.frameTitle,
             },
           ]
         : ['a', { href: src, rel: 'noopener noreferrer' }, src],

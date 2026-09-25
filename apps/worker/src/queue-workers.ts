@@ -4,6 +4,7 @@ import { type WorkerEnv } from '@exocortex/config';
 import {
   AI_QUEUE_LOCK_DURATION_MS,
   AI_QUEUE_STALLED_INTERVAL_MS,
+  type AttachmentTextErrorCode,
   PROJECT_BUILD_QUEUE_LOCK_DURATION_MS,
   PROJECT_BUILD_QUEUE_STALLED_INTERVAL_MS,
   QUEUE_NAMES,
@@ -89,14 +90,14 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       bus,
       settings: readSettings,
     }),
-    onProgress: async (payload, progress, label, job) => {
+    onProgress: async (payload, progress, step, job) => {
       await publishProgress({
         queue: QUEUE_NAMES.documentMaterialization,
         workspaceId: payload.workspaceId,
         correlationId: payload.correlationId,
         jobId: job.id ?? '',
         progress,
-        label,
+        step,
         documentId: payload.documentId,
       });
     },
@@ -110,7 +111,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
           jobId: job.id ?? '',
           queue: QUEUE_NAMES.documentMaterialization,
           progress: 100,
-          label: 'Seite verarbeitet',
+          step: 'done',
           documentId: payload.documentId,
           durationMs,
         },
@@ -127,7 +128,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
           jobId: job?.id ?? '',
           queue: QUEUE_NAMES.documentMaterialization,
           progress: 0,
-          label: 'Seite konnte nicht verarbeitet werden',
+          step: 'failed',
           documentId: payload.documentId,
           reason: error.message,
           attemptsMade: job?.attemptsMade ?? 0,
@@ -279,6 +280,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
           where: { id: payload.attachmentId, textStatus: 'PENDING' },
           data: {
             textStatus: 'FAILED',
+            textErrorCode: 'failed' satisfies AttachmentTextErrorCode,
             textExtractionError: `Extraction failed after ${job.attemptsMade} attempts: ${
               error instanceof Error ? error.message : String(error)
             }`.slice(0, 500),

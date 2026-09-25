@@ -2,6 +2,22 @@ import { Details, DetailsContent, DetailsSummary } from '@tiptap/extension-detai
 
 import { type BlockCatalogEntry } from './block-catalog';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
+
+/**
+ * Draws the disclosure button in the given words; `buildEditorExtensions`
+ * hands in the reader's (issue #98).
+ */
+export function toggleButtonRenderer(
+  words: EditorWords['toggle'],
+): (props: { element: HTMLElement; isOpen: boolean }) => void {
+  return ({ element, isOpen }) => {
+    element.className = 'exocortex-toggle-button';
+    element.textContent = isOpen ? '▾' : '▸';
+    element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    element.setAttribute('aria-label', isOpen ? words.collapse : words.expand);
+  };
+}
 
 /**
  * Toggle list (Notion's "Umschaltliste").
@@ -22,12 +38,7 @@ export const TOGGLE_EXTENSIONS = [
      * its arrow and, more importantly, its accessible name and state here — an
      * unlabelled disclosure button is unusable with a screen reader.
      */
-    renderToggleButton: ({ element, isOpen }) => {
-      element.className = 'exocortex-toggle-button';
-      element.textContent = isOpen ? '▾' : '▸';
-      element.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      element.setAttribute('aria-label', isOpen ? 'Abschnitt einklappen' : 'Abschnitt ausklappen');
-    },
+    renderToggleButton: toggleButtonRenderer(GERMAN_EDITOR_WORDS.toggle),
   }),
   DetailsSummary,
   DetailsContent,

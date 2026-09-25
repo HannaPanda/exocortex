@@ -3855,6 +3855,7 @@ describe('attachment text extraction', () => {
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
     expect(attachment.textStatus).toBe('FAILED');
     expect(attachment.textExtractionError).toBe('PDF extraction is not configured');
+    expect(attachment.textErrorCode).toBe('pdfDisabled');
   }, 30_000);
 
   it('falls through to the next engine when the first finds no text', async () => {
@@ -4311,7 +4312,7 @@ describe('attachment text extraction', () => {
         queues,
         officeExtractor: {
           extract: async () => {
-            throw new OfficeExtractionRefused('encrypted', 'Die Datei ist passwortgeschützt');
+            throw new OfficeExtractionRefused('encrypted', 'The file is password protected');
           },
         },
         storage: fakeStorage(Buffer.from('PK\u0003\u0004')),
@@ -4331,7 +4332,9 @@ describe('attachment text extraction', () => {
 
       const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
       expect(attachment.textStatus).toBe('FAILED');
-      expect(attachment.textExtractionError).toBe('Die Datei ist passwortgeschützt');
+      expect(attachment.textExtractionError).toBe('The file is password protected');
+      // What a reader is shown, in their language, is the code (issue #98).
+      expect(attachment.textErrorCode).toBe('encrypted');
     }, 30_000);
 
     it('retries a converter that broke rather than blaming the document', async () => {

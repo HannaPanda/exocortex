@@ -7,7 +7,9 @@ import {
 import {
   ATTACHMENT_TEXT_MAX_CHARS,
   attachmentTextEngine,
+  type AttachmentTextErrorCode,
   type DocumentTextMetadata,
+  isAttachmentTextErrorCode,
   QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
@@ -183,6 +185,7 @@ async function extractFromPdf(context: EngineContext): Promise<ExtractionOutcome
       data: {
         textStatus: 'FAILED',
         textExtractionError: 'PDF extraction is not configured',
+        textErrorCode: 'pdfDisabled' satisfies AttachmentTextErrorCode,
         textTruncated: false,
       },
     });
@@ -198,6 +201,7 @@ async function extractFromPdf(context: EngineContext): Promise<ExtractionOutcome
     return {
       textStatus: 'FAILED',
       textExtractionError: `PDF exceeds the configured size limit (${attachment.byteSize} > ${settings['ai.pdfMaxBytes']} bytes)`,
+      textErrorCode: 'tooLarge' satisfies AttachmentTextErrorCode,
       textTruncated: false,
     };
   }
@@ -234,6 +238,7 @@ async function extractFromPdf(context: EngineContext): Promise<ExtractionOutcome
     return {
       textStatus: 'FAILED',
       textExtractionError: 'No extractable text layer',
+      textErrorCode: 'noTextLayer' satisfies AttachmentTextErrorCode,
       // Even a total failure knows the page count and the title: they come
       // from the file, not from an engine.
       textMetadata: toJsonColumn(mergeAttempts(null, [localInfo, ...attempted])),
@@ -261,6 +266,7 @@ async function extractFromOffice(context: EngineContext): Promise<ExtractionOutc
       data: {
         textStatus: 'FAILED',
         textExtractionError: 'Office text extraction is switched off',
+        textErrorCode: 'officeDisabled' satisfies AttachmentTextErrorCode,
         textTruncated: false,
       },
     });
@@ -276,6 +282,7 @@ async function extractFromOffice(context: EngineContext): Promise<ExtractionOutc
     return {
       textStatus: 'FAILED',
       textExtractionError: `Document exceeds the configured size limit (${attachment.byteSize} > ${settings['ai.officeMaxBytes']} bytes)`,
+      textErrorCode: 'tooLarge' satisfies AttachmentTextErrorCode,
       textTruncated: false,
     };
   }
@@ -297,6 +304,8 @@ async function extractFromOffice(context: EngineContext): Promise<ExtractionOutc
     return {
       textStatus: 'FAILED',
       textExtractionError: error.message,
+      // The converter's own code, when it is one a reader has words for.
+      textErrorCode: isAttachmentTextErrorCode(error.code) ? error.code : null,
       textTruncated: false,
     };
   }
@@ -305,7 +314,8 @@ async function extractFromOffice(context: EngineContext): Promise<ExtractionOutc
     logger.info('Document converted to no text at all', { attachmentId: attachment.id });
     return {
       textStatus: 'FAILED',
-      textExtractionError: 'Die Datei enthält keinen Text',
+      textExtractionError: 'The document converted to no text',
+      textErrorCode: 'empty' satisfies AttachmentTextErrorCode,
       textMetadata: toJsonColumn(result.metadata),
       textTruncated: false,
     };
@@ -337,6 +347,7 @@ function readyUpdate(
     extractedText: text.slice(0, ATTACHMENT_TEXT_MAX_CHARS),
     textExtractedAt: new Date(),
     textExtractionError: null,
+    textErrorCode: null,
     textMetadata: toJsonColumn(metadata),
     textTruncated: truncated,
   };

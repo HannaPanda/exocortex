@@ -15,6 +15,7 @@ export * from './document-diff';
 export * from './document-links';
 export * from './document-map';
 export * from './document-nodes';
+export * from './editor-words';
 export * from './embed';
 export * from './entity-matching';
 export * from './extensions';

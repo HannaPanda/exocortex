@@ -383,6 +383,7 @@ export class WorkspaceAccessService {
       extractedText: string | null;
       textExtractedAt: Date | null;
       textExtractionError: string | null;
+      textErrorCode: string | null;
       /** Engine-reported facts, shaped by `documentTextMetadataSchema`. Parsed by the caller. */
       textMetadata: unknown;
       /** True when `extractedText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
@@ -414,6 +415,7 @@ export class WorkspaceAccessService {
         extractedText: true,
         textExtractedAt: true,
         textExtractionError: true,
+        textErrorCode: true,
         textMetadata: true,
         textTruncated: true,
         correctedText: true,

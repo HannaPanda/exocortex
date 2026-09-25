@@ -2,6 +2,7 @@ import { mergeAttributes, Node } from '@tiptap/core';
 
 import { type BlockCatalogEntry, type BlockIconName } from './block-catalog';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
 import { attachDocumentDetails } from './media-details';
 import { type MediaInfoResolver } from './media-info';
 
@@ -64,6 +65,7 @@ const MEDIA_KINDS: readonly MediaKind[] = [
 
 export interface MediaNodeOptions {
   mediaInfo: MediaInfoResolver | null;
+  words: EditorWords;
 }
 
 declare module '@tiptap/core' {
@@ -92,7 +94,7 @@ function createMediaNode(kind: MediaKind) {
     draggable: true,
 
     addOptions() {
-      return { mediaInfo: null };
+      return { mediaInfo: null, words: GERMAN_EDITOR_WORDS };
     },
 
     addAttributes() {
@@ -129,6 +131,7 @@ function createMediaNode(kind: MediaKind) {
 
     addNodeView() {
       const resolver: MediaInfoResolver | null = this.options.mediaInfo;
+      const words = this.options.words.media;
 
       return ({ node }) => {
         const dom = window.document.createElement('figure');
@@ -139,7 +142,7 @@ function createMediaNode(kind: MediaKind) {
 
         const src = stringAttribute(node.attrs.src);
         const name = stringAttribute(node.attrs.name);
-        const element = buildMediaElement(kind, src, name);
+        const element = buildMediaElement(kind, src, name, words);
         dom.append(element);
 
         // A video does not have a text layer, and nothing is resolved without a
@@ -158,7 +161,7 @@ function createMediaNode(kind: MediaKind) {
           unmountPdf = resolver.renderPdf(viewport, src);
         }
 
-        const details = attachDocumentDetails(kind.name, element, src, name, resolver);
+        const details = attachDocumentDetails(kind.name, element, { src, name }, resolver, words);
 
         return {
           dom,
@@ -221,7 +224,7 @@ function buildPdfAction(src: string, text: string, download: boolean): HTMLAncho
  * exported document and a server-rendered page still say what the file is and
  * link to it.
  */
-function buildPdfElement(src: string, label: string): HTMLElement {
+function buildPdfElement(src: string, label: string, words: EditorWords['media']): HTMLElement {
   const container = window.document.createElement('div');
   container.className = 'exocortex-pdf';
 
@@ -232,8 +235,8 @@ function buildPdfElement(src: string, label: string): HTMLElement {
   title.textContent = label;
   header.append(
     title,
-    buildPdfAction(src, 'Öffnen', false),
-    buildPdfAction(src, 'Herunterladen', true),
+    buildPdfAction(src, words.open, false),
+    buildPdfAction(src, words.download, true),
   );
 
   container.append(header);
@@ -248,7 +251,12 @@ function buildPdfViewport(): HTMLElement {
 }
 
 /** Live DOM for the node view. */
-function buildMediaElement(kind: MediaKind, src: string, name: string): HTMLElement {
+function buildMediaElement(
+  kind: MediaKind,
+  src: string,
+  name: string,
+  words: EditorWords['media'],
+): HTMLElement {
   const label = name.length > 0 ? name : src;
 
   if (kind.name === 'video' || kind.name === 'audio') {
@@ -259,7 +267,7 @@ function buildMediaElement(kind: MediaKind, src: string, name: string): HTMLElem
     return player;
   }
 
-  if (kind.name === 'pdf') return buildPdfElement(src, label);
+  if (kind.name === 'pdf') return buildPdfElement(src, label, words);
 
   const anchor = window.document.createElement('a');
   anchor.href = src;

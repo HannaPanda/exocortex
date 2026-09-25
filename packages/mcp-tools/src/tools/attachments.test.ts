@@ -47,6 +47,7 @@ const baseResponse = {
   metadata: null,
   extractedAt: '2026-05-01T00:00:00.000Z',
   error: null,
+  errorCode: null,
 };
 
 describe('exo_attachment_read_text', () => {
@@ -80,6 +81,7 @@ describe('exo_attachment_read_text', () => {
       ...baseResponse,
       status: 'failed' as const,
       error: 'No extractable text layer',
+      errorCode: 'noTextLayer',
       correction: { editedAt: '2026-05-02T00:00:00.000Z', editedById: 'user12345' },
     });
 

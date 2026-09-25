@@ -4,6 +4,7 @@ import { type Node as PmNode } from '@tiptap/pm/model';
 import { type BlockCatalogEntry } from './block-catalog';
 import { BLOCK_ID_ATTRIBUTE } from './block-id';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -57,11 +58,15 @@ export function readOutline(doc: PmNode): OutlineEntry[] {
  * The node view is plain DOM rather than React so `packages/editor` stays usable
  * headlessly on the server (docs/editor-extensions.md).
  */
-export const TableOfContents = Node.create({
+export const TableOfContents = Node.create<{ words: EditorWords }>({
   name: 'tableOfContents',
   group: 'block',
   atom: true,
   selectable: true,
+
+  addOptions() {
+    return { words: GERMAN_EDITOR_WORDS };
+  },
 
   parseHTML() {
     return [{ tag: 'nav[data-toc]' }];
@@ -73,7 +78,7 @@ export const TableOfContents = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-toc': '',
         class: 'exocortex-toc',
-        'aria-label': 'Inhaltsverzeichnis',
+        'aria-label': this.options.words.tableOfContents.label,
       }),
     ];
   },
@@ -88,11 +93,12 @@ export const TableOfContents = Node.create({
   },
 
   addNodeView() {
+    const words = this.options.words.tableOfContents;
     return ({ editor }) => {
       const dom = window.document.createElement('nav');
       dom.className = 'exocortex-toc';
       dom.setAttribute('data-toc', '');
-      dom.setAttribute('aria-label', 'Inhaltsverzeichnis');
+      dom.setAttribute('aria-label', words.label);
       // The outline is generated content; typing inside it makes no sense.
       dom.contentEditable = 'false';
 
@@ -102,7 +108,7 @@ export const TableOfContents = Node.create({
         if (entries.length === 0) {
           const empty = window.document.createElement('p');
           empty.className = 'exocortex-toc-empty';
-          empty.textContent = 'Noch keine Überschriften auf dieser Seite.';
+          empty.textContent = words.empty;
           dom.append(empty);
           return;
         }

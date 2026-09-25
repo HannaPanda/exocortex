@@ -2,6 +2,7 @@
 import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { type EditorWords, GERMAN_EDITOR_WORDS } from './editor-words';
 import { buildEditorExtensions } from './extensions';
 import {
   type MediaDocumentDetail,
@@ -120,6 +121,7 @@ describe('media block details', () => {
       ocrUsed: true,
     },
     error: null,
+    errorCode: null,
     filename: 'Kontoauszug-Q3.pdf',
     extractable: true,
     correction: null,
@@ -127,9 +129,12 @@ describe('media block details', () => {
   };
 
   /** Lets an assertion run after the resolver's promise has settled. */
-  async function insertPdfWith(resolver: MediaInfoResolver): Promise<HTMLElement> {
+  async function insertPdfWith(
+    resolver: MediaInfoResolver,
+    words?: EditorWords,
+  ): Promise<HTMLElement> {
     editor = new Editor({
-      extensions: buildEditorExtensions({ mediaInfo: resolver }),
+      extensions: buildEditorExtensions({ mediaInfo: resolver, words }),
       content: '<p></p>',
     });
     editor.commands.insertMedia('pdf', { src: '/api/attachments/abc/download', name: 'Scan.pdf' });
@@ -144,6 +149,42 @@ describe('media block details', () => {
       (chip) => chip.textContent ?? '',
     );
   }
+
+  it('speaks the words the host hands in, and words a failure by its code (issue #98)', async () => {
+    const english: EditorWords = {
+      ...GERMAN_EDITOR_WORDS,
+      media: {
+        ...GERMAN_EDITOR_WORDS.media,
+        open: 'Open',
+        status: { ...GERMAN_EDITOR_WORDS.media.status, failed: 'No readable text' },
+        retry: 'Try again',
+        textError: (code) => `reason:${code}`,
+      },
+    };
+    const container = await insertPdfWith(
+      {
+        read: async () => ({
+          status: 'failed',
+          metadata: null,
+          error: 'The file is password protected',
+          errorCode: 'encrypted',
+          filename: 'Scan.pdf',
+          extractable: true,
+          correction: null,
+          truncated: false,
+        }),
+        request: async () => null,
+      },
+      english,
+    );
+
+    const note = container.querySelector('.exocortex-media-chip-failed');
+    expect(note?.textContent).toBe('No readable text');
+    // The code wins over the English detail beside it.
+    expect(note?.getAttribute('title')).toBe('reason:encrypted');
+    expect(container.querySelector('.exocortex-media-retry')?.textContent).toBe('Try again');
+    expect(container.querySelector('.exocortex-pdf-header a')?.textContent).toBe('Open');
+  });
 
   it('lists what the file turned out to be', async () => {
     const container = await insertPdfWith({ read: async () => READY });
@@ -174,6 +215,7 @@ describe('media block details', () => {
         status: 'not_applicable',
         metadata: null,
         error: null,
+        errorCode: null,
         filename: 'notiz.txt',
         extractable: false,
         correction: null,
@@ -195,6 +237,7 @@ describe('media block details', () => {
         status: 'failed',
         metadata: { ...READY.metadata!, ocrUsed: null },
         error: 'No extractable text layer',
+        errorCode: null,
         filename: 'Scan.pdf',
         extractable: true,
         correction: null,
@@ -206,6 +249,7 @@ describe('media block details', () => {
           status: 'pending',
           metadata: null,
           error: null,
+          errorCode: null,
           filename: 'Scan.pdf',
           extractable: true,
           correction: null,
@@ -235,6 +279,7 @@ describe('media block details', () => {
         status: 'not_applicable',
         metadata: null,
         error: null,
+        errorCode: null,
         filename: 'Altbestand.pdf',
         extractable: true,
         correction: null,
@@ -246,6 +291,7 @@ describe('media block details', () => {
           status: 'pending',
           metadata: null,
           error: null,
+          errorCode: null,
           filename: 'Altbestand.pdf',
           extractable: true,
           correction: null,
@@ -311,6 +357,7 @@ describe('media block details', () => {
         status: 'failed',
         metadata: null,
         error: null,
+        errorCode: null,
         filename: 'Scan.pdf',
         extractable: true,
         correction: null,
@@ -375,6 +422,7 @@ describe('media block details', () => {
         status: 'failed',
         metadata: null,
         error: 'No extractable text layer',
+        errorCode: null,
         filename: 'Scan.pdf',
         extractable: true,
         correction: null,
