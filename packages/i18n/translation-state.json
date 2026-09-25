@@ -8532,6 +8532,30 @@
       "source": "2c85dfc7e710934b",
       "output": "cabd6c3fd810b194"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "0bd60decb4143b5e"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "0cd6212dc0ba26b3"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "a8d8ef2c4a31d094"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "1bcfec4be0cbab63"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "54ffbc6f70b41231"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "58e55afd839361c8"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "df444ce4aa138ad6"
@@ -14659,6 +14683,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "c8df66c5fe3f97d0"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "790fb1b462dfd43b"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "32bb0d298ca1545c"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "be77a348f6d164d3"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "6088282a8143292b"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "47d1074714b271c9"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "1aa4cb0bcca76e92"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "0e47f09a748fa132"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "bc7b631a689b45ca"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -23218,6 +23278,30 @@
       "source": "2c85dfc7e710934b",
       "output": "410900715921afc6"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "d5de49a08a25d893"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "bc91def43e86738a"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "d203c2a60bd08daa"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "3941d8c1b8c27109"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "eb209bd0aef45955"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "fda04ffb20b48130"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "513e284e653043c8"
@@ -29345,6 +29429,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "6ceb9375943ccda9"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "2b26671eb88810be"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "2cb84ac1ba4085cf"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "5ca74767f8f32623"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "94ba129ba3ad8f43"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "adc680dfff0f4f4f"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "58d6f29b06337069"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "3aa1970d859b1925"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "d9865e34c2d64dd1"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -37904,6 +38024,30 @@
       "source": "2c85dfc7e710934b",
       "output": "c50ca6d2e9544d19"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "ffec2e7f6a3149da"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "a5067704a5ebb043"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "92e1a4549149e246"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "1754c2f10afb29d7"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "b8f18f7971eaa586"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "22103b9a1ee5c175"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "1f7cfe3415d6d61f"
@@ -44031,6 +44175,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "a9f253794a6bd9cc"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "4b020fc351a16a8b"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "7b1e99374446ee88"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "ead7ba320860dca9"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "3c2755f14a22d47e"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "75c6f2db00c25c18"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "1aa4cb0bcca76e92"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "88c7e3b5554fb770"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "48b0bebd0d6897ab"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -52590,6 +52770,30 @@
       "source": "2c85dfc7e710934b",
       "output": "c93d83dab5b0a7d9"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "4c1b4cefec692208"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "f450962c44ef565e"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "3f00b43d91e13d72"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "3ede4c6791c4c03e"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "f09b5cea98662374"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "3190d484f8b08637"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "06563b6183f12613"
@@ -58717,6 +58921,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "91b5441f56cdcde4"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "0f6904e1ecc236c8"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "c072d396bfe92a7c"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "1e5fd70b5b1a7d5a"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "1ea5a2136bc2dddc"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "6b8a5e47b5c63866"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "850b6f31035433ae"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "258aa45c2d3a997e"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "9114c4bf166f53f9"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -67276,6 +67516,30 @@
       "source": "2c85dfc7e710934b",
       "output": "0a6589545880cea6"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "66fcc658de1fbf72"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "96fba3ac70c315cf"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "4a85fe082f81a423"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "3a7f5a0a149f3808"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "4d0728ad6f34265e"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "cbfc5fb94fc3c226"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "feefed24ce762d60"
@@ -73403,6 +73667,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "2b5bd106d339dc3d"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "14b788b7049fb5cf"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "97ef88f0edf0fd82"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "f3574c4fcf5373b1"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "dc17c6fe1872347f"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "b00dec0568c2fb2f"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "b68d3009a8a88535"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "f4aa1974f15883cf"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "5900f7e322fa2074"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -81962,6 +82262,30 @@
       "source": "2c85dfc7e710934b",
       "output": "9ee21924efcc4090"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "e10068c54ee856be"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "bfa1142b7db8f799"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "2a080f7a45f1b923"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "99076474b96f233e"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "be042dc407f18297"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "90aa0bd79242383b"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "91fa4922ee725e18"
@@ -88089,6 +88413,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "fd66e0f56dd877d3"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "af06c256d10d8b14"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "9618af238c00959c"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "1793c4561ae7c941"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "814af2e18f95e123"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "b46c42d9aae49492"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "8082be4f497eb883"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "98732be95aba0405"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "d5c73a3be6fd3dc1"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "a261bd01e2fa4dc0"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
@@ -96648,6 +97008,30 @@
       "source": "2c85dfc7e710934b",
       "output": "b1c109218ef5a79f"
     },
+    "features.bild-vergroessern.details.p1": {
+      "source": "957a0e26cca0c134",
+      "output": "c903882cbbb8eecb"
+    },
+    "features.bild-vergroessern.details.p2": {
+      "source": "2ae01e30375dcb2a",
+      "output": "d6b7b971b6b60406"
+    },
+    "features.bild-vergroessern.details.p3": {
+      "source": "f286c6c72a3c3b97",
+      "output": "baacd564e825e9d2"
+    },
+    "features.bild-vergroessern.summary": {
+      "source": "8f900146082fdd00",
+      "output": "6a944e134509c60a"
+    },
+    "features.bild-vergroessern.title": {
+      "source": "ba1a017cf04f28c2",
+      "output": "80299c1f7ca710a2"
+    },
+    "features.bild-vergroessern.where": {
+      "source": "af26927d5433b140",
+      "output": "60304a7d44c28cdb"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "c4473f0a8d0efa82"
@@ -102775,6 +103159,42 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "5f011295bc883e83"
+    },
+    "ui.imageLightbox.close": {
+      "source": "cc5a4be5073099e1",
+      "output": "0f0f1b8dc75e7163"
+    },
+    "ui.imageLightbox.controls": {
+      "source": "509c517ede79fef0",
+      "output": "509c517ede79fef0"
+    },
+    "ui.imageLightbox.fit": {
+      "source": "6ca909d851e16c2f",
+      "output": "bdcdd2ac11dee567"
+    },
+    "ui.imageLightbox.instructions": {
+      "source": "97a167b9dfc39e96",
+      "output": "92f41fdea29a75eb"
+    },
+    "ui.imageLightbox.open": {
+      "source": "52746aa2d3328cfb",
+      "output": "88c505472e0687f9"
+    },
+    "ui.imageLightbox.openUntitled": {
+      "source": "fd0d09a508c87cf2",
+      "output": "d24683d859c98a52"
+    },
+    "ui.imageLightbox.title": {
+      "source": "375e84034b8ff2d6",
+      "output": "8fc6b8b69804d942"
+    },
+    "ui.imageLightbox.zoomIn": {
+      "source": "9d7e5880854d4f15",
+      "output": "68eea7e00cd89f1f"
+    },
+    "ui.imageLightbox.zoomOut": {
+      "source": "34283cf0f2dfde44",
+      "output": "c8bed791f2f1e98f"
     },
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",

@@ -61,6 +61,16 @@
     },
     "where": "Nell’editor digita \"/\", oppure apri il menu a sinistra di un blocco."
   },
+  "bild-vergroessern": {
+    "title": "Ingrandire le immagini ed eseguire lo zoom",
+    "summary": "Un clic su un’immagine incorporata la apre a schermo intero sopra la pagina. Lì puoi ingrandirla ben oltre le dimensioni dello schermo e spostarla per leggere i dettagli in screenshot, diagrammi o mappe.",
+    "details": {
+      "p1": "All’inizio l’immagine si adatta interamente allo schermo. Puoi ingrandirla con i tasti più e meno in basso, con la rotellina del mouse, sul trackpad o con due dita sullo smartphone; un doppio clic fa un salto sul punto indicato. Se l’immagine è più grande dello schermo, puoi trascinarla con il mouse o con il dito rimanendo sempre focalizzato sul contenuto.",
+      "p2": "Per chiudere usa la crocetta in alto a destra, premi Escape o fai clic all’esterno dell’immagine. La pagina sottostante rimane dov’era e non scorre.",
+      "p3": "In una pagina che stai modificando, il primo clic seleziona solo l’immagine, così puoi eliminarla o spostarla come prima. Il secondo clic o un doppio clic la apre ingrandita. Negli estratti incorporati di altre pagine e nelle pagine condivise, invece, basta già il primo clic per aprirla."
+    },
+    "where": "Fai clic su un’immagine in una pagina."
+  },
   "seiten-editor": {
     "title": "Scrivere pagine, a quattro mani in contemporanea",
     "summary": "Ogni pagina è un editor a blocchi a cui più persone possono lavorare contemporaneamente. Il testo viene salvato continuamente, anche in caso di breve disconnessione, e si riconcilia poi automaticamente.",

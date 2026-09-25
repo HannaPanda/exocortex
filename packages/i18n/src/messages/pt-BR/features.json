@@ -61,6 +61,16 @@
     },
     "where": "No editor, digite \"/\" ou abra o menu à esquerda de um bloco."
   },
+  "bild-vergroessern": {
+    "title": "Ampliar imagens e dar zoom",
+    "summary": "Um clique em uma imagem incorporada a abre em tamanho grande sobre a página. Lá você pode dar zoom muito além do tamanho da tela e arrastar a imagem para ver detalhes em capturas de tela, diagramas ou mapas.",
+    "details": {
+      "p1": "A imagem se ajusta primeiro à tela inteira. Para dar zoom, use o mais e o menos na parte inferior, a roda do mouse, o trackpad ou o gesto de pinça no celular; um clique duplo amplia diretamente no ponto apontado. Se a imagem ficar maior do que a tela, você pode arrastá-la com o mouse ou com o dedo, mantendo-a sempre visível.",
+      "p2": "Para fechar, use o “X” no canto superior direito, a tecla Escape ou clique fora da imagem. A página ao fundo permanece onde estava, sem rolar junto.",
+      "p3": "Em uma página que você estiver editando, o primeiro clique apenas seleciona a imagem, permitindo excluí-la ou movê-la como de costume. O segundo clique ou um clique duplo a abre em tamanho grande. Em trechos incorporados de outras páginas e em páginas compartilhadas, o primeiro clique já a abre diretamente."
+    },
+    "where": "Clicar em uma imagem dentro de uma página."
+  },
   "seiten-editor": {
     "title": "Escrever páginas em colaboração simultânea",
     "summary": "Cada página é um editor em blocos que várias pessoas podem editar ao mesmo tempo. O texto é salvo continuamente, mesmo se a conexão cair por instantes, e sincroniza automaticamente depois.",

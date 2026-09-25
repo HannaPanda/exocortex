@@ -27,5 +27,16 @@
   },
   "layout": {
     "skipToContent": "Saltar al contenido"
+  },
+  "imageLightbox": {
+    "title": "Imagen",
+    "instructions": "Más y menos para hacer zoom, 0 para ajustar la imagen, teclas de flecha para moverla. Escape para cerrar.",
+    "close": "Cerrar imagen",
+    "controls": "Zoom",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "fit": "Ajustar a la pantalla",
+    "open": "Ampliar imagen: {alt}",
+    "openUntitled": "Ampliar imagen"
   }
 }

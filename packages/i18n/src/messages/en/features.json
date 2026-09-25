@@ -61,6 +61,16 @@
     },
     "where": "Type “/” in the editor, or open the menu to the left of a block."
   },
+  "bild-vergroessern": {
+    "title": "Enlarge and zoom into images",
+    "summary": "Clicking an embedded image opens it large over the page. There you can zoom in well beyond screen size and pan the image around to read details in screenshots, diagrams, or maps.",
+    "details": {
+      "p1": "The image fits completely on the screen at first. You can zoom in with plus and minus at the bottom, with the mouse wheel, on the trackpad, or with two fingers on your phone; a double-click jumps to the spot you point at. Once the image is larger than the screen, you can drag it with the mouse or your finger, and it always stays in view.",
+      "p2": "Close it using the cross in the top right, with Escape, or by clicking next to the image. The page behind it stays where it was and does not scroll along.",
+      "p3": "On a page you are currently editing, the first click only selects the image so you can delete or move it as before. The second click or a double-click opens it large. In embedded snippets of other pages and on shared pages, the very first click opens it."
+    },
+    "where": "Click an image on a page."
+  },
   "seiten-editor": {
     "title": "Write pages, collaboratively in real time",
     "summary": "Every page is a block editor that multiple people can edit at the same time. Text is saved continuously, even if the connection briefly drops, and merges back together automatically afterwards.",

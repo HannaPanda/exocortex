@@ -61,6 +61,16 @@
     },
     "where": "Dans l’éditeur, taper « / » ou ouvrir le menu à gauche d’un bloc."
   },
+  "bild-vergroessern": {
+    "title": "Agrandir les images et zoomer",
+    "summary": "Un clic sur une image intégrée l’ouvre en grand par-dessus la page. Là, tu peux zoomer bien au-delà de la taille de l’écran et déplacer l’image pour lire les détails de captures d’écran, de diagrammes ou de cartes.",
+    "details": {
+      "p1": "L’image s’ajuste d’abord pour tenir entièrement dans l’écran. Pour zoomer, utilise les boutons plus et moins en bas, la molette de la souris, le pavé tactile ou deux doigts sur mobile ; un double-clic zoome directement à l’endroit ciblé. Dès que l’image dépasse la taille de l’écran, fais-la glisser avec la souris ou au doigt pour toujours garder la zone voulue sous les yeux.",
+      "p2": "Pour fermer, clique sur la croix en haut à droite, appuie sur Échap ou clique à côté de l’image. La page en arrière-plan reste là où elle était et ne défile pas.",
+      "p3": "Sur une page en cours de modification, le premier clic ne fait que sélectionner l’image afin de pouvoir la supprimer ou la déplacer comme d’habitude. Le deuxième clic ou un double-clic l’ouvre en grand. Dans les extraits intégrés d’autres pages et sur les pages partagées, le premier clic suffit à l’ouvrir."
+    },
+    "where": "Cliquer sur une image dans une page."
+  },
   "seiten-editor": {
     "title": "Rédiger des pages, à deux en simultané",
     "summary": "Chaque page est un éditeur de blocs que plusieurs personnes peuvent modifier en même temps. Le texte est enregistré en continu, même en cas de brève coupure de connexion, puis synchronisé automatiquement par la suite.",

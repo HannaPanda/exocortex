@@ -61,6 +61,16 @@
     },
     "where": "En el editor, escribe «/» o abre el menú a la izquierda de un bloque."
   },
+  "bild-vergroessern": {
+    "title": "Agrandar imágenes y hacer zoom",
+    "summary": "Al hacer clic en una imagen incrustada, se abre en grande sobre la página. Allí puedes ampliarla mucho más allá del tamaño de la pantalla y moverla para leer detalles en capturas de pantalla, diagramas o mapas.",
+    "details": {
+      "p1": "La imagen se ajusta primero a toda la pantalla. Puedes hacer zoom con el más y el menos abajo, con la rueda del ratón, en el trackpad o con dos dedos en el móvil; con un doble clic vas directamente al punto que señalas. Si la imagen es más grande que la pantalla, arrástrala con el ratón o con el dedo para no perderla nunca de vista.",
+      "p2": "Para cerrarla, usa la cruz de la esquina superior derecha, la tecla Escape o haz clic fuera de la imagen. La página que queda detrás permanece donde estaba y no se desplaza al hacer scroll.",
+      "p3": "En una página que estés editando, el primer clic solo selecciona la imagen para que puedas borrarla o moverla como siempre. El segundo clic o un doble clic la abre en grande. En fragmentos incrustados de otras páginas y en páginas compartidas, se abre directamente con el primer clic."
+    },
+    "where": "Haz clic en una imagen dentro de una página."
+  },
   "seiten-editor": {
     "title": "Escribir páginas, entre dos a la vez",
     "summary": "Cada página es un editor de bloques que varias personas pueden editar simultáneamente. El texto se guarda continuamente, incluso si la conexión se interrumpe un momento, y después se sincroniza de nuevo por sí solo.",

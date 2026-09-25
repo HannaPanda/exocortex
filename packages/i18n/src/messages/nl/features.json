@@ -61,6 +61,16 @@
     },
     "where": "Typ in de editor \"/\", of open het menu links naast een blok."
   },
+  "bild-vergroessern": {
+    "title": "Afbeeldingen vergroten en inzoomen",
+    "summary": "Een klik op een ingebedde afbeelding opent deze groot over de pagina. Daar zoom je in tot ver voorbij de schermgrootte en verschuif je de afbeelding om details in screenshots, diagrammen of kaarten te bekijken.",
+    "details": {
+      "p1": "De afbeelding past eerst precies op het scherm. Inzoomen doe je met plus en min onderaan, met het muiswiel, op het trackpad of met twee vingers op je telefoon; een dubbelklik springt naar de plek die je aanwijst. Is de afbeelding groter dan het scherm, dan sleep je deze met de muis of je vinger, waarbij hij altijd in beeld blijft.",
+      "p2": "Sluiten kan via het kruisje rechtsboven, met Escape of door naast de afbeelding te klikken. De pagina erachter blijft waar hij was en scrolt niet mee.",
+      "p3": "Op een pagina die je bewerkt, selecteert de eerste klik de afbeelding alleen, zodat je deze zoals voorheen kunt verwijderen of verplaatsen. De tweede klik of een dubbelklik opent de afbeelding groot. In ingebedde fragmenten van andere pagina’s en op gedeelde pagina’s opent de eerste klik al direct."
+    },
+    "where": "Op een afbeelding in een pagina klikken."
+  },
   "seiten-editor": {
     "title": "Pagina’s schrijven, tegelijkertijd met twee personen",
     "summary": "Elke pagina is een blokiseditor waarin meerdere mensen tegelijkertijd kunnen werken. De tekst wordt doorlopend opgeslagen, ook als de verbinding even wegvalt, en synchroniseert daarna vanzelf weer.",

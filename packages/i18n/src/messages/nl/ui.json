@@ -27,5 +27,16 @@
   },
   "layout": {
     "skipToContent": "Naar inhoud springen"
+  },
+  "imageLightbox": {
+    "title": "Afbeelding",
+    "instructions": "Plus en min om te zoomen, 0 om de afbeelding weer passend te maken, de pijltjestoetsen om te verplaatsen. Escape om te sluiten.",
+    "close": "Afbeelding sluiten",
+    "controls": "Zoom",
+    "zoomIn": "Inzoomen",
+    "zoomOut": "Uitzoomen",
+    "fit": "Aanpassen aan scherm",
+    "open": "Afbeelding vergroten: {alt}",
+    "openUntitled": "Afbeelding vergroten"
   }
 }

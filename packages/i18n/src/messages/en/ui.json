@@ -27,5 +27,16 @@
   },
   "layout": {
     "skipToContent": "Skip to content"
+  },
+  "imageLightbox": {
+    "title": "Image",
+    "instructions": "Plus and minus zoom, 0 fits the image, arrow keys pan. Escape closes.",
+    "close": "Close image",
+    "controls": "Zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit to screen",
+    "open": "Enlarge image: {alt}",
+    "openUntitled": "Enlarge image"
   }
 }

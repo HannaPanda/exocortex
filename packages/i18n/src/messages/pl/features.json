@@ -61,6 +61,16 @@
     },
     "where": "Wpisz „/” w edytorze lub otwórz menu po lewej stronie bloku."
   },
+  "bild-vergroessern": {
+    "title": "Powiększanie obrazów i przybliżanie",
+    "summary": "Kliknięcie osadzonego obrazu otwiera go w powiększeniu nad stroną. Możesz przybliżać go daleko poza rozmiar ekranu i przesuwać, aby odczytać szczegóły na zrzutach ekranu, diagramach czy mapach.",
+    "details": {
+      "p1": "Obraz początkowo mieści się w całości na ekranie. Przybliżanie działa za pomocą plusa i minusa na dole, kółka myszy, gładzika lub gestu dwóch palców na telefonie; podwójne kliknięcie przenosi do wskazanego miejsca. Gdy obraz jest większy niż ekran, możesz go przeciągać myszą lub palcem, a on cały czas pozostaje widoczny.",
+      "p2": "Zamknięcie następuje przez kliknięcie krzyżyka w prawym górnym rogu, klawisza Escape lub kliknięcie obok obrazu. Strona w tle pozostaje tam, gdzie była, i nie przewija się.",
+      "p3": "Na stronie, którą właśnie edytujesz, pierwsze kliknięcie tylko zaznacza obraz, aby można go było jak dotąd usunąć lub przenieść. Drugie kliknięcie lub podwójne kliknięcie otwiera go w powiększeniu. W osadzonych wycinkach innych stron i na udostępnionych stronach powiększenie otwiera już pierwsze kliknięcie."
+    },
+    "where": "Kliknij obraz na stronie."
+  },
   "seiten-editor": {
     "title": "Pisanie stron wspólnie w tym samym czasie",
     "summary": "Każda strona jest edytorem blokowym, nad którym może jednocześnie pracować kilka osób. Tekst jest zapisywany na bieżąco, nawet przy chwilowej utracie połączenia, a po jego przywróceniu zmiany samoczynnie się synchronizują.",

@@ -61,6 +61,16 @@
     },
     "where": "Im Editor \"/\" tippen, oder das Menü links neben einem Block öffnen."
   },
+  "bild-vergroessern": {
+    "title": "Bilder vergrößern und hineinzoomen",
+    "summary": "Ein Klick auf ein eingebettetes Bild öffnet es groß über der Seite. Dort zoomst du bis weit über die Bildschirmgröße hinein und schiebst das Bild herum, um Details in Screenshots, Diagrammen oder Karten zu lesen.",
+    "details": {
+      "p1": "Das Bild passt zuerst ganz in den Bildschirm. Hineinzoomen geht mit Plus und Minus unten, mit dem Mausrad, auf dem Trackpad oder mit zwei Fingern auf dem Handy; ein Doppelklick springt an die Stelle, auf die du zeigst. Ist das Bild größer als der Bildschirm, ziehst du es mit der Maus oder dem Finger, und es bleibt dabei immer im Blick.",
+      "p2": "Schließen geht über das Kreuz oben rechts, mit Escape oder mit einem Klick neben das Bild. Die Seite dahinter bleibt, wo sie war, und scrollt nicht mit.",
+      "p3": "Auf einer Seite, die du gerade bearbeitest, wählt der erste Klick das Bild nur aus, damit du es wie bisher löschen oder verschieben kannst. Der zweite Klick oder ein Doppelklick öffnet es groß. In eingebetteten Ausschnitten anderer Seiten und auf geteilten Seiten öffnet schon der erste Klick."
+    },
+    "where": "Auf ein Bild in einer Seite klicken."
+  },
   "seiten-editor": {
     "title": "Seiten schreiben, zu zweit gleichzeitig",
     "summary": "Jede Seite ist ein Blockeditor, den mehrere Leute gleichzeitig bearbeiten können. Der Text wird laufend gespeichert, auch wenn die Verbindung kurz weg ist, und läuft danach von selbst wieder zusammen.",

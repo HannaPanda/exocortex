@@ -27,5 +27,16 @@
   },
   "layout": {
     "skipToContent": "Przejdź do treści"
+  },
+  "imageLightbox": {
+    "title": "Obraz",
+    "instructions": "Plus i minus przybliżają lub oddalają, 0 dopasowuje obraz, strzałki go przesuwają. Escape zamyka.",
+    "close": "Zamknij obraz",
+    "controls": "Powiększenie",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "fit": "Dopasuj do ekranu",
+    "open": "Powiększ obraz: {alt}",
+    "openUntitled": "Powiększ obraz"
   }
 }

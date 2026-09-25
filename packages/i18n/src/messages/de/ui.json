@@ -27,5 +27,16 @@
   },
   "layout": {
     "skipToContent": "Zum Inhalt springen"
+  },
+  "imageLightbox": {
+    "title": "Bild",
+    "instructions": "Plus und Minus zoomen, 0 passt das Bild wieder ein, die Pfeiltasten verschieben es. Escape schließt.",
+    "close": "Bild schließen",
+    "controls": "Zoom",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "fit": "An Bildschirm anpassen",
+    "open": "Bild vergrößern: {alt}",
+    "openUntitled": "Bild vergrößern"
   }
 }
