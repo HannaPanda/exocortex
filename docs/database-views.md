@@ -37,9 +37,10 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    /`storedToResponseValue` (write/read side). A genuinely new storage shape
    needs a new typed column on `DocumentPropertyValue`, not a JSONB
    catch-all — see ADR-011 for why.
-4. Add a cell editor to `apps/web/src/components/database/cells.tsx` and
-   register it in `PropertyCell`'s switch. Add a compact, non-interactive
-   rendering branch to `PropertyValueDisplay` in the same file for Board/Gallery
+4. Add a cell editor under `apps/web/src/components/database/` (next to
+   `text-cells.tsx`, `option-cells.tsx`, `date-cell.tsx`, `relation-cell.tsx`)
+   and register it in `PropertyCell`'s switch in `cells.tsx`. Add a compact,
+   non-interactive rendering branch to `PropertyValueDisplay` in `cells.tsx` for Board/Gallery
    card summaries — these are two different rendering modes on purpose: a
    table cell is a form control, a card summary is read-only text, and a
    `<input type="date" readOnly>` still shows browser date-picker chrome that
@@ -175,7 +176,7 @@ move the same way through their context menu, which is `reorder` on the view.
 Two related rules follow from `rowHeight` being a clamp:
 
 - A cell never truncates without a way out. Text-ish cells
-  (`ExpandableTextCell` in `cells.tsx`) are a button that opens the complete
+  (`ExpandableTextCell` in `text-cells.tsx`) are a button that opens the complete
   value in an overlay anchored to the cell, and the row sheet
   (`row-peek-sheet.tsx`) stacks every property of one row at full sheet width.
 - The table's own scrollport is the `div` in `table-view.tsx`, not the `Table`
@@ -323,7 +324,7 @@ happens to read `"Preis"` is left alone.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
 - **PERSON and FILES are edited as raw, comma-separated ids** in
-  `cells.tsx`'s `IdListCell` — a member picker and a file browser are a
+  `text-cells.tsx`'s `IdListCell` — a member picker and a file browser are a
   separate, larger feature; this is the honest minimal editor that still
   round-trips the array completely through the API.
 - **A database embed's Markdown export/import loses the reference.** Markdown

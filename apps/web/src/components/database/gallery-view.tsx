@@ -23,7 +23,7 @@ interface GalleryViewProps {
  * Card grid. Cover comes from `view.config.coverPropertyId` (a FILES
  * property, one attachment id used as an image `src` via the existing
  * download route) — same "honest minimal editor" scope as the FILES cell in
- * `cells.tsx`: no dedicated file picker yet, just the round-trip.
+ * `text-cells.tsx`: no dedicated file picker yet, just the round-trip.
  */
 export function GalleryView({
   workspaceId,
