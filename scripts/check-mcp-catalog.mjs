@@ -80,6 +80,11 @@ const EXEMPT = [
       'What a public share link serves (issue #83, ADR-044). Authenticated by a token in the path and by nothing else, so a tool calling it would be an agent reading a page it holds no credential for. Everything behind a link is reachable with a credential through the ordinary page routes, which have full parity.',
   },
   {
+    route: 'POST /api/attachments/upload/*',
+    reason:
+      "Redeems an upload ticket (ADR-064). The agent's script calls it with the file, not the agent: the whole point is that the bytes never pass through a tool call. Minting and reading the ticket are tools (`exo_attachment_upload_ticket`, `exo_attachment_upload_ticket_get`), so the loop is complete on the agent's side.",
+  },
+  {
     route: '* /health*',
     reason: 'Liveness and readiness for monitoring and for deploy.sh, not a workspace capability.',
   },

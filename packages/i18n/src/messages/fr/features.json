@@ -364,6 +364,15 @@
     },
     "where": "Glisser un fichier dans l’éditeur."
   },
+  "agenten-datei-hochladen": {
+    "title": "Les agents téléversent directement des fichiers locaux",
+    "summary": "Un agent qui dispose d’une photo ou d’un PDF en local l’envoie directement dans eXocortex, au lieu de devoir d’abord le déposer sur un autre site web. Il récupère pour cela une adresse de téléversement valable dix minutes et pour une seule utilisation.",
+    "details": {
+      "p1": "Jusqu’à présent, un agent ayant un fichier sur son disque dur n’avait que deux mauvaises options : écrire lui-même le fichier sous forme de texte Base64, ce qui est impossible pour une photo, ou le déposer publiquement quelque part et en transmettre l’adresse. Des images se retrouvaient ainsi sur des projets et des sites tiers. Désormais, l’agent demande une adresse de téléversement avec exo_attachment_upload_ticket, et son script y envoie directement le fichier.",
+      "p2": "L’adresse est valable dix minutes et pour un seul téléversement. Le téléversement s’effectue avec les droits de l’agent qui l’a obtenue : si son jeton est révoqué entre-temps, ou s’il perd ses droits d’écriture ou l’accès à la page, l’accès reste fermé. Si un téléversement échoue, par exemple parce que le type de fichier n’est pas autorisé, l’adresse reste valable pour une seconde tentative.",
+      "p3": "Le fichier devient ensuite une pièce jointe tout à fait normale, vérifiée et enregistrée exactement comme celle que tu glisses dans l’éditeur. Grâce à exo_attachment_upload_ticket_get, l’agent peut vérifier si le fichier est bien arrivé et obtenir l’adresse pour l’intégrer dans une page."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Épingler plusieurs sources à un chat",
     "summary": "En plus de la page ouverte, tu peux épingler d’autres pages, des vues de base de données et des recherches enregistrées à un chat. Elles restent attachées même si tu navigues ailleurs, et la liste complète de ce qui est inclus s’affiche en permanence au-dessus du champ de saisie.",

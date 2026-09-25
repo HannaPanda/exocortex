@@ -364,6 +364,15 @@
     },
     "where": "Drag a file into the editor."
   },
+  "agenten-datei-hochladen": {
+    "title": "Agents upload local files directly",
+    "summary": "An agent with a photo or PDF stored locally sends it directly to eXocortex instead of hosting it on another website first. To do this, it gets an upload URL valid for ten minutes and exactly once.",
+    "details": {
+      "p1": "Previously, an agent with a file on its hard drive had two poor options: write out the file itself as Base64 text, which doesn’t work for a photo, or host it publicly somewhere and pass the URL. This led to images ending up on third-party projects and websites. Now the agent asks for an upload URL using exo_attachment_upload_ticket, and its script sends the file straight there.",
+      "p2": "The URL is valid for ten minutes and for exactly one upload. The upload runs with the permissions of the agent that retrieved it: if its token is revoked in the meantime, or if it loses write access or the page, the door stays shut. If an upload fails, for instance because the file type isn’t allowed, the URL remains valid for a second attempt.",
+      "p3": "Afterwards, the file is a regular attachment, checked and stored just like one you drag into the editor. Using exo_attachment_upload_ticket_get, the agent can check whether the file arrived and receives the URL to embed it in a page."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Pin multiple sources to a chat",
     "summary": "Alongside the open page, you can pin additional pages, database views, and saved searches to a chat. They stay attached even as you browse around, and above the input field you can always see the full list of what is included.",

@@ -364,6 +364,15 @@
     },
     "where": "Arrastar o arquivo para o editor."
   },
+  "agenten-datei-hochladen": {
+    "title": "Agentes enviam arquivos locais diretamente",
+    "summary": "Um agente que tenha uma foto ou PDF localmente envia o arquivo diretamente para o eXocortex, em vez de colocá-lo primeiro em outro site. Para isso, ele obtém um endereço de upload válido por dez minutos e para exatamente um uso.",
+    "details": {
+      "p1": "Até agora, um agente com um arquivo no disco tinha duas opções ruins: escrever o arquivo como texto Base64, o que não funciona para uma foto, ou colocá-lo em algum lugar público e passar o endereço. Assim, imagens acabavam em projetos e sites de terceiros. Agora, o agente solicita um endereço de upload usando exo_attachment_upload_ticket, e seu script envia o arquivo diretamente para lá.",
+      "p2": "O endereço é válido por dez minutos e para exatamente um upload. O upload é feito com as permissões do agente que o obteve: se o token dele for revogado nesse meio-tempo, ou se ele perder as permissões de escrita ou a página, o acesso é bloqueado. Se um upload falhar, por exemplo, porque o tipo de arquivo não é permitido, o endereço continua válido para uma segunda tentativa.",
+      "p3": "Depois disso, o arquivo se torna um anexo comum, verificado e salvo da mesma forma que um anexo que você arrasta para o editor. Por meio de exo_attachment_upload_ticket_get, o agente pode verificar se o arquivo chegou e receber o endereço para incorporá-lo a uma página."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Fixar várias fontes em um chat",
     "summary": "Além da página aberta, você pode fixar outras páginas, visualizações de banco de dados e buscas salvas em um chat. Elas permanecem fixadas mesmo se você navegar para outro lugar, e acima do campo de entrada é exibido com clareza tudo o que acompanha a conversa.",

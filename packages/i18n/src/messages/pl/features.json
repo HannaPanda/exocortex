@@ -364,6 +364,15 @@
     },
     "where": "Przeciągnij plik do edytora."
   },
+  "agenten-datei-hochladen": {
+    "title": "Agenci przesyłają pliki lokalne bezpośrednio",
+    "summary": "Agent, który ma u siebie zdjęcie lub plik PDF, przesyła go bezpośrednio do eXocortex, zamiast najpierw umieszczać go na innej stronie. Pobiera w tym celu adres do przesłania, który jest ważny przez dziesięć minut i dokładnie jeden raz.",
+    "details": {
+      "p1": "Dotychczas agent mający plik na dysku miał dwie złe drogi: zapisać plik samodzielnie jako tekst Base64, co w przypadku zdjęcia się nie sprawdza, albo umieścić go gdzieś publicznie i przekazać adres. W ten sposób obrazy lądowały w obcych projektach i witrynach. Teraz agent prosi o adres do przesłania za pomocą exo_attachment_upload_ticket, a jego skrypt wysyła plik bezpośrednio tam.",
+      "p2": "Adres jest ważny przez dziesięć minut i na dokładnie jedno przesłanie. Przesyłanie odbywa się z uprawnieniami agenta, który go pobrał: jeśli w międzyczasie jego token zostanie unieważniony, utraci on uprawnienia do zapisu lub stronę, dostęp zostanie zablokowany. Jeśli przesłanie się nie powiedzie, na przykład dlatego, że typ pliku jest niedozwolony, adres pozostaje ważny na drugą próbę.",
+      "p3": "Plik staje się potem zupełnie zwykłym załącznikiem, tak samo sprawdzonym i zapisanym jak ten, który przeciągasz do edytora. Za pomocą exo_attachment_upload_ticket_get agent może sprawdzić, czy plik dotarł, i otrzymuje adres do osadzenia go na stronie."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Przypinanie wielu źródeł do czatu",
     "summary": "Oprócz otwartej strony możesz przypiąć do czatu inne strony, widoki bazy danych i zapisane wyszukiwania. Pozostają one dołączone, nawet gdy przeglądasz inne treści, a nad polem wprowadzania zawsze dokładnie widać, co jest przekazywane.",

@@ -364,6 +364,15 @@
     },
     "where": "Arrastrar un archivo al editor."
   },
+  "agenten-datei-hochladen": {
+    "title": "Los agentes suben archivos locales directamente",
+    "summary": "Un agente que tiene una foto o un PDF en local lo envía directamente a eXocortex, en lugar de alojarlo primero en otro sitio web. Para ello, obtiene una dirección de subida válida durante diez minutos y para un solo uso.",
+    "details": {
+      "p1": "Hasta ahora, un agente con un archivo en su disco tenía dos opciones malas: escribir el archivo como texto en Base64, lo cual no funciona con una foto, o alojarlo públicamente en algún sitio y pasar la dirección. Así, las imágenes acababan en proyectos y sitios web de terceros. Ahora, el agente solicita una dirección de subida con exo_attachment_upload_ticket y su script envía el archivo directamente allí.",
+      "p2": "La dirección es válida durante diez minutos y para una única subida. Se sube con los permisos del agente que la solicitó: si mientras tanto se revoca su token o pierde los permisos de escritura o la página, la puerta se cierra. Si una subida falla, por ejemplo porque el tipo de archivo no está permitido, la dirección sigue siendo válida para un segundo intento.",
+      "p3": "Después, el archivo pasa a ser un adjunto completamente normal, verificado y almacenado igual que uno que arrastras al editor. A través de exo_attachment_upload_ticket_get, el agente puede comprobar si el archivo ha llegado y obtiene la dirección para incrustarlo en una página."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Fijar varias fuentes a un chat",
     "summary": "Además de la página abierta, puedes fijar otras páginas, vistas de bases de datos y búsquedas guardadas a un chat. Permanecen fijadas incluso si cambias de página, y encima del campo de entrada siempre se muestra con claridad todo lo que se incluye.",

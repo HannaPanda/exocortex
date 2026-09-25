@@ -364,6 +364,15 @@
     },
     "where": "Trascina il file nell’editor."
   },
+  "agenten-datei-hochladen": {
+    "title": "Gli agenti caricano direttamente i file locali",
+    "summary": "Un agente che ha a disposizione una foto o un PDF può inviarlo direttamente a eXocortex, invece di doverlo prima caricare su un altro sito web. A questo scopo richiede un indirizzo di upload valido per dieci minuti e utilizzabile esattamente una volta.",
+    "details": {
+      "p1": "Finora, un agente che aveva un file sul disco rigido aveva solo due opzioni inadeguate: trascrivere il file come testo Base64, cosa impossibile per una foto, oppure caricarlo pubblicamente da qualche parte e trasmettere l’indirizzo. In questo modo le immagini finivano su progetti e siti web esterni. Ora l’agente richiede un indirizzo di upload con exo_attachment_upload_ticket e il suo script invia il file direttamente lì.",
+      "p2": "L’indirizzo è valido per dieci minuti e per un solo upload. Il caricamento avviene con i permessi dell’agente che lo ha richiesto: se nel frattempo il suo token viene revocato, o se perde i permessi di scrittura o la pagina, l’accesso rimane bloccato. Se un upload non va a buon fine, ad esempio perché il tipo di file non è consentito, l’indirizzo resta valido per un secondo tentativo.",
+      "p3": "Il file diventa quindi un normale allegato, controllato e salvato esattamente come uno che trascini nell’editor. Tramite exo_attachment_upload_ticket_get, l’agente può verificare se il file è arrivato e ottiene l’indirizzo per incorporarlo in una pagina."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Fissare più fonti a una chat",
     "summary": "Oltre alla pagina aperta, puoi fissare a una chat altre pagine, viste di database e ricerche salvate. Rimangono collegate anche se navighi altrove, e sopra il campo di inserimento è sempre visibile per intero ciò che viene incluso.",

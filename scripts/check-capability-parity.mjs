@@ -85,6 +85,16 @@ const SURFACE_EXEMPT = [
       "Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.",
   },
   {
+    tool: 'exo_attachment_upload_ticket',
+    reason:
+      'Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.',
+  },
+  {
+    tool: 'exo_attachment_upload_ticket_get',
+    reason:
+      "Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.",
+  },
+  {
     tool: 'exo_page_delete',
     reason:
       "The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).",

@@ -364,6 +364,15 @@
     },
     "where": "Bestand naar de editor slepen."
   },
+  "agenten-datei-hochladen": {
+    "title": "Agents uploaden lokale bestanden direct",
+    "summary": "Een agent die lokaal een foto of pdf heeft staan, stuurt deze direct naar eXocortex in plaats van het eerst op een andere website te plaatsen. De agent vraagt hiervoor een upload-adres aan dat tien minuten en precies één keer geldig is.",
+    "details": {
+      "p1": "Voorheen had een agent met een bestand op de harde schijf twee slechte opties: het bestand zelf uitschrijven als Base64-tekst, wat bij een foto niet werkt, of het ergens openbaar neerzetten en het adres doorgeven. Zo belandden afbeeldingen op externe projecten en websites. Nu vraagt de agent via exo_attachment_upload_ticket een upload-adres aan, en stuurt het bijbehorende script het bestand er direct naartoe.",
+      "p2": "Het adres is tien minuten en voor precies één upload geldig. Er wordt geüpload met de rechten van de agent die het adres heeft opgehaald: als diens token tussentijds wordt ingetrokken, of als de agent schrijfrechten of de pagina verliest, blijft de deur dicht. Mislukt een upload, bijvoorbeeld omdat het bestandstype niet is toegestaan, dan blijft het adres geldig voor een tweede poging.",
+      "p3": "Het bestand is daarna een heel gewone bijlage, net zo gecontroleerd en opgeslagen als eentje die je in de editor sleept. Via exo_attachment_upload_ticket_get kan de agent controleren of het bestand is aangekomen, en krijgt de agent het adres om het in een pagina in te sluiten."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Meerdere bronnen aan een chat vastmaken",
     "summary": "Naast de geopende pagina kun je extra pagina’s, databaseweergaven en opgeslagen zoekopdrachten aan een chat vastmaken. Ze blijven gekoppeld, ook als je verder bladert, en boven het invoerveld staat altijd volledig wat er meegaat.",

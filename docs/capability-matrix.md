@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-225 routes are reachable from at least one client; 144 from all three.
+227 routes are reachable from at least one client; 144 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -119,6 +119,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/ai-rules` | ✓ | ✓ | ✓ | `exo_rules_list` |
+| `GET /api/workspaces/:x/attachments/upload-tickets/:x` | · | · | ✓ | `exo_attachment_upload_ticket_get` |
 | `GET /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_list` |
 | `GET /api/workspaces/:x/automations/runs` | ✓ | ✓ | ✓ | `exo_automation_runs` |
 | `GET /api/workspaces/:x/credentials` | ✓ | · | · | — |
@@ -231,6 +232,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
 | `POST /api/workspaces/:x/attachments/from-url` | · | ✓ | ✓ | `exo_attachment_upload_url` |
+| `POST /api/workspaces/:x/attachments/upload-tickets` | · | · | ✓ | `exo_attachment_upload_ticket` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |
 | `POST /api/workspaces/:x/capture` | ✓ | ✓ | ✓ | `exo_capture` |
 | `POST /api/workspaces/:x/clip` | ✓ | ✓ | ✓ | `exo_clip` |
@@ -313,9 +315,11 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_ai_run_cancel` — mcp: Cancels an AI run. Same reason, with teeth: the run it would most easily reach is its own.
 - `exo_ai_run_get` — mcp: Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.
 - `exo_ai_usage` — mcp: The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.
+- `exo_attachment_upload_ticket` — mcp: Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.
+- `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.
 - `exo_page_delete` — mcp: The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).
 - `exo_toolbox` — ai: Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.
 
 ---
 
-Counted against 47 documented route exemptions.
+Counted against 48 documented route exemptions.

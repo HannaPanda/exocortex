@@ -8092,6 +8092,10 @@
       "source": "ddd093043a07027c",
       "output": "0ad963dda6375efc"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "984fce0394b61d5d"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "d1294d098e7fbb27"
@@ -8147,6 +8151,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "2a6a258f2c5ff197"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "c594c5e3be2757cb"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "bf81ce8892ca48fd"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "fa359ed1765e23af"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "b511966dccd86b53"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "83e79312ca65ab71"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -22838,6 +22862,10 @@
       "source": "ddd093043a07027c",
       "output": "a8cc1e9070c0ee81"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "5432882e95fc7bcf"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "1b0e104026e93be0"
@@ -22893,6 +22921,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "d49d34f33982f9bf"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "0c76ad18139c44c5"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "d8e4569a507e037b"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "875613ad6ef72462"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "ab0832b289b442af"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "cc727ed9bd1f2781"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -37584,6 +37632,10 @@
       "source": "ddd093043a07027c",
       "output": "0ded4c081df8ee8c"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "02733102362967d8"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "948b097bf1c232c9"
@@ -37639,6 +37691,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "69e045befdcba265"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "789921363dc3093f"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "2d5c235d76fcc2c5"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "71fcc5dbc72ceb85"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "f4d6f52071de5beb"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "845297c3b4c84534"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -52330,6 +52402,10 @@
       "source": "ddd093043a07027c",
       "output": "0204f16eb01cbf6f"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "4536fc733b1062bb"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "c32df2f850046b6e"
@@ -52385,6 +52461,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "fb617146d019eb05"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "a915c9c7e2f335a2"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "5315a12a2fb2a2ea"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "88be909621d97f0c"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "bfaa26516b958b5f"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "6cbc3ed50182233a"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -67076,6 +67172,10 @@
       "source": "ddd093043a07027c",
       "output": "cdc9dbfcf2809eca"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "eb6c3349cf3a6ead"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "7f1e6b760c24b572"
@@ -67131,6 +67231,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "5513cf37c136ae81"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "c5e7310d662aac5c"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "2f92d7f924e3bfce"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "2b822e4771cae778"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "58760e3e367edc4a"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "3b106fb3fb9e9247"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -81822,6 +81942,10 @@
       "source": "ddd093043a07027c",
       "output": "eacb8bbf4962fe38"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "464fcfe818f901b2"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "06ca29d8a73b46fc"
@@ -81877,6 +82001,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "e65d5ad5ed8f8248"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "e767add265b415c9"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "5b80f0018ed74ec5"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "34dd87ddf703a044"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "213704d8e3d9f1f6"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "610ddc1cdb3e7453"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",
@@ -96568,6 +96712,10 @@
       "source": "ddd093043a07027c",
       "output": "37dadd68e7d15cf3"
     },
+    "errors.codes.upload_ticket_invalid": {
+      "source": "4a8024ad231ff133",
+      "output": "5fef19dd37a66cb7"
+    },
     "errors.codes.user_disabled": {
       "source": "999e6271b6d36bc2",
       "output": "1417995d2f3a78d9"
@@ -96623,6 +96771,26 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "ec5a616cdd10a132"
+    },
+    "features.agenten-datei-hochladen.details.p1": {
+      "source": "dd7bc621bdfbe853",
+      "output": "69b40e97bfbbc056"
+    },
+    "features.agenten-datei-hochladen.details.p2": {
+      "source": "8975721fe2107b0c",
+      "output": "75483a62d46b455c"
+    },
+    "features.agenten-datei-hochladen.details.p3": {
+      "source": "f27cf8d787ef1fcb",
+      "output": "a99a13ae0cc8d924"
+    },
+    "features.agenten-datei-hochladen.summary": {
+      "source": "51dda8b690b45172",
+      "output": "5e5043f6dd4defed"
+    },
+    "features.agenten-datei-hochladen.title": {
+      "source": "68e10e2d9e4f96fc",
+      "output": "f384578e6a622cbd"
     },
     "features.agenten-gedaechtnis.details.p1": {
       "source": "9971543a427a7ac2",

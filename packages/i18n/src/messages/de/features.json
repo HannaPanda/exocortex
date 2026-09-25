@@ -364,6 +364,15 @@
     },
     "where": "Datei in den Editor ziehen."
   },
+  "agenten-datei-hochladen": {
+    "title": "Agenten laden lokale Dateien direkt hoch",
+    "summary": "Ein Agent, der ein Foto oder PDF bei sich liegen hat, schickt es direkt in eXocortex, statt es erst auf einer anderen Website abzulegen. Er holt sich dafür eine Upload-Adresse, die zehn Minuten und genau einmal gilt.",
+    "details": {
+      "p1": "Bisher hatte ein Agent mit einer Datei auf der Festplatte zwei schlechte Wege: die Datei als Base64-Text selbst ausschreiben, was bei einem Foto nicht geht, oder sie irgendwo öffentlich ablegen und die Adresse übergeben. So landeten Bilder auf fremden Projekten und Websites. Jetzt fragt der Agent mit exo_attachment_upload_ticket nach einer Upload-Adresse, und sein Skript schickt die Datei direkt dorthin.",
+      "p2": "Die Adresse gilt zehn Minuten und für genau einen Upload. Hochgeladen wird mit den Rechten des Agenten, der sie geholt hat: Wird sein Token in der Zwischenzeit widerrufen, verliert er Schreibrechte oder die Seite, bleibt die Tür zu. Geht ein Upload schief, etwa weil der Dateityp nicht erlaubt ist, bleibt die Adresse für einen zweiten Versuch gültig.",
+      "p3": "Die Datei ist danach ein ganz normaler Anhang, genauso geprüft und gespeichert wie einer, den du in den Editor ziehst. Über exo_attachment_upload_ticket_get kann der Agent nachsehen, ob die Datei angekommen ist, und bekommt die Adresse zum Einbetten in eine Seite."
+    }
+  },
   "angeheftete-quellen": {
     "title": "Mehrere Quellen an einen Chat heften",
     "summary": "Neben der offenen Seite kannst du weitere Seiten, Datenbankansichten und gespeicherte Suchen an einen Chat heften. Sie bleiben dran, auch wenn du weiterblätterst, und über dem Eingabefeld steht jederzeit vollständig, was mitgeht.",

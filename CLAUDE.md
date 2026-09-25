@@ -601,6 +601,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   replaces a configured `only`. The adapter asks `providerRoutingFor(model)`
   per request, so every caller is routed alike; the empty object is the
   default and changes nothing.
+- ADR-064: a local file arrives through an upload ticket, never through a
+  third host. `exo_attachment_upload_ticket` mints a one-time address (ten
+  minutes, 256 bits, only the hash stored) that the agent's script POSTs the
+  file to; the bytes pass neither through the model nor another site.
+  Redeeming acts as the minting credential: its `exo_` token is re-checked by
+  the same `assertApiTokenUsable` the guard uses, must still carry `write`,
+  and its page confinement is installed before the ordinary upload runs. The
+  ticket is claimed before the body is read and released when the upload
+  fails. MCP only; the built-in AI has no files.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

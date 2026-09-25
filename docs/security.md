@@ -312,6 +312,37 @@ grant publishes `document_share_changed` on the revocation channel of
 well as a narrowing; the collaboration server's re-authorization sweep already
 re-reads `findDocumentContext`, so a missed message costs at most 30 seconds.
 
+## Upload tickets
+
+[ADR-064](adr/ADR-064-a-local-file-arrives-through-an-upload-ticket.md). An
+agent with a file on disk mints a ticket through the authenticated API
+(`POST /api/workspaces/:id/attachments/upload-tickets`) and its script POSTs the
+file to the returned address (`POST /api/attachments/upload/:secret`), which is
+public. Properties worth stating:
+
+- **The secret is the only thing in the URL, and it works once.** 256 random
+  bits, stored as a domain-separated SHA-256 hash, returned once, never logged by
+  the API. It names one upload into one workspace and page, chosen at minting;
+  the upload request cannot change the target. Unknown, used and expired all
+  answer `upload_ticket_invalid` (404).
+- **Ten minutes, never longer than the minting credential.** A ticket from an
+  `exo_` token or a session expires with it if that comes first. A service token
+  (the two-minute loopback token of an OAuth MCP call) does not cap it; the
+  account behind it is re-checked instead.
+- **Redeeming acts as the minting credential.** The `exo_` token is checked by the
+  same function `SessionGuard` uses (`assertApiTokenUsable`), must still carry
+  `write`, and its page confinement is installed in the request context before
+  the upload's own `requireRoleAnchoredAt` runs. Revoking the token, narrowing it,
+  deleting its page or removing the member all close an open ticket. If the
+  request context is missing, redemption refuses rather than upload with the
+  owner's full reach.
+- **Claimed before the body is read.** A request without a valid ticket costs one
+  indexed query and never makes the API buffer a file. A failed upload releases
+  the claim, so the ticket survives a script's first mistake.
+- **Own rate limit.** 30/min per address, below the global limit. The file
+  itself goes through the ordinary upload: magic-byte detection, the allow-list,
+  `MAX_UPLOAD_BYTES`.
+
 ## The MCP endpoint and its OAuth server
 
 `POST /api/mcp` ([ADR-018](adr/ADR-018-remote-mcp-over-http.md)) is the one

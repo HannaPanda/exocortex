@@ -50,7 +50,8 @@ What is deliberately still missing is listed under
   downscaled image previews, and text extraction from PDFs (Docling locally,
   with OCR for scans) and from twelve office formats -- Word, Excel,
   PowerPoint, OpenDocument, RTF, EPUB, CSV -- through a local library call
-  (ADR-050)
+  (ADR-050); an agent uploads a file from its own disk through a one-time
+  upload ticket rather than a third host (ADR-064)
 
 **Structure**
 

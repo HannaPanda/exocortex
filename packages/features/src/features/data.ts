@@ -97,6 +97,13 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_attachment_upload', 'exo_attachment_upload_url'],
   }),
   defineFeature({
+    id: 'agenten-datei-hochladen',
+    area: 'dateien',
+    since: '2026-09-25',
+    references: ['ADR-064'],
+    tools: ['exo_attachment_upload_ticket', 'exo_attachment_upload_ticket_get'],
+  }),
+  defineFeature({
     id: 'texterkennung',
     area: 'dateien',
     since: '2026-08-06',
