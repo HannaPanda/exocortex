@@ -86,7 +86,8 @@
     "share_exists": "Esta página já está compartilhada com esta conta. Altere o compartilhamento existente.",
     "share_grantee_unknown": "Não há nenhuma conta associada a este endereço.",
     "share_grantee_is_member": "Esta pessoa já tem acesso à página: ela é membro deste espaço de trabalho.",
-    "token_scope_exceeded": "Este token é válido apenas para determinadas páginas e não tem permissão de acesso aqui."
+    "token_scope_exceeded": "Este token é válido apenas para determinadas páginas e não tem permissão de acesso aqui.",
+    "upload_ticket_invalid": "Este ticket de upload não é mais válido. Ele já foi usado, expirou ou nunca foi válido. Obtenha um novo."
   },
   "boundary": {
     "pageTitle": "Não foi possível carregar esta página",

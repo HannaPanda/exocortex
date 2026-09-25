@@ -86,7 +86,8 @@
     "share_exists": "Ta strona jest już udostępniona temu kontu. Zmień istniejące udostępnienie.",
     "share_grantee_unknown": "Dla tego adresu nie ma tutaj konta.",
     "share_grantee_is_member": "Ta osoba ma już dostęp do strony: jest członkiem tego obszaru roboczego.",
-    "token_scope_exceeded": "Ten token jest ważny tylko dla określonych stron i nie ma tutaj dostępu."
+    "token_scope_exceeded": "Ten token jest ważny tylko dla określonych stron i nie ma tutaj dostępu.",
+    "upload_ticket_invalid": "Ten bilet przesyłania jest już nieważny. Został już użyty, wygasł lub nigdy nie był ważny. Pobierz nowy."
   },
   "boundary": {
     "pageTitle": "Nie udało się załadować tej strony",

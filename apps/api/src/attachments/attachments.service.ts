@@ -111,22 +111,7 @@ export class AttachmentsService {
       );
     }
 
-    if (input.documentId !== null) {
-      const document = await this.prisma.document.findUnique({
-        where: { id: input.documentId },
-        select: { workspaceId: true, archivedAt: true },
-      });
-      if (document === null) throw AppError.notFound('Document');
-      if (document.workspaceId !== input.workspaceId) {
-        throw new AppError(
-          'document_cross_workspace',
-          'The document belongs to a different workspace',
-        );
-      }
-      if (document.archivedAt !== null) {
-        throw new AppError('document_archived', 'Cannot attach files to an archived document');
-      }
-    }
+    await this.assertAttachTarget(input.workspaceId, input.documentId);
 
     const filename = sanitizeFilename(input.filename, detected.extension);
 
@@ -225,6 +210,33 @@ export class AttachmentsService {
       // questions, and the one a page needs is this one (issue #117).
       embedUrl: attachmentDownloadPath(stored.id),
     };
+  }
+
+  /**
+   * Refuses a page a file cannot hang on: missing, in another workspace, or
+   * archived. `null` is the workspace itself and always a valid target here;
+   * whether the caller may upload into it is the access check's question.
+   *
+   * Public because an upload ticket (ADR-064) asks the same question when it
+   * is minted, so an agent hears about a wrong page before it runs a script,
+   * not after.
+   */
+  async assertAttachTarget(workspaceId: string, documentId: string | null): Promise<void> {
+    if (documentId === null) return;
+    const document = await this.prisma.document.findUnique({
+      where: { id: documentId },
+      select: { workspaceId: true, archivedAt: true },
+    });
+    if (document === null) throw AppError.notFound('Document');
+    if (document.workspaceId !== workspaceId) {
+      throw new AppError(
+        'document_cross_workspace',
+        'The document belongs to a different workspace',
+      );
+    }
+    if (document.archivedAt !== null) {
+      throw new AppError('document_archived', 'Cannot attach files to an archived document');
+    }
   }
 
   /**

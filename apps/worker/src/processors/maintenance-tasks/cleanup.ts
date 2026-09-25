@@ -276,6 +276,32 @@ export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, report
 };
 
 /**
+ * How long an upload ticket stays readable after it expired (ADR-064). A day:
+ * enough for "did that upload last night go through" to still have an answer
+ * through `exo_attachment_upload_ticket_get`, and nothing that depends on it.
+ */
+const UPLOAD_TICKET_RETENTION_MS = DAY_MS;
+
+/**
+ * Removes upload tickets a day after they expired (ADR-064).
+ *
+ * A hard delete, like the invitations above and for the same reason: a ticket
+ * is an address that was valid for ten minutes, not something anybody wrote.
+ * The file a ticket produced is an ordinary attachment and is not touched;
+ * the column pointing at it is on the ticket, not on the file.
+ */
+export const pruneUploadTickets: MaintenanceTask = async ({ prisma, logger, reportProgress }) => {
+  await reportProgress(10, 'pruningUploadTickets');
+  const removed = await prisma.attachmentUploadTicket.deleteMany({
+    where: { expiresAt: { lt: new Date(Date.now() - UPLOAD_TICKET_RETENTION_MS) } },
+  });
+  await reportProgress(100, 'done');
+  if (removed.count > 0) {
+    logger.info('Expired upload tickets pruned', { removed: removed.count });
+  }
+};
+
+/**
  * Removes messages between agents that have stopped being delivered
  * (issue #51, ADR-047).
  *

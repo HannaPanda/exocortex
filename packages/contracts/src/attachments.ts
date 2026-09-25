@@ -153,6 +153,63 @@ export const uploadAttachmentFromUrlRequestSchema = z.object({
 export type UploadAttachmentFromUrlRequest = z.infer<typeof uploadAttachmentFromUrlRequestSchema>;
 
 /**
+ * How long an upload ticket stays redeemable (ADR-064). Ten minutes: long
+ * enough for an agent to mint one, write a script and run it, short enough
+ * that a secret left in a log is worthless by the time anybody reads it.
+ */
+export const UPLOAD_TICKET_TTL_SECONDS = 600;
+
+/**
+ * Body of `POST /api/workspaces/:workspaceId/attachments/upload-tickets`.
+ * The same target fields as the URL upload: where the file lands and, if the
+ * caller wants, what it is called.
+ */
+export const createUploadTicketRequestSchema = z.object({
+  documentId: idSchema.nullable().default(null),
+  /** Overrides the name the upload carries. The extension is still the file's. */
+  filename: z.string().min(1).max(255).nullable().default(null),
+});
+export type CreateUploadTicketRequest = z.infer<typeof createUploadTicketRequestSchema>;
+
+/**
+ * Where a ticket stands. `open` can still be redeemed; `used` produced a file
+ * (`attachmentId`, `embedUrl`); `expired` was never used in time. A ticket
+ * whose upload is running right now reads as `used` without a file yet.
+ */
+export const UPLOAD_TICKET_STATES = ['open', 'used', 'expired'] as const;
+export const uploadTicketStateSchema = z.enum(UPLOAD_TICKET_STATES);
+export type UploadTicketState = z.infer<typeof uploadTicketStateSchema>;
+
+export const uploadTicketSchema = z.object({
+  id: idSchema,
+  workspaceId: idSchema,
+  documentId: idSchema.nullable(),
+  filename: z.string().nullable(),
+  state: uploadTicketStateSchema,
+  expiresAt: z.string(),
+  usedAt: z.string().nullable(),
+  attachmentId: idSchema.nullable(),
+  /** `attachmentDownloadPath` of the file, once there is one. */
+  embedUrl: z.string().nullable(),
+  createdAt: z.string(),
+});
+export type UploadTicket = z.infer<typeof uploadTicketSchema>;
+
+export const createUploadTicketResponseSchema = z.object({
+  ticket: uploadTicketSchema,
+  /**
+   * The address to POST the file to, as `multipart/form-data` with one file
+   * part. Carries the secret, is shown exactly once, and works for one upload.
+   * The answer to that POST is an ordinary `UploadAttachmentResponse`.
+   */
+  uploadUrl: z.string(),
+});
+export type CreateUploadTicketResponse = z.infer<typeof createUploadTicketResponseSchema>;
+
+export const uploadTicketResponseSchema = z.object({ ticket: uploadTicketSchema });
+export type UploadTicketResponse = z.infer<typeof uploadTicketResponseSchema>;
+
+/**
  * Why an attachment's text could not be read, as a code each reader words in
  * its own language (issue #98): the engine is switched off, the file is over
  * the size limit, it has no text, or the office converter refused it for a

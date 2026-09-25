@@ -146,6 +146,13 @@ export const API_ERROR_CODES = [
    * account: this one says the *token* is narrower than its owner.
    */
   'token_scope_exceeded',
+  /**
+   * The upload ticket does not exist, was already used, or has expired
+   * (ADR-064). One code for all three, like `share_link_invalid`: the redeem
+   * route is public, and telling a caller which it was would make it an
+   * oracle for guessed tickets. The cure is the same either way: mint a new one.
+   */
+  'upload_ticket_invalid',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -331,4 +338,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // The credential is genuine and its owner may well be allowed; this token
   // was issued for other pages. 403, because no retry with it will help.
   token_scope_exceeded: 403,
+  // 404 for the reason `share_link_invalid` is one: an anonymous caller must
+  // not learn whether a ticket ever existed.
+  upload_ticket_invalid: 404,
 };

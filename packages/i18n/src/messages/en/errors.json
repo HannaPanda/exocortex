@@ -86,7 +86,8 @@
     "share_exists": "This page is already shared with this account. Change the existing share.",
     "share_grantee_unknown": "There is no account for this address here.",
     "share_grantee_is_member": "This person can already access the page: they are a member of this workspace.",
-    "token_scope_exceeded": "This token is only valid for specific pages and cannot access here."
+    "token_scope_exceeded": "This token is only valid for specific pages and cannot access here.",
+    "upload_ticket_invalid": "This upload ticket is no longer valid. It has already been used, has expired, or was never valid. Please get a new one."
   },
   "boundary": {
     "pageTitle": "This page could not be loaded",

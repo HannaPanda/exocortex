@@ -86,7 +86,8 @@
     "share_exists": "Deze pagina is al gedeeld met dit account. Pas de bestaande deling aan.",
     "share_grantee_unknown": "Er is hier geen account voor dit adres.",
     "share_grantee_is_member": "Deze persoon heeft al toegang tot de pagina: die is lid van deze werkruimte.",
-    "token_scope_exceeded": "Dit token geldt alleen voor bepaalde pagina’s en heeft hier geen toegang."
+    "token_scope_exceeded": "Dit token geldt alleen voor bepaalde pagina’s en heeft hier geen toegang.",
+    "upload_ticket_invalid": "Dit uploadticket is niet meer geldig. Het is al gebruikt, verlopen of het is nooit geldig geweest. Vraag een nieuw ticket aan."
   },
   "boundary": {
     "pageTitle": "Deze pagina kon niet worden geladen",

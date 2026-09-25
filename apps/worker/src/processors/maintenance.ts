@@ -14,6 +14,7 @@ import {
   pruneAutomationRuns,
   pruneInvitations,
   pruneMemories,
+  pruneUploadTickets,
   reapProjectBuilds,
   reapRenderJobs,
   reapStaleAiRuns,
@@ -99,6 +100,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'backfill-passage-anchors': backfillPassageAnchors,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
+  'prune-upload-tickets': pruneUploadTickets,
   'prune-agent-messages': pruneAgentMessages,
   'consolidate-memories': consolidateMemories,
   'decay-memory-facts': decayMemoryFacts,
@@ -114,7 +116,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
 /**
  * Maintenance processor.
  *
- * Twenty-six unrelated sweeps share one queue and one schedule; what they have
+ * Twenty-eight unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

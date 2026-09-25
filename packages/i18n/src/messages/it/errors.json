@@ -86,7 +86,8 @@
     "share_exists": "Questa pagina è già condivisa con questo account. Modifica la condivisione esistente.",
     "share_grantee_unknown": "Nessun account corrisponde a questo indirizzo.",
     "share_grantee_is_member": "Questa persona può già accedere alla pagina: fa parte di quest’area di lavoro.",
-    "token_scope_exceeded": "Questo token è valido solo per determinate pagine e non può accedere qui."
+    "token_scope_exceeded": "Questo token è valido solo per determinate pagine e non può accedere qui.",
+    "upload_ticket_invalid": "Questo ticket di caricamento non è più valido. È già stato usato, è scaduto oppure non è mai stato valido. Richiedine uno nuovo."
   },
   "boundary": {
     "pageTitle": "Impossibile caricare questa pagina",

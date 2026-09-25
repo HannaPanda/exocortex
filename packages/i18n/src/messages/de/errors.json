@@ -86,7 +86,8 @@
     "share_exists": "Diese Seite ist mit diesem Konto schon geteilt. Ändere die vorhandene Freigabe.",
     "share_grantee_unknown": "Zu dieser Adresse gibt es hier kein Konto.",
     "share_grantee_is_member": "Diese Person kommt schon an die Seite: sie ist Mitglied dieses Arbeitsbereichs.",
-    "token_scope_exceeded": "Dieses Token gilt nur für bestimmte Seiten und darf hier nicht zugreifen."
+    "token_scope_exceeded": "Dieses Token gilt nur für bestimmte Seiten und darf hier nicht zugreifen.",
+    "upload_ticket_invalid": "Dieses Upload-Ticket gilt nicht mehr. Es wurde schon benutzt, ist abgelaufen, oder es war nie gültig. Hol dir ein neues."
   },
   "boundary": {
     "pageTitle": "Diese Seite konnte nicht geladen werden",

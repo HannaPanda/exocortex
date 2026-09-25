@@ -86,7 +86,8 @@
     "share_exists": "Cette page est déjà partagée avec ce compte. Modifie le partage existant.",
     "share_grantee_unknown": "Il n’y a aucun compte pour cette adresse ici.",
     "share_grantee_is_member": "Cette personne a déjà accès à la page : elle est membre de cet espace de travail.",
-    "token_scope_exceeded": "Ce jeton n’est valable que pour certaines pages et ne peut pas accéder ici."
+    "token_scope_exceeded": "Ce jeton n’est valable que pour certaines pages et ne peut pas accéder ici.",
+    "upload_ticket_invalid": "Ce ticket de téléversement n’est plus valable. Il a déjà été utilisé, a expiré ou n’a jamais été valide. Récupères-en un nouveau."
   },
   "boundary": {
     "pageTitle": "Impossible de charger cette page",

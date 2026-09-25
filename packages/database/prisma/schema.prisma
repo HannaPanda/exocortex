@@ -55,42 +55,43 @@ model User {
   sessions                    Session[]
   accounts                    Account[]
   memberships                 WorkspaceMember[]
-  createdDocuments            Document[]            @relation("DocumentCreatedBy")
-  updatedDocuments            Document[]            @relation("DocumentUpdatedBy")
+  createdDocuments            Document[]               @relation("DocumentCreatedBy")
+  updatedDocuments            Document[]               @relation("DocumentUpdatedBy")
   createdSnapshots            DocumentSnapshot[]
   createdAttachments          Attachment[]
-  correctedAttachmentTexts    Attachment[]          @relation("AttachmentTextCorrectedBy")
+  correctedAttachmentTexts    Attachment[]             @relation("AttachmentTextCorrectedBy")
   auditEntries                AuditLog[]
   aiRuns                      AiRun[]
   apiTokens                   ApiToken[]
-  updatedSettings             Setting[]             @relation("SettingUpdatedBy")
-  updatedWorkspaceSettings    WorkspaceSetting[]    @relation("WorkspaceSettingUpdatedBy")
-  createdWorkspaceCredentials WorkspaceCredential[] @relation("WorkspaceCredentialCreatedBy")
-  aiConversations             AiConversation[]      @relation("AiConversationCreatedBy")
-  projectBuilds               ProjectBuild[]        @relation("ProjectBuildCreatedBy")
-  calendarAccounts            CalendarAccount[]     @relation("CalendarAccountOwner")
-  comments                    Comment[]             @relation("CommentCreatedBy")
-  resolvedComments            Comment[]             @relation("CommentResolvedBy")
+  updatedSettings             Setting[]                @relation("SettingUpdatedBy")
+  updatedWorkspaceSettings    WorkspaceSetting[]       @relation("WorkspaceSettingUpdatedBy")
+  createdWorkspaceCredentials WorkspaceCredential[]    @relation("WorkspaceCredentialCreatedBy")
+  aiConversations             AiConversation[]         @relation("AiConversationCreatedBy")
+  projectBuilds               ProjectBuild[]           @relation("ProjectBuildCreatedBy")
+  calendarAccounts            CalendarAccount[]        @relation("CalendarAccountOwner")
+  comments                    Comment[]                @relation("CommentCreatedBy")
+  resolvedComments            Comment[]                @relation("CommentResolvedBy")
   oauthClients                OauthClient[]
   oauthAccessTokens           OauthAccessToken[]
   oauthRefreshTokens          OauthRefreshToken[]
   oauthConsents               OauthConsent[]
-  sentInvitations             Invitation[]          @relation("InvitationInvitedBy")
+  sentInvitations             Invitation[]             @relation("InvitationInvitedBy")
   featureSeen                 UserFeatureSeen?
-  acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
+  acceptedInvitation          Invitation?              @relation("InvitationAcceptedBy")
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
   memoryCheckpoints           MemoryCheckpoint[]
-  sentAgentMessages           AgentMessage[]        @relation("AgentMessageSender")
-  receivedAgentMessages       AgentMessage[]        @relation("AgentMessageRecipient")
-  automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
-  renderTemplates             RenderTemplate[]      @relation("RenderTemplateCreatedBy")
-  renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
-  createdSavedQueries         SavedQuery[]          @relation("SavedQueryCreatedBy")
-  updatedSavedQueries         SavedQuery[]          @relation("SavedQueryUpdatedBy")
-  grantedShares               DocumentShare[]       @relation("DocumentShareCreatedBy")
-  receivedShares              DocumentShare[]       @relation("DocumentShareGrantee")
-  pushSubscriptions           PushSubscription[]    @relation("PushSubscriptionOwner")
+  sentAgentMessages           AgentMessage[]           @relation("AgentMessageSender")
+  receivedAgentMessages       AgentMessage[]           @relation("AgentMessageRecipient")
+  attachmentUploadTickets     AttachmentUploadTicket[]
+  automationRules             AutomationRule[]         @relation("AutomationRuleCreatedBy")
+  renderTemplates             RenderTemplate[]         @relation("RenderTemplateCreatedBy")
+  renderJobs                  RenderJob[]              @relation("RenderJobCreatedBy")
+  createdSavedQueries         SavedQuery[]             @relation("SavedQueryCreatedBy")
+  updatedSavedQueries         SavedQuery[]             @relation("SavedQueryUpdatedBy")
+  grantedShares               DocumentShare[]          @relation("DocumentShareCreatedBy")
+  receivedShares              DocumentShare[]          @relation("DocumentShareGrantee")
+  pushSubscriptions           PushSubscription[]       @relation("PushSubscriptionOwner")
   notificationPreferences     NotificationPreference[] @relation("NotificationPreferenceOwner")
   commentDigestEntries        CommentDigestEntry[]     @relation("CommentDigestRecipient")
 
@@ -437,8 +438,10 @@ model ApiToken {
   /// scoped page would widen the token back to the whole account, which is a
   /// privilege escalation dressed as a cleanup. A confined token that has lost
   /// every page it was given reaches nothing at all.
-  pageScoped Boolean             @default(false)
-  pageScopes ApiTokenPageScope[]
+  pageScoped    Boolean                  @default(false)
+  pageScopes    ApiTokenPageScope[]
+  /// Upload tickets this token minted (ADR-064); they end with it.
+  uploadTickets AttachmentUploadTicket[]
 
   @@index([userId])
   @@map("api_token")
@@ -557,30 +560,31 @@ model Workspace {
   /// oldest membership wins, deterministically.
   isMemory Boolean @default(false)
 
-  members           WorkspaceMember[]
-  documents         Document[]
-  attachments       Attachment[]
-  outbox            OutboxEvent[]
-  auditLog          AuditLog[]
-  aiRuns            AiRun[]
-  aiConversations   AiConversation[]
-  documentLinks     DocumentLink[]
-  calendarAccounts  CalendarAccount[]
-  comments          Comment[]
-  commentDigestEntries CommentDigestEntry[]
-  invitations       Invitation[]
-  agentWrites       AgentWriteJournal[]
-  settings          WorkspaceSetting[]
-  credentials       WorkspaceCredential[]
-  automations       AutomationRule[]
-  automationRuns    AutomationRun[]
-  renderTemplates   RenderTemplate[]
-  renderJobs        RenderJob[]
-  projectBuilds     ProjectBuild[]
-  savedQueries      SavedQuery[]
-  shares            DocumentShare[]
-  memoryCheckpoints MemoryCheckpoint[]
-  agentMessages     AgentMessage[]
+  members                 WorkspaceMember[]
+  documents               Document[]
+  attachments             Attachment[]
+  outbox                  OutboxEvent[]
+  auditLog                AuditLog[]
+  aiRuns                  AiRun[]
+  aiConversations         AiConversation[]
+  documentLinks           DocumentLink[]
+  calendarAccounts        CalendarAccount[]
+  comments                Comment[]
+  commentDigestEntries    CommentDigestEntry[]
+  invitations             Invitation[]
+  agentWrites             AgentWriteJournal[]
+  settings                WorkspaceSetting[]
+  credentials             WorkspaceCredential[]
+  automations             AutomationRule[]
+  automationRuns          AutomationRun[]
+  renderTemplates         RenderTemplate[]
+  renderJobs              RenderJob[]
+  projectBuilds           ProjectBuild[]
+  savedQueries            SavedQuery[]
+  shares                  DocumentShare[]
+  memoryCheckpoints       MemoryCheckpoint[]
+  agentMessages           AgentMessage[]
+  attachmentUploadTickets AttachmentUploadTicket[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -830,56 +834,58 @@ model Document {
 
   /// Present when `type` is COLLECTION: the property and view definitions of
   /// this database.
-  databaseProperties    DatabaseProperty[]        @relation("CollectionProperties")
-  databaseViews         DatabaseView[]            @relation("CollectionViews")
+  databaseProperties      DatabaseProperty[]        @relation("CollectionProperties")
+  databaseViews           DatabaseView[]            @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
-  propertyValues        DocumentPropertyValue[]   @relation("RowPropertyValues")
+  propertyValues          DocumentPropertyValue[]   @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
-  aiConversations       AiConversation[]          @relation("AiConversationDocument")
+  aiConversations         AiConversation[]          @relation("AiConversationDocument")
   /// Conversations that pinned this page as a context source (issue #75).
-  aiConversationSources AiConversationSource[]    @relation("AiConversationSourceDocument")
+  aiConversationSources   AiConversationSource[]    @relation("AiConversationSourceDocument")
   /// References this page makes, and references other pages make to it.
-  outgoingLinks         DocumentLink[]            @relation("DocumentLinkSource")
-  incomingLinks         DocumentLink[]            @relation("DocumentLinkTarget")
+  outgoingLinks           DocumentLink[]            @relation("DocumentLinkSource")
+  incomingLinks           DocumentLink[]            @relation("DocumentLinkTarget")
   /// Present when this COLLECTION mirrors a remote calendar.
-  calendarLinks         CalendarLink[]            @relation("CalendarLinkTarget")
+  calendarLinks           CalendarLink[]            @relation("CalendarLinkTarget")
   /// Present when this row mirrors one remote calendar object.
-  calendarObject        CalendarObjectState[]     @relation("CalendarRow")
+  calendarObject          CalendarObjectState[]     @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
-  comments              Comment[]                 @relation("DocumentComments")
-  commentDigestEntries  CommentDigestEntry[]      @relation("DocumentCommentDigestEntries")
+  comments                Comment[]                 @relation("DocumentComments")
+  commentDigestEntries    CommentDigestEntry[]      @relation("DocumentCommentDigestEntries")
   /// Present when `type` is PROJECT: the project's settings, files and builds
   /// (issue #43, ADR-027).
-  project               Project?                  @relation("ProjectDocument")
+  project                 Project?                  @relation("ProjectDocument")
   /// Present when this page *is* a distilled memory fact (issue #46).
-  memoryFact            MemoryFact?               @relation("MemoryFactPage")
+  memoryFact              MemoryFact?               @relation("MemoryFactPage")
   /// Present when this page is a session note a consolidation run has read.
-  memoryConsolidation   MemoryConsolidation?      @relation("MemoryConsolidationNote")
+  memoryConsolidation     MemoryConsolidation?      @relation("MemoryConsolidationNote")
   /// Facts this session note is evidence for.
-  memoryFactSources     MemoryFactSource[]        @relation("MemoryFactSourceNote")
+  memoryFactSources       MemoryFactSource[]        @relation("MemoryFactSourceNote")
   /// Present when this page is the note a pre compaction checkpoint wrote
   /// (issue #92).
-  memoryCheckpoints     MemoryCheckpoint[]        @relation("MemoryCheckpointNote")
+  memoryCheckpoints       MemoryCheckpoint[]        @relation("MemoryCheckpointNote")
   /// Messages between agents that point at this page (issue #51).
-  agentMessages         AgentMessage[]            @relation("AgentMessageAbout")
+  agentMessages           AgentMessage[]            @relation("AgentMessageAbout")
+  /// Upload tickets that land a file on this page (ADR-064).
+  attachmentUploadTickets AttachmentUploadTicket[]
   /// Present when this page is an entity row: the pages that talk about it
   /// (issue #47).
-  entityMentions        EntityMention[]           @relation("EntityMentionEntity")
+  entityMentions          EntityMention[]           @relation("EntityMentionEntity")
   /// Entities this page talks about.
-  mentionedEntities     EntityMention[]           @relation("EntityMentionPage")
+  mentionedEntities       EntityMention[]           @relation("EntityMentionPage")
   /// Names on this page that no entity answers to yet.
-  entitySightings       EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
+  entitySightings         EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
   /// Present when a rule is scoped to this page's subtree or database.
-  automationScopes      AutomationRule[]          @relation("AutomationScopeDocument")
+  automationScopes        AutomationRule[]          @relation("AutomationScopeDocument")
   /// Automation runs this page triggered.
-  automationRuns        AutomationRun[]           @relation("AutomationRunDocument")
+  automationRuns          AutomationRun[]           @relation("AutomationRunDocument")
   /// Builds of this page into a file (issue #44).
-  renderJobs            RenderJob[]               @relation("RenderJobDocument")
+  renderJobs              RenderJob[]               @relation("RenderJobDocument")
   /// Grants that let somebody outside this workspace reach this page, and the
   /// public links to it (issue #83, ADR-044).
-  shares                DocumentShare[]           @relation("DocumentShareDocument")
+  shares                  DocumentShare[]           @relation("DocumentShareDocument")
   /// API tokens confined to this page or the branch below it.
-  tokenScopes           ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
+  tokenScopes             ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -947,10 +953,10 @@ model DocumentShare {
 
   /// SHA-256 of the raw link token: what the anonymous read looks a token up
   /// by, so the lookup never needs the key below. Null for a `USER` share.
-  tokenHash   String? @unique
+  tokenHash       String? @unique
   /// First characters of the raw token, so a link is recognisable in a list
   /// to somebody who may not see the whole address.
-  tokenPrefix String?
+  tokenPrefix     String?
   /// The raw token, AES-256-GCM under `CREDENTIAL_ENCRYPTION_KEY`
   /// (packages/auth/src/credential-cipher.ts), so the workspace's admins can
   /// see and copy a link again (ADR-044, addendum 2026-09-24). A link is meant
@@ -1163,19 +1169,19 @@ model DocumentSearchIndex {
 /// through raw SQL in `semantic-search.ts`, because Prisma has no vector type.
 /// `textHash` is what keeps re-indexing an unchanged page free.
 model DocumentEmbedding {
-  id         String                       @id @default(cuid(2))
-  documentId String
-  document   Document                     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  id             String                       @id @default(cuid(2))
+  documentId     String
+  document       Document                     @relation(fields: [documentId], references: [id], onDelete: Cascade)
   /// `NULL` for the vector of the whole page. A passage of a long page carries
   /// `chunk:0000`, `chunk:0001` and so on (issue #36, see `chunkBlockId`).
-  blockId    String?
-  model      String
-  embedding  Unsupported("vector(1536)")?
-  textHash   String?
+  blockId        String?
+  model          String
+  embedding      Unsupported("vector(1536)")?
+  textHash       String?
   /// The passage this vector was built from, so a hit can show the paragraph
   /// that matched instead of the first 200 characters of the page. `NULL` on a
   /// whole-document row, which has the search index for that.
-  chunkText  String?
+  chunkText      String?
   /// The heading this passage sits under, so a hit says where on the page it
   /// is and not only which page (issue #118). `NULL` on a whole-document row
   /// and on a passage nobody has worked the heading out for yet; `[]` on a
@@ -1183,7 +1189,7 @@ model DocumentEmbedding {
   /// `NULL`s, which is why the empty array is a different value.
   headingBlockId String?
   headingPath    Json?
-  createdAt  DateTime                     @default(now())
+  createdAt      DateTime                     @default(now())
 
   @@unique([documentId, blockId, model])
   @@index([documentId])
@@ -1277,9 +1283,9 @@ model Comment {
   document    Document  @relation("DocumentComments", fields: [documentId], references: [id], onDelete: Cascade)
 
   /// The thread this comment answers. `null` makes it the root of one.
-  parentId String?
-  parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
-  replies  Comment[] @relation("CommentThread")
+  parentId      String?
+  parent        Comment?             @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]            @relation("CommentThread")
   /// Pending comment-digest pointers. They cascade with the comment: a
   /// deleted comment owes nobody a mail (issue #106).
   digestEntries CommentDigestEntry[]
@@ -1518,15 +1524,17 @@ model Attachment {
   correctedText     String?
   textCorrectedAt   DateTime?
   textCorrectedById String?
-  textCorrectedBy   User?          @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  textCorrectedBy   User?                    @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
   /// Present when this file is the artifact of a render (issue #44).
-  renderJobs        RenderJob[]    @relation("RenderJobArtifact")
+  renderJobs        RenderJob[]              @relation("RenderJobArtifact")
   /// Present when this file sits in a project's file tree (issue #43).
   projectFiles      ProjectFile[]
   /// Present when this file is the PDF a project build produced.
-  projectBuildPdfs  ProjectBuild[] @relation("ProjectBuildArtifact")
+  projectBuildPdfs  ProjectBuild[]           @relation("ProjectBuildArtifact")
   /// Present when this file is the SyncTeX map a project build produced.
-  projectBuildMaps  ProjectBuild[] @relation("ProjectBuildSourceMap")
+  projectBuildMaps  ProjectBuild[]           @relation("ProjectBuildSourceMap")
+  /// The upload ticket this file arrived through, if any (ADR-064).
+  uploadTickets     AttachmentUploadTicket[]
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -1534,6 +1542,60 @@ model Attachment {
   /// asks for exactly them.
   @@index([isCover])
   @@map("attachment")
+}
+
+/// A one-time address an agent's script uploads a local file to (ADR-064).
+///
+/// An agent holding a file on disk had no good way in: the Base64 upload makes
+/// the model spell out every byte, and the URL upload needs the file somewhere
+/// public, which is how pictures ended up on unrelated sites. A ticket is
+/// minted through the ordinary authenticated API and redeemed by a plain
+/// multipart POST to a path that carries the secret, so the bytes travel from
+/// the script straight here and never through the model or a third host.
+///
+/// Redeeming acts as the credential that minted it: the same user, the same
+/// API token (re-checked for revocation, expiry, scope and page confinement),
+/// the same workspace and page. The ticket names a target, it grants nothing
+/// the credential could not do itself.
+model AttachmentUploadTicket {
+  id String @id @default(cuid(2))
+
+  /// SHA-256 of the secret. The secret itself is returned once and never kept:
+  /// unlike a share link, a ticket has no reason to be shown twice.
+  tokenHash String @unique
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// The page the file will hang on. Null uploads into the workspace itself,
+  /// which a page-confined credential may not mint.
+  documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  /// Overrides the name the upload carries. The extension is still the file's.
+  filename    String?
+
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  /// The `exo_` token that minted it, when one did. Null for a browser session
+  /// or a service token, which carry no revocable row.
+  apiTokenId  String?
+  apiToken    ApiToken? @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
+
+  /// Never later than the minting credential's own expiry.
+  expiresAt    DateTime
+  /// Set by the request that claims the ticket, before it reads the body;
+  /// cleared again when that upload fails, so a mistaken first try does not
+  /// burn it.
+  usedAt       DateTime?
+  /// The file it produced. Set once, together with a final `usedAt`.
+  attachmentId String?
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  /// The daily sweep deletes by expiry.
+  @@index([expiresAt])
+  @@index([workspaceId, createdAt])
+  @@map("attachment_upload_ticket")
 }
 
 // ---------------------------------------------------------------------------
@@ -3421,7 +3483,7 @@ model CommentDigestEntry {
 
   /// When the entry was written, which is when the comment was dispatched.
   /// What the daily slot compares against.
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   /// When the mail carrying it was handed to the queue. Null means owed.
   sentAt    DateTime?
 

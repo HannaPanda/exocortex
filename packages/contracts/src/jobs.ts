@@ -198,6 +198,12 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'prune-invitations',
     /**
+     * Deletes upload tickets a day after they expired (ADR-064). A ticket is a
+     * ten-minute address, used or not; the file it produced does not depend
+     * on it and stays.
+     */
+    'prune-upload-tickets',
+    /**
      * Deletes messages between agents whose `expiresAt` has passed (issue #51,
      * ADR-047). Unconditional and hourly: a message's expiry is part of what
      * the mailbox promises, not a retention setting somebody switches on.

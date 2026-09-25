@@ -414,6 +414,10 @@ export class QueueRegistry {
     // after that, so this only ever has work in a deployment that invites people
     // and gets ignored (issue #3).
     await schedule('prune-invitations', { pattern: '45 4 * * *' });
+    // Daily, beside it. Tickets live ten minutes and are kept a day after
+    // that, so a failed upload can still be read back the next morning; the
+    // files they produced do not depend on them (ADR-064).
+    await schedule('prune-upload-tickets', { pattern: '50 4 * * *' });
     // Hourly, not nightly. A message carries its own `expiresAt`, so unlike
     // every other sweep here this one is not waiting for a retention setting
     // somebody has to switch on -- it is the mechanism the mailbox's promise
