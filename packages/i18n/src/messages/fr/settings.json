@@ -1,0 +1,12 @@
+{
+  "language": {
+    "title": "Langue",
+    "intro": "La langue dans laquelle eXocortex s’adresse à toi. Ce choix s’applique à ton compte, donc sur tous les appareils où tu es connecté. Tes propres contenus ne sont jamais traduits.",
+    "legend": "Langue de l’interface",
+    "followBrowser": "Comme mon navigateur",
+    "followBrowserHint": "Tant que tu ne choisis rien, eXocortex s’adapte à ton navigateur, actuellement {browser}.",
+    "saveFailed": "Impossible d’enregistrer la langue. Réessaie dans un instant.",
+    "loading": "Chargement de la langue …",
+    "loadError": "Impossible de charger la langue"
+  }
+}

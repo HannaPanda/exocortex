@@ -1,0 +1,1 @@
+The account's personal settings pages: which language the interface speaks, notifications, connected apps and API tokens. Headings are short nouns; the paragraphs under them explain a choice in one or two plain sentences.

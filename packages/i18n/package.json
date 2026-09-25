@@ -1,0 +1,38 @@
+{
+  "name": "@exocortex/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The interface languages: message catalogues per locale, locale negotiation and the translator the server side renders with",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "default": "./dist/catalog.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run --exclude '**/*.integration.test.*' --passWithNoTests",
+    "test:integration": "vitest run --passWithNoTests integration.test"
+  },
+  "dependencies": {
+    "@exocortex/contracts": "workspace:*",
+    "use-intl": "4.14.6"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  }
+}

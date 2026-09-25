@@ -48,7 +48,13 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
   // may, is decided by the caller. Deliberately not allowed to see
   // @exocortex/database: a package that could look up an address would sooner
   // or later be asked to decide who gets mail.
-  '@exocortex/mail': ['@exocortex/contracts', '@exocortex/logger'],
+  '@exocortex/mail': ['@exocortex/contracts', '@exocortex/logger', '@exocortex/i18n'],
+  // The interface languages (issue #98, ADR-062): message catalogues, locale
+  // negotiation, the translator the server side renders with. It reads the
+  // locale list out of the contracts and nothing else, so the browser, the
+  // API, the worker and the mail templates can all depend on it without any
+  // of them pulling in the others.
+  '@exocortex/i18n': ['@exocortex/contracts'],
   '@exocortex/auth': [
     '@exocortex/config',
     '@exocortex/logger',
@@ -83,6 +89,7 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/features',
     // The mails a request waits on: verification, password reset, invitation.
     '@exocortex/mail',
+    '@exocortex/i18n',
   ],
   '@exocortex/collaboration': [
     '@exocortex/config',
@@ -112,12 +119,19 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     // queued and sent here, so a relay that is down delays a mail instead of
     // failing whatever request caused it.
     '@exocortex/mail',
+    // Push texts and run diagnostics in the language of whoever reads them.
+    '@exocortex/i18n',
   ],
   // The web frontend must never reach infrastructure packages directly.
   // The web bundle must never reach server-side packages. Authentication is
   // consumed through the `better-auth/react` client, not through
   // `@exocortex/auth` (which pulls in Prisma).
-  '@exocortex/web': ['@exocortex/ui', '@exocortex/editor', '@exocortex/contracts'],
+  '@exocortex/web': [
+    '@exocortex/ui',
+    '@exocortex/editor',
+    '@exocortex/contracts',
+    '@exocortex/i18n',
+  ],
   '@exocortex/e2e': [],
 };
 

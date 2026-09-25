@@ -16,6 +16,10 @@ allowBuilds:
   'better-sqlite3': true
   msgpackr-extract: false
   '@scarf/scarf': false
+  # Pulled in by next-intl for its message extractor, which this repository
+  # does not use (issue #98); the postinstall only checks for the native
+  # binary, which the optional platform package already provides.
+  '@swc/core': false
 
 # A package pnpm installed before it had aged past the release-age wait, added
 # here by pnpm itself rather than by hand. 6.7.0 was four hours old when it went

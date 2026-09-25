@@ -1,0 +1,268 @@
+{
+  "en": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "dafa8c60387889e3"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "50c7578ef2acb92a"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "0b326389f802a896"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "8027f432a7fb7c27"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "b141cce23f44295a"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "428e76b2a27d1a0e"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "c1da85842fd397e6"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "a4fe65264ef7dbb3"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "a4fe65264ef7dbb3"
+    }
+  },
+  "es": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "1b348a7e4247942e"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "ccfd6f793f34b02d"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "6c9588d6b4dc4012"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "ae41373cea3bf791"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "85b55401255cdb2c"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "ce182ae36f8186db"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "e5ef7df8fd81377c"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "7ae9d418353b399f"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "7ae9d418353b399f"
+    }
+  },
+  "fr": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "3555491db35469c3"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "8ac388c207f782c1"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "15704e00950cf97b"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "3e91b633157d19fe"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "5f650ae2df6f22d7"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "7611cc7362b6d1b4"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "6fafbb6d0240fba6"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "5f6baab4dbe152fc"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "5f6baab4dbe152fc"
+    }
+  },
+  "it": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "549d241c01525718"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "3d3290560e4c1d0b"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "d7a0f58ef80b0d5a"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "2c85e86f60dc264d"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "65459bda110f90f3"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "c6e409d61bbc33e3"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "f95720065de2f543"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "0fcc9b7d744c5fee"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "0fcc9b7d744c5fee"
+    }
+  },
+  "nl": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "5e55404bc7f1b3a8"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "0d08213da7c57e90"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "0d05e96c202839ef"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "11ce5b4643dbd441"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "23d239b8d3a96f67"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "9f356a2df18d36aa"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "b73a0983f8d6e195"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "532568d0860c656f"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "532568d0860c656f"
+    }
+  },
+  "pl": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "12238ebcc94d2f09"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "a15667ce39bd6cd6"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "6825a80d054c99b1"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "a5e225548d32bbc6"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "3e6750bbb315b858"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "29154c46c4882e64"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "c95b764b7893884b"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "314cd0c9855dffc4"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "314cd0c9855dffc4"
+    }
+  },
+  "pt-BR": {
+    "settings.language.followBrowser": {
+      "source": "aeeefdcb2da2cf38",
+      "output": "6bce45b44d6a5e6f"
+    },
+    "settings.language.followBrowserHint": {
+      "source": "913d7b0e047ee896",
+      "output": "5630cef768809d19"
+    },
+    "settings.language.intro": {
+      "source": "4e9b2c69cc4e3ed3",
+      "output": "2cb41264a1437f9a"
+    },
+    "settings.language.legend": {
+      "source": "6ce43872fe0faa94",
+      "output": "980b2fd3e50c6074"
+    },
+    "settings.language.loadError": {
+      "source": "71fb40771123e3a2",
+      "output": "71c2a7ae9482a7a9"
+    },
+    "settings.language.loading": {
+      "source": "a5430adf0a1baa03",
+      "output": "7fb3893ab2745d80"
+    },
+    "settings.language.saveFailed": {
+      "source": "72451d1303429e34",
+      "output": "050bd9d211b3c65b"
+    },
+    "settings.language.title": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "7ae9d418353b399f"
+    },
+    "shell.globalLinks.language": {
+      "source": "f2a1cc71fa59a04b",
+      "output": "7ae9d418353b399f"
+    }
+  }
+}

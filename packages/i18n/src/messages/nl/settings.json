@@ -1,0 +1,12 @@
+{
+  "language": {
+    "title": "Taal",
+    "intro": "In welke taal eXocortex met je communiceert. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd. Je eigen inhoud wordt nooit vertaald.",
+    "legend": "Taal van de interface",
+    "followBrowser": "Zoals mijn browser",
+    "followBrowserHint": "Zolang je niets kiest, volgt eXocortex je browser, momenteel dus {browser}.",
+    "saveFailed": "De taal kon niet worden opgeslagen. Probeer het zo meteen nog eens.",
+    "loading": "Taal wordt geladen …",
+    "loadError": "De taal kon niet worden geladen"
+  }
+}

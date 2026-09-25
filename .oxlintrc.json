@@ -202,6 +202,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -353,6 +360,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/logger must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -510,6 +524,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -661,6 +682,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/editor must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -818,6 +846,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -941,6 +976,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/database must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -1084,6 +1126,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -1217,6 +1266,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -1347,6 +1403,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/ai must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -1497,6 +1560,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -1641,6 +1711,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/features must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -1852,6 +1929,160 @@
     },
     {
       "files": [
+        "packages/i18n/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mail",
+                  "@exocortex/mail/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/i18n must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
         "packages/auth/**/*.{ts,tsx,mts,cts}"
       ],
       "rules": {
@@ -1914,6 +2145,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/auth must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -2064,6 +2302,13 @@
               },
               {
                 "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
                   "@exocortex/auth",
                   "@exocortex/auth/*"
                 ],
@@ -2194,6 +2439,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -2369,6 +2621,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [
@@ -2726,6 +2985,13 @@
                   "@exocortex/mail/*"
                 ],
                 "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/mail. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/i18n",
+                  "@exocortex/i18n/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/i18n. See scripts/dependency-graph.mjs."
               },
               {
                 "group": [

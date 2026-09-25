@@ -1,0 +1,1 @@
+The application frame around every page: the top bar, the account menu with its entries (help, chats, entities, shares, memory, settings, administration), the page tree and the sidebars. Entries are short labels a person scans, not sentences.

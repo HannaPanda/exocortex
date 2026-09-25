@@ -1,0 +1,133 @@
+{
+  "doNotTranslate": [
+    "eXocortex",
+    "MCP",
+    "Markdown",
+    "LaTeX",
+    "API",
+    "Hermes",
+    "Claude Code",
+    "Codex",
+    "OpenRouter",
+    "Rollup"
+  ],
+  "register": {
+    "en": "friendly and plain, second person",
+    "es": "friendly, informal tú",
+    "fr": "friendly, informal tu",
+    "it": "friendly, informal tu",
+    "nl": "friendly, informal je/jij",
+    "pl": "friendly, informal ty; write ty, twój, ciebie in lowercase as software interfaces do, never with the capitals of a letter",
+    "pt-BR": "friendly, informal você"
+  },
+  "terms": {
+    "Seite": {
+      "en": "page",
+      "es": "página",
+      "fr": "page",
+      "it": "pagina",
+      "nl": "pagina",
+      "pl": "strona",
+      "pt-BR": "página"
+    },
+    "Arbeitsbereich": {
+      "en": "workspace",
+      "es": "espacio de trabajo",
+      "fr": "espace de travail",
+      "it": "area di lavoro",
+      "nl": "werkruimte",
+      "pl": "obszar roboczy",
+      "pt-BR": "espaço de trabalho"
+    },
+    "Datenbank": {
+      "en": "database",
+      "es": "base de datos",
+      "fr": "base de données",
+      "it": "database",
+      "nl": "database",
+      "pl": "baza danych",
+      "pt-BR": "banco de dados"
+    },
+    "Eingang": {
+      "en": "inbox",
+      "es": "bandeja de entrada",
+      "fr": "boîte de réception",
+      "it": "posta in arrivo",
+      "nl": "inbox",
+      "pl": "skrzynka odbiorcza",
+      "pt-BR": "caixa de entrada"
+    },
+    "Freigabe": {
+      "en": "share",
+      "es": "uso compartido",
+      "fr": "partage",
+      "it": "condivisione",
+      "nl": "deling",
+      "pl": "udostępnienie",
+      "pt-BR": "compartilhamento"
+    },
+    "Gedächtnis": {
+      "en": "memory",
+      "es": "memoria",
+      "fr": "mémoire",
+      "it": "memoria",
+      "nl": "geheugen",
+      "pl": "pamięć",
+      "pt-BR": "memória"
+    },
+    "Entität": {
+      "en": "entity",
+      "es": "entidad",
+      "fr": "entité",
+      "it": "entità",
+      "nl": "entiteit",
+      "pl": "encja",
+      "pt-BR": "entidade"
+    },
+    "Automation": {
+      "en": "automation",
+      "es": "automatización",
+      "fr": "automatisation",
+      "it": "automazione",
+      "nl": "automatisering",
+      "pl": "automatyzacja",
+      "pt-BR": "automação"
+    },
+    "Vorlage": {
+      "en": "template",
+      "es": "plantilla",
+      "fr": "modèle",
+      "it": "modello",
+      "nl": "sjabloon",
+      "pl": "szablon",
+      "pt-BR": "modelo"
+    },
+    "Papierkorb": {
+      "en": "trash",
+      "es": "papelera",
+      "fr": "corbeille",
+      "it": "cestino",
+      "nl": "prullenbak",
+      "pl": "kosz",
+      "pt-BR": "lixeira"
+    },
+    "Agent": {
+      "en": "agent",
+      "es": "agente",
+      "fr": "agent",
+      "it": "agente",
+      "nl": "agent",
+      "pl": "agent",
+      "pt-BR": "agente"
+    },
+    "Verwaltung": {
+      "en": "administration",
+      "es": "administración",
+      "fr": "administration",
+      "it": "amministrazione",
+      "nl": "beheer",
+      "pl": "administracja",
+      "pt-BR": "administração"
+    }
+  }
+}
