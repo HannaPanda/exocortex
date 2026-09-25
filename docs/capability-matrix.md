@@ -164,6 +164,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
+| `PATCH /api/workspaces/order` | ✓ | ✓ | ✓ | `exo_workspace_reorder` |
 | `POST /api/admin/ai-models` | ✓ | · | · | — |
 | `POST /api/admin/ai-models/catalog` | ✓ | · | · | — |
 | `POST /api/admin/ai-models/sync` | ✓ | · | · | — |
@@ -251,7 +252,6 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
-| `PUT /api/workspaces/order` | ✓ | ✓ | ✓ | `exo_workspace_reorder` |
 
 ## Routes the browser reaches and agents do not
 

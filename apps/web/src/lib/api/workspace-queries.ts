@@ -71,7 +71,7 @@ export function useReorderWorkspaces() {
   return useMutation({
     mutationFn: (workspaceIds: string[]) =>
       apiRequest<WorkspaceListResponse>('/api/workspaces/order', {
-        method: 'PUT',
+        method: 'PATCH',
         body: { workspaceIds },
       }),
     onMutate: async (workspaceIds) => {

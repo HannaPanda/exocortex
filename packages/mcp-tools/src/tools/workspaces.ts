@@ -90,7 +90,7 @@ export const workspaceReorderTool: AnyToolDefinition = defineTool({
   target: () => 'user-preferences:workspace-order',
   async execute(client, input) {
     const result = await client.request({
-      method: 'PUT',
+      method: 'PATCH',
       path: '/api/workspaces/order',
       body: input,
       responseSchema: workspaceListResponseSchema,

@@ -72,9 +72,10 @@ export class WorkspacesController {
 
   /**
    * The caller's own order of their workspaces; the first one opens on start.
-   * PUT, because the answer is the whole list in its new order.
+   * Answers with the whole list in its new order. Declared above
+   * `:workspaceId`, so the literal segment is never read as an id.
    */
-  @Put('order')
+  @Patch('order')
   @ApiBody({ schema: openApiSchema(reorderWorkspacesRequestSchema) })
   @ApiOkResponse({ schema: openApiResponseSchema(workspaceListResponseSchema) })
   async reorder(
