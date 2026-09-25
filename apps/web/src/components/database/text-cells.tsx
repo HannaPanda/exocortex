@@ -64,7 +64,7 @@ function ExpandableTextCell({
   // No effect to resync `draft` when `value` changes: `PropertyCell` keys every
   // cell on its committed value, so a server-driven change (this mutation's own
   // success, another user's edit) remounts the cell instead (same pattern as
-  // `DocumentTitleInput` in document-view.tsx).
+  // `DocumentTitleInput` in document-title-input.tsx).
   const committed = format(value);
   const [draft, setDraft] = React.useState(committed);
   const [open, setOpen] = React.useState(false);
