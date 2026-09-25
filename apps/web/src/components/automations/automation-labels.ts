@@ -1,3 +1,6 @@
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import * as React from 'react';
+
 import {
   type AutomationAction,
   type AutomationOutput,
@@ -9,23 +12,14 @@ import {
 } from '@exocortex/contracts';
 
 /**
- * German names for the enums an automation is made of (issue #50, ADR-024).
+ * The words for the enums an automation is made of (issue #50, ADR-024).
  *
  * Their own file because three components need the same words: a list, a form
  * and a run log that disagreed about what `DOCUMENT_CONTENT_CHANGED` is called
- * would read like three different features.
+ * would read like three different features. The words themselves live in the
+ * `automations` catalogue; this file holds the orders and the one hook that
+ * reads them.
  */
-
-export const TRIGGER_LABELS: Record<AutomationTrigger, string> = {
-  DOCUMENT_CREATED: 'Seite angelegt',
-  DOCUMENT_UPDATED: 'Titel oder Eigenschaften geändert',
-  DOCUMENT_CONTENT_CHANGED: 'Inhalt geändert',
-  DOCUMENT_MOVED: 'Seite verschoben',
-  DOCUMENT_ARCHIVED: 'Seite in den Papierkorb gelegt',
-  DOCUMENT_DELETED: 'Seite endgültig gelöscht',
-  DATABASE_ROW_CHANGED: 'Zeilenwert geändert',
-  SCHEDULE: 'Zeitplan',
-};
 
 /** The order the form offers them in: from "happens most" to "happens least". */
 export const TRIGGER_ORDER: readonly AutomationTrigger[] = [
@@ -39,55 +33,22 @@ export const TRIGGER_ORDER: readonly AutomationTrigger[] = [
   'SCHEDULE',
 ];
 
-export const SCOPE_LABELS: Record<AutomationScope, string> = {
-  WORKSPACE: 'Ganzer Arbeitsbereich',
-  SUBTREE: 'Eine Seite samt Unterseiten',
-  DATABASE: 'Eine Datenbank und ihre Zeilen',
-};
+export const SCOPE_ORDER: readonly AutomationScope[] = ['WORKSPACE', 'SUBTREE', 'DATABASE'];
 
-export const ACTION_LABELS: Record<AutomationAction, string> = {
-  WEBHOOK: 'Webhook (signierter POST)',
-  AI_RUN: 'KI-Lauf gegen die geänderte Seite',
-  EMAIL_SELF: 'E-Mail an dich selbst',
-};
+export const ACTION_ORDER: readonly AutomationAction[] = ['WEBHOOK', 'AI_RUN', 'EMAIL_SELF'];
 
-export const OUTPUT_LABELS: Record<AutomationOutput, string> = {
-  COMMENT: 'Als Kommentar an der Seite',
-  CHILD_PAGE: 'Als neue Unterseite',
-};
+export const OUTPUT_ORDER: readonly AutomationOutput[] = ['COMMENT', 'CHILD_PAGE'];
 
-export const SCHEDULE_KIND_LABELS: Record<AutomationScheduleKind, string> = {
-  ONCE: 'Einmalig zu einem Zeitpunkt',
-  DAILY: 'Täglich',
-  WEEKLY: 'Wöchentlich',
-  MONTHLY: 'Monatlich',
-  CRON: 'Cron-Ausdruck',
-};
-
-/** Sunday first, the way `Date` counts, not the way a German calendar prints. */
-export const WEEKDAY_LABELS: readonly string[] = [
-  'Sonntag',
-  'Montag',
-  'Dienstag',
-  'Mittwoch',
-  'Donnerstag',
-  'Freitag',
-  'Samstag',
+export const SCHEDULE_KIND_ORDER: readonly AutomationScheduleKind[] = [
+  'ONCE',
+  'DAILY',
+  'WEEKLY',
+  'MONTHLY',
+  'CRON',
 ];
 
-export const RUN_ORIGIN_LABELS: Record<AutomationRunOrigin, string> = {
-  EVENT: 'Änderung',
-  SCHEDULE: 'Zeitplan',
-  MANUAL: 'Von Hand',
-};
-
-export const RUN_STATUS_LABELS: Record<AutomationRunStatus, string> = {
-  PENDING: 'wartet',
-  RUNNING: 'läuft',
-  SUCCEEDED: 'erledigt',
-  FAILED: 'fehlgeschlagen',
-  SKIPPED: 'übersprungen',
-};
+/** Sunday first, the way `Date` counts, not the way a calendar prints. */
+export const WEEKDAY_INDEXES: readonly number[] = [0, 1, 2, 3, 4, 5, 6];
 
 /** Badge colour per outcome. `SKIPPED` is deliberately not an error. */
 export function runStatusVariant(
@@ -99,20 +60,7 @@ export function runStatusVariant(
   return 'secondary';
 }
 
-/** A duration a person can read at a glance. */
-export function formatDuration(durationMs: number | null): string {
-  if (durationMs === null) return '';
-  if (durationMs < 1_000) return `${String(durationMs)} ms`;
-  return `${(durationMs / 1_000).toFixed(1)} s`;
-}
-
-/**
- * A schedule in one German clause (issue #73).
- *
- * The zone is always printed, even when it is the reader's own: a rule that
- * says 07:00 without saying where is a rule two people read differently.
- */
-export function describeSchedule(rule: {
+export interface ScheduleDescription {
   scheduleKind: AutomationScheduleKind | null;
   scheduleAt: string | null;
   scheduleTime: string | null;
@@ -120,31 +68,86 @@ export function describeSchedule(rule: {
   scheduleDayOfMonth: number | null;
   scheduleCron: string | null;
   scheduleTimeZone: string | null;
-}): string {
-  const zone = rule.scheduleTimeZone ?? '?';
-  const time = rule.scheduleTime ?? '?';
-  switch (rule.scheduleKind) {
-    case 'ONCE':
-      return rule.scheduleAt === null ? 'Einmalig' : `Einmalig am ${formatMoment(rule.scheduleAt)}`;
-    case 'DAILY':
-      return `Täglich um ${time} (${zone})`;
-    case 'WEEKLY':
-      return `Jeden ${WEEKDAY_LABELS[rule.scheduleWeekday ?? 0]} um ${time} (${zone})`;
-    case 'MONTHLY':
-      return `Monatlich am ${String(rule.scheduleDayOfMonth ?? 1)}. um ${time} (${zone})`;
-    case 'CRON':
-      return `Cron „${rule.scheduleCron ?? ''}" (${zone})`;
-    default:
-      return 'Ohne Zeitplan';
-  }
 }
 
-/** A timestamp in the local zone, without the year most rows share. */
-export function formatMoment(iso: string): string {
-  return new Date(iso).toLocaleString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+/**
+ * Everything an automation says about itself, in the reader's language.
+ *
+ * Weekday names come from `Intl` with the active locale: 2023-01-01 was a
+ * Sunday, so day `n` of that week is weekday `n` the way `Date` counts.
+ */
+export function useAutomationWording() {
+  const t = useTranslations('automations');
+  const format = useFormatter();
+  const locale = useLocale();
+
+  return React.useMemo(() => {
+    const weekdayFormat = new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' });
+    const weekday = (index: number): string =>
+      weekdayFormat.format(new Date(Date.UTC(2023, 0, 1 + index)));
+
+    /** A timestamp in the local zone, without the year most rows share. */
+    const moment = (iso: string): string =>
+      format.dateTime(new Date(iso), {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+    /** A duration a person can read at a glance. */
+    const duration = (durationMs: number | null): string => {
+      if (durationMs === null) return '';
+      if (durationMs < 1_000)
+        return format.number(durationMs, { style: 'unit', unit: 'millisecond' });
+      return format.number(durationMs / 1_000, {
+        style: 'unit',
+        unit: 'second',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      });
+    };
+
+    /**
+     * A schedule in one clause (issue #73).
+     *
+     * The zone is always printed, even when it is the reader's own: a rule
+     * that says 07:00 without saying where is a rule two people read
+     * differently.
+     */
+    const schedule = (rule: ScheduleDescription): string => {
+      const zone = rule.scheduleTimeZone ?? '?';
+      const time = rule.scheduleTime ?? '?';
+      switch (rule.scheduleKind) {
+        case 'ONCE':
+          return rule.scheduleAt === null
+            ? t('schedule.once')
+            : t('schedule.onceAt', { moment: moment(rule.scheduleAt) });
+        case 'DAILY':
+          return t('schedule.daily', { time, zone });
+        case 'WEEKLY':
+          return t('schedule.weekly', { weekday: weekday(rule.scheduleWeekday ?? 0), time, zone });
+        case 'MONTHLY':
+          return t('schedule.monthly', { day: rule.scheduleDayOfMonth ?? 1, time, zone });
+        case 'CRON':
+          return t('schedule.cron', { expression: rule.scheduleCron ?? '', zone });
+        default:
+          return t('schedule.none');
+      }
+    };
+
+    return {
+      trigger: (trigger: AutomationTrigger): string => t(`triggers.${trigger}`),
+      scope: (scope: AutomationScope): string => t(`scopes.${scope}`),
+      action: (action: AutomationAction): string => t(`actions.${action}`),
+      output: (output: AutomationOutput): string => t(`outputs.${output}`),
+      scheduleKind: (kind: AutomationScheduleKind): string => t(`scheduleKinds.${kind}`),
+      runOrigin: (origin: AutomationRunOrigin): string => t(`runOrigins.${origin}`),
+      runStatus: (status: AutomationRunStatus): string => t(`runStatuses.${status}`),
+      weekday,
+      moment,
+      duration,
+      schedule,
+    };
+  }, [format, locale, t]);
 }

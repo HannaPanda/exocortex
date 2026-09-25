@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Vorlagen"
+  },
+  "statuses": {
+    "PENDING": "wartet",
+    "RUNNING": "wird gebaut",
+    "COMPLETED": "fertig",
+    "FAILED": "fehlgeschlagen",
+    "CANCELLED": "abgebrochen"
+  },
+  "sources": {
+    "DOCUMENT": "Nur diese Seite",
+    "SUBTREE": "Seite samt Unterseiten, mit Inhaltsverzeichnis"
+  },
+  "variableOrigins": {
+    "MANUAL": "Wird vor dem Bau eingetippt",
+    "TITLE": "Titel der Seite",
+    "PATH": "Pfad der Seite",
+    "AUTHOR": "Wer den Bau startet",
+    "TODAY": "Heutiges Datum",
+    "PROPERTY": "Eigenschaft der Datenbankzeile"
+  },
+  "dialog": {
+    "title": "Als PDF veröffentlichen",
+    "description": "Der Inhalt dieser Seite wird mit einer Vorlage gesetzt. Die Seite selbst bleibt unverändert.",
+    "close": "Schließen",
+    "rebuild": "Neu erzeugen",
+    "build": "PDF erzeugen",
+    "disabled": "Die PDF-Ausgabe ist für diesen Arbeitsbereich abgeschaltet.",
+    "noTemplates": "Es gibt noch keine Vorlage. Eine Administratorin legt sie unter „Vorlagen“ im Arbeitsbereich an.",
+    "startFailed": "Der Bau ließ sich nicht starten.",
+    "template": "Vorlage",
+    "chooseTemplate": "Vorlage wählen",
+    "source": "Umfang",
+    "historyHeading": "Bisherige PDFs",
+    "stale": "Seite hat sich geändert",
+    "deletedTemplate": "(gelöschte Vorlage)",
+    "openPdf": "PDF öffnen",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "showLog": "Protokoll anzeigen",
+    "hideLog": "Protokoll ausblenden",
+    "emptyLog": "(leer)",
+    "editTemplates": "Vorlagen bearbeiten"
+  },
+  "templateDialog": {
+    "newTitle": "Neue Vorlage",
+    "editTitle": "Vorlage bearbeiten",
+    "description": "Der Quelltext ist eine Pandoc-Vorlage: <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Ohne eigenen Quelltext wird Eisvogel benutzt.",
+    "name": "Name",
+    "templateDescription": "Beschreibung",
+    "templateDescriptionPlaceholder": "Wofür diese Vorlage gedacht ist",
+    "useBuiltIn": "Eingebaute Vorlage Eisvogel benutzen",
+    "source": "Quelltext",
+    "variables": "Variablen",
+    "addVariable": "Variable hinzufügen",
+    "newVariableLabel": "Neue Variable",
+    "variableName": "Name in der Vorlage",
+    "variableLabel": "Beschriftung",
+    "variableOrigin": "Woher der Wert kommt",
+    "propertyName": "Name der Eigenschaft",
+    "propertyPlaceholder": "Eigenschaft",
+    "required": "Pflichtfeld",
+    "removeVariable": "Entfernen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saveFailed": "Die Vorlage ließ sich nicht speichern."
+  },
+  "templatesPage": {
+    "loading": "Vorlagen werden geladen …",
+    "title": "Vorlagen",
+    "intro": "Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Der Satz läuft über Pandoc und LaTeX; der Inhalt der Seiten bleibt dabei unberührt.",
+    "newTemplate": "Neue Vorlage",
+    "disabled": "Die PDF-Ausgabe ist für diesen Arbeitsbereich abgeschaltet. Die Vorlagen unten bleiben erhalten, es lässt sich aber nichts damit bauen. Umschalten lässt sich das über die Einstellung <code>{setting}</code>; hat die Installation sie global abgeschaltet, kann ein Arbeitsbereich sie nicht selbst wieder einschalten.",
+    "emptyTitle": "Noch keine Vorlagen",
+    "emptyDescription": "Eine Vorlage ohne eigenen Quelltext benutzt die eingebaute Vorlage Eisvogel und braucht keine Zeile LaTeX.",
+    "columns": {
+      "name": "Name",
+      "typesetting": "Satz",
+      "variables": "Variablen"
+    },
+    "builtIn": "Eisvogel (eingebaut)",
+    "ownSource": "Eigener Quelltext",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  }
+}

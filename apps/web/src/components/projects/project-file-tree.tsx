@@ -1,6 +1,7 @@
 'use client';
 
 import { FileIcon, FileTextIcon, FolderIcon, ImageIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ProjectFile } from '@exocortex/contracts';
@@ -23,7 +24,7 @@ interface TreeNode {
 }
 
 /** Groups the flat path list into the folders it implies. */
-function buildTree(files: readonly ProjectFile[]): TreeNode[] {
+function buildTree(files: readonly ProjectFile[], collator: Intl.Collator): TreeNode[] {
   const root: TreeNode = { name: '', path: '', file: null, children: [] };
 
   for (const file of files) {
@@ -49,7 +50,7 @@ function buildTree(files: readonly ProjectFile[]): TreeNode[] {
       const aFolder = a.file === null;
       const bFolder = b.file === null;
       if (aFolder !== bFolder) return aFolder ? -1 : 1;
-      return a.name.localeCompare(b.name, 'de');
+      return collator.compare(a.name, b.name);
     });
     for (const node of nodes) sort(node.children);
   };
@@ -89,18 +90,20 @@ export function ProjectFileTree({
   onDelete,
   onCreate,
 }: ProjectFileTreeProps) {
-  const tree = React.useMemo(() => buildTree(files), [files]);
+  const t = useTranslations('projects.fileTree');
+  const locale = useLocale();
+  const tree = React.useMemo(() => buildTree(files, new Intl.Collator(locale)), [files, locale]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
-        <span className="text-xs font-medium text-muted-foreground">Dateien</span>
+        <span className="text-xs font-medium text-muted-foreground">{t('heading')}</span>
         {readOnly ? null : (
           <Button
             variant="ghost"
             size="icon-sm"
             onClick={onCreate}
-            aria-label="Datei anlegen"
+            aria-label={t('create')}
             data-testid="project-file-create"
           >
             <PlusIcon className="size-4" />
@@ -109,7 +112,7 @@ export function ProjectFileTree({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-1">
         {tree.length === 0 ? (
-          <p className="px-2 py-3 text-xs text-muted-foreground">Noch keine Dateien.</p>
+          <p className="px-2 py-3 text-xs text-muted-foreground">{t('empty')}</p>
         ) : (
           <TreeLevel
             nodes={tree}
@@ -143,6 +146,7 @@ function TreeLevel({
   onSelect: (file: ProjectFile) => void;
   onDelete: (file: ProjectFile) => void;
 }) {
+  const t = useTranslations('projects.fileTree');
   return (
     <ul className="space-y-px">
       {nodes.map((node) => (
@@ -176,7 +180,7 @@ function TreeLevel({
             <span className="truncate">{node.name}</span>
             {node.path === rootFile ? (
               <span className="shrink-0 rounded-sm bg-muted px-1 text-nano text-foreground/90">
-                Haupt
+                {t('rootBadge')}
               </span>
             ) : null}
             {node.file !== null && !readOnly ? (
@@ -187,7 +191,7 @@ function TreeLevel({
                 // focused is worse than hidden, and a touch device has no
                 // hover to reveal it with.
                 className="ms-auto opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
-                aria-label={`${node.name} entfernen`}
+                aria-label={t('remove', { name: node.name })}
                 onClick={(event) => {
                   event.stopPropagation();
                   onDelete(node.file as ProjectFile);

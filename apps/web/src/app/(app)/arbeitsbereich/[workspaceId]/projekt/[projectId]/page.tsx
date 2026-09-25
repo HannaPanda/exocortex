@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { ProjectView } from '@/components/projects/project-view';
 
-export const metadata: Metadata = { title: 'Projekt' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('projects.route');
+  return { title: t('title') };
+}
 
 export default async function ProjectPage({
   params,

@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automatyzacje"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Strona utworzona",
+    "DOCUMENT_UPDATED": "Tytuł lub właściwości zmienione",
+    "DOCUMENT_CONTENT_CHANGED": "Treść zmieniona",
+    "DOCUMENT_MOVED": "Strona przeniesiona",
+    "DOCUMENT_ARCHIVED": "Strona przeniesiona do kosza",
+    "DOCUMENT_DELETED": "Strona trwale usunięta",
+    "DATABASE_ROW_CHANGED": "Wartość wiersza zmieniona",
+    "SCHEDULE": "Harmonogram"
+  },
+  "scopes": {
+    "WORKSPACE": "Cały obszar roboczy",
+    "SUBTREE": "Strona wraz z podstronami",
+    "DATABASE": "Baza danych i jej wiersze"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (podpisany POST)",
+    "AI_RUN": "Uruchomienie AI dla zmienionej strony",
+    "EMAIL_SELF": "E-mail do ciebie"
+  },
+  "outputs": {
+    "COMMENT": "Jako komentarz do strony",
+    "CHILD_PAGE": "Jako nowa podstrona"
+  },
+  "scheduleKinds": {
+    "ONCE": "Jednorazowo w określonym momencie",
+    "DAILY": "Codziennie",
+    "WEEKLY": "Co tydzień",
+    "MONTHLY": "Co miesiąc",
+    "CRON": "Wyrażenie cron"
+  },
+  "runOrigins": {
+    "EVENT": "Zmiana",
+    "SCHEDULE": "Harmonogram",
+    "MANUAL": "Ręcznie"
+  },
+  "runStatuses": {
+    "PENDING": "oczekuje",
+    "RUNNING": "w trakcie",
+    "SUCCEEDED": "ukończono",
+    "FAILED": "niepowodzenie",
+    "SKIPPED": "pominięto"
+  },
+  "schedule": {
+    "once": "Jednorazowo",
+    "onceAt": "Jednorazowo: {moment}",
+    "daily": "Codziennie o {time} ({zone})",
+    "weekly": "Co tydzień ({weekday}) o {time} ({zone})",
+    "monthly": "Co miesiąc {day}. dnia o {time} ({zone})",
+    "cron": "Cron „{expression}” ({zone})",
+    "none": "Bez harmonogramu"
+  },
+  "scheduleFields": {
+    "kind": "Harmonogram",
+    "at": "Termin",
+    "atHint": "Uruchamia się dokładnie raz. Potem reguła pozostaje na liście, bez wyłączania się.",
+    "weekday": "Dzień tygodnia",
+    "dayOfMonth": "Dzień miesiąca",
+    "dayOfMonthHint": "W krótszych miesiącach 31 oznacza ostatni dzień miesiąca. Żaden miesiąc nie jest pomijany.",
+    "time": "Godzina",
+    "cron": "Wyrażenie cron",
+    "cronHint": "Pięć pól: minuta, godzina, dzień miesiąca, miesiąc, dzień tygodnia (0 to niedziela). Zakresy, listy i kroki są dozwolone, ale nazwy i skróty, takie jak @daily, nie.",
+    "zone": "Strefa czasowa",
+    "zoneHint": "Należy do reguły, a nie do serwera. Czas letni jest uwzględniany: 07:00 pozostaje 07:00."
+  },
+  "dialog": {
+    "newTitle": "Nowa automatyzacja",
+    "editTitle": "Edytuj automatyzację",
+    "description": "Gdy w wybranym zakresie coś się zmieni lub nadejdzie czas z harmonogramu, akcja zostanie uruchomiona. Automatyzacja nigdy nie nadpisuje zawartości strony.",
+    "name": "Nazwa",
+    "namePlaceholder": "Poinformuj Hermes o nowych notatkach ze spotkania",
+    "debounce": "Debounce (sekundy)",
+    "debounceHint": "Przez ten czas na stronie nie mogą zachodzić żadne zmiany, zanim reguła zostanie uruchomiona. Bez tego każde naciśnięcie klawisza wywołuje uruchomienie, a w przypadku uruchomienia SI każde z nich kosztuje.",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "save": "Zapisz",
+    "secretIntro": "Reguła została utworzona. Sekret podpisywania widzisz teraz i nigdy więcej: eXocortex nie może go ponownie wyświetlić. Usługa odbierająca potrzebuje go do weryfikacji podpisu.",
+    "secretLabel": "Sekret podpisywania",
+    "secretSignature": "Każde żądanie POST zawiera nagłówki <code>{timestampHeader}</code> i <code>{signatureHeader}</code>. Wartość <code>{signedValue}</code> jest podpisywana za pomocą HMAC-SHA256 z użyciem tego sekretu.",
+    "secretDone": "Skopiowane",
+    "scope": "Zakres",
+    "subtreeDocumentId": "ID strony",
+    "databaseDocumentId": "ID bazy danych",
+    "scopeDocumentPlaceholder": "np. {example}",
+    "scopeDocumentHint": "ID znajduje się w pasku adresu strony.",
+    "triggers": "Wyzwalacze",
+    "triggersHint": "Wartości wierszy są dostępne tylko w zakresie bazy danych, a wszystkie inne poza nim. Harmonogram działa samodzielnie i wymaga strony jako zakresu: zegar sam jej nie wskazuje.",
+    "action": "Akcja",
+    "mailSubject": "Temat (opcjonalnie)",
+    "mailSubjectPlaceholder": "Pozostaw puste, aby użyć nazwy reguły",
+    "mailHint": "Wiadomość e-mail trafia na potwierdzony adres twojego konta i żaden inny. Treść zawiera samą stronę – w przypadku długich stron skróconą i z linkiem poniżej.",
+    "webhookUrl": "Docelowy adres URL",
+    "webhookNoHosts": "Ta instalacja nie zezwala obecnie na cele webhooków. Globalny administrator musi uzupełnić {setting}.",
+    "webhookHosts": "Dozwolone hosty: {hosts}. Wysyłane są tylko metadane strony, nigdy jej zawartość.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Sprawdź, czy ta strona w wyniku zmiany nie zawiera nieaktualnych informacji.",
+    "promptHint": "Zmieniona strona stanowi materiał dla modelu. Odpowiedź trafia obok niej, a nie do jej wnętrza.",
+    "output": "Wynik",
+    "model": "Model (opcjonalnie)",
+    "modelPlaceholder": "Zostaw puste dla domyślnego modelu"
+  },
+  "page": {
+    "loading": "Ładowanie automatyzacji…",
+    "title": "Automatyzacje",
+    "intro": "Reguły, które reagują na zmiany stron lub na czas: podpisany webhook lub uruchomienie AI na danej stronie.",
+    "newRule": "Nowa reguła",
+    "disabled": "Automatyzacje są wyłączone dla tego obszaru roboczego. Żadna z poniższych reguł nie działa, bez względu na jej konfigurację. Można to zmienić w ustawieniu <code>{setting}</code>; jeśli instalacja wyłączyła je globalnie, obszar roboczy nie może włączyć ich samodzielnie.",
+    "readOnly": "Reguły może tworzyć i zmieniać właściciel lub właścicielka tego obszaru roboczego. Reguła wysyła dane na zewnątrz lub wydaje pieniądze na model i robi to nadal, gdy nikt już nie patrzy.",
+    "rulesHeading": "Reguły",
+    "emptyTitle": "Brak automatyzacji",
+    "emptyDescription": "Reguła składa się z trzech odpowiedzi: gdzie patrzy, na co reaguje i co potem robi.",
+    "columns": {
+      "name": "Nazwa",
+      "scope": "Zakres",
+      "triggers": "Wyzwalacze",
+      "action": "Akcja",
+      "enabled": "Wł."
+    },
+    "selfDisabled": "Samoczynnie wyłączono: {reason}",
+    "lastTriggered": "Ostatnio {moment}",
+    "noNextRun": "Brak kolejnego uruchomienia",
+    "nextRun": "Następne uruchomienie {moment}",
+    "disableRule": "Wyłącz {name}",
+    "enableRule": "Włącz {name}",
+    "documentIdPlaceholder": "ID strony",
+    "runAgainst": "Strona, na której ma zostać uruchomiona reguła {name}",
+    "runNow": "Uruchom teraz",
+    "edit": "Zmień",
+    "confirmDelete": "Na pewno usunąć",
+    "delete": "Usuń"
+  },
+  "runLog": {
+    "heading": "Dziennik uruchomień",
+    "empty": "Jeszcze nic nie uruchomiono.",
+    "columns": {
+      "moment": "Czas",
+      "rule": "Reguła",
+      "page": "Strona",
+      "origin": "Źródło",
+      "status": "Wynik",
+      "duration": "Czas trwania"
+    },
+    "deletedPage": "(usunięta)"
+  }
+}

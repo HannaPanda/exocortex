@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entitäten"
+  },
+  "types": {
+    "person": "Person",
+    "host": "Host",
+    "service": "Dienst",
+    "project": "Projekt",
+    "credential": "Zugang",
+    "organisation": "Organisation",
+    "other": "Sonstiges"
+  },
+  "page": {
+    "loading": "Entitäten werden geladen …",
+    "title": "Entitäten",
+    "intro": "Personen, Hosts, Dienste und Projekte, die in deinen Seiten vorkommen, und was über sie bekannt ist.",
+    "create": "Neue Entität",
+    "searchPlaceholder": "Name oder Alias",
+    "allTypes": "Alle Typen",
+    "nothingSelectedTitle": "Nichts ausgewählt",
+    "nothingSelectedDescription": "Links eine Entität anklicken, um Fakten, Verbindungen und Seiten zu sehen.",
+    "candidatesTitle": "Vorschläge",
+    "candidatesIntro": "Namen, die auf mehreren Seiten auftauchen und zu denen es noch keine Entität gibt.",
+    "emptyTitle": "Keine Entitäten",
+    "emptyDescription": "Entweder ist noch keine angelegt, oder der Filter passt auf keine.",
+    "aliases": "auch: {aliases}",
+    "mentionCount": "{count, plural, one {# Seite} other {# Seiten}}"
+  },
+  "candidates": {
+    "loading": "Vorschläge werden geladen …",
+    "emptyTitle": "Keine Vorschläge",
+    "emptyDescription": "Namen erscheinen hier, sobald sie auf mindestens {threshold, plural, one {# Seite} other {# Seiten}} vorkommen.",
+    "documentCount": "auf {count, plural, one {# Seite} other {# Seiten}}",
+    "occurrences": "{count}× genannt",
+    "confirm": "Anlegen",
+    "dismiss": "Verwerfen"
+  },
+  "setup": {
+    "missing": "Es gibt noch kein Verzeichnis für Entitäten. Es wird als Datenbank in einem Arbeitsbereich angelegt; danach sammelt eXocortex Namen aus den Seiten von selbst.",
+    "adminOnly": "Anlegen kann es nur, wer diese Installation verwaltet.",
+    "chooseWorkspace": "Arbeitsbereich wählen",
+    "databaseTitle": "Entitäten",
+    "create": "Verzeichnis anlegen"
+  },
+  "detail": {
+    "loading": "Profil wird geladen …",
+    "openPage": "Seite öffnen",
+    "type": "Typ",
+    "aliases": "Aliasse",
+    "rescanQueued": "Die Seiten werden neu durchsucht; neue Treffer erscheinen in ein paar Minuten.",
+    "facts": "Fakten",
+    "confirmations": "{count, plural, one {# Bestätigung} other {# Bestätigungen}}",
+    "relations": "Verbindungen",
+    "mentions": "Seiten",
+    "noMentions": "Noch keine Seite nennt diesen Namen.",
+    "mentionMeta": "{workspace} · „{alias}“",
+    "unlink": "Verknüpfung lösen",
+    "hiddenMentions": "{count, plural, one {Eine weitere Seite in einem Arbeitsbereich, den du nicht sehen kannst.} other {# weitere Seiten in Arbeitsbereichen, die du nicht sehen kannst.}}"
+  },
+  "dialog": {
+    "title": "Neue Entität",
+    "description": "Wird eine Zeile im Entitäten-Verzeichnis und damit eine ganz normale Seite.",
+    "name": "Name",
+    "type": "Typ",
+    "aliases": "Aliasse",
+    "aliasesPlaceholder": "fpb2, Flauschipanda 2",
+    "aliasesHint": "Mit Komma getrennt. Jede Schreibweise, die eine Seite benutzen könnte.",
+    "note": "Notiz",
+    "cancel": "Abbrechen",
+    "create": "Anlegen"
+  },
+  "linkPage": {
+    "title": "Seite verknüpfen",
+    "workspace": "Arbeitsbereich",
+    "chooseWorkspace": "Arbeitsbereich wählen",
+    "search": "Seite suchen",
+    "searchPlaceholder": "Titel",
+    "note": "Warum",
+    "notePlaceholder": "Steht dort nur als „der Server“",
+    "submit": "Verknüpfen"
+  }
+}

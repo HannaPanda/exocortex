@@ -6,6 +6,7 @@ import { stex } from '@codemirror/legacy-modes/mode/stex';
 import { EditorState, type Extension } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, placeholder } from '@codemirror/view';
 import { type HocuspocusProvider } from '@hocuspocus/provider';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { yCollab } from 'y-codemirror.next';
 import * as Y from 'yjs';
@@ -84,6 +85,8 @@ export function ProjectCodeEditor({
   focusNonce,
   onCursorLine,
 }: ProjectCodeEditorProps) {
+  const t = useTranslations('projects.editor');
+  const emptyFileText = t('emptyFile');
   const host = React.useRef<HTMLDivElement | null>(null);
   const view = React.useRef<EditorView | null>(null);
   // Through a ref, so a new callback identity does not rebuild the editor and
@@ -121,7 +124,7 @@ export function ProjectCodeEditor({
           if (!update.selectionSet && !update.docChanged) return;
           report.current(update.state.doc.lineAt(update.state.selection.main.head).number);
         }),
-        placeholder('Diese Datei ist leer.'),
+        placeholder(emptyFileText),
         EditorState.readOnly.of(readOnly),
         EditorView.editable.of(!readOnly),
       ],
@@ -133,7 +136,7 @@ export function ProjectCodeEditor({
       created.destroy();
       view.current = null;
     };
-  }, [provider, ydoc, path, readOnly]);
+  }, [provider, ydoc, path, readOnly, emptyFileText]);
 
   // Jumping to a diagnostic's line. An effect of its own so it does not rebuild
   // the editor, which would drop everybody's cursor to jump to a warning.

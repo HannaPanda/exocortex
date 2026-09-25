@@ -1,6 +1,7 @@
 'use client';
 
 import { FileArchiveIcon, HammerIcon, PackageOpenIcon, SquareIcon, UploadIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -35,12 +36,7 @@ const ENGINE_LABEL: Record<ProjectEngine, string> = {
   LUALATEX: 'LuaLaTeX',
 };
 
-const BIBLIOGRAPHY_LABEL: Record<ProjectBibliography, string> = {
-  AUTO: 'automatisch',
-  BIBTEX: 'BibTeX',
-  BIBER: 'Biber',
-  NONE: 'keine',
-};
+const BIBLIOGRAPHY_ORDER: readonly ProjectBibliography[] = ['AUTO', 'BIBTEX', 'BIBER', 'NONE'];
 
 interface ProjectToolbarProps {
   project: Project;
@@ -69,6 +65,7 @@ export function ProjectToolbar({
   onBuild,
   onCancel,
 }: ProjectToolbarProps) {
+  const t = useTranslations('projects.toolbar');
   const uploadInput = React.useRef<HTMLInputElement | null>(null);
   const importInput = React.useRef<HTMLInputElement | null>(null);
   const rootCandidates = files.filter((file) => file.kind === 'TEXT' && file.path.endsWith('.tex'));
@@ -82,7 +79,7 @@ export function ProjectToolbar({
       <h1 className="me-2 truncate text-sm font-medium">{project.title}</h1>
 
       <Label htmlFor="project-root" className="text-xs text-muted-foreground">
-        Hauptdatei
+        {t('rootFile')}
       </Label>
       <Select
         value={project.rootFile}
@@ -109,7 +106,7 @@ export function ProjectToolbar({
           if (value !== null) onUpdate({ engine: value as ProjectEngine });
         }}
       >
-        <SelectTrigger size="sm" className="w-32" aria-label="Engine">
+        <SelectTrigger size="sm" className="w-32" aria-label={t('engine')}>
           <SelectValue>{() => ENGINE_LABEL[project.engine]}</SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -127,13 +124,13 @@ export function ProjectToolbar({
           if (value !== null) onUpdate({ bibliography: value as ProjectBibliography });
         }}
       >
-        <SelectTrigger size="sm" className="w-36" aria-label="Literaturverzeichnis">
-          <SelectValue>{() => BIBLIOGRAPHY_LABEL[project.bibliography]}</SelectValue>
+        <SelectTrigger size="sm" className="w-36" aria-label={t('bibliography')}>
+          <SelectValue>{() => t(`bibliographies.${project.bibliography}`)}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(BIBLIOGRAPHY_LABEL).map(([value, label]) => (
+          {BIBLIOGRAPHY_ORDER.map((value) => (
             <SelectItem key={value} value={value}>
-              {label}
+              {t(`bibliographies.${value}`)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -152,7 +149,7 @@ export function ProjectToolbar({
           }}
         />
         <Button variant="ghost" size="sm" onClick={() => uploadInput.current?.click()}>
-          <UploadIcon className="size-4" /> Datei hochladen
+          <UploadIcon className="size-4" /> {t('upload')}
         </Button>
 
         <input
@@ -173,7 +170,7 @@ export function ProjectToolbar({
           disabled={archivePending}
           onClick={() => importInput.current?.click()}
         >
-          <PackageOpenIcon className="size-4" /> ZIP importieren
+          <PackageOpenIcon className="size-4" /> {t('importZip')}
         </Button>
 
         <Button
@@ -183,16 +180,16 @@ export function ProjectToolbar({
           data-testid="project-export"
           onClick={onExport}
         >
-          <FileArchiveIcon className="size-4" /> Als ZIP
+          <FileArchiveIcon className="size-4" /> {t('exportZip')}
         </Button>
 
         {running ? (
           <Button variant="outline" size="sm" onClick={onCancel}>
-            <SquareIcon className="size-4" /> Abbrechen
+            <SquareIcon className="size-4" /> {t('cancel')}
           </Button>
         ) : (
           <Button size="sm" data-testid="project-build" disabled={buildPending} onClick={onBuild}>
-            <HammerIcon className="size-4" /> Bauen
+            <HammerIcon className="size-4" /> {t('build')}
           </Button>
         )}
       </div>

@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Memória"
+  },
+  "statuses": {
+    "current": "válido",
+    "superseded": "obsoleto",
+    "conflicted": "conflitante"
+  },
+  "facts": {
+    "title": "Memória",
+    "intro": "O que os agentes destilaram de suas notas de sessão. Cada frase é uma página própria no espaço de trabalho Memory.",
+    "project": "Projeto",
+    "projectPlaceholder": "todos",
+    "status": "Status",
+    "target": "Promover para",
+    "chooseWorkspace": "Escolher espaço de trabalho",
+    "loading": "Carregando fatos …",
+    "omitted": "{count, plural, one {# outro fato neste projeto foi omitido pelo filtro.} many {# outros fatos neste projeto foram omitidos pelo filtro.} other {# outros fatos neste projeto foram omitidos pelo filtro.}}",
+    "emptyTitle": "Nenhum fato",
+    "emptyDescription": "A consolidação acontece à noite. Sem notas de sessão, não há nada para destilar.",
+    "confirmations": "{count, plural, one {# confirmação} many {# confirmações} other {# confirmações}}",
+    "confidence": "Peso {confidence}",
+    "lastConfirmed": "última vez {moment}",
+    "sourceNotes": "{count, plural, one {de # nota} many {de # notas} other {de # notas}}",
+    "promote": "Promover",
+    "promoted": "promovido"
+  }
+}

@@ -1,8 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { ENTITY_TYPE_LABELS, type EntityCandidate, type EntityType } from '@exocortex/contracts';
+import { type EntityCandidate, type EntityType } from '@exocortex/contracts';
 import {
   Button,
   EmptyState,
@@ -20,6 +21,8 @@ import {
   useEntityCandidates,
 } from '@/lib/api/entity-queries';
 
+import { ENTITY_TYPES, useEntityTypeLabel } from './entity-type-label';
+
 /**
  * Names that keep turning up and that no entity answers to yet (issue #47).
  *
@@ -33,17 +36,16 @@ import {
  * judgement can be made without opening anything.
  */
 export function EntityCandidates() {
+  const t = useTranslations('entities.candidates');
   const candidates = useEntityCandidates();
-  if (candidates.isPending) return <LoadingState label="Vorschläge werden geladen …" />;
+  if (candidates.isPending) return <LoadingState label={t('loading')} />;
 
   const rows = candidates.data?.candidates ?? [];
   if (rows.length === 0) {
     return (
       <EmptyState
-        title="Keine Vorschläge"
-        description={`Namen erscheinen hier, sobald sie auf mindestens ${String(
-          candidates.data?.threshold ?? 3,
-        )} Seiten vorkommen.`}
+        title={t('emptyTitle')}
+        description={t('emptyDescription', { threshold: candidates.data?.threshold ?? 3 })}
       />
     );
   }
@@ -61,6 +63,8 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
   const confirm = useConfirmEntityCandidate();
   const dismiss = useDismissEntityCandidate();
   const [type, setType] = React.useState<EntityType>('other');
+  const t = useTranslations('entities.candidates');
+  const typeLabel = useEntityTypeLabel();
 
   const busy = confirm.isPending || dismiss.isPending;
 
@@ -72,22 +76,20 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium">{candidate.phrase}</span>
         <span className="text-xs text-muted-foreground">
-          {candidate.documentCount === 1
-            ? 'auf 1 Seite'
-            : `auf ${String(candidate.documentCount)} Seiten`}
+          {t('documentCount', { count: candidate.documentCount })}
           {candidate.occurrences > candidate.documentCount
-            ? ` · ${String(candidate.occurrences)}× genannt`
+            ? ` · ${t('occurrences', { count: candidate.occurrences })}`
             : ''}
         </span>
         <div className="ms-auto flex items-center gap-2">
           <Select value={type} onValueChange={(next) => setType(next as EntityType)}>
             <SelectTrigger className="w-36" data-testid="entity-candidate-type">
-              <SelectValue>{() => ENTITY_TYPE_LABELS[type]}</SelectValue>
+              <SelectValue>{() => typeLabel(type)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (
+              {ENTITY_TYPES.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {ENTITY_TYPE_LABELS[value]}
+                  {typeLabel(value)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -100,7 +102,7 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
               confirm.mutate({ candidateId: candidate.id, request: { type, aliases: [] } })
             }
           >
-            Anlegen
+            {t('confirm')}
           </Button>
           <Button
             variant="ghost"
@@ -109,7 +111,7 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
             data-testid="entity-candidate-dismiss"
             onClick={() => dismiss.mutate(candidate.id)}
           >
-            Verwerfen
+            {t('dismiss')}
           </Button>
         </div>
       </div>

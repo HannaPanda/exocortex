@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -38,11 +39,11 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
 import {
-  ACTION_LABELS,
-  OUTPUT_LABELS,
-  SCOPE_LABELS,
-  TRIGGER_LABELS,
+  ACTION_ORDER,
+  OUTPUT_ORDER,
+  SCOPE_ORDER,
   TRIGGER_ORDER,
+  useAutomationWording,
 } from './automation-labels';
 import {
   AutomationScheduleFields,
@@ -208,6 +209,7 @@ export function AutomationRuleDialog({
   rule,
   allowedHosts,
 }: AutomationRuleDialogProps) {
+  const t = useTranslations('automations.dialog');
   const create = useCreateAutomationRule(workspaceId);
   const update = useUpdateAutomationRule(workspaceId);
 
@@ -270,11 +272,8 @@ export function AutomationRuleDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>{isNew ? 'Neue Automation' : 'Automation ändern'}</DialogTitle>
-          <DialogDescription>
-            Wenn sich unter dem gewählten Bereich etwas ändert oder der Zeitplan fällig wird, läuft
-            die Aktion. Eine Automation überschreibt nie den Inhalt einer Seite.
-          </DialogDescription>
+          <DialogTitle>{isNew ? t('newTitle') : t('editTitle')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <DialogBody>
@@ -289,13 +288,13 @@ export function AutomationRuleDialog({
               ) : null}
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="automation-name">Name</Label>
+                <Label htmlFor="automation-name">{t('name')}</Label>
                 <Input
                   id="automation-name"
                   data-testid="automation-name-input"
                   value={draft.name}
                   onChange={(event) => set('name', event.target.value)}
-                  placeholder="Hermes über neue Sitzungsnotizen informieren"
+                  placeholder={t('namePlaceholder')}
                 />
               </div>
 
@@ -310,7 +309,7 @@ export function AutomationRuleDialog({
               ) : null}
 
               <div className={scheduled ? 'hidden' : 'flex flex-col gap-2'}>
-                <Label htmlFor="automation-debounce">Entprellung (Sekunden)</Label>
+                <Label htmlFor="automation-debounce">{t('debounce')}</Label>
                 <Input
                   id="automation-debounce"
                   type="number"
@@ -319,10 +318,7 @@ export function AutomationRuleDialog({
                   onChange={(event) => set('debounceSeconds', Number(event.target.value))}
                   className="max-w-32"
                 />
-                <p className="text-xs text-muted-foreground">
-                  So lange muss eine Seite ruhig sein, bevor die Regel läuft. Ohne das löst jeder
-                  Tastendruck einen Lauf aus, und bei einem KI-Lauf kostet jeder davon Geld.
-                </p>
+                <p className="text-xs text-muted-foreground">{t('debounceHint')}</p>
               </div>
 
               <ActionFields draft={draft} set={set} allowedHosts={allowedHosts} isNew={isNew} />
@@ -333,10 +329,10 @@ export function AutomationRuleDialog({
         {secret === null ? (
           <DialogFooter>
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button onClick={submit} disabled={pending} data-testid="automation-save">
-              {isNew ? 'Anlegen' : 'Speichern'}
+              {isNew ? t('create') : t('save')}
             </Button>
           </DialogFooter>
         ) : null}
@@ -347,22 +343,23 @@ export function AutomationRuleDialog({
 
 /** The one moment the signing secret exists outside the database. */
 function SecretHandover({ secret, onDone }: { secret: string; onDone: () => void }) {
+  const t = useTranslations('automations.dialog');
   return (
     <div className="flex flex-col gap-4" data-testid="automation-secret">
       <Alert>
-        <AlertDescription>
-          Die Regel ist angelegt. Das Signiergeheimnis siehst du jetzt und nie wieder: eXocortex
-          kann es nicht zurückgeben. Der empfangende Dienst braucht es, um die Signatur zu prüfen.
-        </AlertDescription>
+        <AlertDescription>{t('secretIntro')}</AlertDescription>
       </Alert>
-      <CopyBlock label="Signiergeheimnis" value={secret} />
+      <CopyBlock label={t('secretLabel')} value={secret} />
       <p className="text-xs text-muted-foreground">
-        Jeder POST trägt die Kopfzeilen <code>x-exocortex-timestamp</code> und{' '}
-        <code>x-exocortex-signature</code>. Signiert wird{' '}
-        <code>&lt;timestamp&gt;.&lt;body&gt;</code> per HMAC-SHA256 mit diesem Geheimnis.
+        {t.rich('secretSignature', {
+          timestampHeader: 'x-exocortex-timestamp',
+          signatureHeader: 'x-exocortex-signature',
+          signedValue: '<timestamp>.<body>',
+          code: (chunks) => <code>{chunks}</code>,
+        })}
       </p>
       <DialogFooter>
-        <Button onClick={onDone}>Habe ich kopiert</Button>
+        <Button onClick={onDone}>{t('secretDone')}</Button>
       </DialogFooter>
     </div>
   );
@@ -374,17 +371,19 @@ interface FieldProps {
 }
 
 function ScopeFields({ draft, set }: FieldProps) {
+  const t = useTranslations('automations.dialog');
+  const wording = useAutomationWording();
   return (
     <div className="flex flex-col gap-2">
-      <Label>Geltungsbereich</Label>
+      <Label>{t('scope')}</Label>
       <Select value={draft.scope} onValueChange={(value) => set('scope', value as AutomationScope)}>
         <SelectTrigger data-testid="automation-scope">
-          <SelectValue>{() => SCOPE_LABELS[draft.scope]}</SelectValue>
+          <SelectValue>{() => wording.scope(draft.scope)}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {(Object.keys(SCOPE_LABELS) as AutomationScope[]).map((scope) => (
+          {SCOPE_ORDER.map((scope) => (
             <SelectItem key={scope} value={scope}>
-              {SCOPE_LABELS[scope]}
+              {wording.scope(scope)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -392,18 +391,16 @@ function ScopeFields({ draft, set }: FieldProps) {
       {draft.scope === 'WORKSPACE' ? null : (
         <div className="flex flex-col gap-2">
           <Label htmlFor="automation-scope-document">
-            {draft.scope === 'SUBTREE' ? 'Seiten-Id' : 'Datenbank-Id'}
+            {draft.scope === 'SUBTREE' ? t('subtreeDocumentId') : t('databaseDocumentId')}
           </Label>
           <Input
             id="automation-scope-document"
             data-testid="automation-scope-document"
             value={draft.scopeDocumentId}
             onChange={(event) => set('scopeDocumentId', event.target.value)}
-            placeholder="z. B. z29zpmvlgk3wk86anm1axa2h"
+            placeholder={t('scopeDocumentPlaceholder', { example: 'z29zpmvlgk3wk86anm1axa2h' })}
           />
-          <p className="text-xs text-muted-foreground">
-            Die Id steht in der Adresszeile der Seite.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('scopeDocumentHint')}</p>
         </div>
       )}
     </div>
@@ -417,9 +414,11 @@ function TriggerFields({
   draft: Draft;
   onToggle: (trigger: AutomationTrigger, on: boolean) => void;
 }) {
+  const t = useTranslations('automations.dialog');
+  const wording = useAutomationWording();
   return (
     <div className="flex flex-col gap-2">
-      <Label>Auslöser</Label>
+      <Label>{t('triggers')}</Label>
       <div className="flex flex-col gap-2">
         {TRIGGER_ORDER.map((trigger) => {
           const onlyInDatabase = trigger === 'DATABASE_ROW_CHANGED';
@@ -438,15 +437,12 @@ function TriggerFields({
                 disabled={disabled}
                 onCheckedChange={(checked) => onToggle(trigger, checked === true)}
               />
-              {TRIGGER_LABELS[trigger]}
+              {wording.trigger(trigger)}
             </label>
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
-        Zeilenwerte gibt es nur im Geltungsbereich einer Datenbank, alles andere nur außerhalb. Ein
-        Zeitplan steht allein und braucht eine Seite als Geltungsbereich: die Uhr nennt keine.
-      </p>
+      <p className="text-xs text-muted-foreground">{t('triggersHint')}</p>
     </div>
   );
 }
@@ -457,10 +453,12 @@ function ActionFields({
   allowedHosts,
   isNew,
 }: FieldProps & { allowedHosts: readonly string[]; isNew: boolean }) {
+  const t = useTranslations('automations.dialog');
+  const wording = useAutomationWording();
   return (
     <div className="flex flex-col gap-4 border-t border-border pt-4">
       <div className="flex flex-col gap-2">
-        <Label>Aktion</Label>
+        <Label>{t('action')}</Label>
         <Select
           value={draft.action}
           onValueChange={(value) => set('action', value as AutomationAction)}
@@ -469,12 +467,12 @@ function ActionFields({
           disabled={!isNew && draft.action !== 'WEBHOOK'}
         >
           <SelectTrigger data-testid="automation-action">
-            <SelectValue>{() => ACTION_LABELS[draft.action]}</SelectValue>
+            <SelectValue>{() => wording.action(draft.action)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {(Object.keys(ACTION_LABELS) as AutomationAction[]).map((action) => (
+            {ACTION_ORDER.map((action) => (
               <SelectItem key={action} value={action}>
-                {ACTION_LABELS[action]}
+                {wording.action(action)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -492,20 +490,18 @@ function ActionFields({
 
 /** The mail action: a subject, and the promise about where it goes. */
 function MailFields({ draft, set }: FieldProps) {
+  const t = useTranslations('automations.dialog');
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="automation-mail-subject">Betreff (optional)</Label>
+      <Label htmlFor="automation-mail-subject">{t('mailSubject')}</Label>
       <Input
         id="automation-mail-subject"
         data-testid="automation-mail-subject"
         value={draft.mailSubject}
         onChange={(event) => set('mailSubject', event.target.value)}
-        placeholder="Leer lassen für den Namen der Regel"
+        placeholder={t('mailSubjectPlaceholder')}
       />
-      <p className="text-xs text-muted-foreground">
-        Die Mail geht an die bestätigte Adresse deines eigenen Kontos, an keine andere. Im Text
-        steht die Seite selbst, bei langen Seiten gekürzt und mit einem Link darunter.
-      </p>
+      <p className="text-xs text-muted-foreground">{t('mailHint')}</p>
     </div>
   );
 }
@@ -515,9 +511,10 @@ function WebhookFields({
   set,
   allowedHosts,
 }: FieldProps & { allowedHosts: readonly string[] }) {
+  const t = useTranslations('automations.dialog');
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="automation-url">Ziel-URL</Label>
+      <Label htmlFor="automation-url">{t('webhookUrl')}</Label>
       <Input
         id="automation-url"
         data-testid="automation-url"
@@ -527,55 +524,55 @@ function WebhookFields({
       />
       <p className="text-xs text-muted-foreground">
         {allowedHosts.length === 0
-          ? 'Diese Installation erlaubt derzeit keine Webhook-Ziele. Ein globaler Administrator muss automations.webhookAllowedHosts füllen.'
-          : `Erlaubte Hosts: ${allowedHosts.join(', ')}. Verschickt werden nur Metadaten der Seite, nie ihr Inhalt.`}
+          ? t('webhookNoHosts', { setting: 'automations.webhookAllowedHosts' })
+          : t('webhookHosts', { hosts: allowedHosts.join(', ') })}
       </p>
     </div>
   );
 }
 
 function AiFields({ draft, set }: FieldProps) {
+  const t = useTranslations('automations.dialog');
+  const wording = useAutomationWording();
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="automation-prompt">Prompt</Label>
+        <Label htmlFor="automation-prompt">{t('prompt')}</Label>
         <Textarea
           id="automation-prompt"
           data-testid="automation-prompt"
           rows={4}
           value={draft.prompt}
           onChange={(event) => set('prompt', event.target.value)}
-          placeholder="Prüfe, ob diese Seite durch die Änderung veraltete Angaben enthält."
+          placeholder={t('promptPlaceholder')}
         />
-        <p className="text-xs text-muted-foreground">
-          Die geänderte Seite ist das Material des Modells. Die Antwort landet daneben, nicht darin.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('promptHint')}</p>
       </div>
       <div className="flex flex-col gap-2">
-        <Label>Ergebnis</Label>
+        <Label>{t('output')}</Label>
         <Select
           value={draft.output}
           onValueChange={(value) => set('output', value as AutomationOutput)}
         >
           <SelectTrigger data-testid="automation-output">
-            <SelectValue>{() => OUTPUT_LABELS[draft.output]}</SelectValue>
+            <SelectValue>{() => wording.output(draft.output)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {(Object.keys(OUTPUT_LABELS) as AutomationOutput[]).map((output) => (
+            {OUTPUT_ORDER.map((output) => (
               <SelectItem key={output} value={output}>
-                {OUTPUT_LABELS[output]}
+                {wording.output(output)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="automation-model">Modell (optional)</Label>
+        <Label htmlFor="automation-model">{t('model')}</Label>
         <Input
           id="automation-model"
           value={draft.modelSlug}
           onChange={(event) => set('modelSlug', event.target.value)}
-          placeholder="Leer lassen für das Standardmodell"
+          placeholder={t('modelPlaceholder')}
         />
       </div>
     </>

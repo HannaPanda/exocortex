@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automatiseringen"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Pagina aangemaakt",
+    "DOCUMENT_UPDATED": "Titel of eigenschappen gewijzigd",
+    "DOCUMENT_CONTENT_CHANGED": "Inhoud gewijzigd",
+    "DOCUMENT_MOVED": "Pagina verplaatst",
+    "DOCUMENT_ARCHIVED": "Pagina naar de prullenbak verplaatst",
+    "DOCUMENT_DELETED": "Pagina definitief verwijderd",
+    "DATABASE_ROW_CHANGED": "Rijwaarde gewijzigd",
+    "SCHEDULE": "Schema"
+  },
+  "scopes": {
+    "WORKSPACE": "Gehele werkruimte",
+    "SUBTREE": "Een pagina inclusief subpagina’s",
+    "DATABASE": "Een database en de bijbehorende rijen"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (ondertekende POST)",
+    "AI_RUN": "AI-run op de gewijzigde pagina",
+    "EMAIL_SELF": "E-mail naar jezelf"
+  },
+  "outputs": {
+    "COMMENT": "Als reactie op de pagina",
+    "CHILD_PAGE": "Als nieuwe subpagina"
+  },
+  "scheduleKinds": {
+    "ONCE": "Eenmalig op een tijdstip",
+    "DAILY": "Dagelijks",
+    "WEEKLY": "Wekelijks",
+    "MONTHLY": "Maandelijks",
+    "CRON": "Cron-expressie"
+  },
+  "runOrigins": {
+    "EVENT": "Wijziging",
+    "SCHEDULE": "Schema",
+    "MANUAL": "Handmatig"
+  },
+  "runStatuses": {
+    "PENDING": "wachtend",
+    "RUNNING": "wordt uitgevoerd",
+    "SUCCEEDED": "voltooid",
+    "FAILED": "mislukt",
+    "SKIPPED": "overgeslagen"
+  },
+  "schedule": {
+    "once": "Eenmalig",
+    "onceAt": "Eenmalig op {moment}",
+    "daily": "Dagelijks om {time} ({zone})",
+    "weekly": "Elke {weekday} om {time} ({zone})",
+    "monthly": "Maandelijks op de {day}e om {time} ({zone})",
+    "cron": "Cron „{expression}“ ({zone})",
+    "none": "Zonder schema"
+  },
+  "scheduleFields": {
+    "kind": "Schema",
+    "at": "Tijdstip",
+    "atHint": "Wordt precies één keer uitgevoerd. Daarna blijft de regel bewaard zonder zichzelf uit te schakelen.",
+    "weekday": "Weekdag",
+    "dayOfMonth": "Dag van de maand",
+    "dayOfMonthHint": "De 31e betekent in een kortere maand de laatste dag ervan. Een maand wordt nooit overgeslagen.",
+    "time": "Tijdstip",
+    "cron": "Cron-expressie",
+    "cronHint": "Vijf velden: minuut, uur, dag van de maand, maand, weekdag (0 is zondag). Bereiken, lijsten en stappen zijn toegestaan, namen en afkortingen zoals @daily niet.",
+    "zone": "Tijdzone",
+    "zoneHint": "Hoort bij de regel, niet bij de server. Zomertijd wordt meegerekend: 07:00 blijft 07:00."
+  },
+  "dialog": {
+    "newTitle": "Nieuwe automatisering",
+    "editTitle": "Automatisering bewerken",
+    "description": "Wanneer er iets verandert onder het gekozen bereik of de planning afloopt, wordt de actie uitgevoerd. Een automatisering overschrijft nooit de inhoud van een pagina.",
+    "name": "Naam",
+    "namePlaceholder": "Hermes informeren over nieuwe vergadernotities",
+    "debounce": "Debounce (seconden)",
+    "debounceHint": "Zolang moet een pagina inactief zijn voordat de regel wordt uitgevoerd. Zonder dit activeert elke toetsaanslag een run, en bij een AI-run kost elke run geld.",
+    "cancel": "Annuleren",
+    "create": "Maken",
+    "save": "Opslaan",
+    "secretIntro": "De regel is aangemaakt. Het ondertekeningsgeheim zie je nu en nooit meer: eXocortex kan het niet terughalen. De ontvangende dienst heeft het nodig om de handtekening te controleren.",
+    "secretLabel": "Ondertekeningsgeheim",
+    "secretSignature": "Elke POST bevat de headers <code>{timestampHeader}</code> en <code>{signatureHeader}</code>. <code>{signedValue}</code> wordt ondertekend via HMAC-SHA256 met dit geheim.",
+    "secretDone": "Heb ik gekopieerd",
+    "scope": "Bereik",
+    "subtreeDocumentId": "Pagina-id",
+    "databaseDocumentId": "Database-id",
+    "scopeDocumentPlaceholder": "bijv. {example}",
+    "scopeDocumentHint": "De id staat in de adresbalk van de pagina.",
+    "triggers": "Triggers",
+    "triggersHint": "Rijwaarden zijn er alleen binnen het bereik van een database, al het andere alleen daarbuiten. Een planning staat op zichzelf en heeft een pagina als bereik nodig: de klok noemt er geen.",
+    "action": "Actie",
+    "mailSubject": "Onderwerp (optioneel)",
+    "mailSubjectPlaceholder": "Leeg laten voor de naam van de regel",
+    "mailHint": "De e-mail gaat naar het bevestigde adres van je eigen account, naar geen enkel ander. In de tekst staat de pagina zelf, bij lange pagina’s ingekort en met een link eronder.",
+    "webhookUrl": "Doel-URL",
+    "webhookNoHosts": "Deze installatie staat momenteel geen webhook-doelen toe. Een globale beheerder moet {setting} invullen.",
+    "webhookHosts": "Toegestane hosts: {hosts}. Er worden alleen metadata van de pagina verzonden, nooit de inhoud ervan.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Controleer of deze pagina door de wijziging verouderde gegevens bevat.",
+    "promptHint": "De gewijzigde pagina is het materiaal voor het model. Het antwoord komt ernaast te staan, niet erin.",
+    "output": "Resultaat",
+    "model": "Model (optioneel)",
+    "modelPlaceholder": "Leeg laten voor het standaardmodel"
+  },
+  "page": {
+    "loading": "Automatiseringen worden geladen …",
+    "title": "Automatiseringen",
+    "intro": "Regels die reageren op wijzigingen aan pagina’s of op de klok: een ondertekende webhook of een AI-run op de betreffende pagina.",
+    "newRule": "Nieuwe regel",
+    "disabled": "Automatiseringen zijn uitgeschakeld voor deze werkruimte. Geen van de onderstaande regels wordt uitgevoerd, ongeacht hoe ze zijn ingesteld. Dit kan worden gewijzigd via de instelling <code>{setting}</code>; als de installatie ze globaal heeft uitgeschakeld, kan een werkruimte ze niet zelf weer inschakelen.",
+    "readOnly": "Alleen de eigenaar van deze werkruimte kan regels aanmaken en bewerken. Een regel verstuurt gegevens naar buiten of geeft geld uit aan een model, en blijft dat doen wanneer niemand meer kijkt.",
+    "rulesHeading": "Regels",
+    "emptyTitle": "Nog geen automatisering",
+    "emptyDescription": "Een regel bestaat uit drie antwoorden: waar hij kijkt, waarop hij reageert en wat hij vervolgens doet.",
+    "columns": {
+      "name": "Naam",
+      "scope": "Bereik",
+      "triggers": "Triggers",
+      "action": "Actie",
+      "enabled": "Aan"
+    },
+    "selfDisabled": "Zelf uitgeschakeld: {reason}",
+    "lastTriggered": "Laatst {moment}",
+    "noNextRun": "Geen volgende run",
+    "nextRun": "Volgende run {moment}",
+    "disableRule": "{name} uitschakelen",
+    "enableRule": "{name} inschakelen",
+    "documentIdPlaceholder": "Pagina-ID",
+    "runAgainst": "Pagina waarop {name} moet worden uitgevoerd",
+    "runNow": "Nu uitvoeren",
+    "edit": "Bewerken",
+    "confirmDelete": "Echt verwijderen",
+    "delete": "Verwijderen"
+  },
+  "runLog": {
+    "heading": "Uitvoeringslogboek",
+    "empty": "Nog niets uitgevoerd.",
+    "columns": {
+      "moment": "Tijdstip",
+      "rule": "Regel",
+      "page": "Pagina",
+      "origin": "Start",
+      "status": "Resultaat",
+      "duration": "Duur"
+    },
+    "deletedPage": "(verwijderd)"
+  }
+}

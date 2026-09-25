@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -34,7 +35,7 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useCreateRenderTemplate, useUpdateRenderTemplate } from '@/lib/api/render-queries';
 
-import { VARIABLE_ORIGIN_LABELS } from './render-labels';
+import { useRenderWording, VARIABLE_ORIGIN_ORDER } from './render-labels';
 
 /**
  * Writing a render template (issue #44, ADR-026).
@@ -82,6 +83,8 @@ function TemplateForm({
   template: RenderTemplate | null;
   onDone: () => void;
 }) {
+  const t = useTranslations('render.templateDialog');
+  const wording = useRenderWording();
   const create = useCreateRenderTemplate(workspaceId);
   const update = useUpdateRenderTemplate(workspaceId);
 
@@ -111,7 +114,7 @@ function TemplateForm({
       }
       onDone();
     } catch (cause) {
-      setError(saveFailureMessage(cause));
+      setError(saveFailureMessage(cause, t('saveFailed')));
     }
   };
 
@@ -126,16 +129,20 @@ function TemplateForm({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{template === null ? 'Neue Vorlage' : 'Vorlage bearbeiten'}</DialogTitle>
+        <DialogTitle>{template === null ? t('newTitle') : t('editTitle')}</DialogTitle>
         <DialogDescription>
-          Der Quelltext ist eine Pandoc-Vorlage: <code>$title$</code>, <code>$body$</code>,{' '}
-          <code>$for(...)$</code>. Ohne eigenen Quelltext wird Eisvogel benutzt.
+          {t.rich('description', {
+            title: '$title$',
+            body: '$body$',
+            loop: '$for(...)$',
+            code: (chunks) => <code>{chunks}</code>,
+          })}
         </DialogDescription>
       </DialogHeader>
 
       <DialogBody className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="template-name">Name</Label>
+          <Label htmlFor="template-name">{t('name')}</Label>
           <Input
             id="template-name"
             value={name}
@@ -145,12 +152,12 @@ function TemplateForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="template-description">Beschreibung</Label>
+          <Label htmlFor="template-description">{t('templateDescription')}</Label>
           <Input
             id="template-description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            placeholder="Wofür diese Vorlage gedacht ist"
+            placeholder={t('templateDescriptionPlaceholder')}
           />
         </div>
 
@@ -159,12 +166,12 @@ function TemplateForm({
             checked={useBuiltIn}
             onCheckedChange={(checked) => setUseBuiltIn(checked === true)}
           />
-          Eingebaute Vorlage Eisvogel benutzen
+          {t('useBuiltIn')}
         </label>
 
         {useBuiltIn ? null : (
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="template-source">Quelltext</Label>
+            <Label htmlFor="template-source">{t('source')}</Label>
             <Textarea
               id="template-source"
               rows={14}
@@ -178,7 +185,7 @@ function TemplateForm({
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <Label>Variablen</Label>
+            <Label>{t('variables')}</Label>
             <Button
               variant="outline"
               size="sm"
@@ -188,7 +195,7 @@ function TemplateForm({
                   ...previous,
                   {
                     name: `variable-${String(previous.length + 1)}`,
-                    label: 'Neue Variable',
+                    label: t('newVariableLabel'),
                     origin: 'MANUAL',
                     property: null,
                     required: false,
@@ -197,7 +204,7 @@ function TemplateForm({
                 ])
               }
             >
-              Variable hinzufügen
+              {t('addVariable')}
             </Button>
           </div>
 
@@ -210,13 +217,13 @@ function TemplateForm({
               <div className="flex gap-2">
                 <Input
                   value={variable.name}
-                  aria-label="Name in der Vorlage"
+                  aria-label={t('variableName')}
                   onChange={(event) => patchVariable(index, { name: event.target.value })}
                   className="font-mono"
                 />
                 <Input
                   value={variable.label}
-                  aria-label="Beschriftung"
+                  aria-label={t('variableLabel')}
                   onChange={(event) => patchVariable(index, { label: event.target.value })}
                 />
               </div>
@@ -227,13 +234,13 @@ function TemplateForm({
                     patchVariable(index, { origin: value as RenderVariableOrigin })
                   }
                 >
-                  <SelectTrigger aria-label="Woher der Wert kommt">
-                    <SelectValue>{() => VARIABLE_ORIGIN_LABELS[variable.origin]}</SelectValue>
+                  <SelectTrigger aria-label={t('variableOrigin')}>
+                    <SelectValue>{() => wording.variableOrigin(variable.origin)}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(VARIABLE_ORIGIN_LABELS).map(([value, label]) => (
+                    {VARIABLE_ORIGIN_ORDER.map((value) => (
                       <SelectItem key={value} value={value}>
-                        {label}
+                        {wording.variableOrigin(value)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -241,8 +248,8 @@ function TemplateForm({
                 {variable.origin === 'PROPERTY' ? (
                   <Input
                     value={variable.property ?? ''}
-                    aria-label="Name der Eigenschaft"
-                    placeholder="Eigenschaft"
+                    aria-label={t('propertyName')}
+                    placeholder={t('propertyPlaceholder')}
                     onChange={(event) => patchVariable(index, { property: event.target.value })}
                   />
                 ) : null}
@@ -255,7 +262,7 @@ function TemplateForm({
                       patchVariable(index, { required: checked === true })
                     }
                   />
-                  Pflichtfeld
+                  {t('required')}
                 </label>
                 <Button
                   variant="ghost"
@@ -267,7 +274,7 @@ function TemplateForm({
                     )
                   }
                 >
-                  Entfernen
+                  {t('removeVariable')}
                 </Button>
               </div>
             </div>
@@ -283,23 +290,23 @@ function TemplateForm({
 
       <DialogFooter>
         <Button variant="ghost" onClick={onDone}>
-          Abbrechen
+          {t('cancel')}
         </Button>
         <Button
           data-testid="template-save"
           disabled={name.trim().length === 0 || create.isPending || update.isPending}
           onClick={() => void save()}
         >
-          Speichern
+          {t('save')}
         </Button>
       </DialogFooter>
     </>
   );
 }
 
-function saveFailureMessage(cause: unknown): string {
+function saveFailureMessage(cause: unknown, fallback: string): string {
   if (cause instanceof ApiError) {
     return cause.message.length > 0 ? cause.message : messageForCode(cause.code);
   }
-  return 'Die Vorlage ließ sich nicht speichern.';
+  return fallback;
 }

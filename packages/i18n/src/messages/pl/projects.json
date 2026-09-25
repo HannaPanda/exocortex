@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Projekt"
+  },
+  "buildStatuses": {
+    "PENDING": "oczekuje",
+    "RUNNING": "w toku",
+    "COMPLETED": "ukończono",
+    "FAILED": "niepowodzenie",
+    "CANCELLED": "anulowano"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "nie dotyczy",
+    "PENDING": "w toku",
+    "READY": "gotowe",
+    "FAILED": "niepowodzenie"
+  },
+  "history": {
+    "emptyTitle": "Brak kompilacji",
+    "emptyDescription": "To, co zostało skompilowane, pojawi się tutaj – nawet po odświeżeniu strony.",
+    "sourcesChanged": "Zmieniono pliki źródłowe",
+    "pageCount": "{count} str.",
+    "openPdf": "Otwórz PDF",
+    "delete": "Usuń",
+    "textExtract": "Wyodrębnianie tekstu: {status}",
+    "syncTexFile": "Plik SyncTeX"
+  },
+  "panel": {
+    "notBuiltTitle": "Jeszcze nie skompilowano",
+    "notBuiltDescription": "Kliknij „Kompiluj”. Za pierwszym razem trwa to najdłużej, później kompilacja jest buforowana w pamięci podręcznej.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Błędy",
+      "errorsWithCount": "Błędy ({count})",
+      "log": "Dziennik",
+      "history": "Historia"
+    },
+    "logLoading": "Ładowanie dziennika…",
+    "noLog": "Brak dziennika.",
+    "stale": "nieaktualne",
+    "errorCount": "{count, plural, one {# błąd} few {# błędy} many {# błędów} other {# błędu}}",
+    "warningCount": "{count, plural, one {# ostrzeżenie} few {# ostrzeżenia} many {# ostrzeżeń} other {# ostrzeżenia}}",
+    "pageCount": "{count, plural, one {# strona} few {# strony} many {# stron} other {# strony}}",
+    "download": "PDF",
+    "running": "Trwa kompilacja…",
+    "noPdfTitle": "Brak pliku PDF",
+    "noPdfDescription": "Ta kompilacja nie utworzyła żadnego pliku. Lista błędów wyjaśnia przyczynę.",
+    "noErrorsTitle": "Brak błędów",
+    "noErrorsDescription": "LaTeX nie zgłosił żadnych zastrzeżeń."
+  },
+  "editor": {
+    "emptyFile": "Ten plik jest pusty."
+  },
+  "fileTree": {
+    "heading": "Pliki",
+    "create": "Utwórz plik",
+    "empty": "Nie ma jeszcze plików.",
+    "rootBadge": "główny",
+    "remove": "Usuń {name}"
+  },
+  "importDialog": {
+    "title": "Zaimportowano archiwum",
+    "imported": "{count, plural, one {# plik jest teraz w projekcie.} few {# pliki są teraz w projekcie.} many {# plików jest teraz w projekcie.} other {# pliku jest teraz w projekcie.}}",
+    "strippedRoot": "Wspólny folder nadrzędny <code>{root}</code> został pominięty.",
+    "rootFileChanged": "Plik główny to teraz <code>{file}</code>.",
+    "skippedHeading": "Pominięte",
+    "more": "… i {count} więcej",
+    "overwrite": "Nadpisz istniejące",
+    "close": "Zamknij",
+    "skipReasons": {
+      "invalid_path": "Ta ścieżka jest niedozwolona w projekcie.",
+      "ignored": "Plik pomocniczy systemu operacyjnego, który nie powinien znaleźć się w projekcie.",
+      "exists": "W tym miejscu znajduje się już plik. Opcja „Nadpisz istniejące” go zastąpi.",
+      "too_large": "Plik jest większy, niż pozwala na to projekt.",
+      "not_utf8": "Plik wygląda jak tekst, ale nie jest zakodowany w UTF-8.",
+      "too_many_files": "Projekt osiągnął dozwoloną liczbę plików.",
+      "encrypted": "Wpis w archiwum jest zaszyfrowany.",
+      "unsupported_method": "Wpis został skompresowany metodą, która nie jest tutaj obsługiwana.",
+      "corrupt": "Nie udało się rozpakować wpisu w archiwum.",
+      "upload_failed": "Nie udało się zapisać pliku jako załącznika."
+    }
+  },
+  "newFile": {
+    "title": "Utwórz plik",
+    "description": "Ścieżka jest względna wobec projektu. Foldery powstają poprzez uwzględnienie ich w ścieżce: <code>{example}</code> utworzy również ten folder.",
+    "examplePath": "rozdzial/wstep.tex",
+    "path": "Ścieżka",
+    "assetHint": "W przypadku obrazów, czcionek i plików PDF użyj przycisku „Prześlij plik”.",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "pathProblems": {
+      "empty": "Ścieżka jest pusta.",
+      "too_long": "Ścieżka jest dłuższa niż {max} znaków.",
+      "absolute": "Ścieżka nie może zaczynać się od ukośnika.",
+      "traversal": "Ścieżka nie może prowadzić poza projekt.",
+      "trailing_slash": "Ścieżka nie może kończyć się ukośnikiem.",
+      "empty_segment": "Ścieżka zawiera pusty segment.",
+      "invalid_character": "Ścieżka zawiera niedozwolony znak.",
+      "reserved_name": "Ta nazwa jest zarezerwowana na potrzeby budowania."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Plik główny",
+    "engine": "Silnik",
+    "bibliography": "Bibliografia",
+    "bibliographies": {
+      "AUTO": "automatycznie",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "brak"
+    },
+    "upload": "Prześlij plik",
+    "importZip": "Importuj ZIP",
+    "exportZip": "Jako ZIP",
+    "cancel": "Anuluj",
+    "build": "Buduj"
+  },
+  "view": {
+    "notFound": "Nie znaleziono projektu",
+    "loading": "Ładowanie projektu…",
+    "files": "Pliki",
+    "noFileSelected": "Nie wybrano pliku",
+    "chooseFile": "Wybierz plik z drzewa plików.",
+    "assetDescription": "Przesłany plik. Można go użyć w projekcie, ale nie można go tutaj edytować.",
+    "noConnection": "Brak połączenia",
+    "connecting": "Nawiązywanie połączenia…"
+  },
+  "sourceSync": {
+    "outsideProject": "To miejsce pochodzi z {path}, pliku spoza projektu.",
+    "noMapping": "Dla tego miejsca nie ma przypisania w mapie SyncTeX."
+  }
+}

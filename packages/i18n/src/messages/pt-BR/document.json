@@ -341,5 +341,20 @@
     "fitWidth": "Largura",
     "pageCount": "{count, plural, one {# página} many {# de páginas} other {# páginas}}",
     "clickHint": "Clique para ir à fonte"
+  },
+  "templateSettings": {
+    "titleMark": "Marcar como modelo",
+    "titleEdit": "Modelo",
+    "description": "Novas páginas poderão ser criadas a partir desta página. A página em si permanece onde está e continua sendo uma página comum.",
+    "purpose": "Para que serve o modelo? (opcional)",
+    "purposePlaceholder": "Aparece na seleção abaixo do título",
+    "pattern": "Padrão de título (opcional)",
+    "patternPlaceholder": "Revisão semanal Sem{token}",
+    "preview": "Resultado atual: <result>{preview}</result>",
+    "placeholders": "Possíveis: {placeholders}",
+    "unmark": "Deixar de ser modelo",
+    "cancel": "Cancelar",
+    "mark": "Marcar como modelo",
+    "save": "Salvar"
   }
 }

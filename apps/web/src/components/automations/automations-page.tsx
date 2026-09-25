@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AutomationRule } from '@exocortex/contracts';
@@ -30,17 +31,7 @@ import {
 } from '@/lib/api/automation-queries';
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
-import {
-  ACTION_LABELS,
-  describeSchedule,
-  formatDuration,
-  formatMoment,
-  RUN_ORIGIN_LABELS,
-  RUN_STATUS_LABELS,
-  runStatusVariant,
-  SCOPE_LABELS,
-  TRIGGER_LABELS,
-} from './automation-labels';
+import { runStatusVariant, useAutomationWording } from './automation-labels';
 import { AutomationRuleDialog } from './automation-rule-dialog';
 
 /**
@@ -57,6 +48,7 @@ import { AutomationRuleDialog } from './automation-rule-dialog';
  * a secret from those people.
  */
 export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('automations.page');
   const detail = useWorkspaceDetail(workspaceId);
   const rules = useAutomationRules(workspaceId);
   const update = useUpdateAutomationRule(workspaceId);
@@ -65,7 +57,7 @@ export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   if (detail.isPending || rules.isPending || rules.data === undefined) {
-    return <LoadingState label="Automationen werden geladen …" />;
+    return <LoadingState label={t('loading')} />;
   }
 
   const isOwner = detail.data?.role === 'OWNER';
@@ -80,15 +72,12 @@ export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-4xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="exocortex-page-title">Automationen</h1>
-          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-            Regeln, die auf Änderungen an Seiten oder auf die Uhr reagieren: ein signierter Webhook
-            oder ein KI-Lauf gegen die betroffene Seite.
-          </p>
+          <h1 className="exocortex-page-title">{t('title')}</h1>
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
         </div>
         {isOwner ? (
           <Button onClick={openNew} data-testid="automation-new">
-            Neue Regel
+            {t('newRule')}
           </Button>
         ) : null}
       </div>
@@ -96,31 +85,24 @@ export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
       {!enabledForWorkspace ? (
         <Alert className="mt-6" data-testid="automations-disabled">
           <AlertDescription>
-            Automationen sind für diesen Arbeitsbereich abgeschaltet. Keine der Regeln unten läuft,
-            egal wie sie eingestellt ist. Umschalten lässt sich das über die Einstellung
-            <code className="mx-1">automations.enabled</code>; wenn die Installation sie global
-            abgeschaltet hat, kann ein Arbeitsbereich sie nicht selbst wieder einschalten.
+            {t.rich('disabled', {
+              setting: 'automations.enabled',
+              code: (chunks) => <code>{chunks}</code>,
+            })}
           </AlertDescription>
         </Alert>
       ) : null}
 
       {!isOwner ? (
         <Alert className="mt-6" data-testid="automations-readonly">
-          <AlertDescription>
-            Regeln anlegen und ändern kann die Besitzerin oder der Besitzer dieses Arbeitsbereichs.
-            Eine Regel schickt Daten nach außen oder gibt Geld für ein Modell aus, und sie tut das
-            weiter, wenn niemand mehr hinschaut.
-          </AlertDescription>
+          <AlertDescription>{t('readOnly')}</AlertDescription>
         </Alert>
       ) : null}
 
       <section className="mt-8 flex flex-col gap-3">
-        <h2 className="text-sm font-medium">Regeln</h2>
+        <h2 className="text-sm font-medium">{t('rulesHeading')}</h2>
         {rules.data.rules.length === 0 ? (
-          <EmptyState
-            title="Noch keine Automation"
-            description="Eine Regel besteht aus drei Antworten: wo sie hinsieht, worauf sie reagiert und was sie dann tut."
-          />
+          <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <RuleTable
             rules={rules.data.rules}
@@ -165,15 +147,17 @@ function RuleTable({
   onEdit: (rule: AutomationRule) => void;
   onToggle: (rule: AutomationRule, enabled: boolean) => void;
 }) {
+  const t = useTranslations('automations.page');
+  const wording = useAutomationWording();
   return (
     <Table narrow="list" data-testid="automation-rules">
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Bereich</TableHead>
-          <TableHead>Auslöser</TableHead>
-          <TableHead>Aktion</TableHead>
-          <TableHead className="text-right">An</TableHead>
+          <TableHead>{t('columns.name')}</TableHead>
+          <TableHead>{t('columns.scope')}</TableHead>
+          <TableHead>{t('columns.triggers')}</TableHead>
+          <TableHead>{t('columns.action')}</TableHead>
+          <TableHead className="text-right">{t('columns.enabled')}</TableHead>
           {isOwner ? <TableHead className="w-px" /> : null}
         </TableRow>
       </TableHeader>
@@ -184,44 +168,48 @@ function RuleTable({
               <div className="font-medium">{rule.name}</div>
               {rule.disabledReason === null ? null : (
                 <div className="text-xs text-destructive">
-                  Selbst abgeschaltet: {rule.disabledReason}
+                  {t('selfDisabled', { reason: rule.disabledReason })}
                 </div>
               )}
               {rule.lastTriggeredAt === null ? null : (
                 <div className="text-xs text-muted-foreground">
-                  Zuletzt {formatMoment(rule.lastTriggeredAt)}
+                  {t('lastTriggered', { moment: wording.moment(rule.lastTriggeredAt) })}
                 </div>
               )}
             </TableCell>
-            <TableCell label="Bereich" className="text-sm text-muted-foreground">
+            <TableCell label={t('columns.scope')} className="text-sm text-muted-foreground">
               {rule.scope === 'WORKSPACE'
-                ? SCOPE_LABELS.WORKSPACE
+                ? wording.scope('WORKSPACE')
                 : (rule.scopeDocumentTitle ?? rule.scopeDocumentId ?? '')}
             </TableCell>
-            <TableCell label="Auslöser" className="text-sm text-muted-foreground">
+            <TableCell label={t('columns.triggers')} className="text-sm text-muted-foreground">
               {rule.triggers.includes('SCHEDULE') ? (
                 <>
-                  <div>{describeSchedule(rule)}</div>
+                  <div>{wording.schedule(rule)}</div>
                   <div className="text-xs">
                     {rule.nextRunAt === null
-                      ? 'Kein weiterer Lauf'
-                      : `Nächster Lauf ${formatMoment(rule.nextRunAt)}`}
+                      ? t('noNextRun')
+                      : t('nextRun', { moment: wording.moment(rule.nextRunAt) })}
                   </div>
                 </>
               ) : (
-                rule.triggers.map((trigger) => TRIGGER_LABELS[trigger]).join(', ')
+                rule.triggers.map((trigger) => wording.trigger(trigger)).join(', ')
               )}
             </TableCell>
-            <TableCell label="Aktion" className="text-sm text-muted-foreground">
-              {ACTION_LABELS[rule.action]}
+            <TableCell label={t('columns.action')} className="text-sm text-muted-foreground">
+              {wording.action(rule.action)}
               <div className="text-xs">{rule.webhookUrl ?? ''}</div>
             </TableCell>
-            <TableCell label="An" className="text-right">
+            <TableCell label={t('columns.enabled')} className="text-right">
               <Switch
                 checked={rule.enabled}
                 disabled={!isOwner}
                 onCheckedChange={(checked) => onToggle(rule, checked)}
-                aria-label={`${rule.name} ${rule.enabled ? 'abschalten' : 'einschalten'}`}
+                aria-label={
+                  rule.enabled
+                    ? t('disableRule', { name: rule.name })
+                    : t('enableRule', { name: rule.name })
+                }
               />
             </TableCell>
             {isOwner ? (
@@ -253,6 +241,7 @@ function RuleActions({
   workspaceId: string;
   onEdit: (rule: AutomationRule) => void;
 }) {
+  const t = useTranslations('automations.page');
   const trigger = useTriggerAutomationRule(workspaceId);
   const remove = useDeleteAutomationRule(workspaceId);
   const [documentId, setDocumentId] = React.useState('');
@@ -267,9 +256,9 @@ function RuleActions({
         <Input
           value={documentId}
           onChange={(event) => setDocumentId(event.target.value)}
-          placeholder="Seiten-Id"
+          placeholder={t('documentIdPlaceholder')}
           className="h-8 w-36"
-          aria-label={`Seite, gegen die ${rule.name} laufen soll`}
+          aria-label={t('runAgainst', { name: rule.name })}
         />
       )}
       <Button
@@ -286,10 +275,10 @@ function RuleActions({
           })
         }
       >
-        Jetzt ausführen
+        {t('runNow')}
       </Button>
       <Button size="sm" variant="ghost" onClick={() => onEdit(rule)}>
-        Ändern
+        {t('edit')}
       </Button>
       {confirming ? (
         <Button
@@ -298,11 +287,11 @@ function RuleActions({
           onClick={() => remove.mutate(rule.id)}
           data-testid="automation-delete-confirm"
         >
-          Wirklich löschen
+          {t('confirmDelete')}
         </Button>
       ) : (
         <Button size="sm" variant="ghost" onClick={() => setConfirming(true)}>
-          Löschen
+          {t('delete')}
         </Button>
       )}
     </div>
@@ -310,50 +299,52 @@ function RuleActions({
 }
 
 function RunLog({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('automations.runLog');
+  const wording = useAutomationWording();
   const runs = useAutomationRuns(workspaceId);
 
   return (
     <section className="mt-10 flex flex-col gap-3">
-      <h2 className="text-sm font-medium">Lauf-Protokoll</h2>
+      <h2 className="text-sm font-medium">{t('heading')}</h2>
       {runs.data === undefined || runs.data.runs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Noch nichts gelaufen.</p>
+        <p className="text-sm text-muted-foreground">{t('empty')}</p>
       ) : (
         <Table narrow="list" data-testid="automation-runs">
           <TableHeader>
             <TableRow>
-              <TableHead>Zeitpunkt</TableHead>
-              <TableHead>Regel</TableHead>
-              <TableHead>Seite</TableHead>
-              <TableHead>Start</TableHead>
-              <TableHead>Ergebnis</TableHead>
-              <TableHead>Dauer</TableHead>
+              <TableHead>{t('columns.moment')}</TableHead>
+              <TableHead>{t('columns.rule')}</TableHead>
+              <TableHead>{t('columns.page')}</TableHead>
+              <TableHead>{t('columns.origin')}</TableHead>
+              <TableHead>{t('columns.status')}</TableHead>
+              <TableHead>{t('columns.duration')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {runs.data.runs.map((run) => (
               <TableRow key={run.id} data-testid="automation-run">
-                <TableCell label="Zeitpunkt" className="text-sm text-muted-foreground">
-                  {formatMoment(run.createdAt)}
+                <TableCell label={t('columns.moment')} className="text-sm text-muted-foreground">
+                  {wording.moment(run.createdAt)}
                 </TableCell>
                 <TableCell cell="title" className="text-sm">
                   {run.ruleName}
                 </TableCell>
-                <TableCell label="Seite" className="text-sm text-muted-foreground">
-                  {run.documentTitle ?? '(gelöscht)'}
+                <TableCell label={t('columns.page')} className="text-sm text-muted-foreground">
+                  {run.documentTitle ?? t('deletedPage')}
                 </TableCell>
-                <TableCell label="Start" className="text-sm text-muted-foreground">
-                  {RUN_ORIGIN_LABELS[run.origin]}
+                <TableCell label={t('columns.origin')} className="text-sm text-muted-foreground">
+                  {wording.runOrigin(run.origin)}
                 </TableCell>
-                <TableCell label="Ergebnis">
+                <TableCell label={t('columns.status')}>
                   <Badge variant={runStatusVariant(run.status)}>
-                    {RUN_STATUS_LABELS[run.status]}
+                    {wording.runStatus(run.status)}
                   </Badge>
                   {run.error === null ? null : (
                     <div className="mt-1 text-xs text-muted-foreground">{run.error}</div>
                   )}
                 </TableCell>
-                <TableCell label="Dauer" className="text-sm text-muted-foreground">
-                  {formatDuration(run.durationMs)}
+                <TableCell label={t('columns.duration')} className="text-sm text-muted-foreground">
+                  {wording.duration(run.durationMs)}
                 </TableCell>
               </TableRow>
             ))}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -29,6 +30,7 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
  * that belongs to an entity is rarely in the workspace the entity lives in.
  */
 export function EntityLinkPage({ entityId }: { entityId: string }) {
+  const t = useTranslations('entities.linkPage');
   const workspaces = useWorkspaces();
   const link = useLinkEntityPage();
 
@@ -41,10 +43,10 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
 
   return (
     <section className="flex flex-col gap-2 border-t border-border pt-3">
-      <h3 className="text-sm font-medium">Seite verknüpfen</h3>
+      <h3 className="text-sm font-medium">{t('title')}</h3>
       <div className="flex flex-wrap items-end gap-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={`link-workspace-${entityId}`}>Arbeitsbereich</Label>
+          <Label htmlFor={`link-workspace-${entityId}`}>{t('workspace')}</Label>
           <Select value={chosen ?? ''} onValueChange={setWorkspaceId}>
             <SelectTrigger
               id={`link-workspace-${entityId}`}
@@ -54,7 +56,7 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
               <SelectValue>
                 {() =>
                   workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
-                  'Arbeitsbereich wählen'
+                  t('chooseWorkspace')
                 }
               </SelectValue>
             </SelectTrigger>
@@ -68,11 +70,11 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
           </Select>
         </div>
         <div className="flex min-w-40 flex-1 flex-col gap-1.5">
-          <Label htmlFor={`link-query-${entityId}`}>Seite suchen</Label>
+          <Label htmlFor={`link-query-${entityId}`}>{t('search')}</Label>
           <Input
             id={`link-query-${entityId}`}
             value={query}
-            placeholder="Titel"
+            placeholder={t('searchPlaceholder')}
             data-testid="entity-link-query"
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -80,11 +82,11 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`link-note-${entityId}`}>Warum</Label>
+        <Label htmlFor={`link-note-${entityId}`}>{t('note')}</Label>
         <Input
           id={`link-note-${entityId}`}
           value={note}
-          placeholder="Steht dort nur als „der Server“"
+          placeholder={t('notePlaceholder')}
           onChange={(event) => setNote(event.target.value)}
         />
       </div>
@@ -109,7 +111,7 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
                 })
             }
           >
-            Verknüpfen
+            {t('submit')}
           </Button>
         </div>
       ))}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ProjectSourceArea } from '@exocortex/contracts';
@@ -35,7 +36,7 @@ export interface ProjectSourceSync {
   /** True while a click is being answered, so the pane can say it is working. */
   picking: boolean;
   /**
-   * Why the last click had no answer, in German. Null when it had one.
+   * Why the last click had no answer, in the reader's language. Null when it had one.
    *
    * A click in a margin, on a page from a class file, or in a build whose map
    * was never written all end here. Saying so is worth a line: silence looks
@@ -50,6 +51,7 @@ export function useProjectSourceSync(input: {
   openFile: (path: string, line: number | null) => void;
 }): ProjectSourceSync {
   const { buildId, file, openFile } = input;
+  const t = useTranslations('projects.sourceSync');
   const [settledLine, setSettledLine] = React.useState<number | null>(null);
   const [pickError, setPickError] = React.useState<string | null>(null);
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,19 +79,17 @@ export function useProjectSourceSync(input: {
       mutate(clicked, {
         onSuccess: (result) => {
           if (result.file === null) {
-            setPickError(
-              `Diese Stelle kommt aus ${result.inputPath}, einer Datei außerhalb des Projekts.`,
-            );
+            setPickError(t('outsideProject', { path: result.inputPath }));
             return;
           }
           openFile(result.file, result.line);
         },
         onError: () => {
-          setPickError('Zu dieser Stelle gibt es keine Zuordnung in der SyncTeX-Karte.');
+          setPickError(t('noMapping'));
         },
       });
     },
-    [buildId, mutate, openFile],
+    [buildId, mutate, openFile, t],
   );
 
   return {

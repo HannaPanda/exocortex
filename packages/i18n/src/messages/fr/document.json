@@ -341,5 +341,20 @@
     "fitWidth": "Largeur",
     "pageCount": "{count, plural, one {# page} many {# pages} other {# pages}}",
     "clickHint": "Cliquer pour accéder à la source"
+  },
+  "templateSettings": {
+    "titleMark": "Marquer comme modèle",
+    "titleEdit": "Modèle",
+    "description": "Tu pourras créer de nouvelles pages à partir de cette page. La page elle-même reste là où elle est et demeure une page ordinaire.",
+    "purpose": "À quoi sert ce modèle ? (facultatif)",
+    "purposePlaceholder": "S’affiche sous le titre dans la sélection",
+    "pattern": "Modèle de titre (facultatif)",
+    "patternPlaceholder": "Revue hebdomadaire S{token}",
+    "preview": "Donne actuellement : <result>{preview}</result>",
+    "placeholders": "Disponibles : {placeholders}",
+    "unmark": "Ne plus utiliser comme modèle",
+    "cancel": "Annuler",
+    "mark": "Marquer comme modèle",
+    "save": "Enregistrer"
   }
 }

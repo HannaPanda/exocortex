@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Encje"
+  },
+  "types": {
+    "person": "Osoba",
+    "host": "Host",
+    "service": "Usługa",
+    "project": "Projekt",
+    "credential": "Dane dostępowe",
+    "organisation": "Organizacja",
+    "other": "Inne"
+  },
+  "page": {
+    "loading": "Ładowanie encji …",
+    "title": "Encje",
+    "intro": "Osoby, hosty, usługi i projekty pojawiające się na twoich stronach oraz informacje o nich.",
+    "create": "Nowa encja",
+    "searchPlaceholder": "Nazwa lub alias",
+    "allTypes": "Wszystkie typy",
+    "nothingSelectedTitle": "Nic nie wybrano",
+    "nothingSelectedDescription": "Kliknij encję po lewej stronie, aby zobaczyć fakty, powiązania i strony.",
+    "candidatesTitle": "Sugestie",
+    "candidatesIntro": "Nazwy, które pojawiają się na wielu stronach i nie mają jeszcze przypisanej encji.",
+    "emptyTitle": "Brak encji",
+    "emptyDescription": "Nie utworzono jeszcze żadnej encji lub żadna nie pasuje do filtra.",
+    "aliases": "też: {aliases}",
+    "mentionCount": "{count, plural, one {# strona} few {# strony} many {# stron} other {# strony}}"
+  },
+  "candidates": {
+    "loading": "Ładowanie sugestii …",
+    "emptyTitle": "Brak sugestii",
+    "emptyDescription": "Nazwy pojawią się tutaj, gdy wystąpią na co najmniej {threshold, plural, one {# stronie} few {# stronach} many {# stronach} other {# strony}}.",
+    "documentCount": "na {count, plural, one {# stronie} few {# stronach} many {# stronach} other {# strony}}",
+    "occurrences": "{count}× wymieniono",
+    "confirm": "Utwórz",
+    "dismiss": "Odrzuć"
+  },
+  "setup": {
+    "missing": "Nie ma jeszcze katalogu encji. Zostanie on utworzony jako baza danych w obszarze roboczym; od tego momentu eXocortex będzie automatycznie zbierać nazwy ze stron.",
+    "adminOnly": "Utworzyć go może tylko osoba zarządzająca tą instalacją.",
+    "chooseWorkspace": "Wybierz obszar roboczy",
+    "databaseTitle": "Encje",
+    "create": "Utwórz katalog"
+  },
+  "detail": {
+    "loading": "Ładowanie profilu …",
+    "openPage": "Otwórz stronę",
+    "type": "Typ",
+    "aliases": "Aliasy",
+    "rescanQueued": "Strony są ponownie przeszukiwane; nowe wyniki pojawią się za kilka minut.",
+    "facts": "Fakty",
+    "confirmations": "{count, plural, one {# potwierdzenie} few {# potwierdzenia} many {# potwierdzeń} other {# potwierdzenia}}",
+    "relations": "Powiązania",
+    "mentions": "Strony",
+    "noMentions": "Żadna strona jeszcze nie wymienia tej nazwy.",
+    "mentionMeta": "{workspace} · „{alias}”",
+    "unlink": "Odłącz",
+    "hiddenMentions": "{count, plural, one {Jeszcze jedna strona w obszarze roboczym, którego nie możesz zobaczyć.} few {# kolejne strony w obszarach roboczych, których nie możesz zobaczyć.} many {# kolejnych stron w obszarach roboczych, których nie możesz zobaczyć.} other {# kolejnej strony w obszarach roboczych, których nie możesz zobaczyć.}}"
+  },
+  "dialog": {
+    "title": "Nowa encja",
+    "description": "Będzie wierszem w katalogu encji, a tym samym zwykłą stroną.",
+    "name": "Nazwa",
+    "type": "Typ",
+    "aliases": "Aliasy",
+    "aliasesPlaceholder": "fpb2, Puszysta Panda 2",
+    "aliasesHint": "Rozdzielone przecinkami. Każda pisownia, która może pojawić się na stronie.",
+    "note": "Notatka",
+    "cancel": "Anuluj",
+    "create": "Utwórz"
+  },
+  "linkPage": {
+    "title": "Połącz stronę",
+    "workspace": "Obszar roboczy",
+    "chooseWorkspace": "Wybierz obszar roboczy",
+    "search": "Szukaj strony",
+    "searchPlaceholder": "Tytuł",
+    "note": "Dlaczego",
+    "notePlaceholder": "Występuje tam tylko jako „ten serwer”",
+    "submit": "Połącz"
+  }
+}

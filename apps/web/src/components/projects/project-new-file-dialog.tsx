@@ -1,12 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import {
-  checkProjectPath,
-  isProjectTextPath,
-  projectPathProblemMessage,
-} from '@exocortex/contracts';
+import { checkProjectPath, isProjectTextPath, PROJECT_MAX_PATH_CHARS } from '@exocortex/contracts';
 import {
   Button,
   Dialog,
@@ -41,17 +38,18 @@ export function ProjectNewFileDialog({
   onOpenChange,
   onCreate,
 }: ProjectNewFileDialogProps) {
+  const t = useTranslations('projects.newFile');
   const [path, setPath] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
 
   const submit = (): void => {
     const problem = checkProjectPath(path);
     if (problem !== null) {
-      setError(projectPathProblemMessage(problem));
+      setError(t(`pathProblems.${problem}`, { max: PROJECT_MAX_PATH_CHARS }));
       return;
     }
     if (!isProjectTextPath(path)) {
-      setError('Für Bilder, Schriften und PDFs den Knopf „Datei hochladen“ benutzen.');
+      setError(t('assetHint'));
       return;
     }
     onCreate(path);
@@ -63,14 +61,16 @@ export function ProjectNewFileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Datei anlegen</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            Der Pfad ist relativ zum Projekt. Ordner entstehen dadurch, dass ein Pfad sie nennt:
-            <code className="mx-1">kapitel/einleitung.tex</code> legt den Ordner mit an.
+            {t.rich('description', {
+              example: t('examplePath'),
+              code: (chunks) => <code>{chunks}</code>,
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="project-new-path">Pfad</Label>
+          <Label htmlFor="project-new-path">{t('path')}</Label>
           <Input
             id="project-new-path"
             value={path}
@@ -79,16 +79,16 @@ export function ProjectNewFileDialog({
               setPath(event.target.value);
               setError(null);
             }}
-            placeholder="kapitel/einleitung.tex"
+            placeholder={t('examplePath')}
           />
           {error === null ? null : <p className="text-xs text-destructive">{error}</p>}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button disabled={path.trim().length === 0 || pending} onClick={submit}>
-            Anlegen
+            {t('create')}
           </Button>
         </DialogFooter>
       </DialogContent>

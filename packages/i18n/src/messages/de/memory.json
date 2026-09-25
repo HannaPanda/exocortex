@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Gedächtnis"
+  },
+  "statuses": {
+    "current": "gilt",
+    "superseded": "überholt",
+    "conflicted": "widersprüchlich"
+  },
+  "facts": {
+    "title": "Gedächtnis",
+    "intro": "Was die Agenten aus ihren Sitzungsnotizen destilliert haben. Jeder Satz ist eine eigene Seite im Memory-Arbeitsbereich.",
+    "project": "Projekt",
+    "projectPlaceholder": "alle",
+    "status": "Zustand",
+    "target": "Übernehmen nach",
+    "chooseWorkspace": "Arbeitsbereich wählen",
+    "loading": "Fakten werden geladen …",
+    "omitted": "{count, plural, one {# weiteren Fakt in diesem Projekt hat der Filter weggelassen.} other {# weitere Fakten in diesem Projekt hat der Filter weggelassen.}}",
+    "emptyTitle": "Keine Fakten",
+    "emptyDescription": "Die Verdichtung läuft nachts. Ohne Sitzungsnotizen gibt es nichts zu destillieren.",
+    "confirmations": "{count, plural, one {# Bestätigung} other {# Bestätigungen}}",
+    "confidence": "Gewicht {confidence}",
+    "lastConfirmed": "zuletzt {moment}",
+    "sourceNotes": "{count, plural, one {aus # Notiz} other {aus # Notizen}}",
+    "promote": "Übernehmen",
+    "promoted": "übernommen"
+  }
+}

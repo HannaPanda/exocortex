@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Modèles"
+  },
+  "statuses": {
+    "PENDING": "en attente",
+    "RUNNING": "en cours",
+    "COMPLETED": "terminé",
+    "FAILED": "échoué",
+    "CANCELLED": "annulé"
+  },
+  "sources": {
+    "DOCUMENT": "Uniquement cette page",
+    "SUBTREE": "Page et sous-pages, avec table des matières"
+  },
+  "variableOrigins": {
+    "MANUAL": "Saisi avant la génération",
+    "TITLE": "Titre de la page",
+    "PATH": "Chemin de la page",
+    "AUTHOR": "Personne qui lance la génération",
+    "TODAY": "Date du jour",
+    "PROPERTY": "Propriété de la ligne de base de données"
+  },
+  "dialog": {
+    "title": "Publier en PDF",
+    "description": "Le contenu de cette page est mis en page avec un modèle. La page elle-même reste inchangée.",
+    "close": "Fermer",
+    "rebuild": "Régénérer",
+    "build": "Générer le PDF",
+    "disabled": "L’export PDF est désactivé pour cet espace de travail.",
+    "noTemplates": "Il n’y a pas encore de modèle. Une personne administratrice peut en créer sous « Modèles » dans l’espace de travail.",
+    "startFailed": "Impossible de lancer la génération.",
+    "template": "Modèle",
+    "chooseTemplate": "Choisir un modèle",
+    "source": "Étendue",
+    "historyHeading": "PDF précédents",
+    "stale": "La page a été modifiée",
+    "deletedTemplate": "(modèle supprimé)",
+    "openPdf": "Ouvrir le PDF",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "showLog": "Afficher le journal",
+    "hideLog": "Masquer le journal",
+    "emptyLog": "(vide)",
+    "editTemplates": "Modifier les modèles"
+  },
+  "templateDialog": {
+    "newTitle": "Nouveau modèle",
+    "editTitle": "Modifier le modèle",
+    "description": "Le code source est un modèle Pandoc : <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Sans code source personnalisé, Eisvogel est utilisé.",
+    "name": "Nom",
+    "templateDescription": "Description",
+    "templateDescriptionPlaceholder": "À quoi sert ce modèle",
+    "useBuiltIn": "Utiliser le modèle intégré Eisvogel",
+    "source": "Code source",
+    "variables": "Variables",
+    "addVariable": "Ajouter une variable",
+    "newVariableLabel": "Nouvelle variable",
+    "variableName": "Nom dans le modèle",
+    "variableLabel": "Libellé",
+    "variableOrigin": "D’où vient la valeur",
+    "propertyName": "Nom de la propriété",
+    "propertyPlaceholder": "Propriété",
+    "required": "Champ obligatoire",
+    "removeVariable": "Supprimer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saveFailed": "Impossible d’enregistrer le modèle."
+  },
+  "templatesPage": {
+    "loading": "Chargement des modèles…",
+    "title": "Modèles",
+    "intro": "Pour publier des pages de cet espace de travail en PDF. La mise en page repose sur Pandoc et LaTeX ; le contenu des pages reste intact.",
+    "newTemplate": "Nouveau modèle",
+    "disabled": "La génération de PDF est désactivée pour cet espace de travail. Les modèles ci-dessous sont conservés, mais rien ne peut être généré avec. Tu peux modifier cela via le paramètre <code>{setting}</code> ; si l’installation l’a désactivée globalement, un espace de travail ne peut pas la réactiver lui-même.",
+    "emptyTitle": "Pas encore de modèles",
+    "emptyDescription": "Un modèle sans code source propre utilise le modèle intégré Eisvogel et ne nécessite aucune ligne de LaTeX.",
+    "columns": {
+      "name": "Nom",
+      "typesetting": "Composition",
+      "variables": "Variables"
+    },
+    "builtIn": "Eisvogel (intégré)",
+    "ownSource": "Code source propre",
+    "edit": "Modifier",
+    "delete": "Supprimer"
+  }
+}

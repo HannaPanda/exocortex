@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Progetto"
+  },
+  "buildStatuses": {
+    "PENDING": "in attesa",
+    "RUNNING": "in corso",
+    "COMPLETED": "completato",
+    "FAILED": "non riuscito",
+    "CANCELLED": "annullato"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "non applicabile",
+    "PENDING": "in corso",
+    "READY": "pronto",
+    "FAILED": "non riuscito"
+  },
+  "history": {
+    "emptyTitle": "Nessuna compilazione",
+    "emptyDescription": "Le compilazioni effettuate appariranno qui, anche dopo aver ricaricato.",
+    "sourcesChanged": "Sorgenti modificate",
+    "pageCount": "{count} pag.",
+    "openPdf": "Apri PDF",
+    "delete": "Elimina",
+    "textExtract": "Estratto di testo {status}",
+    "syncTexFile": "File SyncTeX"
+  },
+  "panel": {
+    "notBuiltTitle": "Non ancora compilato",
+    "notBuiltDescription": "Premi «Compila». La prima volta richiede più tempo, poi la compilazione viene memorizzata nella cache.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Errori",
+      "errorsWithCount": "Errori ({count})",
+      "log": "Registro",
+      "history": "Cronologia"
+    },
+    "logLoading": "Caricamento del registro…",
+    "noLog": "Nessun registro.",
+    "stale": "obsoleto",
+    "errorCount": "{count, plural, one {# errore} many {# errori} other {# errori}}",
+    "warningCount": "{count, plural, one {# avviso} many {# avvisi} other {# avvisi}}",
+    "pageCount": "{count, plural, one {# pagina} many {# pagine} other {# pagine}}",
+    "download": "PDF",
+    "running": "Compilazione in corso…",
+    "noPdfTitle": "Nessun PDF",
+    "noPdfDescription": "Questa compilazione non ha prodotto alcun file. L’elenco degli errori ne indica il motivo.",
+    "noErrorsTitle": "Nessun errore",
+    "noErrorsDescription": "LaTeX non ha rilevato alcun problema."
+  },
+  "editor": {
+    "emptyFile": "Questo file è vuoto."
+  },
+  "fileTree": {
+    "heading": "File",
+    "create": "Crea file",
+    "empty": "Ancora nessun file.",
+    "rootBadge": "principale",
+    "remove": "Rimuovi {name}"
+  },
+  "importDialog": {
+    "title": "Archivio importato",
+    "imported": "{count, plural, one {# file è ora nel progetto.} many {# file sono ora nel progetto.} other {# file sono ora nel progetto.}}",
+    "strippedRoot": "La cartella principale comune <code>{root}</code> è stata omessa.",
+    "rootFileChanged": "Il file principale ora è <code>{file}</code>.",
+    "skippedHeading": "Non importati",
+    "more": "… e altri {count}",
+    "overwrite": "Sovrascrivi esistenti",
+    "close": "Chiudi",
+    "skipReasons": {
+      "invalid_path": "Il percorso non è consentito nel progetto.",
+      "ignored": "Un file ausiliario del sistema operativo che non appartiene al progetto.",
+      "exists": "In questa posizione è già presente un file. “Sovrascrivi esistenti” lo sostituirà.",
+      "too_large": "Il file supera la dimensione consentita per questo progetto.",
+      "not_utf8": "Il file sembra di testo, ma non è codificato in UTF-8.",
+      "too_many_files": "Il progetto ha raggiunto il numero consentito di file.",
+      "encrypted": "La voce nell’archivio è crittografata.",
+      "unsupported_method": "La voce è compressa con un metodo non supportato qui.",
+      "corrupt": "Impossibile estrarre la voce nell’archivio.",
+      "upload_failed": "Impossibile salvare il file come allegato."
+    }
+  },
+  "newFile": {
+    "title": "Crea file",
+    "description": "Il percorso è relativo al progetto. Le cartelle vengono create indicandole nel percorso: <code>{example}</code> creerà anche la cartella.",
+    "examplePath": "capitoli/introduzione.tex",
+    "path": "Percorso",
+    "assetHint": "Per immagini, font e PDF usa il pulsante “Carica file”.",
+    "cancel": "Annulla",
+    "create": "Crea",
+    "pathProblems": {
+      "empty": "Il percorso è vuoto.",
+      "too_long": "Il percorso supera i {max} caratteri.",
+      "absolute": "Il percorso non può iniziare con una barra.",
+      "traversal": "Il percorso non può uscire dal progetto.",
+      "trailing_slash": "Il percorso non può terminare con una barra.",
+      "empty_segment": "Il percorso contiene un segmento vuoto.",
+      "invalid_character": "Il percorso contiene un carattere non valido.",
+      "reserved_name": "Questo nome è riservato per la compilazione."
+    }
+  },
+  "toolbar": {
+    "rootFile": "File principale",
+    "engine": "Engine",
+    "bibliography": "Bibliografia",
+    "bibliographies": {
+      "AUTO": "automatico",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "nessuna"
+    },
+    "upload": "Carica file",
+    "importZip": "Importa ZIP",
+    "exportZip": "Come ZIP",
+    "cancel": "Annulla",
+    "build": "Compila"
+  },
+  "view": {
+    "notFound": "Progetto non trovato",
+    "loading": "Caricamento del progetto …",
+    "files": "File",
+    "noFileSelected": "Nessun file selezionato",
+    "chooseFile": "Scegli un file dall’albero dei file.",
+    "assetDescription": "Un file caricato. Puoi usarlo nel progetto, ma non modificarlo qui.",
+    "noConnection": "Nessuna connessione",
+    "connecting": "Connessione in corso …"
+  },
+  "sourceSync": {
+    "outsideProject": "Questo punto proviene da {path}, un file all’esterno del progetto.",
+    "noMapping": "Non c’è alcuna corrispondenza per questo punto nella mappa SyncTeX."
+  }
+}

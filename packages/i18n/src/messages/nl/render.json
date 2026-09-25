@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Sjablonen"
+  },
+  "statuses": {
+    "PENDING": "wachtend",
+    "RUNNING": "wordt gebouwd",
+    "COMPLETED": "voltooid",
+    "FAILED": "mislukt",
+    "CANCELLED": "geannuleerd"
+  },
+  "sources": {
+    "DOCUMENT": "Alleen deze pagina",
+    "SUBTREE": "Pagina inclusief subpagina’s, met inhoudsopgave"
+  },
+  "variableOrigins": {
+    "MANUAL": "Wordt voor het bouwen ingevoerd",
+    "TITLE": "Titel van de pagina",
+    "PATH": "Pad van de pagina",
+    "AUTHOR": "Wie het bouwen start",
+    "TODAY": "Datum van vandaag",
+    "PROPERTY": "Eigenschap van de databaserij"
+  },
+  "dialog": {
+    "title": "Als PDF publiceren",
+    "description": "De inhoud van deze pagina wordt opgemaakt met een sjabloon. De pagina zelf blijft ongewijzigd.",
+    "close": "Sluiten",
+    "rebuild": "Opnieuw genereren",
+    "build": "PDF genereren",
+    "disabled": "PDF-uitvoer is uitgeschakeld voor deze werkruimte.",
+    "noTemplates": "Er is nog geen sjabloon. Een beheerder maakt er een aan onder „Sjablonen“ in de werkruimte.",
+    "startFailed": "Het bouwen kon niet worden gestart.",
+    "template": "Sjabloon",
+    "chooseTemplate": "Sjabloon kiezen",
+    "source": "Omvang",
+    "historyHeading": "Eerdere PDF’s",
+    "stale": "Pagina is gewijzigd",
+    "deletedTemplate": "(verwijderd sjabloon)",
+    "openPdf": "PDF openen",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren",
+    "showLog": "Logboek tonen",
+    "hideLog": "Logboek verbergen",
+    "emptyLog": "(leeg)",
+    "editTemplates": "Sjablonen bewerken"
+  },
+  "templateDialog": {
+    "newTitle": "Nieuw sjabloon",
+    "editTitle": "Sjabloon bewerken",
+    "description": "De broncode is een Pandoc-sjabloon: <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Zonder eigen broncode wordt Eisvogel gebruikt.",
+    "name": "Naam",
+    "templateDescription": "Beschrijving",
+    "templateDescriptionPlaceholder": "Waar dit sjabloon voor bedoeld is",
+    "useBuiltIn": "Ingebouwd sjabloon Eisvogel gebruiken",
+    "source": "Broncode",
+    "variables": "Variabelen",
+    "addVariable": "Variabele toevoegen",
+    "newVariableLabel": "Nieuwe variabele",
+    "variableName": "Naam in het sjabloon",
+    "variableLabel": "Label",
+    "variableOrigin": "Waar de waarde vandaan komt",
+    "propertyName": "Naam van de eigenschap",
+    "propertyPlaceholder": "Eigenschap",
+    "required": "Verplicht veld",
+    "removeVariable": "Verwijderen",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "saveFailed": "Het sjabloon kon niet worden opgeslagen."
+  },
+  "templatesPage": {
+    "loading": "Sjablonen laden …",
+    "title": "Sjablonen",
+    "intro": "Hiermee kun je pagina’s van deze werkruimte als PDF publiceren. Het zetten gebeurt via Pandoc en LaTeX; de inhoud van de pagina’s blijft daarbij onaangeroerd.",
+    "newTemplate": "Nieuw sjabloon",
+    "disabled": "PDF-uitvoer is uitgeschakeld voor deze werkruimte. De onderstaande sjablonen blijven bewaard, maar er kan niets mee worden gebouwd. Je kunt dit wijzigen via de instelling <code>{setting}</code>; als de installatie dit globaal heeft uitgeschakeld, kan een werkruimte het niet zelf weer inschakelen.",
+    "emptyTitle": "Nog geen sjablonen",
+    "emptyDescription": "Een sjabloon zonder eigen broncode gebruikt het ingebouwde sjabloon Eisvogel en heeft geen regel LaTeX nodig.",
+    "columns": {
+      "name": "Naam",
+      "typesetting": "Zetwerk",
+      "variables": "Variabelen"
+    },
+    "builtIn": "Eisvogel (ingebouwd)",
+    "ownSource": "Eigen broncode",
+    "edit": "Bewerken",
+    "delete": "Verwijderen"
+  }
+}

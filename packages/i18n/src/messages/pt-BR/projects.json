@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Projeto"
+  },
+  "buildStatuses": {
+    "PENDING": "aguardando",
+    "RUNNING": "em execução",
+    "COMPLETED": "concluído",
+    "FAILED": "falhou",
+    "CANCELLED": "cancelado"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "não se aplica",
+    "PENDING": "em processamento",
+    "READY": "pronto",
+    "FAILED": "falhou"
+  },
+  "history": {
+    "emptyTitle": "Nenhuma compilação ainda",
+    "emptyDescription": "O que for compilado aparece aqui, mesmo após recarregar a página.",
+    "sourcesChanged": "Fontes alteradas",
+    "pageCount": "{count} pág.",
+    "openPdf": "Abrir PDF",
+    "delete": "Excluir",
+    "textExtract": "Extração de texto {status}",
+    "syncTexFile": "Arquivo SyncTeX"
+  },
+  "panel": {
+    "notBuiltTitle": "Ainda não compilado",
+    "notBuiltDescription": "Clique em “Compilar”. A primeira vez demora mais, depois a compilação fica em cache.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Erros",
+      "errorsWithCount": "Erros ({count})",
+      "log": "Log",
+      "history": "Histórico"
+    },
+    "logLoading": "Carregando log…",
+    "noLog": "Nenhum log.",
+    "stale": "desatualizado",
+    "errorCount": "{count, plural, one {# erro} many {# erros} other {# erros}}",
+    "warningCount": "{count, plural, one {# aviso} many {# avisos} other {# avisos}}",
+    "pageCount": "{count, plural, one {# página} many {# páginas} other {# páginas}}",
+    "download": "PDF",
+    "running": "Compilação em andamento…",
+    "noPdfTitle": "Nenhum PDF",
+    "noPdfDescription": "Esta compilação não gerou nenhum arquivo. A lista de erros mostra o motivo.",
+    "noErrorsTitle": "Nenhum erro",
+    "noErrorsDescription": "O LaTeX não encontrou nenhum problema."
+  },
+  "editor": {
+    "emptyFile": "Este arquivo está vazio."
+  },
+  "fileTree": {
+    "heading": "Arquivos",
+    "create": "Criar arquivo",
+    "empty": "Ainda não há arquivos.",
+    "rootBadge": "principal",
+    "remove": "Remover {name}"
+  },
+  "importDialog": {
+    "title": "Arquivo importado",
+    "imported": "{count, plural, one {# arquivo agora está no projeto.} many {# de arquivos agora estão no projeto.} other {# arquivos agora estão no projeto.}}",
+    "strippedRoot": "A pasta raiz comum <code>{root}</code> foi omitida.",
+    "rootFileChanged": "O arquivo principal agora é <code>{file}</code>.",
+    "skippedHeading": "Não importados",
+    "more": "… e mais {count}",
+    "overwrite": "Substituir existentes",
+    "close": "Fechar",
+    "skipReasons": {
+      "invalid_path": "O caminho não é permitido no projeto.",
+      "ignored": "Um arquivo auxiliar do sistema operacional que não pertence ao projeto.",
+      "exists": "Já existe um arquivo neste local. “Substituir existentes” vai substituí-lo.",
+      "too_large": "O arquivo é maior do que o permitido neste projeto.",
+      "not_utf8": "O arquivo parece texto, mas não está codificado em UTF-8.",
+      "too_many_files": "O projeto atingiu o limite de arquivos permitido.",
+      "encrypted": "O item no arquivo comprimido está protegido por senha.",
+      "unsupported_method": "O item foi compactado com um método incompatível.",
+      "corrupt": "Não foi possível descompactar o item do arquivo.",
+      "upload_failed": "Não foi possível salvar o arquivo como anexo."
+    }
+  },
+  "newFile": {
+    "title": "Criar arquivo",
+    "description": "O caminho é relativo ao projeto. As pastas são criadas assim que informadas no caminho: <code>{example}</code> também cria a pasta.",
+    "examplePath": "capitulo/introducao.tex",
+    "path": "Caminho",
+    "assetHint": "Para imagens, fontes e PDFs, use o botão “Enviar arquivo”.",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "pathProblems": {
+      "empty": "O caminho está vazio.",
+      "too_long": "O caminho tem mais de {max} caracteres.",
+      "absolute": "O caminho não pode começar com uma barra.",
+      "traversal": "O caminho não pode apontar para fora do projeto.",
+      "trailing_slash": "O caminho não pode terminar com uma barra.",
+      "empty_segment": "O caminho contém um trecho vazio.",
+      "invalid_character": "O caminho contém um caractere inválido.",
+      "reserved_name": "Este nome é reservado para a compilação."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Arquivo principal",
+    "engine": "Engine",
+    "bibliography": "Bibliografia",
+    "bibliographies": {
+      "AUTO": "automático",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "nenhuma"
+    },
+    "upload": "Enviar arquivo",
+    "importZip": "Importar ZIP",
+    "exportZip": "Como ZIP",
+    "cancel": "Cancelar",
+    "build": "Compilar"
+  },
+  "view": {
+    "notFound": "Projeto não encontrado",
+    "loading": "Carregando projeto …",
+    "files": "Arquivos",
+    "noFileSelected": "Nenhum arquivo selecionado",
+    "chooseFile": "Escolha um arquivo na árvore de arquivos.",
+    "assetDescription": "Um arquivo enviado. Ele pode ser usado no projeto, mas não editado aqui.",
+    "noConnection": "Sem conexão",
+    "connecting": "Conectando …"
+  },
+  "sourceSync": {
+    "outsideProject": "Este trecho vem de {path}, um arquivo fora do projeto.",
+    "noMapping": "Não há mapeamento para este trecho no mapa SyncTeX."
+  }
+}

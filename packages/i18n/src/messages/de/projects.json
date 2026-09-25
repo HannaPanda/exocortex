@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Projekt"
+  },
+  "buildStatuses": {
+    "PENDING": "wartet",
+    "RUNNING": "läuft",
+    "COMPLETED": "fertig",
+    "FAILED": "fehlgeschlagen",
+    "CANCELLED": "abgebrochen"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "entfällt",
+    "PENDING": "läuft",
+    "READY": "fertig",
+    "FAILED": "fehlgeschlagen"
+  },
+  "history": {
+    "emptyTitle": "Noch keine Bauten",
+    "emptyDescription": "Was gebaut wurde, steht hier, auch nach einem Neuladen.",
+    "sourcesChanged": "Quellen geändert",
+    "pageCount": "{count} S.",
+    "openPdf": "PDF öffnen",
+    "delete": "Löschen",
+    "textExtract": "Textauszug {status}",
+    "syncTexFile": "SyncTeX-Datei"
+  },
+  "panel": {
+    "notBuiltTitle": "Noch nicht gebaut",
+    "notBuiltDescription": "Auf „Bauen“ drücken. Das erste Mal dauert am längsten, danach ist der Bau gecacht.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Fehler",
+      "errorsWithCount": "Fehler ({count})",
+      "log": "Protokoll",
+      "history": "Verlauf"
+    },
+    "logLoading": "Protokoll wird geladen …",
+    "noLog": "Kein Protokoll.",
+    "stale": "veraltet",
+    "errorCount": "{count, plural, one {# Fehler} other {# Fehler}}",
+    "warningCount": "{count, plural, one {# Warnung} other {# Warnungen}}",
+    "pageCount": "{count, plural, one {# Seite} other {# Seiten}}",
+    "download": "PDF",
+    "running": "Der Bau läuft …",
+    "noPdfTitle": "Kein PDF",
+    "noPdfDescription": "Dieser Bau hat keine Datei abgeliefert. Die Fehlerliste sagt, warum.",
+    "noErrorsTitle": "Keine Fehler",
+    "noErrorsDescription": "LaTeX hatte nichts zu beanstanden."
+  },
+  "editor": {
+    "emptyFile": "Diese Datei ist leer."
+  },
+  "fileTree": {
+    "heading": "Dateien",
+    "create": "Datei anlegen",
+    "empty": "Noch keine Dateien.",
+    "rootBadge": "Haupt",
+    "remove": "{name} entfernen"
+  },
+  "importDialog": {
+    "title": "Archiv übernommen",
+    "imported": "{count, plural, one {# Datei ist jetzt im Projekt.} other {# Dateien sind jetzt im Projekt.}}",
+    "strippedRoot": "Der gemeinsame Oberordner <code>{root}</code> wurde weggelassen.",
+    "rootFileChanged": "Hauptdatei ist jetzt <code>{file}</code>.",
+    "skippedHeading": "Nicht übernommen",
+    "more": "… und {count} weitere",
+    "overwrite": "Vorhandene überschreiben",
+    "close": "Schließen",
+    "skipReasons": {
+      "invalid_path": "Der Pfad ist im Projekt nicht erlaubt.",
+      "ignored": "Eine Hilfsdatei des Betriebssystems, die im Projekt nichts zu suchen hat.",
+      "exists": "An dieser Stelle liegt schon eine Datei. „Vorhandene überschreiben“ ersetzt sie.",
+      "too_large": "Die Datei ist größer, als dieses Projekt erlaubt.",
+      "not_utf8": "Die Datei sieht wie Text aus, ist aber nicht UTF-8 kodiert.",
+      "too_many_files": "Das Projekt hat die erlaubte Anzahl Dateien erreicht.",
+      "encrypted": "Der Eintrag im Archiv ist verschlüsselt.",
+      "unsupported_method": "Der Eintrag ist mit einem Verfahren gepackt, das hier nicht gelesen wird.",
+      "corrupt": "Der Eintrag im Archiv ließ sich nicht entpacken.",
+      "upload_failed": "Die Datei konnte nicht als Anhang gespeichert werden."
+    }
+  },
+  "newFile": {
+    "title": "Datei anlegen",
+    "description": "Der Pfad ist relativ zum Projekt. Ordner entstehen dadurch, dass ein Pfad sie nennt: <code>{example}</code> legt den Ordner mit an.",
+    "examplePath": "kapitel/einleitung.tex",
+    "path": "Pfad",
+    "assetHint": "Für Bilder, Schriften und PDFs den Knopf „Datei hochladen“ benutzen.",
+    "cancel": "Abbrechen",
+    "create": "Anlegen",
+    "pathProblems": {
+      "empty": "Der Pfad ist leer.",
+      "too_long": "Der Pfad ist länger als {max} Zeichen.",
+      "absolute": "Der Pfad darf nicht mit einem Schrägstrich beginnen.",
+      "traversal": "Der Pfad darf nicht aus dem Projekt herausführen.",
+      "trailing_slash": "Der Pfad darf nicht mit einem Schrägstrich enden.",
+      "empty_segment": "Der Pfad enthält einen leeren Abschnitt.",
+      "invalid_character": "Der Pfad enthält ein unzulässiges Zeichen.",
+      "reserved_name": "Dieser Name ist für den Bau reserviert."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Hauptdatei",
+    "engine": "Engine",
+    "bibliography": "Literaturverzeichnis",
+    "bibliographies": {
+      "AUTO": "automatisch",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "keine"
+    },
+    "upload": "Datei hochladen",
+    "importZip": "ZIP importieren",
+    "exportZip": "Als ZIP",
+    "cancel": "Abbrechen",
+    "build": "Bauen"
+  },
+  "view": {
+    "notFound": "Projekt nicht gefunden",
+    "loading": "Projekt wird geladen …",
+    "files": "Dateien",
+    "noFileSelected": "Keine Datei gewählt",
+    "chooseFile": "Wähle eine Datei aus dem Dateibaum.",
+    "assetDescription": "Eine hochgeladene Datei. Sie lässt sich im Projekt verwenden, aber nicht hier bearbeiten.",
+    "noConnection": "Keine Verbindung",
+    "connecting": "Verbindung wird aufgebaut …"
+  },
+  "sourceSync": {
+    "outsideProject": "Diese Stelle kommt aus {path}, einer Datei außerhalb des Projekts.",
+    "noMapping": "Zu dieser Stelle gibt es keine Zuordnung in der SyncTeX-Karte."
+  }
+}

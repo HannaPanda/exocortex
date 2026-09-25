@@ -341,5 +341,20 @@
     "fitWidth": "Szerokość",
     "pageCount": "{count, plural, one {# strona} few {# strony} many {# stron} other {# strony}}",
     "clickHint": "Kliknięcie przenosi do źródła"
+  },
+  "templateSettings": {
+    "titleMark": "Oznacz jako szablon",
+    "titleEdit": "Szablon",
+    "description": "Na podstawie tej strony będzie można tworzyć nowe strony. Sama strona pozostanie na swoim miejscu i nadal będzie zwykłą stroną.",
+    "purpose": "Do czego służy ten szablon? (opcjonalnie)",
+    "purposePlaceholder": "Widoczne pod tytułem przy wyborze",
+    "pattern": "Wzorzec tytułu (opcjonalnie)",
+    "patternPlaceholder": "Przegląd tygodnia T{token}",
+    "preview": "Obecny wynik: <result>{preview}</result>",
+    "placeholders": "Dostępne: {placeholders}",
+    "unmark": "Usuń oznaczenie szablonu",
+    "cancel": "Anuluj",
+    "mark": "Oznacz jako szablon",
+    "save": "Zapisz"
   }
 }

@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automations"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Page created",
+    "DOCUMENT_UPDATED": "Title or properties changed",
+    "DOCUMENT_CONTENT_CHANGED": "Content changed",
+    "DOCUMENT_MOVED": "Page moved",
+    "DOCUMENT_ARCHIVED": "Page moved to trash",
+    "DOCUMENT_DELETED": "Page permanently deleted",
+    "DATABASE_ROW_CHANGED": "Row value changed",
+    "SCHEDULE": "Schedule"
+  },
+  "scopes": {
+    "WORKSPACE": "Entire workspace",
+    "SUBTREE": "A page and its subpages",
+    "DATABASE": "A database and its rows"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (signed POST)",
+    "AI_RUN": "AI run on the changed page",
+    "EMAIL_SELF": "Email to yourself"
+  },
+  "outputs": {
+    "COMMENT": "As a comment on the page",
+    "CHILD_PAGE": "As a new subpage"
+  },
+  "scheduleKinds": {
+    "ONCE": "Once at a specific time",
+    "DAILY": "Daily",
+    "WEEKLY": "Weekly",
+    "MONTHLY": "Monthly",
+    "CRON": "Cron expression"
+  },
+  "runOrigins": {
+    "EVENT": "Change",
+    "SCHEDULE": "Schedule",
+    "MANUAL": "Manual"
+  },
+  "runStatuses": {
+    "PENDING": "pending",
+    "RUNNING": "running",
+    "SUCCEEDED": "succeeded",
+    "FAILED": "failed",
+    "SKIPPED": "skipped"
+  },
+  "schedule": {
+    "once": "Once",
+    "onceAt": "Once at {moment}",
+    "daily": "Daily at {time} ({zone})",
+    "weekly": "Every {weekday} at {time} ({zone})",
+    "monthly": "Monthly on day {day} at {time} ({zone})",
+    "cron": "Cron “{expression}” ({zone})",
+    "none": "No schedule"
+  },
+  "scheduleFields": {
+    "kind": "Schedule",
+    "at": "Date and time",
+    "atHint": "Runs exactly once. After that, the rule remains in place without turning itself off.",
+    "weekday": "Day of the week",
+    "dayOfMonth": "Day of the month",
+    "dayOfMonthHint": "The 31st means the last day in a shorter month. A month is never skipped.",
+    "time": "Time",
+    "cron": "Cron expression",
+    "cronHint": "Five fields: minute, hour, day of month, month, day of week (0 is Sunday). Ranges, lists, and steps are allowed; names and aliases like @daily are not.",
+    "zone": "Time zone",
+    "zoneHint": "Belongs to the rule, not to the server. Daylight saving time is accounted for: 07:00 stays 07:00."
+  },
+  "dialog": {
+    "newTitle": "New automation",
+    "editTitle": "Edit automation",
+    "description": "When something changes within the selected scope or the schedule is due, the action runs. An automation never overwrites the content of a page.",
+    "name": "Name",
+    "namePlaceholder": "Notify Hermes about new meeting notes",
+    "debounce": "Debounce (seconds)",
+    "debounceHint": "How long a page must remain quiet before the rule runs. Without this, every keystroke triggers a run, and with an AI run, each of them costs money.",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save",
+    "secretIntro": "The rule has been created. You can see the signing secret now and never again: eXocortex cannot retrieve it. The receiving service needs it to verify the signature.",
+    "secretLabel": "Signing secret",
+    "secretSignature": "Every POST includes the headers <code>{timestampHeader}</code> and <code>{signatureHeader}</code>. <code>{signedValue}</code> is signed via HMAC-SHA256 with this secret.",
+    "secretDone": "I’ve copied it",
+    "scope": "Scope",
+    "subtreeDocumentId": "Page ID",
+    "databaseDocumentId": "Database ID",
+    "scopeDocumentPlaceholder": "e.g., {example}",
+    "scopeDocumentHint": "The ID is in the address bar of the page.",
+    "triggers": "Triggers",
+    "triggersHint": "Row values only exist within the scope of a database, everything else only outside. A schedule stands alone and requires a page as its scope: the clock specifies none.",
+    "action": "Action",
+    "mailSubject": "Subject (optional)",
+    "mailSubjectPlaceholder": "Leave blank for the name of the rule",
+    "mailHint": "The email goes to the verified address of your own account, nowhere else. The text contains the page itself, shortened for long pages and with a link below.",
+    "webhookUrl": "Target URL",
+    "webhookNoHosts": "This installation currently does not allow any webhook targets. A global administrator must configure {setting}.",
+    "webhookHosts": "Allowed hosts: {hosts}. Only metadata of the page is sent, never its content.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Check whether this page contains outdated information due to the change.",
+    "promptHint": "The modified page is the model’s material. The response ends up alongside it, not inside it.",
+    "output": "Result",
+    "model": "Model (optional)",
+    "modelPlaceholder": "Leave empty for the default model"
+  },
+  "page": {
+    "loading": "Loading automations…",
+    "title": "Automations",
+    "intro": "Rules that react to page changes or the clock: a signed webhook or an AI run against the affected page.",
+    "newRule": "New rule",
+    "disabled": "Automations are turned off for this workspace. None of the rules below will run, regardless of how they are configured. You can toggle this via the setting <code>{setting}</code>; if the installation has turned them off globally, a workspace cannot turn them back on itself.",
+    "readOnly": "Only the owner of this workspace can create and edit rules. A rule sends data externally or spends money on a model, and it keeps doing so even when nobody is watching.",
+    "rulesHeading": "Rules",
+    "emptyTitle": "No automation yet",
+    "emptyDescription": "A rule consists of three answers: where it watches, what it reacts to, and what it does next.",
+    "columns": {
+      "name": "Name",
+      "scope": "Scope",
+      "triggers": "Triggers",
+      "action": "Action",
+      "enabled": "On"
+    },
+    "selfDisabled": "Disabled itself: {reason}",
+    "lastTriggered": "Last {moment}",
+    "noNextRun": "No upcoming run",
+    "nextRun": "Next run {moment}",
+    "disableRule": "Turn off {name}",
+    "enableRule": "Turn on {name}",
+    "documentIdPlaceholder": "Page ID",
+    "runAgainst": "Page to run {name} against",
+    "runNow": "Run now",
+    "edit": "Edit",
+    "confirmDelete": "Confirm delete",
+    "delete": "Delete"
+  },
+  "runLog": {
+    "heading": "Run log",
+    "empty": "Nothing has run yet.",
+    "columns": {
+      "moment": "Time",
+      "rule": "Rule",
+      "page": "Page",
+      "origin": "Triggered by",
+      "status": "Result",
+      "duration": "Duration"
+    },
+    "deletedPage": "(deleted)"
+  }
+}

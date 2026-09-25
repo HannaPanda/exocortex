@@ -2,15 +2,10 @@
 
 import { CheckIcon, SparklesIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import {
-  type Feature,
-  FEATURE_AREA_DESCRIPTIONS,
-  FEATURE_AREA_LABELS,
-  FEATURE_AREAS,
-  type FeatureArea,
-} from '@exocortex/contracts';
+import { type Feature, FEATURE_AREAS, type FeatureArea } from '@exocortex/contracts';
 import {
   AppPage,
   Badge,
@@ -85,12 +80,13 @@ function matches(feature: Feature, needle: string): boolean {
  * which key, which tool) have to be findable without reading the prose again.
  */
 function AccessBox({ feature }: { feature: Feature }) {
+  const t = useTranslations('help.access');
   const rows: { label: string; value: React.ReactNode }[] = [];
 
   if (feature.access.ui !== null) {
     const { where, path } = feature.access.ui;
     rows.push({
-      label: 'Zu finden',
+      label: t('where'),
       value:
         path === null ? (
           where
@@ -98,7 +94,7 @@ function AccessBox({ feature }: { feature: Feature }) {
           <>
             {where}{' '}
             <Link href={path} className="underline underline-offset-2 hover:text-foreground">
-              Öffnen
+              {t('open')}
             </Link>
           </>
         ),
@@ -107,7 +103,7 @@ function AccessBox({ feature }: { feature: Feature }) {
 
   if (feature.access.shortcuts.length > 0) {
     rows.push({
-      label: 'Tastenkürzel',
+      label: t('shortcuts'),
       value: (
         <span className="flex flex-wrap items-center gap-2">
           {feature.access.shortcuts.map((shortcut) => (
@@ -124,9 +120,9 @@ function AccessBox({ feature }: { feature: Feature }) {
   }
 
   for (const [label, values] of [
-    ['Für Agenten', feature.access.tools],
-    ['Einstellungen', feature.access.settings],
-    ['Hintergrund', feature.references],
+    [t('tools'), feature.access.tools],
+    [t('settings'), feature.access.settings],
+    [t('references'), feature.references],
   ] as const) {
     if (values.length > 0)
       rows.push({ label, value: <span className="font-mono">{values.join(', ')}</span> });
@@ -146,6 +142,7 @@ function AccessBox({ feature }: { feature: Feature }) {
 }
 
 function FeatureArticle({ feature }: { feature: Feature }) {
+  const t = useTranslations('help.entry');
   return (
     <article
       id={feature.id}
@@ -154,8 +151,8 @@ function FeatureArticle({ feature }: { feature: Feature }) {
     >
       <div className="flex flex-wrap items-baseline gap-2">
         <h3 className="text-base font-semibold">{feature.title}</h3>
-        {feature.isNew ? <Badge variant="default">Neu</Badge> : null}
-        <span className="text-xs text-muted-foreground">seit {feature.since}</span>
+        {feature.isNew ? <Badge variant="default">{t('new')}</Badge> : null}
+        <span className="text-xs text-muted-foreground">{t('since', { date: feature.since })}</span>
       </div>
       <p className="mt-2 text-sm font-medium">{feature.summary}</p>
       <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
@@ -169,12 +166,11 @@ function FeatureArticle({ feature }: { feature: Feature }) {
 }
 
 function AreaSection({ area, features }: { area: FeatureArea; features: Feature[] }) {
+  const t = useTranslations('help.areas');
   return (
     <section className="scroll-mt-24">
-      <h2 className="text-lg font-semibold">{FEATURE_AREA_LABELS[area]}</h2>
-      <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-        {FEATURE_AREA_DESCRIPTIONS[area]}
-      </p>
+      <h2 className="text-lg font-semibold">{t(`${area}.label`)}</h2>
+      <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t(`${area}.description`)}</p>
       <div className="mt-6 space-y-8">
         {features.map((feature) => (
           <FeatureArticle key={feature.id} feature={feature} />
@@ -186,15 +182,27 @@ function AreaSection({ area, features }: { area: FeatureArea; features: Feature[
 
 /** Area label plus how many entries are visible in it under the current filter. */
 function NavLabel({ area, count }: { area: Selection; count: number }) {
+  const areaLabel = useAreaLabel();
   return (
     <>
-      <span>{area === ALL ? 'Alle Funktionen' : FEATURE_AREA_LABELS[area]}</span>
+      <span>{areaLabel(area)}</span>
       <span className="shrink-0 text-xs tabular-nums opacity-60">{count}</span>
     </>
   );
 }
 
+/** The name of an area in the side navigation, or of the whole list. */
+function useAreaLabel(): (area: Selection) => string {
+  const t = useTranslations('help');
+  return React.useCallback(
+    (area: Selection) => (area === ALL ? t('page.allAreas') : t(`areas.${area}.label`)),
+    [t],
+  );
+}
+
 export function HelpPage() {
+  const t = useTranslations('help.page');
+  const areaLabel = useAreaLabel();
   const [search, setSearch] = React.useState('');
   const [onlyNew, setOnlyNew] = React.useState(false);
   const [selected, setSelected] = React.useState<Selection>('hilfe');
@@ -225,12 +233,8 @@ export function HelpPage() {
   return (
     <AppPage maxWidth="max-w-5xl">
       <div>
-        <h1 className="exocortex-page-title">Hilfe und Funktionen</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          Was diese Installation kann, ausführlich und in ganzen Sätzen: wie es funktioniert, wie du
-          es benutzt und wo es aufhört. Die Liste wird beim Bauen erzwungen, eine neue Fähigkeit
-          kommt also nicht durch, ohne hier beschrieben zu sein.
-        </p>
+        <h1 className="exocortex-page-title">{t('title')}</h1>
+        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -238,8 +242,8 @@ export function HelpPage() {
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Suchen, zum Beispiel nach PDF oder Kalender"
-          aria-label="Funktionen durchsuchen"
+          placeholder={t('searchPlaceholder')}
+          aria-label={t('searchLabel')}
           data-testid="feature-search"
           className="max-w-sm flex-1"
         />
@@ -252,7 +256,7 @@ export function HelpPage() {
               data-testid="feature-filter-new"
             >
               <SparklesIcon />
-              Neu für dich ({newCount})
+              {t('onlyNew', { count: newCount })}
             </Button>
             <Button
               variant="ghost"
@@ -262,22 +266,18 @@ export function HelpPage() {
               data-testid="feature-mark-seen"
             >
               <CheckIcon />
-              Zur Kenntnis genommen
+              {t('markSeen')}
             </Button>
           </>
         ) : null}
       </div>
 
-      {features.isPending ? <LoadingState label="Funktionen werden geladen …" /> : null}
+      {features.isPending ? <LoadingState label={t('loading')} /> : null}
 
       {!features.isPending && shown.length === 0 ? (
         <EmptyState
-          title="Nichts gefunden"
-          description={
-            onlyNew
-              ? 'Seit deinem letzten Besuch ist nichts dazugekommen.'
-              : 'Kein Eintrag passt zu dieser Suche.'
-          }
+          title={t('emptyTitle')}
+          description={onlyNew ? t('emptyNew') : t('emptySearch')}
         />
       ) : null}
 
@@ -292,14 +292,12 @@ export function HelpPage() {
               content would push the content off a phone screen entirely. */}
           <Select value={active} onValueChange={(value) => setSelected(value as Selection)}>
             <SelectTrigger className="w-full md:hidden" data-testid="feature-area-select">
-              <SelectValue>
-                {() => (active === ALL ? 'Alle Funktionen' : FEATURE_AREA_LABELS[active])}
-              </SelectValue>
+              <SelectValue>{() => areaLabel(active)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {([ALL, ...areas] as Selection[]).map((area) => (
                 <SelectItem key={area} value={area}>
-                  {area === ALL ? 'Alle Funktionen' : FEATURE_AREA_LABELS[area]} ({countOf(area)})
+                  {t('areaWithCount', { area: areaLabel(area), count: countOf(area) })}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Plantillas"
+  },
+  "statuses": {
+    "PENDING": "pendiente",
+    "RUNNING": "generando",
+    "COMPLETED": "completado",
+    "FAILED": "fallido",
+    "CANCELLED": "cancelado"
+  },
+  "sources": {
+    "DOCUMENT": "Solo esta página",
+    "SUBTREE": "Página y subpáginas, con índice"
+  },
+  "variableOrigins": {
+    "MANUAL": "Se introduce antes de generar",
+    "TITLE": "Título de la página",
+    "PATH": "Ruta de la página",
+    "AUTHOR": "Quién inicia la generación",
+    "TODAY": "Fecha actual",
+    "PROPERTY": "Propiedad de la fila de la base de datos"
+  },
+  "dialog": {
+    "title": "Publicar como PDF",
+    "description": "El contenido de esta página se compone con una plantilla. La página en sí no se modifica.",
+    "close": "Cerrar",
+    "rebuild": "Volver a generar",
+    "build": "Generar PDF",
+    "disabled": "La exportación a PDF está desactivada para este espacio de trabajo.",
+    "noTemplates": "Aún no hay ninguna plantilla. Quien administre el espacio de trabajo puede crearla en «Plantillas».",
+    "startFailed": "No se pudo iniciar la generación.",
+    "template": "Plantilla",
+    "chooseTemplate": "Elegir plantilla",
+    "source": "Ámbito",
+    "historyHeading": "PDF anteriores",
+    "stale": "La página ha cambiado",
+    "deletedTemplate": "(plantilla eliminada)",
+    "openPdf": "Abrir PDF",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "showLog": "Mostrar registro",
+    "hideLog": "Ocultar registro",
+    "emptyLog": "(vacío)",
+    "editTemplates": "Editar plantillas"
+  },
+  "templateDialog": {
+    "newTitle": "Nueva plantilla",
+    "editTitle": "Editar plantilla",
+    "description": "El código fuente es una plantilla de Pandoc: <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Si no se especifica ningún código, se usará Eisvogel.",
+    "name": "Nombre",
+    "templateDescription": "Descripción",
+    "templateDescriptionPlaceholder": "Para qué está pensada esta plantilla",
+    "useBuiltIn": "Usar la plantilla integrada Eisvogel",
+    "source": "Código fuente",
+    "variables": "Variables",
+    "addVariable": "Añadir variable",
+    "newVariableLabel": "Nueva variable",
+    "variableName": "Nombre en la plantilla",
+    "variableLabel": "Etiqueta",
+    "variableOrigin": "De dónde procede el valor",
+    "propertyName": "Nombre de la propiedad",
+    "propertyPlaceholder": "Propiedad",
+    "required": "Obligatorio",
+    "removeVariable": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saveFailed": "No se pudo guardar la plantilla."
+  },
+  "templatesPage": {
+    "loading": "Cargando plantillas…",
+    "title": "Plantillas",
+    "intro": "Permite publicar páginas de este espacio de trabajo como PDF. La composición se realiza con Pandoc y LaTeX; el contenido de las páginas permanece intacto.",
+    "newTemplate": "Nueva plantilla",
+    "disabled": "La generación de PDF está desactivada para este espacio de trabajo. Las plantillas de abajo se conservan, pero no se puede compilar nada con ellas. Puedes cambiarlo mediante el ajuste <code>{setting}</code>; si la instalación la ha desactivado globalmente, un espacio de trabajo no puede volver a activarla por su cuenta.",
+    "emptyTitle": "Aún no hay plantillas",
+    "emptyDescription": "Una plantilla sin código fuente propio utiliza la plantilla integrada Eisvogel y no necesita ni una línea de LaTeX.",
+    "columns": {
+      "name": "Nombre",
+      "typesetting": "Composición",
+      "variables": "Variables"
+    },
+    "builtIn": "Eisvogel (integrada)",
+    "ownSource": "Código fuente propio",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  }
+}

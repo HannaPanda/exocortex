@@ -341,5 +341,20 @@
     "fitWidth": "Breedte",
     "pageCount": "{count, plural, one {# pagina} other {# pagina’s}}",
     "clickHint": "Klik springt naar de bron"
+  },
+  "templateSettings": {
+    "titleMark": "Als sjabloon markeren",
+    "titleEdit": "Sjabloon",
+    "description": "Vanuit deze pagina kun je dan nieuwe pagina’s aanmaken. De pagina zelf blijft waar die is en blijft een gewone pagina.",
+    "purpose": "Waar is het sjabloon voor? (optioneel)",
+    "purposePlaceholder": "Staat in de selectie onder de titel",
+    "pattern": "Titelpatroon (optioneel)",
+    "patternPlaceholder": "Weekoverzicht week {token}",
+    "preview": "Geeft nu: <result>{preview}</result>",
+    "placeholders": "Mogelijk: {placeholders}",
+    "unmark": "Geen sjabloon meer",
+    "cancel": "Annuleren",
+    "mark": "Als sjabloon markeren",
+    "save": "Opslaan"
   }
 }

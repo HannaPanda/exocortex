@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ProjectBuild } from '@exocortex/contracts';
 import { Badge, Button, cn, EmptyState } from '@exocortex/ui';
 
-import { formatBytes, formatMoment } from '@/components/render/render-labels';
+import { useBuildFormat } from '@/components/render/render-labels';
 import { useProjectBuildArtifacts } from '@/lib/api/project-queries';
 
 /**
@@ -22,13 +23,11 @@ import { useProjectBuildArtifacts } from '@/lib/api/project-queries';
  * is half a feature -- the artifacts are ordinary attachments and they add up.
  */
 
-const STATUS_LABEL: Record<ProjectBuild['status'], string> = {
-  PENDING: 'wartet',
-  RUNNING: 'läuft',
-  COMPLETED: 'fertig',
-  FAILED: 'fehlgeschlagen',
-  CANCELLED: 'abgebrochen',
-};
+/** The name of a build's status in the reader's language; the build panel says it the same way. */
+export function useBuildStatusLabel(): (status: ProjectBuild['status']) => string {
+  const t = useTranslations('projects.buildStatuses');
+  return React.useCallback((status: ProjectBuild['status']) => t(status), [t]);
+}
 
 function statusVariant(
   status: ProjectBuild['status'],
@@ -50,13 +49,9 @@ export function ProjectBuildHistory({
   onSelect: (buildId: string) => void;
   onDelete: (buildId: string) => void;
 }) {
+  const t = useTranslations('projects.history');
   if (builds.length === 0) {
-    return (
-      <EmptyState
-        title="Noch keine Bauten"
-        description="Was gebaut wurde, steht hier, auch nach einem Neuladen."
-      />
-    );
+    return <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />;
   }
 
   return (
@@ -85,6 +80,9 @@ function HistoryRow({
   onSelect: (buildId: string) => void;
   onDelete: (buildId: string) => void;
 }) {
+  const t = useTranslations('projects.history');
+  const statusLabel = useBuildStatusLabel();
+  const format = useBuildFormat();
   const running = build.status === 'PENDING' || build.status === 'RUNNING';
 
   return (
@@ -102,14 +100,14 @@ function HistoryRow({
         onClick={() => onSelect(build.id)}
         data-testid="project-build-select"
       >
-        {formatMoment(build.createdAt)}
+        {format.moment(build.createdAt)}
       </button>
-      <Badge variant={statusVariant(build.status)}>{STATUS_LABEL[build.status]}</Badge>
-      {build.stale ? <Badge variant="outline">Quellen geändert</Badge> : null}
+      <Badge variant={statusVariant(build.status)}>{statusLabel(build.status)}</Badge>
+      {build.stale ? <Badge variant="outline">{t('sourcesChanged')}</Badge> : null}
       <span className="text-xs text-muted-foreground">
         {build.rootFile}
-        {build.pageCount === null ? '' : ` · ${String(build.pageCount)} S.`}
-        {build.attachmentByteSize === null ? '' : ` · ${formatBytes(build.attachmentByteSize)}`}
+        {build.pageCount === null ? '' : ` · ${t('pageCount', { count: build.pageCount })}`}
+        {build.attachmentByteSize === null ? '' : ` · ${format.bytes(build.attachmentByteSize)}`}
       </span>
       <div className="ms-auto flex items-center gap-2">
         {build.downloadPath === null ? null : (
@@ -120,7 +118,7 @@ function HistoryRow({
             className="text-xs underline"
             data-testid="project-build-open"
           >
-            PDF öffnen
+            {t('openPdf')}
           </Link>
         )}
         {/* A running build is cancelled, not deleted: the container is still
@@ -132,7 +130,7 @@ function HistoryRow({
             onClick={() => onDelete(build.id)}
             data-testid="project-build-delete"
           >
-            Löschen
+            {t('delete')}
           </Button>
         )}
       </div>
@@ -150,6 +148,7 @@ function HistoryRow({
  * says READY, `exo_attachment_read_text` reads back what the build printed.
  */
 function ArtifactLine({ buildId }: { buildId: string }) {
+  const t = useTranslations('projects');
   const artifacts = useProjectBuildArtifacts(buildId);
   const data = artifacts.data;
   if (data === undefined || (data.pdf === null && data.sourceMap === null)) return null;
@@ -158,7 +157,8 @@ function ArtifactLine({ buildId }: { buildId: string }) {
     <p className="basis-full text-xs text-muted-foreground" data-testid="project-build-artifacts">
       {data.pdf === null ? null : (
         <span>
-          {data.pdf.filename} · Textauszug {TEXT_STATUS_LABEL[data.pdf.textStatus]}
+          {data.pdf.filename} ·{' '}
+          {t('history.textExtract', { status: t(`textStatuses.${data.pdf.textStatus}`) })}
         </span>
       )}
       {data.sourceMap === null ? null : (
@@ -171,17 +171,10 @@ function ArtifactLine({ buildId }: { buildId: string }) {
             className="underline"
             data-testid="project-build-sourcemap"
           >
-            SyncTeX-Datei
+            {t('history.syncTexFile')}
           </Link>
         </>
       )}
     </p>
   );
 }
-
-const TEXT_STATUS_LABEL: Record<'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED', string> = {
-  NOT_APPLICABLE: 'entfällt',
-  PENDING: 'läuft',
-  READY: 'fertig',
-  FAILED: 'fehlgeschlagen',
-};

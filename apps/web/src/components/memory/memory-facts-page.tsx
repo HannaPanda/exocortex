@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type MemoryFact, type MemoryFactStatus } from '@exocortex/contracts';
@@ -19,7 +20,6 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { formatMoment } from '@/components/render/render-labels';
 import { useMemoryFacts, usePromoteMemoryFact } from '@/lib/api/memory-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 
@@ -37,15 +37,17 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
  * judgement it is had to ask an agent to press the button for them.
  */
 
-const STATUS_LABELS: Record<MemoryFactStatus, string> = {
-  current: 'gilt',
-  superseded: 'überholt',
-  conflicted: 'widersprüchlich',
-};
+/** The name of a fact's status in the reader's language. */
+function useStatusLabel(): (status: MemoryFactStatus) => string {
+  const t = useTranslations('memory.statuses');
+  return React.useCallback((status: MemoryFactStatus) => t(status), [t]);
+}
 
 const STATUSES: MemoryFactStatus[] = ['current', 'conflicted', 'superseded'];
 
 export function MemoryFactsPage() {
+  const t = useTranslations('memory.facts');
+  const statusLabel = useStatusLabel();
   const [project, setProject] = React.useState('');
   const [status, setStatus] = React.useState<MemoryFactStatus>('current');
   const workspaces = useWorkspaces();
@@ -58,48 +60,45 @@ export function MemoryFactsPage() {
   return (
     <AppPage maxWidth="max-w-3xl">
       <div>
-        <h1 className="exocortex-page-title">Gedächtnis</h1>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Was die Agenten aus ihren Sitzungsnotizen destilliert haben. Jeder Satz ist eine eigene
-          Seite im Memory-Arbeitsbereich.
-        </p>
+        <h1 className="exocortex-page-title">{t('title')}</h1>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       <div className="mt-6 flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="memory-project">Projekt</Label>
+          <Label htmlFor="memory-project">{t('project')}</Label>
           <Input
             id="memory-project"
             value={project}
-            placeholder="alle"
+            placeholder={t('projectPlaceholder')}
             className="w-56"
             data-testid="memory-project"
             onChange={(event) => setProject(event.target.value)}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="memory-status">Zustand</Label>
+          <Label htmlFor="memory-status">{t('status')}</Label>
           <Select value={status} onValueChange={(next) => setStatus(next as MemoryFactStatus)}>
             <SelectTrigger id="memory-status" className="w-44" data-testid="memory-status">
-              <SelectValue>{() => STATUS_LABELS[status]}</SelectValue>
+              <SelectValue>{() => statusLabel(status)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {STATUSES.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {STATUS_LABELS[value]}
+                  {statusLabel(value)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="memory-target">Übernehmen nach</Label>
+          <Label htmlFor="memory-target">{t('target')}</Label>
           <Select value={chosenTarget ?? ''} onValueChange={setTarget}>
             <SelectTrigger id="memory-target" className="w-56" data-testid="memory-target">
               <SelectValue>
                 {() =>
                   workspaces.data?.find((workspace) => workspace.id === chosenTarget)?.name ??
-                  'Arbeitsbereich wählen'
+                  t('chooseWorkspace')
                 }
               </SelectValue>
             </SelectTrigger>
@@ -116,7 +115,7 @@ export function MemoryFactsPage() {
 
       <div className="mt-6">
         {facts.isPending ? (
-          <LoadingState label="Fakten werden geladen …" />
+          <LoadingState label={t('loading')} />
         ) : (
           <FactList facts={facts.data?.facts ?? []} targetWorkspaceId={chosenTarget} />
         )}
@@ -124,7 +123,7 @@ export function MemoryFactsPage() {
 
       {(facts.data?.omitted ?? 0) === 0 ? null : (
         <p className="mt-3 text-xs text-muted-foreground">
-          {String(facts.data?.omitted)} weitere Fakten in diesem Projekt hat der Filter weggelassen.
+          {t('omitted', { count: facts.data?.omitted ?? 0 })}
         </p>
       )}
     </AppPage>
@@ -138,13 +137,9 @@ function FactList({
   facts: readonly MemoryFact[];
   targetWorkspaceId: string | null;
 }) {
+  const t = useTranslations('memory.facts');
   if (facts.length === 0) {
-    return (
-      <EmptyState
-        title="Keine Fakten"
-        description="Die Verdichtung läuft nachts. Ohne Sitzungsnotizen gibt es nichts zu destillieren."
-      />
-    );
+    return <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />;
   }
   return (
     <ul className="flex flex-col gap-2" data-testid="memory-facts">
@@ -162,6 +157,9 @@ function FactRow({
   fact: MemoryFact;
   targetWorkspaceId: string | null;
 }) {
+  const t = useTranslations('memory.facts');
+  const format = useFormatter();
+  const statusLabel = useStatusLabel();
   const promote = usePromoteMemoryFact();
 
   return (
@@ -177,7 +175,7 @@ function FactRow({
           {fact.statement}
         </Link>
         <Badge variant={fact.status === 'conflicted' ? 'destructive' : 'secondary'}>
-          {STATUS_LABELS[fact.status]}
+          {statusLabel(fact.status)}
         </Badge>
         <span className="text-xs text-muted-foreground">{fact.projectKey}</span>
       </div>
@@ -187,18 +185,26 @@ function FactRow({
       )}
 
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+        <span>{t('confirmations', { count: fact.confirmations })}</span>
         <span>
-          {fact.confirmations === 1
-            ? '1 Bestätigung'
-            : `${String(fact.confirmations)} Bestätigungen`}
+          {t('confidence', {
+            confidence: format.number(fact.confidence, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }),
+          })}
         </span>
-        <span>Gewicht {fact.confidence.toFixed(2)}</span>
-        <span>zuletzt {formatMoment(fact.lastConfirmedAt)}</span>
         <span>
-          {fact.sourceNoteIds.length === 1
-            ? 'aus 1 Notiz'
-            : `aus ${String(fact.sourceNoteIds.length)} Notizen`}
+          {t('lastConfirmed', {
+            moment: format.dateTime(new Date(fact.lastConfirmedAt), {
+              day: '2-digit',
+              month: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          })}
         </span>
+        <span>{t('sourceNotes', { count: fact.sourceNoteIds.length })}</span>
         <div className="ms-auto flex items-center gap-2">
           {fact.promotedDocumentId === null ? (
             <Button
@@ -214,7 +220,7 @@ function FactRow({
                 });
               }}
             >
-              Übernehmen
+              {t('promote')}
             </Button>
           ) : (
             <Link
@@ -222,7 +228,7 @@ function FactRow({
               className="underline"
               data-testid="memory-fact-promoted"
             >
-              übernommen
+              {t('promoted')}
             </Link>
           )}
         </div>

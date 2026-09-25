@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangleIcon, DownloadIcon, FileTextIcon, XCircleIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -23,7 +24,7 @@ import {
 import { PdfView } from '@/components/pdf/pdf-view';
 import { useProjectBuildDiagnostics, useProjectBuildLog } from '@/lib/api/project-queries';
 
-import { ProjectBuildHistory } from './project-build-history';
+import { ProjectBuildHistory, useBuildStatusLabel } from './project-build-history';
 
 /**
  * The right-hand half of a project: the PDF, the errors and the log
@@ -41,20 +42,12 @@ import { ProjectBuildHistory } from './project-build-history';
  * file at that line. The same list is what an agent reads.
  */
 
-const STATUS_LABEL: Record<ProjectBuild['status'], string> = {
-  PENDING: 'wartet',
-  RUNNING: 'läuft',
-  COMPLETED: 'fertig',
-  FAILED: 'fehlgeschlagen',
-  CANCELLED: 'abgebrochen',
-};
-
 interface ProjectBuildPanelProps {
   build: ProjectBuild | null;
   builds: readonly ProjectBuild[];
   /** Where the caret in the source pane ended up on paper (issue #53). */
   highlights: readonly ProjectSourceArea[];
-  /** Why the last click in the PDF had no answer. German, or null. */
+  /** Why the last click in the PDF had no answer, in the reader's language, or null. */
   pickError: string | null;
   onOpenDiagnostic: (file: string, line: number | null) => void;
   onPickSource: (position: { page: number; x: number; y: number }) => void;
@@ -72,13 +65,9 @@ export function ProjectBuildPanel({
   onSelectBuild,
   onDeleteBuild,
 }: ProjectBuildPanelProps) {
+  const t = useTranslations('projects.panel');
   if (build === null) {
-    return (
-      <EmptyState
-        title="Noch nicht gebaut"
-        description="Auf „Bauen“ drücken. Das erste Mal dauert am längsten, danach ist der Bau gecacht."
-      />
-    );
+    return <EmptyState title={t('notBuiltTitle')} description={t('notBuiltDescription')} />;
   }
   // Keyed on the build, so the tab a previous run ended on does not carry over
   // to the next one -- it says nothing about it. Picking a build out of the
@@ -125,6 +114,7 @@ function BuildPanel({
    * first and then replace it -- a flash of the previous run's file under a red
    * status line, which reads as "it worked".
    */
+  const t = useTranslations('projects.panel.tabs');
   const [chosenTab, setChosenTab] = React.useState<string | null>(null);
   const running = build.status === 'PENDING' || build.status === 'RUNNING';
   const tab = chosenTab ?? (build.status === 'FAILED' ? 'errors' : 'pdf');
@@ -144,13 +134,13 @@ function BuildPanel({
 
       <Tabs value={tab} onValueChange={setChosenTab} className="flex min-h-0 flex-1 flex-col">
         <TabsList className="mx-3 mt-2 self-start">
-          <TabsTrigger value="pdf">PDF</TabsTrigger>
+          <TabsTrigger value="pdf">{t('pdf')}</TabsTrigger>
           <TabsTrigger value="errors">
-            Fehler{entries.length === 0 ? '' : ` (${String(entries.length)})`}
+            {entries.length === 0 ? t('errors') : t('errorsWithCount', { count: entries.length })}
           </TabsTrigger>
-          <TabsTrigger value="log">Protokoll</TabsTrigger>
+          <TabsTrigger value="log">{t('log')}</TabsTrigger>
           <TabsTrigger value="history" data-testid="project-build-history-tab">
-            Verlauf
+            {t('history')}
           </TabsTrigger>
         </TabsList>
 
@@ -188,31 +178,40 @@ function BuildPanel({
 
 /** The raw log. Fetched only while its tab is the one being looked at. */
 function LogPane({ buildId, enabled }: { buildId: string; enabled: boolean }) {
+  const t = useTranslations('projects.panel');
   const log = useProjectBuildLog(buildId, enabled);
-  if (log.data === undefined) return <LoadingState label="Protokoll wird geladen …" />;
+  if (log.data === undefined) return <LoadingState label={t('logLoading')} />;
   return (
     <pre className="whitespace-pre-wrap break-words font-mono text-micro leading-relaxed text-muted-foreground">
-      {log.data.log.length === 0 ? 'Kein Protokoll.' : log.data.log}
+      {log.data.log.length === 0 ? t('noLog') : log.data.log}
     </pre>
   );
 }
 
 /** Status, counts and the download, in one line. */
 function BuildHeader({ build }: { build: ProjectBuild }) {
+  const t = useTranslations('projects.panel');
+  const statusLabel = useBuildStatusLabel();
   return (
     <div className="flex items-center gap-2 border-b border-border px-3 py-2">
       <Badge variant={build.status === 'FAILED' ? 'destructive' : 'secondary'}>
-        {STATUS_LABEL[build.status]}
+        {statusLabel(build.status)}
       </Badge>
-      {build.stale ? <Badge variant="outline">veraltet</Badge> : null}
+      {build.stale ? <Badge variant="outline">{t('stale')}</Badge> : null}
       {build.errorCount > 0 ? (
-        <span className="text-xs text-destructive">{build.errorCount} Fehler</span>
+        <span className="text-xs text-destructive">
+          {t('errorCount', { count: build.errorCount })}
+        </span>
       ) : null}
       {build.warningCount > 0 ? (
-        <span className="text-xs text-muted-foreground">{build.warningCount} Warnungen</span>
+        <span className="text-xs text-muted-foreground">
+          {t('warningCount', { count: build.warningCount })}
+        </span>
       ) : null}
       {build.pageCount === null ? null : (
-        <span className="text-xs text-muted-foreground">{build.pageCount} Seiten</span>
+        <span className="text-xs text-muted-foreground">
+          {t('pageCount', { count: build.pageCount })}
+        </span>
       )}
       {build.downloadPath === null ? null : (
         <Button
@@ -221,7 +220,7 @@ function BuildHeader({ build }: { build: ProjectBuild }) {
           className="ms-auto"
           render={<a href={build.downloadPath} download />}
         >
-          <DownloadIcon className="size-4" /> PDF
+          <DownloadIcon className="size-4" /> {t('download')}
         </Button>
       )}
     </div>
@@ -250,14 +249,10 @@ function PdfPane({
   pickError: string | null;
   onPickSource: (position: { page: number; x: number; y: number }) => void;
 }) {
-  if (running) return <LoadingState label="Der Bau läuft …" />;
+  const t = useTranslations('projects.panel');
+  if (running) return <LoadingState label={t('running')} />;
   if (downloadPath === null) {
-    return (
-      <EmptyState
-        title="Kein PDF"
-        description="Dieser Bau hat keine Datei abgeliefert. Die Fehlerliste sagt, warum."
-      />
-    );
+    return <EmptyState title={t('noPdfTitle')} description={t('noPdfDescription')} />;
   }
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -284,9 +279,10 @@ function ErrorPane({
   entries: readonly ProjectDiagnostic[];
   onOpen: (file: string, line: number | null) => void;
 }) {
-  if (running) return <LoadingState label="Der Bau läuft …" />;
+  const t = useTranslations('projects.panel');
+  if (running) return <LoadingState label={t('running')} />;
   if (entries.length === 0) {
-    return <EmptyState title="Keine Fehler" description="LaTeX hatte nichts zu beanstanden." />;
+    return <EmptyState title={t('noErrorsTitle')} description={t('noErrorsDescription')} />;
   }
   return (
     <ul className="space-y-1" data-testid="project-diagnostics">

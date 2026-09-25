@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "title": "Functies"
+  },
+  "page": {
+    "title": "Hulp en functies",
+    "intro": "Wat deze installatie kan, uitgebreid en in volledige zinnen: hoe het werkt, hoe je het gebruikt en waar het ophoudt. De lijst wordt bij het bouwen afgedwongen; een nieuwe mogelijkheid komt er dus niet door zonder hier beschreven te zijn.",
+    "searchPlaceholder": "Zoeken, bijvoorbeeld naar pdf of kalender",
+    "searchLabel": "Functies doorzoeken",
+    "onlyNew": "Nieuw voor jou ({count})",
+    "markSeen": "Gelezen",
+    "loading": "Functies worden geladen …",
+    "emptyTitle": "Niets gevonden",
+    "emptyNew": "Sinds je laatste bezoek is er niets bijgekomen.",
+    "emptySearch": "Geen enkel resultaat past bij deze zoekopdracht.",
+    "allAreas": "Alle functies",
+    "areaWithCount": "{area} ({count})"
+  },
+  "entry": {
+    "new": "Nieuw",
+    "since": "sinds {date}"
+  },
+  "access": {
+    "where": "Te vinden",
+    "open": "Openen",
+    "shortcuts": "Sneltoetsen",
+    "tools": "Voor agents",
+    "settings": "Instellingen",
+    "references": "Achtergrond"
+  },
+  "areas": {
+    "hilfe": {
+      "label": "Overzicht",
+      "description": "Waar je opzoekt wat deze installatie kan en wat er onlangs is bijgekomen."
+    },
+    "seiten": {
+      "label": "Pagina’s en editor",
+      "description": "De editor zelf: waaruit een pagina bestaat, hoe je die schrijft en hoe die eruitziet."
+    },
+    "struktur": {
+      "label": "Structuur, opslag en sjablonen",
+      "description": "Waar een pagina staat, hoe die daar terechtkomt, hoe die weer verdwijnt en hoe je dezelfde vorm vaker gebruikt."
+    },
+    "suche": {
+      "label": "Zoeken en koppelingen",
+      "description": "Iets terugvinden, ook als je de woorden van toen niet meer weet."
+    },
+    "datenbanken": {
+      "label": "Databases",
+      "description": "Pagina’s als tabel: kolommen met types, opgeslagen weergaven en rijen die volwaardige pagina’s blijven."
+    },
+    "erfassen": {
+      "label": "Snel vastleggen",
+      "description": "De snelste weg van een gedachte of webpagina naar eXocortex."
+    },
+    "zusammenarbeit": {
+      "label": "Samenwerking en geschiedenis",
+      "description": "Samen aan een pagina werken, gesprekken in de tekst en het overzicht van wat wanneer door wie is gewijzigd."
+    },
+    "dateien": {
+      "label": "Bestanden en tekstherkenning",
+      "description": "Wat je uploadt: waar het staat, hoe het wordt getoond en hoe de tekst uit een pdf tevoorschijn komt."
+    },
+    "ki": {
+      "label": "Ingebouwde AI",
+      "description": "Het ingebouwde model: wat het ziet, wat het mag, wat het kost en waar de grenzen liggen."
+    },
+    "automationen": {
+      "label": "Automatiseringen",
+      "description": "Regels die zonder jou draaien, geactiveerd door een wijziging of door de klok."
+    },
+    "gedaechtnis": {
+      "label": "Geheugen en entiteiten",
+      "description": "Wat de agenten in de loop van de tijd onthouden, en de personen, plaatsen en dingen die steeds weer terugkomen op je pagina’s."
+    },
+    "veroeffentlichen": {
+      "label": "Publiceren en projecten",
+      "description": "Een pagina of een project wordt een bestand dat iemand zonder toegang kan lezen."
+    },
+    "agenten": {
+      "label": "Toegang voor agenten",
+      "description": "Hoe Claude Code, Hermes, ChatGPT en andere clients hier binnenkomen en wat ze mogen."
+    },
+    "verwaltung": {
+      "label": "Beheer",
+      "description": "Accounts, instellingen, modellen en kosten van deze installatie."
+    }
+  }
+}

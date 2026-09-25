@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automazioni"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Pagina creata",
+    "DOCUMENT_UPDATED": "Titolo o proprietà modificati",
+    "DOCUMENT_CONTENT_CHANGED": "Contenuto modificato",
+    "DOCUMENT_MOVED": "Pagina spostata",
+    "DOCUMENT_ARCHIVED": "Pagina spostata nel cestino",
+    "DOCUMENT_DELETED": "Pagina eliminata definitivamente",
+    "DATABASE_ROW_CHANGED": "Valore della riga modificato",
+    "SCHEDULE": "Pianificazione"
+  },
+  "scopes": {
+    "WORKSPACE": "Intera area di lavoro",
+    "SUBTREE": "Una pagina e le sue sottopagine",
+    "DATABASE": "Un database e le sue righe"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (POST firmato)",
+    "AI_RUN": "Esecuzione IA sulla pagina modificata",
+    "EMAIL_SELF": "Email al tuo indirizzo"
+  },
+  "outputs": {
+    "COMMENT": "Come commento nella pagina",
+    "CHILD_PAGE": "Come nuova sottopagina"
+  },
+  "scheduleKinds": {
+    "ONCE": "Una sola volta a un orario specifico",
+    "DAILY": "Ogni giorno",
+    "WEEKLY": "Ogni settimana",
+    "MONTHLY": "Ogni mese",
+    "CRON": "Espressione cron"
+  },
+  "runOrigins": {
+    "EVENT": "Modifica",
+    "SCHEDULE": "Pianificazione",
+    "MANUAL": "Manuale"
+  },
+  "runStatuses": {
+    "PENDING": "in attesa",
+    "RUNNING": "in esecuzione",
+    "SUCCEEDED": "completato",
+    "FAILED": "non riuscito",
+    "SKIPPED": "saltato"
+  },
+  "schedule": {
+    "once": "Una sola volta",
+    "onceAt": "Una sola volta il {moment}",
+    "daily": "Ogni giorno alle {time} ({zone})",
+    "weekly": "Ogni {weekday} alle {time} ({zone})",
+    "monthly": "Ogni mese il giorno {day} alle {time} ({zone})",
+    "cron": "Cron “{expression}” ({zone})",
+    "none": "Senza pianificazione"
+  },
+  "scheduleFields": {
+    "kind": "Pianificazione",
+    "at": "Data e ora",
+    "atHint": "Viene eseguita esattamente una volta. Dopodiché la regola rimane presente senza disattivarsi.",
+    "weekday": "Giorno della settimana",
+    "dayOfMonth": "Giorno del mese",
+    "dayOfMonthHint": "Il 31 intende l’ultimo giorno del mese in un mese più corto. Nessun mese viene mai saltato.",
+    "time": "Ora",
+    "cron": "Espressione cron",
+    "cronHint": "Cinque campi: minuto, ora, giorno del mese, mese, giorno della settimana (0 è domenica). Intervalli, elenchi e passi sono consentiti; nomi e scorciatoie come @daily no.",
+    "zone": "Fuso orario",
+    "zoneHint": "Appartiene alla regola, non al server. L’ora legale viene considerata: le 07:00 rimangono le 07:00."
+  },
+  "dialog": {
+    "newTitle": "Nuova automazione",
+    "editTitle": "Modifica automazione",
+    "description": "Quando qualcosa cambia nell’ambito selezionato o scade la pianificazione, l’azione viene eseguita. Un’automazione non sovrascrive mai il contenuto di una pagina.",
+    "name": "Nome",
+    "namePlaceholder": "Informa Hermes sulle nuove note di riunione",
+    "debounce": "Debounce (secondi)",
+    "debounceHint": "Tempo di inattività richiesto per una pagina prima che la regola venga eseguita. Senza questo, ogni pressione di un tasto attiva un’esecuzione, e per un’esecuzione IA ognuna di esse ha un costo.",
+    "cancel": "Annulla",
+    "create": "Crea",
+    "save": "Salva",
+    "secretIntro": "La regola è stata creata. Il segreto di firma è visibile solo adesso e mai più: eXocortex non può recuperarlo. Il servizio ricevente ne ha bisogno per verificare la firma.",
+    "secretLabel": "Segreto di firma",
+    "secretSignature": "Ogni POST include le intestazioni <code>{timestampHeader}</code> e <code>{signatureHeader}</code>. <code>{signedValue}</code> viene firmato tramite HMAC-SHA256 con questo segreto.",
+    "secretDone": "Ho copiato",
+    "scope": "Ambito",
+    "subtreeDocumentId": "ID della pagina",
+    "databaseDocumentId": "ID del database",
+    "scopeDocumentPlaceholder": "es. {example}",
+    "scopeDocumentHint": "L’ID si trova nella barra degli indirizzi della pagina.",
+    "triggers": "Trigger",
+    "triggersHint": "I valori delle righe sono disponibili solo nell’ambito di un database, tutto il resto solo all’esterno. Una pianificazione è autonoma e richiede una pagina come ambito: l’orologio non ne specifica alcuna.",
+    "action": "Azione",
+    "mailSubject": "Oggetto (facoltativo)",
+    "mailSubjectPlaceholder": "Lascia vuoto per usare il nome della regola",
+    "mailHint": "L’e-mail viene inviata all’indirizzo confermato del tuo account e a nessun altro. Il corpo del messaggio contiene la pagina stessa, abbreviata se troppo lunga e con un link sottostante.",
+    "webhookUrl": "URL di destinazione",
+    "webhookNoHosts": "Questa installazione al momento non consente destinazioni webhook. Un amministratore globale deve configurare {setting}.",
+    "webhookHosts": "Host consentiti: {hosts}. Vengono inviati solo i metadati della pagina, mai il suo contenuto.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Verifica se questa pagina contiene informazioni obsolete a causa della modifica.",
+    "promptHint": "La pagina modificata è il materiale fornito al modello. La risposta viene salvata a fianco, non al suo interno.",
+    "output": "Risultato",
+    "model": "Modello (opzionale)",
+    "modelPlaceholder": "Lascia vuoto per il modello predefinito"
+  },
+  "page": {
+    "loading": "Caricamento delle automazioni in corso…",
+    "title": "Automazioni",
+    "intro": "Regole che reagiscono alle modifiche alle pagine o all’orario: un webhook firmato o un’esecuzione di IA sulla pagina interessata.",
+    "newRule": "Nuova regola",
+    "disabled": "Le automazioni sono disattivate per questa area di lavoro. Nessuna delle regole seguenti è attiva, a prescindere dalle impostazioni. Puoi modificare questo comportamento tramite l’impostazione <code>{setting}</code>; se l’installazione le ha disattivate a livello globale, un’area di lavoro non può riattivarle autonomamente.",
+    "readOnly": "Solo chi possiede questa area di lavoro può creare e modificare le regole. Una regola invia dati all’esterno o spende denaro per un modello, e continua a farlo anche quando non controlla più nessuno.",
+    "rulesHeading": "Regole",
+    "emptyTitle": "Ancora nessuna automazione",
+    "emptyDescription": "Una regola è formata da tre risposte: dove guarda, a cosa reagisce e che cosa fa poi.",
+    "columns": {
+      "name": "Nome",
+      "scope": "Ambito",
+      "triggers": "Trigger",
+      "action": "Azione",
+      "enabled": "Attiva"
+    },
+    "selfDisabled": "Disattivata automaticamente: {reason}",
+    "lastTriggered": "Ultima attivazione {moment}",
+    "noNextRun": "Nessuna esecuzione prevista",
+    "nextRun": "Prossima esecuzione {moment}",
+    "disableRule": "Disattiva {name}",
+    "enableRule": "Attiva {name}",
+    "documentIdPlaceholder": "ID pagina",
+    "runAgainst": "Pagina su cui eseguire {name}",
+    "runNow": "Esegui ora",
+    "edit": "Modifica",
+    "confirmDelete": "Conferma eliminazione",
+    "delete": "Elimina"
+  },
+  "runLog": {
+    "heading": "Registro esecuzioni",
+    "empty": "Nessuna esecuzione finora.",
+    "columns": {
+      "moment": "Data e ora",
+      "rule": "Regola",
+      "page": "Pagina",
+      "origin": "Origine",
+      "status": "Esito",
+      "duration": "Durata"
+    },
+    "deletedPage": "(eliminata)"
+  }
+}

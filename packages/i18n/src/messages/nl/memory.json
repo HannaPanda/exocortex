@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Geheugen"
+  },
+  "statuses": {
+    "current": "geldig",
+    "superseded": "achterhaald",
+    "conflicted": "tegenstrijdig"
+  },
+  "facts": {
+    "title": "Geheugen",
+    "intro": "Wat de agenten uit hun sessienotities hebben gedistilleerd. Elke zin is een eigen pagina in de Memory-werkruimte.",
+    "project": "Project",
+    "projectPlaceholder": "alle",
+    "status": "Status",
+    "target": "Overnemen naar",
+    "chooseWorkspace": "Werkruimte kiezen",
+    "loading": "Feiten worden geladen …",
+    "omitted": "{count, plural, one {# extra feit in dit project is door het filter weggelaten.} other {# extra feiten in dit project zijn door het filter weggelaten.}}",
+    "emptyTitle": "Geen feiten",
+    "emptyDescription": "De verdichting vindt ’s nachts plaats. Zonder sessienotities valt er niets te distilleren.",
+    "confirmations": "{count, plural, one {# bevestiging} other {# bevestigingen}}",
+    "confidence": "Gewicht {confidence}",
+    "lastConfirmed": "laatst {moment}",
+    "sourceNotes": "{count, plural, one {uit # notitie} other {uit # notities}}",
+    "promote": "Overnemen",
+    "promoted": "overgenomen"
+  }
+}

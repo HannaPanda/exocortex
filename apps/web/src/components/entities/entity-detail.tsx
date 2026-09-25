@@ -1,14 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import {
-  ENTITY_TYPE_LABELS,
-  type EntityMention,
-  type EntityProfile,
-  type EntityType,
-} from '@exocortex/contracts';
+import { type EntityMention, type EntityProfile, type EntityType } from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -25,6 +21,7 @@ import {
 import { useEntityProfile, useUnlinkEntityPage, useUpdateEntity } from '@/lib/api/entity-queries';
 
 import { EntityLinkPage } from './entity-link-page';
+import { ENTITY_TYPES, useEntityTypeLabel } from './entity-type-label';
 
 /**
  * What is known about one entity (issue #47).
@@ -40,13 +37,16 @@ import { EntityLinkPage } from './entity-link-page';
  * attaches itself next.
  */
 export function EntityDetail({ entityId }: { entityId: string }) {
+  const t = useTranslations('entities.detail');
   const profile = useEntityProfile(entityId);
-  if (profile.data === undefined) return <LoadingState label="Profil wird geladen …" />;
+  if (profile.data === undefined) return <LoadingState label={t('loading')} />;
   return <Profile key={entityId} profile={profile.data} />;
 }
 
 function Profile({ profile }: { profile: EntityProfile }) {
   const { entity } = profile;
+  const t = useTranslations('entities.detail');
+  const typeLabel = useEntityTypeLabel();
   const update = useUpdateEntity();
   const [aliases, setAliases] = React.useState(entity.aliases.join(', '));
 
@@ -69,7 +69,7 @@ function Profile({ profile }: { profile: EntityProfile }) {
           href={`/arbeitsbereich/${entity.workspaceId}/seite/${entity.id}`}
           className="text-xs underline"
         >
-          Seite öffnen
+          {t('openPage')}
         </Link>
       </div>
 
@@ -79,7 +79,7 @@ function Profile({ profile }: { profile: EntityProfile }) {
 
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={`type-${entity.id}`}>Typ</Label>
+          <Label htmlFor={`type-${entity.id}`}>{t('type')}</Label>
           <Select
             value={entity.type}
             onValueChange={(next) =>
@@ -87,19 +87,19 @@ function Profile({ profile }: { profile: EntityProfile }) {
             }
           >
             <SelectTrigger id={`type-${entity.id}`} className="w-40" data-testid="entity-set-type">
-              <SelectValue>{() => ENTITY_TYPE_LABELS[entity.type]}</SelectValue>
+              <SelectValue>{() => typeLabel(entity.type)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (
+              {ENTITY_TYPES.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {ENTITY_TYPE_LABELS[value]}
+                  {typeLabel(value)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
         <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-          <Label htmlFor={`aliases-${entity.id}`}>Aliasse</Label>
+          <Label htmlFor={`aliases-${entity.id}`}>{t('aliases')}</Label>
           <Input
             id={`aliases-${entity.id}`}
             value={aliases}
@@ -110,9 +110,7 @@ function Profile({ profile }: { profile: EntityProfile }) {
         </div>
       </div>
       {update.data?.rescanQueued === true ? (
-        <p className="text-xs text-muted-foreground">
-          Die Seiten werden neu durchsucht; neue Treffer erscheinen in ein paar Minuten.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('rescanQueued')}</p>
       ) : null}
 
       <Facts facts={profile.facts} />
@@ -124,18 +122,17 @@ function Profile({ profile }: { profile: EntityProfile }) {
 }
 
 function Facts({ facts }: { facts: EntityProfile['facts'] }) {
+  const t = useTranslations('entities.detail');
   if (facts.length === 0) return null;
   return (
     <section className="flex flex-col gap-1">
-      <h3 className="text-sm font-medium">Fakten</h3>
+      <h3 className="text-sm font-medium">{t('facts')}</h3>
       <ul className="flex flex-col gap-1" data-testid="entity-facts">
         {facts.map((fact) => (
           <li key={fact.id} className="text-sm">
             {fact.statement}
             <span className="ms-2 text-xs text-muted-foreground">
-              {fact.confirmations === 1
-                ? '1 Bestätigung'
-                : `${String(fact.confirmations)} Bestätigungen`}
+              {t('confirmations', { count: fact.confirmations })}
             </span>
           </li>
         ))}
@@ -145,10 +142,11 @@ function Facts({ facts }: { facts: EntityProfile['facts'] }) {
 }
 
 function Relations({ relations }: { relations: EntityProfile['relations'] }) {
+  const t = useTranslations('entities.detail');
   if (relations.length === 0) return null;
   return (
     <section className="flex flex-col gap-1">
-      <h3 className="text-sm font-medium">Verbindungen</h3>
+      <h3 className="text-sm font-medium">{t('relations')}</h3>
       <ul className="flex flex-wrap gap-1" data-testid="entity-relations">
         {relations.map((relation) => (
           <li key={`${relation.id}-${relation.direction}`}>
@@ -179,13 +177,14 @@ function Mentions({
   mentions: readonly EntityMention[];
   hidden: number;
 }) {
+  const t = useTranslations('entities.detail');
   const unlink = useUnlinkEntityPage();
 
   return (
     <section className="flex flex-col gap-1">
-      <h3 className="text-sm font-medium">Seiten</h3>
+      <h3 className="text-sm font-medium">{t('mentions')}</h3>
       {mentions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Noch keine Seite nennt diesen Namen.</p>
+        <p className="text-sm text-muted-foreground">{t('noMentions')}</p>
       ) : (
         <ul className="flex flex-col gap-1" data-testid="entity-mentions">
           {mentions.map((mention) => (
@@ -200,7 +199,7 @@ function Mentions({
                 {mention.title}
               </Link>
               <span className="text-xs text-muted-foreground">
-                {mention.workspaceName} · „{mention.alias}“
+                {t('mentionMeta', { workspace: mention.workspaceName, alias: mention.alias })}
                 {mention.occurrences > 1 ? ` · ${String(mention.occurrences)}×` : ''}
               </span>
               {mention.source === 'manual' ? (
@@ -212,7 +211,7 @@ function Mentions({
                   onClick={() => unlink.mutate({ entityId, documentId: mention.documentId })}
                   data-testid="entity-unlink"
                 >
-                  Verknüpfung lösen
+                  {t('unlink')}
                 </Button>
               ) : null}
             </li>
@@ -220,11 +219,7 @@ function Mentions({
         </ul>
       )}
       {hidden === 0 ? null : (
-        <p className="text-xs text-muted-foreground">
-          {hidden === 1
-            ? 'Eine weitere Seite in einem Arbeitsbereich, den du nicht sehen kannst.'
-            : `${String(hidden)} weitere Seiten in Arbeitsbereichen, die du nicht sehen kannst.`}
-        </p>
+        <p className="text-xs text-muted-foreground">{t('hiddenMentions', { count: hidden })}</p>
       )}
     </section>
   );

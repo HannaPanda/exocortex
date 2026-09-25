@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "title": "Fonctionnalités"
+  },
+  "page": {
+    "title": "Aide et fonctionnalités",
+    "intro": "Ce que cette installation sait faire, en détail et en phrases complètes : comment cela fonctionne, comment tu l’utilises et où s’arrêtent ses limites. La liste est exigée lors de la compilation, une nouvelle capacité ne passe donc pas sans être décrite ici.",
+    "searchPlaceholder": "Rechercher, par exemple PDF ou calendrier",
+    "searchLabel": "Rechercher dans les fonctionnalités",
+    "onlyNew": "Nouveau pour toi ({count})",
+    "markSeen": "Marquer comme vu",
+    "loading": "Chargement des fonctionnalités…",
+    "emptyTitle": "Rien trouvé",
+    "emptyNew": "Rien n’a été ajouté depuis ta dernière visite.",
+    "emptySearch": "Aucune entrée ne correspond à cette recherche.",
+    "allAreas": "Toutes les fonctionnalités",
+    "areaWithCount": "{area} ({count})"
+  },
+  "entry": {
+    "new": "Nouveau",
+    "since": "depuis le {date}"
+  },
+  "access": {
+    "where": "Où trouver",
+    "open": "Ouvrir",
+    "shortcuts": "Raccourcis clavier",
+    "tools": "Pour les agents",
+    "settings": "Paramètres",
+    "references": "Contexte"
+  },
+  "areas": {
+    "hilfe": {
+      "label": "Vue d’ensemble",
+      "description": "Où consulter ce que cette installation sait faire et les derniers ajouts."
+    },
+    "seiten": {
+      "label": "Pages et éditeur",
+      "description": "L’éditeur lui-même : de quoi se compose une page, comment tu l’écris et à quoi elle ressemble."
+    },
+    "struktur": {
+      "label": "Structure, classement et modèles",
+      "description": "Où se trouve une page, comment elle y arrive, comment elle disparaît et comment réutiliser le même format."
+    },
+    "suche": {
+      "label": "Recherche et liens",
+      "description": "Retrouver quelque chose, même sans te souvenir des termes de l’époque."
+    },
+    "datenbanken": {
+      "label": "Bases de données",
+      "description": "Des pages en tableau : des colonnes avec types, des vues enregistrées et des lignes qui restent des pages à part entière."
+    },
+    "erfassen": {
+      "label": "Capture rapide",
+      "description": "Le moyen le plus direct d’intégrer une idée ou une page web dans eXocortex."
+    },
+    "zusammenarbeit": {
+      "label": "Collaboration et historique",
+      "description": "Travailler à deux sur une page, échanger dans le texte et savoir ce qui a changé, quand et par qui."
+    },
+    "dateien": {
+      "label": "Fichiers et reconnaissance de texte",
+      "description": "Ce que tu téléverses : où c’est stocké, comment c’est affiché et comment le texte est extrait d’un PDF."
+    },
+    "ki": {
+      "label": "IA intégrée",
+      "description": "Le modèle intégré : ce qu’il voit, ce qu’il a le droit de faire, ce qu’il coûte et ses limites."
+    },
+    "automationen": {
+      "label": "Automatisations",
+      "description": "Des règles qui s’exécutent sans toi, déclenchées par une modification ou par l’horloge."
+    },
+    "gedaechtnis": {
+      "label": "Mémoire et entités",
+      "description": "Ce que les agents retiennent au fil du temps, ainsi que les personnes, lieux et choses qui reviennent régulièrement dans tes pages."
+    },
+    "veroeffentlichen": {
+      "label": "Publication et projets",
+      "description": "Transforme une page ou un projet en un fichier consultable sans accès requis."
+    },
+    "agenten": {
+      "label": "Accès pour les agents",
+      "description": "Comment Claude Code, Hermes, ChatGPT et d’autres clients accèdent ici et ce qu’ils ont le droit de faire."
+    },
+    "verwaltung": {
+      "label": "Administration",
+      "description": "Comptes, paramètres, modèles et coûts de cette installation."
+    }
+  }
+}

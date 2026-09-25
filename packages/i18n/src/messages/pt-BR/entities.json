@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entidades"
+  },
+  "types": {
+    "person": "Pessoa",
+    "host": "Host",
+    "service": "Serviço",
+    "project": "Projeto",
+    "credential": "Credencial",
+    "organisation": "Organização",
+    "other": "Outros"
+  },
+  "page": {
+    "loading": "Carregando entidades…",
+    "title": "Entidades",
+    "intro": "Pessoas, hosts, serviços e projetos que aparecem nas suas páginas e o que se sabe sobre eles.",
+    "create": "Nova entidade",
+    "searchPlaceholder": "Nome ou alias",
+    "allTypes": "Todos os tipos",
+    "nothingSelectedTitle": "Nada selecionado",
+    "nothingSelectedDescription": "Clique em uma entidade à esquerda para ver fatos, conexões e páginas.",
+    "candidatesTitle": "Sugestões",
+    "candidatesIntro": "Nomes que aparecem em várias páginas e para os quais ainda não existe uma entidade.",
+    "emptyTitle": "Nenhuma entidade",
+    "emptyDescription": "Ou ainda não foi criada nenhuma, ou nenhuma corresponde ao filtro.",
+    "aliases": "também: {aliases}",
+    "mentionCount": "{count, plural, one {# página} many {# páginas} other {# páginas}}"
+  },
+  "candidates": {
+    "loading": "Carregando sugestões…",
+    "emptyTitle": "Nenhuma sugestão",
+    "emptyDescription": "Nomes aparecem aqui assim que constarem em pelo menos {threshold, plural, one {# página} many {# páginas} other {# páginas}}.",
+    "documentCount": "em {count, plural, one {# página} many {# páginas} other {# páginas}}",
+    "occurrences": "{count} menções",
+    "confirm": "Criar",
+    "dismiss": "Descartar"
+  },
+  "setup": {
+    "missing": "Ainda não existe um diretório de entidades. Ele será criado como um banco de dados em um espaço de trabalho; depois disso, o eXocortex coletará nomes das páginas automaticamente.",
+    "adminOnly": "Apenas quem administra esta instalação pode criá-lo.",
+    "chooseWorkspace": "Escolher espaço de trabalho",
+    "databaseTitle": "Entidades",
+    "create": "Criar diretório"
+  },
+  "detail": {
+    "loading": "Carregando perfil…",
+    "openPage": "Abrir página",
+    "type": "Tipo",
+    "aliases": "Aliases",
+    "rescanQueued": "As páginas estão sendo verificadas novamente; novos resultados aparecerão em alguns minutos.",
+    "facts": "Fatos",
+    "confirmations": "{count, plural, one {# confirmação} many {# confirmações} other {# confirmações}}",
+    "relations": "Conexões",
+    "mentions": "Páginas",
+    "noMentions": "Nenhuma página menciona este nome ainda.",
+    "mentionMeta": "{workspace} · “{alias}”",
+    "unlink": "Desvincular",
+    "hiddenMentions": "{count, plural, one {Mais uma página em um espaço de trabalho que você não pode ver.} many {# outras páginas em espaços de trabalho que você não pode ver.} other {# outras páginas em espaços de trabalho que você não pode ver.}}"
+  },
+  "dialog": {
+    "title": "Nova entidade",
+    "description": "Torna-se uma linha no diretório de entidades e, com isso, uma página normal.",
+    "name": "Nome",
+    "type": "Tipo",
+    "aliases": "Aliases",
+    "aliasesPlaceholder": "fpb2, Pandinha 2",
+    "aliasesHint": "Separados por vírgula. Qualquer grafia que uma página possa usar.",
+    "note": "Nota",
+    "cancel": "Cancelar",
+    "create": "Criar"
+  },
+  "linkPage": {
+    "title": "Vincular página",
+    "workspace": "Espaço de trabalho",
+    "chooseWorkspace": "Escolher espaço de trabalho",
+    "search": "Buscar página",
+    "searchPlaceholder": "Título",
+    "note": "Motivo",
+    "notePlaceholder": "Aparece lá apenas como “o servidor”",
+    "submit": "Vincular"
+  }
+}

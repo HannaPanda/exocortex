@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AutomationScheduleKind } from '@exocortex/contracts';
@@ -14,7 +15,7 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { SCHEDULE_KIND_LABELS, WEEKDAY_LABELS } from './automation-labels';
+import { SCHEDULE_KIND_ORDER, useAutomationWording, WEEKDAY_INDEXES } from './automation-labels';
 
 /**
  * The clock half of a rule (issue #73).
@@ -52,22 +53,24 @@ export function AutomationScheduleFields({
    */
   onChange: (patch: Partial<ScheduleDraft>) => void;
 }) {
+  const t = useTranslations('automations.scheduleFields');
+  const wording = useAutomationWording();
   const kind = draft.scheduleKind;
   return (
     <div className="flex flex-col gap-4" data-testid="automation-schedule">
       <div className="flex flex-col gap-2">
-        <Label>Zeitplan</Label>
+        <Label>{t('kind')}</Label>
         <Select
           value={kind}
           onValueChange={(value) => onChange({ scheduleKind: value as AutomationScheduleKind })}
         >
           <SelectTrigger data-testid="automation-schedule-kind">
-            <SelectValue>{() => SCHEDULE_KIND_LABELS[kind]}</SelectValue>
+            <SelectValue>{() => wording.scheduleKind(kind)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {(Object.keys(SCHEDULE_KIND_LABELS) as AutomationScheduleKind[]).map((entry) => (
+            {SCHEDULE_KIND_ORDER.map((entry) => (
               <SelectItem key={entry} value={entry}>
-                {SCHEDULE_KIND_LABELS[entry]}
+                {wording.scheduleKind(entry)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -76,33 +79,31 @@ export function AutomationScheduleFields({
 
       {kind === 'ONCE' ? (
         <div className="flex flex-col gap-2">
-          <Label id="automation-schedule-at-label">Zeitpunkt</Label>
+          <Label id="automation-schedule-at-label">{t('at')}</Label>
           <DateTimePicker
             aria-labelledby="automation-schedule-at-label"
             data-testid="automation-schedule-at"
             value={draft.scheduleAt.length === 0 ? null : draft.scheduleAt}
             onChange={(value) => onChange({ scheduleAt: value ?? '' })}
           />
-          <p className="text-xs text-muted-foreground">
-            Läuft genau einmal. Danach bleibt die Regel stehen, ohne sich abzuschalten.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('atHint')}</p>
         </div>
       ) : null}
 
       {kind === 'WEEKLY' ? (
         <div className="flex flex-col gap-2">
-          <Label>Wochentag</Label>
+          <Label>{t('weekday')}</Label>
           <Select
             value={String(draft.scheduleWeekday)}
             onValueChange={(value) => onChange({ scheduleWeekday: Number(value) })}
           >
             <SelectTrigger data-testid="automation-schedule-weekday">
-              <SelectValue>{() => WEEKDAY_LABELS[draft.scheduleWeekday]}</SelectValue>
+              <SelectValue>{() => wording.weekday(draft.scheduleWeekday)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {WEEKDAY_LABELS.map((label, index) => (
-                <SelectItem key={label} value={String(index)}>
-                  {label}
+              {WEEKDAY_INDEXES.map((index) => (
+                <SelectItem key={index} value={String(index)}>
+                  {wording.weekday(index)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -112,7 +113,7 @@ export function AutomationScheduleFields({
 
       {kind === 'MONTHLY' ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="automation-schedule-day">Tag im Monat</Label>
+          <Label htmlFor="automation-schedule-day">{t('dayOfMonth')}</Label>
           <Input
             id="automation-schedule-day"
             data-testid="automation-schedule-day"
@@ -123,16 +124,13 @@ export function AutomationScheduleFields({
             onChange={(event) => onChange({ scheduleDayOfMonth: Number(event.target.value) })}
             className="max-w-24"
           />
-          <p className="text-xs text-muted-foreground">
-            Der 31. meint in einem kürzeren Monat dessen letzten Tag. Ein Monat wird nie
-            übersprungen.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('dayOfMonthHint')}</p>
         </div>
       ) : null}
 
       {kind === 'DAILY' || kind === 'WEEKLY' || kind === 'MONTHLY' ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="automation-schedule-time">Uhrzeit</Label>
+          <Label htmlFor="automation-schedule-time">{t('time')}</Label>
           <Input
             id="automation-schedule-time"
             data-testid="automation-schedule-time"
@@ -146,7 +144,7 @@ export function AutomationScheduleFields({
 
       {kind === 'CRON' ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="automation-schedule-cron">Cron-Ausdruck</Label>
+          <Label htmlFor="automation-schedule-cron">{t('cron')}</Label>
           <Input
             id="automation-schedule-cron"
             data-testid="automation-schedule-cron"
@@ -154,15 +152,12 @@ export function AutomationScheduleFields({
             onChange={(event) => onChange({ scheduleCron: event.target.value })}
             placeholder="0 7 * * 1"
           />
-          <p className="text-xs text-muted-foreground">
-            Fünf Felder: Minute, Stunde, Tag im Monat, Monat, Wochentag (0 ist Sonntag). Bereiche,
-            Listen und Schritte sind erlaubt, Namen und Kürzel wie @daily nicht.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('cronHint')}</p>
         </div>
       ) : null}
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="automation-schedule-zone">Zeitzone</Label>
+        <Label htmlFor="automation-schedule-zone">{t('zone')}</Label>
         <Input
           id="automation-schedule-zone"
           data-testid="automation-schedule-zone"
@@ -171,9 +166,7 @@ export function AutomationScheduleFields({
           placeholder="Europe/Berlin"
           className="max-w-60"
         />
-        <p className="text-xs text-muted-foreground">
-          Gehört zur Regel, nicht zum Server. Sommerzeit wird mitgerechnet: 07:00 bleibt 07:00.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('zoneHint')}</p>
       </div>
     </div>
   );

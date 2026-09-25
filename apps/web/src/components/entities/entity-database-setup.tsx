@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -35,6 +36,7 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
  * that could only be switched on with a hand-written request.
  */
 export function EntityDatabaseSetup() {
+  const t = useTranslations('entities.setup');
   const workspaces = useWorkspaces();
   const session = useSessionQuery();
   const provision = useProvisionEntityDatabase();
@@ -46,15 +48,8 @@ export function EntityDatabaseSetup() {
   return (
     <Alert className="mt-6">
       <AlertDescription>
-        <p>
-          Es gibt noch kein Verzeichnis für Entitäten. Es wird als Datenbank in einem Arbeitsbereich
-          angelegt; danach sammelt eXocortex Namen aus den Seiten von selbst.
-        </p>
-        {mayProvision ? null : (
-          <p className="mt-2 text-muted-foreground">
-            Anlegen kann es nur, wer diese Installation verwaltet.
-          </p>
-        )}
+        <p>{t('missing')}</p>
+        {mayProvision ? null : <p className="mt-2 text-muted-foreground">{t('adminOnly')}</p>}
         {mayProvision ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Select value={chosen ?? ''} onValueChange={setWorkspaceId}>
@@ -62,7 +57,7 @@ export function EntityDatabaseSetup() {
                 <SelectValue>
                   {() =>
                     workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
-                    'Arbeitsbereich wählen'
+                    t('chooseWorkspace')
                   }
                 </SelectValue>
               </SelectTrigger>
@@ -79,10 +74,14 @@ export function EntityDatabaseSetup() {
               data-testid="entity-database-create"
               onClick={() => {
                 if (chosen === null) return;
-                provision.mutate({ workspaceId: chosen, parentId: null, title: 'Entitäten' });
+                provision.mutate({
+                  workspaceId: chosen,
+                  parentId: null,
+                  title: t('databaseTitle'),
+                });
               }}
             >
-              Verzeichnis anlegen
+              {t('create')}
             </Button>
           </div>
         ) : null}

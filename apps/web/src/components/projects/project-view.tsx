@@ -1,6 +1,7 @@
 'use client';
 
 import { FolderTreeIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ProjectFile } from '@exocortex/contracts';
@@ -43,14 +44,15 @@ interface ProjectViewProps {
 }
 
 export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
+  const t = useTranslations('projects.view');
   const workspace = useProjectWorkspace(workspaceId, projectId);
   // Below `lg` the three columns stack and the file tree has no room of its
   // own, so it opens as a sheet. Without it a file could not be opened on
   // anything narrower than 1024 px (issue #129).
   const [filesOpen, setFilesOpen] = React.useState(false);
 
-  if (workspace.notFound) return <ErrorState title="Projekt nicht gefunden" />;
-  if (workspace.project === null) return <LoadingState label="Projekt wird geladen …" />;
+  if (workspace.notFound) return <ErrorState title={t('notFound')} />;
+  if (workspace.project === null) return <LoadingState label={t('loading')} />;
 
   return (
     <div className="flex h-full min-h-0 flex-col" data-testid="project-view">
@@ -75,10 +77,10 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
           onClick={() => setFilesOpen(true)}
           data-testid="project-files-open"
         >
-          <FolderTreeIcon /> Dateien
+          <FolderTreeIcon /> {t('files')}
         </Button>
         <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">
-          {workspace.selected?.path ?? 'Keine Datei gewählt'}
+          {workspace.selected?.path ?? t('noFileSelected')}
         </span>
       </div>
 
@@ -97,7 +99,7 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
 
         <Sheet open={filesOpen} onOpenChange={setFilesOpen}>
           <SheetContent side="left" data-testid="project-files-sheet">
-            <SheetTitle className="exocortex-sr-only">Dateien</SheetTitle>
+            <SheetTitle className="exocortex-sr-only">{t('files')}</SheetTitle>
             <ProjectFileTree
               files={workspace.files}
               rootFile={workspace.project.rootFile}
@@ -173,25 +175,19 @@ function SourcePane({
   focusNonce: number;
   onCursorLine: (line: number) => void;
 }) {
+  const t = useTranslations('projects.view');
   if (connection.error !== null) {
-    return <ErrorState title="Keine Verbindung" description={connection.error} />;
+    return <ErrorState title={t('noConnection')} description={connection.error} />;
   }
   // `ready` as well: a file tree is a Yjs document like any other, and an
   // editor built before it has arrived writes into an empty one.
   if (connection.connection === null || !connection.ready)
-    return <LoadingState label="Verbindung wird aufgebaut …" />;
+    return <LoadingState label={t('connecting')} />;
   if (selected === null) {
-    return (
-      <EmptyState title="Keine Datei gewählt" description="Wähle eine Datei aus dem Dateibaum." />
-    );
+    return <EmptyState title={t('noFileSelected')} description={t('chooseFile')} />;
   }
   if (selected.kind === 'ASSET') {
-    return (
-      <EmptyState
-        title={selected.path}
-        description="Eine hochgeladene Datei. Sie lässt sich im Projekt verwenden, aber nicht hier bearbeiten."
-      />
-    );
+    return <EmptyState title={selected.path} description={t('assetDescription')} />;
   }
   return (
     <ProjectCodeEditor

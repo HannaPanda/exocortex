@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Projet"
+  },
+  "buildStatuses": {
+    "PENDING": "en attente",
+    "RUNNING": "en cours",
+    "COMPLETED": "terminé",
+    "FAILED": "échoué",
+    "CANCELLED": "annulé"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "sans objet",
+    "PENDING": "en cours",
+    "READY": "terminé",
+    "FAILED": "échoué"
+  },
+  "history": {
+    "emptyTitle": "Pas encore de compilation",
+    "emptyDescription": "Ce qui a été compilé s’affiche ici, même après un rechargement.",
+    "sourcesChanged": "Sources modifiées",
+    "pageCount": "{count} p.",
+    "openPdf": "Ouvrir le PDF",
+    "delete": "Supprimer",
+    "textExtract": "Extrait de texte {status}",
+    "syncTexFile": "Fichier SyncTeX"
+  },
+  "panel": {
+    "notBuiltTitle": "Pas encore compilé",
+    "notBuiltDescription": "Clique sur « Compiler ». La première fois prend le plus de temps, ensuite la compilation est en cache.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Erreurs",
+      "errorsWithCount": "Erreurs ({count})",
+      "log": "Journal",
+      "history": "Historique"
+    },
+    "logLoading": "Chargement du journal…",
+    "noLog": "Aucun journal.",
+    "stale": "obsolète",
+    "errorCount": "{count, plural, one {# erreur} many {# d’erreurs} other {# erreurs}}",
+    "warningCount": "{count, plural, one {# avertissement} many {# d’avertissements} other {# avertissements}}",
+    "pageCount": "{count, plural, one {# page} many {# de pages} other {# pages}}",
+    "download": "PDF",
+    "running": "Compilation en cours…",
+    "noPdfTitle": "Aucun PDF",
+    "noPdfDescription": "Cette compilation n’a produit aucun fichier. La liste des erreurs en donne la raison.",
+    "noErrorsTitle": "Aucune erreur",
+    "noErrorsDescription": "LaTeX n’a rien trouvé à redire."
+  },
+  "editor": {
+    "emptyFile": "Ce fichier est vide."
+  },
+  "fileTree": {
+    "heading": "Fichiers",
+    "create": "Créer un fichier",
+    "empty": "Pas encore de fichiers.",
+    "rootBadge": "principal",
+    "remove": "Supprimer {name}"
+  },
+  "importDialog": {
+    "title": "Archive importée",
+    "imported": "{count, plural, one {# fichier est maintenant dans le projet.} many {# de fichiers sont maintenant dans le projet.} other {# fichiers sont maintenant dans le projet.}}",
+    "strippedRoot": "Le dossier parent commun <code>{root}</code> a été ignoré.",
+    "rootFileChanged": "Le fichier principal est désormais <code>{file}</code>.",
+    "skippedHeading": "Non importés",
+    "more": "… et {count} autres",
+    "overwrite": "Écraser les fichiers existants",
+    "close": "Fermer",
+    "skipReasons": {
+      "invalid_path": "Le chemin n’est pas autorisé dans le projet.",
+      "ignored": "Un fichier auxiliaire du système d’exploitation qui n’a pas sa place dans le projet.",
+      "exists": "Un fichier existe déjà à cet endroit. « Écraser les fichiers existants » le remplace.",
+      "too_large": "Le fichier est plus volumineux que ce que ce projet autorise.",
+      "not_utf8": "Le fichier ressemble à du texte, mais n’est pas encodé en UTF-8.",
+      "too_many_files": "Le projet a atteint le nombre maximal de fichiers autorisé.",
+      "encrypted": "L’entrée dans l’archive est chiffrée.",
+      "unsupported_method": "L’entrée est compressée avec une méthode qui n’est pas prise en charge ici.",
+      "corrupt": "Impossible d’extraire cette entrée de l’archive.",
+      "upload_failed": "Le fichier n’a pas pu être enregistré comme pièce jointe."
+    }
+  },
+  "newFile": {
+    "title": "Créer un fichier",
+    "description": "Le chemin est relatif au projet. Les dossiers sont créés lorsqu’un chemin les mentionne : <code>{example}</code> crée aussi le dossier.",
+    "examplePath": "chapitres/introduction.tex",
+    "path": "Chemin",
+    "assetHint": "Pour les images, les polices et les PDF, utilise le bouton « Téléverser un fichier ».",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "pathProblems": {
+      "empty": "Le chemin est vide.",
+      "too_long": "Le chemin dépasse {max} caractères.",
+      "absolute": "Le chemin ne doit pas commencer par une barre oblique.",
+      "traversal": "Le chemin ne doit pas sortir du projet.",
+      "trailing_slash": "Le chemin ne doit pas se terminer par une barre oblique.",
+      "empty_segment": "Le chemin contient un segment vide.",
+      "invalid_character": "Le chemin contient un caractère non autorisé.",
+      "reserved_name": "Ce nom est réservé pour la compilation."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Fichier principal",
+    "engine": "Moteur",
+    "bibliography": "Bibliographie",
+    "bibliographies": {
+      "AUTO": "automatique",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "aucune"
+    },
+    "upload": "Téléverser un fichier",
+    "importZip": "Importer un ZIP",
+    "exportZip": "En ZIP",
+    "cancel": "Annuler",
+    "build": "Compiler"
+  },
+  "view": {
+    "notFound": "Projet introuvable",
+    "loading": "Chargement du projet…",
+    "files": "Fichiers",
+    "noFileSelected": "Aucun fichier sélectionné",
+    "chooseFile": "Choisis un fichier dans l’arborescence.",
+    "assetDescription": "Un fichier téléversé. Tu peux l’utiliser dans le projet, mais pas le modifier ici.",
+    "noConnection": "Aucune connexion",
+    "connecting": "Connexion en cours…"
+  },
+  "sourceSync": {
+    "outsideProject": "Cet emplacement provient de {path}, un fichier situé en dehors du projet.",
+    "noMapping": "Il n’y a aucune correspondance pour cet emplacement dans la carte SyncTeX."
+  }
+}

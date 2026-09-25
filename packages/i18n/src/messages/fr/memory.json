@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Mémoire"
+  },
+  "statuses": {
+    "current": "valide",
+    "superseded": "obsolète",
+    "conflicted": "contradictoire"
+  },
+  "facts": {
+    "title": "Mémoire",
+    "intro": "Ce que les agents ont distillé de leurs notes de session. Chaque phrase est une page à part entière dans l’espace de travail Memory.",
+    "project": "Projet",
+    "projectPlaceholder": "tous",
+    "status": "Statut",
+    "target": "Intégrer dans",
+    "chooseWorkspace": "Choisir un espace de travail",
+    "loading": "Chargement des faits …",
+    "omitted": "{count, plural, one {Le filtre a masqué # autre fait dans ce projet.} many {Le filtre a masqué # d’autres faits dans ce projet.} other {Le filtre a masqué # autres faits dans ce projet.}}",
+    "emptyTitle": "Aucun fait",
+    "emptyDescription": "La synthèse tourne la nuit. Sans notes de session, il n’y a rien à distiller.",
+    "confirmations": "{count, plural, one {# confirmation} many {# de confirmations} other {# confirmations}}",
+    "confidence": "Poids {confidence}",
+    "lastConfirmed": "dernière confirmation {moment}",
+    "sourceNotes": "{count, plural, one {provenant de # note} many {provenant de # de notes} other {provenant de # notes}}",
+    "promote": "Intégrer",
+    "promoted": "intégré"
+  }
+}

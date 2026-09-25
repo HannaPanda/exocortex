@@ -43,17 +43,6 @@ import { PageIconPicker } from './page-icon-picker';
  */
 export const AI_RULE_MODES: readonly AiRuleMode[] = ['off', 'always', 'on_demand'];
 
-/**
- * The German names of the rule modes, for `ai-rules-panel.tsx` only, which
- * has not moved into the catalogues yet. Everything in this namespace reads
- * `document.aiRuleModes` instead; delete this once that panel does too.
- */
-export const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
-  off: 'Keine Regel',
-  always: 'Immer anwenden',
-  on_demand: 'Auf Anfrage',
-};
-
 /** Label and hint of each are `document.propertiesDialog.layouts.<value>`. */
 const LAYOUTS: { value: DocumentLayout; bars: string[] }[] = [
   { value: 'narrow', bars: ['w-1/2', 'w-1/2', 'w-1/3'] },

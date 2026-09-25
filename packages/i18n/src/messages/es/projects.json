@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Proyecto"
+  },
+  "buildStatuses": {
+    "PENDING": "en espera",
+    "RUNNING": "en curso",
+    "COMPLETED": "completado",
+    "FAILED": "fallido",
+    "CANCELLED": "cancelado"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "no aplicable",
+    "PENDING": "en curso",
+    "READY": "listo",
+    "FAILED": "fallido"
+  },
+  "history": {
+    "emptyTitle": "Aún no hay compilaciones",
+    "emptyDescription": "Lo que se compile aparecerá aquí, incluso después de recargar.",
+    "sourcesChanged": "Fuentes modificadas",
+    "pageCount": "{count} págs.",
+    "openPdf": "Abrir PDF",
+    "delete": "Eliminar",
+    "textExtract": "Extracto de texto {status}",
+    "syncTexFile": "Archivo SyncTeX"
+  },
+  "panel": {
+    "notBuiltTitle": "Aún no compilado",
+    "notBuiltDescription": "Pulsa «Compilar». La primera vez tarda más; después, la compilación queda en caché.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Errores",
+      "errorsWithCount": "Errores ({count})",
+      "log": "Registro",
+      "history": "Historial"
+    },
+    "logLoading": "Cargando registro…",
+    "noLog": "No hay registro.",
+    "stale": "desactualizado",
+    "errorCount": "{count, plural, one {# error} many {# errores} other {# errores}}",
+    "warningCount": "{count, plural, one {# advertencia} many {# advertencias} other {# advertencias}}",
+    "pageCount": "{count, plural, one {# página} many {# páginas} other {# páginas}}",
+    "download": "PDF",
+    "running": "Compilando…",
+    "noPdfTitle": "Sin PDF",
+    "noPdfDescription": "Esta compilación no ha generado ningún archivo. La lista de errores indica el motivo.",
+    "noErrorsTitle": "Sin errores",
+    "noErrorsDescription": "LaTeX no encontró ningún problema."
+  },
+  "editor": {
+    "emptyFile": "Este archivo está vacío."
+  },
+  "fileTree": {
+    "heading": "Archivos",
+    "create": "Crear archivo",
+    "empty": "Aún no hay archivos.",
+    "rootBadge": "principal",
+    "remove": "Eliminar {name}"
+  },
+  "importDialog": {
+    "title": "Archivo importado",
+    "imported": "{count, plural, one {# archivo está ahora en el proyecto.} many {# de archivos están ahora en el proyecto.} other {# archivos están ahora en el proyecto.}}",
+    "strippedRoot": "Se ha omitido la carpeta superior común <code>{root}</code>.",
+    "rootFileChanged": "El archivo principal ahora es <code>{file}</code>.",
+    "skippedHeading": "No importados",
+    "more": "… y {count} más",
+    "overwrite": "Sobrescribir existentes",
+    "close": "Cerrar",
+    "skipReasons": {
+      "invalid_path": "La ruta no está permitida en el proyecto.",
+      "ignored": "Un archivo auxiliar del sistema operativo que no pertenece al proyecto.",
+      "exists": "Ya existe un archivo en esta ubicación. «Sobrescribir existentes» lo reemplazará.",
+      "too_large": "El archivo es más grande de lo que permite este proyecto.",
+      "not_utf8": "El archivo parece texto, pero no tiene codificación UTF-8.",
+      "too_many_files": "El proyecto ha alcanzado el número máximo de archivos permitido.",
+      "encrypted": "El elemento del archivo está cifrado.",
+      "unsupported_method": "El elemento está comprimido con un método no compatible.",
+      "corrupt": "No se ha podido descomprimir el elemento del archivo.",
+      "upload_failed": "No se ha podido guardar el archivo como adjunto."
+    }
+  },
+  "newFile": {
+    "title": "Crear archivo",
+    "description": "La ruta es relativa al proyecto. Las carpetas se crean al incluirlas en la ruta: <code>{example}</code> crea también la carpeta.",
+    "examplePath": "capitulos/introduccion.tex",
+    "path": "Ruta",
+    "assetHint": "Para imágenes, fuentes y PDF, usa el botón «Subir archivo».",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "pathProblems": {
+      "empty": "La ruta está vacía.",
+      "too_long": "La ruta tiene más de {max} caracteres.",
+      "absolute": "La ruta no puede empezar por una barra.",
+      "traversal": "La ruta no puede salir del proyecto.",
+      "trailing_slash": "La ruta no puede terminar en una barra.",
+      "empty_segment": "La ruta contiene un segmento vacío.",
+      "invalid_character": "La ruta contiene un carácter no válido.",
+      "reserved_name": "Este nombre está reservado para la compilación."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Archivo principal",
+    "engine": "Motor",
+    "bibliography": "Bibliografía",
+    "bibliographies": {
+      "AUTO": "automático",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "ninguna"
+    },
+    "upload": "Subir archivo",
+    "importZip": "Importar ZIP",
+    "exportZip": "Como ZIP",
+    "cancel": "Cancelar",
+    "build": "Compilar"
+  },
+  "view": {
+    "notFound": "Proyecto no encontrado",
+    "loading": "Cargando proyecto…",
+    "files": "Archivos",
+    "noFileSelected": "Ningún archivo seleccionado",
+    "chooseFile": "Elige un archivo del árbol de archivos.",
+    "assetDescription": "Un archivo subido. Se puede usar en el proyecto, pero no editar aquí.",
+    "noConnection": "Sin conexión",
+    "connecting": "Estableciendo conexión…"
+  },
+  "sourceSync": {
+    "outsideProject": "Esta ubicación proviene de {path}, un archivo fuera del proyecto.",
+    "noMapping": "No hay ninguna correspondencia para esta ubicación en el mapa de SyncTeX."
+  }
+}

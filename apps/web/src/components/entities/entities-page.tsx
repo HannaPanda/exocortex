@@ -1,8 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { ENTITY_TYPE_LABELS, type EntitySummary, type EntityType } from '@exocortex/contracts';
+import { type EntitySummary, type EntityType } from '@exocortex/contracts';
 import {
   AppPage,
   Badge,
@@ -24,6 +25,7 @@ import { EntityCandidates } from './entity-candidates';
 import { EntityDatabaseSetup } from './entity-database-setup';
 import { EntityDetail } from './entity-detail';
 import { EntityDialog } from './entity-dialog';
+import { ENTITY_TYPES, useEntityTypeLabel } from './entity-type-label';
 
 /**
  * Who and what this deployment knows about (issue #47).
@@ -44,10 +46,12 @@ export function EntitiesPage() {
   const [type, setType] = React.useState<EntityType | null>(null);
   const [selected, setSelected] = React.useState<string | null>(null);
   const [creating, setCreating] = React.useState(false);
+  const t = useTranslations('entities.page');
+  const typeLabel = useEntityTypeLabel();
 
   const entities = useEntities({ q: query, type });
 
-  if (entities.isPending) return <LoadingState label="Entitäten werden geladen …" />;
+  if (entities.isPending) return <LoadingState label={t('loading')} />;
 
   const databaseId = entities.data?.databaseId ?? null;
   const rows = entities.data?.entities ?? [];
@@ -56,14 +60,11 @@ export function EntitiesPage() {
     <AppPage maxWidth="max-w-5xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="exocortex-page-title">Entitäten</h1>
-          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-            Personen, Hosts, Dienste und Projekte, die in deinen Seiten vorkommen, und was über sie
-            bekannt ist.
-          </p>
+          <h1 className="exocortex-page-title">{t('title')}</h1>
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
         </div>
         <Button onClick={() => setCreating(true)} data-testid="entity-new">
-          Neue Entität
+          {t('create')}
         </Button>
       </div>
 
@@ -72,7 +73,7 @@ export function EntitiesPage() {
       <div className="mt-6 flex flex-wrap items-center gap-2">
         <Input
           value={query}
-          placeholder="Name oder Alias"
+          placeholder={t('searchPlaceholder')}
           className="max-w-xs"
           data-testid="entity-search"
           onChange={(event) => setQuery(event.target.value)}
@@ -82,15 +83,13 @@ export function EntitiesPage() {
           onValueChange={(next) => setType(next === 'all' ? null : (next as EntityType))}
         >
           <SelectTrigger className="w-44" data-testid="entity-type-filter">
-            <SelectValue>
-              {() => (type === null ? 'Alle Typen' : ENTITY_TYPE_LABELS[type])}
-            </SelectValue>
+            <SelectValue>{() => (type === null ? t('allTypes') : typeLabel(type))}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle Typen</SelectItem>
-            {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (
+            <SelectItem value="all">{t('allTypes')}</SelectItem>
+            {ENTITY_TYPES.map((value) => (
               <SelectItem key={value} value={value}>
-                {ENTITY_TYPE_LABELS[value]}
+                {typeLabel(value)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -102,8 +101,8 @@ export function EntitiesPage() {
         <div>
           {selected === null ? (
             <EmptyState
-              title="Nichts ausgewählt"
-              description="Links eine Entität anklicken, um Fakten, Verbindungen und Seiten zu sehen."
+              title={t('nothingSelectedTitle')}
+              description={t('nothingSelectedDescription')}
             />
           ) : (
             <EntityDetail entityId={selected} />
@@ -112,10 +111,8 @@ export function EntitiesPage() {
       </div>
 
       <section className="mt-10 border-t border-border pt-8">
-        <h2 className="text-base font-semibold">Vorschläge</h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Namen, die auf mehreren Seiten auftauchen und zu denen es noch keine Entität gibt.
-        </p>
+        <h2 className="text-base font-semibold">{t('candidatesTitle')}</h2>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('candidatesIntro')}</p>
         <div className="mt-4">
           <EntityCandidates />
         </div>
@@ -135,13 +132,11 @@ function EntityList({
   selected: string | null;
   onSelect: (entityId: string) => void;
 }) {
+  const t = useTranslations('entities.page');
+  const typeLabel = useEntityTypeLabel();
+
   if (rows.length === 0) {
-    return (
-      <EmptyState
-        title="Keine Entitäten"
-        description="Entweder ist noch keine angelegt, oder der Filter passt auf keine."
-      />
-    );
+    return <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />;
   }
 
   return (
@@ -159,14 +154,14 @@ function EntityList({
             )}
           >
             <span className="text-sm font-medium">{entity.title}</span>
-            <Badge variant="secondary">{ENTITY_TYPE_LABELS[entity.type]}</Badge>
+            <Badge variant="secondary">{typeLabel(entity.type)}</Badge>
             {entity.aliases.length === 0 ? null : (
               <span className="text-xs text-muted-foreground">
-                auch: {entity.aliases.join(', ')}
+                {t('aliases', { aliases: entity.aliases.join(', ') })}
               </span>
             )}
             <span className="ms-auto text-xs text-muted-foreground">
-              {entity.mentionCount === 1 ? '1 Seite' : `${String(entity.mentionCount)} Seiten`}
+              {t('mentionCount', { count: entity.mentionCount })}
             </span>
           </button>
         </li>

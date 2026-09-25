@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Project"
+  },
+  "buildStatuses": {
+    "PENDING": "pending",
+    "RUNNING": "running",
+    "COMPLETED": "completed",
+    "FAILED": "failed",
+    "CANCELLED": "cancelled"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "not applicable",
+    "PENDING": "running",
+    "READY": "ready",
+    "FAILED": "failed"
+  },
+  "history": {
+    "emptyTitle": "No builds yet",
+    "emptyDescription": "Whatever was built will appear here, even after reloading.",
+    "sourcesChanged": "Sources changed",
+    "pageCount": "{count} p.",
+    "openPdf": "Open PDF",
+    "delete": "Delete",
+    "textExtract": "Text extract {status}",
+    "syncTexFile": "SyncTeX file"
+  },
+  "panel": {
+    "notBuiltTitle": "Not built yet",
+    "notBuiltDescription": "Press “Build”. The first time takes the longest; after that, the build is cached.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Errors",
+      "errorsWithCount": "Errors ({count})",
+      "log": "Log",
+      "history": "History"
+    },
+    "logLoading": "Loading log …",
+    "noLog": "No log.",
+    "stale": "stale",
+    "errorCount": "{count, plural, one {# error} other {# errors}}",
+    "warningCount": "{count, plural, one {# warning} other {# warnings}}",
+    "pageCount": "{count, plural, one {# page} other {# pages}}",
+    "download": "PDF",
+    "running": "Build in progress …",
+    "noPdfTitle": "No PDF",
+    "noPdfDescription": "This build did not produce a file. The error list explains why.",
+    "noErrorsTitle": "No errors",
+    "noErrorsDescription": "LaTeX had no complaints."
+  },
+  "editor": {
+    "emptyFile": "This file is empty."
+  },
+  "fileTree": {
+    "heading": "Files",
+    "create": "Create file",
+    "empty": "No files yet.",
+    "rootBadge": "main",
+    "remove": "Remove {name}"
+  },
+  "importDialog": {
+    "title": "Archive imported",
+    "imported": "{count, plural, one {# file is now in the project.} other {# files are now in the project.}}",
+    "strippedRoot": "The common parent folder <code>{root}</code> was removed.",
+    "rootFileChanged": "Main file is now <code>{file}</code>.",
+    "skippedHeading": "Not imported",
+    "more": "… and {count} more",
+    "overwrite": "Overwrite existing",
+    "close": "Close",
+    "skipReasons": {
+      "invalid_path": "The path is not allowed in the project.",
+      "ignored": "An operating system file that doesn’t belong in the project.",
+      "exists": "A file already exists here. “Overwrite existing” will replace it.",
+      "too_large": "The file is larger than allowed in this project.",
+      "not_utf8": "The file looks like text, but isn’t UTF-8 encoded.",
+      "too_many_files": "The project has reached the allowed number of files.",
+      "encrypted": "The entry in the archive is encrypted.",
+      "unsupported_method": "The entry was compressed using an unsupported method.",
+      "corrupt": "The entry in the archive couldn’t be unpacked.",
+      "upload_failed": "The file couldn’t be saved as an attachment."
+    }
+  },
+  "newFile": {
+    "title": "Create file",
+    "description": "The path is relative to the project. Folders are created automatically when referenced: <code>{example}</code> also creates the folder.",
+    "examplePath": "chapters/introduction.tex",
+    "path": "Path",
+    "assetHint": "Use the “Upload file” button for images, fonts, and PDFs.",
+    "cancel": "Cancel",
+    "create": "Create",
+    "pathProblems": {
+      "empty": "The path is empty.",
+      "too_long": "The path is longer than {max} characters.",
+      "absolute": "The path cannot start with a slash.",
+      "traversal": "The path cannot lead outside the project.",
+      "trailing_slash": "The path cannot end with a slash.",
+      "empty_segment": "The path contains an empty segment.",
+      "invalid_character": "The path contains an invalid character.",
+      "reserved_name": "This name is reserved for the build."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Main file",
+    "engine": "Engine",
+    "bibliography": "Bibliography",
+    "bibliographies": {
+      "AUTO": "automatic",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "none"
+    },
+    "upload": "Upload file",
+    "importZip": "Import ZIP",
+    "exportZip": "As ZIP",
+    "cancel": "Cancel",
+    "build": "Build"
+  },
+  "view": {
+    "notFound": "Project not found",
+    "loading": "Loading project…",
+    "files": "Files",
+    "noFileSelected": "No file selected",
+    "chooseFile": "Choose a file from the file tree.",
+    "assetDescription": "An uploaded file. It can be used in the project, but not edited here.",
+    "noConnection": "No connection",
+    "connecting": "Connecting…"
+  },
+  "sourceSync": {
+    "outsideProject": "This location comes from {path}, a file outside the project.",
+    "noMapping": "There is no mapping for this location in the SyncTeX map."
+  }
+}

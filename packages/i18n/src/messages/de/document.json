@@ -341,5 +341,20 @@
     "fitWidth": "Breite",
     "pageCount": "{count, plural, one {# Seite} other {# Seiten}}",
     "clickHint": "Klick springt in die Quelle"
+  },
+  "templateSettings": {
+    "titleMark": "Als Vorlage markieren",
+    "titleEdit": "Vorlage",
+    "description": "Aus dieser Seite lassen sich dann neue Seiten anlegen. Die Seite selbst bleibt, wo sie ist, und bleibt eine gewöhnliche Seite.",
+    "purpose": "Wofür ist die Vorlage? (optional)",
+    "purposePlaceholder": "Steht in der Auswahl unter dem Titel",
+    "pattern": "Titelmuster (optional)",
+    "patternPlaceholder": "Wochenreview KW{token}",
+    "preview": "Ergibt gerade: <result>{preview}</result>",
+    "placeholders": "Möglich: {placeholders}",
+    "unmark": "Keine Vorlage mehr",
+    "cancel": "Abbrechen",
+    "mark": "Als Vorlage markieren",
+    "save": "Speichern"
   }
 }

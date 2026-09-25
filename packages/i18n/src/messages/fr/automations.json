@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automatisations"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Page créée",
+    "DOCUMENT_UPDATED": "Titre ou propriétés modifiés",
+    "DOCUMENT_CONTENT_CHANGED": "Contenu modifié",
+    "DOCUMENT_MOVED": "Page déplacée",
+    "DOCUMENT_ARCHIVED": "Page mise à la corbeille",
+    "DOCUMENT_DELETED": "Page supprimée définitivement",
+    "DATABASE_ROW_CHANGED": "Valeur de ligne modifiée",
+    "SCHEDULE": "Planification"
+  },
+  "scopes": {
+    "WORKSPACE": "Tout l’espace de travail",
+    "SUBTREE": "Une page et ses sous-pages",
+    "DATABASE": "Une base de données et ses lignes"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (POST signé)",
+    "AI_RUN": "Exécution d’IA sur la page modifiée",
+    "EMAIL_SELF": "E-mail à toi-même"
+  },
+  "outputs": {
+    "COMMENT": "En commentaire sur la page",
+    "CHILD_PAGE": "En tant que nouvelle sous-page"
+  },
+  "scheduleKinds": {
+    "ONCE": "Une seule fois à un moment précis",
+    "DAILY": "Quotidien",
+    "WEEKLY": "Hebdomadaire",
+    "MONTHLY": "Mensuel",
+    "CRON": "Expression cron"
+  },
+  "runOrigins": {
+    "EVENT": "Modification",
+    "SCHEDULE": "Planification",
+    "MANUAL": "Manuel"
+  },
+  "runStatuses": {
+    "PENDING": "en attente",
+    "RUNNING": "en cours",
+    "SUCCEEDED": "réussi",
+    "FAILED": "échoué",
+    "SKIPPED": "ignoré"
+  },
+  "schedule": {
+    "once": "Une seule fois",
+    "onceAt": "Une seule fois le {moment}",
+    "daily": "Tous les jours à {time} ({zone})",
+    "weekly": "Chaque {weekday} à {time} ({zone})",
+    "monthly": "Chaque mois le {day} à {time} ({zone})",
+    "cron": "Cron « {expression} » ({zone})",
+    "none": "Sans planification"
+  },
+  "scheduleFields": {
+    "kind": "Planification",
+    "at": "Date et heure",
+    "atHint": "S’exécute exactement une fois. Ensuite, la règle reste en place sans se désactiver.",
+    "weekday": "Jour de la semaine",
+    "dayOfMonth": "Jour du mois",
+    "dayOfMonthHint": "Le 31 désigne le dernier jour d’un mois plus court. Aucun mois n’est ignoré.",
+    "time": "Heure",
+    "cron": "Expression cron",
+    "cronHint": "Cinq champs : minute, heure, jour du mois, mois, jour de la semaine (0 correspond au dimanche). Les plages, listes et intervalles sont autorisés, mais pas les noms ni les raccourcis comme @daily.",
+    "zone": "Fuseau horaire",
+    "zoneHint": "Lié à la règle, pas au serveur. L’heure d’été est prise en compte : 07:00 reste 07:00."
+  },
+  "dialog": {
+    "newTitle": "Nouvelle automatisation",
+    "editTitle": "Modifier l’automatisation",
+    "description": "Quand un élément change dans le périmètre sélectionné ou que l’échéance du calendrier arrive, l’action s’exécute. Une automatisation n’écrase jamais le contenu d’une page.",
+    "name": "Nom",
+    "namePlaceholder": "Informer Hermes des nouvelles notes de réunion",
+    "debounce": "Anti-rebond (secondes)",
+    "debounceHint": "Délai pendant lequel une page doit rester inactive avant que la règle ne s’exécute. Sans cela, chaque frappe au clavier déclenche une exécution, et chaque exécution d’IA a un coût.",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "secretIntro": "La règle est créée. Tu vois le secret de signature maintenant et plus jamais : eXocortex ne peut pas le récupérer. Le service récepteur en a besoin pour vérifier la signature.",
+    "secretLabel": "Secret de signature",
+    "secretSignature": "Chaque POST contient les en-têtes <code>{timestampHeader}</code> et <code>{signatureHeader}</code>. La valeur <code>{signedValue}</code> est signée avec HMAC-SHA256 à l’aide de ce secret.",
+    "secretDone": "C’est copié",
+    "scope": "Périmètre",
+    "subtreeDocumentId": "ID de la page",
+    "databaseDocumentId": "ID de la base de données",
+    "scopeDocumentPlaceholder": "ex. {example}",
+    "scopeDocumentHint": "L’ID se trouve dans la barre d’adresse de la page.",
+    "triggers": "Déclencheurs",
+    "triggersHint": "Les valeurs de ligne n’existent que dans le périmètre d’une base de données, tout le reste uniquement en dehors. Une planification est autonome et nécessite une page comme périmètre : l’horloge n’en définit aucune.",
+    "action": "Action",
+    "mailSubject": "Objet (facultatif)",
+    "mailSubjectPlaceholder": "Laisser vide pour utiliser le nom de la règle",
+    "mailHint": "L’e-mail est envoyé à l’adresse confirmée de ton propre compte, à aucune autre. Le corps du message contient la page elle-même, tronquée si elle est longue et accompagnée d’un lien en dessous.",
+    "webhookUrl": "URL cible",
+    "webhookNoHosts": "Cette installation n’autorise actuellement aucune cible de webhook. Un compte administrateur général doit renseigner {setting}.",
+    "webhookHosts": "Hôtes autorisés : {hosts}. Seules les métadonnées de la page sont envoyées, jamais son contenu.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Vérifier si cette page contient des informations obsolètes suite à la modification.",
+    "promptHint": "La page modifiée sert de support au modèle. La réponse est enregistrée à côté, pas à l’intérieur.",
+    "output": "Résultat",
+    "model": "Modèle (facultatif)",
+    "modelPlaceholder": "Laisser vide pour le modèle par défaut"
+  },
+  "page": {
+    "loading": "Chargement des automatisations…",
+    "title": "Automatisations",
+    "intro": "Règles qui réagissent aux modifications des pages ou à l’horloge : un webhook signé ou une exécution d’IA sur la page concernée.",
+    "newRule": "Nouvelle règle",
+    "disabled": "Les automatisations sont désactivées pour cet espace de travail. Aucune des règles ci-dessous ne s’exécute, quelle que soit sa configuration. Tu peux modifier cela via le paramètre <code>{setting}</code> ; si l’installation les a désactivées globalement, un espace de travail ne peut pas les réactiver lui-même.",
+    "readOnly": "Seule la personne propriétaire de cet espace de travail peut créer et modifier des règles. Une règle envoie des données vers l’extérieur ou dépense de l’argent pour un modèle, et continue de le faire même quand personne ne regarde.",
+    "rulesHeading": "Règles",
+    "emptyTitle": "Aucune automatisation pour l’instant",
+    "emptyDescription": "Une règle se résume à trois réponses : où elle regarde, à quoi elle réagit et ce qu’elle fait ensuite.",
+    "columns": {
+      "name": "Nom",
+      "scope": "Portée",
+      "triggers": "Déclencheurs",
+      "action": "Action",
+      "enabled": "Actif"
+    },
+    "selfDisabled": "Désactivée automatiquement : {reason}",
+    "lastTriggered": "Dernier déclenchement {moment}",
+    "noNextRun": "Aucune prochaine exécution",
+    "nextRun": "Prochaine exécution {moment}",
+    "disableRule": "Désactiver {name}",
+    "enableRule": "Activer {name}",
+    "documentIdPlaceholder": "ID de la page",
+    "runAgainst": "Page sur laquelle exécuter {name}",
+    "runNow": "Exécuter maintenant",
+    "edit": "Modifier",
+    "confirmDelete": "Confirmer la suppression",
+    "delete": "Supprimer"
+  },
+  "runLog": {
+    "heading": "Journal des exécutions",
+    "empty": "Rien n’a encore été exécuté.",
+    "columns": {
+      "moment": "Date et heure",
+      "rule": "Règle",
+      "page": "Page",
+      "origin": "Origine",
+      "status": "Résultat",
+      "duration": "Durée"
+    },
+    "deletedPage": "(supprimée)"
+  }
+}

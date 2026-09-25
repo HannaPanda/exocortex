@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automationen"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Seite angelegt",
+    "DOCUMENT_UPDATED": "Titel oder Eigenschaften geändert",
+    "DOCUMENT_CONTENT_CHANGED": "Inhalt geändert",
+    "DOCUMENT_MOVED": "Seite verschoben",
+    "DOCUMENT_ARCHIVED": "Seite in den Papierkorb gelegt",
+    "DOCUMENT_DELETED": "Seite endgültig gelöscht",
+    "DATABASE_ROW_CHANGED": "Zeilenwert geändert",
+    "SCHEDULE": "Zeitplan"
+  },
+  "scopes": {
+    "WORKSPACE": "Ganzer Arbeitsbereich",
+    "SUBTREE": "Eine Seite samt Unterseiten",
+    "DATABASE": "Eine Datenbank und ihre Zeilen"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (signierter POST)",
+    "AI_RUN": "KI-Lauf gegen die geänderte Seite",
+    "EMAIL_SELF": "E-Mail an dich selbst"
+  },
+  "outputs": {
+    "COMMENT": "Als Kommentar an der Seite",
+    "CHILD_PAGE": "Als neue Unterseite"
+  },
+  "scheduleKinds": {
+    "ONCE": "Einmalig zu einem Zeitpunkt",
+    "DAILY": "Täglich",
+    "WEEKLY": "Wöchentlich",
+    "MONTHLY": "Monatlich",
+    "CRON": "Cron-Ausdruck"
+  },
+  "runOrigins": {
+    "EVENT": "Änderung",
+    "SCHEDULE": "Zeitplan",
+    "MANUAL": "Von Hand"
+  },
+  "runStatuses": {
+    "PENDING": "wartet",
+    "RUNNING": "läuft",
+    "SUCCEEDED": "erledigt",
+    "FAILED": "fehlgeschlagen",
+    "SKIPPED": "übersprungen"
+  },
+  "schedule": {
+    "once": "Einmalig",
+    "onceAt": "Einmalig am {moment}",
+    "daily": "Täglich um {time} ({zone})",
+    "weekly": "Jeden {weekday} um {time} ({zone})",
+    "monthly": "Monatlich am {day}. um {time} ({zone})",
+    "cron": "Cron „{expression}“ ({zone})",
+    "none": "Ohne Zeitplan"
+  },
+  "scheduleFields": {
+    "kind": "Zeitplan",
+    "at": "Zeitpunkt",
+    "atHint": "Läuft genau einmal. Danach bleibt die Regel stehen, ohne sich abzuschalten.",
+    "weekday": "Wochentag",
+    "dayOfMonth": "Tag im Monat",
+    "dayOfMonthHint": "Der 31. meint in einem kürzeren Monat dessen letzten Tag. Ein Monat wird nie übersprungen.",
+    "time": "Uhrzeit",
+    "cron": "Cron-Ausdruck",
+    "cronHint": "Fünf Felder: Minute, Stunde, Tag im Monat, Monat, Wochentag (0 ist Sonntag). Bereiche, Listen und Schritte sind erlaubt, Namen und Kürzel wie @daily nicht.",
+    "zone": "Zeitzone",
+    "zoneHint": "Gehört zur Regel, nicht zum Server. Sommerzeit wird mitgerechnet: 07:00 bleibt 07:00."
+  },
+  "dialog": {
+    "newTitle": "Neue Automation",
+    "editTitle": "Automation ändern",
+    "description": "Wenn sich unter dem gewählten Bereich etwas ändert oder der Zeitplan fällig wird, läuft die Aktion. Eine Automation überschreibt nie den Inhalt einer Seite.",
+    "name": "Name",
+    "namePlaceholder": "Hermes über neue Sitzungsnotizen informieren",
+    "debounce": "Entprellung (Sekunden)",
+    "debounceHint": "So lange muss eine Seite ruhig sein, bevor die Regel läuft. Ohne das löst jeder Tastendruck einen Lauf aus, und bei einem KI-Lauf kostet jeder davon Geld.",
+    "cancel": "Abbrechen",
+    "create": "Anlegen",
+    "save": "Speichern",
+    "secretIntro": "Die Regel ist angelegt. Das Signiergeheimnis siehst du jetzt und nie wieder: eXocortex kann es nicht zurückgeben. Der empfangende Dienst braucht es, um die Signatur zu prüfen.",
+    "secretLabel": "Signiergeheimnis",
+    "secretSignature": "Jeder POST trägt die Kopfzeilen <code>{timestampHeader}</code> und <code>{signatureHeader}</code>. Signiert wird <code>{signedValue}</code> per HMAC-SHA256 mit diesem Geheimnis.",
+    "secretDone": "Habe ich kopiert",
+    "scope": "Geltungsbereich",
+    "subtreeDocumentId": "Seiten-Id",
+    "databaseDocumentId": "Datenbank-Id",
+    "scopeDocumentPlaceholder": "z. B. {example}",
+    "scopeDocumentHint": "Die Id steht in der Adresszeile der Seite.",
+    "triggers": "Auslöser",
+    "triggersHint": "Zeilenwerte gibt es nur im Geltungsbereich einer Datenbank, alles andere nur außerhalb. Ein Zeitplan steht allein und braucht eine Seite als Geltungsbereich: die Uhr nennt keine.",
+    "action": "Aktion",
+    "mailSubject": "Betreff (optional)",
+    "mailSubjectPlaceholder": "Leer lassen für den Namen der Regel",
+    "mailHint": "Die Mail geht an die bestätigte Adresse deines eigenen Kontos, an keine andere. Im Text steht die Seite selbst, bei langen Seiten gekürzt und mit einem Link darunter.",
+    "webhookUrl": "Ziel-URL",
+    "webhookNoHosts": "Diese Installation erlaubt derzeit keine Webhook-Ziele. Ein globaler Administrator muss {setting} füllen.",
+    "webhookHosts": "Erlaubte Hosts: {hosts}. Verschickt werden nur Metadaten der Seite, nie ihr Inhalt.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Prüfe, ob diese Seite durch die Änderung veraltete Angaben enthält.",
+    "promptHint": "Die geänderte Seite ist das Material des Modells. Die Antwort landet daneben, nicht darin.",
+    "output": "Ergebnis",
+    "model": "Modell (optional)",
+    "modelPlaceholder": "Leer lassen für das Standardmodell"
+  },
+  "page": {
+    "loading": "Automationen werden geladen …",
+    "title": "Automationen",
+    "intro": "Regeln, die auf Änderungen an Seiten oder auf die Uhr reagieren: ein signierter Webhook oder ein KI-Lauf gegen die betroffene Seite.",
+    "newRule": "Neue Regel",
+    "disabled": "Automationen sind für diesen Arbeitsbereich abgeschaltet. Keine der Regeln unten läuft, egal wie sie eingestellt ist. Umschalten lässt sich das über die Einstellung <code>{setting}</code>; wenn die Installation sie global abgeschaltet hat, kann ein Arbeitsbereich sie nicht selbst wieder einschalten.",
+    "readOnly": "Regeln anlegen und ändern kann die Besitzerin oder der Besitzer dieses Arbeitsbereichs. Eine Regel schickt Daten nach außen oder gibt Geld für ein Modell aus, und sie tut das weiter, wenn niemand mehr hinschaut.",
+    "rulesHeading": "Regeln",
+    "emptyTitle": "Noch keine Automation",
+    "emptyDescription": "Eine Regel besteht aus drei Antworten: wo sie hinsieht, worauf sie reagiert und was sie dann tut.",
+    "columns": {
+      "name": "Name",
+      "scope": "Bereich",
+      "triggers": "Auslöser",
+      "action": "Aktion",
+      "enabled": "An"
+    },
+    "selfDisabled": "Selbst abgeschaltet: {reason}",
+    "lastTriggered": "Zuletzt {moment}",
+    "noNextRun": "Kein weiterer Lauf",
+    "nextRun": "Nächster Lauf {moment}",
+    "disableRule": "{name} abschalten",
+    "enableRule": "{name} einschalten",
+    "documentIdPlaceholder": "Seiten-Id",
+    "runAgainst": "Seite, gegen die {name} laufen soll",
+    "runNow": "Jetzt ausführen",
+    "edit": "Ändern",
+    "confirmDelete": "Wirklich löschen",
+    "delete": "Löschen"
+  },
+  "runLog": {
+    "heading": "Lauf-Protokoll",
+    "empty": "Noch nichts gelaufen.",
+    "columns": {
+      "moment": "Zeitpunkt",
+      "rule": "Regel",
+      "page": "Seite",
+      "origin": "Start",
+      "status": "Ergebnis",
+      "duration": "Dauer"
+    },
+    "deletedPage": "(gelöscht)"
+  }
+}

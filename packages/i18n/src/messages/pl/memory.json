@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Pamięć"
+  },
+  "statuses": {
+    "current": "aktualny",
+    "superseded": "nieaktualny",
+    "conflicted": "sprzeczny"
+  },
+  "facts": {
+    "title": "Pamięć",
+    "intro": "To, co agenci wydestylowali ze swoich notatek z sesji. Każde zdanie to osobna strona w obszarze roboczym Memory.",
+    "project": "Projekt",
+    "projectPlaceholder": "wszystkie",
+    "status": "Status",
+    "target": "Dodaj do",
+    "chooseWorkspace": "Wybierz obszar roboczy",
+    "loading": "Ładowanie faktów…",
+    "omitted": "{count, plural, one {Filtr pominął # kolejny fakt w tym projekcie.} few {Filtr pominął # kolejne fakty w tym projekcie.} many {Filtr pominął # kolejnych faktów w tym projekcie.} other {Filtr pominął # kolejnego faktu w tym projekcie.}}",
+    "emptyTitle": "Brak faktów",
+    "emptyDescription": "Konsolidacja odbywa się w nocy. Bez notatek z sesji nie ma czego destylować.",
+    "confirmations": "{count, plural, one {# potwierdzenie} few {# potwierdzenia} many {# potwierdzeń} other {# potwierdzenia}}",
+    "confidence": "Waga {confidence}",
+    "lastConfirmed": "ostatnio {moment}",
+    "sourceNotes": "{count, plural, one {z # notatki} few {z # notatek} many {z # notatek} other {z # notatki}}",
+    "promote": "Dodaj",
+    "promoted": "dodano"
+  }
+}

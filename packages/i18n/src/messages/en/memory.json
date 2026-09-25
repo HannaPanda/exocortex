@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Memory"
+  },
+  "statuses": {
+    "current": "current",
+    "superseded": "superseded",
+    "conflicted": "conflicted"
+  },
+  "facts": {
+    "title": "Memory",
+    "intro": "What the agents distilled from their session notes. Each sentence is its own page in the Memory workspace.",
+    "project": "Project",
+    "projectPlaceholder": "all",
+    "status": "Status",
+    "target": "Promote to",
+    "chooseWorkspace": "Choose workspace",
+    "loading": "Loading facts…",
+    "omitted": "{count, plural, one {The filter omitted # other fact in this project.} other {The filter omitted # other facts in this project.}}",
+    "emptyTitle": "No facts",
+    "emptyDescription": "Compaction runs at night. Without session notes, there is nothing to distill.",
+    "confirmations": "{count, plural, one {# confirmation} other {# confirmations}}",
+    "confidence": "Weight {confidence}",
+    "lastConfirmed": "last {moment}",
+    "sourceNotes": "{count, plural, one {from # note} other {from # notes}}",
+    "promote": "Promote",
+    "promoted": "promoted"
+  }
+}

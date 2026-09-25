@@ -1,0 +1,132 @@
+{
+  "route": {
+    "title": "Project"
+  },
+  "buildStatuses": {
+    "PENDING": "in de wacht",
+    "RUNNING": "bezig",
+    "COMPLETED": "voltooid",
+    "FAILED": "mislukt",
+    "CANCELLED": "geannuleerd"
+  },
+  "textStatuses": {
+    "NOT_APPLICABLE": "n.v.t.",
+    "PENDING": "bezig",
+    "READY": "gereed",
+    "FAILED": "mislukt"
+  },
+  "history": {
+    "emptyTitle": "Nog geen builds",
+    "emptyDescription": "Wat gebouwd is, staat hier, ook na het vernieuwen.",
+    "sourcesChanged": "Bronnen gewijzigd",
+    "pageCount": "{count} p.",
+    "openPdf": "PDF openen",
+    "delete": "Verwijderen",
+    "textExtract": "Tekstextract {status}",
+    "syncTexFile": "SyncTeX-bestand"
+  },
+  "panel": {
+    "notBuiltTitle": "Nog niet gebouwd",
+    "notBuiltDescription": "Druk op „Bouwen”. De eerste keer duurt het langst, daarna is de build gecachet.",
+    "tabs": {
+      "pdf": "PDF",
+      "errors": "Fouten",
+      "errorsWithCount": "Fouten ({count})",
+      "log": "Logboek",
+      "history": "Geschiedenis"
+    },
+    "logLoading": "Logboek wordt geladen …",
+    "noLog": "Geen logboek.",
+    "stale": "verouderd",
+    "errorCount": "{count, plural, one {# fout} other {# fouten}}",
+    "warningCount": "{count, plural, one {# waarschuwing} other {# waarschuwingen}}",
+    "pageCount": "{count, plural, one {# pagina} other {# pagina’s}}",
+    "download": "PDF",
+    "running": "De build is bezig …",
+    "noPdfTitle": "Geen PDF",
+    "noPdfDescription": "Deze build heeft geen bestand opgeleverd. De foutenlijst legt uit waarom.",
+    "noErrorsTitle": "Geen fouten",
+    "noErrorsDescription": "LaTeX had niets op te merken."
+  },
+  "editor": {
+    "emptyFile": "Dit bestand is leeg."
+  },
+  "fileTree": {
+    "heading": "Bestanden",
+    "create": "Bestand aanmaken",
+    "empty": "Nog geen bestanden.",
+    "rootBadge": "Hoofd",
+    "remove": "{name} verwijderen"
+  },
+  "importDialog": {
+    "title": "Archief geïmporteerd",
+    "imported": "{count, plural, one {# bestand zit nu in het project.} other {# bestanden zitten nu in het project.}}",
+    "strippedRoot": "De gemeenschappelijke bovenliggende map <code>{root}</code> is weggelaten.",
+    "rootFileChanged": "Hoofdbestand is nu <code>{file}</code>.",
+    "skippedHeading": "Niet geïmporteerd",
+    "more": "… en nog {count}",
+    "overwrite": "Bestaande overschrijven",
+    "close": "Sluiten",
+    "skipReasons": {
+      "invalid_path": "Het pad is niet toegestaan in het project.",
+      "ignored": "Een hulpbestand van het besturingssysteem dat niet in het project thuishoort.",
+      "exists": "Op deze plek staat al een bestand. „Bestaande overschrijven” vervangt het.",
+      "too_large": "Het bestand is groter dan toegestaan voor dit project.",
+      "not_utf8": "Het bestand ziet eruit als tekst, maar is niet UTF-8-gecodeerd.",
+      "too_many_files": "Het project heeft het maximaal toegestane aantal bestanden bereikt.",
+      "encrypted": "Het item in het archief is versleuteld.",
+      "unsupported_method": "Het item is ingepakt met een methode die hier niet wordt ondersteund.",
+      "corrupt": "Het item in het archief kon niet worden uitgepakt.",
+      "upload_failed": "Het bestand kon niet als bijlage worden opgeslagen."
+    }
+  },
+  "newFile": {
+    "title": "Bestand aanmaken",
+    "description": "Het pad is relatief ten opzichte van het project. Mappen ontstaan doordat een pad ernaar verwijst: <code>{example}</code> maakt de map automatisch mee aan.",
+    "examplePath": "hoofdstukken/inleiding.tex",
+    "path": "Pad",
+    "assetHint": "Gebruik voor afbeeldingen, lettertypen en pdf’s de knop „Bestand uploaden”.",
+    "cancel": "Annuleren",
+    "create": "Aanmaken",
+    "pathProblems": {
+      "empty": "Het pad is leeg.",
+      "too_long": "Het pad is langer dan {max} tekens.",
+      "absolute": "Het pad mag niet met een schuine streep beginnen.",
+      "traversal": "Het pad mag niet buiten het project leiden.",
+      "trailing_slash": "Het pad mag niet met een schuine streep eindigen.",
+      "empty_segment": "Het pad bevat een leeg segment.",
+      "invalid_character": "Het pad bevat een ongeldig teken.",
+      "reserved_name": "Deze naam is gereserveerd voor het bouwen."
+    }
+  },
+  "toolbar": {
+    "rootFile": "Hoofdbestand",
+    "engine": "Engine",
+    "bibliography": "Bibliografie",
+    "bibliographies": {
+      "AUTO": "automatisch",
+      "BIBTEX": "BibTeX",
+      "BIBER": "Biber",
+      "NONE": "geen"
+    },
+    "upload": "Bestand uploaden",
+    "importZip": "ZIP importeren",
+    "exportZip": "Als ZIP",
+    "cancel": "Annuleren",
+    "build": "Bouwen"
+  },
+  "view": {
+    "notFound": "Project niet gevonden",
+    "loading": "Project wordt geladen …",
+    "files": "Bestanden",
+    "noFileSelected": "Geen bestand geselecteerd",
+    "chooseFile": "Kies een bestand uit de bestandsstructuur.",
+    "assetDescription": "Een geüpload bestand. Je kunt het in het project gebruiken, maar hier niet bewerken.",
+    "noConnection": "Geen verbinding",
+    "connecting": "Verbinding wordt gemaakt …"
+  },
+  "sourceSync": {
+    "outsideProject": "Deze locatie komt uit {path}, een bestand buiten het project.",
+    "noMapping": "Voor deze locatie is er geen koppeling in de SyncTeX-kaart."
+  }
+}

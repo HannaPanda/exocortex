@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entities"
+  },
+  "types": {
+    "person": "Person",
+    "host": "Host",
+    "service": "Service",
+    "project": "Project",
+    "credential": "Credential",
+    "organisation": "Organization",
+    "other": "Other"
+  },
+  "page": {
+    "loading": "Loading entities…",
+    "title": "Entities",
+    "intro": "People, hosts, services, and projects that appear in your pages, and what is known about them.",
+    "create": "New entity",
+    "searchPlaceholder": "Name or alias",
+    "allTypes": "All types",
+    "nothingSelectedTitle": "Nothing selected",
+    "nothingSelectedDescription": "Click an entity on the left to see facts, connections, and pages.",
+    "candidatesTitle": "Suggestions",
+    "candidatesIntro": "Names that appear on multiple pages and don’t have an entity yet.",
+    "emptyTitle": "No entities",
+    "emptyDescription": "Either none have been created yet, or none match the filter.",
+    "aliases": "also: {aliases}",
+    "mentionCount": "{count, plural, one {# page} other {# pages}}"
+  },
+  "candidates": {
+    "loading": "Loading suggestions…",
+    "emptyTitle": "No suggestions",
+    "emptyDescription": "Names appear here once they show up on at least {threshold, plural, one {# page} other {# pages}}.",
+    "documentCount": "on {count, plural, one {# page} other {# pages}}",
+    "occurrences": "mentioned {count}×",
+    "confirm": "Create",
+    "dismiss": "Dismiss"
+  },
+  "setup": {
+    "missing": "There is no directory for entities yet. It will be created as a database in a workspace; after that, eXocortex collects names from pages automatically.",
+    "adminOnly": "Only someone who manages this installation can create it.",
+    "chooseWorkspace": "Choose workspace",
+    "databaseTitle": "Entities",
+    "create": "Create directory"
+  },
+  "detail": {
+    "loading": "Loading profile…",
+    "openPage": "Open page",
+    "type": "Type",
+    "aliases": "Aliases",
+    "rescanQueued": "The pages are being rescanned; new matches will appear in a few minutes.",
+    "facts": "Facts",
+    "confirmations": "{count, plural, one {# confirmation} other {# confirmations}}",
+    "relations": "Connections",
+    "mentions": "Pages",
+    "noMentions": "No page mentions this name yet.",
+    "mentionMeta": "{workspace} · “{alias}”",
+    "unlink": "Unlink",
+    "hiddenMentions": "{count, plural, one {One more page in a workspace you can’t see.} other {# more pages in workspaces you can’t see.}}"
+  },
+  "dialog": {
+    "title": "New entity",
+    "description": "Becomes a row in the entity directory and thus a regular page.",
+    "name": "Name",
+    "type": "Type",
+    "aliases": "Aliases",
+    "aliasesPlaceholder": "fpb2, Fluffy Panda 2",
+    "aliasesHint": "Comma-separated. Any spelling a page might use.",
+    "note": "Note",
+    "cancel": "Cancel",
+    "create": "Create"
+  },
+  "linkPage": {
+    "title": "Link page",
+    "workspace": "Workspace",
+    "chooseWorkspace": "Choose workspace",
+    "search": "Search page",
+    "searchPlaceholder": "Title",
+    "note": "Why",
+    "notePlaceholder": "Only appears there as “the server”",
+    "submit": "Link"
+  }
+}

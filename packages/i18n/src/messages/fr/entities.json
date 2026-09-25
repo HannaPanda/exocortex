@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entités"
+  },
+  "types": {
+    "person": "Personne",
+    "host": "Hôte",
+    "service": "Service",
+    "project": "Projet",
+    "credential": "Accès",
+    "organisation": "Organisation",
+    "other": "Autre"
+  },
+  "page": {
+    "loading": "Chargement des entités…",
+    "title": "Entités",
+    "intro": "Les personnes, hôtes, services et projets qui apparaissent dans tes pages, et ce que l’on sait à leur sujet.",
+    "create": "Nouvelle entité",
+    "searchPlaceholder": "Nom ou alias",
+    "allTypes": "Tous les types",
+    "nothingSelectedTitle": "Rien de sélectionné",
+    "nothingSelectedDescription": "Clique sur une entité à gauche pour voir les faits, les connexions et les pages.",
+    "candidatesTitle": "Suggestions",
+    "candidatesIntro": "Noms qui apparaissent sur plusieurs pages et pour lesquels il n’existe pas encore d’entité.",
+    "emptyTitle": "Aucune entité",
+    "emptyDescription": "Soit aucune n’a encore été créée, soit le filtre n’en retient aucune.",
+    "aliases": "aussi : {aliases}",
+    "mentionCount": "{count, plural, one {# page} many {# de pages} other {# pages}}"
+  },
+  "candidates": {
+    "loading": "Chargement des suggestions…",
+    "emptyTitle": "Aucune suggestion",
+    "emptyDescription": "Les noms apparaîtront ici dès qu’ils figureront sur au moins {threshold, plural, one {# page} many {# de pages} other {# pages}}.",
+    "documentCount": "sur {count, plural, one {# page} many {# de pages} other {# pages}}",
+    "occurrences": "{count}× mentionné",
+    "confirm": "Créer",
+    "dismiss": "Ignorer"
+  },
+  "setup": {
+    "missing": "Il n’existe pas encore d’annuaire d’entités. Il est créé en tant que base de données dans un espace de travail ; eXocortex rassemble ensuite automatiquement les noms trouvés dans les pages.",
+    "adminOnly": "Seule une personne administrant cette installation peut le créer.",
+    "chooseWorkspace": "Choisir un espace de travail",
+    "databaseTitle": "Entités",
+    "create": "Créer l’annuaire"
+  },
+  "detail": {
+    "loading": "Chargement du profil…",
+    "openPage": "Ouvrir la page",
+    "type": "Type",
+    "aliases": "Alias",
+    "rescanQueued": "Les pages sont en cours de nouvelle analyse ; les nouvelles correspondances apparaîtront dans quelques minutes.",
+    "facts": "Faits",
+    "confirmations": "{count, plural, one {# confirmation} many {# de confirmations} other {# confirmations}}",
+    "relations": "Connexions",
+    "mentions": "Pages",
+    "noMentions": "Aucune page ne mentionne encore ce nom.",
+    "mentionMeta": "{workspace} · « {alias} »",
+    "unlink": "Dissocier",
+    "hiddenMentions": "{count, plural, one {Une autre page dans un espace de travail que tu ne peux pas voir.} many {# d’autres pages dans des espaces de travail que tu ne peux pas voir.} other {# autres pages dans des espaces de travail que tu ne peux pas voir.}}"
+  },
+  "dialog": {
+    "title": "Nouvelle entité",
+    "description": "Devient une ligne dans le répertoire des entités et ainsi une page ordinaire.",
+    "name": "Nom",
+    "type": "Type",
+    "aliases": "Alias",
+    "aliasesPlaceholder": "fpb2, Pandadoux 2",
+    "aliasesHint": "Séparés par une virgule. Toutes les variantes qu’une page pourrait employer.",
+    "note": "Note",
+    "cancel": "Annuler",
+    "create": "Créer"
+  },
+  "linkPage": {
+    "title": "Lier une page",
+    "workspace": "Espace de travail",
+    "chooseWorkspace": "Choisir un espace de travail",
+    "search": "Rechercher une page",
+    "searchPlaceholder": "Titre",
+    "note": "Pourquoi",
+    "notePlaceholder": "Y apparaît seulement comme « le serveur »",
+    "submit": "Lier"
+  }
+}

@@ -341,5 +341,20 @@
     "fitWidth": "Fit width",
     "pageCount": "{count, plural, one {# page} other {# pages}}",
     "clickHint": "Click to jump to source"
+  },
+  "templateSettings": {
+    "titleMark": "Mark as template",
+    "titleEdit": "Template",
+    "description": "New pages can then be created from this page. The page itself stays where it is and remains an ordinary page.",
+    "purpose": "What is this template for? (optional)",
+    "purposePlaceholder": "Shown under the title in the selection",
+    "pattern": "Title pattern (optional)",
+    "patternPlaceholder": "Weekly review CW{token}",
+    "preview": "Currently results in: <result>{preview}</result>",
+    "placeholders": "Available: {placeholders}",
+    "unmark": "No longer a template",
+    "cancel": "Cancel",
+    "mark": "Mark as template",
+    "save": "Save"
   }
 }

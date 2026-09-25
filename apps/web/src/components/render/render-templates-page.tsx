@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type RenderTemplate } from '@exocortex/contracts';
@@ -35,6 +36,7 @@ import { RenderTemplateDialog } from './render-template-dialog';
  * knowing which templates exist is how anybody picks one in the render dialog.
  */
 export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('render.templatesPage');
   const detail = useWorkspaceDetail(workspaceId);
   const templates = useRenderTemplates(workspaceId);
   const remove = useDeleteRenderTemplate(workspaceId);
@@ -43,7 +45,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   if (detail.isPending || templates.isPending || templates.data === undefined) {
-    return <LoadingState label="Vorlagen werden geladen …" />;
+    return <LoadingState label={t('loading')} />;
   }
 
   const role = detail.data?.role;
@@ -53,11 +55,8 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-4xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="exocortex-page-title">Vorlagen</h1>
-          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-            Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Der Satz läuft
-            über Pandoc und LaTeX; der Inhalt der Seiten bleibt dabei unberührt.
-          </p>
+          <h1 className="exocortex-page-title">{t('title')}</h1>
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
         </div>
         {canEdit ? (
           <Button
@@ -67,7 +66,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
               setDialogOpen(true);
             }}
           >
-            Neue Vorlage
+            {t('newTemplate')}
           </Button>
         ) : null}
       </div>
@@ -75,27 +74,24 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
       {templates.data.enabledForWorkspace ? null : (
         <Alert className="mt-6" data-testid="render-disabled">
           <AlertDescription>
-            Die PDF-Ausgabe ist für diesen Arbeitsbereich abgeschaltet. Die Vorlagen unten bleiben
-            erhalten, es lässt sich aber nichts damit bauen. Umschalten lässt sich das über die
-            Einstellung <code className="mx-1">render.enabled</code>; hat die Installation sie
-            global abgeschaltet, kann ein Arbeitsbereich sie nicht selbst wieder einschalten.
+            {t.rich('disabled', {
+              setting: 'render.enabled',
+              code: (chunks) => <code>{chunks}</code>,
+            })}
           </AlertDescription>
         </Alert>
       )}
 
       <section className="mt-8 flex flex-col gap-3">
         {templates.data.templates.length === 0 ? (
-          <EmptyState
-            title="Noch keine Vorlagen"
-            description="Eine Vorlage ohne eigenen Quelltext benutzt die eingebaute Vorlage Eisvogel und braucht keine Zeile LaTeX."
-          />
+          <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <Table narrow="list" data-testid="render-templates">
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Satz</TableHead>
-                <TableHead>Variablen</TableHead>
+                <TableHead>{t('columns.name')}</TableHead>
+                <TableHead>{t('columns.typesetting')}</TableHead>
+                <TableHead>{t('columns.variables')}</TableHead>
                 {canEdit ? <TableHead className="w-px" /> : null}
               </TableRow>
             </TableHeader>
@@ -108,14 +104,20 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
                       <div className="text-xs text-muted-foreground">{template.description}</div>
                     )}
                   </TableCell>
-                  <TableCell label="Satz" className="text-sm text-muted-foreground">
+                  <TableCell
+                    label={t('columns.typesetting')}
+                    className="text-sm text-muted-foreground"
+                  >
                     {template.source === null ? (
-                      <Badge variant="muted">Eisvogel (eingebaut)</Badge>
+                      <Badge variant="muted">{t('builtIn')}</Badge>
                     ) : (
-                      <Badge variant="outline">Eigener Quelltext</Badge>
+                      <Badge variant="outline">{t('ownSource')}</Badge>
                     )}
                   </TableCell>
-                  <TableCell label="Variablen" className="text-sm text-muted-foreground">
+                  <TableCell
+                    label={t('columns.variables')}
+                    className="text-sm text-muted-foreground"
+                  >
                     {template.variables.length === 0
                       ? '–'
                       : template.variables.map((variable) => variable.name).join(', ')}
@@ -130,14 +132,14 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
                           setDialogOpen(true);
                         }}
                       >
-                        Bearbeiten
+                        {t('edit')}
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => void remove.mutateAsync(template.id)}
                       >
-                        Löschen
+                        {t('delete')}
                       </Button>
                     </TableCell>
                   ) : null}

@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "title": "Features"
+  },
+  "page": {
+    "title": "Help and features",
+    "intro": "What this deployment can do, in detail and in complete sentences: how it works, how you use it, and where its limits lie. The list is enforced at build time, so no new capability gets through without being described here.",
+    "searchPlaceholder": "Search, for example for PDF or calendar",
+    "searchLabel": "Search features",
+    "onlyNew": "New for you ({count})",
+    "markSeen": "Mark as seen",
+    "loading": "Loading features…",
+    "emptyTitle": "Nothing found",
+    "emptyNew": "Nothing has been added since your last visit.",
+    "emptySearch": "No entries match this search.",
+    "allAreas": "All features",
+    "areaWithCount": "{area} ({count})"
+  },
+  "entry": {
+    "new": "New",
+    "since": "since {date}"
+  },
+  "access": {
+    "where": "Where to find it",
+    "open": "Open",
+    "shortcuts": "Keyboard shortcuts",
+    "tools": "For agents",
+    "settings": "Settings",
+    "references": "Background"
+  },
+  "areas": {
+    "hilfe": {
+      "label": "Overview",
+      "description": "Where you look up what this deployment can do and what was recently added."
+    },
+    "seiten": {
+      "label": "Pages and editor",
+      "description": "The editor itself: what a page consists of, how you write it, and what it looks like."
+    },
+    "struktur": {
+      "label": "Structure, filing, and templates",
+      "description": "Where a page lives, how it gets there, how it disappears again, and how you reuse the same form."
+    },
+    "suche": {
+      "label": "Search and links",
+      "description": "Find things again, even if you don’t remember the exact words from back then."
+    },
+    "datenbanken": {
+      "label": "Databases",
+      "description": "Pages as tables: typed columns, saved views, and rows that remain full pages."
+    },
+    "erfassen": {
+      "label": "Quick capture",
+      "description": "The fastest way from a thought or a web page into eXocortex."
+    },
+    "zusammenarbeit": {
+      "label": "Collaboration and history",
+      "description": "Working together on a page, discussions in the text, and a record of what was changed by whom and when."
+    },
+    "dateien": {
+      "label": "Files and text recognition",
+      "description": "What you upload: where it lives, how it is displayed, and how text is extracted from a PDF."
+    },
+    "ki": {
+      "label": "Built-in AI",
+      "description": "The built-in model: what it sees, what it is allowed to do, what it costs, and where its limits lie."
+    },
+    "automationen": {
+      "label": "Automations",
+      "description": "Rules that run without you, triggered by a change or by the clock."
+    },
+    "gedaechtnis": {
+      "label": "Memory and entities",
+      "description": "What agents retain over time, and the people, places, and things that keep appearing in your pages."
+    },
+    "veroeffentlichen": {
+      "label": "Publishing and projects",
+      "description": "A page or project becomes a file that someone without access can read."
+    },
+    "agenten": {
+      "label": "Access for agents",
+      "description": "How Claude Code, Hermes, ChatGPT, and other clients get in here and what they are allowed to do."
+    },
+    "verwaltung": {
+      "label": "Administration",
+      "description": "Accounts, settings, models, and costs of this installation."
+    }
+  }
+}

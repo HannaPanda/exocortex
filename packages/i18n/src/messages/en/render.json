@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Templates"
+  },
+  "statuses": {
+    "PENDING": "pending",
+    "RUNNING": "building",
+    "COMPLETED": "completed",
+    "FAILED": "failed",
+    "CANCELLED": "cancelled"
+  },
+  "sources": {
+    "DOCUMENT": "This page only",
+    "SUBTREE": "Page and subpages, with table of contents"
+  },
+  "variableOrigins": {
+    "MANUAL": "Entered before building",
+    "TITLE": "Page title",
+    "PATH": "Page path",
+    "AUTHOR": "Who starts the build",
+    "TODAY": "Today’s date",
+    "PROPERTY": "Database row property"
+  },
+  "dialog": {
+    "title": "Publish as PDF",
+    "description": "The content of this page will be typeset using a template. The page itself remains unchanged.",
+    "close": "Close",
+    "rebuild": "Rebuild",
+    "build": "Generate PDF",
+    "disabled": "PDF output is disabled for this workspace.",
+    "noTemplates": "There are no templates yet. An administrator can create them under “Templates” in the workspace.",
+    "startFailed": "The build could not be started.",
+    "template": "Template",
+    "chooseTemplate": "Choose template",
+    "source": "Scope",
+    "historyHeading": "Previous PDFs",
+    "stale": "Page has changed",
+    "deletedTemplate": "(deleted template)",
+    "openPdf": "Open PDF",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "showLog": "Show log",
+    "hideLog": "Hide log",
+    "emptyLog": "(empty)",
+    "editTemplates": "Edit templates"
+  },
+  "templateDialog": {
+    "newTitle": "New template",
+    "editTitle": "Edit template",
+    "description": "The source is a Pandoc template: <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Without custom source code, Eisvogel is used.",
+    "name": "Name",
+    "templateDescription": "Description",
+    "templateDescriptionPlaceholder": "What this template is for",
+    "useBuiltIn": "Use built-in template Eisvogel",
+    "source": "Source code",
+    "variables": "Variables",
+    "addVariable": "Add variable",
+    "newVariableLabel": "New variable",
+    "variableName": "Name in the template",
+    "variableLabel": "Label",
+    "variableOrigin": "Where the value comes from",
+    "propertyName": "Property name",
+    "propertyPlaceholder": "Property",
+    "required": "Required",
+    "removeVariable": "Remove",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveFailed": "The template could not be saved."
+  },
+  "templatesPage": {
+    "loading": "Loading templates…",
+    "title": "Templates",
+    "intro": "Tools to publish pages in this workspace as a PDF. Typesetting is handled by Pandoc and LaTeX; the content of the pages remains untouched.",
+    "newTemplate": "New template",
+    "disabled": "PDF export is disabled for this workspace. The templates below are kept, but cannot be used to build anything. You can toggle this via the <code>{setting}</code> setting; if the installation has disabled it globally, a workspace cannot turn it back on itself.",
+    "emptyTitle": "No templates yet",
+    "emptyDescription": "A template without custom source code uses the built-in Eisvogel template and doesn’t need a single line of LaTeX.",
+    "columns": {
+      "name": "Name",
+      "typesetting": "Typesetting",
+      "variables": "Variables"
+    },
+    "builtIn": "Eisvogel (built-in)",
+    "ownSource": "Custom source code",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

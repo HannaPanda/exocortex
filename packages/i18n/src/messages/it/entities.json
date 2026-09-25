@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entità"
+  },
+  "types": {
+    "person": "Persona",
+    "host": "Host",
+    "service": "Servizio",
+    "project": "Progetto",
+    "credential": "Credenziale",
+    "organisation": "Organizzazione",
+    "other": "Altro"
+  },
+  "page": {
+    "loading": "Caricamento delle entità…",
+    "title": "Entità",
+    "intro": "Persone, host, servizi e progetti che compaiono nelle tue pagine, e ciò che si sa su di loro.",
+    "create": "Nuova entità",
+    "searchPlaceholder": "Nome o alias",
+    "allTypes": "Tutti i tipi",
+    "nothingSelectedTitle": "Nessun elemento selezionato",
+    "nothingSelectedDescription": "Fai clic su un’entità a sinistra per visualizzare fatti, collegamenti e pagine.",
+    "candidatesTitle": "Suggerimenti",
+    "candidatesIntro": "Nomi che compaiono su più pagine e per cui non esiste ancora un’entità.",
+    "emptyTitle": "Nessuna entità",
+    "emptyDescription": "Non ne è ancora stata creata nessuna, oppure nessuna corrisponde al filtro.",
+    "aliases": "anche: {aliases}",
+    "mentionCount": "{count, plural, one {# pagina} many {# pagine} other {# pagine}}"
+  },
+  "candidates": {
+    "loading": "Caricamento dei suggerimenti…",
+    "emptyTitle": "Nessun suggerimento",
+    "emptyDescription": "I nomi appariranno qui non appena compaiono su almeno {threshold, plural, one {# pagina} many {# pagine} other {# pagine}}.",
+    "documentCount": "su {count, plural, one {# pagina} many {# pagine} other {# pagine}}",
+    "occurrences": "menzionato {count} volte",
+    "confirm": "Crea",
+    "dismiss": "Ignora"
+  },
+  "setup": {
+    "missing": "Non esiste ancora una directory per le entità. Verrà creata come database in un’area di lavoro; in seguito eXocortex raccoglierà automaticamente i nomi dalle pagine.",
+    "adminOnly": "Può crearla solo chi amministra questa installazione.",
+    "chooseWorkspace": "Scegli area di lavoro",
+    "databaseTitle": "Entità",
+    "create": "Crea directory"
+  },
+  "detail": {
+    "loading": "Caricamento del profilo…",
+    "openPage": "Apri pagina",
+    "type": "Tipo",
+    "aliases": "Alias",
+    "rescanQueued": "È in corso una nuova scansione delle pagine; i nuovi risultati appariranno tra pochi minuti.",
+    "facts": "Fatti",
+    "confirmations": "{count, plural, one {# conferma} many {# conferme} other {# conferme}}",
+    "relations": "Connessioni",
+    "mentions": "Pagine",
+    "noMentions": "Nessuna pagina menziona ancora questo nome.",
+    "mentionMeta": "{workspace} · “{alias}”",
+    "unlink": "Scollega",
+    "hiddenMentions": "{count, plural, one {Un’altra pagina in un’area di lavoro che non puoi vedere.} many {# altre pagine in aree di lavoro che non puoi vedere.} other {# altre pagine in aree di lavoro che non puoi vedere.}}"
+  },
+  "dialog": {
+    "title": "Nuova entità",
+    "description": "Diventa una riga nell’elenco delle entità e quindi una normale pagina.",
+    "name": "Nome",
+    "type": "Tipo",
+    "aliases": "Alias",
+    "aliasesPlaceholder": "fpb2, PandaMorbido 2",
+    "aliasesHint": "Separati da virgola. Tutte le varianti che una pagina potrebbe usare.",
+    "note": "Nota",
+    "cancel": "Annulla",
+    "create": "Crea"
+  },
+  "linkPage": {
+    "title": "Collega pagina",
+    "workspace": "Area di lavoro",
+    "chooseWorkspace": "Scegli area di lavoro",
+    "search": "Cerca pagina",
+    "searchPlaceholder": "Titolo",
+    "note": "Motivo",
+    "notePlaceholder": "Lì compare solo come “il server”",
+    "submit": "Collega"
+  }
+}

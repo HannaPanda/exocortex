@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "title": "Memoria"
+  },
+  "statuses": {
+    "current": "valido",
+    "superseded": "superato",
+    "conflicted": "contraddittorio"
+  },
+  "facts": {
+    "title": "Memoria",
+    "intro": "Ciò che gli agenti hanno distillato dalle loro note di sessione. Ogni affermazione è una pagina a sé nell’area di lavoro Memory.",
+    "project": "Progetto",
+    "projectPlaceholder": "tutti",
+    "status": "Stato",
+    "target": "Promuovi in",
+    "chooseWorkspace": "Scegli un’area di lavoro",
+    "loading": "Caricamento dei fatti …",
+    "omitted": "{count, plural, one {Il filtro ha escluso # altro fatto in questo progetto.} many {Il filtro ha escluso # altri fatti in questo progetto.} other {Il filtro ha escluso # altri fatti in questo progetto.}}",
+    "emptyTitle": "Nessun fatto",
+    "emptyDescription": "Il consolidamento avviene di notte. Senza note di sessione non c’è nulla da distillare.",
+    "confirmations": "{count, plural, one {# conferma} many {# conferme} other {# conferme}}",
+    "confidence": "Peso {confidence}",
+    "lastConfirmed": "l’ultima volta {moment}",
+    "sourceNotes": "{count, plural, one {da # nota} many {da # note} other {da # note}}",
+    "promote": "Promuovi",
+    "promoted": "promosso"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "route": {
+    "title": "Automações"
+  },
+  "triggers": {
+    "DOCUMENT_CREATED": "Página criada",
+    "DOCUMENT_UPDATED": "Título ou propriedades alterados",
+    "DOCUMENT_CONTENT_CHANGED": "Conteúdo alterado",
+    "DOCUMENT_MOVED": "Página movida",
+    "DOCUMENT_ARCHIVED": "Página movida para a lixeira",
+    "DOCUMENT_DELETED": "Página excluída definitivamente",
+    "DATABASE_ROW_CHANGED": "Valor da linha alterado",
+    "SCHEDULE": "Agendamento"
+  },
+  "scopes": {
+    "WORKSPACE": "Todo o espaço de trabalho",
+    "SUBTREE": "Uma página e suas subpáginas",
+    "DATABASE": "Um banco de dados e suas linhas"
+  },
+  "actions": {
+    "WEBHOOK": "Webhook (POST assinado)",
+    "AI_RUN": "Execução de IA na página alterada",
+    "EMAIL_SELF": "E-mail para você"
+  },
+  "outputs": {
+    "COMMENT": "Como comentário na página",
+    "CHILD_PAGE": "Como nova subpágina"
+  },
+  "scheduleKinds": {
+    "ONCE": "Uma vez em um horário específico",
+    "DAILY": "Diariamente",
+    "WEEKLY": "Semanalmente",
+    "MONTHLY": "Mensalmente",
+    "CRON": "Expressão cron"
+  },
+  "runOrigins": {
+    "EVENT": "Alteração",
+    "SCHEDULE": "Agendamento",
+    "MANUAL": "Manual"
+  },
+  "runStatuses": {
+    "PENDING": "pendente",
+    "RUNNING": "em execução",
+    "SUCCEEDED": "concluído",
+    "FAILED": "com falha",
+    "SKIPPED": "ignorado"
+  },
+  "schedule": {
+    "once": "Uma vez",
+    "onceAt": "Uma vez em {moment}",
+    "daily": "Diariamente às {time} ({zone})",
+    "weekly": "A cada {weekday} às {time} ({zone})",
+    "monthly": "Mensalmente no dia {day} às {time} ({zone})",
+    "cron": "Cron “{expression}” ({zone})",
+    "none": "Sem agendamento"
+  },
+  "scheduleFields": {
+    "kind": "Agendamento",
+    "at": "Data e hora",
+    "atHint": "Executa exatamente uma vez. Depois disso, a regra é mantida sem ser desativada.",
+    "weekday": "Dia da semana",
+    "dayOfMonth": "Dia do mês",
+    "dayOfMonthHint": "O dia 31 significa o último dia em um mês mais curto. Nenhum mês é ignorado.",
+    "time": "Horário",
+    "cron": "Expressão cron",
+    "cronHint": "Cinco campos: minuto, hora, dia do mês, mês, dia da semana (0 é domingo). Intervalos, listas e passos são permitidos; nomes e atalhos como @daily não.",
+    "zone": "Fuso horário",
+    "zoneHint": "Pertence à regra, não ao servidor. O horário de verão é considerado: 07:00 continua sendo 07:00."
+  },
+  "dialog": {
+    "newTitle": "Nova automação",
+    "editTitle": "Editar automação",
+    "description": "Quando algo mudar no escopo selecionado ou o agendamento for acionado, a ação é executada. Uma automação nunca substitui o conteúdo de uma página.",
+    "name": "Nome",
+    "namePlaceholder": "Informar o Hermes sobre novas notas de reunião",
+    "debounce": "Debounce (segundos)",
+    "debounceHint": "Esse é o tempo que uma página deve ficar inativa antes de a regra ser executada. Sem isso, cada tecla pressionada dispara uma execução, e, em uma execução de IA, cada uma custa dinheiro.",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "save": "Salvar",
+    "secretIntro": "A regra foi criada. O segredo de assinatura só pode ser visto agora e nunca mais: o eXocortex não tem como recuperá-lo. O serviço receptor precisa dele para verificar a assinatura.",
+    "secretLabel": "Segredo de assinatura",
+    "secretSignature": "Cada POST inclui os cabeçalhos <code>{timestampHeader}</code> e <code>{signatureHeader}</code>. O valor <code>{signedValue}</code> é assinado com HMAC-SHA256 usando este segredo.",
+    "secretDone": "Já copiei",
+    "scope": "Escopo",
+    "subtreeDocumentId": "ID da página",
+    "databaseDocumentId": "ID do banco de dados",
+    "scopeDocumentPlaceholder": "ex.: {example}",
+    "scopeDocumentHint": "O ID está na barra de endereços da página.",
+    "triggers": "Gatilhos",
+    "triggersHint": "Valores de linhas só existem no escopo de um banco de dados; todo o resto, apenas fora dele. Um agendamento funciona de forma independente e precisa de uma página como escopo: o relógio não especifica nenhuma.",
+    "action": "Ação",
+    "mailSubject": "Assunto (opcional)",
+    "mailSubjectPlaceholder": "Deixe em branco para usar o nome da regra",
+    "mailHint": "O e-mail será enviado para o endereço confirmado da sua própria conta, para nenhum outro. O corpo da mensagem traz a própria página, encurtada no caso de páginas longas e acompanhada de um link abaixo.",
+    "webhookUrl": "URL de destino",
+    "webhookNoHosts": "Esta instalação não permite destinos de webhook no momento. Um administrador global precisa preencher {setting}.",
+    "webhookHosts": "Hosts permitidos: {hosts}. Apenas os metadados da página são enviados, nunca o seu conteúdo.",
+    "prompt": "Prompt",
+    "promptPlaceholder": "Verifique se esta página contém informações desatualizadas devido à alteração.",
+    "promptHint": "A página alterada serve como material para o modelo. A resposta fica ao lado dela, não dentro.",
+    "output": "Resultado",
+    "model": "Modelo (opcional)",
+    "modelPlaceholder": "Deixe em branco para o modelo padrão"
+  },
+  "page": {
+    "loading": "Carregando automações…",
+    "title": "Automações",
+    "intro": "Regras que reagem a alterações em páginas ou ao relógio: um webhook assinado ou uma execução de IA na página afetada.",
+    "newRule": "Nova regra",
+    "disabled": "As automações estão desativadas para este espaço de trabalho. Nenhuma das regras abaixo é executada, independentemente de como estiver configurada. Você pode alterar isso pela configuração <code>{setting}</code>; se a instalação as desativou globalmente, o espaço de trabalho não pode reativá-las por conta própria.",
+    "readOnly": "Apenas quem possui este espaço de trabalho pode criar e alterar regras. Uma regra envia dados para fora ou consome créditos de um modelo, e continuará fazendo isso mesmo se ninguém estiver olhando.",
+    "rulesHeading": "Regras",
+    "emptyTitle": "Nenhuma automação ainda",
+    "emptyDescription": "Uma regra consiste em três respostas: onde ela monitora, ao que reage e o que faz a seguir.",
+    "columns": {
+      "name": "Nome",
+      "scope": "Escopo",
+      "triggers": "Gatilhos",
+      "action": "Ação",
+      "enabled": "Ativa"
+    },
+    "selfDisabled": "Desativada automaticamente: {reason}",
+    "lastTriggered": "Última execução {moment}",
+    "noNextRun": "Nenhuma próxima execução",
+    "nextRun": "Próxima execução {moment}",
+    "disableRule": "Desativar {name}",
+    "enableRule": "Ativar {name}",
+    "documentIdPlaceholder": "ID da página",
+    "runAgainst": "Página na qual executar {name}",
+    "runNow": "Executar agora",
+    "edit": "Editar",
+    "confirmDelete": "Confirmar exclusão",
+    "delete": "Excluir"
+  },
+  "runLog": {
+    "heading": "Registro de execuções",
+    "empty": "Nada executado ainda.",
+    "columns": {
+      "moment": "Momento",
+      "rule": "Regra",
+      "page": "Página",
+      "origin": "Origem",
+      "status": "Resultado",
+      "duration": "Duração"
+    },
+    "deletedPage": "(excluída)"
+  }
+}

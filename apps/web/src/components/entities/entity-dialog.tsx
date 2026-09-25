@@ -1,8 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { ENTITY_TYPE_LABELS, type EntityType } from '@exocortex/contracts';
+import { type EntityType } from '@exocortex/contracts';
 import {
   Button,
   Dialog,
@@ -23,6 +24,8 @@ import {
 
 import { useCreateEntity } from '@/lib/api/entity-queries';
 
+import { ENTITY_TYPES, useEntityTypeLabel } from './entity-type-label';
+
 /**
  * A new entity by hand (issue #47).
  *
@@ -39,6 +42,8 @@ export function EntityDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('entities.dialog');
+  const typeLabel = useEntityTypeLabel();
   const create = useCreateEntity();
   const [title, setTitle] = React.useState('');
   const [type, setType] = React.useState<EntityType>('other');
@@ -73,15 +78,13 @@ export function EntityDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Neue Entität</DialogTitle>
-          <DialogDescription>
-            Wird eine Zeile im Entitäten-Verzeichnis und damit eine ganz normale Seite.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="entity-title">Name</Label>
+            <Label htmlFor="entity-title">{t('name')}</Label>
             <Input
               id="entity-title"
               autoFocus
@@ -92,15 +95,15 @@ export function EntityDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="entity-type">Typ</Label>
+            <Label htmlFor="entity-type">{t('type')}</Label>
             <Select value={type} onValueChange={(next) => setType(next as EntityType)}>
               <SelectTrigger id="entity-type" data-testid="entity-type">
-                <SelectValue>{() => ENTITY_TYPE_LABELS[type]}</SelectValue>
+                <SelectValue>{() => typeLabel(type)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (
+                {ENTITY_TYPES.map((value) => (
                   <SelectItem key={value} value={value}>
-                    {ENTITY_TYPE_LABELS[value]}
+                    {typeLabel(value)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -108,21 +111,19 @@ export function EntityDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="entity-aliases">Aliasse</Label>
+            <Label htmlFor="entity-aliases">{t('aliases')}</Label>
             <Input
               id="entity-aliases"
               value={aliases}
-              placeholder="fpb2, Flauschipanda 2"
+              placeholder={t('aliasesPlaceholder')}
               data-testid="entity-aliases"
               onChange={(event) => setAliases(event.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
-              Mit Komma getrennt. Jede Schreibweise, die eine Seite benutzen könnte.
-            </p>
+            <p className="text-xs text-muted-foreground">{t('aliasesHint')}</p>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="entity-summary">Notiz</Label>
+            <Label htmlFor="entity-summary">{t('note')}</Label>
             <Textarea
               id="entity-summary"
               value={summary}
@@ -140,14 +141,14 @@ export function EntityDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             disabled={title.trim().length < 2 || create.isPending}
             onClick={submit}
             data-testid="entity-create"
           >
-            Anlegen
+            {t('create')}
           </Button>
         </DialogFooter>
       </DialogContent>

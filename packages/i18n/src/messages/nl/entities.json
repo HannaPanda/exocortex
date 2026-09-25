@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "title": "Entiteiten"
+  },
+  "types": {
+    "person": "Persoon",
+    "host": "Host",
+    "service": "Dienst",
+    "project": "Project",
+    "credential": "Inloggegevens",
+    "organisation": "Organisatie",
+    "other": "Overig"
+  },
+  "page": {
+    "loading": "Entiteiten worden geladen …",
+    "title": "Entiteiten",
+    "intro": "Personen, hosts, diensten en projecten die op je pagina’s voorkomen, en wat erover bekend is.",
+    "create": "Nieuwe entiteit",
+    "searchPlaceholder": "Naam of alias",
+    "allTypes": "Alle typen",
+    "nothingSelectedTitle": "Niets geselecteerd",
+    "nothingSelectedDescription": "Klik links op een entiteit om feiten, verbindingen en pagina’s te zien.",
+    "candidatesTitle": "Suggesties",
+    "candidatesIntro": "Namen die op meerdere pagina’s opduiken en waarvoor nog geen entiteit bestaat.",
+    "emptyTitle": "Geen entiteiten",
+    "emptyDescription": "Er is er nog geen aangemaakt, of geen enkele past bij het filter.",
+    "aliases": "ook: {aliases}",
+    "mentionCount": "{count, plural, one {# pagina} other {# pagina’s}}"
+  },
+  "candidates": {
+    "loading": "Suggesties worden geladen …",
+    "emptyTitle": "Geen suggesties",
+    "emptyDescription": "Namen verschijnen hier zodra ze op minstens {threshold, plural, one {# pagina} other {# pagina’s}} voorkomen.",
+    "documentCount": "op {count, plural, one {# pagina} other {# pagina’s}}",
+    "occurrences": "{count}× genoemd",
+    "confirm": "Aanmaken",
+    "dismiss": "Negeren"
+  },
+  "setup": {
+    "missing": "Er is nog geen register voor entiteiten. Het wordt als database in een werkruimte aangemaakt; daarna verzamelt eXocortex vanzelf namen uit de pagina’s.",
+    "adminOnly": "Alleen wie deze installatie beheert, kan dit aanmaken.",
+    "chooseWorkspace": "Werkruimte kiezen",
+    "databaseTitle": "Entiteiten",
+    "create": "Register aanmaken"
+  },
+  "detail": {
+    "loading": "Profiel wordt geladen …",
+    "openPage": "Pagina openen",
+    "type": "Type",
+    "aliases": "Aliassen",
+    "rescanQueued": "De pagina’s worden opnieuw doorzocht; nieuwe resultaten verschijnen over een paar minuten.",
+    "facts": "Feiten",
+    "confirmations": "{count, plural, one {# bevestiging} other {# bevestigingen}}",
+    "relations": "Verbindingen",
+    "mentions": "Pagina’s",
+    "noMentions": "Nog geen enkele pagina noemt deze naam.",
+    "mentionMeta": "{workspace} · „{alias}“",
+    "unlink": "Ontkoppelen",
+    "hiddenMentions": "{count, plural, one {Nog één pagina in een werkruimte die je niet kunt zien.} other {Nog # pagina’s in werkruimtes die je niet kunt zien.}}"
+  },
+  "dialog": {
+    "title": "Nieuwe entiteit",
+    "description": "Wordt een regel in het entiteitenoverzicht en daarmee een gewone pagina.",
+    "name": "Naam",
+    "type": "Type",
+    "aliases": "Aliassen",
+    "aliasesPlaceholder": "fpb2, Fluffypanda 2",
+    "aliasesHint": "Kommagescheiden. Elke schrijfwijze die op een pagina kan voorkomen.",
+    "note": "Notitie",
+    "cancel": "Annuleren",
+    "create": "Aanmaken"
+  },
+  "linkPage": {
+    "title": "Pagina koppelen",
+    "workspace": "Werkruimte",
+    "chooseWorkspace": "Werkruimte kiezen",
+    "search": "Pagina zoeken",
+    "searchPlaceholder": "Titel",
+    "note": "Waarom",
+    "notePlaceholder": "Staat daar alleen als „de server“",
+    "submit": "Koppelen"
+  }
+}

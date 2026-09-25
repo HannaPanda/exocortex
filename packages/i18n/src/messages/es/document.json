@@ -341,5 +341,20 @@
     "fitWidth": "Ancho",
     "pageCount": "{count, plural, one {# página} many {# páginas} other {# páginas}}",
     "clickHint": "Haz clic para ir a la fuente"
+  },
+  "templateSettings": {
+    "titleMark": "Marcar como plantilla",
+    "titleEdit": "Plantilla",
+    "description": "A partir de esta página se podrán crear nuevas páginas. La página en sí se queda donde está y sigue siendo una página normal.",
+    "purpose": "¿Para qué sirve la plantilla? (opcional)",
+    "purposePlaceholder": "Aparece en la selección debajo del título",
+    "pattern": "Patrón de título (opcional)",
+    "patternPlaceholder": "Revisión semanal sem. {token}",
+    "preview": "Resultado actual: <result>{preview}</result>",
+    "placeholders": "Disponibles: {placeholders}",
+    "unmark": "Dejar de usar como plantilla",
+    "cancel": "Cancelar",
+    "mark": "Marcar como plantilla",
+    "save": "Guardar"
   }
 }

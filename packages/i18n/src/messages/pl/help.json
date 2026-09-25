@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "title": "Funkcje"
+  },
+  "page": {
+    "title": "Pomoc i funkcje",
+    "intro": "Co potrafi ta instalacja, szczegółowo i pełnymi zdaniami: jak działa, jak z tego korzystasz i gdzie są granice. Ta lista jest wymuszana podczas budowania, więc żadna nowa funkcja nie przejdzie bez opisania jej w tym miejscu.",
+    "searchPlaceholder": "Szukaj, na przykład PDF lub kalendarz",
+    "searchLabel": "Przeszukaj funkcje",
+    "onlyNew": "Nowe dla ciebie ({count})",
+    "markSeen": "Oznacz jako przeczytane",
+    "loading": "Ładowanie funkcji…",
+    "emptyTitle": "Nic nie znaleziono",
+    "emptyNew": "Od twojej ostatniej wizyty nic nowego się nie pojawiło.",
+    "emptySearch": "Żaden wpis nie pasuje do tego wyszukiwania.",
+    "allAreas": "Wszystkie funkcje",
+    "areaWithCount": "{area} ({count})"
+  },
+  "entry": {
+    "new": "Nowość",
+    "since": "od {date}"
+  },
+  "access": {
+    "where": "Gdzie znaleźć",
+    "open": "Otwórz",
+    "shortcuts": "Skróty klawiszowe",
+    "tools": "Dla agentów",
+    "settings": "Ustawienia",
+    "references": "W tle"
+  },
+  "areas": {
+    "hilfe": {
+      "label": "Przegląd",
+      "description": "Miejsce, w którym sprawdzisz, co potrafi ta instalacja i co nowego ostatnio dodano."
+    },
+    "seiten": {
+      "label": "Strony i edytor",
+      "description": "Sam edytor: z czego składa się strona, jak ją piszesz i jak wygląda."
+    },
+    "struktur": {
+      "label": "Struktura, organizacja i szablony",
+      "description": "Gdzie znajduje się strona, jak tam trafia, jak znika i jak używasz tej samej formy wielokrotnie."
+    },
+    "suche": {
+      "label": "Wyszukiwanie i powiązania",
+      "description": "Jak znaleźć coś ponownie, nawet gdy nie pamiętasz już użytych wtedy słów."
+    },
+    "datenbanken": {
+      "label": "Bazy danych",
+      "description": "Strony jako tabela: kolumny z typami, zapisane widoki i wiersze, które pozostają pełnoprawnymi stronami."
+    },
+    "erfassen": {
+      "label": "Szybkie przechwytywanie",
+      "description": "Najszybsza droga od myśli lub strony internetowej do eXocortex."
+    },
+    "zusammenarbeit": {
+      "label": "Współpraca i historia",
+      "description": "Praca we dwoje nad jedną stroną, dyskusje w tekście i dowód na to, co, kiedy i przez kogo zostało zmienione."
+    },
+    "dateien": {
+      "label": "Pliki i rozpoznawanie tekstu",
+      "description": "To, co przesyłasz: gdzie się znajduje, jak jest wyświetlane i jak wydobyć tekst z pliku PDF."
+    },
+    "ki": {
+      "label": "Wbudowana AI",
+      "description": "Wbudowany model: co widzi, co mu wolno, ile kosztuje i gdzie leżą granice."
+    },
+    "automationen": {
+      "label": "Automatyzacje",
+      "description": "Reguły, które działają bez ciebie, wyzwalane przez zmianę lub zegar."
+    },
+    "gedaechtnis": {
+      "label": "Pamięć i encje",
+      "description": "To, co agenci zapamiętują z czasem, oraz osoby, miejsca i rzeczy, które stale powracają na twoich stronach."
+    },
+    "veroeffentlichen": {
+      "label": "Publikowanie i projekty",
+      "description": "Ze strony lub projektu powstaje plik, który może przeczytać ktoś bez dostępu."
+    },
+    "agenten": {
+      "label": "Dostęp dla agentów",
+      "description": "Jak Claude Code, Hermes, ChatGPT i inni klienci uzyskują tu dostęp i co mogą robić."
+    },
+    "verwaltung": {
+      "label": "Administracja",
+      "description": "Konta, ustawienia, modele i koszty tej instalacji."
+    }
+  }
+}

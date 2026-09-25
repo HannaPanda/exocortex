@@ -341,5 +341,20 @@
     "fitWidth": "Larghezza",
     "pageCount": "{count, plural, one {# pagina} many {# pagine} other {# pagine}}",
     "clickHint": "Fai clic per passare alla sorgente"
+  },
+  "templateSettings": {
+    "titleMark": "Contrassegna come modello",
+    "titleEdit": "Modello",
+    "description": "Da questa pagina potrai creare nuove pagine. La pagina stessa rimane dove si trova e resta una pagina normale.",
+    "purpose": "A cosa serve il modello? (facoltativo)",
+    "purposePlaceholder": "Appare nella selezione sotto il titolo",
+    "pattern": "Schema del titolo (facoltativo)",
+    "patternPlaceholder": "Riepilogo settimanale sett. {token}",
+    "preview": "Risultato attuale: <result>{preview}</result>",
+    "placeholders": "Disponibili: {placeholders}",
+    "unmark": "Non usare più come modello",
+    "cancel": "Annulla",
+    "mark": "Contrassegna come modello",
+    "save": "Salva"
   }
 }

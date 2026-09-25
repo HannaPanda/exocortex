@@ -1,0 +1,88 @@
+{
+  "route": {
+    "title": "Szablony"
+  },
+  "statuses": {
+    "PENDING": "oczekuje",
+    "RUNNING": "generowanie",
+    "COMPLETED": "ukończono",
+    "FAILED": "niepowodzenie",
+    "CANCELLED": "anulowano"
+  },
+  "sources": {
+    "DOCUMENT": "Tylko ta strona",
+    "SUBTREE": "Strona wraz z podstronami, ze spisem treści"
+  },
+  "variableOrigins": {
+    "MANUAL": "Wpisywane przed wygenerowaniem",
+    "TITLE": "Tytuł strony",
+    "PATH": "Ścieżka strony",
+    "AUTHOR": "Kto uruchamia generowanie",
+    "TODAY": "Dzisiejsza data",
+    "PROPERTY": "Właściwość wiersza bazy danych"
+  },
+  "dialog": {
+    "title": "Opublikuj jako PDF",
+    "description": "Treść tej strony zostanie sformatowana przy użyciu szablonu. Sama strona pozostanie bez zmian.",
+    "close": "Zamknij",
+    "rebuild": "Wygeneruj ponownie",
+    "build": "Wygeneruj PDF",
+    "disabled": "Generowanie PDF jest wyłączone dla tego obszaru roboczego.",
+    "noTemplates": "Nie ma jeszcze żadnego szablonu. Osoba z uprawnieniami administratora może go dodać w sekcji „Szablony” w obszarze roboczym.",
+    "startFailed": "Nie udało się rozpocząć generowania.",
+    "template": "Szablon",
+    "chooseTemplate": "Wybierz szablon",
+    "source": "Zakres",
+    "historyHeading": "Dotychczasowe pliki PDF",
+    "stale": "Strona uległa zmianie",
+    "deletedTemplate": "(usunięty szablon)",
+    "openPdf": "Otwórz PDF",
+    "delete": "Usuń",
+    "cancel": "Anuluj",
+    "showLog": "Pokaż dziennik",
+    "hideLog": "Ukryj dziennik",
+    "emptyLog": "(pusty)",
+    "editTemplates": "Edytuj szablony"
+  },
+  "templateDialog": {
+    "newTitle": "Nowy szablon",
+    "editTitle": "Edytuj szablon",
+    "description": "Kod źródłowy to szablon Pandoc: <code>{title}</code>, <code>{body}</code>, <code>{loop}</code>. Bez własnego kodu źródłowego zostanie użyty Eisvogel.",
+    "name": "Nazwa",
+    "templateDescription": "Opis",
+    "templateDescriptionPlaceholder": "Do czego służy ten szablon",
+    "useBuiltIn": "Użyj wbudowanego szablonu Eisvogel",
+    "source": "Kod źródłowy",
+    "variables": "Zmienne",
+    "addVariable": "Dodaj zmienną",
+    "newVariableLabel": "Nowa zmienna",
+    "variableName": "Nazwa w szablonie",
+    "variableLabel": "Etykieta",
+    "variableOrigin": "Źródło wartości",
+    "propertyName": "Nazwa właściwości",
+    "propertyPlaceholder": "Właściwość",
+    "required": "Pole wymagane",
+    "removeVariable": "Usuń",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saveFailed": "Nie udało się zapisać szablonu."
+  },
+  "templatesPage": {
+    "loading": "Ładowanie szablonów…",
+    "title": "Szablony",
+    "intro": "Narzędzia do publikowania stron tego obszaru roboczego jako PDF. Skład odbywa się przez Pandoc i LaTeX; treść stron pozostaje nienaruszona.",
+    "newTemplate": "Nowy szablon",
+    "disabled": "Generowanie plików PDF jest wyłączone dla tego obszaru roboczego. Poniższe szablony zostają zachowane, ale nie można z nich nic zbudować. Możesz to zmienić w ustawieniu <code>{setting}</code>; jeśli zostało wyłączone globalnie w instalacji, obszar roboczy nie może włączyć go samodzielnie.",
+    "emptyTitle": "Brak szablonów",
+    "emptyDescription": "Szablon bez własnego kodu źródłowego korzysta z wbudowanego szablonu Eisvogel i nie wymaga ani jednej linijki kodu LaTeX.",
+    "columns": {
+      "name": "Nazwa",
+      "typesetting": "Skład",
+      "variables": "Zmienne"
+    },
+    "builtIn": "Eisvogel (wbudowany)",
+    "ownSource": "Własny kod źródłowy",
+    "edit": "Edytuj",
+    "delete": "Usuń"
+  }
+}

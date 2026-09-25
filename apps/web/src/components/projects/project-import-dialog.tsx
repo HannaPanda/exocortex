@@ -1,8 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type ImportProjectResponse, projectImportSkipMessage } from '@exocortex/contracts';
+import { type ImportProjectResponse } from '@exocortex/contracts';
 import {
   Button,
   Dialog,
@@ -43,6 +44,7 @@ export function ProjectImportDialog({
   onOpenChange,
   onOverwrite,
 }: ProjectImportDialogProps) {
+  const t = useTranslations('projects.importDialog');
   const shown = result?.skipped.slice(0, MAX_SHOWN_SKIPS) ?? [];
   const rest = (result?.skipped.length ?? 0) - shown.length;
   const blocked = result?.skipped.some((entry) => entry.reason === 'exists') ?? false;
@@ -51,11 +53,9 @@ export function ProjectImportDialog({
     <Dialog open={result !== null} onOpenChange={onOpenChange}>
       <DialogContent data-testid="project-import-result">
         <DialogHeader>
-          <DialogTitle>Archiv übernommen</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            {result === null
-              ? null
-              : `${String(result.imported.length)} Dateien sind jetzt im Projekt.`}
+            {result === null ? null : t('imported', { count: result.imported.length })}
           </DialogDescription>
         </DialogHeader>
 
@@ -63,27 +63,33 @@ export function ProjectImportDialog({
           <div className="flex flex-col gap-2 text-sm">
             {result.strippedRoot === null ? null : (
               <p className="text-muted-foreground">
-                Der gemeinsame Oberordner <code>{result.strippedRoot}</code> wurde weggelassen.
+                {t.rich('strippedRoot', {
+                  root: result.strippedRoot,
+                  code: (chunks) => <code>{chunks}</code>,
+                })}
               </p>
             )}
             {result.rootFileChanged ? (
               <p className="text-muted-foreground">
-                Hauptdatei ist jetzt <code>{result.rootFile}</code>.
+                {t.rich('rootFileChanged', {
+                  file: result.rootFile,
+                  code: (chunks) => <code>{chunks}</code>,
+                })}
               </p>
             ) : null}
 
             {result.skipped.length === 0 ? null : (
               <div className="flex flex-col gap-1">
-                <p className="font-medium">Nicht übernommen</p>
+                <p className="font-medium">{t('skippedHeading')}</p>
                 <ul className="max-h-56 overflow-y-auto text-xs text-muted-foreground">
                   {shown.map((entry) => (
                     <li key={entry.name} className="py-0.5">
-                      <code>{entry.name}</code> {projectImportSkipMessage(entry.reason)}
+                      <code>{entry.name}</code> {t(`skipReasons.${entry.reason}`)}
                     </li>
                   ))}
                 </ul>
                 {rest > 0 ? (
-                  <p className="text-xs text-muted-foreground">… und {rest} weitere</p>
+                  <p className="text-xs text-muted-foreground">{t('more', { count: rest })}</p>
                 ) : null}
               </div>
             )}
@@ -98,10 +104,10 @@ export function ProjectImportDialog({
               data-testid="project-import-overwrite"
               onClick={onOverwrite}
             >
-              Vorhandene überschreiben
+              {t('overwrite')}
             </Button>
           ) : null}
-          <Button onClick={() => onOpenChange(false)}>Schließen</Button>
+          <Button onClick={() => onOpenChange(false)}>{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

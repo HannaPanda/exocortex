@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -47,11 +48,10 @@ import {
 } from '@/lib/api/render-queries';
 
 import {
-  formatBytes,
-  formatMoment,
-  RENDER_SOURCE_LABELS,
-  RENDER_STATUS_LABELS,
+  RENDER_SOURCE_ORDER,
   renderStatusVariant,
+  useBuildFormat,
+  useRenderWording,
 } from './render-labels';
 
 /**
@@ -77,6 +77,7 @@ export function PageRenderDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('render.dialog');
   const [templateId, setTemplateId] = React.useState<string | null>(null);
   const [source, setSource] = React.useState<RenderSource>('DOCUMENT');
   const [values, setValues] = React.useState<Record<string, string>>({});
@@ -116,7 +117,7 @@ export function PageRenderDialog({
       });
       setJobId(result.job.id);
     } catch (cause) {
-      setError(startFailureMessage(cause));
+      setError(startFailureMessage(cause, t('startFailed')));
     }
   };
 
@@ -124,11 +125,8 @@ export function PageRenderDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Als PDF veröffentlichen</DialogTitle>
-          <DialogDescription>
-            Der Inhalt dieser Seite wird mit einer Vorlage gesetzt. Die Seite selbst bleibt
-            unverändert.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="flex flex-col gap-4">
@@ -194,7 +192,7 @@ export function PageRenderDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Schließen
+            {t('close')}
           </Button>
           <Button
             data-testid="render-start"
@@ -203,7 +201,7 @@ export function PageRenderDialog({
             }
             onClick={() => void build()}
           >
-            {model.rebuilding ? 'Neu erzeugen' : 'PDF erzeugen'}
+            {model.rebuilding ? t('rebuild') : t('build')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -277,23 +275,19 @@ function RenderNotices({
   enabled: boolean;
   templateCount: number;
 }) {
+  const t = useTranslations('render.dialog');
   if (!loaded) return null;
   if (!enabled) {
     return (
       <Alert variant="destructive">
-        <AlertDescription>
-          Die PDF-Ausgabe ist für diesen Arbeitsbereich abgeschaltet.
-        </AlertDescription>
+        <AlertDescription>{t('disabled')}</AlertDescription>
       </Alert>
     );
   }
   if (templateCount === 0) {
     return (
       <Alert>
-        <AlertDescription>
-          Es gibt noch keine Vorlage. Eine Administratorin legt sie unter „Vorlagen“ im
-          Arbeitsbereich an.
-        </AlertDescription>
+        <AlertDescription>{t('noTemplates')}</AlertDescription>
       </Alert>
     );
   }
@@ -314,10 +308,10 @@ function preferredTemplateId(
   return templates[0]?.id ?? null;
 }
 
-function startFailureMessage(cause: unknown): string {
+function startFailureMessage(cause: unknown, fallback: string): string {
   if (cause instanceof ApiError)
     return cause.message.length > 0 ? cause.message : messageForCode(cause.code);
-  return 'Der Bau ließ sich nicht starten.';
+  return fallback;
 }
 
 /** Template, scope and whatever the template asks a person to type. */
@@ -340,17 +334,21 @@ function RenderForm({
   onSourceChange: (source: RenderSource) => void;
   onValueChange: (name: string, value: string) => void;
 }) {
+  const t = useTranslations('render.dialog');
+  const wording = useRenderWording();
   const asked = (template?.variables ?? []).filter((variable) => variable.origin === 'MANUAL');
   const description = template?.description ?? '';
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="render-template">Vorlage</Label>
+        <Label htmlFor="render-template">{t('template')}</Label>
         <Select value={templateId ?? ''} onValueChange={onTemplateChange}>
           <SelectTrigger id="render-template" data-testid="render-template">
             <SelectValue>
-              {() => templates.find((entry) => entry.id === templateId)?.name ?? 'Vorlage wählen'}
+              {() =>
+                templates.find((entry) => entry.id === templateId)?.name ?? t('chooseTemplate')
+              }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -367,15 +365,15 @@ function RenderForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="render-source">Umfang</Label>
+        <Label htmlFor="render-source">{t('source')}</Label>
         <Select value={source} onValueChange={(value) => onSourceChange(value as RenderSource)}>
           <SelectTrigger id="render-source" data-testid="render-source">
-            <SelectValue>{() => RENDER_SOURCE_LABELS[source]}</SelectValue>
+            <SelectValue>{() => wording.source(source)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(RENDER_SOURCE_LABELS).map(([value, label]) => (
+            {RENDER_SOURCE_ORDER.map((value) => (
               <SelectItem key={value} value={value}>
-                {label}
+                {wording.source(value)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -427,9 +425,12 @@ function HistoryPanel({
   onSelect: (jobId: string) => void;
   onDelete: (jobId: string) => void;
 }) {
+  const t = useTranslations('render.dialog');
+  const wording = useRenderWording();
+  const format = useBuildFormat();
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-sm font-medium">Bisherige PDFs</h3>
+      <h3 className="text-sm font-medium">{t('historyHeading')}</h3>
       <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto" data-testid="render-history">
         {jobs.map((job) => {
           const selected = job.id === selectedJobId;
@@ -449,15 +450,15 @@ function HistoryPanel({
                 onClick={() => onSelect(job.id)}
                 data-testid="render-history-select"
               >
-                {formatMoment(job.createdAt)}
+                {format.moment(job.createdAt)}
               </button>
-              <Badge variant={renderStatusVariant(job.status)}>
-                {RENDER_STATUS_LABELS[job.status]}
-              </Badge>
-              {job.stale ? <Badge variant="outline">Seite hat sich geändert</Badge> : null}
+              <Badge variant={renderStatusVariant(job.status)}>{wording.status(job.status)}</Badge>
+              {job.stale ? <Badge variant="outline">{t('stale')}</Badge> : null}
               <span className="text-xs text-muted-foreground">
-                {job.templateName ?? '(gelöschte Vorlage)'}
-                {job.attachmentByteSize === null ? '' : ` · ${formatBytes(job.attachmentByteSize)}`}
+                {job.templateName ?? t('deletedTemplate')}
+                {job.attachmentByteSize === null
+                  ? ''
+                  : ` · ${format.bytes(job.attachmentByteSize)}`}
               </span>
               <div className="ml-auto flex items-center gap-2">
                 {job.attachmentId === null ? null : (
@@ -468,7 +469,7 @@ function HistoryPanel({
                     className="text-xs underline"
                     data-testid="render-history-open"
                   >
-                    PDF öffnen
+                    {t('openPdf')}
                   </Link>
                 )}
                 {/* A running build is cancelled, not deleted: the container is
@@ -481,7 +482,7 @@ function HistoryPanel({
                     onClick={() => onDelete(job.id)}
                     data-testid="render-history-delete"
                   >
-                    Löschen
+                    {t('delete')}
                   </Button>
                 )}
               </div>
@@ -507,6 +508,9 @@ function JobPanel({
   onToggleLog: () => void;
   onCancel: () => void;
 }) {
+  const t = useTranslations('render.dialog');
+  const wording = useRenderWording();
+  const format = useBuildFormat();
   const running = job.status === 'PENDING' || job.status === 'RUNNING';
 
   return (
@@ -515,17 +519,17 @@ function JobPanel({
       data-testid="render-job"
     >
       <div className="flex items-center gap-2">
-        <Badge variant={renderStatusVariant(job.status)}>{RENDER_STATUS_LABELS[job.status]}</Badge>
-        {job.stale ? <Badge variant="outline">Seite hat sich geändert</Badge> : null}
+        <Badge variant={renderStatusVariant(job.status)}>{wording.status(job.status)}</Badge>
+        {job.stale ? <Badge variant="outline">{t('stale')}</Badge> : null}
         {job.attachmentByteSize === null ? null : (
           <span className="text-xs text-muted-foreground">
-            {formatBytes(job.attachmentByteSize)}
+            {format.bytes(job.attachmentByteSize)}
           </span>
         )}
         <div className="ml-auto flex items-center gap-2">
           {running ? (
             <Button variant="outline" size="sm" onClick={onCancel} data-testid="render-cancel">
-              Abbrechen
+              {t('cancel')}
             </Button>
           ) : null}
           {job.attachmentId === null ? null : (
@@ -541,7 +545,7 @@ function JobPanel({
                 />
               }
             >
-              PDF öffnen
+              {t('openPdf')}
             </Button>
           )}
         </div>
@@ -556,11 +560,11 @@ function JobPanel({
       {job.logTail === null && log === null ? null : (
         <div className="flex flex-col gap-2">
           <Button variant="ghost" size="sm" className="self-start" onClick={onToggleLog}>
-            {log === null ? 'Protokoll anzeigen' : 'Protokoll ausblenden'}
+            {log === null ? t('showLog') : t('hideLog')}
           </Button>
           {log === null ? null : (
             <pre className="max-h-64 overflow-auto rounded-sm bg-sunken p-2 text-xs whitespace-pre-wrap">
-              {log.length === 0 ? '(leer)' : log}
+              {log.length === 0 ? t('emptyLog') : log}
             </pre>
           )}
         </div>
@@ -573,7 +577,7 @@ function JobPanel({
           href={`/arbeitsbereich/${workspaceId}/vorlagen`}
           className="text-xs text-muted-foreground underline"
         >
-          Vorlagen bearbeiten
+          {t('editTemplates')}
         </Link>
       ) : null}
     </div>
