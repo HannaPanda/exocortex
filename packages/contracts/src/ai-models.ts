@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { providerRoutingOverrideSchema } from './provider-routing';
 
 export const aiReasoningLevelSchema = z.enum([
   'none',
@@ -33,6 +34,12 @@ export const aiModelSchema = z.object({
    * (ADR-032). `null` for an ordinary model, which is its own target.
    */
   aliasTargetSlug: z.string().nullable(),
+  /**
+   * This model's override of the setting `ai.providerRouting` (issue #135,
+   * ADR-063). Only the keys it names replace the global ones; `null` inherits
+   * the setting as it is.
+   */
+  providerRouting: providerRoutingOverrideSchema.nullable(),
   enabled: z.boolean(),
   sortOrder: z.number().int(),
   syncedAt: isoDateTimeSchema.nullable(),
@@ -56,6 +63,7 @@ export const createAiModelRequestSchema = aiModelSchema
     visionCompanionSlug: true,
     reasoningLevels: true,
     maxOutputTokens: true,
+    providerRouting: true,
   });
 export type CreateAiModelRequest = z.infer<typeof createAiModelRequestSchema>;
 

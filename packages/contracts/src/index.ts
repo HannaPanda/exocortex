@@ -37,6 +37,7 @@ export * from './notifications';
 export * from './overviews';
 export * from './primitives';
 export * from './projects';
+export * from './provider-routing';
 export * from './push';
 export * from './render';
 export * from './research';

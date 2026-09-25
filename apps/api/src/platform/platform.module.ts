@@ -1,6 +1,6 @@
 import { Global, Inject, Injectable, Module, type OnApplicationShutdown } from '@nestjs/common';
 
-import { type AiProvider, createAiProvider } from '@exocortex/ai';
+import { type AiProvider, createAiProvider, createProviderRoutingResolver } from '@exocortex/ai';
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
@@ -85,8 +85,13 @@ export class PlatformLifecycle implements OnApplicationShutdown {
     },
     {
       provide: AI_PROVIDER,
-      inject: [API_ENV, LOGGER],
-      useFactory: (env: ApiEnv, logger: Logger): AiProvider =>
+      inject: [API_ENV, LOGGER, PRISMA, SettingsService],
+      useFactory: (
+        env: ApiEnv,
+        logger: Logger,
+        prisma: PrismaClient,
+        settings: SettingsService,
+      ): AiProvider =>
         createAiProvider({
           providerId: env.AI_PROVIDER,
           logger,
@@ -96,6 +101,18 @@ export class PlatformLifecycle implements OnApplicationShutdown {
             baseUrl: env.OPENROUTER_BASE_URL,
             defaultModel: env.OPENROUTER_DEFAULT_MODEL,
           },
+          // The same preferences the worker sends (ADR-063): a checkpoint
+          // summary is an OpenRouter request like any other.
+          providerRoutingFor: createProviderRoutingResolver({
+            readGlobal: async () => (await settings.get())['ai.providerRouting'],
+            readOverride: async (slug) =>
+              (
+                await prisma.aiModel.findUnique({
+                  where: { slug },
+                  select: { providerRouting: true },
+                })
+              )?.providerRouting ?? null,
+          }),
         }),
     },
     {

@@ -147,6 +147,7 @@ function toolCapableModelRow(slug: string): ResolvedModelRow {
     // the run plans no allowlist and routes exactly as it did before ADR-032.
     endpoints: [],
     aliasTargetSlug: null,
+    providerRouting: null,
   };
 }
 

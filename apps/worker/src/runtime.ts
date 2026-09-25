@@ -3,6 +3,7 @@ import {
   createAiProvider,
   createEmbeddingClient,
   createEmbeddingProvider,
+  createProviderRoutingResolver,
   type DocumentTextExtractor,
   type ImageGenerator,
   type PdfDocumentInfoReader,
@@ -10,7 +11,7 @@ import {
 } from '@exocortex/ai';
 import { parseCredentialKey } from '@exocortex/auth';
 import { type WorkerEnv } from '@exocortex/config';
-import { semanticSearchOptions, type Settings } from '@exocortex/contracts';
+import { type ProviderRouting, semanticSearchOptions, type Settings } from '@exocortex/contracts';
 import {
   createPrismaClient,
   HybridSearchAdapter,
@@ -144,7 +145,12 @@ export interface WorkerRuntime {
 }
 
 /** The deployment's own OpenRouter settings with one API key swapped in. */
-function providerWithKey(env: WorkerEnv, logger: Logger, apiKey: string): AiProvider {
+function providerWithKey(
+  env: WorkerEnv,
+  logger: Logger,
+  apiKey: string,
+  providerRoutingFor: (model: string) => Promise<ProviderRouting>,
+): AiProvider {
   return createAiProvider({
     providerId: env.AI_PROVIDER,
     logger,
@@ -154,6 +160,7 @@ function providerWithKey(env: WorkerEnv, logger: Logger, apiKey: string): AiProv
       baseUrl: env.OPENROUTER_BASE_URL,
       defaultModel: env.OPENROUTER_DEFAULT_MODEL,
     },
+    providerRoutingFor,
   });
 }
 
@@ -165,16 +172,25 @@ function providerWithKey(env: WorkerEnv, logger: Logger, apiKey: string): AiProv
 export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRuntime {
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const bus = new RedisEventBus({ redisUrl: env.REDIS_URL, logger });
-  const provider = providerWithKey(env, logger, env.OPENROUTER_API_KEY ?? '');
-
   const readSettings = createSettingsReader(prisma, logger);
+  // One resolver for every provider this process builds, whoever pays: which
+  // providers may serve a model is the deployment's decision (ADR-063), and a
+  // workspace's own key changes the bill, not the routing.
+  const providerRoutingFor = createProviderRoutingResolver({
+    readGlobal: async () => (await readSettings())['ai.providerRouting'],
+    readOverride: async (slug) =>
+      (await prisma.aiModel.findUnique({ where: { slug }, select: { providerRouting: true } }))
+        ?.providerRouting ?? null,
+  });
+  const provider = providerWithKey(env, logger, env.OPENROUTER_API_KEY ?? '', providerRoutingFor);
+
   const aiKeyFor: AiKeyResolver = createAiKeyResolver({ prisma, env, logger });
   const providerFor = async (
     workspaceId: string,
   ): Promise<{ provider: AiProvider; key: ResolvedAiKey }> => {
     const key = await aiKeyFor(workspaceId);
     if (!key.usedOwnKey) return { provider, key };
-    return { provider: providerWithKey(env, logger, key.apiKey), key };
+    return { provider: providerWithKey(env, logger, key.apiKey, providerRoutingFor), key };
   };
 
   const { keywordSearch, search } = createSearch(env, logger, prisma, readSettings);

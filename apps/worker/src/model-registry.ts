@@ -1,3 +1,4 @@
+import { readProviderRoutingOverride } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
 import { type ResolvedModelRow } from './processors/ai-run';
@@ -46,5 +47,6 @@ export async function readModelRow(
     outputMicroUsdPerMTok: row.outputMicroUsdPerMTok,
     endpoints: row.endpoints,
     aliasTargetSlug: row.aliasTargetSlug,
+    providerRouting: readProviderRoutingOverride(row.providerRouting),
   };
 }

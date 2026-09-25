@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { AI_MUTATION_POLICIES, aiMutationPolicySchema } from './ai-trust';
+import { providerRoutingSchema } from './provider-routing';
 import { isUsableTimeZone } from './zoned-time';
 
 /**
@@ -107,6 +108,14 @@ export const settingsSchema = z.object({
   'ai.compactionKeepRecentMessages': z.number().int().min(2).max(200).default(8),
   /** Model used to write the summary. Null reuses the conversation's model. */
   'ai.compactionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /**
+   * OpenRouter's provider preferences for every request this deployment sends
+   * (issue #135, ADR-063): `sort`, `ignore`, `only` and whatever else its
+   * `provider` field accepts. A model may override single keys of it in the
+   * registry. Empty is the default and leaves the choice to OpenRouter, which
+   * is exactly what every request did before the setting existed.
+   */
+  'ai.providerRouting': providerRoutingSchema.default({}),
   /**
    * Days after which a finished run's prompt and answer text are emptied
    * (issue #10). The metric columns survive it, so the usage history stays
@@ -805,6 +814,9 @@ export const SETTING_SCOPES = {
   'ai.compactionThresholdPercent': 'workspace',
   'ai.compactionKeepRecentMessages': 'workspace',
   'ai.compactionModelSlug': 'workspace',
+  // Which providers may serve a request is a decision about the account that
+  // pays and the data it sends, and it is made once per deployment.
+  'ai.providerRouting': 'deployment',
   // Data retention is a promise the deployment makes, not a preference.
   'ai.runPayloadRetentionDays': 'deployment',
   'ai.pdfExtractionEnabled': 'workspace',

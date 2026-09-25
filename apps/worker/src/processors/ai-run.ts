@@ -25,6 +25,7 @@ import {
   resolveModelRow,
   resolveVisionPreprocessor,
   taskTextFor,
+  withConfiguredEndpoints,
 } from './ai-run/preparation';
 
 export { type ResolvedModelRow } from './ai-run/contract';
@@ -205,12 +206,15 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // companion below is paid for by the same key as the answer itself.
     const { provider, key } = await dependencies.providerFor(run.workspaceId);
 
-    const modelRow = await resolveModelRow({
-      modelRegistry: dependencies.modelRegistry,
-      provider,
-      run,
-      logger,
-    });
+    const modelRow = withConfiguredEndpoints(
+      await resolveModelRow({
+        modelRegistry: dependencies.modelRegistry,
+        provider,
+        run,
+        logger,
+      }),
+      settings,
+    );
     const conversation =
       run.conversationId === null
         ? null

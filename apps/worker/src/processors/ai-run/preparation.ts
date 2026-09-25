@@ -2,12 +2,14 @@ import {
   type AiProvider,
   estimateTokens,
   planRoute,
+  restrictEndpoints,
   type RoutingEndpoint,
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import {
   type AiMessage,
   aiMessageSchema,
+  mergeProviderRouting,
   type QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
@@ -71,7 +73,27 @@ export async function resolveModelRow(input: {
     outputMicroUsdPerMTok: null,
     endpoints: [],
     aliasTargetSlug: null,
+    providerRouting: null,
   };
+}
+
+/**
+ * The row with its snapshot narrowed to the providers the configuration allows
+ * (issue #135, ADR-063).
+ *
+ * Done once, before the prompt is budgeted: both the budget and every turn's
+ * plan are computed from these endpoints, so a provider the configuration
+ * excludes can neither be planned for nor make a conversation compact late.
+ */
+export function withConfiguredEndpoints(
+  modelRow: ResolvedModelRow,
+  settings: Settings,
+): ResolvedModelRow {
+  const preferences = mergeProviderRouting(
+    settings['ai.providerRouting'],
+    modelRow.providerRouting,
+  );
+  return { ...modelRow, endpoints: restrictEndpoints(modelRow.endpoints, preferences) };
 }
 
 /** What the prompt is, and how much room it has (ADR-032). */

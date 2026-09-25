@@ -12,6 +12,8 @@
  * happens here: a plan is a set, never an order.
  */
 
+import { type ProviderRouting, providerNameMatches } from '@exocortex/contracts';
+
 /** One provider's offer, as the registry snapshot holds it. */
 export interface RoutingEndpoint {
   /** Verbatim `provider.only` key. */
@@ -141,4 +143,28 @@ export function couldCompactionHelp(input: {
   if (input.plan.allowedProviderKeys.length > 0) return false;
   if (input.plan.capableEndpoints === 0) return false;
   return input.floorInputTokens <= input.plan.largestUsableInputTokens;
+}
+
+/**
+ * The endpoints the configuration leaves in play (issue #135, ADR-063).
+ *
+ * `only` and `ignore` are applied to the snapshot before a plan is made, not
+ * only sent along with the request: otherwise the plan could name a provider
+ * the configuration excludes, the request would carry an allowlist and a
+ * denylist that cancel out, and compaction would aim at a window nobody is
+ * allowed to serve. An empty result plans like a model without a snapshot:
+ * no allowlist of ours goes out, the configured `only` and `ignore` still do,
+ * and OpenRouter answers for a configuration that excludes everybody.
+ */
+export function restrictEndpoints(
+  endpoints: readonly RoutingEndpoint[],
+  preferences: Pick<ProviderRouting, 'only' | 'ignore'>,
+): RoutingEndpoint[] {
+  const only = preferences.only ?? [];
+  const ignore = preferences.ignore ?? [];
+  return endpoints.filter(
+    (endpoint) =>
+      (only.length === 0 || only.some((name) => providerNameMatches(endpoint.providerKey, name))) &&
+      !ignore.some((name) => providerNameMatches(endpoint.providerKey, name)),
+  );
 }

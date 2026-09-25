@@ -1,3 +1,4 @@
+import { type ProviderRouting } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import {
@@ -17,6 +18,8 @@ export interface CreateProviderOptions {
   logger: Logger;
   appUrl: string;
   openRouter?: { apiKey: string; baseUrl: string; defaultModel?: string };
+  /** The provider preferences for one model (issue #135, ADR-063). See `OpenRouterProviderOptions`. */
+  providerRoutingFor?: (model: string) => Promise<ProviderRouting>;
 }
 
 /**
@@ -32,6 +35,9 @@ export function createAiProvider(options: CreateProviderOptions): AiProvider {
       defaultModel: options.openRouter?.defaultModel,
       logger: options.logger,
       appUrl: options.appUrl,
+      ...(options.providerRoutingFor === undefined
+        ? {}
+        : { providerRoutingFor: options.providerRoutingFor }),
     });
   }
   return new MockAiProvider();

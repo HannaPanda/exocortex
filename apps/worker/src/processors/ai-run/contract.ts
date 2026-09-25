@@ -1,5 +1,9 @@
 import { type AiGenerateResult, type AiToolCall, type RoutingEndpoint } from '@exocortex/ai';
-import { type AiRunDiagnosis, type AiUsage } from '@exocortex/contracts';
+import {
+  type AiRunDiagnosis,
+  type AiUsage,
+  type ProviderRoutingOverride,
+} from '@exocortex/contracts';
 import { type AiReasoningLevel as AiReasoningLevelPrisma } from '@exocortex/database';
 
 /** Fields read directly from `ai_model` -- never imported from apps/api (rule 6/package boundaries). */
@@ -29,6 +33,8 @@ export interface ResolvedModelRow {
   endpoints: readonly RoutingEndpoint[];
   /** The model an alias currently resolves to, for drift detection. `null` for an ordinary model. */
   aliasTargetSlug: string | null;
+  /** This model's override of `ai.providerRouting` (issue #135, ADR-063), `null` for none. */
+  providerRouting: ProviderRoutingOverride | null;
 }
 
 /** Why a run ended without an answer. */

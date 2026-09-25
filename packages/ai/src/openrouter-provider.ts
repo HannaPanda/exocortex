@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type AiUsage } from '@exocortex/contracts';
+import { type AiUsage, type ProviderRouting } from '@exocortex/contracts';
 import { type Logger, withSpan } from '@exocortex/logger';
 
 import {
@@ -21,6 +21,14 @@ export interface OpenRouterProviderOptions {
   logger: Logger;
   /** Public application URL, sent as `HTTP-Referer` as OpenRouter recommends. */
   appUrl: string;
+  /**
+   * The provider preferences in force for one model: the setting
+   * `ai.providerRouting` with that model's override laid over it (issue #135,
+   * ADR-063). Asked once per request, so it applies to every caller of this
+   * adapter rather than to the ones that remembered to pass it. Absent means
+   * no preferences, which is how every request went out before it existed.
+   */
+  providerRoutingFor?: (model: string) => Promise<ProviderRouting>;
 }
 
 const OPENROUTER_CAPABILITIES: AiProviderCapabilities = {
@@ -122,9 +130,70 @@ export class OpenRouterProvider implements AiProvider {
     });
   }
 
-  private buildBody(request: AiGenerateRequest, stream: boolean): string {
+  private modelOf(request: AiGenerateRequest): string {
+    return request.model ?? this.options.defaultModel ?? 'anthropic/claude-sonnet-4.5';
+  }
+
+  /**
+   * The configured preferences for this request's model, or none.
+   *
+   * A lookup that fails is logged and costs the request its preferences, never
+   * the request itself: a model that answered yesterday must not stop
+   * answering because a settings read timed out.
+   */
+  private async preferencesFor(request: AiGenerateRequest): Promise<ProviderRouting> {
+    if (this.options.providerRoutingFor === undefined) return {};
+    try {
+      return await this.options.providerRoutingFor(this.modelOf(request));
+    } catch (error) {
+      this.options.logger.warn('Provider preferences unavailable; sending none', {
+        correlationId: request.correlationId,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      return {};
+    }
+  }
+
+  /**
+   * The request's `provider` object, or `undefined` for none (ADR-032, ADR-063).
+   *
+   * Two sources, with separate jobs. The configuration says how to choose
+   * (`sort`, `ignore`, and anything else OpenRouter accepts), verbatim. The
+   * plan says who *can* serve this prompt, and where there is one its list
+   * replaces a configured `only`: the plan was computed from endpoints the
+   * configuration had already narrowed, so it is the same list minus the
+   * providers too small for this turn. `allow_fallbacks` stays on unless the
+   * configuration says otherwise, so failover between the eligible providers
+   * keeps working.
+   */
+  private providerField(
+    request: AiGenerateRequest,
+    preferences: ProviderRouting,
+  ): Record<string, unknown> | undefined {
+    const allowed = request.routing?.allowedProviderKeys ?? [];
+    const field: Record<string, unknown> = { ...preferences };
+    if (allowed.length > 0) {
+      field.only = [...allowed];
+      field.allow_fallbacks = preferences.allow_fallbacks ?? true;
+    }
+    return Object.keys(field).length === 0 ? undefined : field;
+  }
+
+  private async buildBody(request: AiGenerateRequest, stream: boolean): Promise<string> {
+    const preferences = await this.preferencesFor(request);
+    const provider = this.providerField(request, preferences);
+    // Configured preferences are logged per request, so which routing a run
+    // actually asked for can be read beside OpenRouter's own activity log. A
+    // plan alone is already recorded by the worker at debug level.
+    if (provider !== undefined && Object.keys(preferences).length > 0) {
+      this.options.logger.info('OpenRouter provider preferences for request', {
+        correlationId: request.correlationId,
+        model: this.modelOf(request),
+        provider,
+      });
+    }
     return JSON.stringify({
-      model: request.model ?? this.options.defaultModel ?? 'anthropic/claude-sonnet-4.5',
+      model: this.modelOf(request),
       messages: this.mapMessages(request),
       max_tokens: request.maxOutputTokens ?? AI_DEFAULT_LIMITS.maxOutputTokens,
       temperature: request.temperature ?? 0.3,
@@ -146,19 +215,7 @@ export class OpenRouterProvider implements AiProvider {
       ...(request.reasoning === undefined || request.reasoning.effort === 'none'
         ? {}
         : { reasoning: { effort: request.reasoning.effort } }),
-      // Eligibility only (ADR-032): which providers *can* serve this request.
-      // No `sort`, no `order` -- ranking inside the allowed set stays
-      // OpenRouter's job, and `allow_fallbacks` keeps its failover working
-      // between the providers that are left.
-      ...(request.routing?.allowedProviderKeys === undefined ||
-      request.routing.allowedProviderKeys.length === 0
-        ? {}
-        : {
-            provider: {
-              only: [...request.routing.allowedProviderKeys],
-              allow_fallbacks: true,
-            },
-          }),
+      ...(provider === undefined ? {} : { provider }),
     });
   }
 
@@ -187,7 +244,7 @@ export class OpenRouterProvider implements AiProvider {
         const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
           method: 'POST',
           headers: this.headers(),
-          body: this.buildBody(request, streaming),
+          body: await this.buildBody(request, streaming),
           signal: request.signal ?? null,
         });
         span.setAttribute('http.response.status_code', response.status);
@@ -252,8 +309,7 @@ export class OpenRouterProvider implements AiProvider {
   async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
     this.assertConfigured();
     const startedAt = Date.now();
-    const model = request.model ?? this.options.defaultModel ?? 'anthropic/claude-sonnet-4.5';
-    yield { type: 'start', model, provider: this.id };
+    yield { type: 'start', model: this.modelOf(request), provider: this.id };
 
     const response = await this.postCompletions(request, true);
 

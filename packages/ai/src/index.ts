@@ -11,6 +11,7 @@ export * from './pdf-info';
 export * from './pdf-text';
 export * from './provider';
 export * from './registry';
+export * from './provider-routing';
 export * from './route-planner';
 export * from './searxng';
 export * from './steel';

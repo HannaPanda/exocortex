@@ -25,7 +25,7 @@ import {
 import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
   applyModelRouteSnapshot,
-  type Prisma,
+  Prisma,
   type PrismaClient,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
@@ -172,6 +172,7 @@ export class AiModelsService {
         enabled: request.enabled ?? true,
         sortOrder: request.sortOrder ?? 100,
         visionCompanionId,
+        providerRouting: request.providerRouting ?? Prisma.DbNull,
       },
       include: AI_MODEL_INCLUDE,
     });
@@ -205,6 +206,9 @@ export class AiModelsService {
       data.outputMicroUsdPerMTok = request.outputMicroUsdPerMTok;
     if (request.enabled !== undefined) data.enabled = request.enabled;
     if (request.sortOrder !== undefined) data.sortOrder = request.sortOrder;
+    if (request.providerRouting !== undefined) {
+      data.providerRouting = request.providerRouting ?? Prisma.DbNull;
+    }
 
     if (request.visionCompanionSlug !== undefined) {
       if (request.visionCompanionSlug === null) {

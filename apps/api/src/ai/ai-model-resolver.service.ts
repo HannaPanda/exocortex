@@ -5,6 +5,7 @@ import {
   type AiModelListResponse,
   type AiReasoningLevel,
   clampReasoningLevel,
+  readProviderRoutingOverride,
 } from '@exocortex/contracts';
 import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
@@ -54,6 +55,7 @@ interface AiModelRow {
   sortOrder: number;
   syncedAt: Date | null;
   aliasTargetSlug: string | null;
+  providerRouting: unknown;
   visionCompanion: { slug: string } | null;
 }
 
@@ -76,6 +78,7 @@ export function mapAiModelRow(row: AiModelRow): AiModel {
     outputMicroUsdPerMTok: row.outputMicroUsdPerMTok,
     visionCompanionSlug: row.visionCompanion?.slug ?? null,
     aliasTargetSlug: row.aliasTargetSlug,
+    providerRouting: readProviderRoutingOverride(row.providerRouting),
     enabled: row.enabled,
     sortOrder: row.sortOrder,
     syncedAt: row.syncedAt === null ? null : row.syncedAt.toISOString(),

@@ -1650,6 +1650,10 @@ model AiModel {
   /// when an alias answered as a different model than it last resolved to. The
   /// scheduled refresh takes these first, and clears the mark when it succeeds.
   endpointsStaleSince   DateTime?
+  /// Override of the setting `ai.providerRouting` for this model (issue #135,
+  /// ADR-063): only the keys it names replace the global ones, `null` for a key
+  /// removes it. Null here inherits the setting unchanged.
+  providerRouting       Json?
   /// Raw OpenRouter metadata from the last sync. Never read at runtime.
   metadata              Json?
   syncedAt              DateTime?

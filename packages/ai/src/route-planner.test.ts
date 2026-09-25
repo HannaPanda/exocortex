@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { couldCompactionHelp, planRoute, type RoutingEndpoint } from './route-planner';
+import {
+  couldCompactionHelp,
+  planRoute,
+  restrictEndpoints,
+  type RoutingEndpoint,
+} from './route-planner';
 
 /**
  * Provider eligibility (issue #68, ADR-032).
@@ -161,5 +166,35 @@ describe('couldCompactionHelp', () => {
         floorInputTokens: 10,
       }),
     ).toBe(false);
+  });
+});
+
+describe('restrictEndpoints (issue #135, ADR-063)', () => {
+  const endpoint = (providerKey: string) => ({
+    providerKey,
+    contextWindowTokens: 100_000,
+    maxPromptTokens: null,
+    maxOutputTokens: null,
+    supportsTools: true,
+    supportsReasoningEffort: true,
+  });
+  const endpoints = [endpoint('sail/fp8'), endpoint('relace'), endpoint('deepinfra/fp4')];
+
+  it('leaves the snapshot alone without only or ignore', () => {
+    expect(restrictEndpoints(endpoints, {})).toEqual(endpoints);
+  });
+
+  it('drops ignored providers by name or tag', () => {
+    expect(
+      restrictEndpoints(endpoints, { ignore: ['Sail', 'relace'] }).map((e) => e.providerKey),
+    ).toEqual(['deepinfra/fp4']);
+  });
+
+  it('keeps only the allowed providers, and ignore still wins over only', () => {
+    expect(
+      restrictEndpoints(endpoints, { only: ['sail', 'deepinfra'], ignore: ['deepinfra/fp4'] }).map(
+        (e) => e.providerKey,
+      ),
+    ).toEqual(['sail/fp8']);
   });
 });

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { type ProviderRouting } from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 
 import { OpenRouterProvider } from './openrouter-provider';
@@ -7,13 +8,16 @@ import { type AiStreamEvent } from './provider';
 
 const logger = createLogger({ name: 'test', level: 'silent' });
 
-function provider(): OpenRouterProvider {
+function provider(
+  providerRoutingFor?: (model: string) => Promise<ProviderRouting>,
+): OpenRouterProvider {
   return new OpenRouterProvider({
     apiKey: 'test-key',
     baseUrl: 'https://openrouter.test/api/v1',
     defaultModel: 'test/model',
     logger,
     appUrl: 'https://exocortex.test',
+    ...(providerRoutingFor === undefined ? {} : { providerRoutingFor }),
   });
 }
 
@@ -233,7 +237,7 @@ describe('OpenRouterProvider provider routing', () => {
     });
   });
 
-  it('never forces an order or a sort: ranking stays OpenRouter’s job', async () => {
+  it('adds no sort or order of its own when nothing is configured', async () => {
     const captured = captureBody();
 
     await collect(
@@ -274,5 +278,65 @@ describe('OpenRouterProvider provider routing', () => {
     expect(events).toContainEqual(
       expect.objectContaining({ type: 'error', code: 'ai_no_eligible_provider' }),
     );
+  });
+
+  it('sends the configured preferences verbatim to a model without a plan', async () => {
+    const captured = captureBody();
+    const asked: string[] = [];
+
+    await collect(
+      provider(async (model) => {
+        asked.push(model);
+        return { sort: 'throughput', ignore: ['relace'], max_price: { completion: 2 } };
+      }).stream(request),
+    );
+
+    expect(asked).toEqual(['test/model']);
+    expect(captured.body().provider).toEqual({
+      sort: 'throughput',
+      ignore: ['relace'],
+      max_price: { completion: 2 },
+    });
+  });
+
+  it('lets the plan replace a configured allowlist and keeps failover on', async () => {
+    const captured = captureBody();
+
+    await collect(
+      provider(async () => ({ sort: 'latency', only: ['together', 'cloudflare'] })).stream({
+        ...request,
+        routing: { allowedProviderKeys: ['together'] },
+      }),
+    );
+
+    expect(captured.body().provider).toEqual({
+      sort: 'latency',
+      only: ['together'],
+      allow_fallbacks: true,
+    });
+  });
+
+  it('keeps a configured refusal of fallbacks', async () => {
+    const captured = captureBody();
+
+    await collect(
+      provider(async () => ({ allow_fallbacks: false })).stream({
+        ...request,
+        routing: { allowedProviderKeys: ['together'] },
+      }),
+    );
+
+    expect(captured.body().provider).toEqual({ only: ['together'], allow_fallbacks: false });
+  });
+
+  it('sends the request without preferences when they cannot be read', async () => {
+    const captured = captureBody();
+
+    const events = await collect(
+      provider(() => Promise.reject(new Error('settings unavailable'))).stream(request),
+    );
+
+    expect(captured.body()).not.toHaveProperty('provider');
+    expect(events).toContainEqual(expect.objectContaining({ type: 'done', text: 'ok' }));
   });
 });
