@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { type DocumentDetail, type Workspace } from '@exocortex/contracts';
 
-import { type PageBodyHandlers, pageBodyCommands, pageMenuCommands } from './page-commands';
+import { pageBodyCommands, type PageBodyHandlers, pageMenuCommands } from './page-commands';
 import { type PaletteContext } from './palette-command';
 import { shellCommands } from './shell-commands';
 import { workspaceCommands } from './workspace-commands';
@@ -160,8 +160,6 @@ describe('shellCommands', () => {
   });
 
   it('starts no chat outside a workspace', () => {
-    expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain(
-      'command-new-chat',
-    );
+    expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain('command-new-chat');
   });
 });
