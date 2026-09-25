@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { localeSchema } from './locale';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 export const signUpRequestSchema = z.object({
@@ -41,6 +42,12 @@ export const sessionUserSchema = z.object({
    * menu entry that answers with a refusal.
    */
   role: userRoleSchema,
+  /**
+   * The interface language this account chose, or `null` while it has not
+   * (issue #98). The client moves its locale cookie to this value, which is
+   * how a choice made on one device reaches the next.
+   */
+  locale: localeSchema.nullable(),
 });
 export type SessionUser = z.infer<typeof sessionUserSchema>;
 

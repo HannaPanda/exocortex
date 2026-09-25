@@ -43,6 +43,12 @@ model User {
   /// their author through `createdById`/`updatedById`, so removing the row would
   /// take the history with it. Reversible by clearing the field.
   disabledAt    DateTime?
+  /// The interface language this person chose (issue #98, ADR-062), a tag
+  /// from `SUPPORTED_LOCALES`. `NULL` means never chosen, and is a different
+  /// answer from 'de': an undecided account follows its browser. No check
+  /// constraint on purpose -- adding a language must not need a migration,
+  /// and `resolveLocale` already ignores a tag the deployment no longer has.
+  locale        String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

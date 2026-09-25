@@ -3,7 +3,11 @@ import { ApiExcludeEndpoint, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
-import { type CurrentSessionResponse, currentSessionResponseSchema } from '@exocortex/contracts';
+import {
+  type CurrentSessionResponse,
+  currentSessionResponseSchema,
+  isLocale,
+} from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
@@ -96,6 +100,7 @@ export class SessionController {
         image: true,
         createdAt: true,
         role: true,
+        locale: true,
       },
     });
     if (user === null) {
@@ -114,6 +119,9 @@ export class SessionController {
         // to somebody who would only be refused there; the refusal itself is
         // still `AdminGuard`'s, on every single route.
         role: user.role === 'ADMIN' ? 'admin' : 'user',
+        // A tag this deployment no longer speaks reads as "never chose", so
+        // the client falls back to its browser instead of a dead catalogue.
+        locale: isLocale(user.locale) ? user.locale : null,
       },
     };
   }

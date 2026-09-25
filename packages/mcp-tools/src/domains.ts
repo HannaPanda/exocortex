@@ -205,8 +205,8 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
     ],
   },
   notifications: {
-    label: 'Push-Geräte und Benachrichtigungseinstellungen.',
-    keywords: ['benachricht', 'push', 'notification', 'gerät'],
+    label: 'Push-Geräte, Benachrichtigungen und die Sprache der Oberfläche.',
+    keywords: ['benachricht', 'push', 'notification', 'gerät', 'sprache', 'language', 'englisch'],
   },
   projects: {
     label: 'LaTeX-Projekte: Dateien, Übersetzungsläufe, Diagnosen, Archive.',
