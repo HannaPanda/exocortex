@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { AppPage, Separator } from '@exocortex/ui';
@@ -21,19 +22,20 @@ import { ConnectionSetupPanel } from './connection-setup-panel';
  */
 export function ConnectionsPage() {
   const [freshSecret, setFreshSecret] = React.useState<string | null>(null);
+  const t = useTranslations('account.connections');
 
   return (
     <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
       <div>
-        <h1 className="exocortex-page-title">Verbindungen</h1>
+        <h1 className="exocortex-page-title">{t('title')}</h1>
         <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Hier hängen deine Agenten an eXocortex: Anwendungen, die sich in deinem Namen anmelden,
-          Token für alles andere, und die fertigen Befehle zum Einrichten. Wann eXocortex dich von
-          sich aus erreicht, steht unter{' '}
-          <Link href="/einstellungen/benachrichtigungen" className="underline">
-            Benachrichtigungen
-          </Link>
-          .
+          {t.rich('intro', {
+            link: (chunks) => (
+              <Link href="/einstellungen/benachrichtigungen" className="underline">
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </div>
 

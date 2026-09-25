@@ -1,8 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type NotificationDeliveryMode, type NotificationPreference } from '@exocortex/contracts';
+import {
+  type NotificationDeliveryMode,
+  type NotificationKind,
+  type NotificationPreference,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -24,33 +29,45 @@ import {
 } from '@/lib/api/notification-queries';
 
 /**
- * Was dieses Konto per Mail hören will (Issue #105, ADR-052; Issue #106).
+ * What an occasion is called and what it means, in the reader's language.
  *
- * Bewusst neben den Geräten und nicht zwischen ihnen: eine Adresse gehört zur
- * Person, ein Push-Abonnement zu einem Browser. Die Überschrift sagt den
- * Unterschied, weil er sonst wie eine Doppelung aussieht.
- *
- * Angeboten wird nur, was diese Installation auch zustellt. Die möglichen
- * Zustellarten kommen je Zeile aus der Antwort, nicht aus einer Liste hier:
- * eine Oberfläche, die eine vierte Art anbietet, die der Server ablehnt, wäre
- * ein Schalter, der nichts tut.
- *
- * Deshalb steht auch nicht überall dasselbe Bedienelement. Zwei Möglichkeiten
- * sind ein Schalter, drei sind eine Auswahl: ein Schalter mit drei Zuständen
- * wäre ein Rätsel, und eine Auswahl mit zwei Einträgen ein Umweg um ein Ja.
+ * Keyed by the kind rather than read from `NOTIFICATION_CATALOG` or from the
+ * preference's own `label`: both are German, and an occasion has to be called
+ * the same thing in the device rows and in the mail rows, so both panels ask
+ * this one hook.
  */
+export function useNotificationKindWording() {
+  const t = useTranslations('account.notifications.kinds');
+  return React.useMemo(
+    () => ({
+      label: (kind: NotificationKind): string => t(`${kind}.label`),
+      description: (kind: NotificationKind): string => t(`${kind}.description`),
+    }),
+    [t],
+  );
+}
 
-/** Die Wörter für jede Zustellart, in der Reihenfolge, in der sie zunehmen. */
-const MODE_LABELS: Record<NotificationDeliveryMode, string> = {
-  OFF: 'Gar nicht',
-  IMMEDIATE: 'Sofort',
-  DAILY_DIGEST: 'Einmal täglich gesammelt',
-};
-
+/**
+ * What this account wants to hear by mail (issue #105, ADR-052; issue #106).
+ *
+ * Deliberately beside the devices and not among them: an address belongs to
+ * the person, a push subscription to a browser. The heading states the
+ * difference, because otherwise it looks like a duplicate.
+ *
+ * Only what this deployment actually delivers is offered. The possible modes
+ * come per row from the response, not from a list here: an interface that
+ * offers a fourth mode the server refuses would be a switch that does nothing.
+ *
+ * That is also why the control differs between rows. Two choices are a switch,
+ * three are a select: a switch with three states would be a riddle, and a
+ * select with two entries a detour around a yes.
+ */
 export function NotificationPreferencesPanel() {
   const query = useNotificationPreferences();
   const set = useSetNotificationPreference();
   const [error, setError] = React.useState<string | null>(null);
+  const t = useTranslations('account.emailPreferences');
+  const tNotifications = useTranslations('account.notifications');
 
   const change = (preference: NotificationPreference, mode: NotificationDeliveryMode) => {
     setError(null);
@@ -58,7 +75,7 @@ export function NotificationPreferencesPanel() {
       { kind: preference.kind, channel: preference.channel, mode },
       {
         onError: (cause: unknown) => {
-          setError(cause instanceof Error ? cause.message : 'Das hat nicht geklappt.');
+          setError(cause instanceof Error ? cause.message : tNotifications('failed'));
         },
       },
     );
@@ -68,13 +85,9 @@ export function NotificationPreferencesPanel() {
     <section className="flex flex-col gap-3" aria-labelledby="notification-preferences-heading">
       <div>
         <h2 id="notification-preferences-heading" className="text-sm font-semibold">
-          Per E-Mail
+          {t('title')}
         </h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Mail geht an dein Konto und nicht an ein Gerät, deshalb gilt das hier überall gleich.
-          Gedacht für das, was auch morgen noch wichtig ist und was dich erreichen soll, wenn du
-          gerade gar nicht in eXocortex bist.
-        </p>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {error !== null ? (
@@ -84,17 +97,11 @@ export function NotificationPreferencesPanel() {
       ) : null}
 
       {query.isPending ? (
-        <LoadingState label="Einstellungen werden geladen …" variant="skeleton" rows={1} />
+        <LoadingState label={t('loading')} variant="skeleton" rows={1} />
       ) : query.isError ? (
-        <ErrorState
-          title="Einstellungen konnten nicht geladen werden"
-          onRetry={() => void query.refetch()}
-        />
+        <ErrorState title={t('loadError')} onRetry={() => void query.refetch()} />
       ) : query.data.preferences.length === 0 ? (
-        <EmptyState
-          title="Nichts einzustellen"
-          description="Diese Installation verschickt derzeit keine Mail, über die du selbst entscheiden kannst."
-        />
+        <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
       ) : (
         <ul className="flex flex-col gap-3">
           {query.data.preferences.map((preference) => (
@@ -120,17 +127,19 @@ function PreferenceRow({
   pending: boolean;
   onChange: (mode: NotificationDeliveryMode) => void;
 }) {
+  const t = useTranslations('account.emailPreferences');
+  const kindWording = useNotificationKindWording();
   const id = `${preference.kind}-${preference.channel}`;
   const label = (
     <div>
       <Label htmlFor={id} className="text-sm">
-        {preference.label}
+        {kindWording.label(preference.kind)}
       </Label>
-      <p className="text-xs text-muted-foreground">{preference.description}</p>
+      <p className="text-xs text-muted-foreground">{kindWording.description(preference.kind)}</p>
     </div>
   );
 
-  // Zwei Möglichkeiten sind ein Ja oder Nein, und dafür ist ein Schalter da.
+  // Two choices are a yes or a no, and that is what a switch is for.
   if (preference.modes.length <= 2) {
     const on = preference.modes.find((mode) => mode !== 'OFF') ?? 'IMMEDIATE';
     return (
@@ -157,13 +166,13 @@ function PreferenceRow({
         }}
       >
         <SelectTrigger id={id} className="w-full sm:w-72">
-          {/* Base UI zeigt ohne Render-Funktion den rohen Wert an. */}
-          <SelectValue>{() => MODE_LABELS[preference.mode]}</SelectValue>
+          {/* Base UI shows the raw value without a render function. */}
+          <SelectValue>{() => t(`modes.${preference.mode}`)}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {preference.modes.map((mode) => (
             <SelectItem key={mode} value={mode}>
-              {MODE_LABELS[mode]}
+              {t(`modes.${mode}`)}
             </SelectItem>
           ))}
         </SelectContent>

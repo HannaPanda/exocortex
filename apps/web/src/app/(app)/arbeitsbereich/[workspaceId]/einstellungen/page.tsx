@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { WorkspaceSettings } from '@/components/shell/workspace-settings';
 
-export const metadata: Metadata = { title: 'Arbeitsbereich-Einstellungen' };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('settings.workspace');
+  return { title: t('title') };
+}
 
 export default async function WorkspaceSettingsPage({
   params,

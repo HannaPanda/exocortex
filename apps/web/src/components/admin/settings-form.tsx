@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { flushSync } from 'react-dom';
 
@@ -19,15 +20,15 @@ import {
   TabsContent,
 } from '@exocortex/ui';
 
-import { SETTING_COPY } from '@/components/settings/setting-copy';
+import { useSettingCopy } from '@/components/settings/setting-copy';
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import {
   fieldErrorsFromDetails,
   groupOf,
   inputId,
-  invalidMessage,
   SETTING_LIST_CLASS,
   SettingRow,
+  useSettingMessages,
 } from '@/components/settings/setting-row';
 import {
   SettingsActionBar,
@@ -49,12 +50,12 @@ import { messageForCode } from '@/lib/api/error-messages';
  * the form and marked in the group list, so "invalid input" alone would be the
  * less specific of the two.
  */
-function refusalSummary(refusedCount: number, errorCode: string | undefined): string {
-  if (refusedCount === 0) return messageForCode(errorCode);
-  if (refusedCount === 1) {
-    return 'Eine Einstellung liegt außerhalb ihres zulässigen Bereichs und wurde nicht gespeichert. Sie ist im Formular rot markiert.';
-  }
-  return `${refusedCount} Einstellungen liegen außerhalb ihres zulässigen Bereichs und wurden nicht gespeichert. Sie sind im Formular rot markiert.`;
+function refusalSummary(
+  refusedCount: number,
+  errorCode: string | undefined,
+  refused: (count: number) => string,
+): string {
+  return refusedCount === 0 ? messageForCode(errorCode) : refused(refusedCount);
 }
 
 /** The settings whose draft value differs from the one on the server. */
@@ -67,6 +68,10 @@ export function SettingsForm() {
   const settingsQuery = useAdminSettings();
   const modelsQuery = useAdminAiModels();
   const updateSettings = useUpdateAdminSettings();
+  const t = useTranslations('settings.adminForm');
+  const tForm = useTranslations('settings.form');
+  const settingCopy = useSettingCopy();
+  const { invalidMessage } = useSettingMessages();
 
   const [draft, setDraft] = React.useState<Settings | null>(null);
   const [saved, setSaved] = React.useState(false);
@@ -95,7 +100,7 @@ export function SettingsForm() {
   const guardDialog = useUnsavedChangesGuard(changedKeys.length);
 
   if (settingsQuery.isPending || settingsQuery.data === undefined || draft === null) {
-    return <LoadingState label="Einstellungen werden geladen …" variant="skeleton" rows={6} />;
+    return <LoadingState label={tForm('loading')} variant="skeleton" rows={6} />;
   }
 
   // Reassigning into fresh `const`s (rather than referencing `draft` /
@@ -106,8 +111,8 @@ export function SettingsForm() {
   const currentDraft: Settings = draft;
   // Rows the deployment refused to load. Not an error of this form: the value
   // shown is the default that stepped in, and saving the field replaces the bad
-  // row. Named per setting, because "irgendeine Zeile ist kaputt" is what the
-  // log already said.
+  // row. Named per setting, because "some row is broken" is what the log
+  // already said.
   const ignoredKeys = settingsQuery.data.invalidKeys;
   const dirty = changedKeys.length > 0;
 
@@ -205,7 +210,8 @@ export function SettingsForm() {
       onError: (caught) => {
         // A rejection the local check did not anticipate still has to land at
         // the field it belongs to rather than only in the summary.
-        const errors = caught instanceof ApiError ? fieldErrorsFromDetails(caught.details) : {};
+        const errors =
+          caught instanceof ApiError ? fieldErrorsFromDetails(caught.details, invalidMessage) : {};
         setFieldErrors(errors);
         revealFirstError(errors);
       },
@@ -214,7 +220,9 @@ export function SettingsForm() {
 
   const errorCode =
     updateSettings.error instanceof ApiError ? updateSettings.error.code : undefined;
-  const summaryMessage = refusalSummary(Object.keys(fieldErrors).length, errorCode);
+  const summaryMessage = refusalSummary(Object.keys(fieldErrors).length, errorCode, (count) =>
+    t('refused', { count }),
+  );
   const showError = localError || updateSettings.isError;
 
   return (
@@ -224,13 +232,12 @@ export function SettingsForm() {
           page opened. */}
       {ignoredKeys.length > 0 ? (
         <Alert variant="destructive" data-testid="settings-invalid-rows">
-          <AlertTitle>Gespeicherte Werte werden ignoriert</AlertTitle>
+          <AlertTitle>{t('ignoredTitle')}</AlertTitle>
           <AlertDescription>
-            {`In der Datenbank steht für ${ignoredKeys.length === 1 ? 'diese Einstellung' : 'diese Einstellungen'} ein unzulässiger Wert: ${ignoredKeys
-              .map((key) => SETTING_COPY[key].label)
-              .join(
-                ', ',
-              )}. Die Installation läuft stattdessen mit der Vorgabe. Einmal speichern ersetzt die fehlerhafte Zeile.`}
+            {t('ignoredDescription', {
+              count: ignoredKeys.length,
+              labels: ignoredKeys.map((key) => settingCopy(key).label).join(', '),
+            })}
           </AlertDescription>
         </Alert>
       ) : null}
@@ -272,7 +279,7 @@ export function SettingsForm() {
           which is where the rejection in issue #27 went unnoticed. */}
       {saved ? (
         <Alert data-testid="settings-saved">
-          <AlertDescription>Einstellungen gespeichert.</AlertDescription>
+          <AlertDescription>{tForm('saved')}</AlertDescription>
         </Alert>
       ) : null}
       {showError ? (
@@ -284,14 +291,14 @@ export function SettingsForm() {
       <SettingsActionBar dirty={dirty}>
         <div className="flex gap-2">
           <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending}>
-            Speichern
+            {tForm('save')}
           </Button>
           <Button
             variant="outline"
             onClick={handleDiscard}
             disabled={!dirty || updateSettings.isPending}
           >
-            Verwerfen
+            {tForm('discard')}
           </Button>
         </div>
         <UnsavedChangesNotice changedCount={changedKeys.length} testId="settings-dirty" />

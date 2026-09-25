@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -46,10 +47,12 @@ function changedOverrides(
 }
 
 /** What the refusal beside the save button says, given which side refused. */
-function refusalMessage(invalid: boolean, errorCode: string | undefined): string {
-  return invalid
-    ? 'Eine Eingabe ist nicht zulässig, es wurde nichts gespeichert.'
-    : messageForCode(errorCode);
+function refusalMessage(
+  invalid: boolean,
+  errorCode: string | undefined,
+  invalidText: string,
+): string {
+  return invalid ? invalidText : messageForCode(errorCode);
 }
 
 /**
@@ -71,6 +74,8 @@ export function WorkspaceSettingsForm({
   const query = useWorkspaceSettings(workspaceId);
   const models = useAiModels();
   const update = useUpdateWorkspaceSettings(workspaceId);
+  const t = useTranslations('settings.workspaceForm');
+  const tForm = useTranslations('settings.form');
 
   const [draft, setDraft] = React.useState<Settings | null>(null);
   const [reset, setReset] = React.useState<WorkspaceSettingKey[]>([]);
@@ -94,7 +99,7 @@ export function WorkspaceSettingsForm({
   const guardDialog = useUnsavedChangesGuard(changedKeys.length + reset.length);
 
   if (query.isPending || query.data === undefined || draft === null) {
-    return <LoadingState label="Einstellungen werden geladen …" variant="skeleton" rows={4} />;
+    return <LoadingState label={tForm('loading')} variant="skeleton" rows={4} />;
   }
 
   const data: WorkspaceSettingsResponse = query.data;
@@ -179,10 +184,7 @@ export function WorkspaceSettingsForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-muted-foreground">
-        Ohne eigenen Wert gilt hier, was für die ganze Installation eingestellt ist. Was du hier
-        setzt, gilt nur in diesem Arbeitsbereich.
-      </p>
+      <p className="text-sm text-muted-foreground">{t('intro')}</p>
 
       <Tabs
         value={activeGroup}
@@ -211,7 +213,7 @@ export function WorkspaceSettingsForm({
                   <div className="flex items-center gap-2 sm:pl-[calc(240px+1rem)]">
                     {overridden.has(key) && !reset.includes(key) ? (
                       <>
-                        <Badge variant="secondary">Eigener Wert</Badge>
+                        <Badge variant="secondary">{t('ownValue')}</Badge>
                         {canEdit ? (
                           <Button
                             variant="ghost"
@@ -219,16 +221,14 @@ export function WorkspaceSettingsForm({
                             onClick={() => queueReset(key)}
                             data-testid={`workspace-setting-reset-${key}`}
                           >
-                            Auf Installationswert zurücksetzen
+                            {t('reset')}
                           </Button>
                         ) : null}
                       </>
                     ) : reset.includes(key) ? (
-                      <Badge variant="outline">Wird zurückgesetzt</Badge>
+                      <Badge variant="outline">{t('resetting')}</Badge>
                     ) : (
-                      <span className="text-xs text-muted-foreground">
-                        Geerbt aus der Installation
-                      </span>
+                      <span className="text-xs text-muted-foreground">{t('inherited')}</span>
                     )}
                   </div>
                 </div>
@@ -240,12 +240,12 @@ export function WorkspaceSettingsForm({
 
       {saved ? (
         <Alert data-testid="workspace-settings-saved">
-          <AlertDescription>Einstellungen gespeichert.</AlertDescription>
+          <AlertDescription>{tForm('saved')}</AlertDescription>
         </Alert>
       ) : null}
       {update.isError || invalid ? (
         <Alert variant="destructive" data-testid="workspace-settings-error">
-          <AlertDescription>{refusalMessage(invalid, errorCode)}</AlertDescription>
+          <AlertDescription>{refusalMessage(invalid, errorCode, t('invalid'))}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -253,10 +253,10 @@ export function WorkspaceSettingsForm({
         <SettingsActionBar dirty={dirty}>
           <div className="flex gap-2">
             <Button onClick={handleSave} disabled={!dirty || update.isPending}>
-              Speichern
+              {tForm('save')}
             </Button>
             <Button variant="outline" onClick={handleDiscard} disabled={!dirty || update.isPending}>
-              Verwerfen
+              {tForm('discard')}
             </Button>
           </div>
           <UnsavedChangesNotice
@@ -265,9 +265,7 @@ export function WorkspaceSettingsForm({
           />
         </SettingsActionBar>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          Ändern dürfen das Besitzer und Administratoren dieses Arbeitsbereichs.
-        </p>
+        <p className="text-sm text-muted-foreground">{t('readOnly')}</p>
       )}
 
       {guardDialog}

@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrator",
+    "MEMBER": "Member",
+    "GUEST": "Guest (read-only)"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "revoked": "Revoked",
+    "expired": "Expired"
+  },
+  "dialog": {
+    "title": "Invite",
+    "descriptionAdmin": "The invited person creates an account themselves using the link. Registration without an invitation is not possible.",
+    "descriptionWorkspace": "The invited person creates an account using the link and becomes a member of this workspace.",
+    "sent": "Invitation sent to {email}. The link is valid for {days, plural, one {# day} other {# days}} and can only be used once.",
+    "mailFailed": "The invitation was created, but the email couldn’t be sent. Share the link below directly, or resend the invitation later.",
+    "link": "Invitation link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "linkOnce": "This link will only be shown now. It isn’t stored anywhere, so copy it now if you need it.",
+    "another": "Invite another",
+    "close": "Close",
+    "email": "Email address",
+    "workspace": "Workspace",
+    "noWorkspace": "None",
+    "noWorkspaceHint": "Without a workspace, an account is created that can’t see anything yet. Memberships are always explicitly assigned here.",
+    "role": "Role in workspace",
+    "grantAdmin": "Administrator of this installation",
+    "grantAdminHint": "Can manage users, change settings, and see all workspaces.",
+    "cancel": "Cancel",
+    "sending": "Sending …",
+    "submit": "Invite"
+  },
+  "table": {
+    "loading": "Loading invitations …",
+    "loadFailed": "Invitations could not be loaded",
+    "emptyTitle": "No invitations",
+    "emptyDescription": "Anyone joining needs an invitation. Registration without one is disabled.",
+    "freshLink": "New invitation link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "freshLinkHint": "The previous link is no longer valid. Each resend creates a new one.",
+    "caption": "Invitations",
+    "email": "Email",
+    "status": "Status",
+    "workspace": "Workspace",
+    "role": "Role",
+    "invitedBy": "Invited by",
+    "expiresAt": "Expires",
+    "sent": "Sent",
+    "actions": "Actions",
+    "admin": "Admin",
+    "notDelivered": "not delivered",
+    "revokeTitle": "Revoke invitation?",
+    "revokeDescription": "The link sent to {email} will no longer work. If the person is to join after all, they will need a new invitation.",
+    "revoke": "Revoke",
+    "resend": "Resend"
+  }
+}

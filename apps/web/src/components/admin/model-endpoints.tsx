@@ -1,25 +1,22 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
+
 import { type AiModelEndpoint } from '@exocortex/contracts';
 import { Badge, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useAiModelEndpoints } from '@/lib/api/admin-queries';
 
-const numberFormat = new Intl.NumberFormat('de-DE');
+type Formatter = ReturnType<typeof useFormatter>;
 
-function formatPrice(microUsd: number): string {
-  return `$${(microUsd / 1_000_000).toLocaleString('de-DE', {
+/** Micro-USD per million tokens as a dollar amount with two decimals. */
+function formatPrice(format: Formatter, microUsd: number): string {
+  return format.number(microUsd / 1_000_000, {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`;
-}
-
-function formatSyncedAt(value: string | null): string {
-  if (value === null) return 'noch nie abgeglichen';
-  return `abgeglichen am ${new Date(value).toLocaleString('de-DE', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  })}`;
+  });
 }
 
 /** The input an endpoint can really take: its window, or its own tighter prompt cap. */
@@ -43,20 +40,23 @@ export interface ModelEndpointsProps {
  */
 export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
   const endpointsQuery = useAiModelEndpoints(modelId, true);
+  const t = useTranslations('admin.endpoints');
+  const format = useFormatter();
 
   if (endpointsQuery.isPending) {
-    return <LoadingState label="Anbieter werden geladen …" variant="skeleton" rows={2} />;
+    return <LoadingState label={t('loading')} variant="skeleton" rows={2} />;
   }
   if (endpointsQuery.isError) {
-    return (
-      <ErrorState
-        title="Die Anbieter konnten nicht geladen werden"
-        onRetry={() => void endpointsQuery.refetch()}
-      />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void endpointsQuery.refetch()} />;
   }
 
   const { endpoints, targetSlug, syncedAt } = endpointsQuery.data;
+  const synced =
+    syncedAt === null
+      ? t('syncedNever')
+      : t('syncedAt', {
+          date: format.dateTime(new Date(syncedAt), { dateStyle: 'short', timeStyle: 'short' }),
+        });
 
   return (
     <div className="flex flex-col gap-2 py-2">
@@ -66,9 +66,7 @@ export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
             {modelSlug} → <span className="font-medium">{targetSlug}</span> ·{' '}
           </>
         ) : null}
-        {endpoints.length === 0
-          ? 'Kein Anbieter-Abbild vorhanden: Anfragen werden ohne Einschränkung geroutet.'
-          : `${endpoints.length} Anbieter · ${formatSyncedAt(syncedAt)}`}
+        {endpoints.length === 0 ? t('none') : t('summary', { count: endpoints.length, synced })}
       </p>
 
       {endpoints.length === 0 ? null : (
@@ -77,19 +75,19 @@ export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
             <thead className="text-muted-foreground">
               <tr className="text-left">
                 <th scope="col" className="py-1 pr-4 font-medium">
-                  Anbieter
+                  {t('columns.provider')}
                 </th>
                 <th scope="col" className="py-1 pr-4 font-medium">
-                  Eingabe
+                  {t('columns.input')}
                 </th>
                 <th scope="col" className="py-1 pr-4 font-medium">
-                  Ausgabe
+                  {t('columns.output')}
                 </th>
                 <th scope="col" className="py-1 pr-4 font-medium">
-                  Preis
+                  {t('columns.price')}
                 </th>
                 <th scope="col" className="py-1 font-medium">
-                  Kann
+                  {t('columns.capabilities')}
                 </th>
               </tr>
             </thead>
@@ -101,21 +99,23 @@ export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
                     <span className="text-muted-foreground">{endpoint.providerKey}</span>
                   </td>
                   <td className="py-1 pr-4">
-                    {numberFormat.format(usableInputTokens(endpoint))} Tokens
+                    {t('tokens', { count: usableInputTokens(endpoint) })}
                   </td>
                   <td className="py-1 pr-4">
                     {endpoint.maxOutputTokens === null
-                      ? 'ohne Angabe'
-                      : `${numberFormat.format(endpoint.maxOutputTokens)} Tokens`}
+                      ? t('outputUnknown')
+                      : t('tokens', { count: endpoint.maxOutputTokens })}
                   </td>
                   <td className="py-1 pr-4">
-                    {formatPrice(endpoint.inputMicroUsdPerMTok)} /{' '}
-                    {formatPrice(endpoint.outputMicroUsdPerMTok)}
+                    {formatPrice(format, endpoint.inputMicroUsdPerMTok)} /{' '}
+                    {formatPrice(format, endpoint.outputMicroUsdPerMTok)}
                   </td>
                   <td className="flex flex-wrap gap-1 py-1">
-                    {endpoint.supportsTools ? <Badge variant="secondary">Werkzeuge</Badge> : null}
+                    {endpoint.supportsTools ? (
+                      <Badge variant="secondary">{t('tools')}</Badge>
+                    ) : null}
                     {endpoint.supportsReasoningEffort ? (
-                      <Badge variant="secondary">Denkstufen</Badge>
+                      <Badge variant="secondary">{t('reasoning')}</Badge>
                     ) : null}
                     {endpoint.quantization !== null ? (
                       <Badge variant="muted">{endpoint.quantization}</Badge>

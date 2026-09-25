@@ -1,6 +1,7 @@
 'use client';
 
 import { KeyRoundIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -45,6 +46,7 @@ export function ConnectionSetupPanel({ freshSecret, onForgetSecret }: Connection
   // null, the client snapshot is the real origin, and React swaps them at
   // hydration without a mismatch warning and without a second render pass.
   const origin = React.useSyncExternalStore(subscribeToNothing, readOrigin, () => null);
+  const t = useTranslations('account.setup');
 
   const snippets = React.useMemo(
     () => connectionSnippets(origin ?? 'https://exocortex.app', freshSecret),
@@ -55,74 +57,72 @@ export function ConnectionSetupPanel({ freshSecret, onForgetSecret }: Connection
     <section className="flex flex-col gap-3" aria-labelledby="setup-heading">
       <div>
         <h2 id="setup-heading" className="text-sm font-semibold">
-          Einrichten
+          {t('title')}
         </h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Such dir dein Programm und kopier die Zeile. Mehr ist es nicht.
-        </p>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {freshSecret !== null ? (
         <Alert>
           <KeyRoundIcon />
           <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-            <span>
-              Dein neues Token steckt bereits in den Befehlen unten. Es verschwindet, sobald du
-              diese Seite neu lädst.
-            </span>
+            <span>{t('freshToken')}</span>
             <Button variant="outline" size="sm" onClick={onForgetSecret}>
-              Token ausblenden
+              {t('hideToken')}
             </Button>
           </AlertDescription>
         </Alert>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Wo <code className="font-mono">{TOKEN_PLACEHOLDER}</code> steht, gehört ein Token aus dem
-          Abschnitt darüber hin. Legst du gleich hier eins an, setzt eXocortex es von selbst ein.
+          {t.rich('placeholderHint', {
+            placeholder: TOKEN_PLACEHOLDER,
+            code: (chunks) => <code className="font-mono">{chunks}</code>,
+          })}
         </p>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
-        {snippets.map((snippet) => (
-          <Card key={snippet.id} className="gap-4">
-            <CardHeader>
-              <CardTitle className="text-sm">{snippet.title}</CardTitle>
-              <CardDescription>{snippet.summary}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <CopyBlock value={snippet.code} label={`Angaben für ${snippet.title} kopieren`} />
-              {snippet.notes.length > 0 ? (
-                <ul className="flex list-disc flex-col gap-1 pl-4 text-xs text-muted-foreground">
-                  {snippet.notes.map((note) => (
-                    <li key={note} className="break-words">
-                      {note}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </CardContent>
-          </Card>
-        ))}
+        {snippets.map((snippet) => {
+          const title = t(`snippets.${snippet.id}.title`);
+          return (
+            <Card key={snippet.id} className="gap-4">
+              <CardHeader>
+                <CardTitle className="text-sm">{title}</CardTitle>
+                <CardDescription>{t(`snippets.${snippet.id}.summary`)}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <CopyBlock value={snippet.code} label={t('copyLabel', { title })} />
+                {snippet.notes.length > 0 ? (
+                  <ul className="flex list-disc flex-col gap-1 pl-4 text-xs text-muted-foreground">
+                    {snippet.notes.map((note) =>
+                      note.kind === 'code' ? (
+                        <li key={note.code} className="break-words">
+                          {note.code}
+                        </li>
+                      ) : (
+                        <li key={note.key} className="break-words">
+                          {t(`notes.${note.key}`, note.values)}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                ) : null}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="rounded-lg border border-border p-4 text-sm text-muted-foreground">
-        <h3 className="text-sm font-semibold text-foreground">Welche Rechte für wen</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t('rightsTitle')}</h3>
         <ul className="mt-2 flex list-disc flex-col gap-1 pl-4">
-          <li>
-            <span className="font-medium text-foreground">ChatGPT: nur lesen.</span> Es soll
-            nachschlagen, nicht umschreiben.
-          </li>
-          <li>
-            <span className="font-medium text-foreground">
-              Coding-Agenten wie Claude Code: lesen und schreiben.
-            </span>{' '}
-            Sie legen Seiten an und pflegen sie.
-          </li>
-          <li>
-            <span className="font-medium text-foreground">Voller Zugriff: an niemanden.</span> Kein
-            Werkzeug im MCP-Katalog braucht ihn, und er ist das einzige Recht, mit dem sich ein
-            Token weitere Token ausstellen kann.
-          </li>
+          {(['rightsChatgpt', 'rightsAgents', 'rightsAdmin'] as const).map((key) => (
+            <li key={key}>
+              {t.rich(key, {
+                strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+              })}
+            </li>
+          ))}
         </ul>
       </div>
     </section>

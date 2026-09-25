@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrador",
+    "MEMBER": "Miembro",
+    "GUEST": "Invitado (solo lectura)"
+  },
+  "statuses": {
+    "pending": "Pendiente",
+    "accepted": "Aceptada",
+    "revoked": "Revocada",
+    "expired": "Caducada"
+  },
+  "dialog": {
+    "title": "Invitar",
+    "descriptionAdmin": "La persona invitada creará su propia cuenta mediante el enlace. No es posible registrarse sin invitación.",
+    "descriptionWorkspace": "La persona invitada creará una cuenta mediante el enlace y pasará a ser miembro de este espacio de trabajo.",
+    "sent": "Invitación enviada a {email}. El enlace es válido durante {days, plural, one {# día} many {# días} other {# días}} y solo se puede utilizar una vez.",
+    "mailFailed": "Se ha creado la invitación, pero no se ha podido enviar el correo electrónico. Comparte directamente el enlace de abajo o vuelve a enviar la invitación más tarde.",
+    "link": "Enlace de invitación",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "linkOnce": "Este enlace solo se muestra ahora. No queda guardado en ningún sitio, así que cópialo ahora si lo necesitas.",
+    "another": "Invitar a otra persona",
+    "close": "Cerrar",
+    "email": "Dirección de correo electrónico",
+    "workspace": "Espacio de trabajo",
+    "noWorkspace": "Ninguno",
+    "noWorkspaceHint": "Sin espacio de trabajo se crea una cuenta que todavía no puede ver nada. La pertenencia a un espacio de trabajo siempre se asigna de forma explícita.",
+    "role": "Rol en el espacio de trabajo",
+    "grantAdmin": "Administrador de esta instalación",
+    "grantAdminHint": "Puede gestionar usuarios, cambiar ajustes y ver todos los espacios de trabajo.",
+    "cancel": "Cancelar",
+    "sending": "Enviando …",
+    "submit": "Invitar"
+  },
+  "table": {
+    "loading": "Cargando invitaciones …",
+    "loadFailed": "No se han podido cargar las invitaciones",
+    "emptyTitle": "No hay invitaciones",
+    "emptyDescription": "Para entrar aquí se necesita una invitación. El registro sin invitación está desactivado.",
+    "freshLink": "Nuevo enlace de invitación",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "freshLinkHint": "El enlace anterior ya no es válido. Cada reenvío genera uno nuevo.",
+    "caption": "Invitaciones",
+    "email": "Correo electrónico",
+    "status": "Estado",
+    "workspace": "Espacio de trabajo",
+    "role": "Rol",
+    "invitedBy": "Invitación de",
+    "expiresAt": "Caduca el",
+    "sent": "Enviada",
+    "actions": "Acciones",
+    "admin": "Admin",
+    "notDelivered": "no entregada",
+    "revokeTitle": "¿Retirar invitación?",
+    "revokeDescription": "El enlace enviado a {email} dejará de funcionar. Si esa persona quiere unirse más adelante, necesitará una nueva invitación.",
+    "revoke": "Retirar",
+    "resend": "Reenviar"
+  }
+}

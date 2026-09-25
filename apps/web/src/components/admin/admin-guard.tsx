@@ -1,6 +1,7 @@
 'use client';
 
 import { ShieldAlertIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { EmptyState, LoadingState } from '@exocortex/ui';
@@ -24,17 +25,18 @@ import { useSessionQuery } from '@/lib/api/session-queries';
  */
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const session = useSessionQuery();
+  const t = useTranslations('admin.guard');
 
   if (session.isPending) {
-    return <LoadingState label="Zugriff wird geprüft …" />;
+    return <LoadingState label={t('checking')} />;
   }
 
   if (session.isError) {
     return (
       <EmptyState
         icon={ShieldAlertIcon}
-        title="Verwaltung nicht verfügbar"
-        description="Die Sitzung konnte nicht geprüft werden. Bitte versuche es später erneut."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
       />
     );
   }
@@ -43,8 +45,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     return (
       <EmptyState
         icon={ShieldAlertIcon}
-        title="Kein Zugriff"
-        description="Dieser Bereich ist Administratorinnen und Administratoren vorbehalten."
+        title={t('forbiddenTitle')}
+        description={t('forbiddenDescription')}
       />
     );
   }

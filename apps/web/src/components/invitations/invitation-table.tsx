@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type Invitation, type InvitationStatus } from '@exocortex/contracts';
@@ -32,13 +33,6 @@ import {
   useRevokeInvitation,
 } from '@/lib/api/invitation-queries';
 
-const STATUS_LABELS: Record<InvitationStatus, string> = {
-  pending: 'Offen',
-  accepted: 'Angenommen',
-  revoked: 'Zurückgezogen',
-  expired: 'Abgelaufen',
-};
-
 /**
  * Only "offen" gets a colour. The other three are history, and a list where
  * everything is highlighted highlights nothing.
@@ -50,8 +44,6 @@ const STATUS_VARIANTS: Record<InvitationStatus, 'default' | 'secondary' | 'outli
   expired: 'outline',
 };
 
-const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
-
 export function InvitationTable({
   scope,
   showWorkspace = false,
@@ -60,6 +52,9 @@ export function InvitationTable({
   /** The admin list spans workspaces and needs the column; a workspace's own does not. */
   showWorkspace?: boolean;
 }) {
+  const t = useTranslations('invitations.table');
+  const statusLabel = useTranslations('invitations.statuses');
+  const format = useFormatter();
   const invitations = useInvitations(scope);
   const resend = useResendInvitation(scope);
   const revoke = useRevokeInvitation(scope);
@@ -70,23 +65,13 @@ export function InvitationTable({
   const confirmDialog = useDestructiveConfirmDialog();
 
   if (invitations.isPending) {
-    return <LoadingState label="Einladungen werden geladen …" variant="skeleton" rows={3} />;
+    return <LoadingState label={t('loading')} variant="skeleton" rows={3} />;
   }
   if (invitations.isError) {
-    return (
-      <ErrorState
-        title="Einladungen konnten nicht geladen werden"
-        onRetry={() => void invitations.refetch()}
-      />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void invitations.refetch()} />;
   }
   if (invitations.data.length === 0) {
-    return (
-      <EmptyState
-        title="Keine Einladungen"
-        description="Wer hier ankommen soll, braucht eine Einladung. Registrieren ohne eine ist abgeschaltet."
-      />
-    );
+    return <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />;
   }
 
   const mutationError =
@@ -107,7 +92,7 @@ export function InvitationTable({
 
       {freshLink !== null ? (
         <div className="flex flex-col gap-2 rounded-md border border-border p-3">
-          <Label htmlFor="resent-invite-link">Neuer Einladungslink</Label>
+          <Label htmlFor="resent-invite-link">{t('freshLink')}</Label>
           <div className="flex gap-2">
             <Input id="resent-invite-link" readOnly value={freshLink.url} />
             <Button
@@ -116,27 +101,25 @@ export function InvitationTable({
                 void navigator.clipboard.writeText(freshLink.url).then(() => setCopied(true));
               }}
             >
-              {copied ? 'Kopiert' : 'Kopieren'}
+              {copied ? t('copied') : t('copy')}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Der vorherige Link gilt nicht mehr. Jedes erneute Verschicken erzeugt einen neuen.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('freshLinkHint')}</p>
         </div>
       ) : null}
 
       <Table narrow="list">
-        <TableCaption className="sr-only">Einladungen</TableCaption>
+        <TableCaption className="sr-only">{t('caption')}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>E-Mail</TableHead>
-            <TableHead>Status</TableHead>
-            {showWorkspace ? <TableHead>Arbeitsbereich</TableHead> : null}
-            <TableHead>Rolle</TableHead>
-            <TableHead>Eingeladen von</TableHead>
-            <TableHead>Gültig bis</TableHead>
-            <TableHead>Verschickt</TableHead>
-            <TableHead className="sr-only">Aktionen</TableHead>
+            <TableHead>{t('email')}</TableHead>
+            <TableHead>{t('status')}</TableHead>
+            {showWorkspace ? <TableHead>{t('workspace')}</TableHead> : null}
+            <TableHead>{t('role')}</TableHead>
+            <TableHead>{t('invitedBy')}</TableHead>
+            <TableHead>{t('expiresAt')}</TableHead>
+            <TableHead>{t('sent')}</TableHead>
+            <TableHead className="sr-only">{t('actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -145,32 +128,34 @@ export function InvitationTable({
               <TableCell cell="title" className="font-medium">
                 {invitation.email}
               </TableCell>
-              <TableCell label="Status">
+              <TableCell label={t('status')}>
                 <Badge variant={STATUS_VARIANTS[invitation.status]}>
-                  {STATUS_LABELS[invitation.status]}
+                  {statusLabel(invitation.status)}
                 </Badge>
               </TableCell>
               {showWorkspace ? (
-                <TableCell label="Arbeitsbereich" className="text-muted-foreground">
+                <TableCell label={t('workspace')} className="text-muted-foreground">
                   {invitation.workspaceName ?? '–'}
                 </TableCell>
               ) : null}
-              <TableCell label="Rolle" className="text-muted-foreground">
+              <TableCell label={t('role')} className="text-muted-foreground">
                 {invitation.workspaceRole ?? '–'}
                 {invitation.role === 'admin' ? (
                   <Badge variant="secondary" className="ml-2">
-                    Admin
+                    {t('admin')}
                   </Badge>
                 ) : null}
               </TableCell>
-              <TableCell label="Eingeladen von" className="text-muted-foreground">
+              <TableCell label={t('invitedBy')} className="text-muted-foreground">
                 {invitation.invitedByName}
               </TableCell>
-              <TableCell label="Gültig bis" className="text-muted-foreground">
-                {dateFormat.format(new Date(invitation.expiresAt))}
+              <TableCell label={t('expiresAt')} className="text-muted-foreground">
+                {format.dateTime(new Date(invitation.expiresAt), { dateStyle: 'medium' })}
               </TableCell>
-              <TableCell label="Verschickt" className="text-muted-foreground">
-                {invitation.lastSentAt === null ? 'nicht angekommen' : `${invitation.sentCount}×`}
+              <TableCell label={t('sent')} className="text-muted-foreground">
+                {invitation.lastSentAt === null
+                  ? t('notDelivered')
+                  : `${String(invitation.sentCount)}×`}
               </TableCell>
               <TableCell cell="actions">
                 <InvitationActions
@@ -185,9 +170,9 @@ export function InvitationTable({
                   onRevoke={() => {
                     void confirmDialog
                       .confirm({
-                        title: 'Einladung zurückziehen?',
-                        description: `Der Link an ${invitation.email} funktioniert danach nicht mehr. Soll die Person doch kommen, braucht sie eine neue Einladung.`,
-                        confirmLabel: 'Zurückziehen',
+                        title: t('revokeTitle'),
+                        description: t('revokeDescription', { email: invitation.email }),
+                        confirmLabel: t('revoke'),
                       })
                       .then((confirmed) => {
                         if (!confirmed) return;
@@ -221,6 +206,7 @@ function InvitationActions({
   onResend: () => void;
   onRevoke: () => void;
 }) {
+  const t = useTranslations('invitations.table');
   if (invitation.status === 'accepted') {
     return <span className="text-xs text-muted-foreground">–</span>;
   }
@@ -234,7 +220,7 @@ function InvitationActions({
         onClick={onResend}
         data-testid={`resend-invitation-${invitation.id}`}
       >
-        Erneut senden
+        {t('resend')}
       </Button>
       {invitation.status === 'pending' ? (
         <Button
@@ -244,7 +230,7 @@ function InvitationActions({
           onClick={onRevoke}
           data-testid={`revoke-invitation-${invitation.id}`}
         >
-          Zurückziehen
+          {t('revoke')}
         </Button>
       ) : null}
     </div>

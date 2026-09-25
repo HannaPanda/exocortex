@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -22,7 +23,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
-import { SETTING_COPY } from '@/components/settings/setting-copy';
+import { useSettingCopy } from '@/components/settings/setting-copy';
 
 /**
  * The vocabulary of the settings forms, shared by both of them.
@@ -30,7 +31,8 @@ import { SETTING_COPY } from '@/components/settings/setting-copy';
  * There are two since issue #52: the deployment-wide form in the admin area
  * and the override form inside a workspace. They render the same keys with the
  * same words and the same bounds, and a second copy of 60 German labels is a
- * second copy that drifts. The words themselves live in `setting-copy.ts`.
+ * second copy that drifts. The words themselves live in the `settings`
+ * catalogue, read through `setting-copy.ts`.
  */
 
 /** Sentinel for "no model chosen"; distinct from every real slug. */
@@ -39,19 +41,42 @@ const AUTO_VALUE = '__automatic__';
 /**
  * Choices for settings whose schema is a `z.enum`. Only listed keys render as a
  * dropdown; everything else still derives its control from the runtime value
- * type, so an ordinary string setting added later needs no entry here.
+ * type, so an ordinary string setting added later needs no entry here. The
+ * label of a choice is `settings.row.choices.<setting name>.<value>`.
  */
-const SETTING_CHOICES: Partial<Record<SettingKey, readonly { value: string; label: string }[]>> = {
-  'ai.pdfExtractor': [
-    { value: 'docling', label: 'Docling (lokal, kostenlos, mit Texterkennung)' },
-    { value: 'openrouter', label: 'OpenRouter (gehostet, kostenpflichtig, ohne Texterkennung)' },
-  ],
-  'ai.untrustedContentPolicy': [
-    { value: 'guarded', label: 'Gesperrt, sobald Fremdinhalte gelesen wurden (empfohlen)' },
-    { value: 'deny', label: 'Nie: die KI darf in keinem Lauf etwas verändern' },
-    { value: 'allow', label: 'Immer erlaubt, auch nach Fremdinhalten' },
-  ],
-};
+const SETTING_CHOICES = {
+  'ai.pdfExtractor': ['docling', 'openrouter'],
+  'ai.untrustedContentPolicy': ['guarded', 'deny', 'allow'],
+} as const satisfies Partial<Record<SettingKey, readonly string[]>>;
+
+type ChoiceKey = keyof typeof SETTING_CHOICES;
+
+function hasChoices(key: SettingKey): key is ChoiceKey {
+  return key in SETTING_CHOICES;
+}
+
+/** The dropdown entries of a setting that has a closed set, in the reader's language. */
+function useSettingChoices(): (
+  key: SettingKey,
+) => readonly { value: string; label: string }[] | undefined {
+  const t = useTranslations('settings.row.choices');
+  return React.useCallback(
+    (key: SettingKey) => {
+      if (!hasChoices(key)) return undefined;
+      if (key === 'ai.pdfExtractor') {
+        return SETTING_CHOICES[key].map((value) => ({
+          value,
+          label: t(`pdfExtractor.${value}`),
+        }));
+      }
+      return SETTING_CHOICES[key].map((value) => ({
+        value,
+        label: t(`untrustedContentPolicy.${value}`),
+      }));
+    },
+    [t],
+  );
+}
 
 export function groupOf(key: SettingKey): string {
   return key.split('.')[0] ?? key;
@@ -61,24 +86,34 @@ export function inputId(key: SettingKey): string {
   return `setting-${key.replace(/\./g, '-')}`;
 }
 
-const numberFormat = new Intl.NumberFormat('de-DE');
-
 /**
- * The permitted range in words, for the help text under a numeric field.
+ * The words about a numeric setting's bounds, in the reader's language.
  *
- * Derived from `SETTING_NUMBER_RANGES`, never typed out, so it cannot say
- * something different from what the API validates (issue #28).
+ * The range is derived from `SETTING_NUMBER_RANGES`, never typed out, so it
+ * cannot say something different from what the API validates (issue #28).
+ * `rangeHint` is the help text's tail under a numeric field; `invalidMessage`
+ * is what to say about a value the schema refused.
  */
-export function rangeHint(key: SettingKey): string | null {
-  const range = SETTING_NUMBER_RANGES[key];
-  if (range === undefined) return null;
-  return `Zulässig: ${numberFormat.format(range.min)} bis ${numberFormat.format(range.max)}.`;
-}
-
-/** What to say about a value the schema refused. */
-export function invalidMessage(key: SettingKey): string {
-  const hint = rangeHint(key);
-  return hint === null ? 'Dieser Wert ist nicht gültig.' : `Nicht gespeichert. ${hint}`;
+export function useSettingMessages(): {
+  rangeHint: (key: SettingKey) => string | null;
+  invalidMessage: (key: SettingKey) => string;
+} {
+  const t = useTranslations('settings.row');
+  return React.useMemo(
+    () => ({
+      rangeHint: (key: SettingKey) => {
+        const range = SETTING_NUMBER_RANGES[key];
+        return range === undefined ? null : t('rangeHint', { min: range.min, max: range.max });
+      },
+      invalidMessage: (key: SettingKey) => {
+        const range = SETTING_NUMBER_RANGES[key];
+        return range === undefined
+          ? t('invalid')
+          : t('invalidWithRange', { min: range.min, max: range.max });
+      },
+    }),
+    [t],
+  );
 }
 
 /**
@@ -87,9 +122,13 @@ export function invalidMessage(key: SettingKey): string {
  * The API reports which key failed in `details[].path` (see `ZodValidationPipe`),
  * but the shape crosses an `unknown` boundary, so it is narrowed here instead of
  * trusted. Anything unrecognisable yields no field message and leaves the
- * summary alert as the only feedback.
+ * summary alert as the only feedback. `message` is `invalidMessage` from
+ * `useSettingMessages`, handed in so this stays pure.
  */
-export function fieldErrorsFromDetails(details: unknown): Partial<Record<SettingKey, string>> {
+export function fieldErrorsFromDetails(
+  details: unknown,
+  message: (key: SettingKey) => string,
+): Partial<Record<SettingKey, string>> {
   if (!Array.isArray(details)) return {};
   const errors: Partial<Record<SettingKey, string>> = {};
   for (const entry of details) {
@@ -97,7 +136,7 @@ export function fieldErrorsFromDetails(details: unknown): Partial<Record<Setting
     const path = (entry as { path: unknown }).path;
     // Every setting is a scalar, so the issue path is the setting key itself.
     if (typeof path !== 'string' || !(SETTING_KEYS as readonly string[]).includes(path)) continue;
-    errors[path as SettingKey] = invalidMessage(path as SettingKey);
+    errors[path as SettingKey] = message(path as SettingKey);
   }
   return errors;
 }
@@ -126,12 +165,14 @@ export interface SettingRowProps {
  * setting added later to `settingsSchema` renders here automatically.
  */
 export function SettingRow({ settingKey, value, onChange, models, error }: SettingRowProps) {
-  const copy = SETTING_COPY[settingKey];
+  const t = useTranslations('settings.row');
+  const copy = useSettingCopy()(settingKey);
+  const choices = useSettingChoices()(settingKey);
+  const { rangeHint } = useSettingMessages();
   const id = inputId(settingKey);
   const helpId = `${id}-help`;
   const errorId = `${id}-error`;
 
-  const choices = SETTING_CHOICES[settingKey];
   const range = SETTING_NUMBER_RANGES[settingKey];
   const hint = rangeHint(settingKey);
 
@@ -207,11 +248,11 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
       >
         <SelectTrigger id={id} className="w-full" {...described}>
           <SelectValue>
-            {() => models.find((model) => model.slug === value)?.displayName ?? 'Automatisch'}
+            {() => models.find((model) => model.slug === value)?.displayName ?? t('automatic')}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={AUTO_VALUE}>Automatisch</SelectItem>
+          <SelectItem value={AUTO_VALUE}>{t('automatic')}</SelectItem>
           {models.map((model) => (
             <SelectItem key={model.slug} value={model.slug}>
               {model.displayName}

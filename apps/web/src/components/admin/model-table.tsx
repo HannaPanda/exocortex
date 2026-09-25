@@ -8,9 +8,10 @@ import {
   PlusIcon,
   RefreshCwIcon,
 } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
+import { type AiModel, groupAiModelsByVendor } from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -46,26 +47,22 @@ import { ModelCatalogDialog } from './model-catalog-dialog';
 import { ModelDialog } from './model-dialog';
 import { ModelEndpoints } from './model-endpoints';
 
-const numberFormat = new Intl.NumberFormat('de-DE');
+type Formatter = ReturnType<typeof useFormatter>;
 
-const REASONING_LABELS: Record<AiReasoningLevel, string> = {
-  none: 'keine',
-  minimal: 'minimal',
-  low: 'niedrig',
-  medium: 'mittel',
-  high: 'hoch',
-  xhigh: 'sehr hoch',
-  max: 'maximal',
-};
+/** Micro-USD per million tokens as a dollar amount with two decimals. */
+function formatPrice(format: Formatter, microUsd: number): string {
+  return format.number(microUsd / 1_000_000, {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
-/** `$X,XX / $Y,YY per Mio. Tokens`, computed from the micro-USD integers. */
-function formatPrice(inputMicroUsd: number, outputMicroUsd: number): string {
-  const format = (microUsd: number): string =>
-    (microUsd / 1_000_000).toLocaleString('de-DE', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  return `$${format(inputMicroUsd)} / $${format(outputMicroUsd)} per Mio. Tokens`;
+interface SyncSummary {
+  updated: number;
+  disabled: number;
+  unchanged: number;
 }
 
 export function ModelTable() {
@@ -78,20 +75,18 @@ export function ModelTable() {
   const [catalogOpen, setCatalogOpen] = React.useState(false);
   const [expandedModelId, setExpandedModelId] = React.useState<string | null>(null);
   const [editingModel, setEditingModel] = React.useState<AiModel | undefined>(undefined);
-  const [syncSummary, setSyncSummary] = React.useState<string | null>(null);
+  const [syncSummary, setSyncSummary] = React.useState<SyncSummary | null>(null);
   const confirmDialog = useDestructiveConfirmDialog();
+  const t = useTranslations('admin.models');
+  const reasoningLabel = useTranslations('admin.reasoningLevels');
+  const format = useFormatter();
 
   if (modelsQuery.isPending) {
-    return <LoadingState label="Modelle werden geladen …" variant="skeleton" rows={5} />;
+    return <LoadingState label={t('loading')} variant="skeleton" rows={5} />;
   }
 
   if (modelsQuery.isError) {
-    return (
-      <ErrorState
-        title="Modelle konnten nicht geladen werden"
-        onRetry={() => void modelsQuery.refetch()}
-      />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void modelsQuery.refetch()} />;
   }
 
   const { models, defaultModelSlug } = modelsQuery.data;
@@ -104,8 +99,8 @@ export function ModelTable() {
       {confirmDialog.element}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Standardmodell:</span>
-          <Badge variant="outline">{defaultModelSlug ?? 'nicht gesetzt'}</Badge>
+          <span>{t('defaultModel')}</span>
+          <Badge variant="outline">{defaultModelSlug ?? t('defaultModelUnset')}</Badge>
         </div>
         <div className="flex gap-2">
           <Button
@@ -116,18 +111,20 @@ export function ModelTable() {
                 { slugs: [], addMissing: false },
                 {
                   onSuccess: (result) => {
-                    setSyncSummary(
-                      `${result.updated.length} aktualisiert, ${result.disabled.length} deaktiviert, ${result.unchanged} unverändert.`,
-                    );
+                    setSyncSummary({
+                      updated: result.updated.length,
+                      disabled: result.disabled.length,
+                      unchanged: result.unchanged,
+                    });
                   },
                 },
               )
             }
           >
-            <RefreshCwIcon /> Von OpenRouter aktualisieren
+            <RefreshCwIcon /> {t('sync')}
           </Button>
           <Button onClick={() => setCatalogOpen(true)}>
-            <LibraryBigIcon /> Aus dem Katalog hinzufügen
+            <LibraryBigIcon /> {t('addFromCatalog')}
           </Button>
           <Button
             variant="outline"
@@ -136,14 +133,14 @@ export function ModelTable() {
               setDialogOpen(true);
             }}
           >
-            <PlusIcon /> Von Hand anlegen
+            <PlusIcon /> {t('addManually')}
           </Button>
         </div>
       </div>
 
       {syncSummary !== null ? (
         <Alert data-testid="sync-summary">
-          <AlertDescription>{syncSummary}</AlertDescription>
+          <AlertDescription>{t('syncSummary', { ...syncSummary })}</AlertDescription>
         </Alert>
       ) : null}
       {syncModels.isError ? (
@@ -158,16 +155,16 @@ export function ModelTable() {
       ) : null}
 
       <Table narrow="list">
-        <TableCaption className="sr-only">Liste der KI-Modelle im Register</TableCaption>
+        <TableCaption className="sr-only">{t('caption')}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Modell</TableHead>
-            <TableHead>Kontext</TableHead>
-            <TableHead>Bild</TableHead>
-            <TableHead>Denkstufen</TableHead>
-            <TableHead>Preis</TableHead>
-            <TableHead>Aktiv</TableHead>
-            <TableHead className="text-right">Aktionen</TableHead>
+            <TableHead>{t('columns.model')}</TableHead>
+            <TableHead>{t('columns.context')}</TableHead>
+            <TableHead>{t('columns.vision')}</TableHead>
+            <TableHead>{t('columns.reasoning')}</TableHead>
+            <TableHead>{t('columns.price')}</TableHead>
+            <TableHead>{t('columns.enabled')}</TableHead>
+            <TableHead className="text-right">{t('columns.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -184,9 +181,10 @@ export function ModelTable() {
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Anbieter von ${model.displayName} ${
-                        expandedModelId === model.id ? 'ausblenden' : 'anzeigen'
-                      }`}
+                      aria-label={t(
+                        expandedModelId === model.id ? 'hideEndpoints' : 'showEndpoints',
+                        { name: model.displayName },
+                      )}
                       onClick={() =>
                         setExpandedModelId((current) => (current === model.id ? null : model.id))
                       }
@@ -202,13 +200,13 @@ export function ModelTable() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell label="Kontext">
-                  {numberFormat.format(model.contextWindowTokens)} Tokens
+                <TableCell label={t('columns.context')}>
+                  {t('tokens', { count: model.contextWindowTokens })}
                 </TableCell>
-                <TableCell label="Bild">
+                <TableCell label={t('columns.vision')}>
                   <div className="flex flex-col gap-0.5">
                     <Badge variant={model.supportsVision ? 'default' : 'muted'}>
-                      {model.supportsVision ? 'Ja' : 'Nein'}
+                      {model.supportsVision ? t('yes') : t('no')}
                     </Badge>
                     {!model.supportsVision && model.visionCompanionSlug !== null ? (
                       <span className="text-xs text-muted-foreground">
@@ -217,21 +215,24 @@ export function ModelTable() {
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell label="Denkstufen">
+                <TableCell label={t('columns.reasoning')}>
                   <div className="flex flex-wrap gap-1">
                     {model.reasoningLevels.map((level) => (
                       <Badge key={level} variant="secondary">
-                        {REASONING_LABELS[level]}
+                        {reasoningLabel(level)}
                       </Badge>
                     ))}
                   </div>
                 </TableCell>
-                <TableCell label="Preis">
-                  {formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}
+                <TableCell label={t('columns.price')}>
+                  {t('price', {
+                    input: formatPrice(format, model.inputMicroUsdPerMTok),
+                    output: formatPrice(format, model.outputMicroUsdPerMTok),
+                  })}
                 </TableCell>
-                <TableCell label="Aktiv">
+                <TableCell label={t('columns.enabled')}>
                   <Switch
-                    aria-label={`${model.displayName} aktiv`}
+                    aria-label={t('enabledToggle', { name: model.displayName })}
                     checked={model.enabled}
                     onCheckedChange={(checked) =>
                       updateModel.mutate({ modelId: model.id, request: { enabled: checked } })
@@ -245,7 +246,7 @@ export function ModelTable() {
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          aria-label={`Aktionen für ${model.displayName}`}
+                          aria-label={t('actionsFor', { name: model.displayName })}
                         >
                           <MoreHorizontalIcon />
                         </Button>
@@ -258,24 +259,23 @@ export function ModelTable() {
                           setDialogOpen(true);
                         }}
                       >
-                        Bearbeiten
+                        {t('edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         variant="destructive"
                         onClick={() => {
                           void confirmDialog
                             .confirm({
-                              title: `${model.displayName} entfernen?`,
-                              description:
-                                'Das Modell verschwindet aus der Auswahl. Nutzt ein Chat es schon, wird es nur abgeschaltet, damit der Chat es weiter kennt; sonst ist der Eintrag samt Preisen und Einstellungen weg.',
-                              confirmLabel: 'Entfernen',
+                              title: t('removeTitle', { name: model.displayName }),
+                              description: t('removeDescription'),
+                              confirmLabel: t('remove'),
                             })
                             .then((confirmed) => {
                               if (confirmed) deleteModel.mutate(model.id);
                             });
                         }}
                       >
-                        Entfernen
+                        {t('remove')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

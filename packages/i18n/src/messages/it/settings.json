@@ -8,5 +8,587 @@
     "saveFailed": "Non è stato possibile salvare la lingua. Riprova tra poco.",
     "loading": "Caricamento della lingua …",
     "loadError": "Impossibile caricare la lingua"
+  },
+  "groups": {
+    "ai": "IA",
+    "memory": "Memoria",
+    "entities": "Entità",
+    "search": "Ricerca",
+    "mcp": "MCP",
+    "calendar": "Calendario",
+    "notifications": "Notifiche",
+    "activity": "Attività",
+    "automations": "Automazioni",
+    "overview": "Pagine di panoramica",
+    "render": "Pubblicazione",
+    "projects": "Progetti",
+    "agents": "Agenti"
+  },
+  "keys": {
+    "ai": {
+      "enabled": {
+        "label": "IA abilitata",
+        "help": "Attiva o disattiva completamente l’IA integrata per questa installazione."
+      },
+      "defaultModelSlug": {
+        "label": "Modello predefinito",
+        "help": "Viene utilizzato quando una richiesta non specifica un proprio modello."
+      },
+      "systemPrompt": {
+        "label": "Prompt di sistema di base",
+        "help": "Viene anteposto a ogni esecuzione, prima di eventuali pagine di regole dell’IA."
+      },
+      "maxOutputTokens": {
+        "label": "Lunghezza massima della risposta (token)",
+        "help": "Limite massimo per la lunghezza di una singola risposta dell’IA."
+      },
+      "timeoutMs": {
+        "label": "Tempo limite per risposta del modello (ms)",
+        "help": "Interrompe una singola risposta del modello. Le chiamate agli strumenti e le risposte successive hanno tempi propri, vedi «Tempo totale per esecuzione»."
+      },
+      "maxRunMs": {
+        "label": "Tempo totale per esecuzione (ms)",
+        "help": "Trascorso questo tempo, l’esecuzione termina complessivamente, anche se sta ancora richiamando strumenti. Non può mai essere inferiore al tempo limite per risposta del modello."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Limite di costo per richiesta (µUSD)",
+        "help": "Un’esecuzione si interrompe non appena viene raggiunto questo limite di costo."
+      },
+      "toolsEnabled": {
+        "label": "Consenti strumenti",
+        "help": "Consente all’IA di richiamare strumenti come la ricerca o la lettura di pagine."
+      },
+      "mutatingToolsEnabled": {
+        "label": "Consenti strumenti di scrittura",
+        "help": "Consente inoltre all’IA di modificare i dati anziché limitarsi a leggerli."
+      },
+      "untrustedContentPolicy": {
+        "label": "Scrittura dopo contenuti esterni",
+        "help": "I testi provenienti da documenti caricati e dalle descrizioni di immagini possono contenere istruzioni per l’IA che nessuno ha scritto qui. Per impostazione predefinita, dopo aver letto tali contenuti un’esecuzione non può più modificare nulla; indicherà invece cosa avrebbe scritto. «Sempre consentito» serve solo per flussi di lavoro che devono leggere documenti esterni e scrivere direttamente a partire da essi."
+      },
+      "maxToolIterations": {
+        "label": "Iterazioni massime degli strumenti",
+        "help": "Limite massimo per le chiamate agli strumenti all’interno di un’esecuzione."
+      },
+      "visionEnabled": {
+        "label": "Abilita descrizione immagini",
+        "help": "Consente a un modello di visione di descrivere le immagini prima che il modello principale risponda."
+      },
+      "visionMaxImagesPerRun": {
+        "label": "Immagini per richiesta",
+        "help": "Limite massimo per il numero di immagini descritte per ciascuna esecuzione."
+      },
+      "pageContextEnabled": {
+        "label": "Includi il testo della pagina aperta",
+        "help": "Disattivato: l’IA apprende solo titolo e percorso della pagina aperta e carica il testo autonomamente se una domanda lo richiede. Attivato: il testo viene inviato a ogni domanda, anche se non pertinente. Necessario per i modelli senza strumenti, altrimenti comporta un flusso aggiuntivo di dati verso il fornitore."
+      },
+      "pageContextMaxChars": {
+        "label": "Caratteri della pagina aperta",
+        "help": "Limite massimo per il testo della pagina inviato. La parte eccedente viene troncata e l’omissione viene indicata chiaramente nel testo."
+      },
+      "maxPinnedSources": {
+        "label": "Fonti fissate per chat",
+        "help": "Quante pagine, viste del database e ricerche salvate possono essere fissate a una chat. Impostando zero si disattiva la funzione per questa area di lavoro."
+      },
+      "pinnedContextMaxChars": {
+        "label": "Caratteri di tutte le fonti incorporate",
+        "help": "Limite massimo complessivo per tutte le fonti fissate che includono il loro testo. La quota disponibile viene suddivisa equamente tra loro e ogni taglio viene indicato chiaramente nel testo."
+      },
+      "compactionThresholdPercent": {
+        "label": "Sintetizza a partire da (% della finestra di contesto)",
+        "help": "A partire da questo livello di riempimento, i messaggi meno recenti vengono condensati in una sintesi."
+      },
+      "compactionKeepRecentMessages": {
+        "label": "Mantieni gli ultimi messaggi",
+        "help": "Numero di messaggi più recenti che non vengono toccati dalla sintesi."
+      },
+      "compactionModelSlug": {
+        "label": "Modello per le sintesi",
+        "help": "L’opzione automatica usa lo stesso modello della chat."
+      },
+      "runPayloadRetentionDays": {
+        "label": "Conserva i testi dell’IA (giorni)",
+        "help": "Nelle esecuzioni dell’IA meno recenti, domanda e risposta vengono rimosse, mentre i numeri per la vista di utilizzo rimangono invariati. 0 significa: non eliminare mai. Le cronologie delle chat non vengono toccate."
+      },
+      "pdfExtractionEnabled": {
+        "label": "Estrai testo dai PDF",
+        "help": "Estrae il testo dai file PDF caricati affinché l’IA possa leggerlo."
+      },
+      "pdfExtractor": {
+        "label": "Metodo per PDF",
+        "help": "Docling viene eseguito in locale, non costa nulla per documento e legge anche le scansioni tramite riconoscimento del testo. OpenRouter non richiede un servizio dedicato, ma viene fatturato per pagina e non supporta la lettura delle scansioni. Titolo, autore e data vengono letti in entrambi i casi direttamente dal file."
+      },
+      "pdfExtractorFallbackEnabled": {
+        "label": "Secondo metodo come alternativa di riserva",
+        "help": "Se il metodo scelto non trova o non raggiunge nulla, viene tentato l’altro. Non ha effetto se è configurato solo uno dei due."
+      },
+      "pdfExtractionModelSlug": {
+        "label": "Modello per testo da PDF",
+        "help": "L’opzione automatica usa il modello predefinito."
+      },
+      "pdfMaxBytes": {
+        "label": "Dimensione massima del PDF (byte)",
+        "help": "I file PDF che superano questa dimensione non vengono accettati per l’estrazione del testo."
+      },
+      "officeExtractionEnabled": {
+        "label": "Leggi testo dai file di Office",
+        "help": "Legge Word, Excel, PowerPoint, OpenDocument, RTF, EPUB e CSV direttamente su questo server, senza container e senza costi per il modello."
+      },
+      "officeMaxBytes": {
+        "label": "Dimensione massima dei file di Office (byte)",
+        "help": "I file di Office che superano questa dimensione non vengono accettati per l’estrazione del testo."
+      },
+      "imageGenerationEnabled": {
+        "label": "Genera immagini di copertina",
+        "help": "Consente di far creare all’IA l’immagine di copertina di una pagina. Ogni immagine corrisponde a una chiamata a pagamento."
+      },
+      "imageModelSlug": {
+        "label": "Modello per le immagini",
+        "help": "Un modello in grado di generare immagini, ad esempio google/gemini-2.5-flash-image. Senza questo valore la generazione di immagini resta disattivata, anche se l’opzione sopra è attiva."
+      },
+      "webResearchEnabled": {
+        "label": "Cerca sul Web",
+        "help": "Consente all’IA di cercare sul Web e leggere singole pagine. Disattivato finché non viene abilitato: in tal caso partono richieste da questo server verso indirizzi scelti dal modello. Una pagina letta è considerata contenuto esterno, dopodiché si applica «Scrittura dopo contenuti esterni»."
+      },
+      "webResearchMaxChars": {
+        "label": "Caratteri per pagina recuperata",
+        "help": "Limite massimo per il testo di una singola pagina web. La parte eccedente viene troncata e l’omissione viene indicata chiaramente nel testo."
+      },
+      "webResearchMaxFetchesPerRun": {
+        "label": "Pagine per richiesta",
+        "help": "Numero di pagine web che una singola esecuzione può recuperare. 0 disattiva il recupero mantenendo attiva la ricerca."
+      },
+      "webSearchMaxResults": {
+        "label": "Risultati per ricerca",
+        "help": "Limite massimo per l’elenco dei risultati di una ricerca web."
+      }
+    },
+    "memory": {
+      "enabled": {
+        "label": "Memoria attivata",
+        "help": "Consente agli agenti di registrare le sessioni e salvare ricordi. Disattivata: non viene più scritto nulla, ma la lettura rimane possibile."
+      },
+      "captureModelSlug": {
+        "label": "Modello per la sintesi",
+        "help": "Riassume una sessione conclusa in pochi punti chiave. Senza indicazione viene usato il modello per la sintesi delle cronologie, altrimenti il modello predefinito."
+      },
+      "captureMinChars": {
+        "label": "Sessione minima (caratteri)",
+        "help": "Le sessioni più brevi non vengono nemmeno prese in considerazione. Informazioni trascurabili nella memoria peggiorano il recupero."
+      },
+      "recallMaxChars": {
+        "label": "Limite massimo per recupero (caratteri)",
+        "help": "Quantità massima di testo che un recupero può restituire. Una memoria che divora il contesto che dovrebbe migliorare non è di alcun aiuto."
+      },
+      "recallMaxResults": {
+        "label": "Limite massimo per recupero (risultati)",
+        "help": "Numero massimo di ricordi restituiti da un recupero, indipendentemente dalla richiesta."
+      },
+      "retentionDays": {
+        "label": "Conservazione delle note (giorni)",
+        "help": "Le note di sessione più vecchie vengono eliminate nell’area di lavoro della memoria. 0 significa: non eliminare mai. Le pagine di progetto rimangono sempre, le altre aree di lavoro non vengono mai toccate."
+      },
+      "consolidationEnabled": {
+        "label": "Consolidamento dei ricordi",
+        "help": "Riassume durante la notte affermazioni ricorrenti delle note di sessione in fatti, che un recupero antepone ai risultati. Costa una chiamata al modello per progetto ogni notte. Disattivata: rimangono solo le annotazioni pure e semplici."
+      },
+      "consolidationModelSlug": {
+        "label": "Modello per il consolidamento in fatti",
+        "help": "Valuta se una nota conferma, sostituisce o contraddice un fatto noto. Senza indicazione viene usato il modello per la sintesi delle sessioni."
+      },
+      "consolidationProjectsPerRun": {
+        "label": "Progetti per esecuzione",
+        "help": "Quanti progetti vengono elaborati in una notte. Limita il costo massimo di un’esecuzione; il resto verrà elaborato la notte successiva."
+      },
+      "consolidationNotesPerProject": {
+        "label": "Note per progetto",
+        "help": "Quante note non ancora lette un’esecuzione di progetto sottopone al modello."
+      },
+      "factHalfLifeDays": {
+        "label": "Tempo di dimezzamento di un fatto (giorni)",
+        "help": "Un fatto che nessuno conferma più perde la metà del suo peso in questo intervallo, poi di nuovo la metà. Non scompare, diventa più debole. 0 disattiva il decadimento."
+      },
+      "factConfidenceFloor": {
+        "label": "Soglia minima per i fatti",
+        "help": "Al di sotto di questo peso, un fatto non è più considerato attuale e finisce nel cestino. Tra 0 e 1."
+      },
+      "recallFactLimit": {
+        "label": "Fatti prima dei risultati",
+        "help": "Quanti fatti consolidati vengono anteposti al resto durante un recupero. 0 non ne antepone alcuno."
+      },
+      "mailboxEnabled": {
+        "label": "Casella postale tra agenti",
+        "help": "Gli agenti possono lasciarsi messaggi a vicenda, che compaiono in cima al successivo avvio di sessione del destinatario. Disattivata: l’invio viene rifiutato e i recuperi non contengono più posta."
+      },
+      "messageExpiryDays": {
+        "label": "I messaggi scadono dopo",
+        "help": "Dopo quanti giorni un messaggio non viene più recapitato se il mittente non specifica diversamente. Senza scadenza, la casella postale diventerebbe un deposito incontrollato."
+      },
+      "recallMessageLimit": {
+        "label": "Messaggi prima dei risultati",
+        "help": "Quanti messaggi non letti vengono anteposti a tutto il resto durante un recupero. 0 esclude la posta dai recuperi; rimane comunque leggibile tramite lo strumento."
+      }
+    },
+    "entities": {
+      "enabled": {
+        "label": "Entità attivate",
+        "help": "Rileva al salvataggio di una pagina di quali persone, host, servizi o progetti noti parla. Disattivata: non viene rilevato nulla, i collegamenti esistenti rimangono leggibili."
+      },
+      "databaseId": {
+        "label": "Database delle entità",
+        "help": "L’ID del database le cui righe rappresentano le entità. Si trova nella barra degli indirizzi dopo /seite/. Senza indicazione non ci sono nomi da cercare. Uno per installazione: un’entità è una cosa nel mondo e non deve essere reinventata in ogni area di lavoro."
+      },
+      "minAliasLength": {
+        "label": "Alias più breve (caratteri)",
+        "help": "I nomi più brevi vengono ignorati durante il confronto. Un nome di due lettere si trova in una pagina su due, e il risultato sembrerebbe un errore."
+      },
+      "maxMentionsPerDocument": {
+        "label": "Entità per pagina",
+        "help": "Il numero massimo di entità a cui una singola pagina può essere collegata. Limita l’impatto di una pagina di glossario in cui ogni nome compare una volta."
+      },
+      "candidatesEnabled": {
+        "label": "Suggerisci nuovi nomi",
+        "help": "Raccoglie i nomi che ricorrono spesso e per cui non esiste ancora un’entità. Non viene creato nulla in automatico, solo suggerito. Disattivato: rimane solo l’elenco curato manualmente."
+      },
+      "candidateThreshold": {
+        "label": "Soglia per un suggerimento (pagine)",
+        "help": "Un nome deve comparire in questo numero di pagine diverse prima di comparire tra i suggerimenti. Una pagina che menziona un nome una sola volta non è una prova sufficiente."
+      },
+      "recallProfileEnabled": {
+        "label": "Anteponi il profilo al recupero",
+        "help": "Se una richiesta riconosce il nome di un’entità nella domanda, viene mostrato prima il profilo e solo dopo i risultati. È lo scopo principale delle entità; richiede una query aggiuntiva per ogni recupero."
+      }
+    },
+    "search": {
+      "semanticEnabled": {
+        "label": "Ricerca semantica",
+        "help": "Cerca anche in base al significato invece che solo per parole, così una pagina compare anche se non si ricorda più come era formulata. Per farlo, ogni pagina indicizzata viene convertita una volta in un vettore da un modello; questo costa qualche centesimo per area di lavoro."
+      },
+      "embeddingModelSlug": {
+        "label": "Modello per vettori",
+        "help": "Deve fornire 1536 dimensioni, pari alla larghezza della colonna. openai/text-embedding-3-small lo fa in modo predefinito, openai/text-embedding-3-large può ridurle su richiesta. Un modello con una lunghezza diversa viene rifiutato invece di essere salvato in modo errato."
+      },
+      "semanticWeightPercent": {
+        "label": "Peso del significato (%)",
+        "help": "Quanto conta l’elenco dei risultati semantici rispetto a quello a testo pieno. 0 è solo testo pieno, 100 è solo significato, 50 dà a entrambi lo stesso peso."
+      }
+    },
+    "mcp": {
+      "enabled": {
+        "label": "Server MCP abilitato",
+        "help": "Consente a programmi esterni come il server MCP di accedere a questa installazione."
+      },
+      "maxSearchResults": {
+        "label": "Numero massimo di risultati di ricerca",
+        "help": "Limite massimo per il numero di risultati di una ricerca MCP."
+      },
+      "writeConfirmationRequired": {
+        "label": "Richiedi conferma per ogni operazione di scrittura",
+        "help": "Disattivato: solo le operazioni irreversibili (eliminazione definitiva di una pagina, colonna del database, commento, account) richiedono una conferma a due passaggi; tutto il resto è protetto dallo snapshot prima di ogni scrittura. Attivato: ogni strumento MCP che modifica i dati deve essere invocato due volte in modo identico. Questo rallenta notevolmente gli agenti."
+      }
+    },
+    "calendar": {
+      "remindersEnabled": {
+        "label": "Invia promemoria per gli eventi",
+        "help": "Invia un messaggio prima di un evento sincronizzato. Richiede anche un canale di invio configurato sul server."
+      },
+      "reminderLeadMinutes": {
+        "label": "Anticipo in minuti",
+        "help": "Quanto tempo prima di un evento con orario viene inviato il promemoria. 0 significa esattamente all’inizio."
+      },
+      "reminderAllDayHour": {
+        "label": "Orario per gli eventi di una giornata intera",
+        "help": "A che ora vengono notificati gli eventi di una giornata intera come i compleanni. Non avendo un orario di inizio, non è possibile calcolare un anticipo a ritroso."
+      },
+      "timeZone": {
+        "label": "Fuso orario",
+        "help": "Il fuso orario in base al quale interpretare le due impostazioni precedenti, ad esempio Europe/Berlin."
+      }
+    },
+    "notifications": {
+      "digestHour": {
+        "label": "Orario del riepilogo giornaliero",
+        "help": "A che ora viene inviato il riepilogo giornaliero dei commenti per chi lo ha attivato. Di mattina, perché un’email di questo tipo va letta con calma e non richiede una risposta immediata."
+      },
+      "digestTimeZone": {
+        "label": "Fuso orario del riepilogo",
+        "help": "Il fuso orario in base al quale interpretare l’orario precedente, ad esempio Europe/Berlin. È volutamente un’impostazione separata dall’ora del server, che è configurato su UTC."
+      },
+      "commentMailDebounceMinutes": {
+        "label": "Tempo di raggruppamento per le email di commento immediate (minuti)",
+        "help": "Quanto attendere l’arrivo di altri commenti prima di inviare un’email immediata. In questo modo quattro risposte in una discussione generano una sola email invece di quattro. 0 significa senza attesa."
+      }
+    },
+    "activity": {
+      "editSessionSnapshotsEnabled": {
+        "label": "Registra sessioni di modifica",
+        "help": "Salva a intervalli regolari una pagina in corso di modifica attiva, così la scheda delle attività può mostrare intervalli di tempo reali («modificato dalle 14:20 alle 14:45») invece del solo stato finale. Disattivato: non viene creata alcuna istantanea aggiuntiva."
+      },
+      "editSessionSnapshotIntervalMinutes": {
+        "label": "Intervallo tra le istantanee di sessione (minuti)",
+        "help": "La frequenza massima con cui salvare nuovamente una pagina in corso di modifica attiva. Ha effetto solo se l’opzione precedente è attivata."
+      },
+      "snapshotRetentionFullDays": {
+        "label": "Conservazione completa (giorni)",
+        "help": "Per questo periodo tutte le istantanee di una pagina vengono conservate, indipendentemente dal motivo."
+      },
+      "snapshotRetentionDailyDays": {
+        "label": "Sfoltimento giornaliero fino a (giorni)",
+        "help": "Tra la conservazione completa e questa età viene conservato al massimo un backup per giorno di calendario, successivamente al massimo uno a settimana. I backup nominati manualmente sono esclusi."
+      },
+      "snapshotRetentionDryRun": {
+        "label": "Simula solo l’epurazione (dry run)",
+        "help": "Attivo: la pulizia giornaliera calcola e registra ciò che eliminerebbe, ma non elimina nulla. Consigliato prima della prima esecuzione effettiva; disattivare poi consapevolmente."
+      }
+    },
+    "agents": {
+      "journalRetentionDays": {
+        "label": "Conserva le sessioni degli agenti (giorni)",
+        "help": "Per questo periodo rimane traccia nella sezione «Agenti» di quale sessione ha scritto cosa, ed è possibile annullare un’intera sessione in blocco. Successivamente scompare solo l’attribuzione; le versioni salvate delle pagine rimangono inalterate. 0 significa: per sempre."
+      },
+      "largePageChars": {
+        "label": "La pagina è considerata grande a partire da (caratteri)",
+        "help": "Se un agente scrive su una pagina che in seguito supera questa lunghezza, la risposta indica la nuova dimensione e le sezioni più grandi, suggerendo una sottopagina per un nuovo argomento. Non viene rifiutato nulla. Pensato per evitare pagine su cui nel tempo finisce di tutto, perché nessun agente le vede mai per intero."
+      },
+      "oversizedPageChars": {
+        "label": "Gli agenti non aggiungono più nulla a partire da (caratteri)",
+        "help": "Oltre questo limite, una richiesta dell’agente che renderebbe la pagina ancora più grande viene rifiutata, indicando le sezioni più grandi insieme allo strumento per spostarne una su una pagina dedicata. Ridurre il testo, riscrivere e modificare singole sezioni restano operazioni consentite, altrimenti una pagina troppo grande non si potrebbe più sistemare. L’editor, il Web Clipper, le importazioni e la memoria dell’agente sono esclusi."
+      }
+    },
+    "automations": {
+      "enabled": {
+        "label": "Automazioni abilitate",
+        "help": "L’interruttore principale per le regole che reagiscono alle modifiche alle pagine. Disattivato per impostazione predefinita: un’automazione invia dati all’esterno o spende denaro per un modello, e questo non deve iniziare a causa di un aggiornamento. Un’area di lavoro può disattivarle per sé, ma non riattivarle contro questa impostazione."
+      },
+      "webhookAllowedHosts": {
+        "label": "Host webhook consentiti",
+        "help": "Separati da virgola, senza schema e porta (ad es. «hooks.example.org, 127.0.0.1»). I sottodomini sono inclusi. Vuoto significa: non è possibile creare alcuna regola webhook e nessuna regola esistente viene eseguita. Il controllo avviene al salvataggio e nuovamente all’attivazione, in modo che accorciare questo elenco fermi anche le regole già esistenti."
+      },
+      "maxConsecutiveFailures": {
+        "label": "Errori prima della disattivazione automatica",
+        "help": "Quante volte di fila una regola può fallire prima di disattivarsi automaticamente. Una regola che punta a vuoto non migliora ripetendola: riempie solo il registro."
+      },
+      "webhookTimeoutSeconds": {
+        "label": "Tempo limite per un webhook (secondi)",
+        "help": "Il tempo massimo concesso al server di destinazione. Dopodiché l’esecuzione è considerata non riuscita."
+      },
+      "runRetentionDays": {
+        "label": "Conserva il registro delle esecuzioni (giorni)",
+        "help": "Per quanto tempo rimane visibile ciò che le automazioni hanno fatto. Le regole stesse rimangono inalterate. 0 significa: per sempre."
+      }
+    },
+    "overview": {
+      "enabled": {
+        "label": "Gestisci pagine di panoramica",
+        "help": "Indica se generare un’introduzione e schede riassuntive per le pagine contrassegnate come panoramica. L’elenco delle sottopagine compare sempre e comunque, non costa nulla. Disattivato significa: navigazione senza chiamate al modello. Un’area di lavoro può disattivarlo per sé, ma non riattivarlo contro questa impostazione."
+      },
+      "modelSlug": {
+        "label": "Modello per le panoramiche",
+        "help": "Se vuoto, usa il modello predefinito. Qui conviene un modello piccolo: si tratta ogni volta di due-cinque frasi, ma spesso."
+      },
+      "debounceSeconds": {
+        "label": "Tempo di attesa prima della riscrittura (secondi)",
+        "help": "Per quanto tempo una pagina deve restare inattiva prima che la relativa panoramica venga riscritta. Notevolmente più lungo rispetto alle automazioni: nessuno aspetta un’introduzione, e un pomeriggio di lavoro su una pagina deve costare una sola esecuzione, non venti."
+      },
+      "maxChildren": {
+        "label": "Sottopagine per introduzione",
+        "help": "Numero massimo di sottopagine oltre il quale non viene più generata un’introduzione. L’elenco rimane completo; viene omesso solo il paragrafo di inquadramento, perché con cento voci non dice più nulla che l’elenco non dica già."
+      },
+      "maxPageChars": {
+        "label": "Caratteri per pagina per la scheda riassuntiva",
+        "help": "Quantità di testo di una pagina utilizzata per la sua scheda riassuntiva. L’inizio di una pagina dice quasi sempre di cosa si tratta."
+      },
+      "generateCovers": {
+        "label": "Immagini di copertina per le pagine di panoramica",
+        "help": "Una pagina di panoramica senza immagine di copertina ne riceve una generata a partire dalla propria introduzione, una sola volta. Richiede un modello di generazione immagini configurato, altrimenti non succede nulla. Un’immagine di copertina rimossa manualmente rimane rimossa."
+      }
+    },
+    "render": {
+      "enabled": {
+        "label": "Esportazione PDF abilitata",
+        "help": "Consente di generare pagine esistenti in formato PDF con un modello. Attivo per impostazione predefinita: nessun dato lascia l’installazione e non costa denaro, solo tempo di calcolo su questo computer. Un’area di lavoro può disattivare l’esportazione per sé, ma non riattivarla contro questa impostazione."
+      },
+      "image": {
+        "label": "Immagine del container per la compilazione",
+        "help": "Contiene Pandoc, TeX Live e i caratteri tipografici; sul computer stesso non viene installato nulla. Un’immagine diversa cambia gli elementi su cui ogni modello può contare e non viene rilevata dal riutilizzo dei PDF già pronti: dopo la modifica, compila una volta con «rigenera»."
+      },
+      "timeoutSeconds": {
+        "label": "Tempo limite per una compilazione (secondi)",
+        "help": "Trascorso questo tempo, il container viene interrotto. Un’esecuzione di LaTeX che non è pronta dopo tre minuti di solito è in attesa di un input che nessuno può fornire."
+      },
+      "maxArtifactBytes": {
+        "label": "Dimensione massima del PDF generato (byte)",
+        "help": "Limite superiore per il file generato da una compilazione. Al di sopra di questa soglia, l’esecuzione è considerata non riuscita invece di riempire lo spazio di archiviazione."
+      },
+      "jobRetentionDays": {
+        "label": "Conserva il registro di compilazione (giorni)",
+        "help": "Per quanto tempo le build completate e i loro log restano visibili. I PDF generati rimangono salvati come allegati. 0 significa: per sempre."
+      }
+    },
+    "projects": {
+      "enabled": {
+        "label": "Compila progetti",
+        "help": "Indica se questa area di lavoro può compilare i propri progetti LaTeX. Se disattivato, puoi comunque modificare i file; solo il compilatore resta inattivo."
+      },
+      "image": {
+        "label": "Immagine container per la compilazione dei progetti",
+        "help": "Contiene TeX Live, latexmk, biber e i font. Senza questa immagine, ogni compilazione fallisce con un messaggio chiaro."
+      },
+      "timeoutSeconds": {
+        "label": "Limite di tempo per compilazione (secondi)",
+        "help": "Trascorso questo tempo, il container viene interrotto. Una tesi con bibliografia richiede diversi passaggi."
+      },
+      "maxArtifactBytes": {
+        "label": "Dimensione massima del PDF generato (byte)",
+        "help": "Un file generato più grande fa fallire la compilazione anziché esaurire lo spazio su disco."
+      },
+      "maxFileChars": {
+        "label": "Dimensione massima dei file di testo nel progetto (caratteri)",
+        "help": "Si applica a ogni singolo file, non all’intero progetto."
+      },
+      "maxFiles": {
+        "label": "File per progetto",
+        "help": "Percorsi totali, inclusi gli allegati."
+      },
+      "buildRetentionDays": {
+        "label": "Conserva i log di compilazione (giorni)",
+        "help": "Per quanto tempo le compilazioni completate, i registri e gli elenchi di errori restano visibili. I PDF rimangono salvati come allegati. 0 significa: per sempre."
+      }
+    }
+  },
+  "row": {
+    "automatic": "Automatico",
+    "rangeHint": "Consentito: da {min, number} a {max, number}.",
+    "invalid": "Questo valore non è valido.",
+    "invalidWithRange": "Non salvato. Consentito: da {min, number} a {max, number}.",
+    "choices": {
+      "pdfExtractor": {
+        "docling": "Docling (locale, gratuito, con riconoscimento del testo)",
+        "openrouter": "OpenRouter (in hosting, a pagamento, senza riconoscimento del testo)"
+      },
+      "untrustedContentPolicy": {
+        "guarded": "Bloccato non appena vengono letti contenuti esterni (consigliato)",
+        "deny": "Mai: l’IA non può apportare modifiche in nessuna esecuzione",
+        "allow": "Sempre consentito, anche dopo contenuti esterni"
+      }
+    }
+  },
+  "groupNav": {
+    "rejected": "valore rifiutato",
+    "pending": "modifica non salvata"
+  },
+  "unsaved": {
+    "title": "Ignorare le modifiche non salvate?",
+    "description": "{count, plural, one {Un’impostazione è stata modificata e non è ancora salvata} many {Un’impostazione è stata modificata e non è ancora salvata} other {# impostazioni sono state modificate e non sono ancora salvate}}. Cambiando pagina adesso andranno perse; l’azione non può essere annullata. Resta qui e salva per conservarle.",
+    "stay": "Resta qui",
+    "leave": "Ignora ed esci",
+    "notice": "{count, plural, one {Una modifica non è ancora salvata.} many {Una modifica non è ancora salvata.} other {# modifiche non sono ancora salvate.}}"
+  },
+  "form": {
+    "loading": "Caricamento impostazioni…",
+    "saved": "Impostazioni salvate.",
+    "save": "Salva",
+    "discard": "Annulla"
+  },
+  "adminForm": {
+    "refused": "{count, plural, one {Un’impostazione non rientra nell’intervallo consentito e non è stata salvata. È evidenziata in rosso nel modulo.} many {Un’impostazione non rientra nell’intervallo consentito e non è stata salvata. È evidenziata in rosso nel modulo.} other {# impostazioni non rientrano nell’intervallo consentito e non sono state salvate. Sono evidenziate in rosso nel modulo.}}",
+    "ignoredTitle": "I valori salvati vengono ignorati",
+    "ignoredDescription": "Nel database è presente un valore non valido per {count, plural, one {questa impostazione} many {questa impostazione} other {queste impostazioni}}: {labels}. L’installazione utilizzerà invece il valore predefinito. Salvare una volta sostituirà la riga errata."
+  },
+  "workspaceForm": {
+    "intro": "Senza un valore personalizzato, qui vale ciò che è impostato per l’intera installazione. I valori impostati qui si applicano solo a questa area di lavoro.",
+    "invalid": "Un valore inserito non è valido, non è stato salvato nulla.",
+    "ownValue": "Valore personalizzato",
+    "reset": "Ripristina il valore dell’installazione",
+    "resetting": "Ripristino in corso",
+    "inherited": "Ereditato dall’installazione",
+    "readOnly": "Solo chi possiede o amministra quest’area di lavoro può modificarlo."
+  },
+  "credentials": {
+    "readOnly": "Solo chi possiede quest’area di lavoro può impostare una chiave personalizzata. Chi lavora qui non noterà alcuna differenza, se non nella fatturazione.",
+    "loading": "Caricamento della chiave in corso…",
+    "unavailable": "Questa installazione non può salvare chiavi personalizzate: manca la chiave di cifratura. Fintanto che la situazione rimane invariata, tutte le richieste passeranno tramite la chiave dell’installazione.",
+    "ownKey": "Chiave personalizzata",
+    "endsWith": "termina con {hint}",
+    "hintUnknown": "sconosciuto",
+    "neverUsed": "mai usata",
+    "lastUsed": "usata l’ultima volta il {date}",
+    "deploymentKey": "Chiave dell’installazione",
+    "deploymentKeyHint": "Le esecuzioni dell’IA qui vengono addebitate all’installazione.",
+    "inputLabel": "Chiave OpenRouter",
+    "placeholderReplace": "Inserisci una nuova chiave",
+    "replace": "Sostituisci",
+    "save": "Salva",
+    "remove": "Rimuovi chiave",
+    "saved": "Salvata. Dalla prossima esecuzione verrà usata questa chiave.",
+    "footnote": "La chiave viene memorizzata cifrata e non verrà mai più mostrata. Copre i costi delle esecuzioni dell’IA per quest’area di lavoro. La ricerca continua a usare la chiave dell’installazione, poiché tutti gli embedding devono risiedere nello stesso spazio vettoriale."
+  },
+  "workspace": {
+    "title": "Impostazioni dell’area di lavoro",
+    "loading": "Caricamento dell’area di lavoro in corso…",
+    "summary": "{name} · {count, plural, one {# membro} many {# membri} other {# membri}}",
+    "tabs": {
+      "general": "Generale",
+      "members": "Membri",
+      "ai": "IA",
+      "settings": "Impostazioni"
+    },
+    "readOnly": "Solo chi possiede o amministra quest’area di lavoro può rinominarla o modificarne lo slug.",
+    "nameLabel": "Nome",
+    "save": "Salva",
+    "nameSaved": "Nome salvato.",
+    "saved": "Salvato.",
+    "aiKey": {
+      "title": "Chiave personalizzata per l’IA",
+      "description": "Senza una chiave personalizzata, le richieste di quest’area di lavoro passeranno tramite quella dell’installazione."
+    },
+    "aiRules": {
+      "title": "Regole dell’IA",
+      "description": "Pagine trattate dall’IA come istruzioni. L’opzione si imposta nelle proprietà della pagina corrispondente."
+    },
+    "config": {
+      "title": "Configurazione di quest’area di lavoro",
+      "description": "Questi valori si applicano solo qui. Tutto il resto proviene dall’installazione."
+    },
+    "more": {
+      "title": "Altre sezioni",
+      "automations": "Apri automazioni",
+      "templates": "Apri modelli per PDF",
+      "shares": "Apri condivisioni",
+      "description": "Regole che reagiscono alle modifiche alle pagine, con il registro delle loro attività. Gli strumenti per pubblicare le pagine di questa area di lavoro in PDF. E ciò che da questa area di lavoro è condiviso all’esterno, con altri account o tramite link pubblico."
+    },
+    "slug": {
+      "label": "Slug",
+      "description": "Lo slug è presente nei link già inviati o salvati. A differenza del nome non si aggiorna automaticamente, e una modifica renderà questi link non funzionanti.",
+      "confirm": "Modifica comunque",
+      "saved": "Slug salvato."
+    },
+    "memory": {
+      "label": "Memoria degli agenti",
+      "description": "Gli agenti salvano le loro note di sessione in questa area di lavoro e le ritrovano all’avvio successivo. Qui le note scadono dopo il termine impostato. Non è una funzione adatta a un’area che gestisci tu."
+    },
+    "members": {
+      "title": "Membri",
+      "description": "L’iscrizione è sempre esplicita: le persone invitate accedono esattamente a questa area di lavoro.",
+      "invite": "Invita",
+      "caption": "Membri di questa area di lavoro",
+      "name": "Nome",
+      "email": "E-mail",
+      "role": "Ruolo",
+      "actions": "Azioni",
+      "you": "Tu",
+      "roleOf": "Ruolo di {name}",
+      "remove": "Rimuovi",
+      "openInvitations": "Inviti in sospeso",
+      "removeTitle": "Rimuovi membro",
+      "removeDescription": "{name} perderà l’accesso a questa area di lavoro, immediatamente e anche nelle schede già aperte. Le pagine e i commenti creati rimarranno intatti. Per accedere di nuovo servirà un nuovo invito.",
+      "cancel": "Annulla"
+    },
+    "roles": {
+      "OWNER": "Proprietario",
+      "ADMIN": "Amministratore",
+      "MEMBER": "Membro",
+      "GUEST": "Ospite"
+    }
   }
 }

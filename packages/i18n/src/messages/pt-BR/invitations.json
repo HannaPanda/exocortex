@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrador",
+    "MEMBER": "Membro",
+    "GUEST": "Visitante (apenas leitura)"
+  },
+  "statuses": {
+    "pending": "Pendente",
+    "accepted": "Aceito",
+    "revoked": "Revogado",
+    "expired": "Expirado"
+  },
+  "dialog": {
+    "title": "Convidar",
+    "descriptionAdmin": "A pessoa convidada cria uma conta própria pelo link. Não é possível se registrar sem convite.",
+    "descriptionWorkspace": "A pessoa convidada cria uma conta pelo link e se torna membro deste espaço de trabalho.",
+    "sent": "Convite enviado para {email}. O link é válido por {days, plural, one {# dia} many {# dias} other {# dias}} e só pode ser usado uma vez.",
+    "mailFailed": "O convite foi criado, mas não foi possível enviar o e-mail. Compartilhe o link abaixo diretamente ou envie o convite novamente mais tarde.",
+    "link": "Link de convite",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "linkOnce": "Este link só será exibido agora. Ele não fica salvo em lugar nenhum, então copie agora se precisar dele.",
+    "another": "Convidar outra pessoa",
+    "close": "Fechar",
+    "email": "Endereço de e-mail",
+    "workspace": "Espaço de trabalho",
+    "noWorkspace": "Nenhum",
+    "noWorkspaceHint": "Sem um espaço de trabalho, a conta criada ainda não terá acesso a nada. As participações são sempre atribuídas expressamente por aqui.",
+    "role": "Função no espaço de trabalho",
+    "grantAdmin": "Administrador desta instalação",
+    "grantAdminHint": "Pode gerenciar pessoas usuárias, alterar configurações e ver todos os espaços de trabalho.",
+    "cancel": "Cancelar",
+    "sending": "Enviando…",
+    "submit": "Convidar"
+  },
+  "table": {
+    "loading": "Carregando convites…",
+    "loadFailed": "Não foi possível carregar os convites",
+    "emptyTitle": "Nenhum convite",
+    "emptyDescription": "Quem for entrar precisa de um convite. O cadastro sem convite está desativado.",
+    "freshLink": "Novo link de convite",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "freshLinkHint": "O link anterior não é mais válido. Cada reenvio gera um link novo.",
+    "caption": "Convites",
+    "email": "E-mail",
+    "status": "Status",
+    "workspace": "Espaço de trabalho",
+    "role": "Função",
+    "invitedBy": "Convite enviado por",
+    "expiresAt": "Válido até",
+    "sent": "Enviado",
+    "actions": "Ações",
+    "admin": "Admin",
+    "notDelivered": "não entregue",
+    "revokeTitle": "Revogar convite?",
+    "revokeDescription": "O link enviado para {email} deixará de funcionar. Se a pessoa ainda for participar, precisará de um novo convite.",
+    "revoke": "Revogar",
+    "resend": "Reenviar"
+  }
+}

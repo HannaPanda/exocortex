@@ -36,6 +36,20 @@ export function detectPushSupport(): PushSupport {
   return 'unsupported';
 }
 
+/**
+ * Why setting up push on this browser failed, as something the panel can put
+ * into words. Carries no sentence itself: the wording is the catalogue's
+ * (`account.pushDevices.errors.<reason>`), in the reader's language.
+ */
+export type PushSetupFailure = 'denied' | 'dismissed' | 'incomplete';
+
+export class PushSetupError extends Error {
+  constructor(readonly reason: PushSetupFailure) {
+    super(`push setup failed: ${reason}`);
+    this.name = 'PushSetupError';
+  }
+}
+
 export interface BrowserSubscription {
   endpoint: string;
   keys: { p256dh: string; auth: string };
@@ -59,11 +73,7 @@ export async function readExistingSubscription(): Promise<BrowserSubscription | 
 export async function subscribeToPush(publicKey: string): Promise<BrowserSubscription> {
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
-    throw new Error(
-      permission === 'denied'
-        ? 'Dein Browser blockiert Benachrichtigungen für diese Seite. Das lässt sich nur in den Browser-Einstellungen wieder erlauben.'
-        : 'Ohne Erlaubnis kann dieses Gerät nicht benachrichtigt werden.',
-    );
+    throw new PushSetupError(permission === 'denied' ? 'denied' : 'dismissed');
   }
 
   const registration = await navigator.serviceWorker.ready;
@@ -86,14 +96,22 @@ export async function unsubscribeFromPush(): Promise<void> {
   await subscription.unsubscribe();
 }
 
+/** What this browser says about itself, reduced to two names. */
+export interface BrowserIdentity {
+  browser: string;
+  /** Null when the platform is not one of the few this recognises. */
+  platform: string | null;
+}
+
 /**
- * A name for this browser, proposed from what it says about itself.
+ * The parts of a name for this browser, proposed from what it says about
+ * itself; the panel puts them into words. Null where there is no navigator.
  *
  * Deliberately coarse. A full user agent string is unreadable, and the point
  * is only to tell two rows apart until somebody renames them.
  */
-export function proposeDeviceLabel(): string {
-  if (typeof navigator === 'undefined') return 'Unbekanntes Gerät';
+export function identifyBrowser(): BrowserIdentity | null {
+  if (typeof navigator === 'undefined') return null;
   const agent = navigator.userAgent;
 
   const browser = /Firefox\//.test(agent)
@@ -120,7 +138,7 @@ export function proposeDeviceLabel(): string {
             ? 'Linux'
             : null;
 
-  return platform === null ? browser : `${browser} auf ${platform}`;
+  return { browser, platform };
 }
 
 function toSubscription(subscription: PushSubscription): BrowserSubscription {
@@ -131,7 +149,7 @@ function toSubscription(subscription: PushSubscription): BrowserSubscription {
     // A subscription without keys cannot be encrypted to, which means it
     // cannot be used at all. Refusing it here is better than storing a row
     // that never delivers.
-    throw new Error('Der Browser hat ein unvollständiges Abonnement geliefert.');
+    throw new PushSetupError('incomplete');
   }
   return { endpoint: subscription.endpoint, keys: { p256dh, auth } };
 }

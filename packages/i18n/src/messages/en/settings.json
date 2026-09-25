@@ -8,5 +8,587 @@
     "saveFailed": "The language couldn’t be saved. Try again in a moment.",
     "loading": "Loading language …",
     "loadError": "Could not load language"
+  },
+  "groups": {
+    "ai": "AI",
+    "memory": "Memory",
+    "entities": "Entities",
+    "search": "Search",
+    "mcp": "MCP",
+    "calendar": "Calendar",
+    "notifications": "Notifications",
+    "activity": "Activity",
+    "automations": "Automations",
+    "overview": "Overview pages",
+    "render": "Publishing",
+    "projects": "Projects",
+    "agents": "Agents"
+  },
+  "keys": {
+    "ai": {
+      "enabled": {
+        "label": "AI enabled",
+        "help": "Fully turns the built-in AI on or off for this installation."
+      },
+      "defaultModelSlug": {
+        "label": "Default model",
+        "help": "Used when a request does not specify its own model."
+      },
+      "systemPrompt": {
+        "label": "Base system prompt",
+        "help": "Prepended to every run, even before any AI rule pages."
+      },
+      "maxOutputTokens": {
+        "label": "Maximum response length (tokens)",
+        "help": "Upper limit for the length of a single AI response."
+      },
+      "timeoutMs": {
+        "label": "Timeout per model response (ms)",
+        "help": "Cancels a single response from the model. Tool calls and follow-up responses have their own time; see “Total time per run”."
+      },
+      "maxRunMs": {
+        "label": "Total time per run (ms)",
+        "help": "A run ends completely after this time, even if it is still calling tools. Can never be shorter than the timeout per model response."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Cost limit per request (µUSD)",
+        "help": "A run stops as soon as this cost limit is reached."
+      },
+      "toolsEnabled": {
+        "label": "Allow tools",
+        "help": "Allows the AI to call tools such as search or reading pages."
+      },
+      "mutatingToolsEnabled": {
+        "label": "Allow mutating tools",
+        "help": "Additionally allows the AI to modify data instead of only reading it."
+      },
+      "untrustedContentPolicy": {
+        "label": "Writing after untrusted content",
+        "help": "Text from uploaded documents and image descriptions can contain instructions to the AI that nobody here wrote. By default, a run may no longer modify anything after reading such content; it then states what it would have written. “Always allowed” is only needed for workflows that read external documents and should write from them directly."
+      },
+      "maxToolIterations": {
+        "label": "Maximum tool iterations",
+        "help": "Upper limit for tool calls within a run."
+      },
+      "visionEnabled": {
+        "label": "Enable image description",
+        "help": "Lets a vision model describe images before the main model responds."
+      },
+      "visionMaxImagesPerRun": {
+        "label": "Images per request",
+        "help": "Upper limit for the number of described images per run."
+      },
+      "pageContextEnabled": {
+        "label": "Include text of the open page",
+        "help": "Off: The AI only learns the title and path of the open page and loads the text itself if a question requires it. On: The text is sent with every question, even if it has nothing to do with it. Required for models without tools; otherwise, additional data flows to the provider."
+      },
+      "pageContextMaxChars": {
+        "label": "Characters of the open page",
+        "help": "Upper limit for the page text sent along. Anything beyond this is truncated, and the truncation is indicated visibly in the text."
+      },
+      "maxPinnedSources": {
+        "label": "Pinned sources per chat",
+        "help": "How many pages, database views, and saved searches may be pinned to a chat. Zero disables pinning for this workspace."
+      },
+      "pinnedContextMaxChars": {
+        "label": "Characters across all embedded sources",
+        "help": "Upper limit for all pinned sources combined that send their text. The budget is split evenly among them, and any truncation is indicated visibly in the text."
+      },
+      "compactionThresholdPercent": {
+        "label": "Compact at (% of context window)",
+        "help": "Once this fill level is reached, older messages are condensed into a summary."
+      },
+      "compactionKeepRecentMessages": {
+        "label": "Keep recent messages",
+        "help": "This many of the most recent messages remain untouched by a compaction."
+      },
+      "compactionModelSlug": {
+        "label": "Model for summaries",
+        "help": "Automatic uses the same model as the chat."
+      },
+      "runPayloadRetentionDays": {
+        "label": "Retain AI text (days)",
+        "help": "For older AI runs, the question and answer are cleared, while the numbers for the usage view remain. 0 means: never clean up. Chat histories remain unaffected."
+      },
+      "pdfExtractionEnabled": {
+        "label": "Extract PDF text",
+        "help": "Extracts text from uploaded PDF files so the AI can read it."
+      },
+      "pdfExtractor": {
+        "label": "PDF method",
+        "help": "Docling runs locally, costs nothing per document, and can read scans using optical character recognition. OpenRouter does not require a dedicated service, but is billed per page and cannot read scans. In both cases, the title, author, and date are read directly from the file."
+      },
+      "pdfExtractorFallbackEnabled": {
+        "label": "Secondary method as fallback",
+        "help": "If the selected method finds or reaches nothing, it tries the other one. Has no effect if only one of the two is configured."
+      },
+      "pdfExtractionModelSlug": {
+        "label": "Model for PDF text",
+        "help": "Automatic uses the default model."
+      },
+      "pdfMaxBytes": {
+        "label": "Maximum PDF size (bytes)",
+        "help": "PDFs larger than this size will not be accepted for text extraction."
+      },
+      "officeExtractionEnabled": {
+        "label": "Read text from Office files",
+        "help": "Reads Word, Excel, PowerPoint, OpenDocument, RTF, EPUB, and CSV directly on this server, without containers and without model costs."
+      },
+      "officeMaxBytes": {
+        "label": "Maximum Office file size (bytes)",
+        "help": "Office files larger than this size will not be accepted for text extraction."
+      },
+      "imageGenerationEnabled": {
+        "label": "Generate cover images",
+        "help": "Allows the AI to generate the cover image for a page. Each image is a paid call."
+      },
+      "imageModelSlug": {
+        "label": "Model for images",
+        "help": "A model capable of generating images, for example google/gemini-2.5-flash-image. Without an entry, image generation remains off even if the switch above is on."
+      },
+      "webResearchEnabled": {
+        "label": "Research the web",
+        "help": "Allows the AI to search the web and read individual pages. Off until someone enables it: requests are sent from this server to addresses chosen by the model. A read page counts as third-party content, after which “Writing after third-party content” applies."
+      },
+      "webResearchMaxChars": {
+        "label": "Characters per fetched page",
+        "help": "Upper limit for the text of an individual web page. Anything beyond this is truncated, and the truncation is indicated visibly in the text."
+      },
+      "webResearchMaxFetchesPerRun": {
+        "label": "Pages per request",
+        "help": "How many web pages a single run is allowed to fetch. 0 disables fetching and leaves searching enabled."
+      },
+      "webSearchMaxResults": {
+        "label": "Results per search",
+        "help": "Upper limit for web search results."
+      }
+    },
+    "memory": {
+      "enabled": {
+        "label": "Memory enabled",
+        "help": "Allows agents to record sessions and store memories. Off: nothing more is written, reading remains available."
+      },
+      "captureModelSlug": {
+        "label": "Model for condensing",
+        "help": "Condenses an ended session into a few bullet points. If left blank, the model for condensing history is used, otherwise the default model."
+      },
+      "captureMinChars": {
+        "label": "Shortest session (characters)",
+        "help": "Shorter sessions aren’t accepted in the first place. Clutter in memory impairs retrieval."
+      },
+      "recallMaxChars": {
+        "label": "Upper limit per recall (characters)",
+        "help": "The maximum amount of text a recall may return. A memory that eats up the context it is meant to improve doesn’t help."
+      },
+      "recallMaxResults": {
+        "label": "Upper limit per recall (results)",
+        "help": "The maximum number of memories a recall returns, regardless of what was asked for."
+      },
+      "retentionDays": {
+        "label": "Retain notes (days)",
+        "help": "Older session notes are deleted in the memory workspace. 0 means: never clean up. Project pages always remain, and other workspaces are never touched."
+      },
+      "consolidationEnabled": {
+        "label": "Consolidate memories",
+        "help": "Combines recurring statements from session notes into facts each night, which a recall prioritizes at the top. Costs one model call per project per night. Off: stays as raw notes only."
+      },
+      "consolidationModelSlug": {
+        "label": "Model for consolidating into facts",
+        "help": "Judges whether a note confirms, replaces, or contradicts a known fact. If left blank, the model for condensing sessions is used."
+      },
+      "consolidationProjectsPerRun": {
+        "label": "Projects per run",
+        "help": "How many projects a night processes. Limits the maximum cost of a run; the rest is handled the following night."
+      },
+      "consolidationNotesPerProject": {
+        "label": "Notes per project",
+        "help": "How many unread notes a project run presents to the model."
+      },
+      "factHalfLifeDays": {
+        "label": "Fact half-life (days)",
+        "help": "A fact that nobody confirms anymore loses half its weight over this period, then half again. It doesn’t disappear; it fades. 0 disables decay."
+      },
+      "factConfidenceFloor": {
+        "label": "Lower threshold for facts",
+        "help": "Below this weight, a fact is no longer considered current and is moved to the trash. Between 0 and 1."
+      },
+      "recallFactLimit": {
+        "label": "Facts before the result list",
+        "help": "How many consolidated facts a recall prepends to the rest. 0 prepends none."
+      },
+      "mailboxEnabled": {
+        "label": "Inter-agent mailbox",
+        "help": "Agents can leave messages for each other that appear at the very top at the recipient’s next session start. Off: sending is rejected, and a recall no longer carries messages."
+      },
+      "messageExpiryDays": {
+        "label": "Messages expire after",
+        "help": "After how many days a message is no longer delivered if the sender doesn’t specify otherwise. Without expiration, the mailbox would turn into a junk heap."
+      },
+      "recallMessageLimit": {
+        "label": "Messages before the result list",
+        "help": "How many unread messages a recall prepends before everything else. 0 leaves messages out of recalls; they remain readable via the tool."
+      }
+    },
+    "entities": {
+      "enabled": {
+        "label": "Entities enabled",
+        "help": "Captures which known people, hosts, services, or projects a page talks about when saving it. Off: nothing is recorded, existing links remain readable."
+      },
+      "databaseId": {
+        "label": "Entity database",
+        "help": "The ID of the database whose rows are the entities. It is in the address bar after /page/. Without an entry, there are no names to search for. One per installation: an entity is a thing in the world and shouldn’t be reinvented in every workspace."
+      },
+      "minAliasLength": {
+        "label": "Shortest alias name (characters)",
+        "help": "Shorter names are skipped during matching. A two-letter name appears in every other page, and the result looks like a glitch."
+      },
+      "maxMentionsPerDocument": {
+        "label": "Entities per page",
+        "help": "The maximum number of entities a single page can be linked to. Limits the impact of a glossary page where every name appears once."
+      },
+      "candidatesEnabled": {
+        "label": "Suggest new names",
+        "help": "Collects names that appear repeatedly and do not have an entity yet. Nothing is created automatically, only suggested. Off: only the curated list is kept."
+      },
+      "candidateThreshold": {
+        "label": "Threshold for a suggestion (pages)",
+        "help": "A name must appear on this many different pages before it shows up as a suggestion. A single page mentioning a name once is not enough evidence."
+      },
+      "recallProfileEnabled": {
+        "label": "Prepend profile during retrieval",
+        "help": "If retrieval detects an entity name in the question, the profile comes first, followed by the results. That is the actual purpose of entities; it costs one extra query per retrieval."
+      }
+    },
+    "search": {
+      "semanticEnabled": {
+        "label": "Semantic search",
+        "help": "Also searches by meaning instead of just words, so a page still shows up even if nobody remembers how it was phrased. For this, every indexed page is translated once into a vector by a model, costing a few cents per workspace."
+      },
+      "embeddingModelSlug": {
+        "label": "Model for vectors",
+        "help": "Must provide 1536 dimensions; that is the width of the column. openai/text-embedding-3-small does this natively, and openai/text-embedding-3-large can truncate to it on request. A model with a different length is rejected instead of being saved incorrectly."
+      },
+      "semanticWeightPercent": {
+        "label": "Semantic weight (%)",
+        "help": "How much the semantic results count compared to the full-text results. 0 is pure full text, 100 is pure meaning, 50 weighs both equally."
+      }
+    },
+    "mcp": {
+      "enabled": {
+        "label": "MCP server enabled",
+        "help": "Allows external programs such as the MCP server to access this installation."
+      },
+      "maxSearchResults": {
+        "label": "Maximum search results",
+        "help": "Upper limit for the number of results from an MCP search."
+      },
+      "writeConfirmationRequired": {
+        "label": "Require confirmation for every write access",
+        "help": "Off: Only actions that cannot be undone (permanently deleting a page, database column, comment, account) require a two-step confirmation; everything else is protected by the snapshot before each write. On: Every MCP tool that modifies data must be called twice identically. This noticeably slows down agents."
+      }
+    },
+    "calendar": {
+      "remindersEnabled": {
+        "label": "Send event reminders",
+        "help": "Sends a message before a mirrored event. Also requires a configured delivery channel on the server."
+      },
+      "reminderLeadMinutes": {
+        "label": "Lead time in minutes",
+        "help": "How long before a timed event the reminder is sent. 0 means right at the start."
+      },
+      "reminderAllDayHour": {
+        "label": "Time of day for all-day events",
+        "help": "At which hour all-day events like birthdays are announced. They have no start time to count back from."
+      },
+      "timeZone": {
+        "label": "Time zone",
+        "help": "In which zone the two settings above are interpreted, for example Europe/Berlin."
+      }
+    },
+    "notifications": {
+      "digestHour": {
+        "label": "Daily digest time",
+        "help": "At which hour the daily comment digest is sent for everyone who has it enabled. In the morning, because such an email should be read once and not answered immediately."
+      },
+      "digestTimeZone": {
+        "label": "Digest time zone",
+        "help": "In which zone the time above is interpreted, for example Europe/Berlin. Deliberately a separate setting rather than the server’s time, which runs in UTC."
+      },
+      "commentMailDebounceMinutes": {
+        "label": "Batching window for instant comment emails (minutes)",
+        "help": "How long to wait for further comments before sending an instant email. This turns four replies in a thread into one email instead of four. 0 means: no waiting."
+      }
+    },
+    "activity": {
+      "editSessionSnapshotsEnabled": {
+        "label": "Record edit sessions",
+        "help": "Backs up an actively edited page at regular intervals so the activity tab can show actual time spans (“edited 14:20 to 14:45”) instead of just the latest state. Off: no additional backups are created."
+      },
+      "editSessionSnapshotIntervalMinutes": {
+        "label": "Interval between session backups (minutes)",
+        "help": "How often at most an actively edited page may be backed up again. Only takes effect if the setting above is enabled."
+      },
+      "snapshotRetentionFullDays": {
+        "label": "Full retention (days)",
+        "help": "How long all snapshots of a page are kept, regardless of the reason."
+      },
+      "snapshotRetentionDailyDays": {
+        "label": "Daily thinning up to (days)",
+        "help": "Between full retention and this age, at most one snapshot remains per calendar day, after which at most one per week. Manually named snapshots are exempt."
+      },
+      "snapshotRetentionDryRun": {
+        "label": "Only simulate pruning (dry run)",
+        "help": "On: daily cleanup calculates and logs what it would delete, but deletes nothing. Recommended before the first live run; deliberately switch off afterwards."
+      }
+    },
+    "agents": {
+      "journalRetentionDays": {
+        "label": "Retain agent sessions (days)",
+        "help": "How long it remains traceable in the “Agents” section which session wrote what, and how long a session can be reverted in one go. Afterwards, only the association disappears; the saved states of the pages remain unaffected. 0 means: forever."
+      },
+      "largePageChars": {
+        "label": "Page considered large starting at (characters)",
+        "help": "If an agent writes to a page that becomes longer than this, the response states the new size and the largest sections, and suggests a subpage for a new topic. Nothing is rejected. Intended to prevent pages where everything ends up over time because no agent ever sees them in full."
+      },
+      "oversizedPageChars": {
+        "label": "Agents stop appending starting at (characters)",
+        "help": "Above this, an agent request that would make the page even larger is rejected, stating the largest sections along with the tool to move one of them to its own page. Shortening, rewriting, and modifying individual sections remain allowed, otherwise an oversized page could no longer be fixed. The editor, Web Clipper, imports, and agent memory are exempt."
+      }
+    },
+    "automations": {
+      "enabled": {
+        "label": "Automations enabled",
+        "help": "The master switch for rules that react to changes on pages. Off by default: an automation sends data externally or spends money on a model, and that should not start through an update. A workspace may disable them for itself, but cannot re-enable them against this setting."
+      },
+      "webhookAllowedHosts": {
+        "label": "Allowed webhook hosts",
+        "help": "Comma-separated, without scheme and port (e.g. “hooks.example.org, 127.0.0.1”). Subdomains are included. Empty means: no webhook rule can be created and no existing one runs. Checked when saving and again when triggered, so shortening this list also stops rules that already exist."
+      },
+      "maxConsecutiveFailures": {
+        "label": "Failures until auto-disable",
+        "help": "How many times a rule may fail in a row before disabling itself. A rule pointing into the void does not get better by repeating; it only fills the log."
+      },
+      "webhookTimeoutSeconds": {
+        "label": "Timeout for a webhook (seconds)",
+        "help": "How long the receiving server may take. Afterwards, the run is considered failed."
+      },
+      "runRetentionDays": {
+        "label": "Retain run log (days)",
+        "help": "How long what the automations did remains visible. The rules themselves remain unaffected. 0 means: forever."
+      }
+    },
+    "overview": {
+      "enabled": {
+        "label": "Maintain overview pages",
+        "help": "Whether an intro and summaries are generated for pages marked as an overview. The list of subpages is always shown regardless; it costs nothing. Off means: navigation without model calls. A workspace may turn this off for itself, but cannot turn it back on against this setting."
+      },
+      "modelSlug": {
+        "label": "Model for overviews",
+        "help": "Empty uses the default model. A small model is worthwhile here: it involves two to five sentences each time, but frequently."
+      },
+      "debounceSeconds": {
+        "label": "Quiet period before rewriting (seconds)",
+        "help": "How long a page must remain quiet before its overview is rewritten. Significantly longer than for automations: nobody waits for an intro, and an afternoon of work on a page should cost one run, not twenty."
+      },
+      "maxChildren": {
+        "label": "Subpages per intro",
+        "help": "The number of subpages at which an intro is no longer generated. The list remains complete; only the introductory paragraph is omitted, because with a hundred entries it no longer adds anything the list does not already say."
+      },
+      "maxPageChars": {
+        "label": "Characters per page for summary",
+        "help": "How much text of a page is included in its summary. The beginning of a page almost always explains what it is about."
+      },
+      "generateCovers": {
+        "label": "Cover images for overview pages",
+        "help": "An overview page without a cover image gets one drawn from its own intro, once. Requires a configured image model, otherwise nothing happens. A cover image removed manually stays removed."
+      }
+    },
+    "render": {
+      "enabled": {
+        "label": "PDF output enabled",
+        "help": "Allows generating existing pages as PDF using a template. On by default: no data leaves the installation and it costs no money, only compute time on this machine. A workspace may turn off output for itself, but cannot turn it back on against this setting."
+      },
+      "image": {
+        "label": "Container image for builds",
+        "help": "Contains Pandoc, TeX Live, and the fonts; nothing is installed on the machine itself. A different image changes what every template can rely on and is not noticed by the reuse of existing PDFs: build once with “regenerate” afterwards."
+      },
+      "timeoutSeconds": {
+        "label": "Timeout for a build (seconds)",
+        "help": "Afterwards, the container is aborted. A LaTeX run that is not finished after three minutes is usually waiting for input that no one can provide."
+      },
+      "maxArtifactBytes": {
+        "label": "Maximum generated PDF size (bytes)",
+        "help": "Upper limit for the file a build may produce. Above this, the run is considered failed rather than filling storage."
+      },
+      "jobRetentionDays": {
+        "label": "Retain build log (days)",
+        "help": "How long finished builds and their logs remain visible. Generated PDFs are kept as attachments. 0 means: forever."
+      }
+    },
+    "projects": {
+      "enabled": {
+        "label": "Build projects",
+        "help": "Whether this workspace may compile its LaTeX projects. Editing remains possible when this is off; only the compiler stays silent."
+      },
+      "image": {
+        "label": "Container image for project builds",
+        "help": "Contains TeX Live, latexmk, biber, and fonts. Without this image, every build fails with a clear message."
+      },
+      "timeoutSeconds": {
+        "label": "Time limit per build (seconds)",
+        "help": "The container is terminated after this. A thesis with a bibliography requires multiple runs."
+      },
+      "maxArtifactBytes": {
+        "label": "Maximum generated PDF size (bytes)",
+        "help": "A larger output fails the build instead of filling up the disk."
+      },
+      "maxFileChars": {
+        "label": "Maximum text file size in project (characters)",
+        "help": "Applies per file, not to the whole project."
+      },
+      "maxFiles": {
+        "label": "Files per project",
+        "help": "Total paths, including attachments."
+      },
+      "buildRetentionDays": {
+        "label": "Keep build logs (days)",
+        "help": "How long finished builds, their logs, and error lists remain visible. PDFs are kept as attachments. 0 means: forever."
+      }
+    }
+  },
+  "row": {
+    "automatic": "Automatic",
+    "rangeHint": "Allowed: {min, number} to {max, number}.",
+    "invalid": "This value is invalid.",
+    "invalidWithRange": "Not saved. Allowed: {min, number} to {max, number}.",
+    "choices": {
+      "pdfExtractor": {
+        "docling": "Docling (local, free, with text recognition)",
+        "openrouter": "OpenRouter (hosted, paid, without text recognition)"
+      },
+      "untrustedContentPolicy": {
+        "guarded": "Blocked once untrusted content has been read (recommended)",
+        "deny": "Never: the AI may not make changes in any run",
+        "allow": "Always allowed, even after untrusted content"
+      }
+    }
+  },
+  "groupNav": {
+    "rejected": "rejected value",
+    "pending": "unsaved change"
+  },
+  "unsaved": {
+    "title": "Discard unsaved changes?",
+    "description": "{count, plural, one {One setting has been changed and is not yet saved} other {# settings have been changed and are not yet saved}}. If you leave now, you will lose them; this cannot be undone. Staying here and saving will keep them.",
+    "stay": "Stay here",
+    "leave": "Discard and leave",
+    "notice": "{count, plural, one {One change is not yet saved.} other {# changes are not yet saved.}}"
+  },
+  "form": {
+    "loading": "Loading settings…",
+    "saved": "Settings saved.",
+    "save": "Save",
+    "discard": "Discard"
+  },
+  "adminForm": {
+    "refused": "{count, plural, one {One setting is outside its allowed range and was not saved. It is highlighted in red in the form.} other {# settings are outside their allowed range and were not saved. They are highlighted in red in the form.}}",
+    "ignoredTitle": "Saved values are being ignored",
+    "ignoredDescription": "The database contains an invalid value for {count, plural, one {this setting} other {these settings}}: {labels}. The installation uses the default instead. Saving once replaces the faulty row."
+  },
+  "workspaceForm": {
+    "intro": "Without a custom value, whatever is set for the whole installation applies here. What you set here applies only to this workspace.",
+    "invalid": "One input is invalid; nothing was saved.",
+    "ownValue": "Custom value",
+    "reset": "Reset to deployment value",
+    "resetting": "Resetting",
+    "inherited": "Inherited from deployment",
+    "readOnly": "Only owners and administrators of this workspace can change this."
+  },
+  "credentials": {
+    "readOnly": "Only the owner of this workspace can add a custom key. People working here won’t notice anything different except for the billing.",
+    "loading": "Loading key …",
+    "unavailable": "This deployment cannot store custom keys: it is missing the encryption key. Until then, all requests will use the deployment’s key.",
+    "ownKey": "Custom key",
+    "endsWith": "ends with {hint}",
+    "hintUnknown": "unknown",
+    "neverUsed": "never used",
+    "lastUsed": "last used on {date}",
+    "deploymentKey": "Deployment key",
+    "deploymentKeyHint": "AI runs here are billed to the deployment.",
+    "inputLabel": "OpenRouter key",
+    "placeholderReplace": "Enter new key",
+    "replace": "Replace",
+    "save": "Save",
+    "remove": "Remove key",
+    "saved": "Saved. Starting with the next run, this key will be used.",
+    "footnote": "The key is stored encrypted and will never be shown again. It pays for this workspace’s AI runs. Search still uses the deployment key, because all embeddings must stay in the same vector space."
+  },
+  "workspace": {
+    "title": "Workspace settings",
+    "loading": "Loading workspace …",
+    "summary": "{name} · {count, plural, one {# member} other {# members}}",
+    "tabs": {
+      "general": "General",
+      "members": "Members",
+      "ai": "AI",
+      "settings": "Settings"
+    },
+    "readOnly": "Only owners and administrators of this workspace can rename it or change its slug.",
+    "nameLabel": "Name",
+    "save": "Save",
+    "nameSaved": "Name saved.",
+    "saved": "Saved.",
+    "aiKey": {
+      "title": "Custom AI key",
+      "description": "Without a custom key, requests from this workspace will use the deployment’s key."
+    },
+    "aiRules": {
+      "title": "AI rules",
+      "description": "Pages that the AI treats as instructions. This is set in the properties of each page."
+    },
+    "config": {
+      "title": "Configuration for this workspace",
+      "description": "These values apply only here. Everything else is inherited from the deployment."
+    },
+    "more": {
+      "title": "More sections",
+      "automations": "Open automations",
+      "templates": "Open PDF templates",
+      "shares": "Open shares",
+      "description": "Rules that react to changes to pages, with a log of what they did. What can be used to publish pages from this workspace as PDF. And what has been shared externally from this workspace, with accounts or as a public link."
+    },
+    "slug": {
+      "label": "Slug",
+      "description": "The slug is in links that have already been sent or saved. Unlike the name, it does not update automatically, and changing it breaks those links.",
+      "confirm": "Change anyway",
+      "saved": "Slug saved."
+    },
+    "memory": {
+      "label": "Agent memory",
+      "description": "Agents store their session notes in this workspace and find them again on their next launch. Notes here expire after the set time limit. This is not meant for a workspace you maintain yourself."
+    },
+    "members": {
+      "title": "Members",
+      "description": "Memberships are always explicit: anyone who is invited lands in this exact workspace.",
+      "invite": "Invite",
+      "caption": "Members of this workspace",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions",
+      "you": "You",
+      "roleOf": "Role of {name}",
+      "remove": "Remove",
+      "openInvitations": "Pending invitations",
+      "removeTitle": "Remove member",
+      "removeDescription": "{name} loses access to this workspace immediately, including in already open tabs. Created pages and comments are preserved. Regaining access requires a new invitation.",
+      "cancel": "Cancel"
+    },
+    "roles": {
+      "OWNER": "Owner",
+      "ADMIN": "Administrator",
+      "MEMBER": "Member",
+      "GUEST": "Guest"
+    }
   }
 }

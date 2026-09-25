@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Beheerder",
+    "MEMBER": "Lid",
+    "GUEST": "Gast (alleen lezen)"
+  },
+  "statuses": {
+    "pending": "Openstaand",
+    "accepted": "Geaccepteerd",
+    "revoked": "Ingetrokken",
+    "expired": "Verlopen"
+  },
+  "dialog": {
+    "title": "Uitnodigen",
+    "descriptionAdmin": "De uitgenodigde persoon maakt via de link zelf een account aan. Registreren zonder uitnodiging is niet mogelijk.",
+    "descriptionWorkspace": "De uitgenodigde persoon maakt via de link een account aan en wordt lid van deze werkruimte.",
+    "sent": "Uitnodiging verstuurd naar {email}. De link is {days, plural, one {# dag} other {# dagen}} geldig en kan maar één keer worden gebruikt.",
+    "mailFailed": "De uitnodiging is aangemaakt, maar de e-mail kon niet worden verzonden. Deel de link hieronder direct, of verstuur de uitnodiging later opnieuw.",
+    "link": "Uitnodigingslink",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd",
+    "linkOnce": "Deze link wordt alleen nu weergegeven. Hij wordt nergens opgeslagen, dus kopieer hem nu als je hem nodig hebt.",
+    "another": "Nog iemand uitnodigen",
+    "close": "Sluiten",
+    "email": "E-mailadres",
+    "workspace": "Werkruimte",
+    "noWorkspace": "Geen",
+    "noWorkspaceHint": "Zonder werkruimte ontstaat er een account dat nog niets kan zien. Lidmaatschappen worden hier altijd expliciet toegekend.",
+    "role": "Rol in de werkruimte",
+    "grantAdmin": "Beheerder van deze installatie",
+    "grantAdminHint": "Mag gebruikers beheren, instellingen wijzigen en alle werkruimtes bekijken.",
+    "cancel": "Annuleren",
+    "sending": "Wordt verstuurd …",
+    "submit": "Uitnodigen"
+  },
+  "table": {
+    "loading": "Uitnodigingen laden …",
+    "loadFailed": "Uitnodigingen konden niet worden geladen",
+    "emptyTitle": "Geen uitnodigingen",
+    "emptyDescription": "Iedereen die hier toegang wil, heeft een uitnodiging nodig. Registreren zonder uitnodiging is uitgeschakeld.",
+    "freshLink": "Nieuwe uitnodigingslink",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd",
+    "freshLinkHint": "De vorige link is niet meer geldig. Elke nieuwe verzending maakt een nieuwe aan.",
+    "caption": "Uitnodigingen",
+    "email": "E-mail",
+    "status": "Status",
+    "workspace": "Werkruimte",
+    "role": "Rol",
+    "invitedBy": "Uitgenodigd door",
+    "expiresAt": "Geldig tot",
+    "sent": "Verzonden",
+    "actions": "Acties",
+    "admin": "Admin",
+    "notDelivered": "niet afgeleverd",
+    "revokeTitle": "Uitnodiging intrekken?",
+    "revokeDescription": "De link naar {email} werkt daarna niet meer. Als de persoon toch toegang moet krijgen, is er een nieuwe uitnodiging nodig.",
+    "revoke": "Intrekken",
+    "resend": "Opnieuw verzenden"
+  }
+}

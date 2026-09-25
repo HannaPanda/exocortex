@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrateur",
+    "MEMBER": "Membre",
+    "GUEST": "Invité (lecture seule)"
+  },
+  "statuses": {
+    "pending": "En attente",
+    "accepted": "Acceptée",
+    "revoked": "Révoquée",
+    "expired": "Expirée"
+  },
+  "dialog": {
+    "title": "Inviter",
+    "descriptionAdmin": "La personne invitée crée elle-même son compte via le lien. L’inscription sans invitation n’est pas possible.",
+    "descriptionWorkspace": "La personne invitée crée son compte via le lien et devient membre de cet espace de travail.",
+    "sent": "Invitation envoyée à {email}. Le lien est valable {days, plural, one {# jour} many {# jours} other {# jours}} et ne peut être utilisé qu’une seule fois.",
+    "mailFailed": "L’invitation a été créée, mais l’e-mail n’a pas pu être envoyé. Transmets directement le lien ci-dessous, ou renvoie l’invitation plus tard.",
+    "link": "Lien d’invitation",
+    "copy": "Copier",
+    "copied": "Copié",
+    "linkOnce": "Ce lien n’est affiché que maintenant. Il n’est enregistré nulle part, alors copie-le dès maintenant si tu en as besoin.",
+    "another": "Inviter d’autres personnes",
+    "close": "Fermer",
+    "email": "Adresse e-mail",
+    "workspace": "Espace de travail",
+    "noWorkspace": "Aucun",
+    "noWorkspaceHint": "Sans espace de travail, le compte créé ne verra rien pour l’instant. Les accès se gèrent toujours de manière explicite.",
+    "role": "Rôle dans l’espace de travail",
+    "grantAdmin": "Administrateur de cette installation",
+    "grantAdminHint": "Peut gérer les comptes, modifier les paramètres et voir tous les espaces de travail.",
+    "cancel": "Annuler",
+    "sending": "Envoi en cours…",
+    "submit": "Inviter"
+  },
+  "table": {
+    "loading": "Chargement des invitations…",
+    "loadFailed": "Impossible de charger les invitations",
+    "emptyTitle": "Aucune invitation",
+    "emptyDescription": "Pour accéder ici, il faut une invitation. L’inscription libre est désactivée.",
+    "freshLink": "Nouveau lien d’invitation",
+    "copy": "Copier",
+    "copied": "Copié",
+    "freshLinkHint": "Le lien précédent n’est plus valable. Chaque renvoi génère un nouveau lien.",
+    "caption": "Invitations",
+    "email": "E-mail",
+    "status": "Statut",
+    "workspace": "Espace de travail",
+    "role": "Rôle",
+    "invitedBy": "Envoyée par",
+    "expiresAt": "Expire le",
+    "sent": "Envoyée",
+    "actions": "Actions",
+    "admin": "Admin",
+    "notDelivered": "non distribuée",
+    "revokeTitle": "Révoquer l’invitation ?",
+    "revokeDescription": "Le lien envoyé à {email} ne fonctionnera plus. Si la personne doit quand même venir, elle aura besoin d’une nouvelle invitation.",
+    "revoke": "Révoquer",
+    "resend": "Renvoyer"
+  }
+}

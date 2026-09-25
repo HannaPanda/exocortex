@@ -1,0 +1,224 @@
+{
+  "connections": {
+    "title": "Verbindungen",
+    "intro": "Hier hängen deine Agenten an eXocortex: Anwendungen, die sich in deinem Namen anmelden, Token für alles andere, und die fertigen Befehle zum Einrichten. Wann eXocortex dich von sich aus erreicht, steht unter <link>Benachrichtigungen</link>."
+  },
+  "connectedApps": {
+    "title": "Verbundene Anwendungen",
+    "intro": "Programme, denen du auf der Zustimmungsseite Zugriff gegeben hast, zum Beispiel ChatGPT. Sie melden sich in deinem Namen an, ohne ein Token von dir. Trennen wirkt sofort: laufende Sitzungen enden, und ein erneuter Zugriff braucht deine Zustimmung von vorn.",
+    "loading": "Verbindungen werden geladen …",
+    "loadError": "Verbindungen konnten nicht geladen werden",
+    "emptyTitle": "Keine verbundenen Anwendungen",
+    "emptyDescription": "Sobald du einen Connector wie ChatGPT verbindest, steht er hier und kann hier auch wieder getrennt werden.",
+    "caption": "Liste der verbundenen Anwendungen",
+    "columnApp": "Anwendung",
+    "columnConnectedAt": "Verbunden seit",
+    "columnLastAuthorized": "Zuletzt angemeldet",
+    "columnStatus": "Status",
+    "columnActions": "Aktionen",
+    "never": "nie",
+    "statusDisabled": "Abgeschaltet",
+    "statusActive": "Aktiv",
+    "statusIdle": "Ruht",
+    "disconnect": "Trennen",
+    "disconnectTitle": "Verbindung trennen?",
+    "disconnectDescription": "„{name}“ verliert sofort den Zugriff. Bestehende Anmeldungen enden, und die Anwendung kann sich nicht mehr selbst erneuern. Um sie wieder zu verbinden, musst du sie in ihrem eigenen Programm erneut hinzufügen und deine Zustimmung erneut geben.",
+    "cancel": "Abbrechen"
+  },
+  "tokens": {
+    "title": "Token",
+    "intro": "API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf eXocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht: Wenn es abhandenkommt, kann jemand genau das damit tun.",
+    "loading": "Token werden geladen …",
+    "loadError": "Token konnten nicht geladen werden",
+    "caption": "Liste deiner API-Token",
+    "columnName": "Name",
+    "columnPrefix": "Präfix",
+    "columnScopes": "Rechte",
+    "columnPages": "Seiten",
+    "columnLastUsed": "Zuletzt benutzt",
+    "columnExpires": "Läuft ab",
+    "columnStatus": "Status",
+    "columnActions": "Aktionen",
+    "scopeLabels": {
+      "read": "Lesen",
+      "write": "Schreiben",
+      "admin": "Administration"
+    },
+    "noScopes": "Keine",
+    "allPages": "alle",
+    "withSubpages": "{title} + Unterseiten",
+    "never": "nie",
+    "statusRevoked": "Zurückgezogen",
+    "statusActive": "Aktiv",
+    "revoke": "Zurückziehen",
+    "newTitle": "Neues Token",
+    "nameLabel": "Name",
+    "namePlaceholder": "z. B. MCP-Server",
+    "scopeLabel": "Rechte",
+    "scopeOptions": {
+      "read": {
+        "label": "Nur lesen",
+        "hint": "Seiten und Datenbanken lesen, nichts ändern."
+      },
+      "write": {
+        "label": "Lesen und schreiben",
+        "hint": "Zusätzlich Inhalte anlegen, ändern und löschen."
+      },
+      "admin": {
+        "label": "Voller Zugriff",
+        "hint": "Zusätzlich Administration und Token-Verwaltung."
+      }
+    },
+    "expiryLabel": "Gültigkeit",
+    "expiryOptions": {
+      "30": "30 Tage",
+      "90": "90 Tage",
+      "365": "1 Jahr",
+      "never": "Unbegrenzt"
+    },
+    "create": "Anlegen",
+    "createdTitle": "Token erstellt",
+    "createdDescription": "Kopiere das Token jetzt. Aus Sicherheitsgründen wird es danach nicht mehr angezeigt.",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "shownOnce": "Dieses Token wird nie wieder angezeigt. Bewahre es an einem sicheren Ort auf.",
+    "claudeCodeHeading": "Direkt in Claude Code einrichten",
+    "claudeCodeCopy": "Befehl für Claude Code kopieren",
+    "otherClientsHint": "Befehle für ChatGPT und Hermes stehen unter „Einrichten“, mit diesem Token bereits eingesetzt.",
+    "closeReveal": "Verstanden, schließen",
+    "revokeTitle": "Token zurückziehen?",
+    "revokeDescription": "„{name}“ kann danach nicht mehr verwendet werden. Das lässt sich nicht rückgängig machen.",
+    "cancel": "Abbrechen",
+    "pageScope": {
+      "label": "Auf Seiten beschränken (optional)",
+      "hint": "Ohne Angabe kommt das Token überall hin, wo du hinkommst. Nennst du eine Seite, erreicht es nur noch sie: nicht über die Suche, nicht über Verweise, nicht über Listen, und der ganze Rest ist für dieses Token nicht einmal vorhanden.",
+      "noRestriction": "Keine Beschränkung",
+      "addPage": "Seite hinzufügen",
+      "addPagePlaceholder": "Seite hinzufügen …",
+      "reach": "Umfang",
+      "subtree": "mit Unterseiten",
+      "pageOnly": "nur diese Seite",
+      "remove": "Entfernen"
+    }
+  },
+  "setup": {
+    "title": "Einrichten",
+    "intro": "Such dir dein Programm und kopier die Zeile. Mehr ist es nicht.",
+    "freshToken": "Dein neues Token steckt bereits in den Befehlen unten. Es verschwindet, sobald du diese Seite neu lädst.",
+    "hideToken": "Token ausblenden",
+    "placeholderHint": "Wo <code>{placeholder}</code> steht, gehört ein Token aus dem Abschnitt darüber hin. Legst du gleich hier eins an, setzt eXocortex es von selbst ein.",
+    "copyLabel": "Angaben für {title} kopieren",
+    "snippets": {
+      "claude-code-plugin": {
+        "title": "Claude Code mit Gedächtnis",
+        "summary": "Das Plugin bringt die Werkzeuge und das Gedächtnis mit: Erinnerungen beim Start, eine verdichtete Notiz am Ende jeder Sitzung."
+      },
+      "claude-code": {
+        "title": "Claude Code",
+        "summary": "Fügt eXocortex als MCP-Server über HTTP hinzu. Eine Zeile im Terminal."
+      },
+      "chatgpt": {
+        "title": "ChatGPT",
+        "summary": "Als Connector anlegen und OAuth wählen. ChatGPT kann kein Token entgegennehmen, es meldet sich stattdessen bei dir an."
+      },
+      "hermes": {
+        "title": "Hermes",
+        "summary": "Startet den MCP-Server als Prozess. Gehört in ~/.hermes/config.yaml."
+      },
+      "other-http": {
+        "title": "Anderer Client über HTTP",
+        "summary": "Jeder Client, der Streamable HTTP spricht, braucht nur URL und Token."
+      }
+    },
+    "notes": {
+      "pluginInSession": "Beide Zeilen in einer laufenden Claude-Code-Sitzung eingeben, nicht im Terminal.",
+      "pluginAsksForToken": "Beim Aktivieren fragt Claude Code nach Adresse und Token. Leg dir vorher eins im Abschnitt darüber an, es wird nur einmal angezeigt.",
+      "pluginVerify": "Danach /exocortex:einrichten aufrufen: das prüft Werkzeuge und Gedächtnis und sagt, was noch fehlt.",
+      "claudeCodeScope": "Ohne weitere Angabe gilt der Server nur im aktuellen Projekt. Mit --scope user am Ende steht er in allen Projekten zur Verfügung.",
+      "claudeCodeVerify": "Prüfen mit: claude mcp list",
+      "chatgptResearch": "Für Deep Research die eigene URL nehmen: {url}. Sie kennt nur \"search\" und \"fetch\" und kann nichts verändern.",
+      "chatgptConsent": "Nach dem Anlegen landest du auf der Zustimmungsseite. Erst dein „Verbinden“ dort gibt ChatGPT Zugriff, und der Abschnitt „Verbundene Anwendungen“ oben nimmt ihn wieder weg.",
+      "chatgptNoToken": "Ein Token brauchst du hier nicht. Wenn ein Connector nach einem fragt, ist es nicht dieser hier.",
+      "hermesLocalApi": "Läuft Hermes auf demselben Rechner wie eXocortex, ist {url} die bessere API-URL: der Weg geht dann direkt an die API, ohne nginx.",
+      "hermesPath": "Der Pfad in args zeigt auf die gebaute Datei von apps/mcp auf diesem Rechner.",
+      "httpTry": "Zum Ausprobieren, ob Token und URL stimmen:"
+    },
+    "rightsTitle": "Welche Rechte für wen",
+    "rightsChatgpt": "<strong>ChatGPT: nur lesen.</strong> Es soll nachschlagen, nicht umschreiben.",
+    "rightsAgents": "<strong>Coding-Agenten wie Claude Code: lesen und schreiben.</strong> Sie legen Seiten an und pflegen sie.",
+    "rightsAdmin": "<strong>Voller Zugriff: an niemanden.</strong> Kein Werkzeug im MCP-Katalog braucht ihn, und er ist das einzige Recht, mit dem sich ein Token weitere Token ausstellen kann."
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "intro": "Wann eXocortex dich von sich aus erreicht, und auf welchem Weg. Auf deinen Geräten entscheidest du pro Gerät, per Mail für das ganze Konto.",
+    "failed": "Das hat nicht geklappt.",
+    "kinds": {
+      "SHARE": {
+        "label": "Geteilte Seiten",
+        "description": "Jemand teilt eine Seite mit dir, ändert deine Rechte daran oder nimmt sie dir wieder weg."
+      },
+      "COMMENT": {
+        "label": "Kommentare",
+        "description": "Jemand kommentiert eine Seite, die du geschrieben hast, oder antwortet in einem Faden, in dem du schon steckst."
+      },
+      "CALENDAR": {
+        "label": "Termine",
+        "description": "Kurz bevor ein Termin aus deinem Kalender anfängt."
+      },
+      "AGENT": {
+        "label": "Nachrichten von Agenten",
+        "description": "Ein Agent meldet sich: ein langer Lauf ist fertig, etwas ist schiefgegangen, eine Frage blockiert."
+      },
+      "FAILURE": {
+        "label": "Fehlgeschlagene Automationen",
+        "description": "Eine deiner Automationen hat sich nach wiederholten Fehlern abgeschaltet, oder ein geplanter Lauf ist gescheitert."
+      }
+    }
+  },
+  "pushDevices": {
+    "title": "Auf deinen Geräten",
+    "intro": "eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor einem Termin, bei einem Kommentar an deiner Seite, oder wenn ein Agent dir etwas sagen will. Was ein Gerät hören soll, entscheidest du pro Gerät, denn das Handy in der Tasche und der Rechner auf der Arbeit wollen selten dasselbe.",
+    "needsInstallation": "Auf dem iPhone und dem iPad gehen Benachrichtigungen nur, wenn eXocortex auf dem Startbildschirm liegt. Im Teilen-Menü „Zum Home-Bildschirm“ wählen, die App von dort öffnen und hier wiederkommen.",
+    "unsupported": "Dieser Browser kann keine Benachrichtigungen empfangen. Deine anderen Geräte stehen trotzdem hier und lassen sich hier auch abschalten.",
+    "loading": "Geräte werden geladen …",
+    "loadError": "Geräte konnten nicht geladen werden",
+    "notConfigured": "Diese Installation verschickt keine Benachrichtigungen. Dafür fehlt ein VAPID-Schlüsselpaar in der Konfiguration; <code>scripts/generate-vapid-keys.mjs</code> erzeugt eins.",
+    "enable": "Dieses Gerät benachrichtigen",
+    "disable": "Dieses Gerät abmelden",
+    "sendTest": "Testnachricht schicken",
+    "testTitle": "Test",
+    "testBody": "Wenn du das liest, kommen Benachrichtigungen an.",
+    "testResult": "{devices, plural, =0 {Kein Gerät hört auf Agenten-Nachrichten.} one {Unterwegs an # Gerät.} other {Unterwegs an # Geräte.}}",
+    "emptyTitle": "Noch kein Gerät angemeldet",
+    "emptyDescription": "Melde dieses Gerät an, dann steht es hier und du kannst einstellen, was es hören soll.",
+    "removeTitle": "{label} entfernen?",
+    "removeDescription": "Das Gerät bekommt danach keine Benachrichtigungen mehr, und seine Auswahl ist weg. Du kannst es später auf dem Gerät selbst wieder anmelden.",
+    "remove": "Entfernen",
+    "deviceName": "Name des Geräts",
+    "thisDevice": "Dieses Gerät",
+    "failures": "{count, plural, one {# Fehlversuch} other {# Fehlversuche}}",
+    "registeredAt": "{service} · angemeldet {date}",
+    "lastDelivered": "zuletzt erreicht {date}",
+    "nothingDelivered": "noch nichts zugestellt",
+    "unknownDevice": "Unbekanntes Gerät",
+    "browserOnPlatform": "{browser} auf {platform}",
+    "errors": {
+      "denied": "Dein Browser blockiert Benachrichtigungen für diese Seite. Das lässt sich nur in den Browser-Einstellungen wieder erlauben.",
+      "dismissed": "Ohne Erlaubnis kann dieses Gerät nicht benachrichtigt werden.",
+      "incomplete": "Der Browser hat ein unvollständiges Abonnement geliefert."
+    }
+  },
+  "emailPreferences": {
+    "title": "Per E-Mail",
+    "intro": "Mail geht an dein Konto und nicht an ein Gerät, deshalb gilt das hier überall gleich. Gedacht für das, was auch morgen noch wichtig ist und was dich erreichen soll, wenn du gerade gar nicht in eXocortex bist.",
+    "loading": "Einstellungen werden geladen …",
+    "loadError": "Einstellungen konnten nicht geladen werden",
+    "emptyTitle": "Nichts einzustellen",
+    "emptyDescription": "Diese Installation verschickt derzeit keine Mail, über die du selbst entscheiden kannst.",
+    "modes": {
+      "OFF": "Gar nicht",
+      "IMMEDIATE": "Sofort",
+      "DAILY_DIGEST": "Einmal täglich gesammelt"
+    }
+  }
+}

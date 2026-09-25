@@ -8,5 +8,587 @@
     "saveFailed": "De taal kon niet worden opgeslagen. Probeer het zo meteen nog eens.",
     "loading": "Taal wordt geladen …",
     "loadError": "De taal kon niet worden geladen"
+  },
+  "groups": {
+    "ai": "AI",
+    "memory": "Geheugen",
+    "entities": "Entiteiten",
+    "search": "Zoeken",
+    "mcp": "MCP",
+    "calendar": "Agenda",
+    "notifications": "Meldingen",
+    "activity": "Activiteit",
+    "automations": "Automatiseringen",
+    "overview": "Overzichtspagina’s",
+    "render": "Publiceren",
+    "projects": "Projecten",
+    "agents": "Agents"
+  },
+  "keys": {
+    "ai": {
+      "enabled": {
+        "label": "AI ingeschakeld",
+        "help": "Schakelt de ingebouwde AI voor deze installatie volledig in of uit."
+      },
+      "defaultModelSlug": {
+        "label": "Standaardmodel",
+        "help": "Wordt gebruikt wanneer een verzoek geen eigen model opgeeft."
+      },
+      "systemPrompt": {
+        "label": "Basis-systeemprompt",
+        "help": "Wordt aan elke run voorafgegaan, nog vóór eventuele AI-regelpagina’s."
+      },
+      "maxOutputTokens": {
+        "label": "Maximale antwoordlengte (tokens)",
+        "help": "Bovengrens voor de lengte van een enkel AI-antwoord."
+      },
+      "timeoutMs": {
+        "label": "Tijdslimiet per modelantwoord (ms)",
+        "help": "Breekt een enkel antwoord van het model af. Toolaanroepen en vervolgeantwoorden hebben hun eigen tijd, zie „Totale tijd per run”."
+      },
+      "maxRunMs": {
+        "label": "Totale tijd per run (ms)",
+        "help": "Na deze tijd stopt een run in zijn geheel, zelfs als deze nog tools aanroept. Kan nooit korter zijn dan de tijdslimiet per modelantwoord."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Kostenlimiet per verzoek (µUSD)",
+        "help": "Een run stopt zodra deze kostenlimiet is bereikt."
+      },
+      "toolsEnabled": {
+        "label": "Tools toestaan",
+        "help": "Staat de AI toe tools zoals zoeken of pagina’s lezen aan te roepen."
+      },
+      "mutatingToolsEnabled": {
+        "label": "Schrijvende tools toestaan",
+        "help": "Staat de AI daarnaast toe om gegevens te wijzigen in plaats van ze alleen te lezen."
+      },
+      "untrustedContentPolicy": {
+        "label": "Schrijven na externe inhoud",
+        "help": "Teksten uit geüploade documenten en uit afbeeldingsbeschrijvingen kunnen instructies voor de AI bevatten die niemand hier heeft geschreven. Standaard mag een run na het lezen van dergelijke inhoud niets meer wijzigen; hij geeft dan aan wat hij zou hebben geschreven. „Altijd toegestaan” is alleen nodig voor workflows die externe documenten lezen en op basis daarvan zelf moeten schrijven."
+      },
+      "maxToolIterations": {
+        "label": "Maximaal aantal tooliteraties",
+        "help": "Bovengrens voor toolaanroepen binnen een run."
+      },
+      "visionEnabled": {
+        "label": "Afbeeldingsbeschrijving inschakelen",
+        "help": "Laat een vision-model afbeeldingen beschrijven voordat het hoofdmodel antwoordt."
+      },
+      "visionMaxImagesPerRun": {
+        "label": "Afbeeldingen per verzoek",
+        "help": "Bovengrens voor het aantal beschreven afbeeldingen per run."
+      },
+      "pageContextEnabled": {
+        "label": "Tekst van de geopende pagina meesturen",
+        "help": "Uit: de AI krijgt alleen de titel en het pad van de geopende pagina te weten en laadt de tekst zelf als een vraag die nodig heeft. Aan: de tekst wordt bij elke vraag meegestuurd, ook als die er niets mee te maken heeft. Nodig voor modellen zonder tools, anders extra datastroom naar de aanbieder."
+      },
+      "pageContextMaxChars": {
+        "label": "Tekens van de geopende pagina",
+        "help": "Bovengrens voor de meegestuurde paginatekst. Wat daarboven ligt, wordt ingekort, en de inkorting wordt zichtbaar in de tekst vermeld."
+      },
+      "maxPinnedSources": {
+        "label": "Vastgezette bronnen per chat",
+        "help": "Hoeveel pagina’s, databaseweergaven en opgeslagen zoekopdrachten aan een chat mogen worden vastgezet. Nul schakelt het vastzetten voor deze werkruimte uit."
+      },
+      "pinnedContextMaxChars": {
+        "label": "Tekens van alle ingesloten bronnen",
+        "help": "Bovengrens voor alle vastgezette bronnen samen die hun tekst meesturen. Het budget wordt gelijkmatig over hen verdeeld, en elke inkorting wordt zichtbaar in de tekst vermeld."
+      },
+      "compactionThresholdPercent": {
+        "label": "Samenvatten vanaf (% van contextvenster)",
+        "help": "Vanaf dit vulniveau worden oudere berichten tot een samenvatting gecondenseerd."
+      },
+      "compactionKeepRecentMessages": {
+        "label": "Recente berichten behouden",
+        "help": "Zoveel van de recentste berichten blijven bij een samenvatting ongewijzigd."
+      },
+      "compactionModelSlug": {
+        "label": "Model voor samenvattingen",
+        "help": "Automatisch gebruikt hetzelfde model als de chat."
+      },
+      "runPayloadRetentionDays": {
+        "label": "AI-teksten bewaren (dagen)",
+        "help": "Bij oudere AI-runs worden vraag en antwoord gewist; de cijfers voor het gebruiksoverzicht blijven behouden. 0 betekent: nooit opruimen. Geschiedenis in chats blijft onaangetast."
+      },
+      "pdfExtractionEnabled": {
+        "label": "PDF-tekst extraheren",
+        "help": "Extraheert de tekst uit geüploade PDF-bestanden, zodat de AI die kan lezen."
+      },
+      "pdfExtractor": {
+        "label": "PDF-methode",
+        "help": "Docling draait lokaal, kost niets per document en leest ook scans via tekstherkenning. OpenRouter vereist geen eigen service, maar wordt per pagina verrekend en kan geen scans lezen. Titel, auteur en datum worden in beide gevallen rechtstreeks uit het bestand gelezen."
+      },
+      "pdfExtractorFallbackEnabled": {
+        "label": "Tweede methode als terugvaloptie",
+        "help": "Vindt of bereikt de gekozen methode niets, dan probeert het de andere. Heeft geen effect als er maar één van beide is ingesteld."
+      },
+      "pdfExtractionModelSlug": {
+        "label": "Model voor PDF-tekst",
+        "help": "Automatisch gebruikt het standaardmodel."
+      },
+      "pdfMaxBytes": {
+        "label": "Maximale PDF-grootte (bytes)",
+        "help": "PDF’s boven deze grootte worden niet geaccepteerd voor tekstextractie."
+      },
+      "officeExtractionEnabled": {
+        "label": "Tekst uit Office-bestanden lezen",
+        "help": "Leest Word, Excel, PowerPoint, OpenDocument, RTF, EPUB en CSV rechtstreeks op deze server uit, zonder containers en zonder modelkosten."
+      },
+      "officeMaxBytes": {
+        "label": "Maximale Office-bestandsgrootte (bytes)",
+        "help": "Office-bestanden boven deze grootte worden niet geaccepteerd voor tekstextractie."
+      },
+      "imageGenerationEnabled": {
+        "label": "Omslagafbeeldingen genereren",
+        "help": "Maakt het mogelijk om de omslagafbeelding van een pagina door de AI te laten maken. Elke afbeelding is een betaalde aanroep."
+      },
+      "imageModelSlug": {
+        "label": "Model voor afbeeldingen",
+        "help": "Een model dat afbeeldingen kan uitvoeren, bijvoorbeeld google/gemini-2.5-flash-image. Zonder invoer blijft het genereren van afbeeldingen uitgeschakeld, ook als de schakelaar erboven aanstaat."
+      },
+      "webResearchEnabled": {
+        "label": "Op het web zoeken",
+        "help": "Geeft de AI toestemming om op het web te zoeken en afzonderlijke pagina’s te lezen. Uit zolang niemand het inschakelt: hierbij gaan verzoeken van deze server naar adressen die het model kiest. Een gelezen pagina geldt als externe inhoud, waarna „Schrijven na externe inhoud” van kracht wordt."
+      },
+      "webResearchMaxChars": {
+        "label": "Tekens per opgehaalde pagina",
+        "help": "Bovengrens voor de tekst van een afzonderlijke webpagina. Wat daarboven ligt, wordt ingekort, en de inkorting wordt zichtbaar in de tekst vermeld."
+      },
+      "webResearchMaxFetchesPerRun": {
+        "label": "Pagina’s per aanvraag",
+        "help": "Zoveel webpagina’s mag een enkele run ophalen. 0 schakelt het ophalen uit en laat het zoeken intact."
+      },
+      "webSearchMaxResults": {
+        "label": "Resultaten per zoekopdracht",
+        "help": "Bovengrens voor de resultatenlijst van een zoekopdracht op het web."
+      }
+    },
+    "memory": {
+      "enabled": {
+        "label": "Geheugen geactiveerd",
+        "help": "Hiermee kunnen agents sessies noteren en herinneringen opslaan. Uit: er wordt niets meer geschreven, lezen blijft mogelijk."
+      },
+      "captureModelSlug": {
+        "label": "Model voor samenvatten",
+        "help": "Vat een beëindigde sessie samen in een paar steekwoorden. Zonder invoer wordt het model voor het samenvatten van geschiedenissen gebruikt, anders het standaardmodel."
+      },
+      "captureMinChars": {
+        "label": "Kortste sessie (tekens)",
+        "help": "Kortere sessies worden niet eens aangenomen. Snippers in het geheugen maken het terugvinden lastiger."
+      },
+      "recallMaxChars": {
+        "label": "Bovengrens per opvraagactie (tekens)",
+        "help": "Zoveel tekst mag een opvraagactie hoogstens opleveren. Een geheugen dat de context opslokt die het juist moet verbeteren, helpt niet."
+      },
+      "recallMaxResults": {
+        "label": "Bovengrens per opvraagactie (resultaten)",
+        "help": "Hoeveel herinneringen een opvraagactie maximaal teruggeeft, ongeacht waarnaar werd gevraagd."
+      },
+      "retentionDays": {
+        "label": "Notities bewaren (dagen)",
+        "help": "Oudere sessienotities worden in de geheugen-werkruimte verwijderd. 0 betekent: nooit opschonen. Projectpagina’s blijven altijd bewaard, andere werkruimtes worden nooit aangeraakt."
+      },
+      "consolidationEnabled": {
+        "label": "Herinneringen verdichten",
+        "help": "Voegt ’s nachts terugkerende uitspraken uit sessienotities samen tot feiten die vóór de rest van een opvraagactie worden getoond. Kost één modelaanroep per project per nacht. Uit: het blijft bij louter notities."
+      },
+      "consolidationModelSlug": {
+        "label": "Model voor verdichten tot feiten",
+        "help": "Beoordeelt of een notitie een bekend feit bevestigt, vervangt of tegenspreekt. Zonder invoer wordt het model voor het samenvatten van sessies gebruikt."
+      },
+      "consolidationProjectsPerRun": {
+        "label": "Projecten per uitvoerbeurt",
+        "help": "Hoeveel projecten per nacht worden verwerkt. Beperkt de maximale kosten van een uitvoerbeurt; de rest komt de volgende nacht aan de beurt."
+      },
+      "consolidationNotesPerProject": {
+        "label": "Notities per project",
+        "help": "Hoeveel nog ongelezen notities een projectuitvoerbeurt aan het model voorlegt."
+      },
+      "factHalfLifeDays": {
+        "label": "Halfwaardetijd van een feit (dagen)",
+        "help": "Een feit dat niemand meer bevestigt, verliest over deze periode de helft van zijn gewicht, daarna weer de helft. Het verdwijnt niet, het wordt stiller. 0 schakelt het verval uit."
+      },
+      "factConfidenceFloor": {
+        "label": "Ondergrens voor feiten",
+        "help": "Onder dit gewicht geldt een feit niet meer als actueel en verhuist het naar de prullenbak. Tussen 0 en 1."
+      },
+      "recallFactLimit": {
+        "label": "Feiten vóór de resultatenlijst",
+        "help": "Hoeveel samengevatte feiten een opvraagactie vooraf laat gaan aan de rest. 0 plaatst er geen vooraf."
+      },
+      "mailboxEnabled": {
+        "label": "Postvak tussen agents",
+        "help": "Agents kunnen elkaar berichten achterlaten die bij de volgende sessiestart van de ontvanger bovenaan staan. Uit: verzenden wordt geweigerd en een opvraagactie levert geen post meer op."
+      },
+      "messageExpiryDays": {
+        "label": "Berichten vervallen na",
+        "help": "Na hoeveel dagen een bericht niet meer wordt bezorgd als de afzender niets anders aangeeft. Zonder verval zou het postvak dichtslibben."
+      },
+      "recallMessageLimit": {
+        "label": "Berichten vóór de resultatenlijst",
+        "help": "Hoeveel ongelezen berichten een opvraagactie aan al het andere laat voorafgaan. 0 laat post buiten opvraagacties; leesbaar blijft deze via de tool."
+      }
+    },
+    "entities": {
+      "enabled": {
+        "label": "Entiteiten geactiveerd",
+        "help": "Legt bij het opslaan van een pagina vast over welke bekende personen, hosts, diensten of projecten deze gaat. Uit: er wordt niets vastgelegd, bestaande koppelingen blijven leesbaar."
+      },
+      "databaseId": {
+        "label": "Database van de entiteiten",
+        "help": "De id van de database waarvan de rijen de entiteiten zijn. Deze staat in de adresbalk achter /seite/. Zonder invoer zijn er geen namen om naar te zoeken. Eén per installatie: een entiteit is iets in de echte wereld en moet niet in elke werkruimte opnieuw worden uitgevonden."
+      },
+      "minAliasLength": {
+        "label": "Kortste aliasnaam (tekens)",
+        "help": "Kortere namen worden bij het vergelijken overgeslagen. Een naam van twee letters zit in elke tweede pagina, waardoor het resultaat defect lijkt."
+      },
+      "maxMentionsPerDocument": {
+        "label": "Entiteiten per pagina",
+        "help": "Aan hoeveel entiteiten één pagina maximaal wordt gekoppeld. Beperkt de impact van een verklarende woordenlijst waarin elke naam één keer voorkomt."
+      },
+      "candidatesEnabled": {
+        "label": "Nieuwe namen voorstellen",
+        "help": "Verzamelt namen die herhaaldelijk voorkomen en waarvoor nog geen entiteit bestaat. Er wordt niets automatisch aangemaakt, alleen voorgesteld. Uit: het blijft bij de beheerde lijst."
+      },
+      "candidateThreshold": {
+        "label": "Drempelwaarde voor een voorstel (pagina’s)",
+        "help": "Op zoveel verschillende pagina’s moet een naam voorkomen voordat deze als voorstel verschijnt. Een pagina die een naam één keer noemt, is geen bewijs."
+      },
+      "recallProfileEnabled": {
+        "label": "Profiel vooraf tonen bij ophalen",
+        "help": "Herkent een zoekactie een entiteitsnaam in de vraag, dan verschijnt eerst het profiel en pas daarna de resultaten. Dat is het eigenlijke doel van de entiteiten; het kost één extra query per zoekactie."
+      }
+    },
+    "search": {
+      "semanticEnabled": {
+        "label": "Semantisch zoeken",
+        "help": "Zoekt ook op betekenis in plaats van alleen op woorden, zodat een pagina ook wordt gevonden als niemand meer weet hoe deze precies was geformuleerd. Elke geïndexeerde pagina wordt daarvoor eenmalig door een model naar een vector vertaald, wat een paar cent per werkruimte kost."
+      },
+      "embeddingModelSlug": {
+        "label": "Model voor vectoren",
+        "help": "Moet 1536 dimensies opleveren, zo breed is de kolom. openai/text-embedding-3-small doet dat uit zichzelf, openai/text-embedding-3-large kan desgewenst worden ingekort tot dit aantal. Een model met een andere lengte wordt geweigerd in plaats van foutief opgeslagen."
+      },
+      "semanticWeightPercent": {
+        "label": "Gewicht van de betekenis (%)",
+        "help": "Hoe zwaar de semantische resultatenlijst weegt ten opzichte van de volledige tekst. 0 is puur tekst, 100 is puur betekenis, 50 weegt beide gelijk."
+      }
+    },
+    "mcp": {
+      "enabled": {
+        "label": "MCP-server ingeschakeld",
+        "help": "Geeft externe programma’s zoals de MCP-server toegang tot deze installatie."
+      },
+      "maxSearchResults": {
+        "label": "Maximale zoekresultaten",
+        "help": "Bovengrens voor het aantal resultaten van een MCP-zoekopdracht."
+      },
+      "writeConfirmationRequired": {
+        "label": "Elke schrijfactie laten bevestigen",
+        "help": "Uit: Alleen wat onomkeerbaar is (pagina definitief verwijderen, databasekolom, reactie, account) vereist een bevestiging in twee stappen; al het andere wordt beschermd door de snapshot vóór elke schrijfactie. Aan: Elke MCP-tool die gegevens wijzigt, moet tweemaal identiek worden aangeroepen. Dit vertraagt agents merkbaar."
+      }
+    },
+    "calendar": {
+      "remindersEnabled": {
+        "label": "Afspraakherinneringen verzenden",
+        "help": "Stuurt een bericht voorafgaand aan een gespiegelde afspraak. Vereist ook een geconfigureerde verzendmethode op de server."
+      },
+      "reminderLeadMinutes": {
+        "label": "Voorlooptijd in minuten",
+        "help": "Hoe lang voor een afspraak met een specifiek tijdstip de herinnering uitgaat. 0 betekent precies bij het begin."
+      },
+      "reminderAllDayHour": {
+        "label": "Tijdstip voor afspraken die de hele dag duren",
+        "help": "Op welk uur afspraken van een hele dag, zoals verjaardagen, worden aangekondigd. Ze hebben immers geen starttijd om vanaf terug te rekenen."
+      },
+      "timeZone": {
+        "label": "Tijdzone",
+        "help": "In welke tijdzone de twee bovenstaande gegevens worden gelezen, bijvoorbeeld Europe/Berlin."
+      }
+    },
+    "notifications": {
+      "digestHour": {
+        "label": "Tijdstip van het dagoverzicht",
+        "help": "Op welk uur het dagelijkse overzicht van reacties uitgaat voor iedereen die dit heeft ingeschakeld. ’s Ochtends, omdat zo’n e-mail eenmaal gelezen en niet direct beantwoord hoeft te worden."
+      },
+      "digestTimeZone": {
+        "label": "Tijdzone van het overzicht",
+        "help": "In welke zone het bovenstaande tijdstip wordt gelezen, bijvoorbeeld Europe/Berlin. Bewust een eigen instelling in plaats van de servertijd, die in UTC draait."
+      },
+      "commentMailDebounceMinutes": {
+        "label": "Verzameltijd voor directe reactiemails (minuten)",
+        "help": "Hoe lang er op verdere reacties wordt gewacht voordat er een directe e-mail uitgaat. Zo worden vier antwoorden in een thread één e-mail in plaats van vier. 0 betekent: direct verzenden."
+      }
+    },
+    "activity": {
+      "editSessionSnapshotsEnabled": {
+        "label": "Bewerkingssessies vastleggen",
+        "help": "Bewaart regelmatig een kopie van een actief bewerkte pagina, zodat het tabblad Activiteit echte tijdsperioden kan tonen („bewerkt van 14:20 tot 14:45”) in plaats van alleen de laatste status. Uit: er worden geen extra back-ups gemaakt."
+      },
+      "editSessionSnapshotIntervalMinutes": {
+        "label": "Interval tussen sessieback-ups (minuten)",
+        "help": "Hoe vaak een actief bewerkte pagina maximaal opnieuw mag worden opgeslagen. Werkt alleen als de optie hierboven is ingeschakeld."
+      },
+      "snapshotRetentionFullDays": {
+        "label": "Volledige bewaartermijn (dagen)",
+        "help": "Zolang blijven alle snapshots van een pagina behouden, ongeacht de aanleiding."
+      },
+      "snapshotRetentionDailyDays": {
+        "label": "Dagelijks uitdunnen tot (dagen)",
+        "help": "Tussen de volledige bewaring en deze leeftijd blijft maximaal één back-up per kalenderdag bewaard, daarna maximaal één per week. Handmatig benoemde back-ups vallen hierbuiten."
+      },
+      "snapshotRetentionDryRun": {
+        "label": "Uitdunnen alleen simuleren (proefdraaien)",
+        "help": "Aan: de dagelijkse opschoning berekent en registreert wat er verwijderd zou worden, maar verwijdert niets. Aanbevolen vóór de eerste echte uitvoering; schakel daarna bewust uit."
+      }
+    },
+    "agents": {
+      "journalRetentionDays": {
+        "label": "Agent-sessies bewaren (dagen)",
+        "help": "Zo lang blijft onder „Agents” traceerbaar welke sessie wat heeft geschreven, en zo lang kan een sessie in één keer worden teruggedraaid. Daarna verdwijnt alleen de koppeling; de opgeslagen versies van de pagina’s blijven onaangeroerd. 0 betekent: voor altijd."
+      },
+      "largePageChars": {
+        "label": "Pagina geldt vanaf (tekens) als groot",
+        "help": "Schrijft een agent naar een pagina die daarna langer is dan dit, dan noemt het antwoord de nieuwe omvang en de grootste secties en stelt een subpagina voor een nieuw onderwerp voor. Er wordt niets afgewezen. Bedoeld tegen pagina’s waarop na verloop van tijd alles belandt, omdat geen enkele agent ze ooit helemaal overziet."
+      },
+      "oversizedPageChars": {
+        "label": "Agents voegen niets meer toe vanaf (tekens)",
+        "help": "Daarboven wijst een agentverzoek dat de pagina nog groter zou maken zichzelf af, en noemt de grootste secties samen met het gereedschap dat er één naar een eigen pagina verplaatst. Kleiner maken, herschrijven en losse secties wijzigen blijft toegestaan, anders zou een te grote pagina niet meer te herstellen zijn. De editor, Web Clipper, imports en het agentgeheugen zijn uitgezonderd."
+      }
+    },
+    "automations": {
+      "enabled": {
+        "label": "Automatiseringen ingeschakeld",
+        "help": "De hoofdschakelaar voor regels die reageren op wijzigingen aan pagina’s. Standaard uit: een automatisering stuurt gegevens naar buiten of kost geld voor een model, en dat mag niet beginnen door een update. Een werkruimte mag dit voor zichzelf uitschakelen, maar niet tegen deze instelling in weer inschakelen."
+      },
+      "webhookAllowedHosts": {
+        "label": "Toegestane webhook-hosts",
+        "help": "Door komma’s gescheiden, zonder schema en poort (bijvoorbeeld „hooks.example.org, 127.0.0.1”). Subdomeinen tellen mee. Leeg betekent: er kan geen webhook-regel worden aangemaakt en geen bestaande regel wordt uitgevoerd. Wordt gecontroleerd bij het opslaan en nogmaals bij het activeren, zodat het inkorten van deze lijst ook bestaande regels stopt."
+      },
+      "maxConsecutiveFailures": {
+        "label": "Mislukkingen tot zelfuitschakeling",
+        "help": "Zo vaak mag een regel achter elkaar mislukken voordat hij zichzelf uitschakelt. Een regel die nergens naar verwijst, wordt niet beter door herhalen; hij vult alleen het logboek."
+      },
+      "webhookTimeoutSeconds": {
+        "label": "Tijdslimiet voor een webhook (seconden)",
+        "help": "Zo lang mag de ontvangende server erover doen. Daarna geldt de uitvoering als mislukt."
+      },
+      "runRetentionDays": {
+        "label": "Uitvoeringslogboek bewaren (dagen)",
+        "help": "Zo lang blijft zichtbaar wat de automatiseringen hebben gedaan. De regels zelf blijven onaangeroerd. 0 betekent: voor altijd."
+      }
+    },
+    "overview": {
+      "enabled": {
+        "label": "Overzichtspagina’s bijhouden",
+        "help": "Of er voor pagina’s die als overzicht zijn gemarkeerd een inleiding en samenvattingen worden gegenereerd. De lijst met subpagina’s staat er los daarvan altijd, die kost niets. Uit betekent: navigeren zonder modelaanroepen. Een werkruimte mag dit voor zichzelf uitschakelen, maar niet tegen deze instelling in weer inschakelen."
+      },
+      "modelSlug": {
+        "label": "Model voor overzichten",
+        "help": "Leeg gebruikt het standaardmodel. Hier loont een klein model: het gaat telkens om twee tot vijf zinnen, maar wel vaak."
+      },
+      "debounceSeconds": {
+        "label": "Wachttijd voor herschrijven (seconden)",
+        "help": "Zo lang moet het stil zijn rond een pagina voordat het overzicht erover opnieuw wordt geschreven. Aanzienlijk langer dan bij automatiseringen: op een inleiding wacht niemand, en een middag werken aan een pagina moet één uitvoering kosten, geen twintig."
+      },
+      "maxChildren": {
+        "label": "Subpagina’s per inleiding",
+        "help": "Vanaf hoeveel subpagina’s er geen inleiding meer wordt gegenereerd. De lijst blijft compleet; alleen de samenvattende alinea vervalt, omdat die bij honderd items niets meer toevoegt aan wat de lijst al zegt."
+      },
+      "maxPageChars": {
+        "label": "Tekens per pagina voor de samenvatting",
+        "help": "Zoveel tekst van een pagina wordt gebruikt voor de samenvatting. Het begin van een pagina vertelt bijna altijd waar het over gaat."
+      },
+      "generateCovers": {
+        "label": "Omslagafbeeldingen voor overzichtspagina’s",
+        "help": "Een overzichtspagina zonder omslagafbeelding krijgt er eenmalig eentje gegenereerd op basis van haar eigen inleiding. Vereist een geconfigureerd afbeeldingsmodel, anders gebeurt er niets. Een handmatig verwijderde omslagafbeelding blijft verwijderd."
+      }
+    },
+    "render": {
+      "enabled": {
+        "label": "Pdf-uitvoer ingeschakeld",
+        "help": "Staat toe om bestaande pagina’s met een sjabloon als pdf te genereren. Standaard aan: hierbij verlaten geen gegevens de installatie en het kost geen geld, alleen rekentijd op deze computer. Een werkruimte mag de uitvoer voor zichzelf uitschakelen, maar niet tegen deze instelling in weer inschakelen."
+      },
+      "image": {
+        "label": "Container-image voor de build",
+        "help": "Hierin zitten Pandoc, TeX Live en de lettertypen; op de computer zelf wordt niets geïnstalleerd. Een andere image verandert waar elk sjabloon op kan vertrouwen en wordt niet opgemerkt bij het hergebruik van kant-en-klare pdf’s: bouw daarna eenmalig met „opnieuw genereren”."
+      },
+      "timeoutSeconds": {
+        "label": "Tijdslimiet voor een build (seconden)",
+        "help": "Daarna wordt de container afgebroken. Een LaTeX-uitvoering die na drie minuten niet klaar is, wacht meestal op invoer die niemand kan geven."
+      },
+      "maxArtifactBytes": {
+        "label": "Grootste gegenereerde pdf (bytes)",
+        "help": "Bovengrens voor het bestand dat een build mag opleveren. Daarboven geldt de uitvoering als mislukt, in plaats van de schijfruimte vol te schrijven."
+      },
+      "jobRetentionDays": {
+        "label": "Build-logboek bewaren (dagen)",
+        "help": "Zo lang blijven voltooide builds inclusief logboek zichtbaar. De gegenereerde pdf’s blijven behouden als bijlagen. 0 betekent: voor altijd."
+      }
+    },
+    "projects": {
+      "enabled": {
+        "label": "Projecten bouwen",
+        "help": "Of deze werkruimte zijn LaTeX-projecten mag compileren. Bewerken blijft mogelijk als dit uitstaat; alleen de compiler doet niets."
+      },
+      "image": {
+        "label": "Container-image voor projectbuilds",
+        "help": "Hierin zitten TeX Live, latexmk, biber en de lettertypen. Zonder deze image mislukt elke build met een duidelijke melding."
+      },
+      "timeoutSeconds": {
+        "label": "Tijdslimiet per build (seconden)",
+        "help": "Daarna wordt de container afgebroken. Een afstudeerscriptie met literatuurlijst heeft meerdere doorgangen nodig."
+      },
+      "maxArtifactBytes": {
+        "label": "Grootste gegenereerde pdf (bytes)",
+        "help": "Een groter resultaat laat de build mislukken, in plaats van de schijf vol te laten lopen."
+      },
+      "maxFileChars": {
+        "label": "Grootste tekstbestand in het project (tekens)",
+        "help": "Geldt per bestand, niet voor het hele project."
+      },
+      "maxFiles": {
+        "label": "Bestanden per project",
+        "help": "Paden in totaal, inclusief bijlagen."
+      },
+      "buildRetentionDays": {
+        "label": "Buildlogboeken bewaren (dagen)",
+        "help": "Zo lang blijven voltooide builds inclusief logboek en foutenlijst zichtbaar. De pdf’s blijven behouden als bijlagen. 0 betekent: voor altijd."
+      }
+    }
+  },
+  "row": {
+    "automatic": "Automatisch",
+    "rangeHint": "Toegestaan: {min, number} tot {max, number}.",
+    "invalid": "Deze waarde is niet geldig.",
+    "invalidWithRange": "Niet opgeslagen. Toegestaan: {min, number} tot {max, number}.",
+    "choices": {
+      "pdfExtractor": {
+        "docling": "Docling (lokaal, gratis, met tekstherkenning)",
+        "openrouter": "OpenRouter (gehost, betaald, zonder tekstherkenning)"
+      },
+      "untrustedContentPolicy": {
+        "guarded": "Geblokkeerd zodra externe inhoud is gelezen (aanbevolen)",
+        "deny": "Nooit: de AI mag bij geen enkele run iets wijzigen",
+        "allow": "Altijd toegestaan, ook na externe inhoud"
+      }
+    }
+  },
+  "groupNav": {
+    "rejected": "geweigerde waarde",
+    "pending": "niet-opgeslagen wijziging"
+  },
+  "unsaved": {
+    "title": "Niet-opgeslagen wijzigingen verwerpen?",
+    "description": "{count, plural, one {Eén instelling is gewijzigd en nog niet opgeslagen} other {# instellingen zijn gewijzigd en nog niet opgeslagen}}. Als je nu weggaat, verlies je ze; dat kan niet ongedaan worden gemaakt. Hier blijven en opslaan behoudt ze.",
+    "stay": "Hier blijven",
+    "leave": "Verwerpen en weggaan",
+    "notice": "{count, plural, one {Eén wijziging is nog niet opgeslagen.} other {# wijzigingen zijn nog niet opgeslagen.}}"
+  },
+  "form": {
+    "loading": "Instellingen laden …",
+    "saved": "Instellingen opgeslagen.",
+    "save": "Opslaan",
+    "discard": "Verwerpen"
+  },
+  "adminForm": {
+    "refused": "{count, plural, one {Eén instelling valt buiten het toegestane bereik en is niet opgeslagen. Deze is in het formulier rood gemarkeerd.} other {# instellingen vallen buiten het toegestane bereik en zijn niet opgeslagen. Ze zijn in het formulier rood gemarkeerd.}}",
+    "ignoredTitle": "Opgeslagen waarden worden genegeerd",
+    "ignoredDescription": "In de database staat voor {count, plural, one {deze instelling} other {deze instellingen}} een ongeldige waarde: {labels}. De installatie draait in plaats daarvan met de standaardwaarde. Eenmaal opslaan vervangt de foutieve regel."
+  },
+  "workspaceForm": {
+    "intro": "Zonder eigen waarde geldt hier wat voor de hele installatie is ingesteld. Wat je hier instelt, geldt alleen in deze werkruimte.",
+    "invalid": "Een invoer is niet geldig, er is niets opgeslagen.",
+    "ownValue": "Eigen waarde",
+    "reset": "Herstellen naar installatiewaarde",
+    "resetting": "Wordt hersteld",
+    "inherited": "Overgenomen van de installatie",
+    "readOnly": "Alleen eigenaars en beheerders van deze werkruimte kunnen dit wijzigen."
+  },
+  "credentials": {
+    "readOnly": "Een eigen sleutel wordt ingesteld door de eigenaar van deze werkruimte. Wie hier werkt, merkt er niets van behalve op de factuur.",
+    "loading": "Sleutel wordt geladen …",
+    "unavailable": "Deze installatie kan geen eigen sleutels opslaan: de sleutel om te versleutelen ontbreekt. Zolang dat zo is, lopen alle verzoeken via de sleutel van de installatie.",
+    "ownKey": "Eigen sleutel",
+    "endsWith": "eindigt op {hint}",
+    "hintUnknown": "onbekend",
+    "neverUsed": "nog niet gebruikt",
+    "lastUsed": "laatst gebruikt op {date}",
+    "deploymentKey": "Sleutel van de installatie",
+    "deploymentKeyHint": "AI-runs hier gaan op rekening van de installatie.",
+    "inputLabel": "OpenRouter-sleutel",
+    "placeholderReplace": "Nieuwe sleutel invoeren",
+    "replace": "Vervangen",
+    "save": "Opslaan",
+    "remove": "Sleutel verwijderen",
+    "saved": "Opgeslagen. Vanaf de volgende run verloopt alles via deze sleutel.",
+    "footnote": "De sleutel wordt versleuteld opgeslagen en nooit meer weergegeven. Hiermee worden de AI-runs van deze werkruimte betaald. De zoekfunctie blijft de sleutel van de installatie gebruiken, omdat alle embeddings in dezelfde vectorruimte moeten liggen."
+  },
+  "workspace": {
+    "title": "Werkruimte-instellingen",
+    "loading": "Werkruimte wordt geladen …",
+    "summary": "{name} · {count, plural, one {# lid} other {# leden}}",
+    "tabs": {
+      "general": "Algemeen",
+      "members": "Leden",
+      "ai": "AI",
+      "settings": "Instellingen"
+    },
+    "readOnly": "Alleen eigenaars en beheerders van deze werkruimte kunnen deze hernoemen of de slug wijzigen.",
+    "nameLabel": "Naam",
+    "save": "Opslaan",
+    "nameSaved": "Naam opgeslagen.",
+    "saved": "Opgeslagen.",
+    "aiKey": {
+      "title": "Eigen sleutel voor de AI",
+      "description": "Zonder eigen sleutel lopen de verzoeken van deze werkruimte via die van de installatie."
+    },
+    "aiRules": {
+      "title": "AI-regels",
+      "description": "Pagina’s die de AI als instructie behandelt. Dit wordt ingesteld in de eigenschappen van de betreffende pagina."
+    },
+    "config": {
+      "title": "Configuratie van deze werkruimte",
+      "description": "Deze waarden gelden alleen hier. Al het andere komt uit de installatie."
+    },
+    "more": {
+      "title": "Meer onderdelen",
+      "automations": "Automatiseringen openen",
+      "templates": "Sjablonen voor pdf openen",
+      "shares": "Delingen openen",
+      "description": "Regels die reageren op wijzigingen aan pagina’s, inclusief een logboek van wat ze hebben gedaan. Waarmee pagina’s uit deze werkruimte als pdf kunnen worden gepubliceerd. En wat er vanuit deze werkruimte extern is gedeeld, met accounts of via een openbare link."
+    },
+    "slug": {
+      "label": "Slug",
+      "description": "De slug zit in links die al zijn verstuurd of opgeslagen. Anders dan de naam verandert deze niet automatisch mee, en een wijziging maakt die links ongeldig.",
+      "confirm": "Toch wijzigen",
+      "saved": "Slug opgeslagen."
+    },
+    "memory": {
+      "label": "Geheugen van de agenten",
+      "description": "Agenten slaan hun sessienotities op in deze werkruimte en vinden ze bij de volgende start weer terug. Notities vervallen hier na de ingestelde termijn. Dit is niet bedoeld voor een werkruimte die je zelf bijhoudt."
+    },
+    "members": {
+      "title": "Leden",
+      "description": "Lidmaatschappen gelden altijd specifiek: wie wordt uitgenodigd, krijgt toegang tot precies deze werkruimte.",
+      "invite": "Uitnodigen",
+      "caption": "Leden van deze werkruimte",
+      "name": "Naam",
+      "email": "E-mailadres",
+      "role": "Rol",
+      "actions": "Acties",
+      "you": "Jij",
+      "roleOf": "Rol van {name}",
+      "remove": "Verwijderen",
+      "openInvitations": "Openstaande uitnodigingen",
+      "removeTitle": "Lid verwijderen",
+      "removeDescription": "{name} verliest direct de toegang tot deze werkruimte, ook in al geopende tabbladen. Aangemaakte pagina’s en reacties blijven bewaard. Om opnieuw toegang te krijgen is een nieuwe uitnodiging nodig.",
+      "cancel": "Annuleren"
+    },
+    "roles": {
+      "OWNER": "Eigenaar",
+      "ADMIN": "Beheerder",
+      "MEMBER": "Lid",
+      "GUEST": "Gast"
+    }
   }
 }

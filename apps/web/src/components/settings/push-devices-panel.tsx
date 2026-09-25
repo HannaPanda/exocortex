@@ -1,10 +1,10 @@
 'use client';
 
 import { BellIcon, BellOffIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
-  NOTIFICATION_CATALOG,
   type PushDevice,
   type PushNotificationKind,
   pushNotificationKinds,
@@ -33,35 +33,33 @@ import {
 } from '@/lib/api/push-queries';
 import {
   detectPushSupport,
-  proposeDeviceLabel,
+  identifyBrowser,
+  PushSetupError,
   type PushSupport,
   subscribeToPush,
   unsubscribeFromPush,
 } from '@/lib/push';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
+import { useNotificationKindWording } from './notification-preferences-panel';
+
+const DATE_TIME = { dateStyle: 'medium', timeStyle: 'short' } as const;
 
 /**
- * What each kind is called, out of the shared catalogue (issue #105).
- *
- * Not a second list of German words here: an occasion is called the same
+ * The kinds a device can hear. What each is called comes from
+ * `useNotificationKindWording` (issue #105): an occasion is called the same
  * thing wherever it is offered, and the row on this page and the row in the
  * account-wide section below it would otherwise describe the same event
  * differently.
  */
 const KINDS: readonly PushNotificationKind[] = pushNotificationKinds;
 
-/**
- * Die Geräte, auf denen dieses Konto benachrichtigt werden darf (Issue #30,
- * ADR-048).
+/*
+ * The devices this account may be notified on (issue #30, ADR-048).
  *
- * Eine Zeile pro Browser, weil ein Abonnement genau das ist: ein Browser auf
- * einem Gerät. Die Schalter sitzen deshalb an der Zeile und nicht oben an der
- * Seite. Das Handy in der Tasche und der Rechner auf der Arbeit wollen
- * verschiedene Dinge hören.
+ * One row per browser, because that is exactly what a subscription is: one
+ * browser on one device. The switches therefore sit on the row and not at the
+ * top of the page. The phone in the pocket and the desktop at work want to
+ * hear different things.
  */
 /**
  * `useSyncExternalStore` rather than an effect: what this browser supports is
@@ -81,6 +79,23 @@ export function PushDevicesPanel() {
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
   const confirmDialog = useDestructiveConfirmDialog();
+  const t = useTranslations('account.pushDevices');
+  const tNotifications = useTranslations('account.notifications');
+
+  const describeFailure = (cause: unknown): string =>
+    cause instanceof PushSetupError
+      ? t(`errors.${cause.reason}`)
+      : cause instanceof Error
+        ? cause.message
+        : tNotifications('failed');
+
+  const proposeDeviceLabel = (): string => {
+    const identity = identifyBrowser();
+    if (identity === null) return t('unknownDevice');
+    return identity.platform === null
+      ? identity.browser
+      : t('browserOnPlatform', { browser: identity.browser, platform: identity.platform });
+  };
 
   const subscriptionQuery = useBrowserSubscription(support === 'supported');
   const endpoint = subscriptionQuery.data?.endpoint ?? null;
@@ -105,7 +120,7 @@ export function PushDevicesPanel() {
       const subscription = await subscribeToPush(data.publicKey);
       await register.mutateAsync({ ...subscription, label: proposeDeviceLabel() });
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Das hat nicht geklappt.');
+      setError(describeFailure(cause));
     } finally {
       setBusy(false);
     }
@@ -119,7 +134,7 @@ export function PushDevicesPanel() {
       await unsubscribeFromPush();
       await remove.mutateAsync(current.id);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Das hat nicht geklappt.');
+      setError(describeFailure(cause));
     } finally {
       setBusy(false);
     }
@@ -130,14 +145,9 @@ export function PushDevicesPanel() {
       {confirmDialog.element}
       <div>
         <h2 id="push-devices-heading" className="text-sm font-semibold">
-          Auf deinen Geräten
+          {t('title')}
         </h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor
-          einem Termin, bei einem Kommentar an deiner Seite, oder wenn ein Agent dir etwas sagen
-          will. Was ein Gerät hören soll, entscheidest du pro Gerät, denn das Handy in der Tasche
-          und der Rechner auf der Arbeit wollen selten dasselbe.
-        </p>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {error !== null ? (
@@ -148,34 +158,22 @@ export function PushDevicesPanel() {
 
       {support === 'needs-installation' ? (
         <Alert>
-          <AlertDescription>
-            Auf dem iPhone und dem iPad gehen Benachrichtigungen nur, wenn eXocortex auf dem
-            Startbildschirm liegt. Im Teilen-Menü „Zum Home-Bildschirm“ wählen, die App von dort
-            öffnen und hier wiederkommen.
-          </AlertDescription>
+          <AlertDescription>{t('needsInstallation')}</AlertDescription>
         </Alert>
       ) : support === 'unsupported' ? (
         <Alert>
-          <AlertDescription>
-            Dieser Browser kann keine Benachrichtigungen empfangen. Deine anderen Geräte stehen
-            trotzdem hier und lassen sich hier auch abschalten.
-          </AlertDescription>
+          <AlertDescription>{t('unsupported')}</AlertDescription>
         </Alert>
       ) : null}
 
       {devicesQuery.isPending ? (
-        <LoadingState label="Geräte werden geladen …" variant="skeleton" rows={2} />
+        <LoadingState label={t('loading')} variant="skeleton" rows={2} />
       ) : devicesQuery.isError ? (
-        <ErrorState
-          title="Geräte konnten nicht geladen werden"
-          onRetry={() => void devicesQuery.refetch()}
-        />
+        <ErrorState title={t('loadError')} onRetry={() => void devicesQuery.refetch()} />
       ) : !devicesQuery.data.configured ? (
         <Alert>
           <AlertDescription>
-            Diese Installation verschickt keine Benachrichtigungen. Dafür fehlt ein
-            VAPID-Schlüsselpaar in der Konfiguration; <code>scripts/generate-vapid-keys.mjs</code>{' '}
-            erzeugt eins.
+            {t.rich('notConfigured', { code: (chunks) => <code>{chunks}</code> })}
           </AlertDescription>
         </Alert>
       ) : (
@@ -185,32 +183,30 @@ export function PushDevicesPanel() {
               {current === null ? (
                 <Button onClick={() => void enable()} disabled={busy || register.isPending}>
                   <BellIcon />
-                  Dieses Gerät benachrichtigen
+                  {t('enable')}
                 </Button>
               ) : (
                 <>
                   <Button variant="outline" onClick={() => void disable()} disabled={busy}>
                     <BellOffIcon />
-                    Dieses Gerät abmelden
+                    {t('disable')}
                   </Button>
                   <Button
                     variant="ghost"
                     disabled={test.isPending}
                     onClick={() =>
                       test.mutate({
-                        title: 'Test',
-                        body: 'Wenn du das liest, kommen Benachrichtigungen an.',
+                        title: t('testTitle'),
+                        body: t('testBody'),
                         tag: 'test',
                       })
                     }
                   >
-                    Testnachricht schicken
+                    {t('sendTest')}
                   </Button>
                   {test.isSuccess ? (
                     <span className="text-sm text-muted-foreground">
-                      {test.data.devices === 0
-                        ? 'Kein Gerät hört auf Agenten-Nachrichten.'
-                        : `Unterwegs an ${test.data.devices} Gerät${test.data.devices === 1 ? '' : 'e'}.`}
+                      {t('testResult', { devices: test.data.devices })}
                     </span>
                   ) : null}
                 </>
@@ -221,8 +217,8 @@ export function PushDevicesPanel() {
           {devicesQuery.data.devices.length === 0 ? (
             <EmptyState
               icon={BellIcon}
-              title="Noch kein Gerät angemeldet"
-              description="Melde dieses Gerät an, dann steht es hier und du kannst einstellen, was es hören soll."
+              title={t('emptyTitle')}
+              description={t('emptyDescription')}
               className="rounded-lg border border-dashed border-border"
             />
           ) : (
@@ -244,10 +240,9 @@ export function PushDevicesPanel() {
                   }
                   onRemove={async () => {
                     const confirmed = await confirmDialog.confirm({
-                      title: `${device.label} entfernen?`,
-                      description:
-                        'Das Gerät bekommt danach keine Benachrichtigungen mehr, und seine Auswahl ist weg. Du kannst es später auf dem Gerät selbst wieder anmelden.',
-                      confirmLabel: 'Entfernen',
+                      title: t('removeTitle', { label: device.label }),
+                      description: t('removeDescription'),
+                      confirmLabel: t('remove'),
                     });
                     if (!confirmed) return;
                     // Removing the row this browser is subscribed with has to
@@ -278,6 +273,19 @@ function DeviceRow({
   onToggleKind: (kind: PushNotificationKind, enabled: boolean) => void;
   onRemove: () => Promise<void>;
 }) {
+  const t = useTranslations('account.pushDevices');
+  const format = useFormatter();
+  const kindWording = useNotificationKindWording();
+  const meta = [
+    t('registeredAt', {
+      service: device.service,
+      date: format.dateTime(new Date(device.createdAt), DATE_TIME),
+    }),
+    device.lastDeliveredAt !== null
+      ? t('lastDelivered', { date: format.dateTime(new Date(device.lastDeliveredAt), DATE_TIME) })
+      : t('nothingDelivered'),
+  ].join(' · ');
+
   return (
     <li className="rounded-lg border border-border p-3" data-testid="push-device">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -291,7 +299,7 @@ function DeviceRow({
           <Input
             key={device.label}
             defaultValue={device.label}
-            aria-label="Name des Geräts"
+            aria-label={t('deviceName')}
             className="h-8 w-56"
             onBlur={(event) => {
               const trimmed = event.target.value.trim();
@@ -299,22 +307,17 @@ function DeviceRow({
               else event.target.value = device.label;
             }}
           />
-          {device.current ? <Badge variant="default">Dieses Gerät</Badge> : null}
+          {device.current ? <Badge variant="default">{t('thisDevice')}</Badge> : null}
           {device.failureCount > 0 ? (
-            <Badge variant="muted">{device.failureCount} Fehlversuche</Badge>
+            <Badge variant="muted">{t('failures', { count: device.failureCount })}</Badge>
           ) : null}
         </div>
         <Button variant="ghost" size="sm" onClick={() => void onRemove()}>
-          Entfernen
+          {t('remove')}
         </Button>
       </div>
 
-      <p className="mt-1 text-xs text-muted-foreground">
-        {device.service} · angemeldet {dateTimeFormat.format(new Date(device.createdAt))}
-        {device.lastDeliveredAt !== null
-          ? ` · zuletzt erreicht ${dateTimeFormat.format(new Date(device.lastDeliveredAt))}`
-          : ' · noch nichts zugestellt'}
-      </p>
+      <p className="mt-1 text-xs text-muted-foreground">{meta}</p>
 
       <div className="mt-3 flex flex-col gap-2">
         {KINDS.map((kind) => (
@@ -326,11 +329,9 @@ function DeviceRow({
             />
             <div>
               <Label htmlFor={`${device.id}-${kind}`} className="text-sm">
-                {NOTIFICATION_CATALOG[kind].label}
+                {kindWording.label(kind)}
               </Label>
-              <p className="text-xs text-muted-foreground">
-                {NOTIFICATION_CATALOG[kind].description}
-              </p>
+              <p className="text-xs text-muted-foreground">{kindWording.description(kind)}</p>
             </div>
           </div>
         ))}

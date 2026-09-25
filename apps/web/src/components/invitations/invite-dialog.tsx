@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -31,12 +32,6 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { type InvitationScope, useCreateInvitation } from '@/lib/api/invitation-queries';
-
-const WORKSPACE_ROLE_LABELS: Record<InvitationWorkspaceRole, string> = {
-  ADMIN: 'Administrator',
-  MEMBER: 'Mitglied',
-  GUEST: 'Gast (nur lesen)',
-};
 
 const WORKSPACE_ROLE_ORDER: readonly InvitationWorkspaceRole[] = ['MEMBER', 'ADMIN', 'GUEST'];
 
@@ -77,6 +72,8 @@ export function InviteDialog({
   workspaces,
   canGrantAdmin = false,
 }: InviteDialogProps) {
+  const t = useTranslations('invitations.dialog');
+  const roleLabel = useTranslations('invitations.roles');
   const createInvitation = useCreateInvitation(scope);
 
   const [email, setEmail] = React.useState('');
@@ -124,11 +121,9 @@ export function InviteDialog({
     <Dialog open={open} onOpenChange={(next) => (next ? onOpenChange(true) : close())}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Einladen</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            {scope.kind === 'admin'
-              ? 'Die eingeladene Person legt über den Link selbst ein Konto an. Registrieren ohne Einladung ist nicht möglich.'
-              : 'Die eingeladene Person legt über den Link ein Konto an und wird Mitglied dieses Arbeitsbereichs.'}
+            {scope.kind === 'admin' ? t('descriptionAdmin') : t('descriptionWorkspace')}
           </DialogDescription>
         </DialogHeader>
 
@@ -137,38 +132,34 @@ export function InviteDialog({
             {result.emailSent ? (
               <Alert data-testid="invite-sent">
                 <AlertDescription>
-                  Einladung an {result.invitation.email} verschickt. Der Link gilt{' '}
-                  {INVITATION_DEFAULT_TTL_DAYS} Tage und lässt sich nur einmal verwenden.
+                  {t('sent', {
+                    email: result.invitation.email,
+                    days: INVITATION_DEFAULT_TTL_DAYS,
+                  })}
                 </AlertDescription>
               </Alert>
             ) : (
               <Alert variant="destructive" data-testid="invite-mail-failed">
-                <AlertDescription>
-                  Die Einladung wurde angelegt, aber die E-Mail ließ sich nicht verschicken. Gib den
-                  Link unten direkt weiter, oder schick die Einladung später erneut.
-                </AlertDescription>
+                <AlertDescription>{t('mailFailed')}</AlertDescription>
               </Alert>
             )}
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="invite-link">Einladungslink</Label>
+              <Label htmlFor="invite-link">{t('link')}</Label>
               <div className="flex gap-2">
                 <Input id="invite-link" readOnly value={result.url} data-testid="invite-link" />
                 <Button variant="outline" onClick={copyLink} data-testid="copy-invite-link">
-                  {copied ? 'Kopiert' : 'Kopieren'}
+                  {copied ? t('copied') : t('copy')}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Dieser Link wird nur jetzt angezeigt. Er steht nirgends gespeichert, also kopiere
-                ihn jetzt, wenn du ihn brauchst.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('linkOnce')}</p>
             </div>
 
             <DialogFooter>
               <Button variant="outline" onClick={reset} data-testid="invite-another">
-                Weitere einladen
+                {t('another')}
               </Button>
-              <Button onClick={close}>Schließen</Button>
+              <Button onClick={close}>{t('close')}</Button>
             </DialogFooter>
           </div>
         ) : (
@@ -180,7 +171,7 @@ export function InviteDialog({
             ) : null}
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="invite-email">E-Mail-Adresse</Label>
+              <Label htmlFor="invite-email">{t('email')}</Label>
               <Input
                 id="invite-email"
                 type="email"
@@ -194,22 +185,23 @@ export function InviteDialog({
 
             {scope.kind === 'admin' && workspaces !== undefined ? (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="invite-workspace">Arbeitsbereich</Label>
+                <Label htmlFor="invite-workspace">{t('workspace')}</Label>
                 <Select
                   value={workspaceId}
                   onValueChange={(next) => setWorkspaceId(next ?? NO_WORKSPACE)}
                 >
-                  <SelectTrigger id="invite-workspace" aria-label="Arbeitsbereich">
+                  <SelectTrigger id="invite-workspace" aria-label={t('workspace')}>
                     <SelectValue>
                       {() =>
                         workspaceId === NO_WORKSPACE
-                          ? 'Keiner'
-                          : (workspaces.find((item) => item.id === workspaceId)?.name ?? 'Keiner')
+                          ? t('noWorkspace')
+                          : (workspaces.find((item) => item.id === workspaceId)?.name ??
+                            t('noWorkspace'))
                       }
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_WORKSPACE}>Keiner</SelectItem>
+                    <SelectItem value={NO_WORKSPACE}>{t('noWorkspace')}</SelectItem>
                     {workspaces.map((workspace) => (
                       <SelectItem key={workspace.id} value={workspace.id}>
                         {workspace.name}
@@ -217,27 +209,24 @@ export function InviteDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">
-                  Ohne Arbeitsbereich entsteht ein Konto, das noch nichts sieht. Mitgliedschaften
-                  werden hier immer ausdrücklich vergeben.
-                </p>
+                <p className="text-xs text-muted-foreground">{t('noWorkspaceHint')}</p>
               </div>
             ) : null}
 
             {scope.kind === 'workspace' || workspaceId !== NO_WORKSPACE ? (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="invite-role">Rolle im Arbeitsbereich</Label>
+                <Label htmlFor="invite-role">{t('role')}</Label>
                 <Select
                   value={workspaceRole}
                   onValueChange={(next) => setWorkspaceRole(next as InvitationWorkspaceRole)}
                 >
-                  <SelectTrigger id="invite-role" aria-label="Rolle im Arbeitsbereich">
-                    <SelectValue>{() => WORKSPACE_ROLE_LABELS[workspaceRole]}</SelectValue>
+                  <SelectTrigger id="invite-role" aria-label={t('role')}>
+                    <SelectValue>{() => roleLabel(workspaceRole)}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {WORKSPACE_ROLE_ORDER.map((role) => (
                       <SelectItem key={role} value={role}>
-                        {WORKSPACE_ROLE_LABELS[role]}
+                        {roleLabel(role)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -248,10 +237,8 @@ export function InviteDialog({
             {canGrantAdmin ? (
               <div className="flex items-start justify-between gap-4 rounded-md border border-border p-3">
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="invite-admin">Administrator dieser Installation</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Darf Nutzer verwalten, Einstellungen ändern und alle Arbeitsbereiche sehen.
-                  </p>
+                  <Label htmlFor="invite-admin">{t('grantAdmin')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('grantAdminHint')}</p>
                 </div>
                 <Switch
                   id="invite-admin"
@@ -264,14 +251,14 @@ export function InviteDialog({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={close}>
-                Abbrechen
+                {t('cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={email.trim().length === 0 || createInvitation.isPending}
                 data-testid="invite-submit"
               >
-                {createInvitation.isPending ? 'Wird verschickt …' : 'Einladen'}
+                {createInvitation.isPending ? t('sending') : t('submit')}
               </Button>
             </DialogFooter>
           </form>

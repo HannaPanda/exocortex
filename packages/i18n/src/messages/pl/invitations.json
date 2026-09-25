@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrator",
+    "MEMBER": "Członek",
+    "GUEST": "Gość (tylko do odczytu)"
+  },
+  "statuses": {
+    "pending": "Oczekujące",
+    "accepted": "Zaakceptowane",
+    "revoked": "Wycofane",
+    "expired": "Wygasłe"
+  },
+  "dialog": {
+    "title": "Zaproś",
+    "descriptionAdmin": "Zaproszona osoba utworzy konto samodzielnie za pomocą linku. Rejestracja bez zaproszenia nie jest możliwa.",
+    "descriptionWorkspace": "Zaproszona osoba utworzy konto za pomocą linku i zostanie członkiem tego obszaru roboczego.",
+    "sent": "Zaproszenie wysłane na adres {email}. Link jest ważny przez {days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} i można go użyć tylko raz.",
+    "mailFailed": "Zaproszenie zostało utworzone, ale nie udało się wysłać wiadomości e-mail. Przekaż poniższy link bezpośrednio lub wyślij zaproszenie ponownie później.",
+    "link": "Link z zaproszeniem",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "linkOnce": "Ten link wyświetla się tylko teraz. Nie jest nigdzie zapisywany, więc skopiuj go teraz, jeśli go potrzebujesz.",
+    "another": "Zaproś kolejną osobę",
+    "close": "Zamknij",
+    "email": "Adres e-mail",
+    "workspace": "Obszar roboczy",
+    "noWorkspace": "Brak",
+    "noWorkspaceHint": "Bez obszaru roboczego powstanie konto, które jeszcze nic nie widzi. Członkostwa są tutaj zawsze nadawane jawnie.",
+    "role": "Rola w obszarze roboczym",
+    "grantAdmin": "Administrator tej instalacji",
+    "grantAdminHint": "Może zarządzać użytkownikami, zmieniać ustawienia i przeglądać wszystkie obszary robocze.",
+    "cancel": "Anuluj",
+    "sending": "Wysyłanie…",
+    "submit": "Zaproś"
+  },
+  "table": {
+    "loading": "Ładowanie zaproszeń…",
+    "loadFailed": "Nie udało się załadować zaproszeń",
+    "emptyTitle": "Brak zaproszeń",
+    "emptyDescription": "Każdy, kto chce tu dołączyć, potrzebuje zaproszenia. Rejestracja bez zaproszenia jest wyłączona.",
+    "freshLink": "Nowy link z zaproszeniem",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "freshLinkHint": "Poprzedni link już nie obowiązuje. Każde ponowne wysłanie tworzy nowy.",
+    "caption": "Zaproszenia",
+    "email": "E-mail",
+    "status": "Status",
+    "workspace": "Obszar roboczy",
+    "role": "Rola",
+    "invitedBy": "Zaproszenie od",
+    "expiresAt": "Ważne do",
+    "sent": "Wysłano",
+    "actions": "Działania",
+    "admin": "Admin",
+    "notDelivered": "niedoręczone",
+    "revokeTitle": "Wycofać zaproszenie?",
+    "revokeDescription": "Link wysłany na adres {email} przestanie działać. Jeśli ta osoba ma jednak dołączyć, będzie potrzebować nowego zaproszenia.",
+    "revoke": "Wycofaj",
+    "resend": "Wyślij ponownie"
+  }
+}

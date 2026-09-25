@@ -1,0 +1,224 @@
+{
+  "connections": {
+    "title": "Verbindingen",
+    "intro": "Hier zijn je agents gekoppeld aan eXocortex: toepassingen die zich namens jou aanmelden, tokens voor al het andere en kant-en-klare opdrachten voor de configuratie. Wanneer eXocortex uit zichzelf contact met je opneemt, vind je onder <link>Meldingen</link>."
+  },
+  "connectedApps": {
+    "title": "Verbonden toepassingen",
+    "intro": "Programma’s waaraan je op de toestemmingspagina toegang hebt gegeven, zoals ChatGPT. Ze melden zich namens jou aan, zonder een token van jou. Ontkoppelen werkt direct: actieve sessies worden beëindigd en voor nieuwe toegang is je toestemming opnieuw vereist.",
+    "loading": "Verbindingen worden geladen …",
+    "loadError": "Verbindingen konden niet worden geladen",
+    "emptyTitle": "Geen verbonden toepassingen",
+    "emptyDescription": "Zodra je een connector zoals ChatGPT verbindt, verschijnt deze hier en kan hier ook weer worden ontkoppeld.",
+    "caption": "Lijst van verbonden toepassingen",
+    "columnApp": "Toepassing",
+    "columnConnectedAt": "Verbonden sinds",
+    "columnLastAuthorized": "Laatst aangemeld",
+    "columnStatus": "Status",
+    "columnActions": "Acties",
+    "never": "nooit",
+    "statusDisabled": "Uitgeschakeld",
+    "statusActive": "Actief",
+    "statusIdle": "Inactief",
+    "disconnect": "Ontkoppelen",
+    "disconnectTitle": "Verbinding verbreken?",
+    "disconnectDescription": "‘{name}’ verliest direct de toegang. Lopende aanmeldingen eindigen en de toepassing kan zichzelf niet meer vernieuwen. Om opnieuw te verbinden, moet je deze in het eigen programma opnieuw toevoegen en opnieuw je toestemming geven.",
+    "cancel": "Annuleren"
+  },
+  "tokens": {
+    "title": "Tokens",
+    "intro": "Met API-tokens kunnen externe programma’s zoals de MCP-server namens jou toegang krijgen tot eXocortex. Geef elk token alleen de rechten die het echt nodig heeft: als het kwijtraakt, kan iemand er precies dat mee doen.",
+    "loading": "Tokens worden geladen …",
+    "loadError": "Tokens konden niet worden geladen",
+    "caption": "Lijst van je API-tokens",
+    "columnName": "Naam",
+    "columnPrefix": "Prefix",
+    "columnScopes": "Rechten",
+    "columnPages": "Pagina’s",
+    "columnLastUsed": "Laatst gebruikt",
+    "columnExpires": "Verloopt",
+    "columnStatus": "Status",
+    "columnActions": "Acties",
+    "scopeLabels": {
+      "read": "Lezen",
+      "write": "Schrijven",
+      "admin": "Beheer"
+    },
+    "noScopes": "Geen",
+    "allPages": "alle",
+    "withSubpages": "{title} + subpagina’s",
+    "never": "nooit",
+    "statusRevoked": "Ingetrokken",
+    "statusActive": "Actief",
+    "revoke": "Intrekken",
+    "newTitle": "Nieuw token",
+    "nameLabel": "Naam",
+    "namePlaceholder": "bijv. MCP-server",
+    "scopeLabel": "Rechten",
+    "scopeOptions": {
+      "read": {
+        "label": "Alleen lezen",
+        "hint": "Pagina’s en databases lezen, niets wijzigen."
+      },
+      "write": {
+        "label": "Lezen en schrijven",
+        "hint": "Daarnaast inhoud aanmaken, bewerken en verwijderen."
+      },
+      "admin": {
+        "label": "Volledige toegang",
+        "hint": "Daarnaast beheer en tokenbeheer."
+      }
+    },
+    "expiryLabel": "Geldigheid",
+    "expiryOptions": {
+      "30": "30 dagen",
+      "90": "90 dagen",
+      "365": "1 jaar",
+      "never": "Onbeperkt"
+    },
+    "create": "Aanmaken",
+    "createdTitle": "Token aangemaakt",
+    "createdDescription": "Kopieer het token nu. Om veiligheidsredenen wordt het hierna niet meer weergegeven.",
+    "copied": "Gekopieerd",
+    "copy": "Kopiëren",
+    "shownOnce": "Dit token wordt nooit meer weergegeven. Bewaar het op een veilige plek.",
+    "claudeCodeHeading": "Direct in Claude Code instellen",
+    "claudeCodeCopy": "Opdracht voor Claude Code kopiëren",
+    "otherClientsHint": "Opdrachten voor ChatGPT en Hermes vind je onder „Instellen”, met dit token al ingevuld.",
+    "closeReveal": "Begrepen, sluiten",
+    "revokeTitle": "Token intrekken?",
+    "revokeDescription": "„{name}” kan daarna niet meer worden gebruikt. Dit kan niet ongedaan worden gemaakt.",
+    "cancel": "Annuleren",
+    "pageScope": {
+      "label": "Beperken tot pagina’s (optioneel)",
+      "hint": "Zonder opgave kan het token overal bij waar jij bij kunt. Geef je een pagina op, dan heeft het alleen nog toegang daartoe: niet via het zoeken, niet via verwijzingen, niet via lijsten, en al het overige bestaat voor dit token niet eens.",
+      "noRestriction": "Geen beperking",
+      "addPage": "Pagina toevoegen",
+      "addPagePlaceholder": "Pagina toevoegen …",
+      "reach": "Bereik",
+      "subtree": "met subpagina’s",
+      "pageOnly": "alleen deze pagina",
+      "remove": "Verwijderen"
+    }
+  },
+  "setup": {
+    "title": "Instellen",
+    "intro": "Kies je programma en kopieer de regel. Meer is het niet.",
+    "freshToken": "Je nieuwe token zit al in de onderstaande opdrachten. Het verdwijnt zodra je deze pagina vernieuwt.",
+    "hideToken": "Token verbergen",
+    "placeholderHint": "Waar <code>{placeholder}</code> staat, hoort een token uit de sectie hierboven. Maak je er hier direct een aan, dan vult eXocortex dit automatisch in.",
+    "copyLabel": "Gegevens voor {title} kopiëren",
+    "snippets": {
+      "claude-code-plugin": {
+        "title": "Claude Code met geheugen",
+        "summary": "De plug-in brengt de tools en het geheugen mee: herinneringen bij de start, een beknopte notitie aan het einde van elke sessie."
+      },
+      "claude-code": {
+        "title": "Claude Code",
+        "summary": "Voegt eXocortex toe als MCP-server via HTTP. Eén regel in de terminal."
+      },
+      "chatgpt": {
+        "title": "ChatGPT",
+        "summary": "Maak aan als connector en kies OAuth. ChatGPT kan geen token aannemen, het meldt zich in plaats daarvan bij jou aan."
+      },
+      "hermes": {
+        "title": "Hermes",
+        "summary": "Start de MCP-server als proces. Hoort in ~/.hermes/config.yaml."
+      },
+      "other-http": {
+        "title": "Andere client via HTTP",
+        "summary": "Elke client die Streamable HTTP ondersteunt, heeft alleen de URL en een token nodig."
+      }
+    },
+    "notes": {
+      "pluginInSession": "Voer beide regels in een actieve Claude Code-sessie in, niet in de terminal.",
+      "pluginAsksForToken": "Bij het activeren vraagt Claude Code om adres en token. Maak er eerst een aan in het gedeelte hierboven, het wordt maar één keer getoond.",
+      "pluginVerify": "Voer daarna /exocortex:einrichten uit: dit controleert de tools en het geheugen en zegt wat er nog ontbreekt.",
+      "claudeCodeScope": "Zonder verdere opgave geldt de server alleen in het huidige project. Met --scope user aan het einde is deze in alle projecten beschikbaar.",
+      "claudeCodeVerify": "Controleren met: claude mcp list",
+      "chatgptResearch": "Gebruik voor Deep Research de eigen URL: {url}. Deze kent alleen \"search\" en \"fetch\" en kan niets wijzigen.",
+      "chatgptConsent": "Na het aanmaken kom je op de toestemmingspagina. Pas met je „Verbinden” daar krijgt ChatGPT toegang, en via het gedeelte „Verbonden toepassingen” hierboven trek je die weer in.",
+      "chatgptNoToken": "Hier heb je geen token nodig. Vraagt een connector om een token, dan is het niet deze.",
+      "hermesLocalApi": "Draait Hermes op dezelfde computer als eXocortex, dan is {url} de betere API-URL: het verkeer gaat dan rechtstreeks naar de API, zonder nginx.",
+      "hermesPath": "Het pad in args verwijst naar het gebouwde bestand van apps/mcp op deze computer.",
+      "httpTry": "Om te proberen of token en URL kloppen:"
+    },
+    "rightsTitle": "Welke rechten voor wie",
+    "rightsChatgpt": "<strong>ChatGPT: alleen lezen.</strong> Het moet opzoeken, niet herschrijven.",
+    "rightsAgents": "<strong>Coding-agenten zoals Claude Code: lezen en schrijven.</strong> Ze maken pagina’s aan en onderhouden ze.",
+    "rightsAdmin": "<strong>Volledige toegang: aan niemand.</strong> Geen enkele tool in de MCP-catalogus heeft dit nodig, en het is het enige recht waarmee een token verdere tokens kan aanmaken."
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "intro": "Wanneer eXocortex je uit zichzelf benadert, en via welke weg. Op je apparaten beslis je per apparaat, via e-mail voor het hele account.",
+    "failed": "Dat is niet gelukt.",
+    "kinds": {
+      "SHARE": {
+        "label": "Gedeelde pagina’s",
+        "description": "Iemand deelt een pagina met je, wijzigt je rechten daarop of trekt ze weer in."
+      },
+      "COMMENT": {
+        "label": "Reacties",
+        "description": "Iemand reageert op een pagina die jij hebt geschreven, of antwoordt in een gesprek waarin je al zit."
+      },
+      "CALENDAR": {
+        "label": "Afspraken",
+        "description": "Kort voordat een afspraak uit je agenda begint."
+      },
+      "AGENT": {
+        "label": "Berichten van agenten",
+        "description": "Een agent meldt zich: een lange taak is klaar, er is iets misgegaan of een vraag blokkeert de voortgang."
+      },
+      "FAILURE": {
+        "label": "Mislukte automatiseringen",
+        "description": "Een van je automatiseringen is na herhaalde fouten uitgeschakeld, of een geplande uitvoering is mislukt."
+      }
+    }
+  },
+  "pushDevices": {
+    "title": "Op je apparaten",
+    "intro": "eXocortex kan je een seintje geven op je apparaten wanneer je even niet oplet: kort voor een afspraak, bij een reactie op je pagina of wanneer een agent je iets wil laten weten. Wat een apparaat moet ontvangen, bepaal je per apparaat, want de telefoon in je zak en de computer op je werk willen zelden hetzelfde.",
+    "needsInstallation": "Op de iPhone en iPad werken meldingen alleen als eXocortex op het beginscherm staat. Kies in het deelmenu ’Zet op beginscherm’, open de app vanaf daar en kom hier terug.",
+    "unsupported": "Deze browser kan geen meldingen ontvangen. Je andere apparaten staan hier wel en kunnen hier ook worden uitgeschakeld.",
+    "loading": "Apparaten laden …",
+    "loadError": "Apparaten konden niet worden geladen",
+    "notConfigured": "Deze installatie verstuurt geen meldingen. Er ontbreekt een VAPID-sleutelpaar in de configuratie; <code>scripts/generate-vapid-keys.mjs</code> maakt er een aan.",
+    "enable": "Dit apparaat meldingen sturen",
+    "disable": "Dit apparaat afmelden",
+    "sendTest": "Testbericht versturen",
+    "testTitle": "Test",
+    "testBody": "Als je dit leest, komen meldingen aan.",
+    "testResult": "{devices, plural, =0 {Geen apparaat luistert naar berichten van agenten.} one {Onderweg naar # apparaat.} other {Onderweg naar # apparaten.}}",
+    "emptyTitle": "Nog geen apparaat aangemeld",
+    "emptyDescription": "Meld dit apparaat aan, dan verschijnt het hier en kun je instellen wat het moet ontvangen.",
+    "removeTitle": "{label} verwijderen?",
+    "removeDescription": "Het apparaat ontvangt daarna geen meldingen meer en de instellingen ervan verdwijnen. Je kunt het later op het apparaat zelf weer aanmelden.",
+    "remove": "Verwijderen",
+    "deviceName": "Naam van het apparaat",
+    "thisDevice": "Dit apparaat",
+    "failures": "{count, plural, one {# mislukte poging} other {# mislukte pogingen}}",
+    "registeredAt": "{service} · aangemeld {date}",
+    "lastDelivered": "laatst bereikt {date}",
+    "nothingDelivered": "nog niets bezorgd",
+    "unknownDevice": "Onbekend apparaat",
+    "browserOnPlatform": "{browser} op {platform}",
+    "errors": {
+      "denied": "Je browser blokkeert meldingen voor deze pagina. Dit kan alleen in de browserinstellingen weer worden toegestaan.",
+      "dismissed": "Zonder toestemming kan dit apparaat geen meldingen ontvangen.",
+      "incomplete": "De browser heeft een onvolledig abonnement geleverd."
+    }
+  },
+  "emailPreferences": {
+    "title": "Per e-mail",
+    "intro": "E-mail gaat naar je account en niet naar een apparaat, daarom geldt dit overal hetzelfde. Bedoeld voor wat morgen ook nog belangrijk is en wat je moet bereiken als je even helemaal niet in eXocortex bent.",
+    "loading": "Instellingen laden …",
+    "loadError": "Instellingen konden niet worden geladen",
+    "emptyTitle": "Niets om in te stellen",
+    "emptyDescription": "Deze installatie verstuurt momenteel geen e-mails waar je zelf over kunt beslissen.",
+    "modes": {
+      "OFF": "Nooit",
+      "IMMEDIATE": "Direct",
+      "DAILY_DIGEST": "Eenmaal per dag gebundeld"
+    }
+  }
+}

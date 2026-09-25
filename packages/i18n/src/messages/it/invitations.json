@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Amministratore",
+    "MEMBER": "Membro",
+    "GUEST": "Ospite (sola lettura)"
+  },
+  "statuses": {
+    "pending": "In attesa",
+    "accepted": "Accettato",
+    "revoked": "Revocato",
+    "expired": "Scaduto"
+  },
+  "dialog": {
+    "title": "Invita",
+    "descriptionAdmin": "La persona invitata creerà autonomamente un account tramite il link. Non è possibile registrarsi senza invito.",
+    "descriptionWorkspace": "La persona invitata creerà un account tramite il link e diventerà membro di quest’area di lavoro.",
+    "sent": "Invito inviato a {email}. Il link è valido per {days, plural, one {# giorno} many {# giorni} other {# giorni}} e può essere utilizzato una sola volta.",
+    "mailFailed": "L’invito è stato creato, ma non è stato possibile inviare l’email. Inoltra direttamente il link qui sotto oppure invia di nuovo l’invito più tardi.",
+    "link": "Link di invito",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "linkOnce": "Questo link viene mostrato solo adesso. Non viene salvato da nessuna parte, quindi copialo ora se ne hai bisogno.",
+    "another": "Invita un’altra persona",
+    "close": "Chiudi",
+    "email": "Indirizzo email",
+    "workspace": "Area di lavoro",
+    "noWorkspace": "Nessuna",
+    "noWorkspaceHint": "Senza un’area di lavoro viene creato un account che non può ancora visualizzare nulla. L’appartenenza a un’area di lavoro viene sempre assegnata in modo esplicito.",
+    "role": "Ruolo nell’area di lavoro",
+    "grantAdmin": "Amministratore di questa installazione",
+    "grantAdminHint": "Può gestire gli utenti, modificare le impostazioni e visualizzare tutte le aree di lavoro.",
+    "cancel": "Annulla",
+    "sending": "Invio in corso…",
+    "submit": "Invita"
+  },
+  "table": {
+    "loading": "Caricamento inviti in corso…",
+    "loadFailed": "Impossibile caricare gli inviti",
+    "emptyTitle": "Nessun invito",
+    "emptyDescription": "Per accedere qui serve un invito. La registrazione senza invito è disattivata.",
+    "freshLink": "Nuovo link di invito",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "freshLinkHint": "Il link precedente non è più valido. Ogni nuovo invio ne genera uno nuovo.",
+    "caption": "Inviti",
+    "email": "Email",
+    "status": "Stato",
+    "workspace": "Area di lavoro",
+    "role": "Ruolo",
+    "invitedBy": "Chi ha invitato",
+    "expiresAt": "Scadenza",
+    "sent": "Inviato",
+    "actions": "Azioni",
+    "admin": "Admin",
+    "notDelivered": "non recapitato",
+    "revokeTitle": "Revocare l’invito?",
+    "revokeDescription": "Il link inviato a {email} non funzionerà più. Se la persona desidera comunque accedere, servirà un nuovo invito.",
+    "revoke": "Revoca",
+    "resend": "Invia di nuovo"
+  }
+}

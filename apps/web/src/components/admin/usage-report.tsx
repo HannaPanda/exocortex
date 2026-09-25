@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -28,17 +29,16 @@ import {
 
 import { useAdminAiUsage } from '@/lib/api/admin-queries';
 
-const numberFormat = new Intl.NumberFormat('de-DE');
-const percentFormat = new Intl.NumberFormat('de-DE', {
-  style: 'percent',
-  maximumFractionDigits: 1,
-});
+type Formatter = ReturnType<typeof useFormatter>;
+type Translator = ReturnType<typeof useTranslations<'admin.usage'>>;
+
+const PERCENT = { style: 'percent', maximumFractionDigits: 1 } as const;
 
 const RANGES = [
-  { days: 1, label: '24 h' },
-  { days: 7, label: '7 Tage' },
-  { days: 30, label: '30 Tage' },
-  { days: 90, label: '3 Monate' },
+  { days: 1, labelKey: 'day' },
+  { days: 7, labelKey: 'week' },
+  { days: 30, labelKey: 'month' },
+  { days: 90, labelKey: 'quarter' },
 ] as const;
 
 /**
@@ -49,29 +49,44 @@ const RANGES = [
  * most recent day look worse (or better) than it turns out to be.
  */
 const STACKED_STATUSES = [
-  { status: 'completed', label: 'erfolgreich', className: 'bg-success' },
-  { status: 'failed', label: 'fehlgeschlagen', className: 'bg-destructive' },
-  { status: 'timed_out', label: 'Zeitüberschreitung', className: 'bg-warning' },
-  { status: 'cancelled', label: 'abgebrochen', className: 'bg-muted-foreground' },
-] as const satisfies readonly { status: AiRunStatus; label: string; className: string }[];
+  { status: 'completed', className: 'bg-success' },
+  { status: 'failed', className: 'bg-destructive' },
+  { status: 'timed_out', className: 'bg-warning' },
+  { status: 'cancelled', className: 'bg-muted-foreground' },
+] as const satisfies readonly { status: AiRunStatus; className: string }[];
 
-/** Micro-USD to a `$X,XX` string; four decimals, because most runs cost cents. */
-function formatMicroUsd(microUsd: number): string {
-  return `$${(microUsd / 1_000_000).toLocaleString('de-DE', {
+/** Micro-USD as a dollar amount; up to four decimals, because most runs cost cents. */
+function formatMicroUsd(format: Formatter, microUsd: number): string {
+  return format.number(microUsd / 1_000_000, {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 4,
-  })}`;
+  });
 }
 
-function formatDuration(ms: number | null): string {
+function formatDuration(format: Formatter, ms: number | null): string {
   if (ms === null) return '–';
-  return ms < 1_000 ? `${numberFormat.format(ms)} ms` : `${(ms / 1_000).toFixed(1)} s`;
+  return ms < 1_000
+    ? format.number(ms, { style: 'unit', unit: 'millisecond' })
+    : format.number(ms / 1_000, {
+        style: 'unit',
+        unit: 'second',
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      });
 }
 
-/** `08.09.` — the axis has room for a day and a month, not a year. */
-function formatDayLabel(date: string): string {
-  const [, month, day] = date.split('-');
-  return `${day}.${month}.`;
+/**
+ * Day and month of an ISO day (`08.09.` in German): the axis has room for a
+ * day and a month, not a year. Read in UTC, the zone the API names days in.
+ */
+function formatDayLabel(format: Formatter, date: string): string {
+  return format.dateTime(new Date(`${date}T00:00:00Z`), {
+    day: '2-digit',
+    month: '2-digit',
+    timeZone: 'UTC',
+  });
 }
 
 /**
@@ -88,16 +103,16 @@ function formatDayLabel(date: string): string {
  * are left out: "0 abgebrochen" is noise on a page about the figures that are
  * not zero.
  */
-function runBreakdown(byStatus: AiUsageStatusCounts): string | undefined {
-  const groups: readonly (readonly [number, string])[] = [
-    [byStatus.completed, 'erfolgreich'],
-    [byStatus.failed + byStatus.timed_out, 'fehlgeschlagen'],
-    [byStatus.cancelled, 'abgebrochen'],
-    [byStatus.pending + byStatus.running, 'noch offen'],
-  ];
+function runBreakdown(t: Translator, byStatus: AiUsageStatusCounts): string | undefined {
+  const groups = [
+    [byStatus.completed, 'completed'],
+    [byStatus.failed + byStatus.timed_out, 'failed'],
+    [byStatus.cancelled, 'cancelled'],
+    [byStatus.pending + byStatus.running, 'open'],
+  ] as const;
   const parts = groups
     .filter(([count]) => count > 0)
-    .map(([count, label]) => `${numberFormat.format(count)} ${label}`);
+    .map(([count, key]) => t(`breakdown.${key}`, { count }));
   return parts.length === 0 ? undefined : parts.join(', ');
 }
 
@@ -109,26 +124,28 @@ function runBreakdown(byStatus: AiUsageStatusCounts): string | undefined {
  * and then saying how much of it was calculated is the honest version.
  */
 function CostSummary({ cost }: { cost: AiUsageCost }) {
+  const t = useTranslations('admin.usage');
+  const format = useFormatter();
   const total = cost.measuredMicroUsd + cost.estimatedMicroUsd;
   const parts: string[] = [];
   if (cost.estimatedMicroUsd > 0) {
-    parts.push(`davon ${formatMicroUsd(cost.estimatedMicroUsd)} geschätzt`);
+    parts.push(t('costEstimated', { amount: formatMicroUsd(format, cost.estimatedMicroUsd) }));
   }
   if (cost.unpricedRuns > 0) {
-    parts.push(`${numberFormat.format(cost.unpricedRuns)} ohne Preis`);
+    parts.push(t('costUnpriced', { count: cost.unpricedRuns }));
   }
   // Whose money this was. Only shown once a workspace actually brought its own
   // key: on a deployment without BYOK the line would say "0 fremd bezahlt"
   // forever, which is noise and not information.
   if (cost.ownKeyRuns > 0) {
-    parts.push(`${formatMicroUsd(cost.ownKeyMicroUsd)} über eigene Schlüssel`);
+    parts.push(t('costOwnKey', { amount: formatMicroUsd(format, cost.ownKeyMicroUsd) }));
   }
   return (
     <Readout
-      label="Kosten"
-      value={formatMicroUsd(total)}
+      label={t('cost')}
+      value={formatMicroUsd(format, total)}
       tone="live"
-      note={parts.length === 0 ? 'vollständig vom Anbieter gemeldet' : parts.join(' · ')}
+      note={parts.length === 0 ? t('costFullyReported') : parts.join(' · ')}
       data-testid="usage-metric-cost"
     />
   );
@@ -145,6 +162,9 @@ function CostSummary({ cost }: { cost: AiUsageCost }) {
  */
 function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
   const chartTableId = React.useId();
+  const t = useTranslations('admin.usage');
+  const format = useFormatter();
+  const dayLabel = (date: string): string => formatDayLabel(format, date);
   const peak = Math.max(1, ...daily.map((day) => day.runs));
   // A dense range gets a label every few days; otherwise they overlap.
   const labelEvery = Math.ceil(daily.length / 12);
@@ -159,7 +179,7 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
     // by a rule now, and one boxed block in the middle of it would be the only
     // thing claiming to be separate from the page it is about.
     <section className="flex flex-col gap-3">
-      <SectionRule>Läufe pro Tag, nach Ausgang</SectionRule>
+      <SectionRule>{t('chart.title')}</SectionRule>
       <div className="space-y-3">
         {/*
          * The bars are the picture; the table under them is the same data for
@@ -172,14 +192,18 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
         <div
           className="flex h-40 items-end gap-px"
           role="img"
-          aria-label="Läufe pro Tag"
+          aria-label={t('chart.imageLabel')}
           aria-describedby={chartTableId}
         >
           {daily.map((day, index) => (
             <div
               key={day.date}
               className="flex h-full flex-1 flex-col justify-end gap-px"
-              title={`${formatDayLabel(day.date)} ${numberFormat.format(day.runs)} Läufe, ${formatMicroUsd(day.costMicroUsd)}`}
+              title={t('chart.column', {
+                day: dayLabel(day.date),
+                runs: day.runs,
+                cost: formatMicroUsd(format, day.costMicroUsd),
+              })}
               data-testid={index === 0 ? 'usage-chart-column' : undefined}
             >
               {STACKED_STATUSES.map((segment) => {
@@ -200,7 +224,7 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
         <div className="flex gap-px text-nano text-muted-foreground">
           {daily.map((day, index) => (
             <span key={day.date} className="flex-1 truncate text-center">
-              {index % labelEvery === 0 ? formatDayLabel(day.date) : ''}
+              {index % labelEvery === 0 ? dayLabel(day.date) : ''}
             </span>
           ))}
         </div>
@@ -208,7 +232,7 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
           {STACKED_STATUSES.map((segment) => (
             <span key={segment.status} className="flex items-center gap-1.5">
               <span className={cn('size-2 rounded-xs', segment.className)} aria-hidden />
-              {segment.label}
+              {t(`statuses.${segment.status}`)}
             </span>
           ))}
         </div>
@@ -217,24 +241,24 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
             reader as the table the picture describes. */}
         <p className="text-xs text-muted-foreground">
           {daily.length === 0
-            ? 'Keine Tage im Zeitraum.'
-            : `Stärkster Tag: ${formatDayLabel(busiest.date)} mit ${numberFormat.format(busiest.runs)} Läufen.`}
+            ? t('chart.noDays')
+            : t('chart.busiest', { day: dayLabel(busiest.date), runs: busiest.runs })}
         </p>
         <table id={chartTableId} className="exocortex-sr-only">
-          <caption>Läufe und Kosten pro Tag</caption>
+          <caption>{t('chart.tableCaption')}</caption>
           <thead>
             <tr>
-              <th scope="col">Tag</th>
-              <th scope="col">Läufe</th>
-              <th scope="col">Kosten</th>
+              <th scope="col">{t('chart.day')}</th>
+              <th scope="col">{t('chart.runs')}</th>
+              <th scope="col">{t('chart.cost')}</th>
             </tr>
           </thead>
           <tbody>
             {daily.map((day) => (
               <tr key={day.date}>
-                <th scope="row">{formatDayLabel(day.date)}</th>
-                <td>{numberFormat.format(day.runs)}</td>
-                <td>{formatMicroUsd(day.costMicroUsd)}</td>
+                <th scope="row">{dayLabel(day.date)}</th>
+                <td>{format.number(day.runs)}</td>
+                <td>{formatMicroUsd(format, day.costMicroUsd)}</td>
               </tr>
             ))}
           </tbody>
@@ -245,19 +269,19 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
 }
 
 function ModelTable({ usage }: { usage: AiUsageResponse }) {
+  const t = useTranslations('admin.usage.modelTable');
+  const format = useFormatter();
   return (
     <Table narrow="list">
-      <TableCaption>
-        Welches Modell wie oft, was es kostet, wie zuverlässig und wie schnell es antwortet.
-      </TableCaption>
+      <TableCaption>{t('caption')}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Modell</TableHead>
-          <TableHead className="text-right">Läufe</TableHead>
-          <TableHead className="text-right">Erfolg</TableHead>
-          <TableHead className="text-right">Tokens rein/raus</TableHead>
-          <TableHead className="text-right">Kosten</TableHead>
-          <TableHead className="text-right">Median</TableHead>
+          <TableHead>{t('model')}</TableHead>
+          <TableHead className="text-right">{t('runs')}</TableHead>
+          <TableHead className="text-right">{t('success')}</TableHead>
+          <TableHead className="text-right">{t('tokens')}</TableHead>
+          <TableHead className="text-right">{t('cost')}</TableHead>
+          <TableHead className="text-right">{t('median')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -271,23 +295,23 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
                   {row.model} · {row.provider}
                 </div>
               </TableCell>
-              <TableCell label="Läufe" className="text-right tabular-nums">
-                {numberFormat.format(row.runs)}
+              <TableCell label={t('runs')} className="text-right tabular-nums">
+                {format.number(row.runs)}
               </TableCell>
-              <TableCell label="Erfolg" className="text-right tabular-nums">
-                {finished === 0 ? '–' : percentFormat.format(row.completedRuns / finished)}
+              <TableCell label={t('success')} className="text-right tabular-nums">
+                {finished === 0 ? '–' : format.number(row.completedRuns / finished, PERCENT)}
               </TableCell>
-              <TableCell label="Tokens rein/raus" className="text-right tabular-nums">
-                {numberFormat.format(row.tokens.input)} / {numberFormat.format(row.tokens.output)}
+              <TableCell label={t('tokens')} className="text-right tabular-nums">
+                {format.number(row.tokens.input)} / {format.number(row.tokens.output)}
               </TableCell>
-              <TableCell label="Kosten" className="text-right tabular-nums">
-                {formatMicroUsd(row.cost.measuredMicroUsd + row.cost.estimatedMicroUsd)}
+              <TableCell label={t('cost')} className="text-right tabular-nums">
+                {formatMicroUsd(format, row.cost.measuredMicroUsd + row.cost.estimatedMicroUsd)}
                 {row.cost.estimatedMicroUsd > 0 ? (
-                  <span className="ml-1 text-xs text-muted-foreground">geschätzt</span>
+                  <span className="ml-1 text-xs text-muted-foreground">{t('estimated')}</span>
                 ) : null}
               </TableCell>
-              <TableCell label="Median" className="text-right tabular-nums">
-                {formatDuration(row.medianDurationMs)}
+              <TableCell label={t('median')} className="text-right tabular-nums">
+                {formatDuration(format, row.medianDurationMs)}
               </TableCell>
             </TableRow>
           );
@@ -298,35 +322,34 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
 }
 
 function ErrorTable({ usage }: { usage: AiUsageResponse }) {
+  const t = useTranslations('admin.usage.errorTable');
+  const format = useFormatter();
   const failed = usage.byErrorCode.reduce((sum, row) => sum + row.runs, 0);
   return (
     <Table narrow="list">
-      <TableCaption>
-        Nur gescheiterte Läufe und Zeitüberschreitungen. Ein Abbruch durch einen Menschen ist kein
-        Fehler und steht hier nicht.
-      </TableCaption>
+      <TableCaption>{t('caption')}</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Fehlercode</TableHead>
-          <TableHead className="text-right">Läufe</TableHead>
-          <TableHead className="text-right">Anteil</TableHead>
-          <TableHead className="text-right">Zuletzt</TableHead>
+          <TableHead>{t('code')}</TableHead>
+          <TableHead className="text-right">{t('runs')}</TableHead>
+          <TableHead className="text-right">{t('share')}</TableHead>
+          <TableHead className="text-right">{t('lastSeen')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {usage.byErrorCode.map((row) => (
-          <TableRow key={row.errorCode ?? 'ohne-code'}>
+          <TableRow key={row.errorCode ?? 'no-code'}>
             <TableCell cell="title" className="font-mono text-xs">
-              {row.errorCode ?? 'ohne Code'}
+              {row.errorCode ?? t('noCode')}
             </TableCell>
-            <TableCell label="Läufe" className="text-right tabular-nums">
-              {numberFormat.format(row.runs)}
+            <TableCell label={t('runs')} className="text-right tabular-nums">
+              {format.number(row.runs)}
             </TableCell>
-            <TableCell label="Anteil" className="text-right tabular-nums">
-              {failed === 0 ? '–' : percentFormat.format(row.runs / failed)}
+            <TableCell label={t('share')} className="text-right tabular-nums">
+              {failed === 0 ? '–' : format.number(row.runs / failed, PERCENT)}
             </TableCell>
-            <TableCell label="Zuletzt" className="text-right tabular-nums">
-              {new Date(row.lastSeenAt).toLocaleString('de-DE', {
+            <TableCell label={t('lastSeen')} className="text-right tabular-nums">
+              {format.dateTime(new Date(row.lastSeenAt), {
                 dateStyle: 'short',
                 timeStyle: 'short',
               })}
@@ -342,9 +365,11 @@ function ErrorTable({ usage }: { usage: AiUsageResponse }) {
 export function UsageReport() {
   const [days, setDays] = React.useState<number>(30);
   const usageQuery = useAdminAiUsage(days);
+  const t = useTranslations('admin.usage');
+  const format = useFormatter();
 
   const picker = (
-    <div className="flex flex-wrap gap-1" role="group" aria-label="Zeitraum">
+    <div className="flex flex-wrap gap-1" role="group" aria-label={t('rangeLabel')}>
       {RANGES.map((range) => (
         <Button
           key={range.days}
@@ -353,7 +378,7 @@ export function UsageReport() {
           aria-pressed={range.days === days}
           onClick={() => setDays(range.days)}
         >
-          {range.label}
+          {t(`ranges.${range.labelKey}`)}
         </Button>
       ))}
     </div>
@@ -363,7 +388,7 @@ export function UsageReport() {
     return (
       <div className="space-y-6">
         {picker}
-        <LoadingState label="Nutzung wird ausgewertet …" variant="skeleton" rows={4} />
+        <LoadingState label={t('loading')} variant="skeleton" rows={4} />
       </div>
     );
   }
@@ -372,10 +397,7 @@ export function UsageReport() {
     return (
       <div className="space-y-6">
         {picker}
-        <ErrorState
-          title="Nutzung konnte nicht geladen werden"
-          onRetry={() => void usageQuery.refetch()}
-        />
+        <ErrorState title={t('loadFailed')} onRetry={() => void usageQuery.refetch()} />
       </div>
     );
   }
@@ -393,43 +415,39 @@ export function UsageReport() {
           ranking. What was spent and whether it worked comes before how long it
           took. */}
       <section className="flex flex-col gap-3">
-        <SectionRule>Im Zeitraum</SectionRule>
+        <SectionRule>{t('inRange')}</SectionRule>
         <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
           <Readout
-            label="Läufe"
-            value={numberFormat.format(usage.runs)}
+            label={t('runs')}
+            value={format.number(usage.runs)}
             tone="live"
-            note={runBreakdown(usage.byStatus)}
+            note={runBreakdown(t, usage.byStatus)}
             data-testid="usage-metric-runs"
           />
           <CostSummary cost={usage.cost} />
           <Readout
-            label="Erfolgsquote"
-            value={usage.successRate === null ? '–' : percentFormat.format(usage.successRate)}
-            note="abgebrochene Läufe zählen nicht mit"
+            label={t('successRate')}
+            value={usage.successRate === null ? '–' : format.number(usage.successRate, PERCENT)}
+            note={t('successRateNote')}
           />
           <Readout
-            label="Tokens rein/raus"
-            value={`${numberFormat.format(usage.tokens.input)} / ${numberFormat.format(usage.tokens.output)}`}
+            label={t('tokens')}
+            value={`${format.number(usage.tokens.input)} / ${format.number(usage.tokens.output)}`}
             note={
               cachedShare === null
                 ? undefined
-                : `${percentFormat.format(cachedShare)} der Eingabe kam aus dem Zwischenspeicher`
+                : t('cachedShare', { share: format.number(cachedShare, PERCENT) })
             }
           />
           <Readout
-            label="Dauer"
-            value={formatDuration(usage.medianDurationMs)}
-            note={`95. Perzentil: ${formatDuration(usage.p95DurationMs)}`}
+            label={t('duration')}
+            value={formatDuration(format, usage.medianDurationMs)}
+            note={t('p95', { duration: formatDuration(format, usage.p95DurationMs) })}
           />
           <Readout
-            label="Werkzeug-Iterationen"
-            value={numberFormat.format(usage.toolIterations)}
-            note={
-              usage.prunedRuns === 0
-                ? undefined
-                : `${numberFormat.format(usage.prunedRuns)} Läufe ohne Texte (aufgeräumt)`
-            }
+            label={t('toolIterations')}
+            value={format.number(usage.toolIterations)}
+            note={usage.prunedRuns === 0 ? undefined : t('pruned', { count: usage.prunedRuns })}
           />
         </div>
       </section>
@@ -437,24 +455,18 @@ export function UsageReport() {
       <DailyChart daily={usage.daily} />
 
       <section className="space-y-2">
-        <SectionRule>Nach Modell</SectionRule>
+        <SectionRule>{t('byModel')}</SectionRule>
         {usage.byModel.length === 0 ? (
-          <EmptyState
-            title="Keine Läufe in diesem Zeitraum"
-            description="Sobald die KI benutzt wird, steht hier, welches Modell was gekostet hat."
-          />
+          <EmptyState title={t('noRunsTitle')} description={t('noRunsDescription')} />
         ) : (
           <ModelTable usage={usage} />
         )}
       </section>
 
       <section className="space-y-2">
-        <SectionRule>Fehler</SectionRule>
+        <SectionRule>{t('errors')}</SectionRule>
         {usage.byErrorCode.length === 0 ? (
-          <EmptyState
-            title="Keine Fehler in diesem Zeitraum"
-            description="Kein Lauf ist gescheitert und keiner lief in eine Zeitüberschreitung."
-          />
+          <EmptyState title={t('noErrorsTitle')} description={t('noErrorsDescription')} />
         ) : (
           <ErrorTable usage={usage} />
         )}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -34,16 +35,6 @@ import { useCreateAiModel, useUpdateAiModel } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const REASONING_LABELS: Record<AiReasoningLevel, string> = {
-  none: 'keine',
-  minimal: 'minimal',
-  low: 'niedrig',
-  medium: 'mittel',
-  high: 'hoch',
-  xhigh: 'sehr hoch',
-  max: 'maximal',
-};
-
 const REASONING_ORDER: readonly AiReasoningLevel[] = [
   'none',
   'minimal',
@@ -53,6 +44,15 @@ const REASONING_ORDER: readonly AiReasoningLevel[] = [
   'xhigh',
   'max',
 ];
+
+/** Client-side validation failures, named by their catalogue key. */
+type FieldErrorKey =
+  | 'slugRequired'
+  | 'displayNameRequired'
+  | 'contextWindowPositive'
+  | 'inputPriceNumber'
+  | 'outputPriceNumber'
+  | 'reasoningRequired';
 
 /** Sentinel for "no vision companion"; distinct from every real slug. */
 const NO_COMPANION = '__none__';
@@ -158,7 +158,9 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
   const [form, setForm] = React.useState<ModelFormState>(() =>
     model !== undefined ? formFromModel(model) : emptyForm(),
   );
-  const [fieldErrors, setFieldErrors] = React.useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = React.useState<FieldErrorKey[]>([]);
+  const t = useTranslations('admin.modelDialog');
+  const reasoningLabel = useTranslations('admin.reasoningLevels');
   const createModel = useCreateAiModel();
   const updateModel = useUpdateAiModel();
 
@@ -168,23 +170,23 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
-    const errors: string[] = [];
-    if (form.slug.trim().length === 0) errors.push('Der Slug darf nicht leer sein.');
-    if (form.displayName.trim().length === 0) errors.push('Der Anzeigename darf nicht leer sein.');
+    const errors: FieldErrorKey[] = [];
+    if (form.slug.trim().length === 0) errors.push('slugRequired');
+    if (form.displayName.trim().length === 0) errors.push('displayNameRequired');
     const contextWindow = Number(form.contextWindowTokens);
     if (!Number.isFinite(contextWindow) || contextWindow <= 0) {
-      errors.push('Das Kontextfenster muss eine positive Zahl sein.');
+      errors.push('contextWindowPositive');
     }
     const inputPrice = Number(form.inputMicroUsdPerMTok);
     const outputPrice = Number(form.outputMicroUsdPerMTok);
     if (!Number.isFinite(inputPrice) || inputPrice < 0) {
-      errors.push('Der Eingabepreis muss eine Zahl sein.');
+      errors.push('inputPriceNumber');
     }
     if (!Number.isFinite(outputPrice) || outputPrice < 0) {
-      errors.push('Der Ausgabepreis muss eine Zahl sein.');
+      errors.push('outputPriceNumber');
     }
     if (form.reasoningLevels.length === 0) {
-      errors.push('Mindestens eine Denkstufe muss ausgewählt sein.');
+      errors.push('reasoningRequired');
     }
 
     if (errors.length > 0) {
@@ -226,11 +228,9 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{isEdit ? 'Modell bearbeiten' : 'Neues Modell'}</DialogTitle>
+        <DialogTitle>{isEdit ? t('editTitle') : t('createTitle')}</DialogTitle>
         <DialogDescription>
-          {isEdit
-            ? 'Ändert einen bestehenden Eintrag im Modellregister.'
-            : 'Fügt ein neues Modell zum Modellregister hinzu.'}
+          {isEdit ? t('editDescription') : t('createDescription')}
         </DialogDescription>
       </DialogHeader>
 
@@ -240,7 +240,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             <AlertDescription>
               <ul className="list-disc pl-4">
                 {fieldErrors.map((error) => (
-                  <li key={error}>{error}</li>
+                  <li key={error}>{t(`errors.${error}`)}</li>
                 ))}
               </ul>
             </AlertDescription>
@@ -254,7 +254,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-slug">Slug</Label>
+            <Label htmlFor="model-slug">{t('fields.slug')}</Label>
             <Input
               id="model-slug"
               value={form.slug}
@@ -264,7 +264,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-display-name">Anzeigename</Label>
+            <Label htmlFor="model-display-name">{t('fields.displayName')}</Label>
             <Input
               id="model-display-name"
               value={form.displayName}
@@ -276,7 +276,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="model-description">Beschreibung</Label>
+          <Label htmlFor="model-description">{t('fields.description')}</Label>
           <Input
             id="model-description"
             value={form.description}
@@ -286,7 +286,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-context">Kontextfenster (Tokens)</Label>
+            <Label htmlFor="model-context">{t('fields.contextWindow')}</Label>
             <Input
               id="model-context"
               type="number"
@@ -297,11 +297,11 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-max-output">Maximale Ausgabe (Tokens)</Label>
+            <Label htmlFor="model-max-output">{t('fields.maxOutput')}</Label>
             <Input
               id="model-max-output"
               type="number"
-              placeholder="unbegrenzt"
+              placeholder={t('fields.maxOutputPlaceholder')}
               value={form.maxOutputTokens}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, maxOutputTokens: event.target.value }))
@@ -319,7 +319,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
                 setForm((prev) => ({ ...prev, supportsVision: checked }))
               }
             />
-            Bildverständnis
+            {t('fields.vision')}
           </Label>
           <Label htmlFor="model-tools" className="gap-2">
             <Switch
@@ -329,7 +329,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
                 setForm((prev) => ({ ...prev, supportsTools: checked }))
               }
             />
-            Werkzeuge
+            {t('fields.tools')}
           </Label>
           <Label htmlFor="model-enabled" className="gap-2">
             <Switch
@@ -337,12 +337,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
               checked={form.enabled}
               onCheckedChange={(checked) => setForm((prev) => ({ ...prev, enabled: checked }))}
             />
-            Aktiv
+            {t('fields.enabled')}
           </Label>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label id="model-reasoning-label">Denkstufen</Label>
+          <Label id="model-reasoning-label">{t('fields.reasoning')}</Label>
           <ToggleGroup
             aria-labelledby="model-reasoning-label"
             value={form.reasoningLevels}
@@ -353,7 +353,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
           >
             {REASONING_ORDER.map((level) => (
               <Toggle key={level} value={level} variant="outline" size="sm">
-                {REASONING_LABELS[level]}
+                {reasoningLabel(level)}
               </Toggle>
             ))}
           </ToggleGroup>
@@ -361,7 +361,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-input-price">Eingabepreis (µUSD / Mio. Tokens)</Label>
+            <Label htmlFor="model-input-price">{t('fields.inputPrice')}</Label>
             <Input
               id="model-input-price"
               type="number"
@@ -372,7 +372,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-output-price">Ausgabepreis (µUSD / Mio. Tokens)</Label>
+            <Label htmlFor="model-output-price">{t('fields.outputPrice')}</Label>
             <Input
               id="model-output-price"
               type="number"
@@ -386,7 +386,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-companion">Vision-Begleitmodell</Label>
+            <Label htmlFor="model-companion">{t('fields.companion')}</Label>
             <Select
               value={form.visionCompanionSlug}
               onValueChange={(next) =>
@@ -398,12 +398,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
                 <SelectValue>
                   {() =>
                     companionOptions.find((entry) => entry.slug === form.visionCompanionSlug)
-                      ?.displayName ?? 'Keines'
+                      ?.displayName ?? t('fields.companionNone')
                   }
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={NO_COMPANION}>Keines</SelectItem>
+                <SelectItem value={NO_COMPANION}>{t('fields.companionNone')}</SelectItem>
                 {companionOptions.map((entry) => (
                   <SelectItem key={entry.slug} value={entry.slug}>
                     {entry.displayName}
@@ -413,7 +413,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-sort-order">Sortierung</Label>
+            <Label htmlFor="model-sort-order">{t('fields.sortOrder')}</Label>
             <Input
               id="model-sort-order"
               type="number"
@@ -425,10 +425,10 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button type="submit" disabled={mutation.isPending}>
-            {isEdit ? 'Speichern' : 'Anlegen'}
+            {isEdit ? t('save') : t('create')}
           </Button>
         </DialogFooter>
       </form>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AgentSession, type AgentSessionRevertResponse } from '@exocortex/contracts';
@@ -32,16 +33,15 @@ import { useAgentSessions, useRevertAgentSession } from '@/lib/api/admin-queries
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
+const DATE_TIME = { dateStyle: 'medium', timeStyle: 'short' } as const;
 
-const SKIP_REASONS: Record<string, string> = {
-  changed_since: 'seither von jemand anderem bearbeitet',
-  no_snapshot: 'kein Stand davor vorhanden',
-  unavailable: 'Seite nicht verfügbar',
-};
+/** Skip reasons the catalogue has a sentence for; anything else is shown raw. */
+const SKIP_REASONS = ['changed_since', 'no_snapshot', 'unavailable'] as const;
+type SkipReason = (typeof SKIP_REASONS)[number];
+
+function isSkipReason(reason: string): reason is SkipReason {
+  return (SKIP_REASONS as readonly string[]).includes(reason);
+}
 
 /**
  * Which agents wrote here, and the way back (issue #49).
@@ -54,21 +54,18 @@ const SKIP_REASONS: Record<string, string> = {
 export function AgentSessionTable() {
   const sessionsQuery = useAgentSessions();
   const revert = useRevertAgentSession();
+  const t = useTranslations('admin.agentSessions');
+  const format = useFormatter();
 
   const [pending, setPending] = React.useState<AgentSession | null>(null);
   const [inspected, setInspected] = React.useState<AgentSession | null>(null);
   const [result, setResult] = React.useState<AgentSessionRevertResponse | null>(null);
 
   if (sessionsQuery.isPending) {
-    return <LoadingState label="Agenten-Sitzungen werden geladen …" variant="skeleton" rows={5} />;
+    return <LoadingState label={t('loading')} variant="skeleton" rows={5} />;
   }
   if (sessionsQuery.isError) {
-    return (
-      <ErrorState
-        title="Sitzungen konnten nicht geladen werden"
-        onRetry={() => void sessionsQuery.refetch()}
-      />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void sessionsQuery.refetch()} />;
   }
 
   const sessions = sessionsQuery.data;
@@ -86,12 +83,8 @@ export function AgentSessionTable() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <SectionRule>Agenten-Sitzungen</SectionRule>
-        <p className="text-sm text-muted-foreground">
-          Jede Verbindung eines Agenten mit dem, was sie geschrieben hat. Zurücknehmen setzt jede
-          betroffene Seite auf den Stand vor dem ersten Eingriff dieser Sitzung zurück; Seiten, die
-          inzwischen jemand anderes bearbeitet hat, bleiben unangetastet.
-        </p>
+        <SectionRule>{t('title')}</SectionRule>
+        <p className="text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {error !== null ? (
@@ -104,15 +97,21 @@ export function AgentSessionTable() {
         <Alert data-testid="agent-session-revert-result">
           <AlertDescription>
             <span className="font-medium">
-              {result.reverted.length === 1 ? 'Eine Seite' : `${result.reverted.length} Seiten`}{' '}
-              zurückgesetzt, {result.skipped.length} übersprungen.
+              {t('revertResult', {
+                reverted: result.reverted.length,
+                skipped: result.skipped.length,
+              })}
             </span>
             {result.skipped.length > 0 ? (
               <ul className="mt-2 list-disc pl-5">
                 {result.skipped.map((entry) => (
                   <li key={entry.documentId}>
-                    {entry.documentTitle ?? entry.documentId}:{' '}
-                    {SKIP_REASONS[entry.reason] ?? entry.reason}
+                    {t('skippedEntry', {
+                      title: entry.documentTitle ?? entry.documentId,
+                      reason: isSkipReason(entry.reason)
+                        ? t(`skipReasons.${entry.reason}`)
+                        : entry.reason,
+                    })}
                   </li>
                 ))}
               </ul>
@@ -122,21 +121,18 @@ export function AgentSessionTable() {
       ) : null}
 
       {sessions.length === 0 ? (
-        <EmptyState
-          title="Noch keine Agenten-Sitzung aufgezeichnet"
-          description="Sobald ein Agent über MCP oder die eingebaute KI eine Seite schreibt, erscheint die Sitzung hier."
-        />
+        <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
       ) : (
         <Table narrow="list">
-          <TableCaption className="sr-only">Agenten-Sitzungen dieser Installation</TableCaption>
+          <TableCaption className="sr-only">{t('caption')}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Client</TableHead>
-              <TableHead>Konto</TableHead>
-              <TableHead>Zeitraum</TableHead>
-              <TableHead>Schreibvorgänge</TableHead>
-              <TableHead>Seiten</TableHead>
-              <TableHead className="sr-only">Aktionen</TableHead>
+              <TableHead>{t('columns.client')}</TableHead>
+              <TableHead>{t('columns.account')}</TableHead>
+              <TableHead>{t('columns.period')}</TableHead>
+              <TableHead>{t('columns.writes')}</TableHead>
+              <TableHead>{t('columns.pages')}</TableHead>
+              <TableHead className="sr-only">{t('columns.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -150,18 +146,23 @@ export function AgentSessionTable() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell label="Konto" className="text-muted-foreground">
+                <TableCell label={t('columns.account')} className="text-muted-foreground">
                   {session.userName ?? '–'}
                 </TableCell>
-                <TableCell label="Zeitraum" className="whitespace-nowrap text-muted-foreground">
-                  {dateTimeFormat.format(new Date(session.startedAt))} bis{' '}
-                  {dateTimeFormat.format(new Date(session.lastSeenAt))}
+                <TableCell
+                  label={t('columns.period')}
+                  className="whitespace-nowrap text-muted-foreground"
+                >
+                  {t('period', {
+                    start: format.dateTime(new Date(session.startedAt), DATE_TIME),
+                    end: format.dateTime(new Date(session.lastSeenAt), DATE_TIME),
+                  })}
                 </TableCell>
-                <TableCell label="Schreibvorgänge">{session.writeCount}</TableCell>
-                <TableCell label="Seiten">{session.documentCount}</TableCell>
+                <TableCell label={t('columns.writes')}>{session.writeCount}</TableCell>
+                <TableCell label={t('columns.pages')}>{session.documentCount}</TableCell>
                 <TableCell cell="actions" className="flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setInspected(session)}>
-                    Details
+                    {t('details')}
                   </Button>
                   <Button
                     variant="outline"
@@ -170,7 +171,7 @@ export function AgentSessionTable() {
                     onClick={() => setPending(session)}
                     data-testid="revert-agent-session"
                   >
-                    Zurücknehmen
+                    {t('revert')}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -187,8 +188,8 @@ export function AgentSessionTable() {
       >
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{inspected?.clientLabel ?? 'Agenten-Sitzung'}</DialogTitle>
-            <DialogDescription>Was diese Sitzung angefasst hat, neueste zuerst.</DialogDescription>
+            <DialogTitle>{inspected?.clientLabel ?? t('detailTitleFallback')}</DialogTitle>
+            <DialogDescription>{t('detailDescription')}</DialogDescription>
           </DialogHeader>
           {inspected === null ? null : <AgentSessionDetail sessionId={inspected.id} />}
         </DialogContent>
@@ -202,17 +203,14 @@ export function AgentSessionTable() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Sitzung zurücknehmen?</DialogTitle>
+            <DialogTitle>{t('confirmTitle')}</DialogTitle>
             <DialogDescription>
-              {pending === null
-                ? null
-                : `${pending.documentCount === 1 ? 'Eine Seite wird' : `${pending.documentCount} Seiten werden`} auf den Stand vor dieser Sitzung zurückgesetzt. ` +
-                  'Der aktuelle Stand jeder Seite wird vorher gesichert, der Schritt ist also selbst umkehrbar.'}
+              {pending === null ? null : t('confirmDescription', { count: pending.documentCount })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setPending(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -222,7 +220,7 @@ export function AgentSessionTable() {
               }}
               data-testid="confirm-revert-agent-session"
             >
-              Zurücknehmen
+              {t('revert')}
             </Button>
           </DialogFooter>
         </DialogContent>

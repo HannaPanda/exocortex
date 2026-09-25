@@ -1,6 +1,7 @@
 'use client';
 
 import { CopyIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -47,46 +48,27 @@ import { connectionSnippets } from '@/lib/connection-snippets';
 
 import { CopyBlock } from './copy-block';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
+const DATE_TIME = { dateStyle: 'medium', timeStyle: 'short' } as const;
 
-const EXPIRY_OPTIONS = [
-  { value: '30', label: '30 Tage' },
-  { value: '90', label: '90 Tage' },
-  { value: '365', label: '1 Jahr' },
-  { value: 'never', label: 'Unbegrenzt' },
-] as const;
+/** Worded by `account.tokens.expiryOptions.<value>`. */
+const EXPIRY_OPTIONS = ['30', '90', '365', 'never'] as const;
 
-type ExpiryOption = (typeof EXPIRY_OPTIONS)[number]['value'];
+type ExpiryOption = (typeof EXPIRY_OPTIONS)[number];
 
 /**
  * Scopes are cumulative, so one choice is enough: sending the highest scope also
  * grants everything below it. Offering three checkboxes would only let someone
- * tick "admin" without "read" and wonder why nothing works.
+ * tick "admin" without "read" and wonder why nothing works. Worded by
+ * `account.tokens.scopeOptions.<value>`.
  */
-const SCOPE_OPTIONS = [
-  { value: 'read', label: 'Nur lesen', hint: 'Seiten und Datenbanken lesen, nichts ändern.' },
-  {
-    value: 'write',
-    label: 'Lesen und schreiben',
-    hint: 'Zusätzlich Inhalte anlegen, ändern und löschen.',
-  },
-  {
-    value: 'admin',
-    label: 'Voller Zugriff',
-    hint: 'Zusätzlich Administration und Token-Verwaltung.',
-  },
-] as const;
+const SCOPE_OPTIONS = ['read', 'write', 'admin'] as const;
 
-type ScopeOption = (typeof SCOPE_OPTIONS)[number]['value'];
+type ScopeOption = (typeof SCOPE_OPTIONS)[number];
 
-const SCOPE_LABELS: Record<string, string> = {
-  read: 'Lesen',
-  write: 'Schreiben',
-  admin: 'Administration',
-};
+/** A granted scope this page has a name for; anything else is shown raw. */
+function isKnownScope(scope: string): scope is ScopeOption {
+  return (SCOPE_OPTIONS as readonly string[]).includes(scope);
+}
 
 /** The "no page limit" choice, which is what a token has had until issue #83. */
 const NO_SCOPE = '__all__';
@@ -121,6 +103,8 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
   const tokensQuery = useApiTokens();
   const createToken = useCreateApiToken();
   const revokeToken = useRevokeApiToken();
+  const t = useTranslations('account.tokens');
+  const format = useFormatter();
 
   const [name, setName] = React.useState('');
   const [expiry, setExpiry] = React.useState<ExpiryOption>('90');
@@ -188,13 +172,9 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
     <section className="flex flex-col gap-3" aria-labelledby="api-tokens-heading">
       <div>
         <h2 id="api-tokens-heading" className="text-sm font-semibold">
-          Token
+          {t('title')}
         </h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf eXocortex
-          zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht: Wenn es
-          abhandenkommt, kann jemand genau das damit tun.
-        </p>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {revokeToken.isError ? (
@@ -204,25 +184,22 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       ) : null}
 
       {tokensQuery.isPending ? (
-        <LoadingState label="Token werden geladen …" variant="skeleton" rows={3} />
+        <LoadingState label={t('loading')} variant="skeleton" rows={3} />
       ) : tokensQuery.isError ? (
-        <ErrorState
-          title="Token konnten nicht geladen werden"
-          onRetry={() => void tokensQuery.refetch()}
-        />
+        <ErrorState title={t('loadError')} onRetry={() => void tokensQuery.refetch()} />
       ) : (
         <Table narrow="list">
-          <TableCaption className="sr-only">Liste deiner API-Token</TableCaption>
+          <TableCaption className="sr-only">{t('caption')}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Präfix</TableHead>
-              <TableHead>Rechte</TableHead>
-              <TableHead>Seiten</TableHead>
-              <TableHead>Zuletzt benutzt</TableHead>
-              <TableHead>Läuft ab</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aktionen</TableHead>
+              <TableHead>{t('columnName')}</TableHead>
+              <TableHead>{t('columnPrefix')}</TableHead>
+              <TableHead>{t('columnScopes')}</TableHead>
+              <TableHead>{t('columnPages')}</TableHead>
+              <TableHead>{t('columnLastUsed')}</TableHead>
+              <TableHead>{t('columnExpires')}</TableHead>
+              <TableHead>{t('columnStatus')}</TableHead>
+              <TableHead className="text-right">{t('columnActions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -231,51 +208,52 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
               return (
                 <TableRow key={token.id}>
                   <TableCell cell="title">{token.name}</TableCell>
-                  <TableCell label="Präfix" className="font-mono text-xs">
+                  <TableCell label={t('columnPrefix')} className="font-mono text-xs">
                     {token.prefix}
                   </TableCell>
-                  <TableCell label="Rechte">
+                  <TableCell label={t('columnScopes')}>
                     {token.scopes.length > 0 ? (
                       <span className="flex flex-wrap gap-1">
                         {token.scopes.map((granted) => (
                           <Badge key={granted} variant="muted">
-                            {SCOPE_LABELS[granted] ?? granted}
+                            {isKnownScope(granted) ? t(`scopeLabels.${granted}`) : granted}
                           </Badge>
                         ))}
                       </span>
                     ) : (
                       // Issued before scopes existed. The API refuses it, so say so
                       // instead of showing an empty cell that looks like a glitch.
-                      <Badge variant="destructive">Keine</Badge>
+                      <Badge variant="destructive">{t('noScopes')}</Badge>
                     )}
                   </TableCell>
-                  <TableCell label="Seiten" className="text-xs">
+                  <TableCell label={t('columnPages')} className="text-xs">
                     {token.pageScopes.length === 0 ? (
-                      <span className="text-muted-foreground">alle</span>
+                      <span className="text-muted-foreground">{t('allPages')}</span>
                     ) : (
                       <span className="flex flex-col gap-0.5">
                         {token.pageScopes.map((entry) => (
                           <span key={entry.documentId}>
-                            {entry.documentTitle}
-                            {entry.scope === 'SUBTREE' ? ' + Unterseiten' : ''}
+                            {entry.scope === 'SUBTREE'
+                              ? t('withSubpages', { title: entry.documentTitle })
+                              : entry.documentTitle}
                           </span>
                         ))}
                       </span>
                     )}
                   </TableCell>
-                  <TableCell label="Zuletzt benutzt">
+                  <TableCell label={t('columnLastUsed')}>
                     {token.lastUsedAt !== null
-                      ? dateTimeFormat.format(new Date(token.lastUsedAt))
-                      : '–'}
+                      ? format.dateTime(new Date(token.lastUsedAt), DATE_TIME)
+                      : t('never')}
                   </TableCell>
-                  <TableCell label="Läuft ab">
+                  <TableCell label={t('columnExpires')}>
                     {token.expiresAt !== null
-                      ? dateTimeFormat.format(new Date(token.expiresAt))
-                      : '–'}
+                      ? format.dateTime(new Date(token.expiresAt), DATE_TIME)
+                      : t('never')}
                   </TableCell>
-                  <TableCell label="Status">
+                  <TableCell label={t('columnStatus')}>
                     <Badge variant={revoked ? 'muted' : 'default'}>
-                      {revoked ? 'Zurückgezogen' : 'Aktiv'}
+                      {revoked ? t('statusRevoked') : t('statusActive')}
                     </Badge>
                   </TableCell>
                   <TableCell cell="actions" className="text-right">
@@ -285,7 +263,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                       disabled={revoked}
                       onClick={() => setRevokeTarget(token)}
                     >
-                      Zurückziehen
+                      {t('revoke')}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -296,7 +274,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       )}
 
       <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
-        <h2 className="text-sm font-semibold">Neues Token</h2>
+        <h2 className="text-sm font-semibold">{t('newTitle')}</h2>
         {createToken.isError ? (
           <Alert variant="destructive">
             <AlertDescription>{messageForCode(createErrorCode)}</AlertDescription>
@@ -304,56 +282,50 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
         ) : null}
         <form className="flex flex-wrap items-end gap-3" onSubmit={handleCreate}>
           <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-            <Label htmlFor="token-name">Name</Label>
+            <Label htmlFor="token-name">{t('nameLabel')}</Label>
             <Input
               id="token-name"
               value={name}
-              placeholder="z. B. MCP-Server"
+              placeholder={t('namePlaceholder')}
               onChange={(event) => setName(event.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="token-scope">Rechte</Label>
+            <Label htmlFor="token-scope">{t('scopeLabel')}</Label>
             <Select value={scope} onValueChange={(next) => setScope(next as ScopeOption)}>
               <SelectTrigger id="token-scope" className="w-56">
-                <SelectValue>
-                  {() => SCOPE_OPTIONS.find((option) => option.value === scope)?.label ?? scope}
-                </SelectValue>
+                <SelectValue>{() => t(`scopeOptions.${scope}.label`)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {SCOPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {t(`scopeOptions.${option}.label`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="token-expiry">Gültigkeit</Label>
+            <Label htmlFor="token-expiry">{t('expiryLabel')}</Label>
             <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
               <SelectTrigger id="token-expiry" className="w-40">
                 {/* Base UI shows the raw value without a render function. */}
-                <SelectValue>
-                  {() => EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label ?? expiry}
-                </SelectValue>
+                <SelectValue>{() => t(`expiryOptions.${expiry}`)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {EXPIRY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {t(`expiryOptions.${option}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <Button type="submit" disabled={name.trim().length === 0 || createToken.isPending}>
-            Anlegen
+            {t('create')}
           </Button>
         </form>
-        <p className="text-xs text-muted-foreground">
-          {SCOPE_OPTIONS.find((option) => option.value === scope)?.hint}
-        </p>
+        <p className="text-xs text-muted-foreground">{t(`scopeOptions.${scope}.hint`)}</p>
 
         <TokenPageScopePicker
           workspaceId={scopeWorkspaceId}
@@ -373,10 +345,8 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       <Dialog open={revealedToken !== null} onOpenChange={() => {}}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Token erstellt</DialogTitle>
-            <DialogDescription>
-              Kopiere das Token jetzt. Aus Sicherheitsgründen wird es danach nicht mehr angezeigt.
-            </DialogDescription>
+            <DialogTitle>{t('createdTitle')}</DialogTitle>
+            <DialogDescription>{t('createdDescription')}</DialogDescription>
           </DialogHeader>
           {revealedToken !== null ? (
             <div className="flex flex-col gap-3">
@@ -384,11 +354,9 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                 {revealedToken.secret}
               </div>
               <Button variant="outline" onClick={() => void handleCopy(revealedToken.secret)}>
-                <CopyIcon /> {copied ? 'Kopiert' : 'Kopieren'}
+                <CopyIcon /> {copied ? t('copied') : t('copy')}
               </Button>
-              <p className="text-sm text-destructive-text">
-                Dieses Token wird nie wieder angezeigt. Bewahre es an einem sicheren Ort auf.
-              </p>
+              <p className="text-sm text-destructive-text">{t('shownOnce')}</p>
               {/*
                 The finished command, not just the secret: this dialog is the
                 one moment the token exists in the browser, so what a person
@@ -397,20 +365,17 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                 lives.
               */}
               <div className="flex flex-col gap-1.5">
-                <p className="text-sm font-medium">Direkt in Claude Code einrichten</p>
+                <p className="text-sm font-medium">{t('claudeCodeHeading')}</p>
                 <CopyBlock
                   value={claudeCodeCommand(revealedToken.secret)}
-                  label="Befehl für Claude Code kopieren"
+                  label={t('claudeCodeCopy')}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Befehle für ChatGPT und Hermes stehen unter „Einrichten“, mit diesem Token bereits
-                  eingesetzt.
-                </p>
+                <p className="text-xs text-muted-foreground">{t('otherClientsHint')}</p>
               </div>
             </div>
           ) : null}
           <DialogFooter>
-            <Button onClick={closeRevealDialog}>Verstanden, schließen</Button>
+            <Button onClick={closeRevealDialog}>{t('closeReveal')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -418,16 +383,14 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       <Dialog open={revokeTarget !== null} onOpenChange={(open) => !open && setRevokeTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Token zurückziehen?</DialogTitle>
+            <DialogTitle>{t('revokeTitle')}</DialogTitle>
             <DialogDescription>
-              {revokeTarget !== null
-                ? `„${revokeTarget.name}“ kann danach nicht mehr verwendet werden. Das lässt sich nicht rückgängig machen.`
-                : null}
+              {revokeTarget !== null ? t('revokeDescription', { name: revokeTarget.name }) : null}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRevokeTarget(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -436,7 +399,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                 revokeToken.mutate(revokeTarget.id, { onSuccess: () => setRevokeTarget(null) });
               }}
             >
-              Zurückziehen
+              {t('revoke')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -479,27 +442,24 @@ function TokenPageScopePicker({
   value: readonly ApiTokenPageScopeInput[];
   onChange: (next: ApiTokenPageScopeInput[]) => void;
 }) {
+  const t = useTranslations('account.tokens.pageScope');
   return (
     <div className="flex flex-col gap-2 border-t border-border pt-3">
-      <Label htmlFor="token-scope-workspace">Auf Seiten beschränken (optional)</Label>
-      <p className="text-xs text-muted-foreground">
-        Ohne Angabe kommt das Token überall hin, wo du hinkommst. Nennst du eine Seite, erreicht es
-        nur noch sie: nicht über die Suche, nicht über Verweise, nicht über Listen, und der ganze
-        Rest ist für dieses Token nicht einmal vorhanden.
-      </p>
+      <Label htmlFor="token-scope-workspace">{t('label')}</Label>
+      <p className="text-xs text-muted-foreground">{t('hint')}</p>
       <div className="flex flex-wrap items-end gap-2">
         <Select value={workspaceId} onValueChange={(next) => onWorkspaceChange(next ?? NO_SCOPE)}>
           <SelectTrigger id="token-scope-workspace" className="w-56">
             <SelectValue>
               {() =>
                 workspaceId === NO_SCOPE
-                  ? 'Keine Beschränkung'
+                  ? t('noRestriction')
                   : (workspaces.find((entry) => entry.id === workspaceId)?.name ?? workspaceId)
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NO_SCOPE}>Keine Beschränkung</SelectItem>
+            <SelectItem value={NO_SCOPE}>{t('noRestriction')}</SelectItem>
             {workspaces.map((workspace) => (
               <SelectItem key={workspace.id} value={workspace.id}>
                 {workspace.name}
@@ -517,8 +477,8 @@ function TokenPageScopePicker({
               onChange([...value, { documentId, scope: 'SUBTREE' }]);
             }}
           >
-            <SelectTrigger aria-label="Seite hinzufügen" className="w-72">
-              <SelectValue>{() => 'Seite hinzufügen …'}</SelectValue>
+            <SelectTrigger aria-label={t('addPage')} className="w-72">
+              <SelectValue>{() => t('addPagePlaceholder')}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {candidates.map((entry) => (
@@ -554,14 +514,14 @@ function TokenPageScopePicker({
                   )
                 }
               >
-                <SelectTrigger aria-label="Umfang" className="w-48">
+                <SelectTrigger aria-label={t('reach')} className="w-48">
                   <SelectValue>
-                    {() => (entry.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur diese Seite')}
+                    {() => (entry.scope === 'SUBTREE' ? t('subtree') : t('pageOnly'))}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="SUBTREE">mit Unterseiten</SelectItem>
-                  <SelectItem value="PAGE_ONLY">nur diese Seite</SelectItem>
+                  <SelectItem value="SUBTREE">{t('subtree')}</SelectItem>
+                  <SelectItem value="PAGE_ONLY">{t('pageOnly')}</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -572,7 +532,7 @@ function TokenPageScopePicker({
                   onChange(value.filter((item) => item.documentId !== entry.documentId))
                 }
               >
-                Entfernen
+                {t('remove')}
               </Button>
             </li>
           ))}

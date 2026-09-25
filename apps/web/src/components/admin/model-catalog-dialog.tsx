@@ -1,6 +1,7 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiModelCatalogEntry, groupAiModelsByVendor } from '@exocortex/contracts';
@@ -29,8 +30,6 @@ import { useAddAiModelsFromCatalog, useAiModelCatalog } from '@/lib/api/admin-qu
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const numberFormat = new Intl.NumberFormat('de-DE');
-
 /**
  * How many matches are rendered at once. The provider offers several hundred
  * models; a list that long is not read, it is searched, and rendering all of
@@ -38,11 +37,16 @@ const numberFormat = new Intl.NumberFormat('de-DE');
  */
 const VISIBLE_LIMIT = 60;
 
-function formatPrice(microUsd: number): string {
-  return `$${(microUsd / 1_000_000).toLocaleString('de-DE', {
+type Formatter = ReturnType<typeof useFormatter>;
+
+/** Micro-USD per million tokens as a dollar amount with two decimals. */
+function formatPrice(format: Formatter, microUsd: number): string {
+  return format.number(microUsd / 1_000_000, {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`;
+  });
 }
 
 function matches(entry: AiModelCatalogEntry, needle: string): boolean {
@@ -63,6 +67,8 @@ function CatalogRow({
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
 }) {
+  const t = useTranslations('admin.catalog');
+  const format = useFormatter();
   const inputId = `catalog-${entry.slug}`;
   return (
     <div className="flex items-start gap-3 rounded-md px-2 py-1.5 hover:bg-muted/50">
@@ -76,20 +82,24 @@ function CatalogRow({
       <Label htmlFor={inputId} className="flex min-w-0 flex-1 flex-col gap-0.5 font-normal">
         <span className="flex flex-wrap items-center gap-1.5">
           <span className="font-medium">{entry.displayName}</span>
-          {entry.registered ? <Badge variant="muted">im Register</Badge> : null}
-          {entry.aliasTargetSlug !== null ? <Badge variant="outline">Alias</Badge> : null}
-          {entry.supportsVision ? <Badge variant="secondary">Bild</Badge> : null}
-          {entry.supportsTools ? <Badge variant="secondary">Werkzeuge</Badge> : null}
-          {entry.reasoningLevels.length > 1 ? <Badge variant="secondary">Denkstufen</Badge> : null}
+          {entry.registered ? <Badge variant="muted">{t('registered')}</Badge> : null}
+          {entry.aliasTargetSlug !== null ? <Badge variant="outline">{t('alias')}</Badge> : null}
+          {entry.supportsVision ? <Badge variant="secondary">{t('vision')}</Badge> : null}
+          {entry.supportsTools ? <Badge variant="secondary">{t('tools')}</Badge> : null}
+          {entry.reasoningLevels.length > 1 ? (
+            <Badge variant="secondary">{t('reasoning')}</Badge>
+          ) : null}
         </span>
         <span className="truncate text-xs text-muted-foreground">
           {entry.slug}
           {entry.aliasTargetSlug !== null ? ` → ${entry.aliasTargetSlug}` : ''}
         </span>
         <span className="text-xs text-muted-foreground">
-          {numberFormat.format(entry.contextWindowTokens)} Tokens Kontext ·{' '}
-          {formatPrice(entry.inputMicroUsdPerMTok)} / {formatPrice(entry.outputMicroUsdPerMTok)} pro
-          Mio. Tokens
+          {t('facts', {
+            context: entry.contextWindowTokens,
+            input: formatPrice(format, entry.inputMicroUsdPerMTok),
+            output: formatPrice(format, entry.outputMicroUsdPerMTok),
+          })}
         </span>
       </Label>
     </div>
@@ -112,6 +122,7 @@ export interface ModelCatalogDialogProps {
 export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogProps) {
   const catalogQuery = useAiModelCatalog(open);
   const addModels = useAddAiModelsFromCatalog();
+  const t = useTranslations('admin.catalog');
 
   const [search, setSearch] = React.useState('');
   const [selected, setSelected] = React.useState<string[]>([]);
@@ -143,19 +154,15 @@ export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogPro
     <Dialog open={open} onOpenChange={(next) => (next ? onOpenChange(true) : close())}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Modelle aus dem OpenRouter-Katalog</DialogTitle>
-          <DialogDescription>
-            Auswählen genügt: Kontextfenster, Preise, Bildverständnis, Werkzeuge und Denkstufen
-            kommen aus dem Katalog. Bei einem Alias ({'\u201Elatest\u201C'}) zählen die Werte des
-            Ziels, und gespeichert wird der vorsichtigste Wert seiner Anbieter.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="relative">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             className="pl-8"
-            placeholder={'Suchen, etwa \u201Eglm\u201C oder \u201Eopenai gpt\u201C'}
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             data-testid="model-catalog-search"
@@ -163,15 +170,15 @@ export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogPro
         </div>
 
         {catalogQuery.isPending ? (
-          <LoadingState label="Katalog wird geladen …" variant="skeleton" rows={4} />
+          <LoadingState label={t('loading')} variant="skeleton" rows={4} />
         ) : catalogQuery.isError ? (
           <ErrorState
-            title="Der Katalog konnte nicht geladen werden"
-            description="OpenRouter hat nicht geantwortet."
+            title={t('loadFailedTitle')}
+            description={t('loadFailedDescription')}
             onRetry={() => void catalogQuery.refetch()}
           />
         ) : filtered.length === 0 ? (
-          <EmptyState title="Kein Modell passt zur Suche" />
+          <EmptyState title={t('noMatch')} />
         ) : (
           <ScrollArea className="h-80 pr-2" clampContentWidth>
             <div className="flex flex-col gap-3">
@@ -192,8 +199,7 @@ export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogPro
               ))}
               {filtered.length > visible.length ? (
                 <p className="px-2 text-xs text-muted-foreground">
-                  {numberFormat.format(filtered.length - visible.length)} weitere Treffer. Suche
-                  eingrenzen, um sie zu sehen.
+                  {t('moreMatches', { count: filtered.length - visible.length })}
                 </p>
               ) : null}
             </div>
@@ -212,21 +218,21 @@ export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogPro
               checked={enableImmediately}
               onCheckedChange={(checked) => setEnableImmediately(checked)}
             />
-            Direkt aktivieren
+            {t('enableImmediately')}
           </Label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {selected.length === 0 ? 'nichts ausgewählt' : `${selected.length} ausgewählt`}
+              {t('selected', { count: selected.length })}
             </span>
             <Button variant="outline" onClick={close}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               disabled={selected.length === 0 || addModels.isPending}
               onClick={handleAdd}
               data-testid="model-catalog-add"
             >
-              Hinzufügen
+              {t('add')}
             </Button>
           </div>
         </DialogFooter>

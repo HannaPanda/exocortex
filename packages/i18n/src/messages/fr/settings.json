@@ -8,5 +8,587 @@
     "saveFailed": "Impossible d’enregistrer la langue. Réessaie dans un instant.",
     "loading": "Chargement de la langue …",
     "loadError": "Impossible de charger la langue"
+  },
+  "groups": {
+    "ai": "IA",
+    "memory": "Mémoire",
+    "entities": "Entités",
+    "search": "Recherche",
+    "mcp": "MCP",
+    "calendar": "Calendrier",
+    "notifications": "Notifications",
+    "activity": "Activité",
+    "automations": "Automatisations",
+    "overview": "Pages de vue d’ensemble",
+    "render": "Publication",
+    "projects": "Projets",
+    "agents": "Agents"
+  },
+  "keys": {
+    "ai": {
+      "enabled": {
+        "label": "IA activée",
+        "help": "Active ou désactive complètement l’IA intégrée pour cette installation."
+      },
+      "defaultModelSlug": {
+        "label": "Modèle par défaut",
+        "help": "Utilisé lorsqu’une requête ne spécifie aucun modèle particulier."
+      },
+      "systemPrompt": {
+        "label": "Prompt système de base",
+        "help": "Placé au début de chaque exécution, avant toute page de règles pour l’IA."
+      },
+      "maxOutputTokens": {
+        "label": "Longueur maximale de réponse (tokens)",
+        "help": "Limite supérieure pour la longueur d’une seule réponse de l’IA."
+      },
+      "timeoutMs": {
+        "label": "Délai d’attente par réponse du modèle (ms)",
+        "help": "Interrompt une réponse individuelle du modèle. Les appels d’outils et les réponses suivantes ont leur propre durée, voir « Durée totale par exécution »."
+      },
+      "maxRunMs": {
+        "label": "Durée totale par exécution (ms)",
+        "help": "Une exécution s’arrête complètement après cette durée, même si elle appelle encore des outils. Ne peut jamais être inférieure au délai d’attente par réponse du modèle."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Limite de coût par requête (µUSD)",
+        "help": "Une exécution s’arrête dès que cette limite de coût est atteinte."
+      },
+      "toolsEnabled": {
+        "label": "Autoriser les outils",
+        "help": "Permet à l’IA d’appeler des outils tels que la recherche ou la lecture de pages."
+      },
+      "mutatingToolsEnabled": {
+        "label": "Autoriser les outils d’écriture",
+        "help": "Permet en plus à l’IA de modifier des données au lieu de seulement les lire."
+      },
+      "untrustedContentPolicy": {
+        "label": "Écriture après des contenus externes",
+        "help": "Les textes issus de documents importés et de descriptions d’images peuvent contenir des instructions destinées à l’IA que personne ici n’a rédigées. Par défaut, une exécution ne peut plus rien modifier après avoir lu de tels contenus ; elle indique alors ce qu’elle aurait écrit. L’option « Toujours autorisée » n’est nécessaire que pour les processus qui doivent lire des documents externes et écrire eux-mêmes à partir de ceux-ci."
+      },
+      "maxToolIterations": {
+        "label": "Nombre maximal d’itérations d’outils",
+        "help": "Limite supérieure pour les appels d’outils au cours d’une même exécution."
+      },
+      "visionEnabled": {
+        "label": "Activer la description d’images",
+        "help": "Permet à un modèle de vision de décrire les images avant que le modèle principal ne réponde."
+      },
+      "visionMaxImagesPerRun": {
+        "label": "Images par requête",
+        "help": "Limite supérieure pour le nombre d’images décrites par exécution."
+      },
+      "pageContextEnabled": {
+        "label": "Envoyer le texte de la page ouverte",
+        "help": "Désactivé : l’IA ne connaît que le titre et le chemin de la page ouverte et charge elle-même le texte si une question le nécessite. Activé : le texte est transmis avec chaque question, même sans rapport. Nécessaire pour les modèles sans outils, sinon fuite de données supplémentaire vers le fournisseur."
+      },
+      "pageContextMaxChars": {
+        "label": "Caractères de la page ouverte",
+        "help": "Limite maximale pour le texte de la page transmis. Ce qui dépasse est tronqué, et la coupure est visible dans le texte."
+      },
+      "maxPinnedSources": {
+        "label": "Sources épinglées par chat",
+        "help": "Nombre de pages, de vues de base de données et de recherches enregistrées pouvant être épinglées à un chat. Zéro désactive l’épinglage pour cet espace de travail."
+      },
+      "pinnedContextMaxChars": {
+        "label": "Caractères de toutes les sources intégrées",
+        "help": "Limite maximale pour l’ensemble des sources épinglées transmettant leur texte. Le quota est réparti équitablement entre elles, et chaque coupure est visible dans le texte."
+      },
+      "compactionThresholdPercent": {
+        "label": "Compacter à partir de (% de la fenêtre de contexte)",
+        "help": "À partir de ce niveau de remplissage, les messages plus anciens sont condensés en un résumé."
+      },
+      "compactionKeepRecentMessages": {
+        "label": "Conserver les derniers messages",
+        "help": "Nombre de messages récents qui ne seront pas touchés par un compactage."
+      },
+      "compactionModelSlug": {
+        "label": "Modèle pour les résumés",
+        "help": "Automatique utilise le même modèle que le chat."
+      },
+      "runPayloadRetentionDays": {
+        "label": "Conserver les textes de l’IA (jours)",
+        "help": "Pour les exécutions de l’IA plus anciennes, la question et la réponse sont vidées, les chiffres de l’affichage d’utilisation restent conservés. 0 signifie : ne jamais nettoyer. L’historique des chats n’est pas affecté."
+      },
+      "pdfExtractionEnabled": {
+        "label": "Extraire le texte des PDF",
+        "help": "Extrait le texte des fichiers PDF téléversés afin que l’IA puisse le lire."
+      },
+      "pdfExtractor": {
+        "label": "Méthode pour les PDF",
+        "help": "Docling s’exécute localement, ne coûte rien par document et lit aussi les documents numérisés via la reconnaissance de texte. OpenRouter ne nécessite aucun service dédié, mais est facturé par page et ne peut pas lire les numérisations. Le titre, l’auteur et la date sont dans les deux cas directement lus depuis le fichier."
+      },
+      "pdfExtractorFallbackEnabled": {
+        "label": "Seconde méthode comme solution de repli",
+        "help": "Si la méthode choisie ne trouve ou n’atteint rien, l’autre méthode prend le relais. Sans effet si une seule des deux est configurée."
+      },
+      "pdfExtractionModelSlug": {
+        "label": "Modèle pour le texte des PDF",
+        "help": "Automatique utilise le modèle par défaut."
+      },
+      "pdfMaxBytes": {
+        "label": "Taille maximale des PDF (octets)",
+        "help": "Les PDF dépassant cette taille ne sont pas acceptés pour l’extraction de texte."
+      },
+      "officeExtractionEnabled": {
+        "label": "Lire le texte des fichiers Office",
+        "help": "Lit Word, Excel, PowerPoint, OpenDocument, RTF, EPUB et CSV directement sur ce serveur, sans conteneur et sans frais de modèle."
+      },
+      "officeMaxBytes": {
+        "label": "Taille maximale des fichiers Office (octets)",
+        "help": "Les fichiers Office dépassant cette taille ne sont pas acceptés pour l’extraction de texte."
+      },
+      "imageGenerationEnabled": {
+        "label": "Générer des images de couverture",
+        "help": "Permet de faire générer l’image de couverture d’une page par l’IA. Chaque image constitue un appel payant."
+      },
+      "imageModelSlug": {
+        "label": "Modèle pour les images",
+        "help": "Un modèle capable de générer des images, par exemple google/gemini-2.5-flash-image. Sans saisie, la génération d’images reste désactivée, même si l’option ci-dessus est activée."
+      },
+      "webResearchEnabled": {
+        "label": "Faire des recherches sur le Web",
+        "help": "Permet à l’IA de faire des recherches sur le Web et de lire des pages individuelles. Désactivé tant que personne ne l’active : des requêtes sont alors envoyées depuis ce serveur vers des adresses choisies par le modèle. Une page lue est considérée comme un contenu tiers, après quoi « Écriture après contenus tiers » s’applique."
+      },
+      "webResearchMaxChars": {
+        "label": "Caractères par page récupérée",
+        "help": "Limite maximale pour le texte d’une page web individuelle. Ce qui dépasse est tronqué, et la coupure est visible dans le texte."
+      },
+      "webResearchMaxFetchesPerRun": {
+        "label": "Pages par requête",
+        "help": "Nombre de pages web qu’une seule exécution est autorisée à récupérer. 0 désactive la récupération et conserve uniquement la recherche."
+      },
+      "webSearchMaxResults": {
+        "label": "Résultats par recherche",
+        "help": "Limite maximale de résultats pour une recherche web."
+      }
+    },
+    "memory": {
+      "enabled": {
+        "label": "Mémoire activée",
+        "help": "Permet aux agents d’enregistrer les sessions et de stocker des souvenirs. Désactivé : plus rien n’est écrit, mais la lecture reste possible."
+      },
+      "captureModelSlug": {
+        "label": "Modèle pour la synthèse",
+        "help": "Résume une session terminée en quelques points clés. Sans saisie, le modèle de synthèse d’historique est utilisé, sinon le modèle par défaut."
+      },
+      "captureMinChars": {
+        "label": "Taille minimale de session (caractères)",
+        "help": "Les sessions plus courtes ne sont pas du tout prises en compte. L’encombrement de la mémoire nuit à la recherche."
+      },
+      "recallMaxChars": {
+        "label": "Limite par rappel (caractères)",
+        "help": "Quantité maximale de texte qu’un rappel peut renvoyer. Une mémoire qui dévore le contexte qu’elle est censée enrichir n’est d’aucune aide."
+      },
+      "recallMaxResults": {
+        "label": "Limite par rappel (résultats)",
+        "help": "Nombre maximal de souvenirs qu’un rappel renvoie, quelle que soit la requête."
+      },
+      "retentionDays": {
+        "label": "Conservation des notes (jours)",
+        "help": "Les notes de session plus anciennes sont supprimées de l’espace de travail de la mémoire. 0 signifie : ne jamais nettoyer. Les pages de projet sont toujours conservées et les autres espaces de travail ne sont jamais modifiés."
+      },
+      "consolidationEnabled": {
+        "label": "Consolider les souvenirs",
+        "help": "Regroupe la nuit les éléments récurrents des notes de session sous forme de faits, qu’un rappel place en tête. Coûte un appel de modèle par projet et par nuit. Désactivé : seules les notes brutes sont conservées."
+      },
+      "consolidationModelSlug": {
+        "label": "Modèle pour la consolidation des faits",
+        "help": "Détermine si une note confirme, remplace ou contredit un fait connu. Sans saisie, le modèle de synthèse de sessions est utilisé."
+      },
+      "consolidationProjectsPerRun": {
+        "label": "Projets par cycle",
+        "help": "Nombre de projets traités par nuit. Limite le coût maximal d’un cycle ; le reste sera traité la nuit suivante."
+      },
+      "consolidationNotesPerProject": {
+        "label": "Notes par projet",
+        "help": "Nombre de notes non encore lues qu’un cycle de projet soumet au modèle."
+      },
+      "factHalfLifeDays": {
+        "label": "Demi-vie d’un fait (jours)",
+        "help": "Un fait que plus personne ne confirme perd la moitié de son poids sur cette période, puis encore la moitié. Il ne disparaît pas, il s’estompe. 0 désactive la dépréciation."
+      },
+      "factConfidenceFloor": {
+        "label": "Seuil minimal pour les faits",
+        "help": "En dessous de ce poids, un fait n’est plus considéré comme valide et passe dans la corbeille. Entre 0 et 1."
+      },
+      "recallFactLimit": {
+        "label": "Faits avant la liste de résultats",
+        "help": "Nombre de faits consolidés qu’un rappel place avant le reste. 0 n’en place aucun."
+      },
+      "mailboxEnabled": {
+        "label": "Boîte de réception entre agents",
+        "help": "Les agents peuvent se laisser des messages qui apparaîtront en tête lors du prochain démarrage de session du destinataire. Désactivé : les envois sont refusés et un rappel ne contient plus de courrier."
+      },
+      "messageExpiryDays": {
+        "label": "Expiration des messages après",
+        "help": "Nombre de jours après lesquels un message n’est plus remis si l’expéditeur n’indique rien d’autre. Sans expiration, la boîte de réception deviendrait un dépotoir."
+      },
+      "recallMessageLimit": {
+        "label": "Messages avant la liste de résultats",
+        "help": "Nombre de messages non lus qu’un rappel place avant tout le reste. 0 exclut les courriers des rappels ; ils restent consultables via l’outil."
+      }
+    },
+    "entities": {
+      "enabled": {
+        "label": "Entités activées",
+        "help": "Détecte lors de l’enregistrement d’une page les personnes, hôtes, services ou projets connus dont elle traite. Désactivé : rien n’est détecté, mais les liaisons existantes restent lisibles."
+      },
+      "databaseId": {
+        "label": "Base de données des entités",
+        "help": "L’identifiant de la base de données dont les lignes représentent les entités. Il figure dans la barre d’adresse après /seite/. Sans saisie, il n’y a aucun nom à rechercher. Une seule par installation : une entité est un élément du monde réel et ne doit pas être réinventée dans chaque espace de travail."
+      },
+      "minAliasLength": {
+        "label": "Alias le plus court (caractères)",
+        "help": "Les noms plus courts sont ignorés lors de la mise en correspondance. Un nom de deux lettres se retrouve dans une page sur deux, ce qui donne l’impression d’une anomalie."
+      },
+      "maxMentionsPerDocument": {
+        "label": "Entités par page",
+        "help": "Nombre maximal d’entités auxquelles une seule page peut être liée. Limite l’impact d’une page de glossaire où chaque nom apparaît une fois."
+      },
+      "candidatesEnabled": {
+        "label": "Suggérer de nouveaux noms",
+        "help": "Collecte les noms qui apparaissent à plusieurs reprises et pour lesquels il n’existe pas encore d’entité. Rien n’est créé automatiquement, seulement suggéré. Désactivé : seule la liste tenue à jour est conservée."
+      },
+      "candidateThreshold": {
+        "label": "Seuil pour une suggestion (pages)",
+        "help": "Un nom doit figurer sur ce nombre de pages distinctes avant d’apparaître comme suggestion. Une page mentionnant un nom une seule fois ne constitue pas une preuve suffisante."
+      },
+      "recallProfileEnabled": {
+        "label": "Placer le profil en tête lors de la récupération",
+        "help": "Si une récupération détecte un nom d’entité dans la question, le profil est placé en premier, suivi des résultats. C’est la fonction première des entités ; cela coûte une requête supplémentaire par récupération."
+      }
+    },
+    "search": {
+      "semanticEnabled": {
+        "label": "Recherche sémantique",
+        "help": "Cherche aussi par le sens plutôt que par les seuls mots, afin qu’une page ressorte même si personne ne se souvient de sa formulation exacte. Chaque page indexée est convertie une fois en vecteur par un modèle, ce qui coûte quelques centimes par espace de travail."
+      },
+      "embeddingModelSlug": {
+        "label": "Modèle pour les vecteurs",
+        "help": "Doit fournir 1536 dimensions, telle est la largeur de la colonne. openai/text-embedding-3-small le fait par défaut, openai/text-embedding-3-large peut être tronqué à cette taille sur demande. Tout modèle ayant une autre longueur est rejeté plutôt que mal enregistré."
+      },
+      "semanticWeightPercent": {
+        "label": "Poids du sens (%)",
+        "help": "Dans quelle mesure les résultats sémantiques comptent par rapport à la liste plein texte. 0 correspond au plein texte pur, 100 au sens pur, 50 accorde le même poids aux deux."
+      }
+    },
+    "mcp": {
+      "enabled": {
+        "label": "Serveur MCP activé",
+        "help": "Permet aux programmes externes comme le serveur MCP d’accéder à cette installation."
+      },
+      "maxSearchResults": {
+        "label": "Résultats de recherche maximaux",
+        "help": "Limite supérieure du nombre de résultats pour une recherche MCP."
+      },
+      "writeConfirmationRequired": {
+        "label": "Exiger une confirmation pour chaque écriture",
+        "help": "Désactivé : seules les actions irréversibles (suppression définitive d’une page, colonne de base de données, commentaire, compte) exigent une confirmation en deux étapes ; tout le reste est protégé par l’instantané avant chaque écriture. Activé : chaque outil MCP qui modifie des données doit être appelé deux fois à l’identique. Cela ralentit sensiblement les agents."
+      }
+    },
+    "calendar": {
+      "remindersEnabled": {
+        "label": "Envoyer des rappels d’événements",
+        "help": "Envoie un message avant un événement synchronisé. Nécessite en plus un canal d’envoi configuré sur le serveur."
+      },
+      "reminderLeadMinutes": {
+        "label": "Délai de prévenance en minutes",
+        "help": "Combien de temps avant un événement avec horaire le rappel est envoyé. 0 signifie au début exact."
+      },
+      "reminderAllDayHour": {
+        "label": "Heure pour les événements sur toute la journée",
+        "help": "À quelle heure les événements sur toute la journée, comme les anniversaires, sont annoncés. Ils n’ont pas d’heure de début à partir de laquelle décompter le délai."
+      },
+      "timeZone": {
+        "label": "Fuseau horaire",
+        "help": "Dans quel fuseau sont interprétées les deux indications ci-dessus, par exemple Europe/Berlin."
+      }
+    },
+    "notifications": {
+      "digestHour": {
+        "label": "Heure du récapitulatif quotidien",
+        "help": "À quelle heure le récapitulatif quotidien des commentaires est envoyé, pour toutes les personnes qui l’ont activé. Le matin, car un tel e-mail se lit tranquillement sans devoir y répondre immédiatement."
+      },
+      "digestTimeZone": {
+        "label": "Fuseau horaire du récapitulatif",
+        "help": "Dans quel fuseau l’heure ci-dessus est interprétée, par exemple Europe/Berlin. Volontairement distinct de l’heure du serveur, qui fonctionne en UTC."
+      },
+      "commentMailDebounceMinutes": {
+        "label": "Délai de regroupement des e-mails de commentaire (minutes)",
+        "help": "Combien de temps attendre d’autres commentaires avant d’envoyer un e-mail instantané. Ainsi, quatre réponses dans un fil donnent lieu à un seul e-mail au lieu de quatre. 0 signifie : sans attente."
+      }
+    },
+    "activity": {
+      "editSessionSnapshotsEnabled": {
+        "label": "Enregistrer les sessions de modification",
+        "help": "Sauvegarde une page en cours d’édition à intervalles réguliers, pour que l’onglet d’activité puisse afficher de véritables plages temporelles (« modifié de 14:20 à 14:45 ») plutôt que le dernier état seul. Désactivé : aucune sauvegarde supplémentaire n’est créée."
+      },
+      "editSessionSnapshotIntervalMinutes": {
+        "label": "Intervalle entre les sauvegardes de session (minutes)",
+        "help": "Fréquence maximale à laquelle une page en cours d’édition peut être sauvegardée. Ne s’applique que si la ligne du dessus est activée."
+      },
+      "snapshotRetentionFullDays": {
+        "label": "Conservation intégrale (jours)",
+        "help": "Durée pendant laquelle toutes les sauvegardes d’une page sont conservées, quel qu’en soit le motif."
+      },
+      "snapshotRetentionDailyDays": {
+        "label": "Élagage quotidien jusqu’à (jours)",
+        "help": "Entre la rétention complète et cet âge, il ne reste au plus qu’une sauvegarde par jour civil, puis au plus une par semaine. Les sauvegardes nommées manuellement en sont exclues."
+      },
+      "snapshotRetentionDryRun": {
+        "label": "Simuler uniquement l’élagage (à blanc)",
+        "help": "Activé : le nettoyage quotidien calcule et consigne ce qu’il supprimerait, mais ne supprime rien. Recommandé avant la première exécution réelle ; à désactiver délibérément ensuite."
+      }
+    },
+    "agents": {
+      "journalRetentionDays": {
+        "label": "Conserver les sessions d’agent (jours)",
+        "help": "Durée pendant laquelle la section « Agents » permet de savoir quelle session a écrit quoi, et pendant laquelle une session peut être annulée en bloc. Ensuite, seule l’association disparaît ; les états sauvegardés des pages restent inchangés. 0 signifie : pour toujours."
+      },
+      "largePageChars": {
+        "label": "Page considérée comme grande à partir de (caractères)",
+        "help": "Si un agent écrit sur une page qui dépasse ensuite cette taille, la réponse indique la nouvelle taille et les sections les plus volumineuses, et suggère une sous-page pour un nouveau sujet. Rien n’est refusé. Conçu pour éviter les pages où tout finit par atterrir au fil du temps, car aucun agent ne les voit jamais en entier."
+      },
+      "oversizedPageChars": {
+        "label": "Les agents n’ajoutent plus rien à partir de (caractères)",
+        "help": "Au-delà, une requête d’agent qui rendrait la page encore plus volumineuse est refusée ; elle indique les sections les plus volumineuses ainsi que l’outil permettant d’en déplacer une vers sa propre page. Réduire la taille, réécrire et modifier des sections individuelles reste autorisé, sinon une page trop grande ne pourrait plus être réparée. L’éditeur, le Web Clipper, les imports et la mémoire de l’agent sont exclus."
+      }
+    },
+    "automations": {
+      "enabled": {
+        "label": "Automatisations activées",
+        "help": "L’interrupteur principal pour les règles qui réagissent aux modifications apportées aux pages. Désactivé par défaut : une automatisation envoie des données vers l’extérieur ou dépense de l’argent pour un modèle, ce qui ne doit pas commencer à cause d’une simple mise à jour. Un espace de travail peut la désactiver pour lui-même, mais pas la réactiver à l’encontre de ce paramètre."
+      },
+      "webhookAllowedHosts": {
+        "label": "Hôtes de webhook autorisés",
+        "help": "Séparés par des virgules, sans schéma ni port (par exemple « hooks.example.org, 127.0.0.1 »). Les sous-domaines sont inclus. Laisser vide signifie : aucune règle de webhook ne peut être créée et aucune règle existante ne s’exécute. Vérifié lors de l’enregistrement puis lors du déclenchement, afin que raccourcir cette liste arrête aussi les règles existantes."
+      },
+      "maxConsecutiveFailures": {
+        "label": "Échecs avant désactivation automatique",
+        "help": "Nombre maximal d’échecs consécutifs autorisés pour une règle avant qu’elle ne se désactive d’elle-même. Une règle qui pointe dans le vide ne s’améliore pas en se répétant, elle ne fait que remplir le journal."
+      },
+      "webhookTimeoutSeconds": {
+        "label": "Délai limite pour un webhook (secondes)",
+        "help": "Temps maximal accordé au serveur récepteur. Ensuite, l’exécution est considérée comme ayant échoué."
+      },
+      "runRetentionDays": {
+        "label": "Conserver le journal d’exécution (jours)",
+        "help": "Durée pendant laquelle les actions effectuées par les automatisations restent visibles. Les règles elles-mêmes restent intactes. 0 signifie : pour toujours."
+      }
+    },
+    "overview": {
+      "enabled": {
+        "label": "Maintenir les pages d’aperçu",
+        "help": "Indique si un texte d’introduction et des fiches synthétiques sont générés pour les pages marquées comme aperçu. La liste des sous-pages s’affiche toujours indépendamment de cela, elle ne coûte rien. Désactivé signifie : navigation sans appels de modèle. Un espace de travail peut le désactiver pour lui-même, mais pas le réactiver à l’encontre de ce paramètre."
+      },
+      "modelSlug": {
+        "label": "Modèle pour les aperçus",
+        "help": "Laisser vide utilise le modèle par défaut. Il vaut la peine d’utiliser un petit modèle ici : il s’agit à chaque fois de deux à cinq phrases, mais souvent."
+      },
+      "debounceSeconds": {
+        "label": "Temps de repos avant réécriture (secondes)",
+        "help": "Durée pendant laquelle une page ne doit plus être modifiée avant que son aperçu ne soit réécrit. Nettement plus long que pour les automatisations : personne n’attend une introduction, et un après-midi de travail sur une page doit coûter une seule exécution, pas vingt."
+      },
+      "maxChildren": {
+        "label": "Sous-pages par introduction",
+        "help": "Nombre de sous-pages à partir duquel aucune introduction n’est plus générée. La liste reste complète ; seul le paragraphe de mise en contexte disparaît, car avec cent entrées, il n’apporte rien de plus que la liste elle-même."
+      },
+      "maxPageChars": {
+        "label": "Caractères par page pour la fiche synthétique",
+        "help": "Quantité de texte d’une page prise en compte pour sa fiche synthétique. Le début d’une page indique presque toujours de quoi il s’agit."
+      },
+      "generateCovers": {
+        "label": "Images de couverture pour les pages d’aperçu",
+        "help": "Une page d’aperçu sans image de couverture en reçoit une peinte à partir de sa propre introduction, une seule fois. Nécessite un modèle d’image configuré, sinon rien ne se passe. Une image de couverture supprimée manuellement le reste."
+      }
+    },
+    "render": {
+      "enabled": {
+        "label": "Export PDF activé",
+        "help": "Permet de générer des pages existantes au format PDF à l’aide d’un modèle. Activé par défaut : aucune donnée ne quitte l’installation et cela ne coûte rien, seulement du temps de calcul sur cette machine. Un espace de travail peut désactiver l’export pour lui-même, mais pas le réactiver à l’encontre de ce paramètre."
+      },
+      "image": {
+        "label": "Image de conteneur pour la compilation",
+        "help": "Contient Pandoc, TeX Live et les polices ; rien n’est installé sur la machine elle-même. Changer d’image modifie ce sur quoi chaque modèle peut s’appuyer, et cela n’est pas détecté par la réutilisation des PDF déjà prêts : relancer ensuite la compilation avec « regénérer »."
+      },
+      "timeoutSeconds": {
+        "label": "Délai limite pour une compilation (secondes)",
+        "help": "Au-delà, le conteneur est interrompu. Une exécution LaTeX qui n’est pas terminée après trois minutes attend généralement une saisie que personne ne peut fournir."
+      },
+      "maxArtifactBytes": {
+        "label": "Taille maximale du PDF généré (octets)",
+        "help": "Limite maximale pour le fichier qu’une compilation peut produire. Au-delà, l’exécution est considérée comme ayant échoué plutôt que de saturer l’espace de stockage."
+      },
+      "jobRetentionDays": {
+        "label": "Conserver le journal de compilation (jours)",
+        "help": "Durée pendant laquelle les compilations terminées et leur journal restent visibles. Les PDF générés restent conservés en pièces jointes. 0 signifie : pour toujours."
+      }
+    },
+    "projects": {
+      "enabled": {
+        "label": "Compiler les projets",
+        "help": "Indique si cet espace de travail peut compiler ses projets LaTeX. L’édition continue de fonctionner si cette option est désactivée ; seul le compilateur reste inactif."
+      },
+      "image": {
+        "label": "Image de conteneur pour la compilation des projets",
+        "help": "Contient TeX Live, latexmk, biber et les polices. Sans cette image, chaque compilation échoue avec un message explicite."
+      },
+      "timeoutSeconds": {
+        "label": "Délai limite par compilation (secondes)",
+        "help": "Le conteneur s’arrête une fois ce délai dépassé. Un mémoire de fin d’études avec bibliographie nécessite plusieurs passes."
+      },
+      "maxArtifactBytes": {
+        "label": "Taille maximale du PDF généré (octets)",
+        "help": "Un résultat plus volumineux fait échouer la compilation au lieu de remplir le disque."
+      },
+      "maxFileChars": {
+        "label": "Taille maximale d’un fichier texte du projet (caractères)",
+        "help": "S’applique par fichier, non à l’ensemble du projet."
+      },
+      "maxFiles": {
+        "label": "Fichiers par projet",
+        "help": "Nombre total d’emplacements de fichiers, pièces jointes incluses."
+      },
+      "buildRetentionDays": {
+        "label": "Conservation des journaux de compilation (jours)",
+        "help": "Durée pendant laquelle les compilations terminées, leur journal et la liste des erreurs restent visibles. Les PDF restent conservés en pièces jointes. 0 signifie : pour toujours."
+      }
+    }
+  },
+  "row": {
+    "automatic": "Automatique",
+    "rangeHint": "Valeurs acceptées : de {min, number} à {max, number}.",
+    "invalid": "Cette valeur n’est pas valide.",
+    "invalidWithRange": "Non enregistré. Valeurs acceptées : de {min, number} à {max, number}.",
+    "choices": {
+      "pdfExtractor": {
+        "docling": "Docling (local, gratuit, avec reconnaissance de texte)",
+        "openrouter": "OpenRouter (hébergé, payant, sans reconnaissance de texte)"
+      },
+      "untrustedContentPolicy": {
+        "guarded": "Bloqué dès que du contenu externe est lu (recommandé)",
+        "deny": "Jamais : l’IA ne peut rien modifier, quelle que soit l’exécution",
+        "allow": "Toujours autorisé, même après la lecture de contenu externe"
+      }
+    }
+  },
+  "groupNav": {
+    "rejected": "valeur refusée",
+    "pending": "modification non enregistrée"
+  },
+  "unsaved": {
+    "title": "Abandonner les modifications non enregistrées ?",
+    "description": "{count, plural, one {Un paramètre a été modifié et n’est pas encore enregistré} many {# paramètres ont été modifiés et ne sont pas encore enregistrés} other {# paramètres ont été modifiés et ne sont pas encore enregistrés}}. Quitter maintenant les fera perdre de manière irréversible. Rester ici et enregistrer permet de les conserver.",
+    "stay": "Rester ici",
+    "leave": "Abandonner et quitter",
+    "notice": "{count, plural, one {Une modification n’est pas encore enregistrée.} many {# modifications ne sont pas encore enregistrées.} other {# modifications ne sont pas encore enregistrées.}}"
+  },
+  "form": {
+    "loading": "Chargement des paramètres…",
+    "saved": "Paramètres enregistrés.",
+    "save": "Enregistrer",
+    "discard": "Abandonner"
+  },
+  "adminForm": {
+    "refused": "{count, plural, one {Un paramètre est hors de la plage autorisée et n’a pas été enregistré. Il est surligné en rouge dans le formulaire.} many {# paramètres sont hors de la plage autorisée et n’ont pas été enregistrés. Ils sont surlignés en rouge dans le formulaire.} other {# paramètres sont hors de la plage autorisée et n’ont pas été enregistrés. Ils sont surlignés en rouge dans le formulaire.}}",
+    "ignoredTitle": "Valeurs enregistrées ignorées",
+    "ignoredDescription": "La base de données contient une valeur non autorisée pour {count, plural, one {ce paramètre} many {ces paramètres} other {ces paramètres}} : {labels}. L’installation s’exécute avec la valeur par défaut à la place. Un enregistrement remplacera la ligne erronée."
+  },
+  "workspaceForm": {
+    "intro": "Sans valeur définie ici, les réglages de l’ensemble de l’installation s’appliquent. Ce que tu définis ici ne s’applique qu’à cet espace de travail.",
+    "invalid": "Une valeur saisie n’est pas valide, rien n’a été enregistré.",
+    "ownValue": "Valeur personnalisée",
+    "reset": "Rétablir la valeur de l’installation",
+    "resetting": "Rétablissement…",
+    "inherited": "Héritée de l’installation",
+    "readOnly": "Seules les personnes propriétaires et administratrices de cet espace de travail peuvent modifier cela."
+  },
+  "credentials": {
+    "readOnly": "La personne propriétaire de cet espace de travail peut renseigner sa propre clé. Pour les personnes travaillant ici, rien ne change, hormis la facture.",
+    "loading": "Chargement de la clé…",
+    "unavailable": "Cette installation ne peut pas enregistrer de clés personnalisées : il lui manque la clé de chiffrement. Tant que c’est le cas, toutes les requêtes utilisent la clé de l’installation.",
+    "ownKey": "Clé personnalisée",
+    "endsWith": "se termine par {hint}",
+    "hintUnknown": "inconnu",
+    "neverUsed": "jamais utilisée",
+    "lastUsed": "dernière utilisation le {date}",
+    "deploymentKey": "Clé de l’installation",
+    "deploymentKeyHint": "Les exécutions de l’IA ici sont facturées à l’installation.",
+    "inputLabel": "Clé OpenRouter",
+    "placeholderReplace": "Saisir une nouvelle clé",
+    "replace": "Remplacer",
+    "save": "Enregistrer",
+    "remove": "Supprimer la clé",
+    "saved": "Enregistré. À partir de la prochaine exécution, cette clé sera utilisée.",
+    "footnote": "La clé est stockée de manière chiffrée et ne sera plus jamais affichée. Elle règle les exécutions de l’IA pour cet espace de travail. La recherche continue d’utiliser la clé de l’installation, car tous les plongements doivent se trouver dans le même espace vectoriel."
+  },
+  "workspace": {
+    "title": "Paramètres de l’espace de travail",
+    "loading": "Chargement de l’espace de travail…",
+    "summary": "{name} · {count, plural, one {# membre} many {# membres} other {# membres}}",
+    "tabs": {
+      "general": "Général",
+      "members": "Membres",
+      "ai": "IA",
+      "settings": "Paramètres"
+    },
+    "readOnly": "Seules les personnes propriétaires et administratrices de cet espace de travail peuvent le renommer ou en modifier le slug.",
+    "nameLabel": "Nom",
+    "save": "Enregistrer",
+    "nameSaved": "Nom enregistré.",
+    "saved": "Enregistré.",
+    "aiKey": {
+      "title": "Clé personnalisée pour l’IA",
+      "description": "Sans clé personnalisée, les requêtes de cet espace de travail passent par celle de l’installation."
+    },
+    "aiRules": {
+      "title": "Règles de l’IA",
+      "description": "Pages que l’IA traite comme des instructions. Cela se définit dans les propriétés de chaque page."
+    },
+    "config": {
+      "title": "Configuration de cet espace de travail",
+      "description": "Ces valeurs ne s’appliquent qu’ici. Tout le reste provient de l’installation."
+    },
+    "more": {
+      "title": "Autres rubriques",
+      "automations": "Ouvrir les automatisations",
+      "templates": "Ouvrir les modèles de PDF",
+      "shares": "Ouvrir les partages",
+      "description": "Des règles qui réagissent aux modifications apportées aux pages, avec le journal de ce qu’elles ont fait. De quoi publier les pages de cet espace de travail en PDF. Et ce qui est partagé vers l’extérieur depuis cet espace de travail, auprès de comptes et sous forme de lien public."
+    },
+    "slug": {
+      "label": "Slug",
+      "description": "Le slug figure dans les liens déjà envoyés ou enregistrés. Contrairement au nom, il ne s’adapte pas automatiquement, et toute modification rompt ces liens.",
+      "confirm": "Modifier quand même",
+      "saved": "Slug enregistré."
+    },
+    "memory": {
+      "label": "Mémoire des agents",
+      "description": "Les agents enregistrent leurs notes de session dans cet espace de travail et les retrouvent au démarrage suivant. Ici, les notes expirent après le délai configuré. Ce n’est pas adapté pour un espace que tu gères toi-même."
+    },
+    "members": {
+      "title": "Membres",
+      "description": "L’accès comme membre est toujours explicite : toute personne invitée rejoint précisément cet espace de travail.",
+      "invite": "Inviter",
+      "caption": "Membres de cet espace de travail",
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "actions": "Actions",
+      "you": "Toi",
+      "roleOf": "Rôle de {name}",
+      "remove": "Retirer",
+      "openInvitations": "Invitations en attente",
+      "removeTitle": "Retirer le membre",
+      "removeDescription": "{name} perd immédiatement l’accès à cet espace de travail, y compris dans les onglets déjà ouverts. Les pages et les commentaires créés sont conservés. Pour y accéder à nouveau, une nouvelle invitation sera nécessaire.",
+      "cancel": "Annuler"
+    },
+    "roles": {
+      "OWNER": "Propriétaire",
+      "ADMIN": "Administrateur",
+      "MEMBER": "Membre",
+      "GUEST": "Invité"
+    }
   }
 }

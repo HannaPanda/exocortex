@@ -1,3 +1,5 @@
+import { useFormatter, useTranslations } from 'next-intl';
+
 import { type AdminOverviewResponse } from '@exocortex/contracts';
 import { Readout, SectionRule } from '@exocortex/ui';
 
@@ -19,18 +21,6 @@ import { Readout, SectionRule } from '@exocortex/ui';
  * already wrong.
  */
 
-const numberFormat = new Intl.NumberFormat('de-DE');
-const currencyFormat = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'USD' });
-
-function formatNumber(value: number): string {
-  return numberFormat.format(value);
-}
-
-/** `aiCostLast24hMicroUsd` is micro-USD; convert to USD before formatting. */
-function formatMicroUsd(microUsd: number): string {
-  return currencyFormat.format(microUsd / 1_000_000);
-}
-
 /**
  * A group of readouts under one rule.
  *
@@ -48,50 +38,52 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 }
 
 export function OverviewCards({ overview }: { overview: AdminOverviewResponse }) {
+  const t = useTranslations('admin.overview');
+  const format = useFormatter();
+  const formatNumber = (value: number): string => format.number(value);
+  // `aiCostLast24hMicroUsd` is micro-USD; convert to USD before formatting.
+  const formatMicroUsd = (microUsd: number): string =>
+    format.number(microUsd / 1_000_000, { style: 'currency', currency: 'USD' });
   return (
     // `gap-10` between groups against `gap-4` inside them, the same rhythm the
     // workspace overview uses: the space is what groups a section here, since
     // nothing is boxed.
     <div className="flex flex-col gap-10">
-      <Group title="Letzte 24 Stunden">
+      <Group title={t('last24h')}>
         <Readout
-          label="KI-Anfragen"
+          label={t('aiRuns')}
           value={formatNumber(overview.aiRunsLast24h)}
           tone="live"
           data-testid="admin-metric-ai-runs"
         />
         <Readout
-          label="KI-Kosten"
+          label={t('aiCost')}
           value={formatMicroUsd(overview.aiCostLast24hMicroUsd)}
           tone="live"
           data-testid="admin-metric-ai-cost"
         />
       </Group>
 
-      <Group title="Bestand">
+      <Group title={t('stock')}>
         <Readout
-          label="Nutzer"
+          label={t('users')}
           value={formatNumber(overview.userCount)}
-          note={
-            overview.adminCount === 1
-              ? 'davon eine Person mit Administrationsrechten'
-              : `davon ${formatNumber(overview.adminCount)} mit Administrationsrechten`
-          }
+          note={t('admins', { count: overview.adminCount })}
           data-testid="admin-metric-users"
         />
-        <Readout label="Arbeitsbereiche" value={formatNumber(overview.workspaceCount)} />
-        <Readout label="Seiten" value={formatNumber(overview.documentCount)} />
-        <Readout label="Dateien" value={formatNumber(overview.attachmentCount)} />
+        <Readout label={t('workspaces')} value={formatNumber(overview.workspaceCount)} />
+        <Readout label={t('pages')} value={formatNumber(overview.documentCount)} />
+        <Readout label={t('files')} value={formatNumber(overview.attachmentCount)} />
       </Group>
 
-      <Group title="Konfiguration">
+      <Group title={t('configuration')}>
         <Readout
-          label="KI-Modelle"
+          label={t('models')}
           value={formatNumber(overview.aiModelCount)}
-          note={`${formatNumber(overview.enabledAiModelCount)} davon aktiv`}
+          note={t('modelsEnabled', { count: overview.enabledAiModelCount })}
           data-testid="admin-metric-models"
         />
-        <Readout label="API-Token" value={formatNumber(overview.apiTokenCount)} />
+        <Readout label={t('apiTokens')} value={formatNumber(overview.apiTokenCount)} />
       </Group>
     </div>
   );

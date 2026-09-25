@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AdminUser, type UserRole } from '@exocortex/contracts';
@@ -44,14 +45,6 @@ import { messageForCode } from '@/lib/api/error-messages';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 
-const ROLE_LABELS: Record<UserRole, string> = { user: 'Nutzer', admin: 'Administrator' };
-
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
-const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
-
 /**
  * The user administration screen: who is here, who is invited, and the two ways
  * somebody stops being here (issue #3).
@@ -68,21 +61,19 @@ export function UserTable() {
   const updateRole = useUpdateUserRole();
   const updateStatus = useUpdateUserStatus();
   const deleteUser = useDeleteUser();
+  const t = useTranslations('admin.users');
+  const format = useFormatter();
+  const roleLabel = (role: UserRole): string => t(`roles.${role}`);
 
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [pendingDeletion, setPendingDeletion] = React.useState<AdminUser | null>(null);
 
   if (usersQuery.isPending) {
-    return <LoadingState label="Nutzer werden geladen …" variant="skeleton" rows={5} />;
+    return <LoadingState label={t('loading')} variant="skeleton" rows={5} />;
   }
 
   if (usersQuery.isError) {
-    return (
-      <ErrorState
-        title="Nutzerliste konnte nicht geladen werden"
-        onRetry={() => void usersQuery.refetch()}
-      />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void usersQuery.refetch()} />;
   }
 
   const currentUserId = sessionQuery.data?.user?.id ?? null;
@@ -97,11 +88,11 @@ export function UserTable() {
         <SectionRule
           action={
             <Button onClick={() => setInviteOpen(true)} data-testid="open-invite-dialog">
-              Einladen
+              {t('invite')}
             </Button>
           }
         >
-          Nutzer
+          {t('title')}
         </SectionRule>
 
         {actionError !== undefined ? (
@@ -111,16 +102,16 @@ export function UserTable() {
         ) : null}
 
         <Table narrow="list">
-          <TableCaption className="sr-only">Liste der Nutzer dieser Installation</TableCaption>
+          <TableCaption className="sr-only">{t('caption')}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>E-Mail</TableHead>
-              <TableHead>Rolle</TableHead>
-              <TableHead>Arbeitsbereiche</TableHead>
-              <TableHead>Zuletzt aktiv</TableHead>
-              <TableHead>Registriert</TableHead>
-              <TableHead className="sr-only">Aktionen</TableHead>
+              <TableHead>{t('columns.name')}</TableHead>
+              <TableHead>{t('columns.email')}</TableHead>
+              <TableHead>{t('columns.role')}</TableHead>
+              <TableHead>{t('columns.workspaces')}</TableHead>
+              <TableHead>{t('columns.lastActive')}</TableHead>
+              <TableHead>{t('columns.registered')}</TableHead>
+              <TableHead className="sr-only">{t('columns.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -132,18 +123,18 @@ export function UserTable() {
                   <TableCell cell="title">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{user.name}</span>
-                      {isSelf ? <Badge variant="secondary">Du</Badge> : null}
+                      {isSelf ? <Badge variant="secondary">{t('you')}</Badge> : null}
                       {disabled ? (
                         <Badge variant="outline" data-testid={`user-disabled-${user.id}`}>
-                          Deaktiviert
+                          {t('disabled')}
                         </Badge>
                       ) : null}
                     </div>
                   </TableCell>
-                  <TableCell label="E-Mail" className="text-muted-foreground">
+                  <TableCell label={t('columns.email')} className="text-muted-foreground">
                     {user.email}
                   </TableCell>
-                  <TableCell label="Rolle">
+                  <TableCell label={t('columns.role')}>
                     <Select
                       value={user.role}
                       disabled={isSelf || busy}
@@ -151,24 +142,27 @@ export function UserTable() {
                         updateRole.mutate({ userId: user.id, request: { role: next as UserRole } })
                       }
                     >
-                      <SelectTrigger aria-label={`Rolle von ${user.name}`} size="sm">
+                      <SelectTrigger aria-label={t('roleOf', { name: user.name })} size="sm">
                         {/* Base UI shows the raw value ("admin") without this. */}
-                        <SelectValue>{() => ROLE_LABELS[user.role]}</SelectValue>
+                        <SelectValue>{() => roleLabel(user.role)}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">{ROLE_LABELS.user}</SelectItem>
-                        <SelectItem value="admin">{ROLE_LABELS.admin}</SelectItem>
+                        <SelectItem value="user">{roleLabel('user')}</SelectItem>
+                        <SelectItem value="admin">{roleLabel('admin')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell label="Arbeitsbereiche">{user.workspaceCount}</TableCell>
-                  <TableCell label="Zuletzt aktiv">
+                  <TableCell label={t('columns.workspaces')}>{user.workspaceCount}</TableCell>
+                  <TableCell label={t('columns.lastActive')}>
                     {user.lastSessionAt !== null
-                      ? dateTimeFormat.format(new Date(user.lastSessionAt))
+                      ? format.dateTime(new Date(user.lastSessionAt), {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })
                       : '–'}
                   </TableCell>
-                  <TableCell label="Registriert">
-                    {dateFormat.format(new Date(user.createdAt))}
+                  <TableCell label={t('columns.registered')}>
+                    {format.dateTime(new Date(user.createdAt), { dateStyle: 'medium' })}
                   </TableCell>
                   <TableCell cell="actions">
                     {isSelf ? (
@@ -184,7 +178,7 @@ export function UserTable() {
                           }
                           data-testid={`toggle-user-status-${user.id}`}
                         >
-                          {disabled ? 'Aktivieren' : 'Deaktivieren'}
+                          {disabled ? t('activate') : t('deactivate')}
                         </Button>
                         {/*
                           Deleting is only offered for an account that authored
@@ -195,9 +189,9 @@ export function UserTable() {
                         {user.hasAuthoredContent ? (
                           <span
                             className="self-center text-xs text-muted-foreground"
-                            title="Dieses Konto hat Inhalte angelegt und kann nur deaktiviert werden."
+                            title={t('hasContentHint')}
                           >
-                            hat Inhalte
+                            {t('hasContent')}
                           </span>
                         ) : (
                           <Button
@@ -207,7 +201,7 @@ export function UserTable() {
                             onClick={() => setPendingDeletion(user)}
                             data-testid={`delete-user-${user.id}`}
                           >
-                            Löschen
+                            {t('delete')}
                           </Button>
                         )}
                       </div>
@@ -221,7 +215,7 @@ export function UserTable() {
       </section>
 
       <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <SectionRule>Einladungen</SectionRule>
+        <SectionRule>{t('invitations')}</SectionRule>
         <InvitationTable scope={{ kind: 'admin' }} showWorkspace />
       </section>
 
@@ -241,15 +235,14 @@ export function UserTable() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Konto löschen</DialogTitle>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
             <DialogDescription>
-              {pendingDeletion?.email} wird endgültig entfernt. Das lässt sich nicht zurücknehmen.
-              Wenn du nur den Zugang sperren willst, deaktiviere das Konto stattdessen.
+              {t('deleteDescription', { email: pendingDeletion?.email ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingDeletion(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -262,7 +255,7 @@ export function UserTable() {
               }}
               data-testid="confirm-delete-user"
             >
-              Löschen
+              {t('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

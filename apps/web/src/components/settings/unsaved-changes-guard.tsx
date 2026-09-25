@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -13,23 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@exocortex/ui';
-
-/**
- * What the question says, given how much is at stake.
- *
- * The shape is the one the trash sheet already asks in: the fact first, then
- * the consequence, then the way out. A count rather than "Änderungen" alone,
- * because a settings form holds over a hundred rows across thirteen groups and
- * "you have unsaved changes" tells somebody nothing about whether it was the
- * one switch they just flipped or an afternoon's work.
- */
-function describe(count: number): string {
-  const subject =
-    count === 1
-      ? 'Eine Einstellung ist geändert und noch nicht gespeichert'
-      : `${count} Einstellungen sind geändert und noch nicht gespeichert`;
-  return `${subject}. Wer jetzt wechselt, verliert sie; das lässt sich nicht rückgängig machen. Hier bleiben und speichern behält sie.`;
-}
 
 /**
  * Whether this click is a navigation that would take the form off screen.
@@ -87,6 +71,7 @@ function navigationTargetOf(event: MouseEvent): string | null {
  */
 export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
   const router = useRouter();
+  const t = useTranslations('settings.unsaved');
   const [pendingHref, setPendingHref] = React.useState<string | null>(null);
   const dirty = changedCount > 0;
 
@@ -122,15 +107,21 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
     <Dialog
       open={pendingHref !== null}
       onOpenChange={(open: boolean) => {
-        // Escape and the backdrop mean the same as "Hier bleiben": the safe
+        // Escape and the backdrop mean the same as "stay here": the safe
         // answer is the one an accidental dismissal gives.
         if (!open) setPendingHref(null);
       }}
     >
       <DialogContent data-testid="unsaved-changes-dialog">
         <DialogHeader>
-          <DialogTitle>Ungespeicherte Änderungen verwerfen?</DialogTitle>
-          <DialogDescription>{describe(changedCount)}</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          {/* The shape is the one the trash sheet already asks in: the fact
+              first, then the consequence, then the way out. A count rather than
+              "changes" alone, because a settings form holds over a hundred rows
+              across thirteen groups and "you have unsaved changes" tells
+              somebody nothing about whether it was the one switch they just
+              flipped or an afternoon's work. */}
+          <DialogDescription>{t('description', { count: changedCount })}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button
@@ -138,7 +129,7 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
             data-testid="unsaved-changes-stay"
             onClick={() => setPendingHref(null)}
           >
-            Hier bleiben
+            {t('stay')}
           </Button>
           <Button
             variant="destructive"
@@ -149,7 +140,7 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
               if (href !== null) router.push(href);
             }}
           >
-            Verwerfen und wechseln
+            {t('leave')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -172,13 +163,10 @@ export function UnsavedChangesNotice({
   changedCount: number;
   testId: string;
 }) {
+  const t = useTranslations('settings.unsaved');
   return (
     <p role="status" data-testid={testId} className="text-sm text-muted-foreground">
-      {changedCount === 0
-        ? ''
-        : changedCount === 1
-          ? 'Eine Änderung ist noch nicht gespeichert.'
-          : `${changedCount} Änderungen sind noch nicht gespeichert.`}
+      {changedCount === 0 ? '' : t('notice', { count: changedCount })}
     </p>
   );
 }

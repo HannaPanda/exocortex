@@ -1,0 +1,61 @@
+{
+  "roles": {
+    "ADMIN": "Administrator",
+    "MEMBER": "Mitglied",
+    "GUEST": "Gast (nur lesen)"
+  },
+  "statuses": {
+    "pending": "Offen",
+    "accepted": "Angenommen",
+    "revoked": "Zurückgezogen",
+    "expired": "Abgelaufen"
+  },
+  "dialog": {
+    "title": "Einladen",
+    "descriptionAdmin": "Die eingeladene Person legt über den Link selbst ein Konto an. Registrieren ohne Einladung ist nicht möglich.",
+    "descriptionWorkspace": "Die eingeladene Person legt über den Link ein Konto an und wird Mitglied dieses Arbeitsbereichs.",
+    "sent": "Einladung an {email} verschickt. Der Link gilt {days, plural, one {# Tag} other {# Tage}} und lässt sich nur einmal verwenden.",
+    "mailFailed": "Die Einladung wurde angelegt, aber die E-Mail ließ sich nicht verschicken. Gib den Link unten direkt weiter, oder schick die Einladung später erneut.",
+    "link": "Einladungslink",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "linkOnce": "Dieser Link wird nur jetzt angezeigt. Er steht nirgends gespeichert, also kopiere ihn jetzt, wenn du ihn brauchst.",
+    "another": "Weitere einladen",
+    "close": "Schließen",
+    "email": "E-Mail-Adresse",
+    "workspace": "Arbeitsbereich",
+    "noWorkspace": "Keiner",
+    "noWorkspaceHint": "Ohne Arbeitsbereich entsteht ein Konto, das noch nichts sieht. Mitgliedschaften werden hier immer ausdrücklich vergeben.",
+    "role": "Rolle im Arbeitsbereich",
+    "grantAdmin": "Administrator dieser Installation",
+    "grantAdminHint": "Darf Nutzer verwalten, Einstellungen ändern und alle Arbeitsbereiche sehen.",
+    "cancel": "Abbrechen",
+    "sending": "Wird verschickt …",
+    "submit": "Einladen"
+  },
+  "table": {
+    "loading": "Einladungen werden geladen …",
+    "loadFailed": "Einladungen konnten nicht geladen werden",
+    "emptyTitle": "Keine Einladungen",
+    "emptyDescription": "Wer hier ankommen soll, braucht eine Einladung. Registrieren ohne eine ist abgeschaltet.",
+    "freshLink": "Neuer Einladungslink",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "freshLinkHint": "Der vorherige Link gilt nicht mehr. Jedes erneute Verschicken erzeugt einen neuen.",
+    "caption": "Einladungen",
+    "email": "E-Mail",
+    "status": "Status",
+    "workspace": "Arbeitsbereich",
+    "role": "Rolle",
+    "invitedBy": "Eingeladen von",
+    "expiresAt": "Gültig bis",
+    "sent": "Verschickt",
+    "actions": "Aktionen",
+    "admin": "Admin",
+    "notDelivered": "nicht angekommen",
+    "revokeTitle": "Einladung zurückziehen?",
+    "revokeDescription": "Der Link an {email} funktioniert danach nicht mehr. Soll die Person doch kommen, braucht sie eine neue Einladung.",
+    "revoke": "Zurückziehen",
+    "resend": "Erneut senden"
+  }
+}

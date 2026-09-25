@@ -1,6 +1,7 @@
 'use client';
 
 import { PlugZapIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ConnectedApp } from '@exocortex/contracts';
@@ -31,10 +32,7 @@ import { useConnectedApps, useDisconnectApp } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
+const DATE_TIME = { dateStyle: 'medium', timeStyle: 'short' } as const;
 
 /** The host of the first redirect URL, which is the one recognisable part of a claimed identity. */
 function hostOf(app: ConnectedApp): string | null {
@@ -59,6 +57,8 @@ function hostOf(app: ConnectedApp): string | null {
 export function ConnectedAppsPanel() {
   const appsQuery = useConnectedApps();
   const disconnect = useDisconnectApp();
+  const t = useTranslations('account.connectedApps');
+  const format = useFormatter();
 
   const [target, setTarget] = React.useState<ConnectedApp | null>(null);
   const disconnectErrorCode =
@@ -68,13 +68,9 @@ export function ConnectedAppsPanel() {
     <section className="flex flex-col gap-3" aria-labelledby="connected-apps-heading">
       <div>
         <h2 id="connected-apps-heading" className="text-sm font-semibold">
-          Verbundene Anwendungen
+          {t('title')}
         </h2>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Programme, denen du auf der Zustimmungsseite Zugriff gegeben hast, zum Beispiel ChatGPT.
-          Sie melden sich in deinem Namen an, ohne ein Token von dir. Trennen wirkt sofort: laufende
-          Sitzungen enden, und ein erneuter Zugriff braucht deine Zustimmung von vorn.
-        </p>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       {disconnect.isError ? (
@@ -84,29 +80,26 @@ export function ConnectedAppsPanel() {
       ) : null}
 
       {appsQuery.isPending ? (
-        <LoadingState label="Verbindungen werden geladen …" variant="skeleton" rows={2} />
+        <LoadingState label={t('loading')} variant="skeleton" rows={2} />
       ) : appsQuery.isError ? (
-        <ErrorState
-          title="Verbindungen konnten nicht geladen werden"
-          onRetry={() => void appsQuery.refetch()}
-        />
+        <ErrorState title={t('loadError')} onRetry={() => void appsQuery.refetch()} />
       ) : appsQuery.data.length === 0 ? (
         <EmptyState
           icon={PlugZapIcon}
-          title="Keine verbundenen Anwendungen"
-          description="Sobald du einen Connector wie ChatGPT verbindest, steht er hier und kann hier auch wieder getrennt werden."
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
           className="rounded-lg border border-dashed border-border"
         />
       ) : (
         <Table narrow="list">
-          <TableCaption className="sr-only">Liste der verbundenen Anwendungen</TableCaption>
+          <TableCaption className="sr-only">{t('caption')}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Anwendung</TableHead>
-              <TableHead>Verbunden seit</TableHead>
-              <TableHead>Zuletzt angemeldet</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Aktionen</TableHead>
+              <TableHead>{t('columnApp')}</TableHead>
+              <TableHead>{t('columnConnectedAt')}</TableHead>
+              <TableHead>{t('columnLastAuthorized')}</TableHead>
+              <TableHead>{t('columnStatus')}</TableHead>
+              <TableHead className="text-right">{t('columnActions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,24 +113,24 @@ export function ConnectedAppsPanel() {
                       <span className="block text-xs text-muted-foreground">{host}</span>
                     ) : null}
                   </TableCell>
-                  <TableCell label="Verbunden seit">
-                    {dateTimeFormat.format(new Date(app.connectedAt))}
+                  <TableCell label={t('columnConnectedAt')}>
+                    {format.dateTime(new Date(app.connectedAt), DATE_TIME)}
                   </TableCell>
-                  <TableCell label="Zuletzt angemeldet">
+                  <TableCell label={t('columnLastAuthorized')}>
                     {app.lastAuthorizedAt !== null
-                      ? dateTimeFormat.format(new Date(app.lastAuthorizedAt))
-                      : '–'}
+                      ? format.dateTime(new Date(app.lastAuthorizedAt), DATE_TIME)
+                      : t('never')}
                   </TableCell>
-                  <TableCell label="Status">
+                  <TableCell label={t('columnStatus')}>
                     {app.disabled ? (
-                      <Badge variant="muted">Abgeschaltet</Badge>
+                      <Badge variant="muted">{t('statusDisabled')}</Badge>
                     ) : app.activeGrantCount > 0 ? (
                       // The client can still fetch itself a new access token.
                       // Whether it is holding one right now is not knowable:
                       // an access token is a signed JWT nobody keeps a copy of.
-                      <Badge variant="default">Aktiv</Badge>
+                      <Badge variant="default">{t('statusActive')}</Badge>
                     ) : (
-                      <Badge variant="muted">Ruht</Badge>
+                      <Badge variant="muted">{t('statusIdle')}</Badge>
                     )}
                   </TableCell>
                   <TableCell cell="actions" className="text-right">
@@ -147,7 +140,7 @@ export function ConnectedAppsPanel() {
                       disabled={disconnect.isPending}
                       onClick={() => setTarget(app)}
                     >
-                      Trennen
+                      {t('disconnect')}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -160,16 +153,14 @@ export function ConnectedAppsPanel() {
       <Dialog open={target !== null} onOpenChange={(open) => !open && setTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Verbindung trennen?</DialogTitle>
+            <DialogTitle>{t('disconnectTitle')}</DialogTitle>
             <DialogDescription>
-              {target !== null
-                ? `„${target.name}“ verliert sofort den Zugriff. Bestehende Anmeldungen enden, und die Anwendung kann sich nicht mehr selbst erneuern. Um sie wieder zu verbinden, musst du sie in ihrem eigenen Programm erneut hinzufügen und deine Zustimmung erneut geben.`
-                : null}
+              {target !== null ? t('disconnectDescription', { name: target.name }) : null}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setTarget(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -179,7 +170,7 @@ export function ConnectedAppsPanel() {
                 disconnect.mutate(target.clientId, { onSuccess: () => setTarget(null) });
               }}
             >
-              Trennen
+              {t('disconnect')}
             </Button>
           </DialogFooter>
         </DialogContent>
