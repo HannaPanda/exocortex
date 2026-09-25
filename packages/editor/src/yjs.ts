@@ -42,6 +42,19 @@ export function yjsStateToDocument(state: Uint8Array): Y.Doc {
 export function yjsStateToProseMirrorJson(state: Uint8Array): ProseMirrorDocument {
   const doc = yjsStateToDocument(state);
   try {
+    return yDocToProseMirrorJson(doc);
+  } finally {
+    doc.destroy();
+  }
+}
+
+/**
+ * The same derivation for a `Y.Doc` that is already open, such as the living
+ * document in the collaboration server. The document is read, never destroyed:
+ * it belongs to whoever opened it.
+ */
+export function yDocToProseMirrorJson(doc: Y.Doc): ProseMirrorDocument {
+  try {
     // y-prosemirror is untyped at this boundary; convert through `unknown`
     // instead of introducing `any` into Exocortex code.
     const json = yDocToProsemirrorJSON(doc, YJS_DOCUMENT_FIELD) as unknown;
@@ -58,8 +71,6 @@ export function yjsStateToProseMirrorJson(state: Uint8Array): ProseMirrorDocumen
     throw new YjsMaterializationError('Failed to derive ProseMirror JSON from Yjs state', {
       cause: error,
     });
-  } finally {
-    doc.destroy();
   }
 }
 

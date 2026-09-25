@@ -8,6 +8,8 @@ import { type ApiEnv } from '@exocortex/config';
 import { type CollaborationApplyRequest } from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 
+import { runWithRequestContext } from '../common/correlation';
+
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 
 /**
@@ -93,6 +95,8 @@ describe('CollaborationBridgeService', () => {
     expect(call.method).toBe('POST');
     expect(call.url).toBe('/internal/documents/doc12345678/content');
     expect(call.body).toMatchObject({ mode: 'append', correlationId: 'corr-1' });
+    // Outside an agent session the writer is a person (issue #112).
+    expect(call.body.actor).toEqual({ kind: 'person', label: null });
 
     const token = (call.authorization ?? '').replace(/^Bearer\s+/, '');
     // A token that also opened the API's own service routes would widen this
@@ -112,6 +116,33 @@ describe('CollaborationBridgeService', () => {
       clientsCount: 3,
       yjsUpdatedAt: '2026-08-06T10:00:00.000Z',
       reachable: true,
+    });
+  });
+
+  it('names the agent when the request came from an agent session', async () => {
+    const { baseUrl, received } = await startStub(() => ({
+      status: 200,
+      body: { applied: true, clientsCount: 1, yjsUpdatedAt: '2026-08-06T10:00:00.000Z' },
+    }));
+
+    await runWithRequestContext(
+      {
+        correlationId: 'corr-agent',
+        agentSession: { externalId: 'session-1', clientLabel: 'claude-code 2.1.4' },
+      },
+      () =>
+        createService(baseUrl).applyToLiveSession({
+          documentId: 'doc12345678',
+          userId: 'user1234',
+          mode: 'append',
+          proseMirrorJson: document,
+          correlationId: 'corr-agent',
+        }),
+    );
+
+    expect((received[0] as Received).body.actor).toEqual({
+      kind: 'agent',
+      label: 'claude-code 2.1.4',
     });
   });
 

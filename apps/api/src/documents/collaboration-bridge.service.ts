@@ -8,10 +8,12 @@ import {
   collaborationApplyPath,
   type CollaborationApplyRequest,
   collaborationApplyResponseSchema,
+  type CollaborationEditActor,
 } from '@exocortex/contracts';
 import { type ProseMirrorDocument } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 
+import { currentAgentSession } from '../common/correlation';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 
 /**
@@ -32,6 +34,19 @@ export interface ApplyToLiveSessionResult {
   yjsUpdatedAt: string | null;
   /** `false` when the collaboration server could not be reached at all. */
   reachable: boolean;
+}
+
+/**
+ * Who the open editors are told made the change (issue #112).
+ *
+ * Read from the request context rather than passed down by every writer: the
+ * agent session header is what distinguishes an agent from a person using the
+ * API, and it reaches every write path through the context already (ADR-022).
+ */
+function currentActor(): CollaborationEditActor {
+  const session = currentAgentSession();
+  if (session === undefined) return { kind: 'person', label: null };
+  return { kind: 'agent', label: session.clientLabel ?? null };
 }
 
 /**
@@ -92,6 +107,7 @@ export class CollaborationBridgeService {
       proseMirrorJson: input.proseMirrorJson,
       mode: input.mode,
       edit: input.edit ?? null,
+      actor: currentActor(),
       correlationId: input.correlationId,
     };
 

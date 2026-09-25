@@ -20,6 +20,8 @@ import {
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 
+import { announceChange, announceRefusal, captureBeforeEdit } from './edit-notices';
+
 /**
  * `POST /internal/documents/:documentId/content` — the collaboration server's
  * only write entrance besides the WebSocket (ADR-016).
@@ -182,6 +184,17 @@ export function createInternalContentHandler(options: InternalContentHandlerOpti
       return true;
     }
 
+    // The people with the page open are told what changed and by whom
+    // (issue #112), which needs the page as it was before the change.
+    const notice = {
+      instance,
+      prisma: options.prisma,
+      documentId,
+      actor: parsed.data.actor,
+      userId: verification.claims.userId,
+    };
+    const before = captureBeforeEdit(notice);
+
     const connection = await instance.openDirectConnection(documentId);
     try {
       await connection.transact((document) => {
@@ -201,6 +214,7 @@ export function createInternalContentHandler(options: InternalContentHandlerOpti
         documentId,
         correlationId: parsed.data.correlationId,
       });
+      await announceRefusal(notice, parsed.data.edit);
       respond(response, 422, { error: 'apply_failed' });
       return true;
     }
@@ -216,6 +230,10 @@ export function createInternalContentHandler(options: InternalContentHandlerOpti
       select: { yjsUpdatedAt: true },
     });
     const clientsCount = instance.documents.get(documentId)?.getConnectionsCount() ?? 0;
+
+    // After the store, so the update the notice describes has already gone
+    // down the same socket ahead of it.
+    await announceChange(notice, before);
 
     logger.info('Applied content to the live document', {
       documentId,

@@ -21,6 +21,21 @@ import { idSchema, isoDateTimeSchema } from './primitives';
 export const collaborationApplyModeSchema = z.enum(['replace', 'append', 'prepend']);
 export type CollaborationApplyMode = z.infer<typeof collaborationApplyModeSchema>;
 
+/**
+ * The writer of a change that did not come from the editor.
+ *
+ * `agent` when the request named an agent session (ADR-022): an MCP client, or
+ * the built-in AI, which labels itself. The label is the client's own
+ * `clientInfo`, unverified, and is only ever shown to a person -- never used
+ * for a decision. `person` is somebody using the REST API directly; the
+ * collaboration server puts their name to it.
+ */
+export const collaborationEditActorSchema = z.object({
+  kind: z.enum(['agent', 'person']),
+  label: z.string().max(200).nullable(),
+});
+export type CollaborationEditActor = z.infer<typeof collaborationEditActorSchema>;
+
 export const collaborationApplyRequestSchema = z.object({
   /**
    * A ProseMirror `doc` node. Only the outermost shape is checked here so a
@@ -47,10 +62,63 @@ export const collaborationApplyRequestSchema = z.object({
    * addresses the right one -- or honestly fails, when the block is gone.
    */
   edit: blockRangeEditSchema.nullable().default(null),
+  /**
+   * Who is writing, so the people with the page open can be told (issue #112).
+   * Absent means a person through the REST API.
+   */
+  actor: collaborationEditActorSchema.default({ kind: 'person', label: null }),
   /** Carried through so both processes log the same request. */
   correlationId: z.string(),
 });
 export type CollaborationApplyRequest = z.infer<typeof collaborationApplyRequestSchema>;
+
+/**
+ * What an open editor is told after such a change (issue #112), as a
+ * Hocuspocus stateless message on the document's own socket.
+ *
+ * The same socket as the Yjs updates rather than the application event bus
+ * (ADR-008 keeps those apart for a reason that holds here too): the notice is
+ * about this document's content, it needs no authorization beyond the
+ * connection that already reads the document, and it arrives after the update
+ * it describes, because both travel down the same ordered channel.
+ *
+ * It is a notice and nothing else. It is never stored, it names blocks and not
+ * content, and a client that misses it has lost a highlight, not information.
+ */
+export const EDIT_NOTICE_TYPE = 'exocortex.edit-notice';
+
+export const collaborationEditNoticeSchema = z.object({
+  type: z.literal(EDIT_NOTICE_TYPE),
+  /**
+   * `changed`: the write reached the page and these blocks differ now.
+   * `failed`: the collaboration server refused it (a narrow write whose blocks
+   * were gone), and these are the blocks it was aimed at, so nobody reads a
+   * successful change into a refusal.
+   */
+  outcome: z.enum(['changed', 'failed']),
+  actorKind: collaborationEditActorSchema.shape.kind,
+  /** What to call the writer; `null` when nothing is known about it. */
+  actorName: z.string().max(200).nullable(),
+  blockIds: z.array(z.string()).max(200),
+});
+export type CollaborationEditNotice = z.infer<typeof collaborationEditNoticeSchema>;
+
+/** The most blocks one notice names; a whole-page rewrite is cut here. */
+export const EDIT_NOTICE_MAX_BLOCKS = 200;
+
+/**
+ * What a person should read for an agent's self-description: its name without
+ * the version. `claude-code 2.1.4` is Claude Code to the reader, and a version
+ * number in a marker beside a paragraph is noise.
+ */
+export function agentDisplayName(label: string | null): string | null {
+  if (label === null) return null;
+  const name = label
+    .trim()
+    .replace(/\s+v?\d[\w.+-]*$/u, '')
+    .trim();
+  return name === '' ? null : name;
+}
 
 export const collaborationApplyResponseSchema = z.object({
   /**

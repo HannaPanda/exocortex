@@ -5,6 +5,7 @@ export * from './block-id';
 export * from './block-range';
 export * from './breadcrumb';
 export * from './callout';
+export * from './changed-blocks';
 export * from './code-block';
 export * from './collapsible-heading';
 export * from './columns';

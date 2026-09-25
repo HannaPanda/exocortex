@@ -9,9 +9,16 @@ import * as Y from 'yjs';
 
 import { issueCollaborationTicket, issueServiceToken } from '@exocortex/auth';
 import { loadCollaborationEnv } from '@exocortex/config';
-import { collaborationApplyPath, type CollaborationApplyRequest } from '@exocortex/contracts';
+import {
+  collaborationApplyPath,
+  type CollaborationApplyRequest,
+  type CollaborationEditNotice,
+  collaborationEditNoticeSchema,
+  EDIT_NOTICE_TYPE,
+} from '@exocortex/contracts';
 import { createPrismaClient, generateOrderKey, type PrismaClient } from '@exocortex/database';
 import {
+  BLOCK_ID_ATTRIBUTE,
   createEmptyYjsState,
   markdownToYjsState,
   parseMarkdown,
@@ -113,6 +120,7 @@ async function applyContent(input: {
   mode: CollaborationApplyRequest['mode'];
   /** Set to address blocks instead of the whole document (issue #111). */
   edit?: CollaborationApplyRequest['edit'];
+  actor?: CollaborationApplyRequest['actor'];
   token?: string;
 }): Promise<Response> {
   const token =
@@ -131,6 +139,7 @@ async function applyContent(input: {
       proseMirrorJson: parseMarkdown(input.markdown).document,
       mode: input.mode,
       edit: input.edit ?? null,
+      actor: input.actor ?? { kind: 'person', label: null },
       correlationId: 'test-correlation',
     } satisfies CollaborationApplyRequest),
   });
@@ -676,6 +685,84 @@ describe('internal content endpoint', () => {
     expect(persisted).toContain('Erster Absatz.');
     expect(persisted).toContain('Gerade getippt.');
     expect(persisted).toContain('Vom Agenten angehängt.');
+
+    provider.destroy();
+    ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+
+  /** Issue #112: the people with the page open are told what changed and by whom. */
+  it('tells the open editors which blocks an agent changed', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Mit Hinweis', 'Erster Absatz.\n');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({ ticket: ticketFor(page, 'write'), name: page, document: ydoc });
+    const notices: CollaborationEditNotice[] = [];
+    provider.on('stateless', ({ payload }: { payload: string }) => {
+      notices.push(collaborationEditNoticeSchema.parse(JSON.parse(payload)));
+    });
+    await waitFor(() => provider.isSynced);
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Vom Agenten angehängt.\n',
+      mode: 'append',
+      actor: { kind: 'agent', label: 'claude-code 2.1.4' },
+    });
+    expect(response.status).toBe(200);
+
+    await waitFor(() => notices.length > 0);
+    const [notice] = notices;
+    expect(notice).toMatchObject({
+      outcome: 'changed',
+      actorKind: 'agent',
+      actorName: 'claude-code',
+    });
+    // Exactly the new paragraph: the one that was already there is unchanged.
+    expect(notice?.blockIds).toHaveLength(1);
+    const appended = ydoc
+      .get(YJS_DOCUMENT_FIELD, Y.XmlFragment)
+      .toArray()
+      .find((node) => node instanceof Y.XmlElement && node.toString().includes('angehängt'));
+    expect((appended as Y.XmlElement).getAttribute(BLOCK_ID_ATTRIBUTE)).toBe(notice?.blockIds[0]);
+
+    provider.destroy();
+    ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+
+  it('tells the open editors when a narrow write was refused', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Verfehlt', 'Bleibt stehen.\n');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({ ticket: ticketFor(page, 'write'), name: page, document: ydoc });
+    const notices: CollaborationEditNotice[] = [];
+    provider.on('stateless', ({ payload }: { payload: string }) => {
+      notices.push(collaborationEditNoticeSchema.parse(JSON.parse(payload)));
+    });
+    await waitFor(() => provider.isSynced);
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Trifft nichts.\n',
+      mode: 'replace',
+      edit: { fromBlockId: 'goneeeeeeee1', toBlockId: null, placement: 'replace' },
+      actor: { kind: 'agent', label: 'hermes' },
+    });
+    expect(response.status).toBe(422);
+
+    await waitFor(() => notices.length > 0);
+    expect(notices[0]).toEqual({
+      type: EDIT_NOTICE_TYPE,
+      outcome: 'failed',
+      actorKind: 'agent',
+      actorName: 'hermes',
+      blockIds: ['goneeeeeeee1'],
+    });
 
     provider.destroy();
     ydoc.destroy();
