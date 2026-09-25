@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
+import { useDatabaseCommands } from '@/components/palette/database-commands';
 import {
   useCreateDatabaseView,
   useDatabaseProperties,
@@ -83,6 +84,17 @@ export function DatabaseShell({
     if (resolvedViewId === null) return;
     onActiveViewResolved?.(resolvedViewId);
   }, [resolvedViewId, onActiveViewResolved]);
+
+  // Only the full-page database publishes its view, and only it offers
+  // commands: an embedded one is a block in somebody's text.
+  useDatabaseCommands({
+    documentId,
+    views: views.data,
+    activeViewId: resolvedViewId,
+    onSelectView: setActiveViewId,
+    readOnly,
+    enabled: onActiveViewResolved !== undefined,
+  });
 
   if (properties.isPending || views.isPending) {
     return <LoadingState variant="skeleton" rows={5} label={t('loading')} />;

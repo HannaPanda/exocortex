@@ -28,9 +28,19 @@ import { CommentsPanel } from '@/components/shell/comments-panel';
 import { PanelErrorBoundary } from '@/components/shell/panel-error-boundary';
 import { PropertiesPanel } from '@/components/shell/properties-panel';
 
+/** The panel's tabs; the shell holds which one is shown, so the palette can pick one. */
+export const CONTEXT_TABS = ['ai', 'properties', 'comments', 'backlinks', 'activity'] as const;
+export type ContextTab = (typeof CONTEXT_TABS)[number];
+
+function isContextTab(value: unknown): value is ContextTab {
+  return CONTEXT_TABS.some((tab) => tab === value);
+}
+
 export interface ContextPanelProps {
   workspaceId: string | null;
   documentId: string | null;
+  tab: ContextTab;
+  onTabChange: (tab: ContextTab) => void;
 }
 
 /**
@@ -80,9 +90,8 @@ function ContextTab({
  * rather than printing one; an interface that reports absences makes the reader
  * filter them out every time.
  */
-export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
+export function ContextPanel({ workspaceId, documentId, tab, onTabChange }: ContextPanelProps) {
   const t = useTranslations('shell.contextPanel');
-  const [tab, setTab] = React.useState('ai');
   const { request: commentRequest } = useCommentAnchor();
 
   // Commenting from the editor has to land where the composer is, otherwise the
@@ -94,8 +103,8 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
       return;
     }
     handledCommentRequest.current = commentRequest.requestId;
-    setTab('comments');
-  }, [commentRequest]);
+    onTabChange('comments');
+  }, [commentRequest, onTabChange]);
 
   if (documentId === null) {
     return (
@@ -110,7 +119,9 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
   return (
     <Tabs
       value={tab}
-      onValueChange={(value) => setTab(String(value))}
+      onValueChange={(value) => {
+        if (isContextTab(value)) onTabChange(value);
+      }}
       className="flex min-h-0 flex-1 flex-col"
     >
       <div className="p-2">

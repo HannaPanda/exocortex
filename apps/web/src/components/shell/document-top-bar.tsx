@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from '@exocortex/ui';
 
+import { usePageMenuCommands } from '@/components/palette/page-commands';
 import { useArchiveDocument, useRestoreDocument } from '@/lib/api/document-queries';
 import { useInbox } from '@/lib/api/inbox-queries';
 import { useDocumentShares } from '@/lib/api/share-queries';
@@ -93,6 +94,21 @@ export function DocumentTopBar({
   const inInbox =
     detail.parentId !== null && detail.parentId === (inbox.data?.inbox?.id ?? null) && !archived;
 
+  const archive = (): void => {
+    void archiveDocument
+      .mutateAsync(documentId)
+      .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
+  };
+
+  // The same menu, reachable by name from Strg + K (issue #148).
+  usePageMenuCommands(detail, archived, {
+    openTemplate: () => setTemplateSettings(true),
+    openShare: () => setSharing(true),
+    file: () => setFiling(true),
+    archive,
+    restore: () => void restoreDocument.mutateAsync(documentId),
+  });
+
   return (
     <div className="flex items-center gap-2 border-b border-border px-6 py-2">
       <PageBreadcrumb workspaceId={workspaceId} workspaceName={workspaceName} detail={detail} />
@@ -143,11 +159,7 @@ export function DocumentTopBar({
           onExport={onExport}
           onOpenRender={onOpenRender}
           onOpenImport={onOpenImport}
-          onArchive={() => {
-            void archiveDocument
-              .mutateAsync(documentId)
-              .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
-          }}
+          onArchive={archive}
         />
       </div>
 

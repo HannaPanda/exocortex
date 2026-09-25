@@ -1,6 +1,6 @@
 'use client';
 
-import { ClockIcon, ListFilterIcon, PlusIcon } from 'lucide-react';
+import { ClockIcon, ListFilterIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -12,11 +12,11 @@ import { type CommandItem, CommandPalette } from '@exocortex/ui';
 import { DocumentIcon } from '@/components/document/document-icon';
 import {
   isLinkCommand,
+  PALETTE_GROUPS,
   type PaletteCommand,
   type PaletteGroup,
   paletteMatcher,
 } from '@/components/palette/palette-command';
-import { useCreateDocument } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
 import { useSearch } from '@/lib/api/search-queries';
 import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
@@ -67,7 +67,8 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
   const t = useTranslations('search.command');
   const [query, setQuery] = React.useState('');
   const search = useSearch(workspaceId ?? undefined, query);
-  const createDocument = useCreateDocument(workspaceId ?? undefined);
+  // The command chosen, kept until the dialog has closed: see `onClosed`.
+  const [pendingRun, setPendingRun] = React.useState<(() => void) | null>(null);
   // Both only while the palette is open. The overview is usually already in the
   // cache from the workspace's landing page, so opening the palette costs
   // nothing; a workspace's stored questions are small but not worth a request
@@ -94,25 +95,9 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
     };
 
     const actions: CommandItem[] = [];
-    if (workspaceId !== null) {
-      if (matches(t('createPage'), ...t('createPageKeywords').split(' '))) {
-        actions.push({
-          id: 'action-create-page',
-          group: t('groupActions'),
-          label: t('createPage'),
-          icon: <PlusIcon className="size-4 text-muted-foreground" />,
-          onSelect: () => {
-            void createDocument
-              .mutateAsync({ title: t('untitledPage'), type: 'PAGE', parentId: null })
-              .then((document) => {
-                go(`/arbeitsbereich/${workspaceId}/seite/${document.id}`);
-              });
-          },
-        });
-      }
-    }
-
     const groupLabel: Record<PaletteGroup, string> = {
+      page: t('groupPage'),
+      create: t('groupCreate'),
       actions: t('groupActions'),
       view: t('groupView'),
       navigation: t('groupNavigation'),
@@ -120,7 +105,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
     };
     // Grouped by heading in this order whatever order the providers listed
     // them in, because `CommandPalette` draws a heading where its first row is.
-    const ordered = (['actions', 'view', 'navigation', 'settings'] as const).flatMap((group) =>
+    const ordered = PALETTE_GROUPS.flatMap((group) =>
       commands.filter((command) => command.group === group),
     );
     for (const command of ordered) {
@@ -142,8 +127,8 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
         actions.push({
           ...base,
           onSelect: () => {
+            setPendingRun(() => command.run);
             onOpenChange(false);
-            command.run();
           },
         });
       }
@@ -233,7 +218,6 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
     return typed ? [...actions, ...stored, ...results] : [...recent, ...actions, ...stored];
   }, [
     commands,
-    createDocument,
     onOpenChange,
     overview.data,
     query,
@@ -252,6 +236,12 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       query={query}
       onQueryChange={setQuery}
       items={items}
+      onClosed={() => {
+        // After the dialog has given focus back, so an action that focuses
+        // the title or opens a popover is not undone by it.
+        setPendingRun(null);
+        pendingRun?.();
+      }}
       emptyLabel={query.trim().length === 1 ? t('minimumLength') : t('empty')}
       footer={
         // A count, a duration and an engine name: a readout, so it gets the

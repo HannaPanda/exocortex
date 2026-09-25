@@ -5,6 +5,8 @@ import * as React from 'react';
 
 import { cn } from '@exocortex/ui';
 
+import { usePaletteRequest } from '@/components/palette/palette-requests';
+
 interface DocumentTitleInputProps {
   initialTitle: string;
   readOnly: boolean;
@@ -18,6 +20,17 @@ interface DocumentTitleInputProps {
 export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleInputProps) {
   const t = useTranslations('shell.documentTitleInput');
   const [value, setValue] = React.useState(initialTitle);
+  const field = React.useRef<HTMLTextAreaElement>(null);
+
+  // "Seite umbenennen" from the palette: the title is edited where it stands.
+  usePaletteRequest(
+    'rename',
+    () => {
+      field.current?.focus();
+      field.current?.select();
+    },
+    !readOnly,
+  );
 
   const commit = (): void => {
     const trimmed = value.trim();
@@ -44,6 +57,7 @@ export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: Documen
      */
     <div className="exocortex-page-title mb-5 grid w-full">
       <textarea
+        ref={field}
         value={value}
         rows={1}
         aria-label={t('label')}

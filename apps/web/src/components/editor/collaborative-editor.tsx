@@ -84,6 +84,7 @@ import { attachmentMediaInfoResolverFor } from '@/lib/api/attachment-info';
 import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
+import { PaletteFileUpload } from './palette-file-upload';
 import {
   type AskSavedQueryEmbed,
   SavedQueryEmbedPromptContext,
@@ -554,6 +555,9 @@ function EditorSurface({
         <p className="mt-2 text-xs text-destructive-text" role="alert">
           {uploadError}
         </p>
+      )}
+      {editor === null || access !== 'write' ? null : (
+        <PaletteFileUpload editor={editor} insertFiles={insertFiles} />
       )}
       {editor === null ? null : (
         <EditorChrome

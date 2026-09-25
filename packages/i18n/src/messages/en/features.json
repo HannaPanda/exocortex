@@ -212,12 +212,13 @@
     "where": "The magnifying glass at the top of the navigation."
   },
   "befehlspalette": {
-    "title": "Open every place and setting with Strg+K",
-    "summary": "Strg+K not only searches pages, but also opens every area of the application by name: chats, memory, shares, connections, administration, and every single setting group. You don’t need to know which menu something is hidden in.",
+    "title": "Every place, setting, and page action with Strg+K",
+    "summary": "Strg+K doesn’t just search pages; it also opens any area of the application by name, right down to individual setting groups, and runs whatever is possible on the open page: rename, change icon or cover image, switch width, move, share. You don’t need to know which menu something is tucked into.",
     "details": {
       "p1": "Just type what it’s about. “model” leads to AI models, “connector” or “mcp” to connections, “language” to language settings, “calendar” to calendar settings. Each command recognizes multiple keywords, including German ones, and words can appear in any order and abbreviated: “sett ai” finds AI settings.",
-      "p2": "Results are grouped under clear headings: Actions, View, Go to, and Settings, followed by saved searches and pages. Only relevant options are offered. Without an open workspace, its commands are hidden; administration is only visible to those permitted to access it, and “Manage members” only appears for those who can edit members.",
-      "p3": "Without input, the palette stays quiet: recently edited pages at the top, followed by just a handful of frequent commands like Capture or advanced search. Everything else appears as soon as you search for it. A location opens as a real link, so you can also open it in a new tab. A setting group has its own URL, such as /admin/einstellungen?gruppe=ai, which can be bookmarked."
+      "p2": "The results appear under distinct headings: This page, Create, Actions, View, Go to, and Settings, followed by saved searches and pages. Only what is currently relevant is offered. Without an open workspace, its commands are missing; a page you can only read offers only copy link and export; administration is visible only to those allowed to enter it; and “Manage members” appears only for those who are permitted to change members.",
+      "p3": "Without input, the palette stays quiet: recently edited pages at the top, followed by just a handful of frequent commands like Capture or advanced search. Everything else appears as soon as you search for it. A location opens as a real link, so you can also open it in a new tab. A setting group has its own URL, such as /admin/einstellungen?gruppe=ai, which can be bookmarked.",
+      "p4": "On an open page, you can rename it, change its icon and cover image or generate one with AI, change the width, show it as an overview page, create a subpage or database beneath it, upload a file, share it, move it, or put it in the trash. Comments, references, and page history open directly in the context panel, and “Start new chat” begins a conversation with the assistant. In a database, “New row” and new views are added, and with “switch” you jump to another workspace."
     },
     "where": "Strg+K from anywhere, or the magnifying glass at the top of the navigation."
   },

@@ -8593,20 +8593,24 @@
       "output": "a8157926ffda0fc7"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "5f3765c82e200859"
+      "source": "abda96619bc806c2",
+      "output": "e1795840d9a25546"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "865ebfb52138736c"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "bcca5e0847837607"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "3f5091a3a14c403a"
+      "source": "9bf57743a3b82e0d",
+      "output": "9a465433c72bddd5"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "b086ff052a536646"
+      "source": "d00765c5ebc56457",
+      "output": "c729f17966f09345"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -12148,14 +12152,6 @@
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "f2a50371d20625f3"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "2ce2f1403ae090d6"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "9f5cac3cf2edba63"
@@ -12164,9 +12160,17 @@
       "source": "5656f92db78df688",
       "output": "ff8059dc6752afdd"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "4759498ac2a719c6"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "a8aa078b7ea67c00"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "ebf2023c7ca044e4"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -12199,10 +12203,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "f16735178d5e2d9f"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "037c426c05970681"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -14520,6 +14520,38 @@
       "source": "ab424ef93255babc",
       "output": "57f9e56fba2d7fe6"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "f55785d06cd693ea"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "4ecf1fc7d62df203"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "5eac6d7593f7988f"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "cac3c92b818a4a83"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "aeb85717e2bcb2f7"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "2c8ab0020682c5c8"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "707fe1e6c54f37e8"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "2d1a82fc8e3cebcf"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -14527,6 +14559,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "9b66ab616f5dbf4d"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "7e8ae600b3935055"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "1f8d58251a0ae878"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "29f3c446805be64e"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "01af962e355df02d"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "f2a50371d20625f3"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "6135c348f95643cf"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "3de908dd0fec5e22"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "c81fa0a8ca926234"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "ada6d39a08af56be"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "5e0cd3df44bcb858"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "3025c1029504f80f"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "8ea6cab3dcce54fb"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "ae280085deabddbd"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "551006c18797e80b"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "7e9c2e5f5fd557f2"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "0b86a08662fa0d1a"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "847d690a76927db4"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "ad47df6fc76e885f"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "1b6d788dcbddc5ae"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "57789cb3e56114c2"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "d7b8b26fcb718418"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -14712,9 +14828,193 @@
       "source": "c403d8e890da7e9d",
       "output": "b40d1f72d0d2d0ae"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "25d90d3a9463a180"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "90b01296e7f1f943"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "05187ac7532ea1eb"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "b8884491e491be8e"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "a7581a044f114b47"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "f6ab7c90d52be710"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "abcdc6026e4c0e95"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "cf44203cb179ad8c"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "87f2c4e6223c2e8d"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "7625b86c6681896b"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "2f9b129b76a10d1b"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "b3dbd10c896db52d"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "8bfdb2d47008ab4f"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "60cf9f44aee196df"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "2e1518aaef8977f2"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "4ec7b443e4d31a29"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "f24e0d216da92d51"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "743bb0e56a8c94b3"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "a1aec2d21b35d5f8"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "117ddf9ffa5234aa"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "b2e42610bdaeec8c"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "9430b1911debeb19"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "3f4b40578bf02e24"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "851150a9e5d93994"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "2a681a3831feb175"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "a5ecafd77180eadd"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "595ff53fcb2d5e94"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "6347249da35aad30"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "2f7c583d5f18cf9a"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "61375d196534e463"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "1abab3a0484046e2"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "88130495035084b1"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "0ff2a25b4632aa49"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "c9e2877e69434288"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "a12d4a55c16e2eeb"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "a14458f18c547149"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "c1ed7d6406d2fa8f"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "0240e2dd368dd6ac"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "3ea3ca498756ac49"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "d9b6a500cb3eeb71"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "e557c56d98d12098"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "0694a9b331cc0ef3"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "7ca8cd8236b1bcd4"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "8810e6bc16d23bf6"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "9a31585ab00b280e"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "d99bcd78b586826a"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "1378a1f4e54078a7"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -14823,6 +15123,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "a7a7f9be847b7fb2"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "191a7e8239407db7"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "908ce697a6756371"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -23755,20 +24063,24 @@
       "output": "ce38a376f3365088"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "608afb9726e7012c"
+      "source": "abda96619bc806c2",
+      "output": "630fd9eb5957c354"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "5f650f80d59714e6"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "fa872a873b1b9b79"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "1465a494262ddb48"
+      "source": "9bf57743a3b82e0d",
+      "output": "87abbb568cc52273"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "028d1d2a6c04a682"
+      "source": "d00765c5ebc56457",
+      "output": "d60d48ac7ea2608e"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -27310,14 +27622,6 @@
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "d28958a3acd51bfd"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "a8e5fc4523900507"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "f46cf7b0b94965ae"
@@ -27326,9 +27630,17 @@
       "source": "5656f92db78df688",
       "output": "fb89a30ba7f64d18"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "3fe5ff266fc3ceac"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "8d11ba02dfea47a5"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "bab04e8ce4fd7907"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -27361,10 +27673,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "83bde44e372ead26"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "d5f064af5325adc9"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -29682,6 +29990,38 @@
       "source": "ab424ef93255babc",
       "output": "500e0fcd999a460b"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "d1a66915d581d7c7"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "59d78866618d3ee5"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "3350b036c122e5f0"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "af2bc72cdb92beb3"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "3eaf02f859c95ef5"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "b291edd90af29796"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "efb2a664e3ac4c41"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "cb061a63b180ad4c"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -29689,6 +30029,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "92aa707e7afcdee8"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "13a0a5992b8f4033"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "81ee2dd175d193c8"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "5d788ede6474896f"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "2f09f8087e67eb58"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "d28958a3acd51bfd"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "7922368930b5012d"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "3ed8d7e648d761d6"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "2decfbe82587aaa6"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "06180cc0db3af46f"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "269ecda96420b283"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "34c205e6f4254f9b"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "9b7592103f494af5"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "9a91cf34fbbb86e0"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "85568b14d0fd5941"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "1923fbbbdaae9353"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "47abfe6b2aac014e"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "e4b64037bd6d2297"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "09ef05b177603f0e"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "348129d401b46dc2"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "12aad6aa1e2eb495"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "c846bde9466298c4"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -29874,9 +30298,193 @@
       "source": "c403d8e890da7e9d",
       "output": "bafe8298dada9c57"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "aab82cd6e3d8424e"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "fec9152855c7f217"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "e5cfcfa10b8d8b5b"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "71af29bf6a0f1d49"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "bea41600f1ff2b50"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "e129d73fa67f7ff4"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "4b31fa966748d79e"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "e4b406488dd5122b"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "162314527e090c48"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "f364c0fe5cac7195"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "ecd1d550ad858512"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "6ef95546c7b16fc4"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "630d3f3292271cea"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "fc59c97fc8cf25a2"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "03c7925f622c6d30"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "00c4b9e18b1ac0e5"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "e3e7e96c3c460e78"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "02742960184d2f8c"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "8998c7e1aa752fe0"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "24b5c5b94850e216"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "1d89239fbe752036"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "27841c5e60790d88"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "484d84b9166e9eb5"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "8a2fe521cd79a86f"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "dcce72cc7aea40b4"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "b2a211f246b3663f"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "f8d5f8e49f9fd70c"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "36153c897ab62a44"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "daf23908ffcaeed3"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "baabac423a4686ea"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "18ad162f2fc0d146"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "c5e147a9a44fe23c"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "f81f7bf32b92b603"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "73d5a69c78ea1072"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "967e8283cf6319dd"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "b7c869569e85b8da"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "3cb5b6b90d29e3a4"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "94ab7217476d8cd3"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "e0a8807453ba5fbb"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "b6a41e3cb325346f"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "d240d6d6fa0aa581"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "531338a661607ece"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "4efba3216122af4c"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "470b9cd58dba9d47"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "e439db6e7fd394f5"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "c0f6446dab4bcd19"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "8dd62bf8245f13c8"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -29985,6 +30593,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "a0f4402a0b2a99ec"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "a00511713e77a76d"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "3542ffc61b9a4cd5"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -38917,20 +39533,24 @@
       "output": "c3990b2a721f6f88"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "4637a4a79e6ff0d8"
+      "source": "abda96619bc806c2",
+      "output": "a68ca2d192bb4fe4"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "4775988ad545c7ed"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "5fa483a775b31fe0"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "6d923d025f953ffe"
+      "source": "9bf57743a3b82e0d",
+      "output": "8b33b0154cccda45"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "73d1a8772764577c"
+      "source": "d00765c5ebc56457",
+      "output": "c1278ba827791295"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -42472,14 +43092,6 @@
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "3a2aaddef3921ef8"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "836d59b3cf3426f5"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "b914a0de2e702dff"
@@ -42488,9 +43100,17 @@
       "source": "5656f92db78df688",
       "output": "ff8059dc6752afdd"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "969418f4d5aea880"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "615b02a6fef370c9"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "c5c3a25ff1bcfa55"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -42523,10 +43143,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "42f49242bde35242"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "f4e81b7c1979874d"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -44844,6 +45460,38 @@
       "source": "ab424ef93255babc",
       "output": "61816357872b8fb3"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "1b49a47ea217f12e"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "d50c41c7bd6ca44a"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "eeda259f8f749a42"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "9c433a19ab5f8785"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "188e886ecfb080d1"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "1c9557d710a12d02"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "50ebdbc30314f0a1"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "cecc1aa2c85259c2"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -44851,6 +45499,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "3ab93a289b7896f0"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "9befb7b84fb1b8e5"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "139d775cb39b07b9"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "e8370c326db07dfc"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "88de5963c692a2a7"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "3a2aaddef3921ef8"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "67bfc8a0e8fc3c9a"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "03df65170f3dd1d0"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "a2929d64d043071d"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "03613d699f723835"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "708bfbe2149f9c5b"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "bfdc47497cd14880"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "5466843202a8a661"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "5100586f8c3c6d2e"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "24fa7e82832a36c8"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "1601901de627b59b"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "142244d425fc56aa"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "eacc0b7e97cf1389"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "dab23293a633d8f6"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "ab0da991d12b583d"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "9be1b61e2c62611b"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "e584e1d206853273"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -45036,9 +45768,193 @@
       "source": "c403d8e890da7e9d",
       "output": "813a3eed99e71d7f"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "9915a3e13d47cd56"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "b1960cbb22ab394b"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "07eb0e076d2db547"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "d1f79f72cac6fe17"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "41bcef8efcbca700"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "8a274c9cc537e7ad"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "b3928cd9d184d507"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "fc2fd52c7cbcbbf3"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "2f697582bb2a06aa"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "1ec9473515c5f116"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "a2f72a630a088fc4"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "152c1fd576d91deb"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "25a10a013e9d1a63"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "eb6952f69980f767"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "ae560b3fd800f4d3"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "275dd30e8afe5490"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "8c0c90178c52561a"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "4ef976b74e0ed13d"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "e5764a74dbd6c1a9"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "c4bdc7c1d3e5de84"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "7d2e2fd10b14f841"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "067743b82c12134b"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "aa6c1b6acc1f9a44"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "2e839d97531b7956"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "b7acce4f6a202920"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "dd2de423d0b15ad3"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "73f982e465ff4231"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "595fe1c7c0622a76"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "31211a715b2c048e"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "1ee18d2e0d09a5ed"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "72e55b08e49d46b2"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "677e2450158021a5"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "3ae0e786042dd2d6"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "9fa052e71a80e48f"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "a279251a45a601f0"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "a753d619347b3727"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "840656aeb52a27d8"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "704e24fdb66a6d49"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "ce3668a1bc2f7cac"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "b3746e5b2aca92eb"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "8c5a7b81f054a4aa"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "49e84c31ab13159a"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "e9e17ed04846bc8a"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "5a7e9730bc26e407"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "f47ccd267200b53c"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "b0076bd6e674fab5"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "46058140ce3a5563"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -45147,6 +46063,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "919b41455ffb2a20"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "72b074599601d726"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "6da9deb3886edf15"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -54079,20 +55003,24 @@
       "output": "2ecf2b24bd9716b0"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "bad156c5c74450c8"
+      "source": "abda96619bc806c2",
+      "output": "a8dd1d4599cbe67f"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "b802a053f30a5f85"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "9d5c309078864937"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "5a15968706b600da"
+      "source": "9bf57743a3b82e0d",
+      "output": "a45a1b8f21d7c9bc"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "a1cbc6685e3ea2d0"
+      "source": "d00765c5ebc56457",
+      "output": "3e00613abb263797"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -57634,14 +58562,6 @@
       "source": "ef5b4049bb367b05",
       "output": "460b3a7da007b7af"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "79fa2c0a95e4f222"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "68f1a912265d98cf"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "0af987882e513c5c"
@@ -57650,9 +58570,17 @@
       "source": "5656f92db78df688",
       "output": "1c3e6183f58fe753"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "9bf626657ea30339"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "232c2affd6ddae28"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "4761c8397a71c840"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -57685,10 +58613,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "a12e1097c18617ab"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "d5fd599d30859ab6"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -60006,6 +60930,38 @@
       "source": "ab424ef93255babc",
       "output": "9083b4d74ab0cdd5"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "92dd655e9dacc22e"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "b834f597fc401b56"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "9805d9d393747a3a"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "605503e7c252c2e1"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "f466507fa997b11b"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "ea50c14c7e548f6e"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "12571c93c8132005"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "36856e3b606d04ef"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -60013,6 +60969,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "82bcc5dcfdcc7e60"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "fcb5b1c70db66cd0"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "aa805ec47c0694f3"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "177dafa3c1362ef3"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "9cca12b561ae07d1"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "79fa2c0a95e4f222"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "50b59d1f45f9b6d2"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "4a205ef51ce01525"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "bacb9d0ab1fbf9f6"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "78dacd02c2db2dd7"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "74f825e641ef595a"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "778f64718cfbb53e"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "394608997440d86d"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "e476dfc810d85339"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "83603664dc972c5c"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "34139d9fd04eef18"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "c7bdc3fc30b9e954"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "8021798d1d57c867"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "619a01abed96f8ad"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "79e3badd80efde42"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "d1de28f59f43e82e"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "f8fceec01a58042a"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -60198,9 +61238,193 @@
       "source": "c403d8e890da7e9d",
       "output": "64d749e202e24ace"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "78334490c31bc400"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "2797b15c314cb9ca"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "5b0ab78ba88eee4f"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "c9357d1fed85e5c5"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "aedbc90f26c8b053"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "687b22d3ae0becb5"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "67e9c93bbf421d0b"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "df066bf96ccebfdd"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "1d35044ee85e7d70"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "cd8766ac2bb3c248"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "033c42980021940c"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "a54e6898ba8bc493"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "82a37dfbec678f11"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "f4c8671c9b4488d4"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "b39b0bca084af504"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "7812561629bea87c"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "f4be3f0ceb04f5d0"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "2cbca3d9895b5952"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "2f930d3b510d966d"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "8444abd2858e10cb"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "ea9ce9faf0cce521"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "9030037489ab3b7a"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "abb9bddfe4a581ee"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "4f09ddf9302c77f4"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "5c0d551086b49fc9"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "0714a5d484c00364"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "1d8cb1ce58d98168"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "29ed89b6e48fbffa"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "186df5881d1f0676"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "c6f30b4a96714ea4"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "3b146bd810309c00"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "724eb4234fa07faa"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "e93b92a283d90257"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "0ac12ca44e53014e"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "6e8b3417449b4668"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "ae2bef30cc542411"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "50075ce409660c3a"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "b7e26235f91673b8"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "d664c39b53b44a5c"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "0e602931fcf9a61f"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "f135d3f04e849da1"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "b786eaf234c266a8"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "e6ffab5a89aed873"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "292c660800a47ca7"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "6be8333f9bde2c11"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "b5dff4405a35d938"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "f865311a4e1906b7"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -60309,6 +61533,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "6c7865087bfdd7a3"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "110463d49ba66fd7"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "9d1c6b7f344eb0cc"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -69241,20 +70473,24 @@
       "output": "bd4e149404e2e188"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "e3a76309319b0e1e"
+      "source": "abda96619bc806c2",
+      "output": "852a41f0769c0863"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "2bc11d8874407638"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "9aca1af73d8574ca"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "274a43a08b05f7ce"
+      "source": "9bf57743a3b82e0d",
+      "output": "d002174292667ab8"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "bf44291f07f4c544"
+      "source": "d00765c5ebc56457",
+      "output": "aaa0fcaddaced53a"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -72796,14 +74032,6 @@
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "194cde71c69f7d62"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "05ffef3c2bb703c7"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "7956de4fa0f35f6c"
@@ -72812,9 +74040,17 @@
       "source": "5656f92db78df688",
       "output": "de4bc8356417db0e"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "46405d4b4a68fd5a"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "2d0cf06dc29b1da2"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "973018c3aae1d19e"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -72847,10 +74083,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "a125967303c04c07"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "af43c47ec9984f2f"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -75168,6 +76400,38 @@
       "source": "ab424ef93255babc",
       "output": "fe208777fec4ecb8"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "53432c64d518ed6a"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "ffd84d99d778736c"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "21ad28fddeae3b85"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "634138fea6bf6517"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "34d9c1f260a0ceb8"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "e6678b966a05ff93"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "6f1f82bd8d729dd0"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "b4cf23a42bd8f315"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -75175,6 +76439,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "adb86340d21055f5"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "1c8714a04fe12a91"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "9e5d7b7cd54ae7a0"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "a8f6dc400504c8fd"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "23854a0c0fc99cc4"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "194cde71c69f7d62"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "8fe0f9e129391eb4"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "79c1eeba8bf26d72"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "8db03fae2587bea0"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "928a6257f74f9197"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "508a5e346f52b360"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "d3ea04779665be37"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "38c1ad85670b873e"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "2bb8885860384ee5"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "d973f986a370c6e3"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "5bf36876f363cb44"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "e8d1413d52278ad9"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "8ada4a1a5208876b"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "a54387e0024016e1"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "03ef4368b4702cfe"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "edabb7530bd1938e"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "b061311111651c70"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -75360,9 +76708,193 @@
       "source": "c403d8e890da7e9d",
       "output": "b096f3091b2d4ec4"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "519f3d7c1d83b24c"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "ea925a4020b5e977"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "2da80196d625d99b"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "26b3fa2329db045c"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "c7d0d9e8be5dc77d"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "e66505bc53ee2f2e"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "15bc491b1424a330"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "d4ac81cacf87dd49"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "80164c80f0f7de05"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "46254f1c239c5a29"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "ea02b205b36e8a05"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "da014783f3571d0b"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "47e47ee1bf80dd73"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "08b4d451987d05c6"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "6154f556ac5b0d57"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "bbe7e7362c1fe59f"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "dd3fd2358e23027a"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "a61ca2dbac578313"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "99607ffe2eb79d6b"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "d9d4da69ac5a13dc"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "36d265f527334289"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "d2207532ef1b4086"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "0606fd080dc6840f"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "af3f9e106daceb71"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "878d66445e8a020b"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "034e5cbf9f90323c"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "5059d6f292c0496b"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "cd73f25e7fd006aa"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "fb6bdd40380e403d"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "38e3196444b912d4"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "f30ee1fc852975a3"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "571c18e963f6e670"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "dd8daf326c2c84d0"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "aad768fdcf148175"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "b036520d79db13dc"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "10555a0050db4c07"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "71bf564e09eada3c"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "9727a29e431b16a2"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "cfb6747dd43e9e50"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "1715fb4760004376"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "bcdc24fe2ef913d9"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "9c8bc4c1b47e857d"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "e315968996a36e8d"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "1b167f60dd054b18"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "c6eeae1c857a2250"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "1261db4c610e55a5"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "3f2092c037f44693"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -75471,6 +77003,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "937ac76d208faa3c"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "13f89f3d048ea659"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "0a6cca40ee061ff1"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -84403,20 +85943,24 @@
       "output": "fc8dde8ac71b2c83"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "57ce21e27d2b2fe6"
+      "source": "abda96619bc806c2",
+      "output": "b9a086c2b8b7470e"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "145de2f1c9087f2e"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "0a2c738bb929d42d"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "3b37cf42ea36450e"
+      "source": "9bf57743a3b82e0d",
+      "output": "c3d9062847edf698"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "e0f3e241bad26a2b"
+      "source": "d00765c5ebc56457",
+      "output": "50b80213844cb854"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -87958,14 +89502,6 @@
       "source": "ef5b4049bb367b05",
       "output": "751205c0b70a1a77"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "bfb3c44a6e18d7f8"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "667248d34c0c7769"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "d481ad1adaaf60a6"
@@ -87974,9 +89510,17 @@
       "source": "5656f92db78df688",
       "output": "7ae30805570ad29e"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "01e375aaaf064eac"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "0c40817b79eedad4"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "5a4cb4018d5adec6"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -88009,10 +89553,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "6496f668e9f36f5c"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "a9413e7ab24472d0"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -90330,6 +91870,38 @@
       "source": "ab424ef93255babc",
       "output": "94a638698cb82192"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "09467a410138c1fd"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "452b59f002df787c"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "510b7a855287d8ba"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "70f20e288ceb89bb"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "6e6b9f1cb635e085"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "eaadcd2bae7e9b44"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "935651add4d4ade3"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "7833beb61560e91d"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -90337,6 +91909,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "ad04e9bef49e5431"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "c57b96d1e389b082"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "937d4372d9cfd4c0"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "102cb564306d37ec"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "d2f34bf84d2dc288"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "bfb3c44a6e18d7f8"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "e4899d5201862bf6"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "9695892e1484e153"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "1419e2de27e4a90e"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "b5fee826429397f4"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "326560d44ba76984"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "da69084cb3988eec"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "236862cc13b3e9c5"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "4e252fca746a610d"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "d82296a30c7b3692"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "a7c79ec28da58c2f"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "93385fd94872fd9c"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "ccfac5da07dd180b"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "492fd1d6972c59c8"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "571cce5a24d303e6"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "04779c4a29943e86"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "8bb1d7d9fc37b0b4"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -90522,9 +92178,193 @@
       "source": "c403d8e890da7e9d",
       "output": "e0918a89fa133d41"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "340617bdff727221"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "28ffb2ef166c29ae"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "74cbe6bbfd4aed83"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "af56e1647871e74d"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "06ea3d40022426a5"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "59ddb300bf734db8"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "0c735e8869f9dc75"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "1521a3039b8364d5"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "cc33fba9abdcbf4a"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "66a8633429c55147"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "54855f83a9a6acee"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "c19c4a72b044db4d"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "fc1d57bf24b1d487"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "717eaa6f38ce6a01"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "781ab38c4fc2afa9"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "d7ba91b57fa99b64"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "944526b409c89e12"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "cca8dfea0712cef3"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "d4082de58e59c065"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "706be69de147352c"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "64b9cc5d79d4114f"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "a15e508455dca9e4"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "e2a4dfe14ef84459"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "6e7940de25c888b9"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "7ff682649a4a5525"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "6e45f0c19e870f2d"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "93d7c097870b3c5b"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "921bc87b4678e915"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "424cbef23457e4b6"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "c572fedfb95ef9a1"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "c67203ccdd953fe4"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "31c0b6722c178b61"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "50bf6d9f8df727b1"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "db6e368f8a822d65"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "68f79b7440ac4b85"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "e30511eb2fd4a3d6"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "d78b9ec1b1e09551"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "efd1b7ba72432d88"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "9b8fa2659f63f122"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "24a306127a210684"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "7d8ccf891aad51ce"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "7a543c4c0aa8fec7"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "4656d93053898dee"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "a588a3a1307b5945"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "3834b540c415a875"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "fe0d0a4ab983ab05"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "a93a709c1fea6fcb"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -90633,6 +92473,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "36f826ce6d570770"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "2478bafb0ac26674"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "9b2877cff3f6c417"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",
@@ -99565,20 +101413,24 @@
       "output": "dbc9bc790a6a5c20"
     },
     "features.befehlspalette.details.p2": {
-      "source": "b0fc3aba54b3b9fa",
-      "output": "04b7b77375b50174"
+      "source": "abda96619bc806c2",
+      "output": "a4a461dbde039428"
     },
     "features.befehlspalette.details.p3": {
       "source": "3e9f4b9bdc712150",
       "output": "a13c61702923ae65"
     },
+    "features.befehlspalette.details.p4": {
+      "source": "038c4c715cb9bdd4",
+      "output": "bed4c9b4b68ef71a"
+    },
     "features.befehlspalette.summary": {
-      "source": "7ba5f9ab54d10134",
-      "output": "0974457fe8eb242b"
+      "source": "9bf57743a3b82e0d",
+      "output": "e8522cb3cddfee53"
     },
     "features.befehlspalette.title": {
-      "source": "6a47f4e2e70239c6",
-      "output": "9ea88e98929532ac"
+      "source": "d00765c5ebc56457",
+      "output": "f25ab796dd28c609"
     },
     "features.befehlspalette.where": {
       "source": "36c76de849794597",
@@ -103120,14 +104972,6 @@
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
     },
-    "search.command.createPage": {
-      "source": "239c9852183eb68f",
-      "output": "eec84323ca2dfdcf"
-    },
-    "search.command.createPageKeywords": {
-      "source": "45fbcb47ef8bd226",
-      "output": "c7e0b0eb2be0b1d9"
-    },
     "search.command.empty": {
       "source": "49cf37307a96b6cd",
       "output": "ec58f70ee77063c6"
@@ -103136,9 +104980,17 @@
       "source": "5656f92db78df688",
       "output": "7d3e4d6dc900b59b"
     },
+    "search.command.groupCreate": {
+      "source": "5ca419548155adf2",
+      "output": "49ba5d18d8c4c23f"
+    },
     "search.command.groupNavigation": {
       "source": "1d7a68f2068b7d36",
       "output": "99970c27f61fddc9"
+    },
+    "search.command.groupPage": {
+      "source": "166c6f67b00a1469",
+      "output": "bab04e8ce4fd7907"
     },
     "search.command.groupPages": {
       "source": "d79c018994cab0f5",
@@ -103171,10 +105023,6 @@
     "search.command.readout": {
       "source": "c4bd501449e28ecf",
       "output": "83bde44e372ead26"
-    },
-    "search.command.untitledPage": {
-      "source": "e67ee93ae0b127cd",
-      "output": "2ba6ee89dd169b4f"
     },
     "search.nodeView.allResults": {
       "source": "eac6db4ac8817783",
@@ -105492,6 +107340,38 @@
       "source": "ab424ef93255babc",
       "output": "5278f75f08d33ee8"
     },
+    "shell.paletteCommands.contextActivity": {
+      "source": "77cf5a6629625f9f",
+      "output": "9f6905c683f1de26"
+    },
+    "shell.paletteCommands.contextActivityKeywords": {
+      "source": "9160e1b9bd60d06e",
+      "output": "5b78251f9705d867"
+    },
+    "shell.paletteCommands.contextAi": {
+      "source": "cc165de8d71ea8d5",
+      "output": "8312536e8d902cfc"
+    },
+    "shell.paletteCommands.contextAiKeywords": {
+      "source": "2427b1771cb013a3",
+      "output": "0869f37c68b082da"
+    },
+    "shell.paletteCommands.contextBacklinks": {
+      "source": "af0fb0af94d16771",
+      "output": "a05b5fa780a8388c"
+    },
+    "shell.paletteCommands.contextBacklinksKeywords": {
+      "source": "30fa63d82f1827b4",
+      "output": "ba7ec6401d2dca8d"
+    },
+    "shell.paletteCommands.contextComments": {
+      "source": "033ec31e17b94726",
+      "output": "a9968c77095a91f4"
+    },
+    "shell.paletteCommands.contextCommentsKeywords": {
+      "source": "caef605806c3ff7b",
+      "output": "1cac6817f445f1a1"
+    },
     "shell.paletteCommands.contextHint": {
       "source": "bc0b458a298173e5",
       "output": "a467062dd5618f95"
@@ -105499,6 +107379,90 @@
     "shell.paletteCommands.contextKeywords": {
       "source": "47ee078e78883730",
       "output": "79d539d08682be01"
+    },
+    "shell.paletteCommands.contextProperties": {
+      "source": "83b0bc6e04182324",
+      "output": "c9f683bbfdbe3a35"
+    },
+    "shell.paletteCommands.contextPropertiesKeywords": {
+      "source": "579e8560532b185e",
+      "output": "6ad3104c4f127289"
+    },
+    "shell.paletteCommands.create.database": {
+      "source": "3f4d2914ae2ca484",
+      "output": "b480b6b1fbf56c8a"
+    },
+    "shell.paletteCommands.create.databaseKeywords": {
+      "source": "1e300eec6ae634ba",
+      "output": "ca6ba35fb6599d7d"
+    },
+    "shell.paletteCommands.create.page": {
+      "source": "239c9852183eb68f",
+      "output": "eec84323ca2dfdcf"
+    },
+    "shell.paletteCommands.create.pageKeywords": {
+      "source": "9672ea42ba269852",
+      "output": "73746a059ecf06ac"
+    },
+    "shell.paletteCommands.create.project": {
+      "source": "7eb8ce098b81095b",
+      "output": "82465f74eaf015cf"
+    },
+    "shell.paletteCommands.create.projectKeywords": {
+      "source": "260e040603aee48e",
+      "output": "a750d8bea33574c8"
+    },
+    "shell.paletteCommands.create.savedQuery": {
+      "source": "4f469a4f1e8e13df",
+      "output": "03896959f30ab805"
+    },
+    "shell.paletteCommands.create.savedQueryHint": {
+      "source": "420ea9b14305fbb5",
+      "output": "94d96aea664e1bbe"
+    },
+    "shell.paletteCommands.create.savedQueryKeywords": {
+      "source": "1a3abd00cbe29df8",
+      "output": "5e3cb7ae82a5fce2"
+    },
+    "shell.paletteCommands.database.newRow": {
+      "source": "14c24c82f1fd3059",
+      "output": "e6a8ded996cbf4a2"
+    },
+    "shell.paletteCommands.database.newRowKeywords": {
+      "source": "c800e6d09ec49cbd",
+      "output": "4ee04e24eda79e43"
+    },
+    "shell.paletteCommands.database.newView": {
+      "source": "684be10fdef68889",
+      "output": "f8c4344621be7cd9"
+    },
+    "shell.paletteCommands.database.newViewKeywords": {
+      "source": "2be59d0937528385",
+      "output": "422e13f30bab85c3"
+    },
+    "shell.paletteCommands.database.showView": {
+      "source": "544d223731e10c04",
+      "output": "14f1f5609a246ad7"
+    },
+    "shell.paletteCommands.database.showViewKeywords": {
+      "source": "0eb067e70ce962f5",
+      "output": "4db2dbef478af26f"
+    },
+    "shell.paletteCommands.focus": {
+      "source": "10527e92430c9d00",
+      "output": "84dd731fc6dd446f"
+    },
+    "shell.paletteCommands.focusKeywords": {
+      "source": "8b939a5ad1e24ea2",
+      "output": "37fc4cad01fe94be"
+    },
+    "shell.paletteCommands.fullscreen": {
+      "source": "8f4532ca4c50c975",
+      "output": "e900e6abed8508fc"
+    },
+    "shell.paletteCommands.fullscreenKeywords": {
+      "source": "d3120bac4f423a8e",
+      "output": "d0657d28f5b322dc"
     },
     "shell.paletteCommands.hideContext": {
       "source": "5f7288a6c4818268",
@@ -105684,9 +107648,193 @@
       "source": "c403d8e890da7e9d",
       "output": "f3db506ccefcc21e"
     },
+    "shell.paletteCommands.newChat": {
+      "source": "719edb454eab1c18",
+      "output": "2da239c6d529cb35"
+    },
+    "shell.paletteCommands.newChatKeywords": {
+      "source": "3c823e553a6937df",
+      "output": "310e1f2dec4e9ddf"
+    },
     "shell.paletteCommands.openTrash": {
       "source": "0227ded9082f7259",
       "output": "4d256e006bec7a80"
+    },
+    "shell.paletteCommands.page.addCover": {
+      "source": "ffe09a42120da7d8",
+      "output": "aba6d592eced8594"
+    },
+    "shell.paletteCommands.page.aiRule": {
+      "source": "8ab5464c2fe71622",
+      "output": "ad536b7b45f4b97d"
+    },
+    "shell.paletteCommands.page.aiRuleKeywords": {
+      "source": "1f8e82cecfb50414",
+      "output": "fd46a50a0d8fdc5f"
+    },
+    "shell.paletteCommands.page.archive": {
+      "source": "f410bbf99a019f0b",
+      "output": "ac0f6b223b267faf"
+    },
+    "shell.paletteCommands.page.archiveKeywords": {
+      "source": "8e5fa2108bd1d32d",
+      "output": "80c6deee64426147"
+    },
+    "shell.paletteCommands.page.changeIcon": {
+      "source": "91a7608fa2b92647",
+      "output": "5d059853bc4d580c"
+    },
+    "shell.paletteCommands.page.changeIconKeywords": {
+      "source": "e8ded883a95b3052",
+      "output": "ab200ff0d61a618a"
+    },
+    "shell.paletteCommands.page.copyLink": {
+      "source": "4569c2731a2af214",
+      "output": "624c52804646ae88"
+    },
+    "shell.paletteCommands.page.copyLinkKeywords": {
+      "source": "b3d2523ef5c3a673",
+      "output": "ce439cdbb1f32a0c"
+    },
+    "shell.paletteCommands.page.coverKeywords": {
+      "source": "54c401411b11f35a",
+      "output": "f0693d26db9ac07c"
+    },
+    "shell.paletteCommands.page.createChild": {
+      "source": "4dd9add2682a727d",
+      "output": "e1859a9b772e74c7"
+    },
+    "shell.paletteCommands.page.createChildDatabase": {
+      "source": "d9e078bd2156a168",
+      "output": "c9aa1c730c67da6c"
+    },
+    "shell.paletteCommands.page.createChildDatabaseKeywords": {
+      "source": "a33318600a425190",
+      "output": "53fd987649bb3dd8"
+    },
+    "shell.paletteCommands.page.createChildKeywords": {
+      "source": "10c3d3e1d22e80a3",
+      "output": "c84361fa5e9b035a"
+    },
+    "shell.paletteCommands.page.exportMarkdown": {
+      "source": "bcc1eb8bd54e9842",
+      "output": "d953e4e9ba2d4a47"
+    },
+    "shell.paletteCommands.page.exportMarkdownKeywords": {
+      "source": "156f0adc4505c053",
+      "output": "82d6a0ea86fa975c"
+    },
+    "shell.paletteCommands.page.generateCover": {
+      "source": "c3b3952b52fbb1fe",
+      "output": "0cf2f1d78717e042"
+    },
+    "shell.paletteCommands.page.generateCoverKeywords": {
+      "source": "60000365d8b346e7",
+      "output": "2dfbef87d0f629a0"
+    },
+    "shell.paletteCommands.page.importMarkdown": {
+      "source": "c4037f1709ee6bf3",
+      "output": "27841c5e60790d88"
+    },
+    "shell.paletteCommands.page.importMarkdownKeywords": {
+      "source": "bdc09c99bfd4b894",
+      "output": "08b532a92baaf0f8"
+    },
+    "shell.paletteCommands.page.layoutFull": {
+      "source": "b5f31f281dfc5c45",
+      "output": "36902ec14ec75c0e"
+    },
+    "shell.paletteCommands.page.layoutKeywords": {
+      "source": "c01b6abefc746225",
+      "output": "b9900b3526bfc982"
+    },
+    "shell.paletteCommands.page.layoutNarrow": {
+      "source": "f961a3822a52df4d",
+      "output": "3195130702f6e3c8"
+    },
+    "shell.paletteCommands.page.layoutWide": {
+      "source": "7a173880390b830c",
+      "output": "1d8cb1ce58d98168"
+    },
+    "shell.paletteCommands.page.move": {
+      "source": "29c6f1457f4f2dea",
+      "output": "36153c897ab62a44"
+    },
+    "shell.paletteCommands.page.moveKeywords": {
+      "source": "646285aeeafb85b2",
+      "output": "f6720fae54d7c90a"
+    },
+    "shell.paletteCommands.page.overviewKeywords": {
+      "source": "6647efb06716f89c",
+      "output": "ef599366066abab7"
+    },
+    "shell.paletteCommands.page.overviewOff": {
+      "source": "d142499363aa301f",
+      "output": "8b5d8e14ec97e09f"
+    },
+    "shell.paletteCommands.page.overviewOn": {
+      "source": "2f0c89681fa45961",
+      "output": "3438dc4431fee032"
+    },
+    "shell.paletteCommands.page.properties": {
+      "source": "f5a6e5250422beb2",
+      "output": "fc8f80f112b137d2"
+    },
+    "shell.paletteCommands.page.propertiesKeywords": {
+      "source": "b7f50aa52258accb",
+      "output": "ac6b049bfff136d0"
+    },
+    "shell.paletteCommands.page.rename": {
+      "source": "c5877deeae81a5f7",
+      "output": "13c3ff26c48c0de8"
+    },
+    "shell.paletteCommands.page.renameKeywords": {
+      "source": "51fc799504847382",
+      "output": "557004718950e7a3"
+    },
+    "shell.paletteCommands.page.render": {
+      "source": "50fa7f925d7088e7",
+      "output": "3cb5b6b90d29e3a4"
+    },
+    "shell.paletteCommands.page.renderKeywords": {
+      "source": "d66309313293febb",
+      "output": "94ab7217476d8cd3"
+    },
+    "shell.paletteCommands.page.replaceCover": {
+      "source": "9ec72bc9c00dda19",
+      "output": "fd4c37ca5cf29131"
+    },
+    "shell.paletteCommands.page.restore": {
+      "source": "7226c48a28382163",
+      "output": "b6a41e3cb325346f"
+    },
+    "shell.paletteCommands.page.restoreKeywords": {
+      "source": "29dda86c15438e22",
+      "output": "34bab27d27781323"
+    },
+    "shell.paletteCommands.page.share": {
+      "source": "b909b4b71080adbf",
+      "output": "a8f3a49dacd5889c"
+    },
+    "shell.paletteCommands.page.shareKeywords": {
+      "source": "54d749fd5a5c0aed",
+      "output": "b4cf0b264e6363bf"
+    },
+    "shell.paletteCommands.page.template": {
+      "source": "068825be1f234475",
+      "output": "e7480b9544959b88"
+    },
+    "shell.paletteCommands.page.templateKeywords": {
+      "source": "de20dad1a3966083",
+      "output": "b35f16e3a560a968"
+    },
+    "shell.paletteCommands.page.uploadFile": {
+      "source": "2a8706e1cc6b7c8c",
+      "output": "eafa13fc6809b127"
+    },
+    "shell.paletteCommands.page.uploadFileKeywords": {
+      "source": "4b392d07c90dbb7d",
+      "output": "5e95602e0c5709aa"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -105795,6 +107943,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "f04824fd0d1f89bc"
+    },
+    "shell.paletteCommands.workspace.switch": {
+      "source": "b18e7b2f701373be",
+      "output": "0bdb4abeb7f25c67"
+    },
+    "shell.paletteCommands.workspace.switchKeywords": {
+      "source": "2362f6373a056e85",
+      "output": "4c9c7f0269e05747"
     },
     "shell.presenceAvatars.label": {
       "source": "332b120b31602c0a",

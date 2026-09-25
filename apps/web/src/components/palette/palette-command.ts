@@ -3,11 +3,20 @@ import { type UserRole, type WorkspaceRole } from '@exocortex/contracts';
 /**
  * Which heading a command stands under in the palette.
  *
- * Four and not one: once the palette can open forty places, "Aktionen" above
- * all of them says nothing about what Enter will do. Going somewhere, changing
- * a setting and doing something are three different promises.
+ * Several and not one: once the palette can open forty places, "Aktionen"
+ * above all of them says nothing about what Enter will do. Acting on the open
+ * page, making something new, going somewhere and changing a setting are
+ * different promises. The order here is the order of the headings.
  */
-export type PaletteGroup = 'navigation' | 'settings' | 'actions' | 'view';
+export const PALETTE_GROUPS = [
+  'page',
+  'create',
+  'actions',
+  'view',
+  'navigation',
+  'settings',
+] as const;
+export type PaletteGroup = (typeof PALETTE_GROUPS)[number];
 
 interface PaletteCommandBase {
   /** Stable, and unique across every provider: it is the row's React key. */
@@ -32,7 +41,10 @@ export interface PaletteLinkCommand extends PaletteCommandBase {
   href: string;
 }
 
-/** A command that does something here, without leaving the page. */
+/**
+ * A command that does something here, without leaving the page. It runs once
+ * the palette has closed and handed focus back, so it may move focus itself.
+ */
 export interface PaletteRunCommand extends PaletteCommandBase {
   run: () => void;
 }

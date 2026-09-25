@@ -113,6 +113,8 @@
     "columnUpdated": "Gewijzigd"
   },
   "command": {
+    "groupPage": "Deze pagina",
+    "groupCreate": "Maken",
     "groupActions": "Acties",
     "groupView": "Weergave",
     "groupNavigation": "Ga naar",
@@ -120,9 +122,6 @@
     "groupSavedQueries": "Opgeslagen zoekopdrachten",
     "groupRecent": "Recent bewerkt",
     "groupPages": "Pagina’s",
-    "createPage": "Nieuwe pagina maken",
-    "createPageKeywords": "maken schrijven",
-    "untitledPage": "Naamloze pagina",
     "minimumLength": "Typ minimaal twee tekens voor pagina’s",
     "empty": "Niets gevonden",
     "readout": "{count, plural, one {# resultaat} other {# resultaten}} · {tookMs} ms · {adapter}",

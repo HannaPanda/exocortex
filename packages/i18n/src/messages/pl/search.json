@@ -113,6 +113,8 @@
     "columnUpdated": "Zmodyfikowano"
   },
   "command": {
+    "groupPage": "Ta strona",
+    "groupCreate": "Utwórz",
     "groupActions": "Działania",
     "groupView": "Widok",
     "groupNavigation": "Przejdź do",
@@ -120,9 +122,6 @@
     "groupSavedQueries": "Zapisane wyszukiwania",
     "groupRecent": "Ostatnio edytowane",
     "groupPages": "Strony",
-    "createPage": "Utwórz nową stronę",
-    "createPageKeywords": "utwórz stwórz napisz",
-    "untitledPage": "Strona bez tytułu",
     "minimumLength": "Wpisz co najmniej dwa znaki, aby szukać stron",
     "empty": "Nic nie znaleziono",
     "readout": "{count, plural, one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}} · {tookMs} ms · {adapter}",

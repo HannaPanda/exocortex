@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from '@exocortex/ui';
 
+import { usePaletteRequest } from '@/components/palette/palette-requests';
 import { useUpdateDocument } from '@/lib/api/document-queries';
 
 import {
@@ -450,6 +451,9 @@ export function PageIconButton({
 }: PageIconControlProps & { readOnly: boolean }) {
   const t = useTranslations('document.iconPicker');
   const updateDocument = useUpdateDocument(workspaceId);
+  const [open, setOpen] = React.useState(false);
+  // "Symbol ändern" from the palette opens this same picker.
+  usePaletteRequest('change-icon', () => setOpen(true), !readOnly);
 
   const icon = (
     <DocumentIcon
@@ -470,6 +474,8 @@ export function PageIconButton({
         icon={document.icon}
         iconColor={document.iconColor}
         type={document.type}
+        open={open}
+        onOpenChange={setOpen}
         onSelect={(selection) => {
           void updateDocument.mutateAsync({ documentId: document.id, request: selection });
         }}
@@ -496,12 +502,16 @@ export function PageIconButton({
 export function PageIconAddButton({ workspaceId, document }: PageIconControlProps) {
   const t = useTranslations('document.iconPicker');
   const updateDocument = useUpdateDocument(workspaceId);
+  const [open, setOpen] = React.useState(false);
+  usePaletteRequest('change-icon', () => setOpen(true));
 
   return (
     <PageIconPicker
       icon={document.icon}
       iconColor={document.iconColor}
       type={document.type}
+      open={open}
+      onOpenChange={setOpen}
       onSelect={(selection) => {
         void updateDocument.mutateAsync({ documentId: document.id, request: selection });
       }}

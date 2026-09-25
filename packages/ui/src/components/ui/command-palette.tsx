@@ -60,6 +60,12 @@ export interface CommandPaletteProps {
   placeholder?: string;
   emptyLabel?: string;
   footer?: React.ReactNode;
+  /**
+   * Called once the palette has finished closing and handed focus back. An
+   * action that moves focus itself (a title field, a popover) has to wait for
+   * this, or the dialog returns focus to where it was opened and undoes it.
+   */
+  onClosed?: () => void;
 }
 
 /**
@@ -78,6 +84,7 @@ export function CommandPalette({
   placeholder,
   emptyLabel,
   footer,
+  onClosed,
 }: CommandPaletteProps) {
   const t = useTranslations('ui.commandPalette');
   // The active item is tracked by id, not by index: when the result list changes
@@ -127,7 +134,13 @@ export function CommandPalette({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={(nowOpen) => {
+        if (!nowOpen) onClosed?.();
+      }}
+    >
       <DialogContent
         className="top-24 max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
         showCloseButton={false}

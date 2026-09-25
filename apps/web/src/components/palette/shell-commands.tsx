@@ -1,12 +1,59 @@
 'use client';
 
-import { InboxIcon, PanelLeftIcon, PanelRightIcon, Trash2Icon } from 'lucide-react';
+import {
+  ActivityIcon,
+  ExpandIcon,
+  FocusIcon,
+  InboxIcon,
+  LinkIcon,
+  MessageSquareIcon,
+  MessageSquarePlusIcon,
+  PanelLeftIcon,
+  PanelRightIcon,
+  SettingsIcon,
+  SparklesIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
+
+import { type ContextTab } from '@/components/shell/context-panel';
 
 import { keywordsOf, type PaletteCommand } from './palette-command';
 
 const ICON = 'size-4 text-muted-foreground';
+
+/**
+ * Opening the context panel at one of its tabs. Only the assistant makes sense
+ * off a page, and the panel drops its tab bar there (`ContextPanel`).
+ */
+const CONTEXT_TAB_COMMANDS: readonly {
+  tab: ContextTab;
+  key: 'Ai' | 'Properties' | 'Comments' | 'Backlinks' | 'Activity';
+  icon: React.ComponentType<{ className?: string }>;
+  needsPage: boolean;
+}[] = [
+  { tab: 'ai', key: 'Ai', icon: SparklesIcon, needsPage: false },
+  { tab: 'comments', key: 'Comments', icon: MessageSquareIcon, needsPage: true },
+  { tab: 'backlinks', key: 'Backlinks', icon: LinkIcon, needsPage: true },
+  { tab: 'activity', key: 'Activity', icon: ActivityIcon, needsPage: true },
+  { tab: 'properties', key: 'Properties', icon: SettingsIcon, needsPage: true },
+];
+
+export interface ShellCommandInput {
+  hasWorkspace: boolean;
+  hasDocument: boolean;
+  sidebarOpen: boolean;
+  contextOpen: boolean;
+  onOpenCapture: () => void;
+  onToggleSidebar: () => void;
+  onToggleContext: () => void;
+  onOpenContextTab: (tab: ContextTab) => void;
+  onNewChat: () => void;
+  onFocus: () => void;
+  onOpenTrash: () => void;
+  t: ReturnType<typeof useTranslations<'shell.paletteCommands'>>;
+}
 
 /**
  * The shell's own commands, for the palette (issue #115).
@@ -21,37 +68,20 @@ const ICON = 'size-4 text-muted-foreground';
  * to live inside the page tree, so it could only be opened while the navigation
  * was on screen.
  */
-export function shellCommands({
-  hasWorkspace,
-  sidebarOpen,
-  contextOpen,
-  onOpenCapture,
-  onToggleSidebar,
-  onToggleContext,
-  onOpenTrash,
-  t,
-}: {
-  hasWorkspace: boolean;
-  sidebarOpen: boolean;
-  contextOpen: boolean;
-  onOpenCapture: () => void;
-  onToggleSidebar: () => void;
-  onToggleContext: () => void;
-  onOpenTrash: () => void;
-  t: ReturnType<typeof useTranslations<'shell.paletteCommands'>>;
-}): PaletteCommand[] {
+export function shellCommands(input: ShellCommandInput): PaletteCommand[] {
+  const { hasWorkspace, sidebarOpen, contextOpen, t } = input;
   const commands: PaletteCommand[] = [];
 
   if (hasWorkspace) {
     commands.push({
       id: 'command-capture',
-      group: 'actions',
+      group: 'create',
       idle: true,
       label: t('capture'),
       hint: t('captureHint'),
       icon: <InboxIcon className={ICON} />,
       keywords: keywordsOf(t('captureKeywords')),
-      run: onOpenCapture,
+      run: input.onOpenCapture,
     });
   }
 
@@ -70,7 +100,7 @@ export function shellCommands({
       hint: t('sidebarHint'),
       icon: <PanelLeftIcon className={ICON} />,
       keywords: keywordsOf(t('sidebarKeywords')),
-      run: onToggleSidebar,
+      run: input.onToggleSidebar,
     });
   }
 
@@ -82,7 +112,7 @@ export function shellCommands({
     hint: t('contextHint'),
     icon: <PanelRightIcon className={ICON} />,
     keywords: keywordsOf(t('contextKeywords')),
-    run: onToggleContext,
+    run: input.onToggleContext,
   });
 
   if (hasWorkspace) {
@@ -93,7 +123,70 @@ export function shellCommands({
       label: t('openTrash'),
       icon: <Trash2Icon className={ICON} />,
       keywords: keywordsOf(t('trashKeywords')),
-      run: onOpenTrash,
+      run: input.onOpenTrash,
+    });
+  }
+
+  return [...commands, ...panelCommands(input)];
+}
+
+/**
+ * A new chat, the context panel at a named tab, and the two ways to give the
+ * page the whole screen.
+ */
+function panelCommands(input: ShellCommandInput): PaletteCommand[] {
+  const { hasWorkspace, hasDocument, sidebarOpen, contextOpen, t } = input;
+  const commands: PaletteCommand[] = [];
+
+  // A conversation belongs to a workspace, so outside one there is nothing to
+  // start it in.
+  if (hasWorkspace) {
+    commands.push({
+      id: 'command-new-chat',
+      group: 'create',
+      label: t('newChat'),
+      icon: <MessageSquarePlusIcon className={ICON} />,
+      keywords: keywordsOf(t('newChatKeywords')),
+      run: input.onNewChat,
+    });
+  }
+
+  for (const entry of CONTEXT_TAB_COMMANDS) {
+    if (entry.needsPage && !hasDocument) continue;
+    commands.push({
+      id: `command-context-${entry.tab}`,
+      group: 'view',
+      label: t(`context${entry.key}`),
+      icon: <entry.icon className={ICON} />,
+      keywords: keywordsOf(t(`context${entry.key}Keywords`)),
+      run: () => input.onOpenContextTab(entry.tab),
+    });
+  }
+
+  // Both panels away at once. Only offered while one of them is there,
+  // because otherwise it would do nothing.
+  if (sidebarOpen || contextOpen) {
+    commands.push({
+      id: 'command-focus',
+      group: 'view',
+      label: t('focus'),
+      icon: <FocusIcon className={ICON} />,
+      keywords: keywordsOf(t('focusKeywords')),
+      run: input.onFocus,
+    });
+  }
+
+  if (typeof document !== 'undefined' && document.fullscreenEnabled) {
+    commands.push({
+      id: 'command-fullscreen',
+      group: 'view',
+      label: t('fullscreen'),
+      icon: <ExpandIcon className={ICON} />,
+      keywords: keywordsOf(t('fullscreenKeywords')),
+      run: () => {
+        if (document.fullscreenElement === null) void document.documentElement.requestFullscreen();
+        else void document.exitFullscreen();
+      },
     });
   }
 

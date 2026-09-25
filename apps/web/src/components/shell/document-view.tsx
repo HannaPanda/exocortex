@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -12,10 +13,13 @@ import { PageIconAddButton, PageIconButton } from '@/components/document/page-ic
 import { PageOverview } from '@/components/document/page-overview';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
+import { usePageBodyCommands } from '@/components/palette/page-commands';
+import { useAskPalette } from '@/components/palette/palette-requests';
 import { PageRenderDialog } from '@/components/render/page-render-dialog';
-import { useDocument, useUpdateDocument } from '@/lib/api/document-queries';
+import { useCreateDocument, useDocument, useUpdateDocument } from '@/lib/api/document-queries';
 import { useExportMarkdown } from '@/lib/api/markdown-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
+import { documentHref } from '@/lib/document-href';
 
 import { useDocumentSession } from './document-session';
 import { DocumentTitleInput } from './document-title-input';
@@ -33,14 +37,60 @@ interface DocumentViewProps {
  */
 export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const t = useTranslations('document.view');
+  const tTree = useTranslations('shell.pageTree');
+  const router = useRouter();
   const session = useSessionQuery();
   const document = useDocument(documentId);
   const updateDocument = useUpdateDocument(workspaceId);
+  const createDocument = useCreateDocument(workspaceId);
   const exportMarkdown = useExportMarkdown();
+  const askPalette = useAskPalette();
 
   const [importOpen, setImportOpen] = React.useState(false);
   const [propertiesOpen, setPropertiesOpen] = React.useState(false);
   const [renderOpen, setRenderOpen] = React.useState(false);
+
+  const downloadMarkdown = async (): Promise<void> => {
+    const result = await exportMarkdown.mutateAsync(documentId);
+    const blob = new Blob([result.markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = window.document.createElement('a');
+    anchor.href = url;
+    anchor.download = result.filename;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // What the palette can do to this page (issue #148). Before the early
+  // returns, because it is a hook; it offers nothing until the page is loaded.
+  usePageBodyCommands(document.data, {
+    ask: askPalette,
+    setLayout: (layout) => void updateDocument.mutateAsync({ documentId, request: { layout } }),
+    setOverview: (on) =>
+      void updateDocument.mutateAsync({
+        documentId,
+        request: { overviewMode: on ? 'auto' : 'off' },
+      }),
+    openProperties: () => setPropertiesOpen(true),
+    createChild: (type) => {
+      void createDocument
+        .mutateAsync({
+          title: type === 'COLLECTION' ? tTree('untitledDatabase') : tTree('untitledPage'),
+          type,
+          parentId: documentId,
+        })
+        .then((child) => router.push(documentHref(workspaceId, child.id, type)));
+    },
+    copyLink: () => {
+      const type = document.data?.type ?? 'PAGE';
+      void window.navigator.clipboard.writeText(
+        `${window.location.origin}${documentHref(workspaceId, documentId, type)}`,
+      );
+    },
+    exportMarkdown: () => void downloadMarkdown(),
+    openRender: () => setRenderOpen(true),
+    openImport: () => setImportOpen(true),
+  });
 
   // Published for the AI panel: a database page means nothing without the view
   // its rows are being read through. Only the full-page database does this; an
@@ -108,17 +158,6 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
       />
     </>
   );
-
-  const downloadMarkdown = async (): Promise<void> => {
-    const result = await exportMarkdown.mutateAsync(documentId);
-    const blob = new Blob([result.markdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = window.document.createElement('a');
-    anchor.href = url;
-    anchor.download = result.filename;
-    anchor.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">

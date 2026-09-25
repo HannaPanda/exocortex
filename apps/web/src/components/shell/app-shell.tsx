@@ -21,6 +21,8 @@ import {
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { LocaleSync } from '@/components/locale-sync';
+import { PaletteContributionsProvider } from '@/components/palette/contributions';
+import { PaletteRequestsProvider, useAskPalette } from '@/components/palette/palette-requests';
 import { usePaletteCommands } from '@/components/palette/registry';
 import { shellCommands } from '@/components/palette/shell-commands';
 import { SearchCommand } from '@/components/search/search-command';
@@ -32,7 +34,7 @@ import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider'
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
-import { ContextPanel } from './context-panel';
+import { ContextPanel, type ContextTab } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
@@ -57,7 +59,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <DocumentSessionProvider>
       <AiSelectionProvider>
         <CommentAnchorProvider>
-          <AppShellInner>{children}</AppShellInner>
+          <PaletteRequestsProvider>
+            <PaletteContributionsProvider>
+              <AppShellInner>{children}</AppShellInner>
+            </PaletteContributionsProvider>
+          </PaletteRequestsProvider>
         </CommentAnchorProvider>
       </AiSelectionProvider>
     </DocumentSessionProvider>
@@ -105,6 +111,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   // The trash used to live inside the page tree, so it existed only while the
   // navigation was open. It is a workspace-wide sheet like the two above.
   const [trashOpen, setTrashOpen] = React.useState(false);
+  // Held here rather than in the panel, so the palette can open it at a tab.
+  const [contextTab, setContextTab] = React.useState<ContextTab>('ai');
+  const askPalette = useAskPalette();
 
   const sidebarOpen = sidebar.open;
   const contextOpen = context.open;
@@ -227,15 +236,42 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     () =>
       shellCommands({
         hasWorkspace: workspaceId !== null,
+        hasDocument: documentId !== null,
         sidebarOpen,
         contextOpen,
         onOpenCapture: () => setCaptureOpen(true),
         onToggleSidebar: () => setSidebarOpen(!sidebarOpen),
         onToggleContext: () => setContextOpen(!contextOpen),
+        onOpenContextTab: (tab) => {
+          setContextTab(tab);
+          if (!contextOpen) setContextOpen(true);
+        },
+        onNewChat: () => {
+          setContextTab('ai');
+          if (!contextOpen) setContextOpen(true);
+          askPalette('new-chat');
+        },
+        onFocus: () => {
+          setSidebar({ ...sidebar, open: false });
+          setContext({ ...context, open: false });
+        },
         onOpenTrash: () => setTrashOpen(true),
         t: tCommands,
       }),
-    [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, tCommands, workspaceId],
+    [
+      askPalette,
+      context,
+      contextOpen,
+      documentId,
+      setContext,
+      setContextOpen,
+      setSidebar,
+      setSidebarOpen,
+      sidebar,
+      sidebarOpen,
+      tCommands,
+      workspaceId,
+    ],
   );
   const paletteCommands = usePaletteCommands({
     workspaceId,
@@ -344,7 +380,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             <SheetContent side="right" data-testid="context-panel">
               <SheetTitle className="exocortex-sr-only">{t('contextTitle')}</SheetTitle>
               <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
-                <ContextPanel workspaceId={workspaceId} documentId={documentId} />
+                <ContextPanel
+                  workspaceId={workspaceId}
+                  documentId={documentId}
+                  tab={contextTab}
+                  onTabChange={setContextTab}
+                />
               </aside>
             </SheetContent>
           </Sheet>
@@ -360,7 +401,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             data-testid="context-panel"
           >
             <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
-              <ContextPanel workspaceId={workspaceId} documentId={documentId} />
+              <ContextPanel
+                workspaceId={workspaceId}
+                documentId={documentId}
+                tab={contextTab}
+                onTabChange={setContextTab}
+              />
             </aside>
           </ResizablePanel>
         ) : null}

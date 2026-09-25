@@ -113,6 +113,8 @@
     "columnUpdated": "Geändert"
   },
   "command": {
+    "groupPage": "Diese Seite",
+    "groupCreate": "Erstellen",
     "groupActions": "Aktionen",
     "groupView": "Ansicht",
     "groupNavigation": "Gehe zu",
@@ -120,9 +122,6 @@
     "groupSavedQueries": "Gespeicherte Suchen",
     "groupRecent": "Zuletzt bearbeitet",
     "groupPages": "Seiten",
-    "createPage": "Neue Seite anlegen",
-    "createPageKeywords": "erstellen schreiben",
-    "untitledPage": "Unbenannte Seite",
     "minimumLength": "Für Seiten mindestens zwei Zeichen eingeben",
     "empty": "Nichts gefunden",
     "readout": "{count, plural, one {# Treffer} other {# Treffer}} · {tookMs} ms · {adapter}",

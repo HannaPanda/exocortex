@@ -25,6 +25,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { usePaletteRequest } from '@/components/palette/palette-requests';
 import { useGenerateDocumentCover, useUploadDocumentCover } from '@/lib/api/cover-queries';
 import { useUpdateDocument } from '@/lib/api/document-queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
@@ -76,6 +77,15 @@ function useCoverPicker(workspaceId: string, documentId: string) {
   );
 
   return { input, choose: () => inputRef.current?.click(), upload };
+}
+
+/**
+ * "Titelbild hochladen" and "Titelbild erzeugen" from the palette reach the
+ * same file input and prompt dialog as the buttons.
+ */
+function useCoverRequests(choose: () => void, openPrompt: () => void, enabled: boolean): void {
+  usePaletteRequest('upload-cover', choose, enabled);
+  usePaletteRequest('generate-cover', openPrompt, enabled);
 }
 
 /**
@@ -200,6 +210,7 @@ export function PageCoverAddButton({
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
   const generation = useCoverGeneration(documentId);
   const [promptOpen, setPromptOpen] = React.useState(false);
+  useCoverRequests(choose, () => setPromptOpen(true), true);
 
   // Hidden until the page is hovered, so an empty page carries no control for
   // something it does not have. A touch device has no hover to give, so there
@@ -282,6 +293,7 @@ export function PageCover({
   const updateDocument = useUpdateDocument(workspaceId);
   const generation = useCoverGeneration(documentId);
   const [promptOpen, setPromptOpen] = React.useState(false);
+  useCoverRequests(choose, () => setPromptOpen(true), !readOnly);
 
   // Non-null means "repositioning": the draft is what the page shows, and the
   // stored position is what it falls back to on cancel.

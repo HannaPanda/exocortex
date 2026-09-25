@@ -6,11 +6,14 @@ import * as React from 'react';
 import { type UserRole } from '@exocortex/contracts';
 
 import { useSettingGroupLabel } from '@/components/settings/setting-copy';
-import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
+import { useWorkspaceDetail, useWorkspaces } from '@/lib/api/workspace-queries';
 
+import { usePaletteContributions } from './contributions';
+import { useCreateCommands } from './create-commands';
 import { navigationCommands } from './navigation-commands';
 import { type PaletteCommand, type PaletteContext } from './palette-command';
 import { settingsCommands } from './settings-commands';
+import { workspaceCommands } from './workspace-commands';
 
 /**
  * Everything the command palette offers besides pages and saved searches.
@@ -20,7 +23,9 @@ import { settingsCommands } from './settings-commands';
  * place, a setting group or an action adds a provider module beside these, or
  * entries to one of them; nothing here grows except the list below. The
  * shell's commands arrive ready-made, because the panels and dialogs they
- * open live in `AppShell` and the palette only lists them.
+ * open live in `AppShell` and the palette only lists them. The open page's
+ * and the open database's arrive the same way, through
+ * `usePaletteContribution` in the component that owns their dialogs.
  *
  * What is enforced: every screen in `apps/web/src/app` is either opened by a
  * command in `navigation-commands.tsx` or excused in
@@ -40,7 +45,11 @@ export function usePaletteCommands({
 }): PaletteCommand[] {
   const tNavigation = useTranslations('shell.paletteCommands.navigation');
   const tSettings = useTranslations('shell.paletteCommands.settings');
+  const tWorkspace = useTranslations('shell.paletteCommands.workspace');
   const groupLabel = useSettingGroupLabel();
+  const create = useCreateCommands(workspaceId);
+  const contributed = usePaletteContributions();
+  const workspaces = useWorkspaces();
   // Usually in the cache already: the workspace switcher and the settings
   // page ask for the same row.
   const detail = useWorkspaceDetail(workspaceId ?? undefined);
@@ -49,9 +58,25 @@ export function usePaletteCommands({
   return React.useMemo(() => {
     const context: PaletteContext = { workspaceId, documentId, role, workspaceRole };
     return [
+      ...contributed,
+      ...create,
       ...shell,
       ...navigationCommands(context, tNavigation),
+      ...workspaceCommands(context, workspaces.data ?? [], tWorkspace),
       ...settingsCommands(context, tSettings, groupLabel),
     ];
-  }, [documentId, groupLabel, role, shell, tNavigation, tSettings, workspaceId, workspaceRole]);
+  }, [
+    contributed,
+    create,
+    documentId,
+    groupLabel,
+    role,
+    shell,
+    tNavigation,
+    tSettings,
+    tWorkspace,
+    workspaceId,
+    workspaceRole,
+    workspaces.data,
+  ]);
 }

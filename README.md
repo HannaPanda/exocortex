@@ -85,10 +85,13 @@ What is deliberately still missing is listed under
   where to find it, marks what is newer than the reader's own marker, and is
   kept complete by a hard gate that refuses a tool, screen or automation
   trigger nobody described (ADR-040)
-- a command palette: `Strg + K` searches pages and saved searches and opens
+- a command palette: `Strg + K` searches pages and saved searches, opens
   every place by name, from the chats to a single settings group, with
-  generous search words ("modell", "connector", "sprache"); a hard gate
-  refuses a screen nobody can open from it (issue #148)
+  generous search words ("modell", "connector", "sprache"), and runs what
+  makes sense on the open surface: the page's actions (rename, symbol, cover,
+  width, overview, move, share), creating pages, databases and chats, the
+  context panel at a tab, a database's rows and views, switching workspace; a
+  hard gate refuses a screen nobody can open from it (issue #148)
 - sharing a single page outward (ADR-044): an unguessable read-only link, or a
   grant to another account that reads or writes without becoming a member of
   anything, for one page or the branch below it, optionally with an expiry and

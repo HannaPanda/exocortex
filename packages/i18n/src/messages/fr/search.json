@@ -113,6 +113,8 @@
     "columnUpdated": "Modifié"
   },
   "command": {
+    "groupPage": "Cette page",
+    "groupCreate": "Créer",
     "groupActions": "Actions",
     "groupView": "Affichage",
     "groupNavigation": "Aller à",
@@ -120,9 +122,6 @@
     "groupSavedQueries": "Recherches enregistrées",
     "groupRecent": "Récemment modifiées",
     "groupPages": "Pages",
-    "createPage": "Créer une nouvelle page",
-    "createPageKeywords": "créer écrire",
-    "untitledPage": "Page sans titre",
     "minimumLength": "Saisis au moins deux caractères pour les pages",
     "empty": "Rien trouvé",
     "readout": "{count, plural, one {# résultat} many {# de résultats} other {# résultats}} · {tookMs} ms · {adapter}",

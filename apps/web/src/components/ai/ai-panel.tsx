@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { usePaletteRequest } from '@/components/palette/palette-requests';
 import { useDocumentSession } from '@/components/shell/document-session';
 import {
   useAiConversation,
@@ -150,6 +151,9 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     createConversation,
     setActiveConversationId,
   ]);
+
+  // "Neuer Chat" from the palette, which also opens the panel this is in.
+  usePaletteRequest('new-chat', () => void startNewConversation(), workspaceId !== null);
 
   const pinnedSources = usePinnedSources({
     conversationId: activeConversationId,
