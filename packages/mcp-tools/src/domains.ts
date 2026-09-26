@@ -169,6 +169,21 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'workitem',
     ],
   },
+  attention: {
+    label: 'Was auf einen Menschen wartet: Rückfragen, Entscheidungen, Freigaben, Prüfungen.',
+    keywords: [
+      'aufmerksamkeit',
+      'rückfrag',
+      'rueckfrag',
+      'nachfragen',
+      'entscheidung',
+      'wartet auf mich',
+      'wartet auf dich',
+      'braucht mich',
+      'exo_attention',
+      'attention',
+    ],
+  },
   shares: {
     label: 'Freigaben und öffentliche Links.',
     keywords: ['freigab', 'freigeb', 'teilen', 'geteilt', 'share', 'öffentlicher link', 'zugriff'],

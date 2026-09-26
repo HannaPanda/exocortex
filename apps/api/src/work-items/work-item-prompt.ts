@@ -47,7 +47,7 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
     [
       'So hältst du den Auftrag aktuell:',
       `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${input.id}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, und setze status auf review.`,
-      '- Brauchst du eine Entscheidung oder Information von einem Menschen, setze status auf waiting_for_human und nenne in statusReason, worauf du wartest.',
+      `- Brauchst du eine Entscheidung oder Information von einem Menschen, frag mit exo_attention_request (workItemId ${input.id}): mit options für eine Wahl, ohne für eine Antwort in Worten. Der Auftrag wartet dann von selbst, und die Antwort steht später in seiner Historie. Beende danach diesen Lauf, statt auf die Antwort zu warten.`,
       '- Zwischenstände kannst du mit exo_work_item_note festhalten.',
     ].join('\n'),
   );

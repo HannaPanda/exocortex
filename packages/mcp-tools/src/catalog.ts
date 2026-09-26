@@ -3,6 +3,7 @@ import { AGENT_MESSAGE_TOOLS } from './tools/agent-messages.js';
 import { AGENT_SESSION_TOOLS } from './tools/agent-sessions.js';
 import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
+import { ATTENTION_TOOLS } from './tools/attention.js';
 import { AUTOMATION_TOOLS } from './tools/automations.js';
 import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
@@ -58,6 +59,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...SEARCH_TOOLS,
   ...SAVED_QUERY_TOOLS,
   ...WORK_ITEM_TOOLS,
+  ...ATTENTION_TOOLS,
   ...WEB_TOOLS,
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,
