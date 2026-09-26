@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { type ChangesetChangeStatus,changesetStatusOf } from './changesets';
+import { type ChangesetChangeStatus, changesetStatusOf } from './changesets';
 
 describe('changesetStatusOf', () => {
   const cases: [boolean, ChangesetChangeStatus[], string][] = [
