@@ -6,26 +6,28 @@ outlives the runs that attempt it.
 
 ## Where things are
 
-| Piece         | Location                                                                                  |
-| ------------- | ----------------------------------------------------------------------------------------- |
-| Tables        | `work_item`, `work_item_event`, `work_item_ref`, `ai_run.workItemId` (`schema.prisma`)    |
-| Wire contract | `packages/contracts/src/work-items.ts`                                                    |
-| REST          | `apps/api/src/work-items/` (controller, service, pure update planner, mapper, run prompt) |
-| Tools         | `packages/mcp-tools/src/tools/work-items.ts`, domain `workItems`                          |
-| Browser       | `apps/web/src/components/work-items/`, routes `/arbeitsbereich/:id/auftraege[/:itemId]`   |
-| Words         | `packages/i18n/src/messages/de/workItems.json`, feature entry `auftraege`                 |
+| Piece         | Location                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| Tables        | `work_item`, `work_item_event`, `work_item_ref`, `work_item_checkpoint`, `ai_run.workItemId` (`schema.prisma`) |
+| Wire contract | `packages/contracts/src/work-items.ts`                                                                         |
+| REST          | `apps/api/src/work-items/` (controller, service, pure update planner, mapper, run prompt)                      |
+| Tools         | `packages/mcp-tools/src/tools/work-items.ts`, domain `workItems`                                               |
+| Browser       | `apps/web/src/components/work-items/`, routes `/arbeitsbereich/:id/auftraege[/:itemId]`                        |
+| Words         | `packages/i18n/src/messages/de/workItems.json`, feature entry `auftraege`                                      |
 
 ## Routes
 
-| Route                                 | What                                                                                                                                                            |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/workspaces/:id/work-items`  | list; `status`, `assignee` (`me`, `assistant`, `nobody`, id), `requester` (`me`, id), `parentId` (`root`, id), `open` (`true` default, `false`, `all`), `limit` |
-| `POST /api/workspaces/:id/work-items` | create; the caller is the requester                                                                                                                             |
-| `GET /api/work-items/:id`             | detail with refs, children, runs, budget and history                                                                                                            |
-| `PATCH /api/work-items/:id`           | partial update; `null` clears, the ref lists replace                                                                                                            |
-| `POST /api/work-items/:id/notes`      | a note in the history                                                                                                                                           |
-| `POST /api/work-items/:id/runs`       | an attempt by the built-in AI in a conversation of its own                                                                                                      |
-| `DELETE /api/work-items/:id`          | for good; requester or workspace admin                                                                                                                          |
+| Route                                  | What                                                                                                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/workspaces/:id/work-items`   | list; `status`, `assignee` (`me`, `assistant`, `nobody`, id), `requester` (`me`, id), `parentId` (`root`, id), `open` (`true` default, `false`, `all`), `limit` |
+| `POST /api/workspaces/:id/work-items`  | create; the caller is the requester                                                                                                                             |
+| `GET /api/work-items/:id`              | detail with refs, children, runs, budget and history                                                                                                            |
+| `PATCH /api/work-items/:id`            | partial update; `null` clears, the ref lists replace                                                                                                            |
+| `POST /api/work-items/:id/notes`       | a note in the history                                                                                                                                           |
+| `POST /api/work-items/:id/runs`        | an attempt by the built-in AI in a conversation of its own                                                                                                      |
+| `DELETE /api/work-items/:id`           | for good; requester or workspace admin                                                                                                                          |
+| `GET /api/work-items/:id/checkpoints`  | the recorded working states, newest first (`limit`, default 20)                                                                                                 |
+| `POST /api/work-items/:id/checkpoints` | record where the work stands; fields left out carry the previous state forward                                                                                  |
 
 ## Rules worth knowing before changing anything
 
@@ -48,7 +50,9 @@ outlives the runs that attempt it.
 - **An answer can carry a paused run on** (issue #140, ADR-068). The one
   other place the status moves by itself is `WorkItemResumeService`, which
   makes exactly the move `startRun` makes (`queued` to `working`) when it
-  posts the answers into the paused run's conversation. It only resumes work
+  posts the answers into the paused run's conversation, or, when that
+  conversation is gone, starts a new run from the newest working state
+  (issue #142). It only resumes work
   the assistant holds. `run_resumed` and `resume_failed` are its history
   lines; `reportingInstructions` in `work-item-prompt.ts` is shared with the
   resume message, so a change to how a run reports back reaches both.
@@ -57,6 +61,32 @@ outlives the runs that attempt it.
   `syncAfterTransition` or `transitionWorkItem` inside its transaction; a new
   path that moves the status without them leaves an item open that should be
   settled, or none where one should be.
+
+## Working states (issue #142, ADR-069)
+
+A checkpoint is where one piece of work stands: summary, plan with each step's
+status, assumptions, findings, last action, next step, the pages made and used
+(each at its revision), the decisions open at the time, the budget and the
+model. The newest row is the state; rows are never edited.
+
+- **Recording carries forward.** `recordWorkCheckpoint` in
+  `packages/database/src/work-checkpoints.ts` is the one writer the API and the
+  worker share. What a caller leaves out is copied from the previous row, so a
+  new field in the state is a member of `workCheckpointStateSchema` with a
+  default, a line in `mergeCheckpointState`, and nothing else on the writing
+  side.
+- **eXocortex writes two kinds itself.** `WorkItemQuestionsService.raiseRequest`
+  writes `waiting_for_human` when a question the work waits on is raised, and
+  the maintenance task `checkpoint-interrupted-runs` writes `run_interrupted`
+  for the latest run of open work that ended failed, timed out or cancelled.
+  Both are `system`; neither ever writes a plan of its own.
+- **A run starts from the newest by default.** `startRun` asks
+  `WorkItemCheckpointsService.resumeSection` for the words and puts them into
+  the first message (`work-item-checkpoint-prompt.ts`). Decisions settled since
+  are worded by the same `toResumeAnswers` the in-place resume uses, so the two
+  paths cannot drift. `fromCheckpoint: 'none'` is the way to start clean.
+- **Not memory.** Nothing here goes into the memory workspace and nothing there
+  comes back here; a checkpoint is deleted with its work item.
 
 ## Adding a capability
 

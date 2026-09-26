@@ -659,6 +659,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the signed `runId` claim of the service token, never from a request. An
   approval is bound to page revisions (`yjsUpdatedAt`) and an answer after a
   page moved approves nothing.
+- ADR-069: a working state is recorded, not reconstructed from a transcript.
+  `WorkItemCheckpoint` rows are never edited and a record carries the previous
+  one forward (`recordWorkCheckpoint`, one writer for the API and the worker);
+  eXocortex adds `waiting_for_human` when a blocking question is raised and
+  `run_interrupted` from a sweep when a run ends unfinished. A new run starts
+  from the newest by default, told the decisions settled since, so it may be
+  another model without the old conversation. Pages carry their revision.
+  Not memory: nothing crosses into the memory workspace.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

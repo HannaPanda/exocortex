@@ -172,6 +172,11 @@ What is deliberately still missing is listed under
   left; an approval names its action and is bound to the pages it is about at
   the revision the agent read, so an answer after a page moved approves
   nothing (ADR-068)
+- working states of delegated work: the plan, what is done and left,
+  assumptions, findings and the pages made, recorded by the agent after each
+  step and by eXocortex when work waits on a person or a run ends unfinished;
+  the next run carries on from the newest one, with another model if need be,
+  told every decision since instead of reading the old transcript (ADR-069)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
   (ADR-038), which fire a signed webhook, an AI prompt, or the page by mail to
   the person who wrote the rule and to nobody else (ADR-054)
