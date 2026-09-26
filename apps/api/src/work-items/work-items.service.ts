@@ -33,8 +33,8 @@ import {
   type WorkItemEventDraft,
 } from './work-item-changes';
 import {
-  PARTICIPANT_TO_PRISMA,
   parseCriteria,
+  PARTICIPANT_TO_PRISMA,
   PRIORITY_TO_PRISMA,
   STATUS_TO_PRISMA,
   toWorkItemDetail,

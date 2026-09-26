@@ -34,10 +34,10 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { RenderModule } from './render/render.module';
 import { ResearchModule } from './research/research.module';
 import { SavedQueriesModule } from './saved-queries/saved-queries.module';
-import { WorkItemsModule } from './work-items/work-items.module';
 import { SearchModule } from './search/search.module';
 import { SharesModule } from './shares/shares.module';
 import { TemplatesModule } from './templates/templates.module';
+import { WorkItemsModule } from './work-items/work-items.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
