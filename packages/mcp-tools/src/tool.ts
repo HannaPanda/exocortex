@@ -41,6 +41,7 @@ export const TOOL_DOMAINS = [
   'attachments',
   'templates',
   'savedQueries',
+  'workItems',
   'shares',
   'entities',
   'memory',

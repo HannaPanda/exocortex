@@ -142,6 +142,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_saved_query_delete',
       'exo_user_delete',
       'exo_user_set_disabled',
+      'exo_work_item_delete',
       'exo_workspace_rename',
     ]);
   });
@@ -163,7 +164,9 @@ describe('EXOCORTEX_TOOLS', () => {
     // and a LaTeX preamble somebody spent an afternoon on is not something the
     // trash holds a copy of. Creating a share is the one entry here that
     // deletes nothing (issue #83): a public address is out the moment it is
-    // made, and revoking it afterwards does not unread the page.
+    // made, and revoking it afterwards does not unread the page. A work item
+    // is (issue #138): its history goes with it, and cancelling it is the
+    // reversible way to end one.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
@@ -176,6 +179,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_render_template_delete',
       'exo_share_create',
       'exo_user_delete',
+      'exo_work_item_delete',
     ]);
   });
 

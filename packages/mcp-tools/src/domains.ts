@@ -156,6 +156,19 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
     label: 'Gespeicherte Suchen, Smart Views, Abfrageblöcke.',
     keywords: ['gespeicherte suche', 'smart view', 'abfrage', 'saved query', 'suchblock'],
   },
+  workItems: {
+    label: 'Aufträge: delegierte Arbeit mit Ziel, Status, Bearbeiter, Ergebnis und Läufen.',
+    keywords: [
+      'auftrag',
+      'aufträg',
+      'auftraeg',
+      'delegier',
+      'akzeptanzkriter',
+      'work item',
+      'work_item',
+      'workitem',
+    ],
+  },
   shares: {
     label: 'Freigaben und öffentliche Links.',
     keywords: ['freigab', 'freigeb', 'teilen', 'geteilt', 'share', 'öffentlicher link', 'zugriff'],
