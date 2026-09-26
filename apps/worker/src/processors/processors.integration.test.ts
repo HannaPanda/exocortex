@@ -158,7 +158,7 @@ function toolCapableModelRow(slug: string): ResolvedModelRow {
  * and a test about it says so.
  */
 function stubToolRunner(
-  responses: readonly { text: string; isError: boolean; refused?: boolean }[],
+  responses: readonly { text: string; isError: boolean; refused?: boolean; pausesRun?: boolean }[],
 ): ToolRunner {
   let callIndex = 0;
   // The real ledger, so the diagnosis an aborted run reports is built from
@@ -183,7 +183,12 @@ function stubToolRunner(
         resultText: response.text,
         comparable: !response.isError,
       });
-      return { text: response.text, isError: response.isError, refused: response.refused ?? false };
+      return {
+        text: response.text,
+        isError: response.isError,
+        refused: response.refused ?? false,
+        ...(response.pausesRun === true ? { pausesRun: true } : {}),
+      };
     },
   };
 }
@@ -3634,6 +3639,51 @@ describe('conversation-backed tool loop', () => {
     );
     expect(finalAssistantMessage).toBeDefined();
     expect(finalAssistantMessage?.content).toBe(run.resultText);
+  }, 60_000);
+
+  it('ends the run after a blocking human checkpoint instead of asking the model again (issue #140)', async () => {
+    const conversationId = await createConversation();
+    const runId = await createConversationRun({
+      conversationId,
+      content: 'Bitte [[call:exo_test_tool]] ausführen',
+    });
+    let providerCalls = 0;
+    class CountingProvider extends MockAiProvider {
+      override stream(request: Parameters<MockAiProvider['stream']>[0]) {
+        providerCalls += 1;
+        return super.stream(request);
+      }
+    }
+    const counting = new CountingProvider({ chunkDelayMs: 0 });
+
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(counting),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings({ 'ai.maxToolIterations': 4 }),
+      toolRunnerFactory: () =>
+        stubToolRunner([{ text: 'Gefragt, der Auftrag wartet.', isError: false, pausesRun: true }]),
+      visionPreprocessorFor: () => null,
+      queues,
+      modelRegistry: async () => toolCapableModelRow('test-tool-model'),
+    });
+
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-tool-pause-1', runId, workspaceId, userId }).context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.toolIterations).toBe(1);
+    expect(providerCalls).toBe(1);
+    const toolMessages = await prisma.aiConversationMessage.findMany({
+      where: { conversationId, role: 'TOOL' },
+    });
+    expect(toolMessages.map((message) => message.content)).toEqual([
+      'Gefragt, der Auftrag wartet.',
+    ]);
   }, 60_000);
 
   it('fails with ai_tool_limit_exceeded once the iteration cap is reached', async () => {

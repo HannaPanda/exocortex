@@ -155,6 +155,14 @@ export interface ToolResult {
   /** Structured payload, mirrored into MCP `structuredContent`. */
   data?: unknown;
   isError?: boolean;
+  /**
+   * True when this call made the work wait on a person (issue #140): a
+   * blocking human checkpoint. The built-in loop ends the run after the turn
+   * instead of going on, so no worker sits open waiting for an answer that
+   * may take days; the answer carries the work on in a new run. An external
+   * client has no loop of ours and is told so in `text`.
+   */
+  pausesRun?: boolean;
 }
 
 /** Existential wrapper so a heterogeneous catalogue stays typed without `any`. */

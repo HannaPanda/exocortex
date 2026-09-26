@@ -121,12 +121,20 @@ export interface ToolRunner {
    * instead of only the limit it hit.
    */
   tallies(): ToolCallTally[];
-  run(input: { name: string; argumentsJson: string; correlationId: string }): Promise<{
-    text: string;
-    isError: boolean;
-    /** `true` when the trust boundary refused the call; nothing was executed. */
-    refused: boolean;
-  }>;
+  run(input: {
+    name: string;
+    argumentsJson: string;
+    correlationId: string;
+  }): Promise<ToolCallOutcome>;
+}
+
+export interface ToolCallOutcome {
+  text: string;
+  isError: boolean;
+  /** `true` when the trust boundary refused the call; nothing was executed. */
+  refused: boolean;
+  /** `true` when the call raised a blocking human checkpoint (issue #140). */
+  pausesRun?: boolean;
 }
 
 export interface CreateToolRunnerInput {
@@ -257,8 +265,8 @@ function bookCall(
   logger: Logger,
   name: string,
   argumentsJson: string,
-  result: { text: string; isError: boolean; refused: boolean },
-): { text: string; isError: boolean; refused: boolean } {
+  result: ToolCallOutcome,
+): ToolCallOutcome {
   const mutating = findTool(name)?.mutating ?? true;
   const verdict = ledger.record({
     name,
@@ -331,7 +339,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     name: string,
     argumentsJson: string,
     correlationId: string,
-  ): Promise<{ text: string; isError: boolean; refused: boolean }> {
+  ): Promise<ToolCallOutcome> {
     const tool = findTool(name);
     if (tool === null) {
       return { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false };
@@ -423,7 +431,12 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
           refused: false,
         };
       }
-      return { text: truncate(result.text), isError, refused: false };
+      return {
+        text: truncate(result.text),
+        isError,
+        refused: false,
+        ...(result.pausesRun === true && !isError ? { pausesRun: true } : {}),
+      };
     } catch (error) {
       if (error instanceof ExocortexApiError) {
         return {

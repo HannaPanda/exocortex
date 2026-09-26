@@ -43,14 +43,21 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
     sections.push(`Hinweise für diesen Versuch:\n${input.instructions}`);
   }
 
-  sections.push(
-    [
-      'So hältst du den Auftrag aktuell:',
-      `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${input.id}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, und setze status auf review.`,
-      `- Brauchst du eine Entscheidung, eine Freigabe oder eine Information von einem Menschen, frag mit exo_attention_request (workItemId ${input.id}): mit options für eine Wahl, ohne für eine Antwort in Worten, bei einer Freigabe mit action und den betroffenen Seiten als subjectPages. Halte in workState fest, was erledigt ist und was danach kommt. Der Auftrag wartet dann, dieser Lauf endet, und die Antwort setzt die Arbeit in diesem Chat fort.`,
-      '- Zwischenstände kannst du mit exo_work_item_note festhalten.',
-    ].join('\n'),
-  );
+  sections.push(reportingInstructions(input.id));
 
   return sections.join('\n\n');
+}
+
+/**
+ * How a run keeps the item current. Shared with the message that carries a
+ * paused run on (issue #140), because the resumed run has to be told the same
+ * rules the first one was.
+ */
+export function reportingInstructions(workItemId: string): string {
+  return [
+    'So hältst du den Auftrag aktuell:',
+    `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${workItemId}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, und setze status auf review.`,
+    `- Brauchst du eine Entscheidung, eine Freigabe oder eine Information von einem Menschen, frag mit exo_attention_request (workItemId ${workItemId}): mit options für eine Wahl, ohne für eine Antwort in Worten, bei einer Freigabe mit action und den betroffenen Seiten als subjectPages. Halte in workState fest, was erledigt ist und was danach kommt. Der Auftrag wartet dann, dieser Lauf endet, und die Antwort setzt die Arbeit in diesem Chat fort.`,
+    '- Zwischenstände kannst du mit exo_work_item_note festhalten.',
+  ].join('\n');
 }

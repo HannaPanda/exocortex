@@ -52,6 +52,11 @@ function item(overrides: Record<string, unknown> = {}) {
       { id: 'return', label: null },
     ],
     noteMode: 'optional',
+    blocking: true,
+    context: null,
+    action: null,
+    workState: null,
+    subject: null,
     settledAt: null,
     settledBy: null,
     resolution: null,
@@ -102,6 +107,56 @@ describe('attention tools', () => {
       path: '/api/workspaces/ws12345678/attention',
       body: { kind: 'decision', options: [{ id: 'global' }, { id: 'workspace' }] },
     });
+  });
+
+  it('pauses the run on a blocking question about work, and only then (issue #140)', async () => {
+    const blocking = createFakeClient({
+      attentionItem: item({ kind: 'information', system: false, options: [] }),
+    });
+    const paused = await attentionRequestTool.run(blocking.client, {
+      workspaceId: 'ws12345678',
+      kind: 'information',
+      title: 'Wohin damit?',
+      workItemId: 'item1234567',
+      workState: 'Entwurf steht.',
+    });
+    expect(paused.pausesRun).toBe(true);
+    expect(paused.text).toContain('Beende diesen Lauf');
+    expect(blocking.calls[0]?.body).toMatchObject({ workState: 'Entwurf steht.' });
+
+    const loose = createFakeClient({
+      attentionItem: item({ kind: 'information', system: false, options: [], blocking: false }),
+    });
+    const going = await attentionRequestTool.run(loose.client, {
+      workspaceId: 'ws12345678',
+      kind: 'information',
+      title: 'Nebenbei',
+      workItemId: 'item1234567',
+      blocking: false,
+    });
+    expect(going.pausesRun).toBe(false);
+  });
+
+  it('shows what an approval is bound to and that the page has moved since', async () => {
+    const { client } = createFakeClient({
+      attentionItems: [
+        item({
+          kind: 'approval',
+          system: false,
+          options: [{ id: 'yes', label: 'Ja' }],
+          action: 'Seite leeren',
+          subject: [
+            { documentId: 'doc12345678', revision: NOW, title: 'Altlasten', changed: true },
+          ],
+        }),
+      ],
+      openCounts: COUNTS,
+      truncated: false,
+    });
+    const result = await attentionListTool.run(client, {});
+    expect(result.text).toContain('Freizugebende Aktion: Seite leeren');
+    expect(result.text).toContain('Altlasten (id: doc12345678, Revision');
+    expect(result.text).toContain('seitdem geändert');
   });
 
   it('resolves with an option and a note', async () => {

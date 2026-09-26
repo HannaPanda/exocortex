@@ -108,6 +108,11 @@ export interface RunOutcome {
  * the tool loop all read and write. They used to be locals of one 626-line
  * closure, which is how one function ended up with 81 independent paths.
  */
+/** What a call the model made after a blocking checkpoint in the same turn answers. */
+const PAUSED_CALL_TEXT =
+  'Nicht ausgeführt: der Auftrag wartet auf die Antwort auf deine Rückfrage. Die Antwort setzt ' +
+  'die Arbeit in einem neuen Lauf fort.';
+
 class RunExecution {
   private readonly input: RunExecutionInput;
   private readonly runDeadline: number;
@@ -129,6 +134,13 @@ class RunExecution {
   /** Exchanges with the provider so far; names the turn spans (issue #57). */
   private turns = 0;
   private failure: RunFailure | null = null;
+  /**
+   * Set when a tool call raised a blocking human checkpoint (issue #140). The
+   * run ends after the turn, as completed: it did what it could and now waits
+   * on a person, and an answer starts the next run rather than this worker
+   * staying open for it.
+   */
+  private paused = false;
   private toolIterations = 0;
   private spentMicroUsd = 0;
   private truncationRetries = 0;
@@ -589,6 +601,10 @@ class RunExecution {
 
     const toolMessages = await this.runToolCalls(runnable);
     if (this.failure !== null) return false;
+    if (this.paused) {
+      this.input.logger.info('Run paused on a human checkpoint', { runId: run.id });
+      return false;
+    }
 
     this.providerMessages = [
       ...this.providerMessages,
@@ -620,11 +636,18 @@ class RunExecution {
       const target = toolCallTarget(call.name, call.argumentsJson);
       await this.publishToolCall(call.name, 'started', target);
 
-      const result = await runner!.run({
-        name: call.name,
-        argumentsJson: call.argumentsJson,
-        correlationId: payload.correlationId,
-      });
+      // Whatever the model meant to do after asking waits for the answer too:
+      // a write queued behind a request for approval is exactly the write the
+      // approval is about (issue #140). Every call still gets its tool
+      // message, or the transcript would hold a call without a result.
+      const result = this.paused
+        ? { text: PAUSED_CALL_TEXT, isError: true, refused: true }
+        : await runner!.run({
+            name: call.name,
+            argumentsJson: call.argumentsJson,
+            correlationId: payload.correlationId,
+          });
+      if (result.pausesRun === true) this.paused = true;
 
       await prisma.aiConversationMessage.create({
         data: {

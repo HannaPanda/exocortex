@@ -186,7 +186,7 @@ export const attentionRequestTool: AnyToolDefinition = defineTool({
       responseSchema: attentionItemResponseSchema,
     });
     const item = result.attentionItem;
-    const waits = item.blocking && item.workItem !== null;
+    const waits = item.blocking && item.workItem !== null && item.status === 'open';
     return {
       text: waits
         ? `Gefragt: ${item.title} (id: ${item.id}). Der Auftrag wartet jetzt auf die Antwort. ` +
@@ -194,6 +194,7 @@ export const attentionRequestTool: AnyToolDefinition = defineTool({
         : `Gefragt: ${item.title} (id: ${item.id}). Die Antwort kommt später; ` +
           'exo_attention_get liest sie.',
       data: result,
+      pausesRun: waits,
     };
   },
 });

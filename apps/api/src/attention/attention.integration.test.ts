@@ -15,6 +15,7 @@ import { AppError } from '../common/app-error';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';
 import { WorkItemQuestionsService } from '../work-items/work-item-questions.service';
+import { WorkItemResumeService } from '../work-items/work-item-resume.service';
 import { WorkItemsService } from '../work-items/work-items.service';
 
 import { AttentionService } from './attention.service';
@@ -106,6 +107,7 @@ beforeAll(async () => {
     realtime,
     workItems,
     new WorkItemQuestionsService(prisma, workItems),
+    new WorkItemResumeService(prisma, workItems, conversations),
   );
 
   const suffix = Date.now().toString(36);
@@ -691,5 +693,243 @@ describe('AttentionService checkpoints', () => {
       'review',
     );
     expect(await openFor(item.id)).toHaveLength(1);
+  });
+});
+
+/**
+ * Carrying the work on (issue #140, ADR-068): the answer a paused run waited
+ * for is posted into that run's conversation and starts the next run, once
+ * nothing else holds the work up.
+ */
+describe('AttentionService resume', () => {
+  async function pausedRun(workItemId: string) {
+    const conversation = await prisma.aiConversation.create({
+      data: { workspaceId, createdById: ownerId, title: 'Auftragslauf' },
+    });
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: ownerId,
+        provider: 'mock',
+        model: 'mock/model',
+        messages: [],
+        conversationId: conversation.id,
+        workItemId,
+        status: 'COMPLETED',
+      },
+    });
+    return { conversationId: conversation.id, runId: run.id };
+  }
+
+  function assistant(runId: string): WorkItemActor {
+    return { kind: 'assistant', userId: ownerId, agentLabel: null, runId };
+  }
+
+  async function runsAfter(conversationId: string, pausedRunId: string) {
+    return prisma.aiRun.findMany({
+      where: { conversationId, id: { not: pausedRunId } },
+      select: { id: true, messages: true, workItemId: true },
+    });
+  }
+
+  function contentOf(run: { messages: unknown }): string {
+    const [first] = run.messages as { content: string }[];
+    return first?.content ?? '';
+  }
+
+  it('posts the answer and the working state into the paused conversation', async () => {
+    const item = await createItem('Gliederung');
+    await setStatus(item.id, 'working');
+    const paused = await pausedRun(item.id);
+    const asked = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: {
+        kind: 'decision',
+        title: 'Kurz oder lang?',
+        options: [
+          { id: 'short', label: 'Kurz' },
+          { id: 'long', label: 'Lang' },
+        ],
+        workItemId: item.id,
+        workState: 'Einleitung steht, Hauptteil fehlt.',
+      },
+      correlationId,
+    });
+    expect(asked.attentionItem.run?.id).toBe(paused.runId);
+
+    const answered = await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { optionId: 'long', note: 'Mit Beispielen' },
+      correlationId,
+    });
+
+    const [resumed] = await runsAfter(paused.conversationId, paused.runId);
+    expect(resumed).toBeDefined();
+    expect(resumed!.workItemId).toBe(item.id);
+    const text = contentOf(resumed!);
+    expect(text).toContain('Gewählt: Lang (long)');
+    expect(text).toContain('Antwort: Mit Beispielen');
+    expect(text).toContain('Einleitung steht, Hauptteil fehlt.');
+    expect(answered.attentionItem.resolution?.resumedRunId).toBe(resumed!.id);
+
+    const after = await workItems.get({ workItemId: item.id, userId: ownerId });
+    expect(after.workItem.status).toBe('working');
+    expect(after.workItem.events.map((event) => event.kind)).toContain('run_resumed');
+  });
+
+  it('waits for the last blocking answer and then hands over all of them', async () => {
+    const item = await createItem('Zwei Fragen');
+    await setStatus(item.id, 'working');
+    const paused = await pausedRun(item.id);
+    const first = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: { kind: 'information', title: 'Welche Zielgruppe?', workItemId: item.id },
+      correlationId,
+    });
+    const second = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: { kind: 'information', title: 'Welcher Ton?', workItemId: item.id },
+      correlationId,
+    });
+
+    await attention.resolve({
+      attentionItemId: first.attentionItem.id,
+      actor: human(ownerId),
+      request: { note: 'Einsteiger' },
+      correlationId,
+    });
+    expect(await runsAfter(paused.conversationId, paused.runId)).toHaveLength(0);
+
+    await attention.resolve({
+      attentionItemId: second.attentionItem.id,
+      actor: human(ownerId),
+      request: { note: 'Freundlich' },
+      correlationId,
+    });
+    const runs = await runsAfter(paused.conversationId, paused.runId);
+    expect(runs).toHaveLength(1);
+    expect(contentOf(runs[0]!)).toContain('Einsteiger');
+    expect(contentOf(runs[0]!)).toContain('Freundlich');
+  });
+
+  it('tells the run that a stale approval approved nothing', async () => {
+    const page = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Zu löschen',
+        orderKey: 'a0',
+        createdById: ownerId,
+        updatedById: ownerId,
+        content: { create: { yjsState: Buffer.from([0, 0]) } },
+      },
+    });
+    const item = await createItem('Löschen');
+    await setStatus(item.id, 'working');
+    const paused = await pausedRun(item.id);
+    const asked = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: {
+        kind: 'approval',
+        title: 'Darf ich löschen?',
+        action: 'Seite „Zu löschen“ leeren',
+        options: [{ id: 'yes', label: 'Ja' }],
+        workItemId: item.id,
+        subjectPages: [{ documentId: page.id }],
+      },
+      correlationId,
+    });
+    await prisma.documentContent.update({
+      where: { documentId: page.id },
+      data: { yjsUpdatedAt: new Date(Date.now() + 60_000) },
+    });
+    await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { optionId: 'yes' },
+      correlationId,
+    });
+    const [resumed] = await runsAfter(paused.conversationId, paused.runId);
+    expect(contentOf(resumed!)).toContain('Nicht freigegeben');
+    expect(contentOf(resumed!)).not.toContain('expectedYjsUpdatedAt:');
+  });
+
+  it('records a refused resume and leaves the work in the queue', async () => {
+    const item = await createItem('Ohne Budget');
+    await workItems.update({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { budgetMicroUsd: 1 },
+      correlationId,
+    });
+    await setStatus(item.id, 'working');
+    const paused = await pausedRun(item.id);
+    await prisma.aiRun.update({ where: { id: paused.runId }, data: { providerCostMicroUsd: 5 } });
+    const asked = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: { kind: 'information', title: 'Weiter?', workItemId: item.id },
+      correlationId,
+    });
+    const answered = await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { note: 'Ja' },
+      correlationId,
+    });
+    expect(answered.attentionItem.resolution?.resumeError).toBe('work_item_budget_exhausted');
+    expect(await runsAfter(paused.conversationId, paused.runId)).toHaveLength(0);
+    const after = await workItems.get({ workItemId: item.id, userId: ownerId });
+    expect(after.workItem.status).toBe('queued');
+    expect(after.workItem.events.map((event) => event.kind)).toContain('resume_failed');
+  });
+
+  it('carries a returned review on in the run that asked for it', async () => {
+    const item = await createItem('Rückgabe');
+    await setStatus(item.id, 'working');
+    const paused = await pausedRun(item.id);
+    const asked = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: { kind: 'review', title: 'Fertig zur Prüfung', workItemId: item.id },
+      correlationId,
+    });
+    await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { optionId: 'return', note: 'Fazit fehlt' },
+      correlationId,
+    });
+    const [resumed] = await runsAfter(paused.conversationId, paused.runId);
+    expect(contentOf(resumed!)).toContain('zurückgegeben (return)');
+    expect(contentOf(resumed!)).toContain('Fazit fehlt');
+  });
+
+  it('leaves work a person holds to that person', async () => {
+    const item = await createItem('Menschensache');
+    await workItems.update({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { assignee: { kind: 'human', userId: ownerId }, status: 'working' },
+      correlationId,
+    });
+    const paused = await pausedRun(item.id);
+    const asked = await attention.request({
+      workspaceId,
+      actor: assistant(paused.runId),
+      request: { kind: 'information', title: 'Frage', workItemId: item.id },
+      correlationId,
+    });
+    await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { note: 'Antwort' },
+      correlationId,
+    });
+    expect(await runsAfter(paused.conversationId, paused.runId)).toHaveLength(0);
   });
 });

@@ -27,6 +27,7 @@ import { RealtimeService } from '../realtime/realtime.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';
 import { PARTICIPANT_TO_PRISMA, PRIORITY_TO_PRISMA } from '../work-items/work-item-mapper';
 import { WorkItemQuestionsService } from '../work-items/work-item-questions.service';
+import { WorkItemResumeService } from '../work-items/work-item-resume.service';
 import { WorkItemsService } from '../work-items/work-items.service';
 
 import {
@@ -114,8 +115,9 @@ function requestDraft(
     options,
     noteMode: NOTE_MODE_TO_PRISMA[noteMode],
     // Only work can wait (issue #140): a question about nothing in particular
-    // has nothing to pause and nothing to carry on.
-    blocking: target.workItem === null ? false : (request.blocking ?? true),
+    // has nothing to pause and nothing to carry on, and a conflict is about
+    // pages rather than about the work going on.
+    blocking: target.workItem !== null && request.kind !== 'conflict' && (request.blocking ?? true),
     context: request.context ?? null,
     action: request.action ?? null,
     workState: request.workState ?? null,
@@ -138,6 +140,7 @@ export class AttentionService {
     private readonly realtime: RealtimeService,
     private readonly workItems: WorkItemsService,
     private readonly questions: WorkItemQuestionsService,
+    private readonly resume: WorkItemResumeService,
   ) {}
 
   async list(input: { userId: string; query: ListAttentionQuery }): Promise<AttentionListResponse> {
@@ -299,7 +302,18 @@ export class AttentionService {
       if (!settled) throw new AppError('attention_item_settled', 'The item is already settled');
       await this.announce(row.workspaceId, [row.id], 'settled', input.correlationId);
     }
+    await this.carryOn(row, actor, input.correlationId);
     return this.get({ attentionItemId: row.id, userId: actor.userId });
+  }
+
+  /**
+   * The answer is in; if it paused a run, the run goes on (issue #140). Only
+   * for an item a run raised on a work item: a question from an external
+   * agent is read back by that agent, and one about no work has no run.
+   */
+  private async carryOn(row: AttentionRow, actor: WorkItemActor, correlationId: string) {
+    if (row.aiRun === null || row.workItem === null) return;
+    await this.resume.afterAnswer({ attentionItemId: row.id, actor, correlationId });
   }
 
   /**
@@ -387,6 +401,8 @@ export class AttentionService {
         blocking: row.blocking,
         correlationId,
       });
+      // The run hears that its approval went stale, and asks again or not.
+      await this.carryOn(row, actor, correlationId);
     }
     return this.get({ attentionItemId: row.id, userId: actor.userId });
   }

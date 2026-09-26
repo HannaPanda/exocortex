@@ -4,6 +4,7 @@ import { AiModule } from '../ai/ai.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
 import { WorkItemQuestionsService } from './work-item-questions.service';
+import { WorkItemResumeService } from './work-item-resume.service';
 import { WorkItemsController } from './work-items.controller';
 import { WorkItemsService } from './work-items.service';
 
@@ -17,7 +18,7 @@ import { WorkItemsService } from './work-items.service';
 @Module({
   imports: [AiModule, RealtimeModule],
   controllers: [WorkItemsController],
-  providers: [WorkItemsService, WorkItemQuestionsService],
-  exports: [WorkItemsService, WorkItemQuestionsService],
+  providers: [WorkItemsService, WorkItemQuestionsService, WorkItemResumeService],
+  exports: [WorkItemsService, WorkItemQuestionsService, WorkItemResumeService],
 })
 export class WorkItemsModule {}
