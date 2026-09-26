@@ -14,6 +14,7 @@ import { type ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';
+import { WorkItemCheckpointsService } from '../work-items/work-item-checkpoints.service';
 import { WorkItemQuestionsService } from '../work-items/work-item-questions.service';
 import { WorkItemResumeService } from '../work-items/work-item-resume.service';
 import { WorkItemsService } from '../work-items/work-items.service';
@@ -100,7 +101,13 @@ beforeAll(async () => {
     },
   } as unknown as ConversationsService;
 
-  workItems = new WorkItemsService(prisma, access, realtime, conversations);
+  workItems = new WorkItemsService(
+    prisma,
+    access,
+    realtime,
+    conversations,
+    new WorkItemCheckpointsService(prisma, access, realtime),
+  );
   attention = new AttentionService(
     prisma,
     access,
@@ -561,6 +568,18 @@ describe('AttentionService checkpoints', () => {
     expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
       'waiting_for_human',
     );
+    // Only the question the work waits on records where it stands (issue #142).
+    const recorded = await prisma.workItemCheckpoint.findMany({
+      where: { workItemId: item.id },
+      select: { trigger: true, system: true, pendingAttentionIds: true },
+    });
+    expect(recorded).toEqual([
+      {
+        trigger: 'WAITING_FOR_HUMAN',
+        system: true,
+        pendingAttentionIds: expect.arrayContaining([blocking.attentionItem.id]),
+      },
+    ]);
 
     await attention.resolve({
       attentionItemId: blocking.attentionItem.id,

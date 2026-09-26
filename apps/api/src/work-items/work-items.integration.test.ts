@@ -10,6 +10,7 @@ import { AppError } from '../common/app-error';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { type WorkItemActor } from './work-item-actor';
+import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { WorkItemsService } from './work-items.service';
 
 /**
@@ -27,6 +28,7 @@ const correlationId = 'test-correlation';
 
 let prisma: PrismaClient;
 let service: WorkItemsService;
+let checkpoints: WorkItemCheckpointsService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -87,7 +89,8 @@ beforeAll(async () => {
     },
   } as unknown as ConversationsService;
 
-  service = new WorkItemsService(prisma, access, realtime, conversations);
+  checkpoints = new WorkItemCheckpointsService(prisma, access, realtime);
+  service = new WorkItemsService(prisma, access, realtime, conversations, checkpoints);
 
   const suffix = Date.now().toString(36);
   const owner = await prisma.user.create({
@@ -368,5 +371,157 @@ describe('WorkItemsService', () => {
 
     const removed = await service.remove({ workItemId: parent.id, userId: ownerId, correlationId });
     expect(removed).toEqual({ deleted: true, detachedChildren: 1 });
+  });
+});
+
+describe('work checkpoints (issue #142)', () => {
+  async function promptOf(runId: string): Promise<string> {
+    const run = await prisma.aiRun.findUniqueOrThrow({
+      where: { id: runId },
+      select: { messages: true },
+    });
+    return JSON.stringify(run.messages);
+  }
+
+  it('needs a summary first, then carries every left-out field forward', async () => {
+    const item = await createItem('Recherche');
+    await expect(
+      checkpoints.record({
+        workItemId: item.id,
+        actor: human(ownerId),
+        request: { trigger: 'step', plan: [{ text: 'Lesen', status: 'open' }] },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'work_checkpoint_summary_required' });
+
+    await prisma.documentContent.create({
+      data: { documentId: pageId, yjsState: Buffer.from([0, 0]) },
+    });
+    const first = await checkpoints.record({
+      workItemId: item.id,
+      actor: { kind: 'agent', userId: ownerId, agentLabel: 'claude-code' },
+      request: {
+        trigger: 'step',
+        summary: 'Zwei von drei Quellen gelesen.',
+        plan: [
+          { text: 'Quellen lesen', status: 'in_progress' },
+          { text: 'Zusammenfassen', status: 'open' },
+        ],
+        findings: ['A widerspricht B.'],
+        sourceDocumentIds: [pageId],
+      },
+      correlationId,
+    });
+    expect(first.checkpoint.author.kind).toBe('agent');
+    expect(first.checkpoint.refs).toMatchObject([
+      { documentId: pageId, role: 'source', changedSince: false },
+    ]);
+
+    const second = await checkpoints.record({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: {
+        trigger: 'pause',
+        plan: [
+          { text: 'Quellen lesen', status: 'done' },
+          { text: 'Zusammenfassen', status: 'open' },
+        ],
+      },
+      correlationId,
+    });
+    expect(second.checkpoint.summary).toBe('Zwei von drei Quellen gelesen.');
+    expect(second.checkpoint.findings).toEqual(['A widerspricht B.']);
+    expect(second.checkpoint.refs).toHaveLength(1);
+    expect(second.checkpoint.plan[0]?.status).toBe('done');
+
+    // The page moves on; the checkpoint remembers the revision it saw.
+    await prisma.documentContent.update({
+      where: { documentId: pageId },
+      data: { yjsUpdatedAt: new Date(Date.now() + 60_000) },
+    });
+    const listed = await checkpoints.list({
+      workItemId: item.id,
+      userId: ownerId,
+      query: { limit: 20 },
+    });
+    expect(listed.total).toBe(2);
+    expect(listed.checkpoints[0]?.id).toBe(second.checkpoint.id);
+    expect(listed.checkpoints[0]?.refs[0]?.changedSince).toBe(true);
+
+    const detail = await service.get({ workItemId: item.id, userId: ownerId });
+    expect(detail.workItem.checkpointCount).toBe(2);
+    expect(detail.workItem.events.map((event) => event.kind)).toContain('checkpoint_recorded');
+  });
+
+  it('starts a run from the newest checkpoint, or from the goal when asked', async () => {
+    const item = await createItem('Fortsetzen');
+    const recorded = await checkpoints.record({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: {
+        trigger: 'step',
+        summary: 'Gliederung steht, Kapitel 2 fehlt.',
+        nextStep: 'Kapitel 2 schreiben',
+      },
+      correlationId,
+    });
+
+    const resumed = await service.startRun({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { modelSlug: 'other/model' },
+      correlationId,
+    });
+    expect(resumed.checkpointId).toBe(recorded.checkpoint.id);
+    const prompt = await promptOf(resumed.run.id);
+    expect(prompt).toContain('Gliederung steht, Kapitel 2 fehlt.');
+    expect(prompt).toContain('Kapitel 2 schreiben');
+    const started = resumed.workItem.events.find((event) => event.kind === 'run_started');
+    expect(started?.data.checkpointId).toBe(recorded.checkpoint.id);
+
+    const fresh = await service.startRun({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { fromCheckpoint: 'none' },
+      correlationId,
+    });
+    expect(fresh.checkpointId).toBeNull();
+    expect(await promptOf(fresh.run.id)).not.toContain('Gliederung steht');
+
+    await expect(
+      service.startRun({
+        workItemId: item.id,
+        actor: human(ownerId),
+        request: { fromCheckpoint: 'nosuchcheckpoint' },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'work_checkpoint_not_found' });
+  });
+
+  it('keeps checkpoints of a closed item and refuses new ones', async () => {
+    const item = await createItem('Fertig');
+    await checkpoints.record({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { trigger: 'step', summary: 'Alles erledigt.' },
+      correlationId,
+    });
+    await service.update({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { status: 'done' },
+      correlationId,
+    });
+    await expect(
+      checkpoints.record({
+        workItemId: item.id,
+        actor: human(ownerId),
+        request: { trigger: 'step', summary: 'Noch was.' },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'work_item_closed' });
+    await expect(
+      checkpoints.list({ workItemId: item.id, userId: strangerId, query: { limit: 20 } }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 });

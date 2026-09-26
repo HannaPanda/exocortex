@@ -34,6 +34,7 @@ import {
   vacuumSearchIndex,
 } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
+import { checkpointInterruptedRuns } from './maintenance-tasks/work-checkpoints';
 
 export { pruneSnapshotIds } from './maintenance-tasks/snapshots';
 
@@ -113,12 +114,13 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'reap-render-jobs': reapRenderJobs,
   'reap-project-builds': reapProjectBuilds,
   'raise-run-failure-attention': raiseRunFailureAttention,
+  'checkpoint-interrupted-runs': checkpointInterruptedRuns,
 };
 
 /**
  * Maintenance processor.
  *
- * Twenty-nine unrelated sweeps share one queue and one schedule; what they have
+ * Thirty unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

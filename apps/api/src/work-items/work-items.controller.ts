@@ -9,14 +9,22 @@ import {
   createWorkItemRequestSchema,
   type DeleteWorkItemResponse,
   deleteWorkItemResponseSchema,
+  type ListWorkCheckpointsQuery,
+  listWorkCheckpointsQuerySchema,
   type ListWorkItemsQuery,
   listWorkItemsQuerySchema,
+  type RecordWorkCheckpointRequest,
+  recordWorkCheckpointRequestSchema,
   type StartWorkItemRunRequest,
   startWorkItemRunRequestSchema,
   type StartWorkItemRunResponse,
   startWorkItemRunResponseSchema,
   type UpdateWorkItemRequest,
   updateWorkItemRequestSchema,
+  type WorkCheckpointListResponse,
+  workCheckpointListResponseSchema,
+  type WorkCheckpointResponse,
+  workCheckpointResponseSchema,
   type WorkItemListResponse,
   workItemListResponseSchema,
   type WorkItemResponse,
@@ -28,6 +36,7 @@ import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { workItemActorOf } from './work-item-actor';
+import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { WorkItemsService } from './work-items.service';
 
 /**
@@ -41,7 +50,10 @@ import { WorkItemsService } from './work-items.service';
 @ApiTags('work-items')
 @Controller('api')
 export class WorkItemsController {
-  constructor(private readonly workItems: WorkItemsService) {}
+  constructor(
+    private readonly workItems: WorkItemsService,
+    private readonly checkpoints: WorkItemCheckpointsService,
+  ) {}
 
   @Get('workspaces/:workspaceId/work-items')
   @ApiQuery({ name: 'status', required: false, isArray: true })
@@ -139,6 +151,34 @@ export class WorkItemsController {
     @Body(zodPipe(startWorkItemRunRequestSchema)) body: StartWorkItemRunRequest,
   ): Promise<StartWorkItemRunResponse> {
     return this.workItems.startRun({
+      workItemId,
+      actor: workItemActorOf(session),
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Get('work-items/:workItemId/checkpoints')
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse({ schema: openApiResponseSchema(workCheckpointListResponseSchema) })
+  async listCheckpoints(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workItemId') workItemId: string,
+    @Query(zodPipe(listWorkCheckpointsQuerySchema)) query: ListWorkCheckpointsQuery,
+  ): Promise<WorkCheckpointListResponse> {
+    return this.checkpoints.list({ workItemId, userId: session.userId, query });
+  }
+
+  /** Where the work stands (issue #142); fields left out carry the previous state forward. */
+  @Post('work-items/:workItemId/checkpoints')
+  @ApiBody({ schema: openApiSchema(recordWorkCheckpointRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(workCheckpointResponseSchema) })
+  async recordCheckpoint(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workItemId') workItemId: string,
+    @Body(zodPipe(recordWorkCheckpointRequestSchema)) body: RecordWorkCheckpointRequest,
+  ): Promise<WorkCheckpointResponse> {
+    return this.checkpoints.record({
       workItemId,
       actor: workItemActorOf(session),
       request: body,

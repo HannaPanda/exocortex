@@ -46,7 +46,7 @@ const SYSTEM_OPTION_WORDS: Record<string, string> = {
   unblock: 'Hindernis beseitigt',
 };
 
-function answerLines(answer: ResumeAnswer): string[] {
+export function answerLines(answer: ResumeAnswer): string[] {
   const lines = [`Rückfrage „${answer.title}“ (${answer.kind}, id: ${answer.attentionItemId})`];
   if (answer.status === 'obsolete' && answer.obsoleteReason === 'subject_changed') {
     lines.push(

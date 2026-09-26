@@ -17,6 +17,8 @@ export interface WorkItemPromptInput {
   criteria: readonly WorkItemCriterion[];
   contextRefs: readonly WorkItemRef[];
   previousResult: string | null;
+  /** Where a recorded working state left the work (issue #142), already worded. */
+  checkpoint?: string | null;
   instructions: string | null;
 }
 
@@ -39,6 +41,8 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
     sections.push(`Bisheriges Ergebnis aus einem früheren Versuch:\n${input.previousResult}`);
   }
 
+  if (input.checkpoint != null) sections.push(input.checkpoint);
+
   if (input.instructions !== null && input.instructions.length > 0) {
     sections.push(`Hinweise für diesen Versuch:\n${input.instructions}`);
   }
@@ -58,6 +62,7 @@ export function reportingInstructions(workItemId: string): string {
     'So hältst du den Auftrag aktuell:',
     `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${workItemId}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, und setze status auf review.`,
     `- Brauchst du eine Entscheidung, eine Freigabe oder eine Information von einem Menschen, frag mit exo_attention_request (workItemId ${workItemId}): mit options für eine Wahl, ohne für eine Antwort in Worten, bei einer Freigabe mit action und den betroffenen Seiten als subjectPages. Halte in workState fest, was erledigt ist und was danach kommt. Der Auftrag wartet dann, dieser Lauf endet, und die Antwort setzt die Arbeit in diesem Chat fort.`,
-    '- Zwischenstände kannst du mit exo_work_item_note festhalten.',
+    `- Halte nach jedem größeren Arbeitsschritt und bevor du aufhörst deinen Arbeitsstand mit exo_work_item_checkpoint (workItemId ${workItemId}) fest: summary, plan mit status done/in_progress/open, Annahmen, Erkenntnisse, lastAction, nextStep und die erzeugten Seiten. Weggelassene Felder bleiben wie beim letzten Mal. Ein späterer Lauf, auch mit einem anderen Modell, setzt genau dort an.`,
+    '- Kurze Hinweise für Menschen kannst du mit exo_work_item_note in die Historie schreiben.',
   ].join('\n');
 }

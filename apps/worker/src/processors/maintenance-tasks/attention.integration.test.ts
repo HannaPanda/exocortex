@@ -114,6 +114,10 @@ describe('raiseRunFailureAttention', () => {
       reason: 'ai_timeout',
       system: true,
     });
-    expect(published).toHaveLength(1);
+    // The sweep is global; other suites running beside this one may have
+    // failed runs of their own, so only this workspace's events are counted.
+    expect(
+      published.filter((event) => (event as { workspaceId?: string }).workspaceId === workspaceId),
+    ).toHaveLength(1);
   });
 });

@@ -46,7 +46,7 @@ export const KIND_FROM_PRISMA: Record<PrismaKind, AttentionKind> = {
   INFORMATION: 'information',
 };
 
-const STATUS_FROM: Record<PrismaStatus, AttentionStatus> = {
+export const STATUS_FROM: Record<PrismaStatus, AttentionStatus> = {
   OPEN: 'open',
   RESOLVED: 'resolved',
   OBSOLETE: 'obsolete',

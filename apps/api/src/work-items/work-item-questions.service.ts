@@ -5,6 +5,7 @@ import {
   type AttentionKind as PrismaAttentionKind,
   type PrismaClient,
   raiseAttentionItems,
+  recordWorkCheckpoint,
 } from '@exocortex/database';
 
 import {
@@ -19,6 +20,7 @@ import { PRISMA } from '../platform/platform.module';
 import { type WorkItemActor } from './work-item-actor';
 import { transitionWorkItem, writeAnswerEvent } from './work-item-attention';
 import { writeEvents } from './work-item-events';
+import { PARTICIPANT_TO_PRISMA } from './work-item-mapper';
 import { WorkItemsService } from './work-items.service';
 
 /**
@@ -86,6 +88,22 @@ export class WorkItemQuestionsService {
         ],
         input.correlationId,
       );
+      // The work stops here until somebody answers: record where it stands
+      // (issue #142), with the asker's own words when it gave some.
+      if (waits) {
+        await recordWorkCheckpoint(tx, {
+          workItemId: existing.id,
+          aiRunId: input.actor.runId ?? null,
+          trigger: 'WAITING_FOR_HUMAN',
+          authorKind: PARTICIPANT_TO_PRISMA[input.actor.kind],
+          authorId: input.actor.userId,
+          agentLabel: input.actor.agentLabel,
+          system: true,
+          changes:
+            typeof input.draft.workState === 'string' ? { summary: input.draft.workState } : {},
+          correlationId: input.correlationId,
+        });
+      }
       if (waits && existing.status !== 'WAITING_FOR_HUMAN') {
         mergeChanges(
           changes,

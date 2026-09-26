@@ -89,6 +89,7 @@ export const EVENT_KIND_TO_PRISMA: Record<WorkItemEventKind, PrismaEventKind> = 
   attention_resolved: 'ATTENTION_RESOLVED',
   run_resumed: 'RUN_RESUMED',
   resume_failed: 'RESUME_FAILED',
+  checkpoint_recorded: 'CHECKPOINT_RECORDED',
 };
 const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   CREATED: 'created',
@@ -102,6 +103,7 @@ const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   ATTENTION_RESOLVED: 'attention_resolved',
   RUN_RESUMED: 'run_resumed',
   RESUME_FAILED: 'resume_failed',
+  CHECKPOINT_RECORDED: 'checkpoint_recorded',
 };
 
 const RUN_STATUS_FROM_PRISMA: Record<PrismaAiRunStatus, WorkItemRun['status']> = {
@@ -147,6 +149,8 @@ export const WORK_ITEM_DETAIL_SELECT = {
   goal: true,
   result: true,
   budgetMicroUsd: true,
+  _count: { select: { children: true, runs: true, checkpoints: true } },
+  checkpoints: { select: { createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 },
   parent: { select: { id: true, title: true } },
   refs: {
     select: { role: true, document: { select: { id: true, title: true } } },
@@ -297,5 +301,7 @@ export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
     children: row.children.map(toWorkItemSummary),
     runs,
     events: row.events.map(toEvent),
+    checkpointCount: row._count.checkpoints,
+    latestCheckpointAt: row.checkpoints[0]?.createdAt.toISOString() ?? null,
   };
 }

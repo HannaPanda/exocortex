@@ -471,6 +471,9 @@ export class QueueRegistry {
     // that failed behind a work item shows up in the attention inbox within
     // two minutes of failing, whichever of the paths closed it (issue #139).
     await schedule('raise-run-failure-attention', { every: 60_000 });
+    // Same cadence: a run that ended unfinished leaves a working state within
+    // two minutes, so a retry from the inbox already starts from it (#142).
+    await schedule('checkpoint-interrupted-runs', { every: 60_000 });
     // Hourly, off the hour so it never lands with the nightly sweeps. The
     // safety net under materialization: whoever writes the canonical state
     // enqueues the job that derives everything else, and a lost enqueue is

@@ -35,6 +35,7 @@ import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { assertMayProgress } from './work-item-access';
 import { type WorkItemActor } from './work-item-actor';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
 import {
@@ -43,6 +44,7 @@ import {
   planWorkItemUpdate,
   type WorkItemEventDraft,
 } from './work-item-changes';
+import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { eventActor, writeEvents } from './work-item-events';
 import {
   parseCriteria,
@@ -90,6 +92,7 @@ export class WorkItemsService {
     private readonly access: WorkspaceAccessService,
     private readonly realtime: RealtimeService,
     private readonly conversations: ConversationsService,
+    private readonly checkpoints: WorkItemCheckpointsService,
   ) {}
 
   async list(input: {
@@ -315,6 +318,17 @@ export class WorkItemsService {
     if (item.budgetMicroUsd !== null && item.spentMicroUsd >= item.budgetMicroUsd) {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }
+    // Carried on from where the work stands (issue #142), unless asked not to.
+    const resume =
+      input.request.fromCheckpoint === 'none'
+        ? null
+        : await this.checkpoints.resumeSection({
+            workItemId: row.id,
+            workspaceId: row.workspaceId,
+            which: input.request.fromCheckpoint ?? 'latest',
+            spentMicroUsd: item.spentMicroUsd,
+            budgetMicroUsd: item.budgetMicroUsd,
+          });
 
     const { conversation } = await this.conversations.create({
       userId: input.actor.userId,
@@ -342,6 +356,7 @@ export class WorkItemsService {
           criteria: parseCriteria(row.acceptanceCriteria),
           contextRefs: item.contextRefs,
           previousResult: row.result,
+          checkpoint: resume?.text ?? null,
           instructions: input.request.instructions ?? null,
         }),
       },
@@ -350,7 +365,15 @@ export class WorkItemsService {
     if (run === null) throw AppError.internal('Starting the run produced no run');
 
     const attention = await this.prisma.$transaction(async (tx) => {
-      const events: WorkItemEventDraft[] = [{ kind: 'RUN_STARTED', data: { runId: run.id } }];
+      const events: WorkItemEventDraft[] = [
+        {
+          kind: 'RUN_STARTED',
+          data: {
+            runId: run.id,
+            ...(resume === null ? {} : { checkpointId: resume.checkpointId }),
+          },
+        },
+      ];
       const data: Prisma.WorkItemUncheckedUpdateInput = { updatedAt: new Date() };
       if (row.assigneeKind === null) {
         data.assigneeKind = 'ASSISTANT';
@@ -413,6 +436,7 @@ export class WorkItemsService {
         errorCode: null,
       },
       conversationId: conversation.id,
+      checkpointId: resume?.checkpointId ?? null,
       workItem: updated.workItem,
     };
   }
@@ -480,11 +504,7 @@ export class WorkItemsService {
     /** True when the change only moves the work along (a note counts). */
     progressOnly: boolean,
   ): Promise<void> {
-    const role = await this.access.findRole(existing.workspaceId, userId);
-    if (role === null) throw AppError.notFound('Work item');
-    if (canManageWorkItems(role).allowed) return;
-    if (existing.assigneeId === userId && progressOnly) return;
-    assertPolicy(canManageWorkItems(role));
+    await assertMayProgress(this.access, existing, userId, progressOnly);
   }
 
   /** Resolves and checks an assignee; returns the name the history should show. */

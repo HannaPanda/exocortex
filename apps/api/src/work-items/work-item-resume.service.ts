@@ -4,14 +4,13 @@ import { attentionResolutionSchema } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 
 import { ConversationsService } from '../ai/conversations.service';
-import { KIND_FROM_PRISMA, parseOptions } from '../attention/attention-mapper';
-import { parseSubject } from '../attention/attention-subject';
 import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 
 import { type WorkItemActor } from './work-item-actor';
+import { ANSWERED_ITEM_SELECT, type AnsweredItem, toResumeAnswers } from './work-item-answers';
 import { writeEvents } from './work-item-events';
-import { buildResumePrompt, type ResumeAnswer } from './work-item-resume-prompt';
+import { buildResumePrompt } from './work-item-resume-prompt';
 import { WorkItemsService } from './work-items.service';
 
 /**
@@ -26,33 +25,17 @@ import { WorkItemsService } from './work-items.service';
  * work up again, and reads the answer where it always did.
  *
  * The answer itself is already committed when this runs. A resume that cannot
- * happen (budget spent, conversation busy or gone) is written into the work
- * item's history and onto the answered item as `resumeError`, and the work
- * stays in the queue for somebody to start; an answer is never lost to a
- * failed resume.
+ * happen (budget spent, conversation busy) is written into the work item's
+ * history and onto the answered item as `resumeError`, and the work stays in
+ * the queue for somebody to start; an answer is never lost to a failed resume.
+ * A conversation that is gone no longer ends there: the answer starts a new
+ * run from the newest working state instead (issue #142, ADR-069).
  */
 
 /** Why no resume happened, as the code the history and the item carry. */
-type ResumeRefusal =
-  'work_item_budget_exhausted' | 'conversation_missing' | 'ai_conversation_locked' | (string & {});
+type ResumeRefusal = 'work_item_budget_exhausted' | 'ai_conversation_locked' | (string & {});
 
-const PAUSED_ITEM_SELECT = {
-  id: true,
-  workspaceId: true,
-  kind: true,
-  status: true,
-  title: true,
-  options: true,
-  resolution: true,
-  action: true,
-  subject: true,
-  workState: true,
-  blocking: true,
-  system: true,
-  settledBy: { select: { name: true } },
-} satisfies Prisma.AttentionItemSelect;
-
-type PausedItem = Prisma.AttentionItemGetPayload<{ select: typeof PAUSED_ITEM_SELECT }>;
+type PausedItem = AnsweredItem;
 
 @Injectable()
 export class WorkItemResumeService {
@@ -106,7 +89,7 @@ export class WorkItemResumeService {
           status: { not: 'OPEN' },
           kind: { not: 'RUN_FAILED' },
         },
-        select: PAUSED_ITEM_SELECT,
+        select: ANSWERED_ITEM_SELECT,
         orderBy: { createdAt: 'asc' },
       })
     ).filter((item) => (item.blocking || item.system) && !this.alreadyReported(item));
@@ -114,26 +97,37 @@ export class WorkItemResumeService {
 
     let refusal: ResumeRefusal | null = null;
     let resumedRunId: string | null = null;
-    if (run.conversationId === null) {
-      refusal = 'conversation_missing';
-    } else {
-      try {
-        resumedRunId = await this.post({
-          work,
-          conversationId: run.conversationId,
-          ownerId: run.createdById,
-          paused,
-          correlationId: input.correlationId,
-        });
-      } catch (error) {
-        if (!(error instanceof AppError)) throw error;
-        refusal = error.code;
-      }
+    // Without its conversation the paused run cannot be carried on in place;
+    // a new run starts from the recorded working state instead (issue #142),
+    // and is told the answers as decisions made since. It makes the status
+    // move itself, so the record below must not make it again.
+    const fresh = run.conversationId === null;
+    try {
+      resumedRunId =
+        run.conversationId === null
+          ? (
+              await this.workItems.startRun({
+                workItemId: work.id,
+                actor: input.actor,
+                request: { fromCheckpoint: 'latest' },
+                correlationId: input.correlationId,
+              })
+            ).run.id
+          : await this.post({
+              work,
+              conversationId: run.conversationId,
+              ownerId: run.createdById,
+              paused,
+              correlationId: input.correlationId,
+            });
+    } catch (error) {
+      if (!(error instanceof AppError)) throw error;
+      refusal = error.code;
     }
 
     await this.record({
       workItemId: work.id,
-      wasQueued: work.status === 'QUEUED',
+      wasQueued: !fresh && work.status === 'QUEUED',
       answeredId: input.attentionItemId,
       paused,
       actor: input.actor,
@@ -164,8 +158,7 @@ export class WorkItemResumeService {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }
 
-    const titles = await this.subjectTitles(input.paused);
-    const answers = input.paused.map((item) => this.answerOf(item, titles));
+    const answers = await toResumeAnswers(this.prisma, input.paused);
     const workState =
       [...input.paused].reverse().find((item) => item.workState !== null)?.workState ?? null;
 
@@ -184,39 +177,6 @@ export class WorkItemResumeService {
     });
     if (posted.run === null) throw AppError.internal('Resuming produced no run');
     return posted.run.id;
-  }
-
-  private answerOf(item: PausedItem, titles: ReadonlyMap<string, string>): ResumeAnswer {
-    const resolution = attentionResolutionSchema.safeParse(item.resolution);
-    const facts = resolution.success ? resolution.data : {};
-    const option = parseOptions(item.options).find((entry) => entry.id === facts.optionId);
-    return {
-      attentionItemId: item.id,
-      kind: KIND_FROM_PRISMA[item.kind],
-      title: item.title,
-      status: item.status === 'OBSOLETE' ? 'obsolete' : 'resolved',
-      optionId: facts.optionId ?? null,
-      optionLabel: option?.label ?? null,
-      note: facts.note ?? null,
-      obsoleteReason: facts.reason ?? null,
-      answeredBy: item.settledBy?.name ?? null,
-      action: item.action,
-      // A stale approval hands no revision on: there is nothing it approves.
-      subject: item.status === 'OBSOLETE' ? null : parseSubject(item.subject),
-      subjectTitles: titles,
-    };
-  }
-
-  private async subjectTitles(paused: readonly PausedItem[]): Promise<Map<string, string>> {
-    const ids = paused.flatMap(
-      (item) => parseSubject(item.subject)?.pages.map((page) => page.documentId) ?? [],
-    );
-    if (ids.length === 0) return new Map();
-    const rows = await this.prisma.document.findMany({
-      where: { id: { in: ids }, workspaceId: paused[0]!.workspaceId },
-      select: { id: true, title: true },
-    });
-    return new Map(rows.map((row) => [row.id, row.title]));
   }
 
   /**
