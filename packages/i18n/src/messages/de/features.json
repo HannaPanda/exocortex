@@ -894,5 +894,17 @@
       "p3": "Auf dem Telefon lässt sich eXocortex als App installieren, dann fehlt die Adressleiste und das Teilen-Menü kennt es."
     },
     "where": "Die Anmeldeseite."
+  },
+  "auftraege": {
+    "title": "Aufträge: Arbeit an Menschen, Agenten und die KI übergeben",
+    "summary": "Ein Auftrag hält fest, was erledigt werden soll: Ziel, Akzeptanzkriterien, Kontextseiten, wer ihn bearbeitet und was dabei herauskam. Er bleibt bestehen, wenn ein KI-Lauf scheitert, kann auf eine Person warten und später einen zweiten Versuch bekommen.",
+    "details": {
+      "p1": "Bearbeiten kann ein Auftrag eine Person, ein Agentenkonto wie Claude Code oder Hermes, oder die eingebaute KI. Das gilt in alle Richtungen: du gibst einem Agenten Arbeit, ein Agent gibt dir eine Rückfrage als Auftrag, oder zwei Agenten reichen sich Arbeit weiter.",
+      "p2": "Der Status ist eine Entscheidung und kein Spiegel des letzten Laufs: angelegt, in Arbeit, blockiert, wartet auf Rückmeldung, zur Abnahme, erledigt, gescheitert oder abgebrochen. Wer blockiert ist oder wartet, schreibt dazu, worauf.",
+      "p3": "„KI-Lauf starten“ gibt den Auftrag der eingebauten KI in einer eigenen Unterhaltung. Die KI trägt ihr Ergebnis am Auftrag ein, jeder Lauf erscheint mit seinem Stand und seinen Kosten, und ein Budget verhindert, dass weitere Läufe mehr kosten als vorgesehen.",
+      "p4": "Jede Änderung steht in der Historie, mit dem Namen dessen, der sie gemacht hat, und bei einem Agenten auch mit seinem Programm. Aufträge lassen sich in Teilaufträge gliedern.",
+      "p5": "Agenten arbeiten mit exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run und exo_work_item_delete."
+    },
+    "where": "Seitenleiste unter „Aufträge“, oder Strg + K und „Aufträge öffnen“ beziehungsweise „Neuer Auftrag“."
   }
 }

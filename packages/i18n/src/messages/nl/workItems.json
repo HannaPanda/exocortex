@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Taken",
+    "detailTitle": "Taak"
+  },
+  "labels": {
+    "status": {
+      "queued": "Aangemaakt",
+      "working": "In uitvoering",
+      "blocked": "Geblokkeerd",
+      "waiting_for_human": "Wacht op reactie",
+      "review": "Ter controle",
+      "done": "Voltooid",
+      "failed": "Mislukt",
+      "cancelled": "Geannuleerd"
+    },
+    "priority": {
+      "low": "Laag",
+      "normal": "Normaal",
+      "high": "Hoog",
+      "urgent": "Urgent"
+    },
+    "participant": {
+      "nobody": "Niemand",
+      "assistant": "Ingebouwde AI",
+      "unknown": "Onbekend account",
+      "agent": "{name} (agent)"
+    },
+    "event": {
+      "created": "heeft de taak aangemaakt",
+      "statusChanged": "heeft de status gewijzigd van „{from}” naar „{to}”",
+      "assigned": "heeft de taak toegewezen aan {assignee}",
+      "runStarted": "heeft een AI-run gestart",
+      "resultRecorded": "heeft het resultaat ingevoerd",
+      "note": "heeft een notitie toegevoegd",
+      "updated": "heeft {count, plural, one {één veld} other {# velden}} gewijzigd"
+    }
+  },
+  "list": {
+    "title": "Taken",
+    "intro": "Werk dat je hebt overgedragen aan een persoon, een agent of de ingebouwde AI, of dat aan jou is overgedragen. Een taak blijft bewaard, zelfs als een AI-run mislukt, en kan op iemand wachten.",
+    "newItem": "Nieuwe taak",
+    "filterLabel": "Welke taken",
+    "filters": {
+      "open": "Open",
+      "mine": "Aan mij toegewezen",
+      "requested": "Door mij aangevraagd",
+      "all": "Alle"
+    },
+    "loading": "Taken worden geladen …",
+    "loadFailed": "De taken konden niet worden geladen.",
+    "emptyTitle": "Geen openstaande taken",
+    "emptyAllTitle": "Nog geen taken",
+    "emptyDescription": "Maak een taak aan als er iets gedaan moet worden wat langer duurt dan een antwoord in de chat.",
+    "truncated": "Er zijn meer taken dan hier worden getoond. Beperk de selectie met de filters.",
+    "columns": {
+      "title": "Taak",
+      "status": "Status",
+      "assignee": "Uitvoerder",
+      "requester": "Opdrachtgever",
+      "progress": "Criteria",
+      "updated": "Laatst gewijzigd"
+    },
+    "noCriteria": "Geen",
+    "criteria": "{met} van {total}",
+    "children": "{count, plural, one {# deelopdracht} other {# deelopdrachten}}",
+    "due": "Vervalt op {day}"
+  },
+  "dialog": {
+    "newTitle": "Nieuwe opdracht",
+    "editTitle": "Opdracht bewerken",
+    "description": "Beschrijf wat er bereikt moet worden en hoe je weet dat het klaar is.",
+    "titleLabel": "Titel",
+    "goalLabel": "Doel",
+    "goalPlaceholder": "Wat moet er uiteindelijk zijn? Wat is er al bekend en wat niet?",
+    "criteriaLabel": "Acceptatiecriteria",
+    "criteriaPlaceholder": "Eén criterium per regel",
+    "criteriaHint": "Eén criterium per regel. Reeds voltooide criteria blijven behouden zolang de tekst ongewijzigd blijft.",
+    "assigneeLabel": "Uitvoerder",
+    "priorityLabel": "Prioriteit",
+    "dueLabel": "Vervalt op",
+    "budgetLabel": "Budget voor AI-runs (USD)",
+    "budgetPlaceholder": "onbeperkt",
+    "cancel": "Annuleren",
+    "create": "Aanmaken",
+    "save": "Opslaan"
+  },
+  "detail": {
+    "loading": "Opdracht laden …",
+    "loadFailed": "De opdracht kon niet worden geladen.",
+    "backToList": "Alle opdrachten",
+    "backToParent": "Terug naar „{title}”",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "handover": "{requester} aan {assignee}",
+    "due": "Vervalt op {day}",
+    "startRun": "AI-run starten",
+    "statusLabel": "Status",
+    "reasonLabel": "Waar wacht de opdracht op?",
+    "reasonPlaceholder": "Bijvoorbeeld: toegang tot het archief ontbreekt",
+    "setStatus": "Status instellen",
+    "criteriaHeading": "Acceptatiecriteria ({met} van {total})",
+    "contextHeading": "Context",
+    "resultHeading": "Resultaat",
+    "resultPlaceholder": "Wat is het resultaat?",
+    "saveResult": "Resultaat opslaan",
+    "noResult": "Nog geen resultaat.",
+    "childrenHeading": "Deeltaken",
+    "addChild": "Deeltaak aanmaken",
+    "noChildren": "Geen deeltaken.",
+    "runsHeading": "AI-runs",
+    "budget": "{spent} van {budget} verbruikt",
+    "noRuns": "Nog geen run.",
+    "runStatus": {
+      "pending": "in de wacht",
+      "running": "actief",
+      "completed": "voltooid",
+      "failed": "mislukt",
+      "cancelled": "geannuleerd",
+      "timed_out": "time-out verstreken"
+    },
+    "openConversation": "Gesprek openen",
+    "historyHeading": "Geschiedenis",
+    "notePlaceholder": "Tussenstand, vraag of aanwijzing voor de volgende poging",
+    "noteLabel": "Notitie",
+    "addNote": "Notitie toevoegen"
+  },
+  "startRun": {
+    "title": "AI-run starten",
+    "description": "De ingebouwde AI ontvangt de taak met doel, criteria en contextpagina’s in een eigen gesprek en vult het resultaat bij de taak in. Een taak zonder bewerker wordt daarbij aan de AI toegewezen.",
+    "instructionsLabel": "Aanwijzingen voor deze poging (optioneel)",
+    "instructionsPlaceholder": "Bijvoorbeeld: bekijk eerst de bijlagen.",
+    "cancel": "Annuleren",
+    "start": "Starten"
+  },
+  "deleteDialog": {
+    "title": "Taak definitief verwijderen?",
+    "description": "De taak en de bijbehorende geschiedenis zijn daarna definitief verdwenen. Deeltaken blijven behouden als zelfstandige taken, en AI-runs blijven meetellen in het verbruik. Als de taak alleen niet meer nodig is, zet deze dan op „Geannuleerd”.",
+    "cancel": "Annuleren",
+    "confirm": "Definitief verwijderen"
+  }
+}

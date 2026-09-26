@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-228 routes are reachable from at least one client; 145 from all three.
+235 routes are reachable from at least one client; 152 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -47,6 +47,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/saved-queries/:x` | ✓ | ✓ | ✓ | `exo_saved_query_delete` |
 | `DELETE /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_revoke` |
 | `DELETE /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_delete` |
+| `DELETE /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `DELETE /api/workspaces/:x/members/:x` | ✓ | · | · | — |
@@ -116,6 +117,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/saved-queries/:x` | ✓ | ✓ | ✓ | `exo_saved_query_get` |
 | `GET /api/saved-queries/:x/results` | ✓ | ✓ | ✓ | `exo_saved_query_run` |
 | `GET /api/session` | ✓ | · | · | — |
+| `GET /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_get` |
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/ai-rules` | ✓ | ✓ | ✓ | `exo_rules_list` |
@@ -138,6 +140,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/shares` | ✓ | ✓ | ✓ | `exo_share_workspace_list` |
 | `GET /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_list` |
 | `GET /api/workspaces/:x/trash` | ✓ | ✓ | ✓ | `exo_page_trash` |
+| `GET /api/workspaces/:x/work-items` | ✓ | ✓ | ✓ | `exo_work_item_list` |
 | `PATCH /api/admin/ai-models/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/settings` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x` | ✓ | · | · | — |
@@ -161,6 +164,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/saved-queries/:x` | ✓ | ✓ | ✓ | `exo_saved_query_update` |
 | `PATCH /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_update` |
 | `PATCH /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_update` |
+| `PATCH /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
@@ -230,6 +234,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/render/jobs/:x/cancel` | ✓ | ✓ | ✓ | `exo_render_cancel` |
 | `POST /api/saved-queries/:x/position` | ✓ | ✓ | ✓ | `exo_saved_query_reorder` |
 | `POST /api/templates/:x/pages` | ✓ | ✓ | ✓ | `exo_template_use` |
+| `POST /api/work-items/:x/notes` | ✓ | ✓ | ✓ | `exo_work_item_note` |
+| `POST /api/work-items/:x/runs` | ✓ | ✓ | ✓ | `exo_work_item_start_run` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
 | `POST /api/workspaces/:x/attachments/from-url` | · | ✓ | ✓ | `exo_attachment_upload_url` |
@@ -251,6 +257,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_create` |
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
+| `POST /api/workspaces/:x/work-items` | ✓ | ✓ | ✓ | `exo_work_item_create` |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 
 ## Routes the browser reaches and agents do not

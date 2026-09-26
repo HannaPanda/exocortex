@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "„{name}“ nach oben",
     "moveDown": "„{name}“ nach unten",
-    "openSearch": "Suche und gespeicherte Suchen"
+    "openSearch": "Suche und gespeicherte Suchen",
+    "openWorkItems": "Aufträge"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Freigaben dieses Arbeitsbereichs",
         "keywords": "freigabe geteilt link arbeitsbereich workspace"
       },
+      "workItems": {
+        "label": "Aufträge öffnen",
+        "keywords": "auftrag aufträge aufgabe delegieren delegiert agent erledigen zuständig bearbeiter work item"
+      },
       "automations": {
         "label": "Automationen öffnen",
         "keywords": "automation regel zeitplan auslöser workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Neue gespeicherte Suche",
       "savedQueryHint": "in der erweiterten Suche",
       "savedQueryKeywords": "gespeicherte suche smart view ansicht filter speichern neu",
+      "workItem": "Neuer Auftrag",
+      "workItemHint": "Arbeit an eine Person, einen Agenten oder die KI übergeben",
+      "workItemKeywords": "auftrag aufgabe delegieren übergeben erledigen lassen agent ki work item",
       "fromTemplate": "Seite aus Vorlage erstellen",
       "fromTemplateKeywords": "vorlage template muster neu seite erstellen",
       "fromTemplatePlaceholder": "Welche Vorlage?",

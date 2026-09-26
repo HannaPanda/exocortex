@@ -220,6 +220,15 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     });
   });
 
+  // A work item changed, possibly through an agent (issue #138). Lists and the
+  // open detail view re-read; the payload carries only the id.
+  useRealtimeEvent('work-item.changed', (event) => {
+    void queryClient.invalidateQueries({
+      queryKey: ['workspace', event.workspaceId, 'work-items'],
+    });
+    void queryClient.invalidateQueries({ queryKey: ['work-item', event.payload.workItemId] });
+  });
+
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
   // The text itself arrives through the collaboration socket (ADR-016); what
   // the cache still holds is everything around it, from the version list to the

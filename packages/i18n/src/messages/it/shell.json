@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "Sposta “{name}” in alto",
     "moveDown": "Sposta “{name}” in basso",
-    "openSearch": "Ricerca e ricerche salvate"
+    "openSearch": "Ricerca e ricerche salvate",
+    "openWorkItems": "Incarichi"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Condivisioni di quest’area di lavoro",
         "keywords": "condivisione condiviso link area di lavoro workspace"
       },
+      "workItems": {
+        "label": "Apri incarichi",
+        "keywords": "incarico incarichi compito delegare delegato agente svolgere responsabile assegnatario work item"
+      },
       "automations": {
         "label": "Apri automazioni",
         "keywords": "automazione regola pianificazione trigger workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Nuova ricerca salvata",
       "savedQueryHint": "nella ricerca avanzata",
       "savedQueryKeywords": "ricerca salvata smart view vista filtro salva nuovo nuova",
+      "workItem": "Nuovo incarico",
+      "workItemHint": "Affida il lavoro a una persona, a un agente o all’IA",
+      "workItemKeywords": "incarico compito delegare affidare far svolgere agente ia work item",
       "fromTemplate": "Crea pagina da modello",
       "fromTemplateKeywords": "modello template nuovo pagina crea",
       "fromTemplatePlaceholder": "Quale modello?",

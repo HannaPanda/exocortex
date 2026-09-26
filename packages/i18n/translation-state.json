@@ -8156,6 +8156,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "86cc66793bb0f40d"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "2335d2428c45a867"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "e7a83e9e87d1497b"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "abb1c21872b892ab"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "f22cd1a2eb0afa3e"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "6c61a7ad34bb32ff"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "46d1d61abb1f13e7"
@@ -14652,6 +14672,18 @@
       "source": "d70c714110e3d096",
       "output": "3800ee7191b1cd15"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "4b01264de9bb48fc"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "f111977295e32963"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "1a0e9e5aa025fb0e"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "8ea6cab3dcce54fb"
@@ -14843,6 +14875,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "68a8c16acfcb051e"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "f57ed929f2e8a96c"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "d76fc7f041b11fce"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -15292,6 +15332,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "f1baf9fbbe88d202"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "5759a416f2b3b4ff"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -15599,6 +15643,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "d8b8392e2c542950"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "280b10c89cc41d57"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "eb5294f950d15214"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "f5b138e4a0eab1f1"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "65db0c29ba4fffc3"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "63565c0485fec4f7"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "fc28aa1bf07d5e72"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "4283ff8c49fa396d"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "79ed1e0cf071266b"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "7eff0a1919b2f60e"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "a6e600a10fede40f"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "f7d8f1b03edaff3f"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "e2d0a54968ead24e"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "3b25fe3d210b1040"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "464c4ffd019e1e96"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "b9e19273207a7ead"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "0e76960093379060"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "a041444a34cf20ed"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "6a6faa78cd9fbcaf"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "496635cbfcb2f070"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "752edcfbfb982116"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "72a85758b69c1d33"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "d8da2c49df39d91d"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "9a3af8ff2eb63087"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7047b9af7a4cd070"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "d334ca62310fbddb"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "76299a3e8cadeea6"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "6e7d50e84f4731ef"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "421d840b2821adcc"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "8b47045eb7b8ca42"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "4ddb3e96801a1ee2"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "5d28a90f4498a814"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "80cfa3e7f28dde4d"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "c071cf5f5ed6f884"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "3dcd80f1b15f796e"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "935019d730a0dd74"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "a6fdf772dafa37e3"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "4457cb1806768e48"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "2c14183df9a2c9f6"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "5e20d20e3978dcf8"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "049105eba6c5872f"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "b53557b24e111e0f"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "4759498ac2a719c6"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "672210fc15c08569"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "d47a36f4f0558107"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "8c5ce5c6f39af780"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "f2381c3a7b10f33b"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "e1cb6d30fa3f17ee"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "a014c53e987bb28b"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "cdbf6975e8a35b0d"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "35d1408b7dc4f3bc"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "4b01264de9bb48fc"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "d60dbba079223254"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "1509f561f2416598"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "7e8cd2056da73a7f"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "4d3906146ca7ef58"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "e14d94b5fe173a8a"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "d3fb709cb31722b8"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "1c71f684e3e926a0"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "b9e6cf9c437b48f8"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "12eaef7e30cbe6fe"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "cbcefbd751cabe0e"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "15abcee1abe4dfc2"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "6b13a4a9afd337af"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "3fad99b521aa8f8e"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "0ac22ebf2e4c548e"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "c4ebc6d4a5832cd9"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "f793de205ead5ac3"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "a7248eeb45eb1ce2"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "18f2a0947f9d6523"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "d353a99eb4556847"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "11a6767d5674c7e4"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "031a8f0f659df890"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "661ff40a07e037bb"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "c39059141ced2ea7"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "aa2c369a8ccbe71e"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "c1f88e9d6c4145cf"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "2b99b26416b17b2b"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "5e20d20e3978dcf8"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "71708699acf8f3b3"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "b5687cf04af300e4"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "ed0f547507336834"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "382ac5f308f76c24"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "5662d78045b5c4db"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "3b25fe3d210b1040"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "fe4b3453ce48e14c"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "80374df5dcd304fd"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "41c837ef242f599a"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "7f9ccf4a852d26c8"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "a52ace420f2175d0"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "82adb506e0a78ebb"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "ed077f3d8125d60d"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "f9182f6f2dc824cd"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "1fa4d0301c09eb23"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "c91554ef86a60aeb"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "f5962739d0ea2232"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "4b01264de9bb48fc"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "dc937b59892604f5"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "5759a416f2b3b4ff"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "b54681c9b7769f9b"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "ed0f547507336834"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "5759a416f2b3b4ff"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "1c2441ee56ad4f0d"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "a2b0e8567b675739"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "1241392f49411921"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "e4bb9f1ece9af926"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "2c14183df9a2c9f6"
     }
   },
   "es": {
@@ -23758,6 +24250,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "cdc203e2c5196342"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "49ea0222efbaecc6"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "897b90922cc13578"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "c7073f30a0b67a4e"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "12ef5a11bf56ee00"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "bf21d37bd16f631f"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "384825e76c344ed0"
@@ -30254,6 +30766,18 @@
       "source": "d70c714110e3d096",
       "output": "59bc6ab5c57be1ae"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "28acc44bc7e4bb9a"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "0860067d9a072f61"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "a07966158cded42b"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "9b7592103f494af5"
@@ -30445,6 +30969,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "b23b30203b14dd91"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "ec3ddd85c4739bc5"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "41d9c72ed4d2b52f"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -30894,6 +31426,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "70f2bcec425d2f79"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "ab434464d1900142"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "e436ddcd06e85cd0"
@@ -31201,6 +31737,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "a9254c5f812829af"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "be4089a3f07e35f8"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "aaab1bbb84a9253a"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "34b7f89054497396"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "38b2f27bccaac6e9"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "555fe228de377647"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "a05a255681b79e87"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "b1acc127dd516e8e"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "4a7babc0d2cf598e"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "551873daf1de96c7"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "dbb654a486a5fc1f"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "959d033686adee50"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "c9894cf002f90bd0"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "23448d907120672c"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "7f4d8f089118eefc"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "995c071dfaee74ce"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "9fd35ddddb9dbe6e"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "1309e00e426e2342"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "87c1cc15f97e3f34"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "fa73bbe69838faa4"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "b6cdbc0529bec59e"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "ecef8a87fff05ec5"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "46290966f03fc5da"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "b8badd9c554ae790"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "7009e86600df89a0"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "224e9dac3388a238"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "a71bc39fe3f33e42"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "6edd0317b2d7c272"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "72ade12c5299042c"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "1e7c1eef4a629325"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "4033137b151e146a"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "e4a5f22af0ece607"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "227421cc51da8cec"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "c94c54a95af28443"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "61ab679ed2edd7a4"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "511d51a5535d89f8"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "44be1841aac3d332"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "96818f6a25f882d2"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "98e5acddb6c46a24"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "62c1aec4ffc86fa0"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "f38e070a743eb99e"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "1b8cda424ec6bc2d"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "3fe5ff266fc3ceac"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "84bee41776eef418"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "fb2cd1210c4f5f17"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "bc6ccb8c28bc041c"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "75ec08388272428a"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "9611cdf05db72ed1"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "105cf9508b8cd9d4"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "e9daca354ed6f76d"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "fa4f1bd666815f47"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "28acc44bc7e4bb9a"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "dbae0b2a1a745bfc"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "13e51a210f45ed1b"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "4c08a5d5feb22ce2"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "464d47b122d1cb82"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "33c75277f361fc13"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "035b29b5a93665ba"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "a3f9d6cc95ea1483"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "ad8345d153507b9d"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "8909a7631692ff11"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "b9d55e3380726213"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "bced4be28bae4ff3"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "dfce464eb39e96bf"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "207555e3b91e1c32"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "0f3adb000d0f92c0"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "0b6af7d377dad019"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "a7248eeb45eb1ce2"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "0fff1ccde9ea237a"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "3d15e61f2ccd5186"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "b148590c0b0b8fd9"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "49f8da809ccd3d20"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "d197619adfc61289"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "537f6aa1635a3547"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "62039cf08d3f92d9"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "75f1f75e33377448"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "930a95804ca06281"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "62c1aec4ffc86fa0"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "561e4e6265b89f33"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "ee4e6f46c9cc8842"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "98e5acddb6c46a24"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "981fc146f03fe7ac"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "827d2eb55884ee13"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "0b39289b32c305a7"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "23448d907120672c"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "dd006a4bfceec4d9"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "16d4dfb1a7b0fa9f"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "363ebb48f2472b9c"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "6fb63dfbd79061c2"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "aff4d19d6ee43b20"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "5a803c623f5a241d"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "f0303aba6bea75ce"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "dcaa0aed65353a70"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "06bb84376c8af952"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "9433ee25cb5ddcc9"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "58b68a24a0a26d44"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "28acc44bc7e4bb9a"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "9e3fc69d0d9cdcd5"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "ab434464d1900142"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "06bf278d72bc1ec7"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "981fc146f03fe7ac"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "ab434464d1900142"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "9c6f7d2c8af3df0c"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "17c9afebd726ccfb"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "554ebaa3db05164f"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "6dfbcc6fb285566f"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "96818f6a25f882d2"
     }
   },
   "fr": {
@@ -39360,6 +40344,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "c2c5b0af5694680a"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "57d3d35d919982cb"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "51c6ee7db963e104"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "b27ac086b5ccf5c0"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "350da9423034bc8b"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "37cafc72dab02eb3"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "5d656ebd95dd5c05"
@@ -45856,6 +46860,18 @@
       "source": "d70c714110e3d096",
       "output": "8dff62ea5356a82a"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "03452e0d22504967"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "fb1929d0ba5541d9"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "e6c810b8c8bdf42d"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "5466843202a8a661"
@@ -46047,6 +47063,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "4361d8734e81d14a"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "7b3ec7eeb4a1b31f"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "a9041c7ae958fba8"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -46496,6 +47520,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "0d466152c403284b"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "8c7e07ce9d89c682"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "dacd47619a726cd9"
@@ -46803,6 +47831,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "af273d956b5bec8d"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "1a797b980d16ce8e"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "8d971a1c7ac91865"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "6a8729c73cdd5a17"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "b4d87896944abca3"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "88595eb5c91420ef"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "84297af79d427338"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "2d8738944e920f5e"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "4196b78f3642b7ff"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "23eefcbd7721e098"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "2bf0a6d69405ba89"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "dd30344d5be899cf"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "5e5d0216ce0b5b9e"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "a460474965a955f9"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "42e37604b638b627"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "e5e723834ca7e38a"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "865df3324ad95978"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "813757dd91d470af"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "53ee4d8d8b1f141c"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "9d8658cace209311"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "7ca42387abff80d2"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "1f77abadf23a5a8a"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "d8da2c49df39d91d"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "679ea3812195f034"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "71e59b56869b6774"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "b0014d729afe76e1"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "8997aab0b312be61"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "f1ed9999c72bae39"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "0623885c081b3f3d"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "aefffabdba4aeb67"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "dca0ef73e20eaa30"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "3d5004bb5b4c1f38"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "06e4f05177f075d0"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "0ccef1dd7416f3c6"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "8c69efbb42a7c44b"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "7b65b5fc487e6df0"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "d599004efc7e9074"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "1ca514e8180f5ea0"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "89cc8652dc7d8a44"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "dee377cfd8cddfb8"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "62c1aec4ffc86fa0"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "49050c7e4509eb6d"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "da4e4de646598f41"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "969418f4d5aea880"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "c14ae30af68fc547"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "2d7e5e89f6b02840"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "cfea5c84b9d39b32"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "c9b375c22f463e46"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "30d4ce43f89f74e1"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "79b4ded49b069246"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "7d9201525b56eb4c"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "b21064884e8b3eca"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "03452e0d22504967"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "26c18a313d586c4a"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "71dc74873e23107d"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "78e7920010aa1ff0"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "90fe950bb005b0a9"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "a467120dca47870c"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "f8d992b743f583f4"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "7cf53fb9dbfd7f19"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "b4558ee1f5741033"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "2842bc791cc7d962"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "79ab831935af99c8"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "15abcee1abe4dfc2"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "580a65a41703c597"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "040db0d289e7fa3b"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "456b4e49484e8a29"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "9c3e565aa2f13df5"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "2435a9bfbd8aa03e"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "1aaf3e0e4a95dd31"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "0311db8016c3c7ef"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "2f7ea8495f478552"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "13ecee2c319141f6"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "7dc813766936bd0c"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "2f6c8477e92bc6ea"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "0438a138db3b0ec2"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "b6249eb470fc0fbe"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "797f5dcd0217e2b9"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "c0d0fab76c51ca9d"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "62c1aec4ffc86fa0"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "4cc6181ca9aae84a"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "2594e0c0385adcba"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "dee377cfd8cddfb8"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "e4c05d29dfb36953"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "7494e783f3ff1ef7"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "33b999cca4381b12"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "a460474965a955f9"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "d4127a5ec7efb8c7"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "9bae7fb12ee6ef87"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "aa6d5b21e3694cad"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "c2540d03acf12ecb"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "42623b97b4815a8a"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "8fbf75daa893dbf2"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "4ca3ddffc6875726"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "ca1a997891afd881"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "ab277b00206353b2"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "13dfdf5d6276ea4d"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "98a6698045fd40a8"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "03452e0d22504967"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "4679b3b12de0b53a"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "8c7e07ce9d89c682"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "bdfbd670c981a1b6"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "e4c05d29dfb36953"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "8c7e07ce9d89c682"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "0960d03a893f7eb2"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "a6a965ea61c80c90"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "9a0e8aa687bd9756"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "0253f2a6704091c0"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "ffaec7f442d76d01"
     }
   },
   "it": {
@@ -54962,6 +56438,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "c49b454f30006c93"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "e160a478e0605427"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "77ad318331276258"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "d8609f8be1d9b7c4"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "cd6257718985a809"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "9a9d23cefca2c175"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "f32e56bde89e50d4"
@@ -61458,6 +62954,18 @@
       "source": "d70c714110e3d096",
       "output": "e749a4d4b3561414"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "3ead6856cde3fc70"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "7ab67e7172975911"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "1ca5c1cd72bb66f2"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "394608997440d86d"
@@ -61649,6 +63157,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "5dfa27b0359df3e0"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "706bdb27a36bb2d0"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "6261799224de1432"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -62098,6 +63614,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "3f6eed39267dfa2b"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "65f179dcd199cc00"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -62405,6 +63925,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "20b5f4b8bfd56e4f"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "8a62e526a03702d6"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "e0aa1be7441d1e48"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "c6cef9b6efb287d9"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "f69a0661ec5bfe35"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "717e71cdfe531e3d"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "e0711ec0d26f4243"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "c06ec4de89b291e0"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "cfdf4012f5e18144"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "4cc7a7701b68a547"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "627c093062ecfd9e"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "9483487283b1387b"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "7efe336bd548c1eb"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "380e9b7e01919de8"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "49e493ba9d9cdaee"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "7f4d8f089118eefc"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "cc91da834ddfe494"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "7b483f24a5e10a33"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "7703153b36bfc9b6"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "60608e161fdc4ce7"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "bd7f8bdb76a13bfc"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "96624b82192c6f8e"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "ecef8a87fff05ec5"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "e99946a84e9f3cd1"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1b01fb896aca3936"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "b953f6aaf585947d"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "5742d60e72fda689"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "d28636bec9abc135"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "e2c3018441acbd2e"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "7f5bcbdd703362db"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "23401a0f23d0690e"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "89a7bf7a2b3291ea"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "dbcc00620ce6c76a"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "1254376799b05547"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "bbc8d3711f9f59d0"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "ee0b2a2afadfeae6"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "f464a4f949bf9e8d"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "d8bee5d1923e84df"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "2df1526c3493a5f3"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "5d788017bfe473fd"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "c9d26ddd43418f5c"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "bd5e132a1d184f5a"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "c70786704d6698fa"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "9bf626657ea30339"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "ed791ad4855e1a91"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "23658ea89505f466"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "00fa21ea5985792e"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "f622dc37fc91f307"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "27af46d887f8e954"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "e5a5f6c221812f01"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "16a31b48a21e77f1"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "a2412edb69d04e59"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "3ead6856cde3fc70"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "ff5835cd399bf35a"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "c5997e85ae513c07"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "d8f4eedefb37e7ff"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "79a1672b22fdc0e9"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "dcce3f06865c8531"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "1982a2666cfac8cf"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "6659811c85bb68ba"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "5f407328d4fa95d5"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "4e3d44b1c94a82c7"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "8fb7b4554047bfb8"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "bced4be28bae4ff3"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "c96a5593a7191327"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "aa201262e9a77f0a"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "090691bc62ce3c82"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "39ff0d28c520e9b2"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "1aaf3e0e4a95dd31"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "12ec25b003e357f3"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "fdb1baa61e242543"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "97967f1a5ab3fd00"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "55f744d9e86ed80d"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "212b43f7500d2e8a"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "6e018e49c50c447f"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "03473422f91a0fbc"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "52fcfde046ffcd01"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "10f287deb16fd7bf"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "c9d26ddd43418f5c"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "bda20d4958893d22"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "58ebae29ab3b81bc"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "5d788017bfe473fd"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "387ad1fd422d2239"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "63c0961b61a3641b"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "09b7d3b306b0b81f"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "380e9b7e01919de8"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "47d84c889b31d10f"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "7eaaef6c95f4da06"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "dbf039fd08550a5e"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "dd4cfb3e0eeb92ee"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "8497975606d65f20"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "ed4c00832419e699"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "e5b20a5cbea4b357"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "f8c442cfe6a62478"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "ab68950db1ccfbf7"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "324bedbeec8eec31"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "f5c1d0c56adfb24e"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "0233fb2cf045a577"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "aa201262e9a77f0a"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "387ad1fd422d2239"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "148adbc55cb7a9b7"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "387ad1fd422d2239"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "387ad1fd422d2239"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "b51398bb7d6b7bef"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "aaff0f071ef8c7f0"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "4af0c8846371997c"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "58e2fac3ae63f98b"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "ec3c470e4cb0ff77"
     }
   },
   "nl": {
@@ -70564,6 +72532,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "f83f1b040696eee3"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "9108b2c9f172ac2c"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "44cc3f03f0b7df42"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "12f87d4a26926e9b"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "ab5f1932ff33daf4"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "98af2f7a550b677d"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "700d272cc4b47ad2"
@@ -77060,6 +79048,18 @@
       "source": "d70c714110e3d096",
       "output": "e9709c7430f23fcd"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "6ddff84019bee53e"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "1bcd504fced42f1a"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "e906b11f407ed43a"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "38c1ad85670b873e"
@@ -77251,6 +79251,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "2986b4f1e80cc202"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "6f4d5697759419a1"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "7cd05fcd6c5c75a8"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -77700,6 +79708,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "8d16ff419f4e8185"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "406a25e02c7354d3"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -78007,6 +80019,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "576434df7a00aeae"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "d948be582b0ed1cc"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "d0536ba2931f44b0"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "23a684206f98211c"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "ca98321fd1e19c75"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "99d462dbdc65fe3d"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "d724c3edcf060ddf"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "80bf71586693846b"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "979990007c222648"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "87bc1d72fd424d91"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "a6e600a10fede40f"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "18d2b5ac93f214bf"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "d6c44c3e95df5008"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "9c606a0c3aca379d"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "ea89b5636546c3cc"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "7eedbeebcad8266b"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "749cb5862cf4ba0a"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "485d8f3d75fd3a57"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "97401a2bde646965"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "6b998d6097c5d9e5"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "1762bdf930f9fd00"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "f44d51e9cb35f141"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "d90cda6bdf6411e9"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "491fbe1c0a6d1f4a"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1beecf213692d574"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "292855546e7c104e"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "651505cffd3500b1"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "804254a4851f2ebb"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "946d3ebe90864895"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "2dd28a5c29d2432f"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "25de0b5999b26bed"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "9eaea03a0fb9a721"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "9ef2c1f7343bc0fd"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "d6aedac5cb8a084e"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "f198658f75c0a182"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "04968677f1cc068a"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "7bb03a861790f895"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "f1e444d4de156404"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "b254e23f7c87801d"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "5df5c1fa5dca2cc2"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "788c184d0a242ba9"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "f31b7db9231ecf6b"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "20094fdb4eefdb03"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "e799a8622706197d"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "cfd0a5ccce2f545c"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "62df70ac957b69ec"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "73f807b7d818ff43"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "6a450d8a109b5d9b"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "5c2f99b8327027ee"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "c5513b4a4fee1e25"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "30403d9c5088e154"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "6ddff84019bee53e"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "c15363ee85e2808b"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "3caa6d88a258af55"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "abcafc82daaf011f"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "b013287d089f8c3e"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "cdd5f1fbedeb33de"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "9175d8b37ef7a979"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "2d0756d0cbe10223"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "85d4b65856ee8dbd"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "aebf488661c05e89"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "3d26fa983495b389"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "15abcee1abe4dfc2"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "0c8ad79a75d2928b"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "8306926e25c4e546"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "ba984841f40149d5"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "906360eedddf52fc"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "55de6ac58e9321f8"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "e5a4e9245dada34d"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "7e938baa443d52dc"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "92c56429b34e441c"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "ca53207fe79a3392"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "dfa3aaaa5826f4b9"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "1022499eef434fe4"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "0604a69f28f04c5f"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "93bc88334721f4dc"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "77b6fda7b5b59011"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "3191db7caf04957e"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "5df5c1fa5dca2cc2"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "71708699acf8f3b3"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "7578352ba5637bbc"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "d047c0b9bf980f5b"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "6011061151842a7d"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "42a56773f6d57bbf"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "9c606a0c3aca379d"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "15eb7c806b7019dc"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "3a670c688fa98aaf"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "e0927c6c8ce5ae69"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "6329f89678a856fd"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "3801a35c51822839"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "e4416a3f06eafb7d"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "ed077f3d8125d60d"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "9e3a549669d789b8"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "1cd84f8419927248"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "9172e7df80ffdb8c"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "bcb0c10e6d99e309"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "dfc76a4a26bd64d5"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "ed0a2968058c5ac4"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "c76e6790bc5b4018"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "2b204e0c34fbc6b5"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "d047c0b9bf980f5b"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "c76e6790bc5b4018"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "3d0b12e99b608ce3"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "ef9cc5408077a83b"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "264b4025b4795735"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "a6a8d7c2c67ccef9"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "b254e23f7c87801d"
     }
   },
   "pl": {
@@ -86166,6 +88626,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "6da130e09513f304"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "cfaeed8e21c68e01"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "79b20c9e9811c1c9"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "6d934078643634f2"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "aa3304f808e0fa9f"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "81783d8a652d1ed6"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "05c3537b2416974d"
@@ -92662,6 +95142,18 @@
       "source": "d70c714110e3d096",
       "output": "56581873e3bf7246"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "7b15189e71ed42aa"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "43856e68c2c15611"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "d74eaff5b9effd52"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "236862cc13b3e9c5"
@@ -92853,6 +95345,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "563ccec76f07e54c"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "05f639ff618b2aca"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "144ff89e5aed4ab6"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -93302,6 +95802,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "fad6d2f820383947"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "b0098c6accc81a6b"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "df8525011f618f54"
@@ -93609,6 +96113,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "7237b73bc691a25b"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "c028764f2ff6df52"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "ab4c2ef1cb9e1677"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "a3c385625b9a3d5e"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "fca7bcac4ee40aa8"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "38498dc8b5e64c29"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "e86f7dcd67427ffa"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "ed405d4c3b0b0b76"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "e854befcbf361151"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "f1c1775a7923b507"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "33e0a4a8a9a76d95"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "40de6d27633af299"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "ae2d7e6c046a5b00"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "bdd4e1777666e7eb"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "6ebdce7fbd01f5e9"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "cd8fdd392f6781a9"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "47980267f3cdbed0"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "ef1ad35dc5d4e7f5"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "8f17178ad38f5e52"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "55ecd55f25356855"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "4d8d3ce70d04449d"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "5f11e37cffea68f4"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "a2db53fb98a78ef5"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "fb84e5ee68294e18"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7dd8120be3ebe142"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "a54df2c42bee852e"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "5b918c2ce6cd8ea0"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "931647da0d5b88f2"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "f20ee8a7ec766bde"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "406e2084e1b59369"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "47c9a2e96da17ab0"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "b4b10f572b8c33c0"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "b4e4f2d654f42bb6"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "71cb862f11120d8c"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "a8bc1a1f6f7c5ba5"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "6c5a439691c40bac"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "7b26db2f917da9f9"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "e27c59e82465695f"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "144127b0976e1d5b"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "991e336ca573c4d1"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "eb1724d0fdb92983"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "e0e15beca55ef56b"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "01e375aaaf064eac"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "4f35436431053768"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "ba808de2c6f27ebb"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "03120b0c655f42dc"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "30a536899d3d16c9"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "83f07dc6e90d3766"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "77da2c2318e7e150"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "64e32a7ae9ea9a54"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "0cddb6312abcb842"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "7b15189e71ed42aa"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "89107103b5390607"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "b6a0c0c469c5b62d"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "ddc4dba78e64c2fb"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "4f45b9365cb009a4"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "19d69c7147cc3979"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "4639b7476942905b"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "a12d289b655811b4"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "7e928ee9d2044ee4"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "a9ebad828109e46a"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "ccad341cf4ba1f60"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "15abcee1abe4dfc2"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "08736939706ecf70"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "24403fdca543688c"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "16f2685153f7a6b3"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "f3a9a670539c5ab6"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "49757b4b8dc6646a"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "cf4ad9bce57a43d6"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "2c1d59239b4ad17e"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "5e765eb97c2faae3"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "4f77bd68ef02ea08"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "68c6f687f9be1507"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "7435bef4ed25a291"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "3ca65a987a5ffb5c"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "cfe3804f56e582dc"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "e8fda0a702668503"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "4c870f05321b855c"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "48f319501ecc44ef"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "991e336ca573c4d1"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "60f23ad087baa707"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "1947a2f9c10bd03a"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "c51ec11f6b6000a9"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "99a9b7a7ffc3da7b"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "2acc2d81179d5efa"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "bdd4e1777666e7eb"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "ae7c2a743c8da4db"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "a98d253978673c0b"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "3f10ef4187a1b9b4"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "d0117cd3fe6dbf56"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "11366eeda2682659"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "05c938de3ecee35c"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "8f2faefb7b477518"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "6f84e93fdd550d3e"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "5828a33f5777f7bb"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "0f2b82f84c3e7ebb"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "87bb99e61ea0c0ac"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "7b15189e71ed42aa"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "b30f40d8dbcefd13"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "b0098c6accc81a6b"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "3557180f7c169a3f"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "c51ec11f6b6000a9"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "b0098c6accc81a6b"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "47d757e153367a89"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "93918b153b05b54e"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "6fb71f9da27ea3fe"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "2b3ea39d383dab0b"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "32d9777b6d69ea4a"
     }
   },
   "pt-BR": {
@@ -101768,6 +104720,26 @@
       "source": "f7ba6fb9894cc83d",
       "output": "6539a8f722094648"
     },
+    "errors.codes.work_item_assignee_invalid": {
+      "source": "a1fe04ab59a136e0",
+      "output": "6d2662da4adcff4e"
+    },
+    "errors.codes.work_item_budget_exhausted": {
+      "source": "aad6100004f08a34",
+      "output": "b4aceee319766824"
+    },
+    "errors.codes.work_item_closed": {
+      "source": "d22fb28fd7883c42",
+      "output": "2406b9973cac737a"
+    },
+    "errors.codes.work_item_parent_invalid": {
+      "source": "1229948f769fd1cd",
+      "output": "62553353365e584c"
+    },
+    "errors.codes.work_item_ref_invalid": {
+      "source": "970e2f4b247470ae",
+      "output": "ddfd08efa8a00261"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "4e134d996b25056b"
@@ -108264,6 +111236,18 @@
       "source": "d70c714110e3d096",
       "output": "9ced4546c77e8b1a"
     },
+    "shell.paletteCommands.create.workItem": {
+      "source": "f37e58b570f2feef",
+      "output": "42198a6b1dce416a"
+    },
+    "shell.paletteCommands.create.workItemHint": {
+      "source": "9680ea49a5d5439d",
+      "output": "479a55e6d2473bcc"
+    },
+    "shell.paletteCommands.create.workItemKeywords": {
+      "source": "ea06dbe9e7521dc3",
+      "output": "d35cb99e3a268430"
+    },
     "shell.paletteCommands.database.newRow": {
       "source": "14c24c82f1fd3059",
       "output": "e6a8ded996cbf4a2"
@@ -108455,6 +111439,14 @@
     "shell.paletteCommands.navigation.templates.label": {
       "source": "3fb3c21ed8334336",
       "output": "2b6ce27eae163fe9"
+    },
+    "shell.paletteCommands.navigation.workItems.keywords": {
+      "source": "cf0171f2ffa21e3c",
+      "output": "a15b5cce64235c1e"
+    },
+    "shell.paletteCommands.navigation.workItems.label": {
+      "source": "7b38e9de28def86b",
+      "output": "ecdfa653d310d84c"
     },
     "shell.paletteCommands.navigation.workspaceHome.keywords": {
       "source": "e47a93cb55fb26ac",
@@ -108904,6 +111896,10 @@
       "source": "3578ccc0a6d141a2",
       "output": "2782ec42dab6d050"
     },
+    "shell.smartViews.openWorkItems": {
+      "source": "317e945179ce8499",
+      "output": "1ca89d1baefcb29e"
+    },
     "shell.topbar.accountFallback": {
       "source": "df8525011f618f54",
       "output": "5a4cc65d866b2781"
@@ -109211,6 +112207,454 @@
     "ui.states.retry": {
       "source": "948643cb59e8274f",
       "output": "b9e10688be012d8b"
+    },
+    "workItems.deleteDialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.deleteDialog.confirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "51938d6459423161"
+    },
+    "workItems.deleteDialog.description": {
+      "source": "48c42fa80c5456d4",
+      "output": "e4847545785dd1df"
+    },
+    "workItems.deleteDialog.title": {
+      "source": "6b034bd745e4c016",
+      "output": "8821acaeeaacf3ee"
+    },
+    "workItems.detail.addChild": {
+      "source": "36648f8545c0dfb8",
+      "output": "9550a5e555b32831"
+    },
+    "workItems.detail.addNote": {
+      "source": "4f07f41aac5aef98",
+      "output": "11dbbf8c0fd9a766"
+    },
+    "workItems.detail.backToList": {
+      "source": "93ce70ebdfcb8706",
+      "output": "42b1a52309119fb0"
+    },
+    "workItems.detail.backToParent": {
+      "source": "f1f261c770d41fa9",
+      "output": "f2c87ae1123cf9f7"
+    },
+    "workItems.detail.budget": {
+      "source": "66e74cf35036ec87",
+      "output": "4a7babc0d2cf598e"
+    },
+    "workItems.detail.childrenHeading": {
+      "source": "cab088de1364b009",
+      "output": "fd643fd44737dd37"
+    },
+    "workItems.detail.contextHeading": {
+      "source": "d2f889a154968f84",
+      "output": "dbb654a486a5fc1f"
+    },
+    "workItems.detail.criteriaHeading": {
+      "source": "cf96d20f99ade78d",
+      "output": "aa1f9782ad710169"
+    },
+    "workItems.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "8b19518ff49b2e29"
+    },
+    "workItems.detail.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "0513992c68a5d959"
+    },
+    "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "workItems.detail.handover": {
+      "source": "e48804479e312377",
+      "output": "572b2c96502490d4"
+    },
+    "workItems.detail.historyHeading": {
+      "source": "4eaa806899ccca3d",
+      "output": "a80de96d9716c999"
+    },
+    "workItems.detail.loadFailed": {
+      "source": "212a70a426ded540",
+      "output": "6b3311519a9dd1be"
+    },
+    "workItems.detail.loading": {
+      "source": "af1037616893870f",
+      "output": "0c9d16da4c63b4c1"
+    },
+    "workItems.detail.noChildren": {
+      "source": "8b0dce0ca708414e",
+      "output": "933af8b623d0943d"
+    },
+    "workItems.detail.noResult": {
+      "source": "ca1b711b709c7d5b",
+      "output": "53b08106b9f8b5fa"
+    },
+    "workItems.detail.noRuns": {
+      "source": "f3a9c002347197a4",
+      "output": "180f32e70bef3e46"
+    },
+    "workItems.detail.noteLabel": {
+      "source": "74b487d9d2235bde",
+      "output": "ecef8a87fff05ec5"
+    },
+    "workItems.detail.notePlaceholder": {
+      "source": "aa77ed96d4102fbd",
+      "output": "36bf1bc455cd4696"
+    },
+    "workItems.detail.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "a8bba40ab0e0d188"
+    },
+    "workItems.detail.reasonLabel": {
+      "source": "e5ff3f97ee8482d4",
+      "output": "728e79c25ca9a0e6"
+    },
+    "workItems.detail.reasonPlaceholder": {
+      "source": "6b88814af3540086",
+      "output": "e13c9e387bc78650"
+    },
+    "workItems.detail.resultHeading": {
+      "source": "cd8e22cf7439433d",
+      "output": "a71bc39fe3f33e42"
+    },
+    "workItems.detail.resultPlaceholder": {
+      "source": "6e6561a07328cf5e",
+      "output": "832e4bce3f42d4d5"
+    },
+    "workItems.detail.runStatus.cancelled": {
+      "source": "1b347fa5449b22d6",
+      "output": "72ade12c5299042c"
+    },
+    "workItems.detail.runStatus.completed": {
+      "source": "fdc275ebe7bd74e1",
+      "output": "9a77d3ffe4e3377d"
+    },
+    "workItems.detail.runStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "365a43015bcee051"
+    },
+    "workItems.detail.runStatus.pending": {
+      "source": "542760e258ca8b0d",
+      "output": "2e4e5aceedd4d2e7"
+    },
+    "workItems.detail.runStatus.running": {
+      "source": "870fa7cc61521952",
+      "output": "cd3d121df6f7cd51"
+    },
+    "workItems.detail.runStatus.timed_out": {
+      "source": "574ffd399bfb15dc",
+      "output": "471c2f0b84e5c472"
+    },
+    "workItems.detail.runsHeading": {
+      "source": "9448e3a9821691b6",
+      "output": "8a01adbc3d12c644"
+    },
+    "workItems.detail.saveResult": {
+      "source": "4a588183ebf1d043",
+      "output": "9fc232ef7737ded7"
+    },
+    "workItems.detail.setStatus": {
+      "source": "6d1352ac5b19e77f",
+      "output": "3699d0222ed94cfd"
+    },
+    "workItems.detail.startRun": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "93900238fb874e2d"
+    },
+    "workItems.detail.statusLabel": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.dialog.assigneeLabel": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "ac7cc80ede59182a"
+    },
+    "workItems.dialog.budgetLabel": {
+      "source": "d434378e0b9e09ad",
+      "output": "755978fb044870ad"
+    },
+    "workItems.dialog.budgetPlaceholder": {
+      "source": "695bfd96ce1cb807",
+      "output": "1512aa1209d545a3"
+    },
+    "workItems.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "49ba5d18d8c4c23f"
+    },
+    "workItems.dialog.criteriaHint": {
+      "source": "65d02e8b9dc4c420",
+      "output": "3a8504929cc43d55"
+    },
+    "workItems.dialog.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "e02f7672291f4278"
+    },
+    "workItems.dialog.criteriaPlaceholder": {
+      "source": "4fd38fc48a6c8628",
+      "output": "cc612d754c965745"
+    },
+    "workItems.dialog.description": {
+      "source": "c47e0fb5163ea6a0",
+      "output": "32b498353ec7902d"
+    },
+    "workItems.dialog.dueLabel": {
+      "source": "d1540c9a6c9e74d9",
+      "output": "47c0212b2f3ec5a0"
+    },
+    "workItems.dialog.editTitle": {
+      "source": "f2f454e78acf41ff",
+      "output": "bf5c21b8e101b9ef"
+    },
+    "workItems.dialog.goalLabel": {
+      "source": "f487ce3960189b78",
+      "output": "e9daca354ed6f76d"
+    },
+    "workItems.dialog.goalPlaceholder": {
+      "source": "76d6cb2eec3c1460",
+      "output": "4e4dbac778937578"
+    },
+    "workItems.dialog.newTitle": {
+      "source": "f37e58b570f2feef",
+      "output": "98df98ad7e73194b"
+    },
+    "workItems.dialog.priorityLabel": {
+      "source": "787e02f4cc6510e0",
+      "output": "f615779d46c4296b"
+    },
+    "workItems.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "aef7cd5b2081351d"
+    },
+    "workItems.dialog.titleLabel": {
+      "source": "abcafc82daaf011f",
+      "output": "4c08a5d5feb22ce2"
+    },
+    "workItems.labels.event.assigned": {
+      "source": "bc917b33ca3ac47e",
+      "output": "42df6d2746938255"
+    },
+    "workItems.labels.event.created": {
+      "source": "12e726cec9b93c27",
+      "output": "a4849844f8b72d5b"
+    },
+    "workItems.labels.event.note": {
+      "source": "29962f26a181cca8",
+      "output": "0793eaa4c27ac42a"
+    },
+    "workItems.labels.event.resultRecorded": {
+      "source": "a7cef6a9d105720b",
+      "output": "adfa994e976dde42"
+    },
+    "workItems.labels.event.runStarted": {
+      "source": "ff67a290f6f01762",
+      "output": "221101b460894dc8"
+    },
+    "workItems.labels.event.statusChanged": {
+      "source": "987d63d185a30c4b",
+      "output": "3d31fc95fdfce03b"
+    },
+    "workItems.labels.event.updated": {
+      "source": "e70f813dbe8ec75a",
+      "output": "71a1678e31cbb8f8"
+    },
+    "workItems.labels.participant.agent": {
+      "source": "18911cfef541c4a1",
+      "output": "bced4be28bae4ff3"
+    },
+    "workItems.labels.participant.assistant": {
+      "source": "1342829af026a898",
+      "output": "dfce464eb39e96bf"
+    },
+    "workItems.labels.participant.nobody": {
+      "source": "8306926e25c4e546",
+      "output": "19abe373562b9756"
+    },
+    "workItems.labels.participant.unknown": {
+      "source": "6948dec12484d08f",
+      "output": "e9c575842c856f16"
+    },
+    "workItems.labels.priority.high": {
+      "source": "5f9d45fa2f0b9372",
+      "output": "42719229fd62e2d6"
+    },
+    "workItems.labels.priority.low": {
+      "source": "ee12538381b9ba42",
+      "output": "3591fc74b0b7a73c"
+    },
+    "workItems.labels.priority.normal": {
+      "source": "a7248eeb45eb1ce2",
+      "output": "a7248eeb45eb1ce2"
+    },
+    "workItems.labels.priority.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "workItems.labels.status.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "0fff1ccde9ea237a"
+    },
+    "workItems.labels.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "3d15e61f2ccd5186"
+    },
+    "workItems.labels.status.done": {
+      "source": "467e01ba533e1a45",
+      "output": "734601b1cdc91cf1"
+    },
+    "workItems.labels.status.failed": {
+      "source": "4dca28c43ddb9239",
+      "output": "253acf999f5d9871"
+    },
+    "workItems.labels.status.queued": {
+      "source": "23ec7d7e6edfa554",
+      "output": "e107ec3fbf41cb36"
+    },
+    "workItems.labels.status.review": {
+      "source": "564e74e7b4689cad",
+      "output": "73d549030638e99f"
+    },
+    "workItems.labels.status.waiting_for_human": {
+      "source": "f404a198f9008602",
+      "output": "359bc77f38d25d5e"
+    },
+    "workItems.labels.status.working": {
+      "source": "e94e8adc17be38a7",
+      "output": "d6f779583776b1e7"
+    },
+    "workItems.list.children": {
+      "source": "f633141c09a28c01",
+      "output": "98014b48e58f93f6"
+    },
+    "workItems.list.columns.assignee": {
+      "source": "c0f2f15055d2ce2d",
+      "output": "ac7cc80ede59182a"
+    },
+    "workItems.list.columns.progress": {
+      "source": "33a4ae771e41ae17",
+      "output": "bb43cb06a2836724"
+    },
+    "workItems.list.columns.requester": {
+      "source": "f997e048f3be2a5c",
+      "output": "ee4e6f46c9cc8842"
+    },
+    "workItems.list.columns.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "workItems.list.columns.title": {
+      "source": "60c8820ffaf32795",
+      "output": "5cbab8eec44ec501"
+    },
+    "workItems.list.columns.updated": {
+      "source": "4960baa024977c37",
+      "output": "69ba802972359af0"
+    },
+    "workItems.list.criteria": {
+      "source": "fb50aedbf0476b18",
+      "output": "0b39289b32c305a7"
+    },
+    "workItems.list.due": {
+      "source": "f2bcd8f847f99de8",
+      "output": "0513992c68a5d959"
+    },
+    "workItems.list.emptyAllTitle": {
+      "source": "67c7d188553bb1c5",
+      "output": "2df68ee66a5a9ec6"
+    },
+    "workItems.list.emptyDescription": {
+      "source": "88f50d9cb7d1f6e4",
+      "output": "a3c12f7934b088a7"
+    },
+    "workItems.list.emptyTitle": {
+      "source": "e7ffa9502ab2dac7",
+      "output": "42022294cfa30cf9"
+    },
+    "workItems.list.filterLabel": {
+      "source": "532eb150aab6a8f5",
+      "output": "3c07a46494f0d62e"
+    },
+    "workItems.list.filters.all": {
+      "source": "3801a35c51822839",
+      "output": "aff4d19d6ee43b20"
+    },
+    "workItems.list.filters.mine": {
+      "source": "a7a5d81e90d3e452",
+      "output": "0c3a5f4913b696d9"
+    },
+    "workItems.list.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "df72ebb676167e16"
+    },
+    "workItems.list.filters.requested": {
+      "source": "e7a54c58ce2db9dd",
+      "output": "a1e5ca7d1abbc720"
+    },
+    "workItems.list.intro": {
+      "source": "b44e903898316f72",
+      "output": "8eb4936e6cf40fdf"
+    },
+    "workItems.list.loadFailed": {
+      "source": "331d324f6f47ccc3",
+      "output": "45ef06b1d7ff02ab"
+    },
+    "workItems.list.loading": {
+      "source": "6721cc791a636762",
+      "output": "49ac831a954514a6"
+    },
+    "workItems.list.newItem": {
+      "source": "f37e58b570f2feef",
+      "output": "98df98ad7e73194b"
+    },
+    "workItems.list.noCriteria": {
+      "source": "8a572015c49b2071",
+      "output": "496a53a0f11e2a18"
+    },
+    "workItems.list.title": {
+      "source": "317e945179ce8499",
+      "output": "4b2b8ace4d3742f1"
+    },
+    "workItems.list.truncated": {
+      "source": "b734b3002bb4d430",
+      "output": "1d86b623a60c3cdc"
+    },
+    "workItems.route.detailTitle": {
+      "source": "60c8820ffaf32795",
+      "output": "5cbab8eec44ec501"
+    },
+    "workItems.route.listTitle": {
+      "source": "317e945179ce8499",
+      "output": "4b2b8ace4d3742f1"
+    },
+    "workItems.startRun.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "workItems.startRun.description": {
+      "source": "b264b1ab90807f86",
+      "output": "34ab3de2accf9b17"
+    },
+    "workItems.startRun.instructionsLabel": {
+      "source": "6fd6433e9cf40067",
+      "output": "dd22103414762384"
+    },
+    "workItems.startRun.instructionsPlaceholder": {
+      "source": "1dc7c54d650b7d87",
+      "output": "aca21fb2b5091a7c"
+    },
+    "workItems.startRun.start": {
+      "source": "a6a8d7c2c67ccef9",
+      "output": "6dfbcc6fb285566f"
+    },
+    "workItems.startRun.title": {
+      "source": "3e6de6e0eeb81b3a",
+      "output": "93900238fb874e2d"
     }
   }
 }

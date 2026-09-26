@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "Move “{name}” up",
     "moveDown": "Move “{name}” down",
-    "openSearch": "Search and saved searches"
+    "openSearch": "Search and saved searches",
+    "openWorkItems": "Work items"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Shares in this workspace",
         "keywords": "share shared link workspace"
       },
+      "workItems": {
+        "label": "Open work items",
+        "keywords": "work item work items task delegate delegated agent complete assignee work item"
+      },
       "automations": {
         "label": "Open automations",
         "keywords": "automation rule schedule trigger workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "New saved search",
       "savedQueryHint": "in advanced search",
       "savedQueryKeywords": "saved search smart view view filter save new",
+      "workItem": "New work item",
+      "workItemHint": "Hand off work to a person, an agent, or the AI",
+      "workItemKeywords": "work item task delegate hand off have completed agent ai work item",
       "fromTemplate": "Create page from template",
       "fromTemplateKeywords": "template pattern new page create",
       "fromTemplatePlaceholder": "Which template?",

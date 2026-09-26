@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "“{name}” para cima",
     "moveDown": "“{name}” para baixo",
-    "openSearch": "Busca e buscas salvas"
+    "openSearch": "Busca e buscas salvas",
+    "openWorkItems": "Tarefas de trabalho"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Compartilhamentos deste espaço de trabalho",
         "keywords": "compartilhamento compartilhado link espaço de trabalho workspace"
       },
+      "workItems": {
+        "label": "Abrir tarefas de trabalho",
+        "keywords": "tarefa tarefas trabalho delegar delegado agente concluir responsavel executor work item"
+      },
       "automations": {
         "label": "Abrir automações",
         "keywords": "automação regra agendamento gatilho workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Nova busca salva",
       "savedQueryHint": "na busca avançada",
       "savedQueryKeywords": "busca salva pesquisa salva smart view visualização filtro salvar novo nova",
+      "workItem": "Nova tarefa de trabalho",
+      "workItemHint": "Delegar trabalho a uma pessoa, um agente ou à IA",
+      "workItemKeywords": "tarefa trabalho delegar passar encarregar agente ia work item",
       "fromTemplate": "Criar página a partir de modelo",
       "fromTemplateKeywords": "modelo template padrão novo página criar",
       "fromTemplatePlaceholder": "Qual modelo?",

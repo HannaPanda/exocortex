@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Aufträge",
+    "detailTitle": "Auftrag"
+  },
+  "labels": {
+    "status": {
+      "queued": "Angelegt",
+      "working": "In Arbeit",
+      "blocked": "Blockiert",
+      "waiting_for_human": "Wartet auf Rückmeldung",
+      "review": "Zur Abnahme",
+      "done": "Erledigt",
+      "failed": "Gescheitert",
+      "cancelled": "Abgebrochen"
+    },
+    "priority": {
+      "low": "Niedrig",
+      "normal": "Normal",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "participant": {
+      "nobody": "Niemand",
+      "assistant": "Eingebaute KI",
+      "unknown": "Unbekanntes Konto",
+      "agent": "{name} (Agent)"
+    },
+    "event": {
+      "created": "hat den Auftrag angelegt",
+      "statusChanged": "hat den Status von „{from}“ auf „{to}“ gesetzt",
+      "assigned": "hat den Auftrag an {assignee} gegeben",
+      "runStarted": "hat einen KI-Lauf gestartet",
+      "resultRecorded": "hat das Ergebnis eingetragen",
+      "note": "hat eine Notiz hinzugefügt",
+      "updated": "hat {count, plural, one {ein Feld} other {# Felder}} geändert"
+    }
+  },
+  "list": {
+    "title": "Aufträge",
+    "intro": "Arbeit, die du an eine Person, einen Agenten oder die eingebaute KI übergeben hast oder die dir übergeben wurde. Ein Auftrag bleibt bestehen, auch wenn ein KI-Lauf scheitert, und kann auf jemanden warten.",
+    "newItem": "Neuer Auftrag",
+    "filterLabel": "Welche Aufträge",
+    "filters": {
+      "open": "Offen",
+      "mine": "Mir zugewiesen",
+      "requested": "Von mir",
+      "all": "Alle"
+    },
+    "loading": "Aufträge werden geladen …",
+    "loadFailed": "Die Aufträge konnten nicht geladen werden.",
+    "emptyTitle": "Keine offenen Aufträge",
+    "emptyAllTitle": "Noch keine Aufträge",
+    "emptyDescription": "Lege einen Auftrag an, wenn etwas erledigt werden soll, das länger dauert als eine Antwort im Chat.",
+    "truncated": "Es gibt mehr Aufträge, als hier stehen. Grenze die Auswahl mit den Filtern ein.",
+    "columns": {
+      "title": "Auftrag",
+      "status": "Status",
+      "assignee": "Bearbeiter",
+      "requester": "Auftraggeber",
+      "progress": "Kriterien",
+      "updated": "Zuletzt geändert"
+    },
+    "noCriteria": "Keine",
+    "criteria": "{met} von {total}",
+    "children": "{count, plural, one {# Teilauftrag} other {# Teilaufträge}}",
+    "due": "Fällig am {day}"
+  },
+  "dialog": {
+    "newTitle": "Neuer Auftrag",
+    "editTitle": "Auftrag bearbeiten",
+    "description": "Beschreibe, was erreicht werden soll und woran man erkennt, dass es erledigt ist.",
+    "titleLabel": "Titel",
+    "goalLabel": "Ziel",
+    "goalPlaceholder": "Was soll am Ende da sein? Was ist bekannt, was nicht?",
+    "criteriaLabel": "Akzeptanzkriterien",
+    "criteriaPlaceholder": "Ein Kriterium pro Zeile",
+    "criteriaHint": "Ein Kriterium pro Zeile. Bereits erfüllte bleiben erfüllt, solange ihr Text gleich bleibt.",
+    "assigneeLabel": "Bearbeiter",
+    "priorityLabel": "Priorität",
+    "dueLabel": "Fällig am",
+    "budgetLabel": "Budget für KI-Läufe (USD)",
+    "budgetPlaceholder": "ohne Grenze",
+    "cancel": "Abbrechen",
+    "create": "Anlegen",
+    "save": "Speichern"
+  },
+  "detail": {
+    "loading": "Auftrag wird geladen …",
+    "loadFailed": "Der Auftrag konnte nicht geladen werden.",
+    "backToList": "Alle Aufträge",
+    "backToParent": "Zurück zu „{title}“",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "handover": "{requester} an {assignee}",
+    "due": "Fällig am {day}",
+    "startRun": "KI-Lauf starten",
+    "statusLabel": "Status",
+    "reasonLabel": "Worauf wartet der Auftrag?",
+    "reasonPlaceholder": "Zum Beispiel: Zugang zum Archiv fehlt",
+    "setStatus": "Status setzen",
+    "criteriaHeading": "Akzeptanzkriterien ({met} von {total})",
+    "contextHeading": "Kontext",
+    "resultHeading": "Ergebnis",
+    "resultPlaceholder": "Was ist dabei herausgekommen?",
+    "saveResult": "Ergebnis speichern",
+    "noResult": "Noch kein Ergebnis.",
+    "childrenHeading": "Teilaufträge",
+    "addChild": "Teilauftrag anlegen",
+    "noChildren": "Keine Teilaufträge.",
+    "runsHeading": "KI-Läufe",
+    "budget": "{spent} von {budget} verbraucht",
+    "noRuns": "Noch kein Lauf.",
+    "runStatus": {
+      "pending": "wartet",
+      "running": "läuft",
+      "completed": "fertig",
+      "failed": "fehlgeschlagen",
+      "cancelled": "abgebrochen",
+      "timed_out": "Zeit überschritten"
+    },
+    "openConversation": "Unterhaltung öffnen",
+    "historyHeading": "Historie",
+    "notePlaceholder": "Zwischenstand, Rückfrage oder Hinweis für den nächsten Versuch",
+    "noteLabel": "Notiz",
+    "addNote": "Notiz hinzufügen"
+  },
+  "startRun": {
+    "title": "KI-Lauf starten",
+    "description": "Die eingebaute KI bekommt den Auftrag mit Ziel, Kriterien und Kontextseiten in einer eigenen Unterhaltung und trägt ihr Ergebnis am Auftrag ein. Ein Auftrag ohne Bearbeiter geht dabei an die KI.",
+    "instructionsLabel": "Hinweise für diesen Versuch (optional)",
+    "instructionsPlaceholder": "Zum Beispiel: Sieh dir zuerst die Anhänge an.",
+    "cancel": "Abbrechen",
+    "start": "Starten"
+  },
+  "deleteDialog": {
+    "title": "Auftrag endgültig löschen?",
+    "description": "Der Auftrag und seine Historie sind danach weg. Teilaufträge bleiben und stehen für sich, KI-Läufe bleiben im Verbrauch. Wenn der Auftrag nur nicht mehr gebraucht wird, setze ihn stattdessen auf „Abgebrochen“.",
+    "cancel": "Abbrechen",
+    "confirm": "Endgültig löschen"
+  }
+}

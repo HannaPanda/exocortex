@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Tâches",
+    "detailTitle": "Tâche"
+  },
+  "labels": {
+    "status": {
+      "queued": "En attente",
+      "working": "En cours",
+      "blocked": "Bloquée",
+      "waiting_for_human": "En attente de réponse",
+      "review": "À valider",
+      "done": "Terminée",
+      "failed": "Échouée",
+      "cancelled": "Annulée"
+    },
+    "priority": {
+      "low": "Basse",
+      "normal": "Normale",
+      "high": "Haute",
+      "urgent": "Urgente"
+    },
+    "participant": {
+      "nobody": "Personne",
+      "assistant": "IA intégrée",
+      "unknown": "Compte inconnu",
+      "agent": "{name} (agent)"
+    },
+    "event": {
+      "created": "a créé la tâche",
+      "statusChanged": "a changé le statut de « {from} » à « {to} »",
+      "assigned": "a attribué la tâche à {assignee}",
+      "runStarted": "a lancé une exécution d’IA",
+      "resultRecorded": "a enregistré le résultat",
+      "note": "a ajouté une note",
+      "updated": "a modifié {count, plural, one {# champ} many {# champs} other {# champs}}"
+    }
+  },
+  "list": {
+    "title": "Tâches",
+    "intro": "Travail que tu as délégué à une personne, un agent ou l’IA intégrée, ou qui t’a été confié. Une tâche persiste même si une exécution d’IA échoue, et peut rester en attente de quelqu’un.",
+    "newItem": "Nouvelle tâche",
+    "filterLabel": "Quelles tâches",
+    "filters": {
+      "open": "Ouvertes",
+      "mine": "Attribuées à moi",
+      "requested": "Créées par moi",
+      "all": "Toutes"
+    },
+    "loading": "Chargement des tâches…",
+    "loadFailed": "Impossible de charger les tâches.",
+    "emptyTitle": "Aucune tâche ouverte",
+    "emptyAllTitle": "Aucune tâche pour le moment",
+    "emptyDescription": "Crée une tâche quand un travail prend plus de temps qu’une simple réponse dans le chat.",
+    "truncated": "Il y a plus de tâches que celles affichées ici. Affine la sélection à l’aide des filtres.",
+    "columns": {
+      "title": "Tâche",
+      "status": "Statut",
+      "assignee": "Responsable",
+      "requester": "Commanditaire",
+      "progress": "Critères",
+      "updated": "Dernière modification"
+    },
+    "noCriteria": "Aucun",
+    "criteria": "{met} sur {total}",
+    "children": "{count, plural, one {# sous-tâche} many {# sous-tâches} other {# sous-tâches}}",
+    "due": "Échéance le {day}"
+  },
+  "dialog": {
+    "newTitle": "Nouvelle tâche",
+    "editTitle": "Modifier la tâche",
+    "description": "Décris ce qui doit être accompli et comment savoir si c’est terminé.",
+    "titleLabel": "Titre",
+    "goalLabel": "Objectif",
+    "goalPlaceholder": "Quel doit être le résultat final ? Que sait-on et que reste-t-il à clarifier ?",
+    "criteriaLabel": "Critères d’acceptation",
+    "criteriaPlaceholder": "Un critère par ligne",
+    "criteriaHint": "Un critère par ligne. Les critères déjà validés le restent tant que leur texte ne change pas.",
+    "assigneeLabel": "Responsable",
+    "priorityLabel": "Priorité",
+    "dueLabel": "Échéance le",
+    "budgetLabel": "Budget pour les exécutions d’IA (USD)",
+    "budgetPlaceholder": "sans limite",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "save": "Enregistrer"
+  },
+  "detail": {
+    "loading": "Chargement de la tâche…",
+    "loadFailed": "Impossible de charger la tâche.",
+    "backToList": "Toutes les tâches",
+    "backToParent": "Retour à « {title} »",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "handover": "{requester} à {assignee}",
+    "due": "Échéance le {day}",
+    "startRun": "Lancer l’exécution d’IA",
+    "statusLabel": "Statut",
+    "reasonLabel": "Qu’attend cette tâche ?",
+    "reasonPlaceholder": "Par exemple : accès aux archives manquant",
+    "setStatus": "Définir le statut",
+    "criteriaHeading": "Critères d’acceptation ({met} sur {total})",
+    "contextHeading": "Contexte",
+    "resultHeading": "Résultat",
+    "resultPlaceholder": "Quel est le résultat obtenu ?",
+    "saveResult": "Enregistrer le résultat",
+    "noResult": "Aucun résultat pour le moment.",
+    "childrenHeading": "Sous-tâches",
+    "addChild": "Créer une sous-tâche",
+    "noChildren": "Aucune sous-tâche.",
+    "runsHeading": "Exécutions de l’IA",
+    "budget": "{spent} sur {budget} consommés",
+    "noRuns": "Aucune exécution pour le moment.",
+    "runStatus": {
+      "pending": "en attente",
+      "running": "en cours",
+      "completed": "terminé",
+      "failed": "échoué",
+      "cancelled": "annulé",
+      "timed_out": "délai dépassé"
+    },
+    "openConversation": "Ouvrir la conversation",
+    "historyHeading": "Historique",
+    "notePlaceholder": "Point d’étape, question ou remarque pour la prochaine tentative",
+    "noteLabel": "Note",
+    "addNote": "Ajouter une note"
+  },
+  "startRun": {
+    "title": "Lancer une exécution de l’IA",
+    "description": "L’IA intégrée reçoit la tâche avec l’objectif, les critères et les pages de contexte dans une conversation dédiée, puis consigne son résultat sur la tâche. Une tâche sans personne assignée est alors attribuée à l’IA.",
+    "instructionsLabel": "Consignes pour cette tentative (facultatif)",
+    "instructionsPlaceholder": "Par exemple : Regarde d’abord les pièces jointes.",
+    "cancel": "Annuler",
+    "start": "Démarrer"
+  },
+  "deleteDialog": {
+    "title": "Supprimer définitivement la tâche ?",
+    "description": "La tâche et son historique seront supprimés. Les sous-tâches sont conservées et deviennent indépendantes, les exécutions de l’IA restent comptabilisées dans la consommation. Si la tâche n’est simplement plus utile, passe-la plutôt au statut « Annulée ».",
+    "cancel": "Annuler",
+    "confirm": "Supprimer définitivement"
+  }
+}

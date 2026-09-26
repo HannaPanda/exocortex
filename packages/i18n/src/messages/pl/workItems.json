@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Zadania",
+    "detailTitle": "Zadanie"
+  },
+  "labels": {
+    "status": {
+      "queued": "W kolejce",
+      "working": "W toku",
+      "blocked": "Zablokowane",
+      "waiting_for_human": "Oczekuje na odpowiedź",
+      "review": "Do weryfikacji",
+      "done": "Ukończone",
+      "failed": "Niepowodzenie",
+      "cancelled": "Anulowane"
+    },
+    "priority": {
+      "low": "Niski",
+      "normal": "Normalny",
+      "high": "Wysoki",
+      "urgent": "Pilny"
+    },
+    "participant": {
+      "nobody": "Nikt",
+      "assistant": "Wbudowane AI",
+      "unknown": "Nieznane konto",
+      "agent": "{name} (agent)"
+    },
+    "event": {
+      "created": "tworzy zadanie",
+      "statusChanged": "zmienia status z „{from}” na „{to}”",
+      "assigned": "przypisuje zadanie do: {assignee}",
+      "runStarted": "uruchamia przebieg AI",
+      "resultRecorded": "zapisuje wynik",
+      "note": "dodaje notatkę",
+      "updated": "zmienia {count, plural, one {jedno pole} few {# pola} many {# pól} other {# pola}}"
+    }
+  },
+  "list": {
+    "title": "Zadania",
+    "intro": "Praca przekazana przez ciebie osobie, agentowi lub wbudowanemu AI albo przekazana tobie. Zadanie nie znika, nawet jeśli przebieg AI zakończy się niepowodzeniem, i może oczekiwać na czyjąś reakcję.",
+    "newItem": "Nowe zadanie",
+    "filterLabel": "Które zadania",
+    "filters": {
+      "open": "Otwarte",
+      "mine": "Przypisane do mnie",
+      "requested": "Zlecone przeze mnie",
+      "all": "Wszystkie"
+    },
+    "loading": "Wczytywanie zadań…",
+    "loadFailed": "Nie udało się wczytać zadań.",
+    "emptyTitle": "Brak otwartych zadań",
+    "emptyAllTitle": "Brak zadań",
+    "emptyDescription": "Utwórz zadanie, jeśli coś wymaga pracy trwającej dłużej niż zwykła odpowiedź na czacie.",
+    "truncated": "Zadań jest więcej, niż widać na tej liście. Zawęź wybór za pomocą filtrów.",
+    "columns": {
+      "title": "Zadanie",
+      "status": "Status",
+      "assignee": "Osoba odpowiedzialna",
+      "requester": "Zleceniodawca",
+      "progress": "Kryteria",
+      "updated": "Ostatnia zmiana"
+    },
+    "noCriteria": "Brak",
+    "criteria": "{met} z {total}",
+    "children": "{count, plural, one {# podzadanie} few {# podzadania} many {# podzadań} other {# podzadania}}",
+    "due": "Termin: {day}"
+  },
+  "dialog": {
+    "newTitle": "Nowe zadanie",
+    "editTitle": "Edytuj zadanie",
+    "description": "Opisz, co ma zostać osiągnięte i po czym poznać, że jest gotowe.",
+    "titleLabel": "Tytuł",
+    "goalLabel": "Cel",
+    "goalPlaceholder": "Co ma powstać na koniec? Co wiadomo, a co nie?",
+    "criteriaLabel": "Kryteria akceptacji",
+    "criteriaPlaceholder": "Jedno kryterium w wierszu",
+    "criteriaHint": "Jedno kryterium w wierszu. Już spełnione pozostaną spełnione, dopóki ich treść się nie zmieni.",
+    "assigneeLabel": "Osoba odpowiedzialna",
+    "priorityLabel": "Priorytet",
+    "dueLabel": "Termin",
+    "budgetLabel": "Budżet na przebiegi AI (USD)",
+    "budgetPlaceholder": "bez limitu",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "save": "Zapisz"
+  },
+  "detail": {
+    "loading": "Ładowanie zadania…",
+    "loadFailed": "Nie udało się załadować zadania.",
+    "backToList": "Wszystkie zadania",
+    "backToParent": "Wróć do „{title}”",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "handover": "{requester} do {assignee}",
+    "due": "Termin: {day}",
+    "startRun": "Uruchom przebieg AI",
+    "statusLabel": "Status",
+    "reasonLabel": "Na co czeka zadanie?",
+    "reasonPlaceholder": "Na przykład: brak dostępu do archiwum",
+    "setStatus": "Ustaw status",
+    "criteriaHeading": "Kryteria akceptacji ({met} z {total})",
+    "contextHeading": "Kontekst",
+    "resultHeading": "Wynik",
+    "resultPlaceholder": "Jaki jest wynik?",
+    "saveResult": "Zapisz wynik",
+    "noResult": "Brak wyniku.",
+    "childrenHeading": "Podzadania",
+    "addChild": "Utwórz podzadanie",
+    "noChildren": "Brak podzadań.",
+    "runsHeading": "Uruchomienia AI",
+    "budget": "Wykorzystano {spent} z {budget}",
+    "noRuns": "Brak uruchomień.",
+    "runStatus": {
+      "pending": "oczekuje",
+      "running": "działa",
+      "completed": "ukończono",
+      "failed": "nie powiodło się",
+      "cancelled": "anulowano",
+      "timed_out": "przekroczono limit czasu"
+    },
+    "openConversation": "Otwórz rozmowę",
+    "historyHeading": "Historia",
+    "notePlaceholder": "Aktualny stan, pytanie lub wskazówka do następnej próby",
+    "noteLabel": "Notatka",
+    "addNote": "Dodaj notatkę"
+  },
+  "startRun": {
+    "title": "Uruchom AI",
+    "description": "Wbudowana AI otrzyma zadanie wraz z celem, kryteriami i stronami kontekstowymi w osobnej rozmowie, a następnie wpisze swój wynik w zadaniu. Zadanie bez osoby realizującej zostanie przekazane do AI.",
+    "instructionsLabel": "Wskazówki do tej próby (opcjonalnie)",
+    "instructionsPlaceholder": "Na przykład: Najpierw przejrzyj załączniki.",
+    "cancel": "Anuluj",
+    "start": "Uruchom"
+  },
+  "deleteDialog": {
+    "title": "Usunąć zadanie na zawsze?",
+    "description": "Zadanie i jego historia zostaną bezpowrotnie usunięte. Podzadania pozostaną jako samodzielne zadania, a uruchomienia AI pozostaną w zużyciu. Jeśli zadanie po prostu nie jest już potrzebne, zmień jego status na „Anulowano”.",
+    "cancel": "Anuluj",
+    "confirm": "Usuń na zawsze"
+  }
+}

@@ -1,6 +1,12 @@
 'use client';
 
-import { ChevronDownIcon, ChevronUpIcon, ListFilterIcon, SearchIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ClipboardListIcon,
+  ListFilterIcon,
+  SearchIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -108,6 +114,16 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
       >
         <SearchIcon className="size-3.5" />
         {t('openSearch')}
+      </Link>
+      {/* Delegated work (issue #138) sits beside the search: both are ways
+          into the workspace that are not a page in its tree. */}
+      <Link
+        href={`/arbeitsbereich/${workspaceId}/auftraege`}
+        data-testid="open-work-items"
+        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+      >
+        <ClipboardListIcon className="size-3.5" />
+        {t('openWorkItems')}
       </Link>
     </div>
   );

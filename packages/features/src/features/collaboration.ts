@@ -119,4 +119,21 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     ],
     claims: { screens: ['/entitaeten'] },
   }),
+  defineFeature({
+    id: 'auftraege',
+    area: 'zusammenarbeit',
+    since: '2026-09-26',
+    references: ['#138', 'ADR-066'],
+    ui: {},
+    tools: [
+      'exo_work_item_list',
+      'exo_work_item_get',
+      'exo_work_item_create',
+      'exo_work_item_update',
+      'exo_work_item_note',
+      'exo_work_item_start_run',
+      'exo_work_item_delete',
+    ],
+    claims: { screens: ['/arbeitsbereich/:x/auftraege', '/arbeitsbereich/:x/auftraege/:x'] },
+  }),
 ];

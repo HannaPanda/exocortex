@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "„{name}” w górę",
     "moveDown": "„{name}” w dół",
-    "openSearch": "Wyszukiwanie i zapisane wyszukiwania"
+    "openSearch": "Wyszukiwanie i zapisane wyszukiwania",
+    "openWorkItems": "Zadania"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Udostępnienia tego obszaru roboczego",
         "keywords": "udostępnienie udostępnione link obszar roboczy workspace"
       },
+      "workItems": {
+        "label": "Otwórz zadania",
+        "keywords": "zadanie zadania deleguj oddelegowane agent zrób odpowiedzialny wykonawca work item"
+      },
       "automations": {
         "label": "Otwórz automatyzacje",
         "keywords": "automatyzacja reguła harmonogram wyzwalacz workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Nowe zapisane wyszukiwanie",
       "savedQueryHint": "w wyszukiwaniu zaawansowanym",
       "savedQueryKeywords": "zapisane wyszukiwanie smart view widok filtr zapisz nowe",
+      "workItem": "Nowe zadanie",
+      "workItemHint": "Przekaż pracę osobie, agentowi lub sztucznej inteligencji",
+      "workItemKeywords": "zadanie deleguj przekaż zleć agent ai ki work item",
       "fromTemplate": "Utwórz stronę z szablonu",
       "fromTemplateKeywords": "szablon template wzorzec nowa strona utwórz",
       "fromTemplatePlaceholder": "Który szablon?",

@@ -28,6 +28,7 @@ import de_settings from './messages/de/settings.json';
 import de_shares from './messages/de/shares.json';
 import de_shell from './messages/de/shell.json';
 import de_ui from './messages/de/ui.json';
+import de_workItems from './messages/de/workItems.json';
 import en_account from './messages/en/account.json';
 import en_admin from './messages/en/admin.json';
 import en_ai from './messages/en/ai.json';
@@ -55,6 +56,7 @@ import en_settings from './messages/en/settings.json';
 import en_shares from './messages/en/shares.json';
 import en_shell from './messages/en/shell.json';
 import en_ui from './messages/en/ui.json';
+import en_workItems from './messages/en/workItems.json';
 import es_account from './messages/es/account.json';
 import es_admin from './messages/es/admin.json';
 import es_ai from './messages/es/ai.json';
@@ -82,6 +84,7 @@ import es_settings from './messages/es/settings.json';
 import es_shares from './messages/es/shares.json';
 import es_shell from './messages/es/shell.json';
 import es_ui from './messages/es/ui.json';
+import es_workItems from './messages/es/workItems.json';
 import fr_account from './messages/fr/account.json';
 import fr_admin from './messages/fr/admin.json';
 import fr_ai from './messages/fr/ai.json';
@@ -109,6 +112,7 @@ import fr_settings from './messages/fr/settings.json';
 import fr_shares from './messages/fr/shares.json';
 import fr_shell from './messages/fr/shell.json';
 import fr_ui from './messages/fr/ui.json';
+import fr_workItems from './messages/fr/workItems.json';
 import it_account from './messages/it/account.json';
 import it_admin from './messages/it/admin.json';
 import it_ai from './messages/it/ai.json';
@@ -136,6 +140,7 @@ import it_settings from './messages/it/settings.json';
 import it_shares from './messages/it/shares.json';
 import it_shell from './messages/it/shell.json';
 import it_ui from './messages/it/ui.json';
+import it_workItems from './messages/it/workItems.json';
 import nl_account from './messages/nl/account.json';
 import nl_admin from './messages/nl/admin.json';
 import nl_ai from './messages/nl/ai.json';
@@ -163,6 +168,7 @@ import nl_settings from './messages/nl/settings.json';
 import nl_shares from './messages/nl/shares.json';
 import nl_shell from './messages/nl/shell.json';
 import nl_ui from './messages/nl/ui.json';
+import nl_workItems from './messages/nl/workItems.json';
 import pl_account from './messages/pl/account.json';
 import pl_admin from './messages/pl/admin.json';
 import pl_ai from './messages/pl/ai.json';
@@ -190,6 +196,7 @@ import pl_settings from './messages/pl/settings.json';
 import pl_shares from './messages/pl/shares.json';
 import pl_shell from './messages/pl/shell.json';
 import pl_ui from './messages/pl/ui.json';
+import pl_workItems from './messages/pl/workItems.json';
 import pt_BR_account from './messages/pt-BR/account.json';
 import pt_BR_admin from './messages/pt-BR/admin.json';
 import pt_BR_ai from './messages/pt-BR/ai.json';
@@ -217,8 +224,9 @@ import pt_BR_settings from './messages/pt-BR/settings.json';
 import pt_BR_shares from './messages/pt-BR/shares.json';
 import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
+import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","ai","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui"] as const;
+export const NAMESPACES = ["account","admin","ai","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
@@ -249,6 +257,7 @@ export const CATALOG = {
     "shares": de_shares,
     "shell": de_shell,
     "ui": de_ui,
+    "workItems": de_workItems,
   },
   'en': {
     "account": en_account,
@@ -278,6 +287,7 @@ export const CATALOG = {
     "shares": en_shares,
     "shell": en_shell,
     "ui": en_ui,
+    "workItems": en_workItems,
   },
   'es': {
     "account": es_account,
@@ -307,6 +317,7 @@ export const CATALOG = {
     "shares": es_shares,
     "shell": es_shell,
     "ui": es_ui,
+    "workItems": es_workItems,
   },
   'fr': {
     "account": fr_account,
@@ -336,6 +347,7 @@ export const CATALOG = {
     "shares": fr_shares,
     "shell": fr_shell,
     "ui": fr_ui,
+    "workItems": fr_workItems,
   },
   'it': {
     "account": it_account,
@@ -365,6 +377,7 @@ export const CATALOG = {
     "shares": it_shares,
     "shell": it_shell,
     "ui": it_ui,
+    "workItems": it_workItems,
   },
   'nl': {
     "account": nl_account,
@@ -394,6 +407,7 @@ export const CATALOG = {
     "shares": nl_shares,
     "shell": nl_shell,
     "ui": nl_ui,
+    "workItems": nl_workItems,
   },
   'pl': {
     "account": pl_account,
@@ -423,6 +437,7 @@ export const CATALOG = {
     "shares": pl_shares,
     "shell": pl_shell,
     "ui": pl_ui,
+    "workItems": pl_workItems,
   },
   'pt-BR': {
     "account": pt_BR_account,
@@ -452,5 +467,6 @@ export const CATALOG = {
     "shares": pt_BR_shares,
     "shell": pt_BR_shell,
     "ui": pt_BR_ui,
+    "workItems": pt_BR_workItems,
   },
 } as const;

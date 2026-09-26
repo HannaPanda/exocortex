@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Work items",
+    "detailTitle": "Work item"
+  },
+  "labels": {
+    "status": {
+      "queued": "Queued",
+      "working": "In progress",
+      "blocked": "Blocked",
+      "waiting_for_human": "Waiting for feedback",
+      "review": "In review",
+      "done": "Done",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "participant": {
+      "nobody": "Nobody",
+      "assistant": "Built-in AI",
+      "unknown": "Unknown account",
+      "agent": "{name} (agent)"
+    },
+    "event": {
+      "created": "created the work item",
+      "statusChanged": "changed the status from “{from}” to “{to}”",
+      "assigned": "assigned the work item to {assignee}",
+      "runStarted": "started an AI run",
+      "resultRecorded": "recorded the result",
+      "note": "added a note",
+      "updated": "updated {count, plural, one {one field} other {# fields}}"
+    }
+  },
+  "list": {
+    "title": "Work items",
+    "intro": "Work that you delegated to a person, an agent, or the built-in AI, or that was delegated to you. A work item remains even if an AI run fails, and can wait for someone.",
+    "newItem": "New work item",
+    "filterLabel": "Which work items",
+    "filters": {
+      "open": "Open",
+      "mine": "Assigned to me",
+      "requested": "Created by me",
+      "all": "All"
+    },
+    "loading": "Loading work items…",
+    "loadFailed": "The work items could not be loaded.",
+    "emptyTitle": "No open work items",
+    "emptyAllTitle": "No work items yet",
+    "emptyDescription": "Create a work item when something needs to be done that takes longer than a quick reply in chat.",
+    "truncated": "There are more work items than shown here. Narrow down the selection with the filters.",
+    "columns": {
+      "title": "Work item",
+      "status": "Status",
+      "assignee": "Assignee",
+      "requester": "Requester",
+      "progress": "Criteria",
+      "updated": "Last updated"
+    },
+    "noCriteria": "None",
+    "criteria": "{met} of {total}",
+    "children": "{count, plural, one {# sub-item} other {# sub-items}}",
+    "due": "Due on {day}"
+  },
+  "dialog": {
+    "newTitle": "New work item",
+    "editTitle": "Edit work item",
+    "description": "Describe what should be achieved and how you’ll know it’s done.",
+    "titleLabel": "Title",
+    "goalLabel": "Goal",
+    "goalPlaceholder": "What should exist at the end? What is known, what isn’t?",
+    "criteriaLabel": "Acceptance criteria",
+    "criteriaPlaceholder": "One criterion per line",
+    "criteriaHint": "One criterion per line. Criteria already met stay met as long as their text doesn’t change.",
+    "assigneeLabel": "Assignee",
+    "priorityLabel": "Priority",
+    "dueLabel": "Due date",
+    "budgetLabel": "Budget for AI runs (USD)",
+    "budgetPlaceholder": "no limit",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save"
+  },
+  "detail": {
+    "loading": "Loading work item…",
+    "loadFailed": "The work item couldn’t be loaded.",
+    "backToList": "All work items",
+    "backToParent": "Back to “{title}”",
+    "edit": "Edit",
+    "delete": "Delete",
+    "handover": "{requester} to {assignee}",
+    "due": "Due on {day}",
+    "startRun": "Start AI run",
+    "statusLabel": "Status",
+    "reasonLabel": "What is this work item waiting for?",
+    "reasonPlaceholder": "For example: Archive access is missing",
+    "setStatus": "Set status",
+    "criteriaHeading": "Acceptance criteria ({met} of {total})",
+    "contextHeading": "Context",
+    "resultHeading": "Result",
+    "resultPlaceholder": "What was the outcome?",
+    "saveResult": "Save result",
+    "noResult": "No result yet.",
+    "childrenHeading": "Subtasks",
+    "addChild": "Add subtask",
+    "noChildren": "No subtasks.",
+    "runsHeading": "AI runs",
+    "budget": "{spent} of {budget} used",
+    "noRuns": "No runs yet.",
+    "runStatus": {
+      "pending": "waiting",
+      "running": "running",
+      "completed": "completed",
+      "failed": "failed",
+      "cancelled": "cancelled",
+      "timed_out": "timed out"
+    },
+    "openConversation": "Open conversation",
+    "historyHeading": "History",
+    "notePlaceholder": "Progress update, question, or note for the next attempt",
+    "noteLabel": "Note",
+    "addNote": "Add note"
+  },
+  "startRun": {
+    "title": "Start AI run",
+    "description": "The built-in AI receives the work item with its goal, criteria, and context pages in a dedicated conversation, and records its result on the work item. A work item without an assignee will be assigned to the AI.",
+    "instructionsLabel": "Instructions for this attempt (optional)",
+    "instructionsPlaceholder": "For example: Look at the attachments first.",
+    "cancel": "Cancel",
+    "start": "Start"
+  },
+  "deleteDialog": {
+    "title": "Delete work item permanently?",
+    "description": "The work item and its history will be permanently deleted. Subtasks will remain as standalone items, and AI runs will still count toward usage. If the work item is simply no longer needed, set it to “Cancelled” instead.",
+    "cancel": "Cancel",
+    "confirm": "Delete permanently"
+  }
+}

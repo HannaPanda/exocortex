@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Attività",
+    "detailTitle": "Attività"
+  },
+  "labels": {
+    "status": {
+      "queued": "Creata",
+      "working": "In corso",
+      "blocked": "Bloccata",
+      "waiting_for_human": "In attesa di riscontro",
+      "review": "Da revisionare",
+      "done": "Completata",
+      "failed": "Non riuscita",
+      "cancelled": "Annullata"
+    },
+    "priority": {
+      "low": "Bassa",
+      "normal": "Normale",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "participant": {
+      "nobody": "Nessuno",
+      "assistant": "IA integrata",
+      "unknown": "Account sconosciuto",
+      "agent": "{name} (agente)"
+    },
+    "event": {
+      "created": "ha creato l’attività",
+      "statusChanged": "ha cambiato lo stato da „{from}“ a „{to}“",
+      "assigned": "ha assegnato l’attività a {assignee}",
+      "runStarted": "ha avviato un’esecuzione IA",
+      "resultRecorded": "ha registrato il risultato",
+      "note": "ha aggiunto una nota",
+      "updated": "ha modificato {count, plural, one {un campo} many {# campi} other {# campi}}"
+    }
+  },
+  "list": {
+    "title": "Attività",
+    "intro": "Lavoro che hai assegnato a una persona, a un agente o all’IA integrata, oppure che ti è stato assegnato. Un’attività rimane attiva anche se un’esecuzione IA non va a buon fine, e può attendere l’intervento di qualcuno.",
+    "newItem": "Nuova attività",
+    "filterLabel": "Quali attività",
+    "filters": {
+      "open": "Aperte",
+      "mine": "Assegnate a me",
+      "requested": "Richieste da me",
+      "all": "Tutte"
+    },
+    "loading": "Caricamento delle attività…",
+    "loadFailed": "Impossibile caricare le attività.",
+    "emptyTitle": "Nessuna attività aperta",
+    "emptyAllTitle": "Ancora nessuna attività",
+    "emptyDescription": "Crea un’attività quando c’è del lavoro da svolgere che richiede più tempo di una semplice risposta in chat.",
+    "truncated": "Ci sono più attività di quelle mostrate. Limita la selezione usando i filtri.",
+    "columns": {
+      "title": "Attività",
+      "status": "Stato",
+      "assignee": "Assegnatario",
+      "requester": "Committente",
+      "progress": "Criteri",
+      "updated": "Ultima modifica"
+    },
+    "noCriteria": "Nessuno",
+    "criteria": "{met} su {total}",
+    "children": "{count, plural, one {# sotto-incarico} many {# sotto-incarichi} other {# sotto-incarichi}}",
+    "due": "Scadenza il {day}"
+  },
+  "dialog": {
+    "newTitle": "Nuovo incarico",
+    "editTitle": "Modifica incarico",
+    "description": "Descrivi cosa deve essere raggiunto e come si riconosce che è completato.",
+    "titleLabel": "Titolo",
+    "goalLabel": "Obiettivo",
+    "goalPlaceholder": "Cosa deve esserci alla fine? Cosa è noto e cosa no?",
+    "criteriaLabel": "Criteri di accettazione",
+    "criteriaPlaceholder": "Un criterio per riga",
+    "criteriaHint": "Un criterio per riga. Quelli già soddisfatti rimangono tali purché il testo non cambi.",
+    "assigneeLabel": "Assegnatario",
+    "priorityLabel": "Priorità",
+    "dueLabel": "Scadenza il",
+    "budgetLabel": "Budget per esecuzioni dell’IA (USD)",
+    "budgetPlaceholder": "senza limite",
+    "cancel": "Annulla",
+    "create": "Crea",
+    "save": "Salva"
+  },
+  "detail": {
+    "loading": "Caricamento dell’incarico in corso…",
+    "loadFailed": "Impossibile caricare l’incarico.",
+    "backToList": "Tutti gli incarichi",
+    "backToParent": "Torna a «{title}»",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "handover": "{requester} a {assignee}",
+    "due": "Scadenza il {day}",
+    "startRun": "Avvia esecuzione IA",
+    "statusLabel": "Stato",
+    "reasonLabel": "In attesa di cosa?",
+    "reasonPlaceholder": "Ad esempio: manca l’accesso all’archivio",
+    "setStatus": "Imposta stato",
+    "criteriaHeading": "Criteri di accettazione ({met} su {total})",
+    "contextHeading": "Contesto",
+    "resultHeading": "Risultato",
+    "resultPlaceholder": "Qual è il risultato ottenuto?",
+    "saveResult": "Salva risultato",
+    "noResult": "Ancora nessun risultato.",
+    "childrenHeading": "Sotto-attività",
+    "addChild": "Crea sotto-attività",
+    "noChildren": "Nessuna sotto-attività.",
+    "runsHeading": "Esecuzioni dell’IA",
+    "budget": "{spent} di {budget} consumati",
+    "noRuns": "Ancora nessuna esecuzione.",
+    "runStatus": {
+      "pending": "in attesa",
+      "running": "in corso",
+      "completed": "completata",
+      "failed": "non riuscita",
+      "cancelled": "annullata",
+      "timed_out": "tempo scaduto"
+    },
+    "openConversation": "Apri conversazione",
+    "historyHeading": "Cronologia",
+    "notePlaceholder": "Stato di avanzamento, domanda o indicazione per il prossimo tentativo",
+    "noteLabel": "Nota",
+    "addNote": "Aggiungi nota"
+  },
+  "startRun": {
+    "title": "Avvia esecuzione dell’IA",
+    "description": "L’IA integrata riceve l’incarico con obiettivo, criteri e pagine di contesto in una conversazione dedicata e ne inserisce il risultato nell’incarico. Un incarico senza responsabile viene assegnato all’IA.",
+    "instructionsLabel": "Istruzioni per questo tentativo (facoltativo)",
+    "instructionsPlaceholder": "Per esempio: guarda prima gli allegati.",
+    "cancel": "Annulla",
+    "start": "Avvia"
+  },
+  "deleteDialog": {
+    "title": "Eliminare definitivamente l’incarico?",
+    "description": "L’incarico e la sua cronologia andranno persi. Le sotto-attività rimarranno e saranno indipendenti, le esecuzioni dell’IA resteranno nel conteggio dei consumi. Se l’incarico non serve più, impostalo invece su «Annullato».",
+    "cancel": "Annulla",
+    "confirm": "Elimina definitivamente"
+  }
+}

@@ -6,6 +6,7 @@ import {
   BrainIcon,
   ChartColumnIcon,
   CircleQuestionMarkIcon,
+  ClipboardListIcon,
   CpuIcon,
   HouseIcon,
   KeyIcon,
@@ -57,6 +58,7 @@ interface Place {
     | 'workspaceHome'
     | 'workspaceSearch'
     | 'workspaceShares'
+    | 'workItems'
     | 'automations'
     | 'templates'
     | 'workspaceSettings'
@@ -120,6 +122,12 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/freigaben',
     audience: 'workspace',
     icon: Share2Icon,
+  },
+  {
+    key: 'workItems',
+    screen: '/arbeitsbereich/:x/auftraege',
+    audience: 'workspace',
+    icon: ClipboardListIcon,
   },
   {
     key: 'automations',

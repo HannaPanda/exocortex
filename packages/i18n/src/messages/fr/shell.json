@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "Monter « {name} »",
     "moveDown": "Descendre « {name} »",
-    "openSearch": "Recherche et recherches enregistrées"
+    "openSearch": "Recherche et recherches enregistrées",
+    "openWorkItems": "Tâches"
   },
   "connectionStatus": {
     "offlineShort": "hors ligne",
@@ -222,6 +223,10 @@
         "label": "Partages de cet espace de travail",
         "keywords": "partage partagé lien espace de travail workspace"
       },
+      "workItems": {
+        "label": "Ouvrir les tâches",
+        "keywords": "tâche tâches mission déléguer délégué agent accomplir responsable assigné work item"
+      },
       "automations": {
         "label": "Ouvrir les automatisations",
         "keywords": "automatisation règle planification déclencheur workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Nouvelle recherche enregistrée",
       "savedQueryHint": "dans la recherche avancée",
       "savedQueryKeywords": "recherche enregistrée vue dynamique affichage filtre enregistrer nouveau",
+      "workItem": "Nouvelle tâche",
+      "workItemHint": "Confier du travail à une personne, un agent ou l’IA",
+      "workItemKeywords": "tâche mission déléguer confier faire faire agent ia work item",
       "fromTemplate": "Créer une page à partir d’un modèle",
       "fromTemplateKeywords": "modèle template nouveau page créer",
       "fromTemplatePlaceholder": "Quel modèle ?",

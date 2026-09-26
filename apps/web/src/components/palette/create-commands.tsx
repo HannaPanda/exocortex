@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ClipboardPlusIcon,
   FilePlusIcon,
   FolderCodeIcon,
   LayoutTemplateIcon,
@@ -127,6 +128,17 @@ export function useCreateCommands(workspaceId: string | null, open: boolean): Pa
         // A saved search is a search somebody decided to keep, so it is made
         // where searches are built and saved.
         href: `/arbeitsbereich/${workspaceId}/suche`,
+      },
+      {
+        id: 'create-work-item',
+        group: 'create',
+        label: t('workItem'),
+        hint: t('workItemHint'),
+        icon: <ClipboardPlusIcon className={ICON} />,
+        keywords: keywordsOf(t('workItemKeywords')),
+        // The list opens with its dialog, so the new item lands where it will
+        // be looked for afterwards (issue #138).
+        href: `/arbeitsbereich/${workspaceId}/auftraege?new=1`,
       },
       {
         id: 'create-from-template',

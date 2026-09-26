@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "„{name}“ omhoog",
     "moveDown": "„{name}“ omlaag",
-    "openSearch": "Zoeken en opgeslagen zoekopdrachten"
+    "openSearch": "Zoeken en opgeslagen zoekopdrachten",
+    "openWorkItems": "Opdrachten"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -222,6 +223,10 @@
         "label": "Delingen van deze werkruimte",
         "keywords": "deling gedeeld link werkruimte workspace"
       },
+      "workItems": {
+        "label": "Opdrachten openen",
+        "keywords": "opdracht opdrachten taak delegeren gedelegeerd agent uitvoeren verantwoordelijk behandelaar work item"
+      },
       "automations": {
         "label": "Automatiseringen openen",
         "keywords": "automatisering regel schema trigger workflow"
@@ -305,6 +310,9 @@
       "savedQuery": "Nieuwe opgeslagen zoekopdracht",
       "savedQueryHint": "in geavanceerd zoeken",
       "savedQueryKeywords": "opgeslagen zoekopdracht smart view weergave filter opslaan nieuw",
+      "workItem": "Nieuwe opdracht",
+      "workItemHint": "Werk overdragen aan een persoon, een agent of de AI",
+      "workItemKeywords": "opdracht taak delegeren overdragen laten uitvoeren agent ai work item",
       "fromTemplate": "Pagina maken van sjabloon",
       "fromTemplateKeywords": "sjabloon template voorbeeld nieuw pagina maken",
       "fromTemplatePlaceholder": "Welk sjabloon?",

@@ -77,6 +77,10 @@ const SCREEN_EXEMPT = [
     reason: 'A saved search: the palette lists every one by its name.',
   },
   {
+    screen: '/arbeitsbereich/:x/auftraege/:x',
+    reason: 'One work item, reached from the Aufträge list, which the palette opens.',
+  },
+  {
     screen: '/geteilt/:x',
     reason: 'One page somebody shared, reached from /geteilt, which the palette opens.',
   },

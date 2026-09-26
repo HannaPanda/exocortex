@@ -1,0 +1,142 @@
+{
+  "route": {
+    "listTitle": "Tareas",
+    "detailTitle": "Tarea"
+  },
+  "labels": {
+    "status": {
+      "queued": "En cola",
+      "working": "En curso",
+      "blocked": "Bloqueada",
+      "waiting_for_human": "Esperando respuesta",
+      "review": "Para revisión",
+      "done": "Completada",
+      "failed": "Fallida",
+      "cancelled": "Cancelada"
+    },
+    "priority": {
+      "low": "Baja",
+      "normal": "Normal",
+      "high": "Alta",
+      "urgent": "Urgente"
+    },
+    "participant": {
+      "nobody": "Nadie",
+      "assistant": "IA integrada",
+      "unknown": "Cuenta desconocida",
+      "agent": "{name} (agente)"
+    },
+    "event": {
+      "created": "ha creado la tarea",
+      "statusChanged": "ha cambiado el estado de «{from}» a «{to}»",
+      "assigned": "ha asignado la tarea a {assignee}",
+      "runStarted": "ha iniciado una ejecución de IA",
+      "resultRecorded": "ha registrado el resultado",
+      "note": "ha añadido una nota",
+      "updated": "ha modificado {count, plural, one {un campo} many {# campos} other {# campos}}"
+    }
+  },
+  "list": {
+    "title": "Tareas",
+    "intro": "Trabajo que has delegado en una persona, en un agente o en la IA integrada, o que se te ha asignado a ti. Una tarea se mantiene aunque falle una ejecución de IA y puede quedar a la espera de alguien.",
+    "newItem": "Nueva tarea",
+    "filterLabel": "Qué tareas",
+    "filters": {
+      "open": "Abiertas",
+      "mine": "Asignadas a mí",
+      "requested": "Creadas por mí",
+      "all": "Todas"
+    },
+    "loading": "Cargando tareas…",
+    "loadFailed": "No se han podido cargar las tareas.",
+    "emptyTitle": "No hay tareas abiertas",
+    "emptyAllTitle": "Aún no hay tareas",
+    "emptyDescription": "Crea una tarea cuando haya que resolver algo que lleve más tiempo que una respuesta en el chat.",
+    "truncated": "Hay más tareas de las que se muestran aquí. Ajusta la selección con los filtros.",
+    "columns": {
+      "title": "Tarea",
+      "status": "Estado",
+      "assignee": "Responsable",
+      "requester": "Solicitante",
+      "progress": "Criterios",
+      "updated": "Última modificación"
+    },
+    "noCriteria": "Ninguno",
+    "criteria": "{met} de {total}",
+    "children": "{count, plural, one {# subtarea} many {# subtareas} other {# subtareas}}",
+    "due": "Vence el {day}"
+  },
+  "dialog": {
+    "newTitle": "Nueva tarea",
+    "editTitle": "Editar tarea",
+    "description": "Describe qué se quiere conseguir y cómo saber cuándo está terminada.",
+    "titleLabel": "Título",
+    "goalLabel": "Objetivo",
+    "goalPlaceholder": "¿Qué debe haber al final? ¿Qué se sabe y qué no?",
+    "criteriaLabel": "Criterios de aceptación",
+    "criteriaPlaceholder": "Un criterio por línea",
+    "criteriaHint": "Un criterio por línea. Los que ya estén cumplidos seguirán así mientras no cambie su texto.",
+    "assigneeLabel": "Responsable",
+    "priorityLabel": "Prioridad",
+    "dueLabel": "Fecha de vencimiento",
+    "budgetLabel": "Presupuesto para ejecuciones de IA (USD)",
+    "budgetPlaceholder": "sin límite",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "save": "Guardar"
+  },
+  "detail": {
+    "loading": "Cargando tarea…",
+    "loadFailed": "No se ha podido cargar la tarea.",
+    "backToList": "Todas las tareas",
+    "backToParent": "Volver a «{title}»",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "handover": "{requester} a {assignee}",
+    "due": "Vence el {day}",
+    "startRun": "Iniciar ejecución de IA",
+    "statusLabel": "Estado",
+    "reasonLabel": "¿Qué está esperando la tarea?",
+    "reasonPlaceholder": "Por ejemplo: falta acceso al archivo",
+    "setStatus": "Cambiar estado",
+    "criteriaHeading": "Criterios de aceptación ({met} de {total})",
+    "contextHeading": "Contexto",
+    "resultHeading": "Resultado",
+    "resultPlaceholder": "¿Cuál ha sido el resultado?",
+    "saveResult": "Guardar resultado",
+    "noResult": "Aún no hay resultado.",
+    "childrenHeading": "Subtareas",
+    "addChild": "Crear subtarea",
+    "noChildren": "No hay subtareas.",
+    "runsHeading": "Ejecuciones de IA",
+    "budget": "{spent} de {budget} consumidos",
+    "noRuns": "Aún no hay ejecuciones.",
+    "runStatus": {
+      "pending": "en espera",
+      "running": "en curso",
+      "completed": "completado",
+      "failed": "fallido",
+      "cancelled": "cancelado",
+      "timed_out": "tiempo agotado"
+    },
+    "openConversation": "Abrir conversación",
+    "historyHeading": "Historial",
+    "notePlaceholder": "Estado actual, consulta o indicación para el próximo intento",
+    "noteLabel": "Nota",
+    "addNote": "Añadir nota"
+  },
+  "startRun": {
+    "title": "Iniciar ejecución de IA",
+    "description": "La IA integrada recibe la tarea con el objetivo, los criterios y las páginas de contexto en una conversación propia y registra su resultado en la tarea. Si la tarea no tiene responsable, se asigna a la IA.",
+    "instructionsLabel": "Indicaciones para este intento (opcional)",
+    "instructionsPlaceholder": "Por ejemplo: Revisa primero los archivos adjuntos.",
+    "cancel": "Cancelar",
+    "start": "Iniciar"
+  },
+  "deleteDialog": {
+    "title": "¿Eliminar la tarea definitivamente?",
+    "description": "La tarea y su historial desaparecerán. Las subtareas se conservarán de forma independiente y las ejecuciones de IA seguirán contando en el consumo. Si la tarea ya no es necesaria, cámbiala a «Cancelada».",
+    "cancel": "Cancelar",
+    "confirm": "Eliminar definitivamente"
+  }
+}

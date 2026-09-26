@@ -125,7 +125,8 @@
   "smartViews": {
     "moveUp": "Subir «{name}»",
     "moveDown": "Bajar «{name}»",
-    "openSearch": "Búsqueda y búsquedas guardadas"
+    "openSearch": "Búsqueda y búsquedas guardadas",
+    "openWorkItems": "Tareas"
   },
   "connectionStatus": {
     "offlineShort": "sin conexión",
@@ -222,6 +223,10 @@
         "label": "Uso compartido de este espacio de trabajo",
         "keywords": "uso compartido compartido enlace espacio de trabajo workspace"
       },
+      "workItems": {
+        "label": "Abrir tareas",
+        "keywords": "tarea tareas encargo delegar delegado agente completar responsable asignado work item"
+      },
       "automations": {
         "label": "Abrir automatizaciones",
         "keywords": "automatización regla programación disparador workflow flujo de trabajo"
@@ -305,6 +310,9 @@
       "savedQuery": "Nueva búsqueda guardada",
       "savedQueryHint": "en la búsqueda avanzada",
       "savedQueryKeywords": "busqueda guardada smart view vista filtro guardar nueva",
+      "workItem": "Nueva tarea",
+      "workItemHint": "Delegar trabajo a una persona, un agente o la IA",
+      "workItemKeywords": "tarea encargo delegar asignar completar agente ia work item",
       "fromTemplate": "Crear página desde plantilla",
       "fromTemplateKeywords": "plantilla template modelo nueva página crear",
       "fromTemplatePlaceholder": "¿Qué plantilla?",
