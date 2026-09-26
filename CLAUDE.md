@@ -641,6 +641,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   is written in the transaction of the change, a run is an ordinary chat turn
   whose first message is written from the item, and the budget is checked
   before a run starts, not while it runs.
+- ADR-067: what needs a person is one list, and each entry moves once. An
+  `AttentionItem` is a need for action, never information; it goes from open
+  to resolved or obsolete and never back, and the row records who raised and
+  who settled it. A work item's waiting state raises exactly one item in the
+  transaction that enters it (a partial unique index over open keys) and the
+  transition out settles it; a failed run is asked about by a sweep, never by
+  deriving the work item's status. A question an agent asks is the
+  `waiting_for_human` state, and answering a system item is the work item
+  change it stands for, applied in one transaction.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -674,6 +683,7 @@ Each of these has a step-by-step recipe:
 | new palette command, place, settings group in `Strg + K` | `docs/command-palette.md`   |
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
 | new work item field, status rule, run behaviour          | `docs/work-items.md`        |
+| new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 
 ## Deployment on this machine

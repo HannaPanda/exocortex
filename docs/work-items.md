@@ -45,6 +45,11 @@ outlives the runs that attempt it.
   tools means changing `work-item-prompt.ts` and the domain keywords together.
 - **The assignee's rights** are the set `ASSIGNEE_FIELDS` in the service. A
   field added there is one a GUEST who was assigned the item can change.
+- **A status that waits on a person raises an attention item** (issue #139,
+  ADR-067, `docs/attention.md`). Every status change goes through
+  `syncAfterTransition` or `transitionWorkItem` inside its transaction; a new
+  path that moves the status without them leaves an item open that should be
+  settled, or none where one should be.
 
 ## Adding a capability
 

@@ -282,8 +282,8 @@ export const maintenanceJobSchema = jobBase.extend({
      * Raises the attention item a failed run behind a work item owes (issue
      * #139, ADR-067): the run ended, the work did not, and somebody has to
      * decide between another attempt and giving up. A sweep rather than a
-     * hook in each of the places a run can fail, because there are five of
-     * them and the reaper is one; deduplicated by the run's id.
+     * hook in each of the places a run can fail, because there are several
+     * of them and the reapers are among them; deduplicated by the run's id.
      */
     'raise-run-failure-attention',
     /**
