@@ -894,5 +894,17 @@
       "p3": "On a phone, eXocortex can be installed as an app; the address bar disappears and the share menu recognizes it."
     },
     "where": "The sign-in page."
+  },
+  "auftraege": {
+    "title": "Work items: Hand over work to humans, agents, and AI",
+    "summary": "A work item records what needs to be done: objective, acceptance criteria, context pages, who is working on it, and the outcome. It persists even if an AI run fails, can wait for a person, and get a second attempt later.",
+    "details": {
+      "p1": "A work item can be worked on by a person, an agent account like Claude Code or Hermes, or the built-in AI. This works in all directions: you hand work to an agent, an agent hands a follow-up question back to you as a work item, or two agents pass work between each other.",
+      "p2": "The status is an intentional decision and not a mere reflection of the last run: created, in progress, blocked, awaiting feedback, ready for review, done, failed, or cancelled. Anyone who is blocked or waiting notes down what they are waiting for.",
+      "p3": "“Start AI run” hands the work item to the built-in AI in a separate conversation. The AI records its outcome on the work item, each run appears with its status and costs, and a budget prevents further runs from costing more than intended.",
+      "p4": "Every change is recorded in the history, along with the name of the person or agent who made it, and for an agent also its client application. Work items can be broken down into subtasks.",
+      "p5": "Agents work with exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run, and exo_work_item_delete."
+    },
+    "where": "Sidebar under “Work items”, or Ctrl + K and “Open work items” or “New work item”."
   }
 }

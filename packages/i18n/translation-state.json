@@ -8492,6 +8492,38 @@
       "source": "a18b807ba351fc51",
       "output": "16c73e1d785ec8ec"
     },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "b6f7acc6fbc9cf46"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "787733196f8cd827"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "31125089b599699f"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "8e2a58f27088a8cf"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "bb835bcc6f98799a"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "033836a807899075"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "e979df576cafa572"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "94e7a59f9fa9768d"
+    },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
       "output": "5e400c0c15f36ea4"
@@ -24585,6 +24617,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "c46b51fd5c8d1f43"
+    },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "84f5253283d91960"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "d848ca9454e10c27"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "5d689348a52fafcb"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "fe338c4fb29892fd"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "2d0b9355b33f0444"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "3eff1acef459f601"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "a01eff72d68563bd"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "1d870f76c830f352"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -40680,6 +40744,38 @@
       "source": "a18b807ba351fc51",
       "output": "db4b19357202bbce"
     },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "bc368ab9392904a5"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "6f2b13283a00d925"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "583d2e2bf27faf6e"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "f51fdc1760b47cbc"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "7bf28da455a03b9a"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "965bd13ab0f592ff"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "1b84fbb32e7aeb6a"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "3c0eb079f72fcb06"
+    },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
       "output": "e539efeb2dc0527f"
@@ -56773,6 +56869,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "57252f00a4b0731c"
+    },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "a50e5baaeff27731"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "e88fc97e7c9f7273"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "99f75bf650bce6b6"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "318afd76f9c07ef2"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "5898c873e0e8ed24"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "7284182d7d4a1dfd"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "15537e14172334e9"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "b6e54610efb6e742"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -72868,6 +72996,38 @@
       "source": "a18b807ba351fc51",
       "output": "3d34670f65b99ab7"
     },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "4b94d642556269cb"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "7d9329fbc130d4da"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "98bc9ff1e4362533"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "dfcb299e86137296"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "7f1f2dca5b18d374"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "adbfc93f8312176f"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "64e9654e4d409eb4"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "c672c91da4f85935"
+    },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
       "output": "9fa70766db2a5bad"
@@ -88962,6 +89122,38 @@
       "source": "a18b807ba351fc51",
       "output": "8acd949cd5ab5de6"
     },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "9bfc6dda7b88a61e"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "e780d67a5ac49d87"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "d2b0abd603844acf"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "8e067347c68fd153"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "9346a04added2b11"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "a022e105e86f6332"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "b00b3c9ae704fac8"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "31647c9111aa47b7"
+    },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
       "output": "7c292e7e4c64f95c"
@@ -105055,6 +105247,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "b4e7f0957d06ad02"
+    },
+    "features.auftraege.details.p1": {
+      "source": "0250f693521e394a",
+      "output": "3efb3aa671b1ff29"
+    },
+    "features.auftraege.details.p2": {
+      "source": "d8492042ee46c4ad",
+      "output": "d03d6386ab580cf1"
+    },
+    "features.auftraege.details.p3": {
+      "source": "9cfffdc0e12f7dba",
+      "output": "1a595a7e02dc7ee6"
+    },
+    "features.auftraege.details.p4": {
+      "source": "996c63e49efdd059",
+      "output": "98e362d7183fd979"
+    },
+    "features.auftraege.details.p5": {
+      "source": "75f021a99e362bd6",
+      "output": "3d7b4a221b5a0724"
+    },
+    "features.auftraege.summary": {
+      "source": "6677e2e30e1bb0be",
+      "output": "f3fc897d383bd0ee"
+    },
+    "features.auftraege.title": {
+      "source": "c6b62cffa62f5484",
+      "output": "34fe3d3cd6fbf535"
+    },
+    "features.auftraege.where": {
+      "source": "eae5bf05af43fd07",
+      "output": "c9ae2987ba93baec"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",

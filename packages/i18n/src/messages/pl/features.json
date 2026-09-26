@@ -894,5 +894,17 @@
       "p3": "Na telefonie eXocortex można zainstalować jako aplikację – wtedy pasek adresu znika, a aplikacja pojawia się w menu udostępniania."
     },
     "where": "Strona logowania."
+  },
+  "auftraege": {
+    "title": "Zadania: przekazywanie pracy ludziom, agentom i AI",
+    "summary": "Zadanie określa, co ma zostać zrobione: cel, kryteria akceptacji, strony kontekstowe, osobę lub agenta odpowiedzialnego oraz uzyskany wynik. Pozostaje aktywne, jeśli przebieg AI się nie powiedzie, może czekać na człowieka i otrzymać później drugą próbę.",
+    "details": {
+      "p1": "Zadanie może realizować człowiek, konto agenta (takie jak Claude Code lub Hermes) albo wbudowane AI. Działa to we wszystkich kierunkach: zlecasz pracę agentowi, agent przekazuje ci pytanie w formie zadania lub dwa agenty przekazują sobie pracę nawzajem.",
+      "p2": "Status jest decyzją, a nie tylko odzwierciedleniem ostatniego przebiegu: utworzone, w toku, zablokowane, oczekuje na odpowiedź, do odbioru, zrobione, nieudane lub anulowane. W przypadku zablokowania lub oczekiwania podaje się powód.",
+      "p3": "„Uruchom przebieg AI” przekazuje zadanie wbudowanemu AI w osobnej konwersacji. AI zapisuje swój wynik w zadaniu, każdy przebieg pojawia się wraz ze swoim statusem i kosztami, a budżet zapobiega przekroczeniu planowanych wydatków w kolejnych przebiegach.",
+      "p4": "Każda zmiana jest zapisywana w historii wraz z nazwą autora, a w przypadku agenta także z jego programem. Zadania można dzielić na podzadania.",
+      "p5": "Agenci pracują za pomocą exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run oraz exo_work_item_delete."
+    },
+    "where": "Pasek boczny w sekcji „Zadania” albo Strg + K i „Otwórz zadania” bądź „Nowe zadanie”."
   }
 }

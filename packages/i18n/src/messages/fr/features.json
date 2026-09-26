@@ -894,5 +894,17 @@
       "p3": "Sur téléphone, eXocortex peut s’installer comme une application : la barre d’adresse disparaît et le menu de partage le reconnaît."
     },
     "where": "La page de connexion."
+  },
+  "auftraege": {
+    "title": "Tâches : déléguer du travail à des humains, des agents et à l’IA",
+    "summary": "Une tâche consigne ce qui doit être fait : objectif, critères d’acceptation, pages de contexte, personne ou agent assigné et résultat obtenu. Elle subsiste si une exécution de l’IA échoue, peut attendre l’intervention d’une personne et faire l’objet d’un nouvel essai plus tard.",
+    "details": {
+      "p1": "Une tâche peut être traitée par une personne, un compte d’agent comme Claude Code ou Hermes, ou par l’IA intégrée. Cela fonctionne dans toutes les directions : tu donnes du travail à un agent, un agent te soumet une question sous forme de tâche, ou deux agents se passent le relais.",
+      "p2": "Le statut est une décision explicite et non le simple reflet de la dernière exécution : créée, en cours, bloquée, en attente de retour, à valider, terminée, échouée ou annulée. Quiconque est bloqué ou en attente précise ce qui manque.",
+      "p3": "« Lancer l’exécution IA » confie la tâche à l’IA intégrée dans une conversation dédiée. L’IA consigne son résultat sur la tâche, chaque exécution s’affiche avec son état et son coût, et un budget empêche les exécutions suivantes de dépasser la limite prévue.",
+      "p4": "Chaque modification apparaît dans l’historique, avec le nom de son auteur et, pour un agent, avec son programme. Les tâches peuvent être divisées en sous-tâches.",
+      "p5": "Les agents travaillent avec exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run et exo_work_item_delete."
+    },
+    "where": "Barre latérale sous « Tâches », ou Strg + K et « Ouvrir les tâches » ou « Nouvelle tâche »."
   }
 }

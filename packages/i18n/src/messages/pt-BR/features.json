@@ -894,5 +894,17 @@
       "p3": "No celular, o eXocortex pode ser instalado como app: a barra de endereços some e o aplicativo passa a ser reconhecido pelo menu de compartilhamento do sistema."
     },
     "where": "A página de login."
+  },
+  "auftraege": {
+    "title": "Tarefas: passar trabalho para pessoas, agentes e a IA",
+    "summary": "Uma tarefa registra o que deve ser feito: objetivo, critérios de aceitação, páginas de contexto, quem a está executando e o resultado obtido. Ela permanece ativa mesmo se uma execução de IA falhar, podendo aguardar uma pessoa e ter uma nova tentativa mais tarde.",
+    "details": {
+      "p1": "Quem executa uma tarefa pode ser uma pessoa, uma conta de agente como Claude Code ou Hermes, ou a IA integrada. Isso vale em todas as direções: você passa trabalho para um agente, um agente passa uma dúvida para você como tarefa, ou dois agentes repassam trabalho entre si.",
+      "p2": "O status é uma decisão deliberada e não apenas o reflexo da última execução: criada, em andamento, bloqueada, aguardando resposta, pronta para aprovação, concluída, falhou ou cancelada. Quem estiver com bloqueio ou aguardando anota pelo quê.",
+      "p3": "„Iniciar execução de IA“ entrega a tarefa à IA integrada em uma conversa própria. A IA registra o resultado na tarefa, cada execução aparece com seu status e custo, e um limite de orçamento impede que novas execuções gastem mais do que o planejado.",
+      "p4": "Cada alteração fica registrada no histórico, com o nome de quem a realizou e, no caso de um agente, também com o respectivo programa. As tarefas podem ser divididas em subtarefas.",
+      "p5": "Os agentes trabalham com exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run e exo_work_item_delete."
+    },
+    "where": "Barra lateral em „Tarefas“, ou Strg + K e „Abrir tarefas“ ou „Nova tarefa“."
   }
 }

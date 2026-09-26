@@ -894,5 +894,17 @@
       "p3": "Sullo smartphone eXocortex può essere installata come app: in questo modo la barra degli indirizzi scompare e l’app compare nel menu di condivisione."
     },
     "where": "La pagina di accesso."
+  },
+  "auftraege": {
+    "title": "Incarichi: delegare il lavoro a persone, agenti e all’IA",
+    "summary": "Un incarico registra ciò che deve essere fatto: obiettivo, criteri di accettazione, pagine di contesto, chi lo elabora e l’esito ottenuto. Rimane attivo anche se un’esecuzione dell’IA fallisce, può attendere una persona e ricevere in seguito un secondo tentativo.",
+    "details": {
+      "p1": "A elaborare un incarico può essere una persona, un account agente come Claude Code o Hermes, oppure l’IA integrata. Questo vale in tutte le direzioni: puoi assegnare lavoro a un agente, un agente può farti una domanda sotto forma di incarico, oppure due agenti possono passarsi il lavoro a vicenda.",
+      "p2": "Lo stato è una decisione intenzionale e non il semplice riflesso dell’ultima esecuzione: creato, in corso, bloccato, in attesa di risposta, da verificare, completato, fallito o annullato. Chi è bloccato o in attesa specifica il motivo.",
+      "p3": "«Avvia esecuzione IA» affida l’incarico all’IA integrata in una conversazione dedicata. L’IA inserisce il proprio risultato nell’incarico, ogni esecuzione compare con il proprio stato e i relativi costi, e un budget impedisce che ulteriori esecuzioni costino più del previsto.",
+      "p4": "Ogni modifica compare nella cronologia, con il nome di chi l’ha effettuata e, nel caso di un agente, anche con il relativo programma. Gli incarichi possono essere suddivisi in sotto-incarichi.",
+      "p5": "Gli agenti lavorano con exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run ed exo_work_item_delete."
+    },
+    "where": "Barra laterale sotto «Incarichi», oppure Ctrl + K e «Apri incarichi» o «Nuovo incarico»."
   }
 }

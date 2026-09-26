@@ -894,5 +894,17 @@
       "p3": "Op de telefoon kan eXocortex als app worden geïnstalleerd; de adresbalk ontbreekt dan en het deelmenu herkent de app."
     },
     "where": "De aanmeldpagina."
+  },
+  "auftraege": {
+    "title": "Opdrachten: werk overdragen aan mensen, agenten en de AI",
+    "summary": "Een opdracht legt vast wat er moet gebeuren: doel, acceptatiecriteria, contextpagina’s, wie eraan werkt en wat het resultaat was. Hij blijft bestaan als een AI-run mislukt, kan op een persoon wachten en later een tweede poging krijgen.",
+    "details": {
+      "p1": "Een opdracht kan worden bewerkt door een persoon, een agent-account zoals Claude Code of Hermes, of de ingebouwde AI. Dat werkt in alle richtingen: jij geeft werk aan een agent, een agent geeft jou een vraag als opdracht, of twee agenten geven werk aan elkaar door.",
+      "p2": "De status is een beslissing en weerspiegelt niet zomaar de laatste run: aangemaakt, in behandeling, geblokkeerd, wacht op feedback, ter goedkeuring, voltooid, mislukt of afgebroken. Wie geblokkeerd is of wacht, vermeldt waarop.",
+      "p3": "„AI-run starten” geeft de opdracht aan de ingebouwde AI in een eigen gesprek. De AI voegt haar resultaat toe aan de opdracht, elke run verschijnt met de status en de kosten ervan, en een budget voorkomt dat verdere runs meer kosten dan gepland.",
+      "p4": "Elke wijziging staat in de geschiedenis, met de naam van degene die haar heeft uitgevoerd, en bij een agent ook met diens programma. Opdrachten kunnen worden opgedeeld in deelopdrachten.",
+      "p5": "Agenten werken met exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run en exo_work_item_delete."
+    },
+    "where": "Zijbalk onder „Opdrachten”, of Ctrl + K en „Opdrachten openen” respectievelijk „Nieuwe opdracht”."
   }
 }

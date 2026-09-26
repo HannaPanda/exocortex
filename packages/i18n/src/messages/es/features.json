@@ -894,5 +894,17 @@
       "p3": "En el teléfono, eXocortex puede instalarse como aplicación; de este modo desaparece la barra de direcciones y queda integrada en el menú de compartir."
     },
     "where": "La página de inicio de sesión."
+  },
+  "auftraege": {
+    "title": "Tareas: asigna trabajo a personas, agentes y la IA",
+    "summary": "Una tarea recoge lo que debe hacerse: objetivo, criterios de aceptación, páginas de contexto, quién la gestiona y qué resultado se obtuvo. Permanece intacta si una ejecución de IA falla, puede esperar a una persona y recibir otro intento más tarde.",
+    "details": {
+      "p1": "Puede gestionar una tarea una persona, una cuenta de agente como Claude Code o Hermes, o la IA integrada. Esto funciona en todas las direcciones: asignas trabajo a un agente, un agente te plantea una consulta en forma de tarea o dos agentes se van pasando el trabajo.",
+      "p2": "El estado es una decisión y no un mero reflejo de la última ejecución: creada, en curso, bloqueada, esperando respuesta, lista para revisión, completada, fallida o cancelada. Quien se bloquea o espera puede anotar a la espera de qué se encuentra.",
+      "p3": "«Iniciar ejecución de IA» asigna la tarea a la IA integrada en una conversación aparte. La IA registra su resultado en la tarea, cada ejecución se muestra con su estado y sus costes, y un presupuesto evita que las ejecuciones posteriores gasten más de lo previsto.",
+      "p4": "Cada modificación queda reflejada en el historial, junto con el nombre de quien la realizó y, si es un agente, también su programa. Las tareas se pueden dividir en subtareas.",
+      "p5": "Los agentes trabajan con exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run y exo_work_item_delete."
+    },
+    "where": "Barra lateral en «Tareas», o Ctrl + K y «Abrir tareas» o «Nueva tarea»."
   }
 }
