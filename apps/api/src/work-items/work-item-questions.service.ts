@@ -57,7 +57,9 @@ export class WorkItemQuestionsService {
     if (existing.closedAt !== null) {
       throw new AppError('work_item_closed', 'The work item is closed');
     }
-    const question = QUESTION_KINDS_PRISMA.includes(input.draft.kind);
+    if (input.draft.kind === 'REVIEW') return this.raiseReview(existing, input);
+    const waits =
+      QUESTION_KINDS_PRISMA.includes(input.draft.kind) && input.draft.blocking !== false;
 
     const { id, attention } = await this.prisma.$transaction(async (tx) => {
       const changes = emptyChanges();
@@ -84,7 +86,7 @@ export class WorkItemQuestionsService {
         ],
         input.correlationId,
       );
-      if (question && existing.status !== 'WAITING_FOR_HUMAN') {
+      if (waits && existing.status !== 'WAITING_FOR_HUMAN') {
         mergeChanges(
           changes,
           await transitionWorkItem(tx, {
@@ -110,6 +112,52 @@ export class WorkItemQuestionsService {
   }
 
   /**
+   * A review asked for (issue #140) is the work moving into `review`: the
+   * state raises its one review item, and the request's context and working
+   * state ride on it. Asking again while the work is already in review answers
+   * with the item that is open.
+   */
+  private async raiseReview(
+    existing: Awaited<ReturnType<WorkItemsService['loadRow']>>,
+    input: { actor: WorkItemActor; draft: AttentionDraft; correlationId: string },
+  ): Promise<string> {
+    if (existing.requesterKind === 'AGENT') {
+      throw new AppError(
+        'attention_target_invalid',
+        'An agent asked for this work and reads its state itself; there is no inbox to ask in',
+      );
+    }
+    const { draft } = input;
+    const reason = [draft.title, draft.reason].filter((part) => part != null).join('\n\n');
+    const attention = await this.prisma.$transaction(async (tx) =>
+      existing.status === 'REVIEW'
+        ? emptyChanges()
+        : transitionWorkItem(tx, {
+            existing,
+            to: 'REVIEW',
+            reason: reason.slice(0, 1_000),
+            actor: input.actor,
+            correlationId: input.correlationId,
+            checkpoint: { context: draft.context ?? null, workState: draft.workState ?? null },
+          }),
+    );
+    await this.workItems.announce(
+      existing.workspaceId,
+      existing.id,
+      'updated',
+      input.correlationId,
+    );
+    await this.workItems.announceAttention(existing.workspaceId, attention, input.correlationId);
+    const open = await this.prisma.attentionItem.findFirst({
+      where: { workItemId: existing.id, kind: 'REVIEW', status: 'OPEN' },
+      select: { id: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (open === null) throw AppError.conflict('The review could not be raised');
+    return open.id;
+  }
+
+  /**
    * An explicit request on this work was answered or withdrawn (issue #139).
    *
    * The answer goes into the item's history, where the agent that asked
@@ -125,6 +173,10 @@ export class WorkItemQuestionsService {
     optionId: string | undefined;
     note: string | undefined;
     reason: string | undefined;
+    /** Why an obsolete item is obsolete; `withdrawn` unless an approval went stale (issue #140). */
+    obsoleteReason?: 'withdrawn' | 'subject_changed';
+    /** Whether the work waited on this one (issue #140). */
+    blocking: boolean;
     correlationId: string;
   }): Promise<void> {
     const existing = await this.workItems.loadRow(input.workItemId);
@@ -136,7 +188,10 @@ export class WorkItemQuestionsService {
         actor: input.actor,
         resolution:
           input.status === 'OBSOLETE'
-            ? { reason: 'withdrawn', ...(input.reason === undefined ? {} : { note: input.reason }) }
+            ? {
+                reason: input.obsoleteReason ?? 'withdrawn',
+                ...(input.reason === undefined ? {} : { note: input.reason }),
+              }
             : {
                 ...(input.optionId === undefined ? {} : { optionId: input.optionId }),
                 ...(input.note === undefined ? {} : { note: input.note }),
@@ -159,9 +214,18 @@ export class WorkItemQuestionsService {
       } else {
         await tx.workItem.update({ where: { id: existing.id }, data: { updatedAt: new Date() } });
       }
-      if (existing.status === 'WAITING_FOR_HUMAN' && QUESTION_KINDS_PRISMA.includes(input.kind)) {
+      if (
+        existing.status === 'WAITING_FOR_HUMAN' &&
+        input.blocking &&
+        QUESTION_KINDS_PRISMA.includes(input.kind)
+      ) {
         const stillAsked = await tx.attentionItem.count({
-          where: { workItemId: existing.id, status: 'OPEN', kind: { in: QUESTION_KINDS_PRISMA } },
+          where: {
+            workItemId: existing.id,
+            status: 'OPEN',
+            kind: { in: QUESTION_KINDS_PRISMA },
+            blocking: true,
+          },
         });
         if (stillAsked === 0) {
           mergeChanges(

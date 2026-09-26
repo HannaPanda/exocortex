@@ -27,6 +27,21 @@ describe('service tokens', () => {
     expect(expiresAt).toBeGreaterThan(Date.now());
   });
 
+  it('carries the run it was minted for, and nothing when minted for none (issue #140)', () => {
+    const withRun = verifyServiceToken({
+      secret,
+      token: issue({ runId: 'run_1' }).token,
+      expectedPurpose: 'ai-tools',
+    });
+    expect(withRun.valid && withRun.claims.runId).toBe('run_1');
+    const without = verifyServiceToken({
+      secret,
+      token: issue().token,
+      expectedPurpose: 'ai-tools',
+    });
+    expect(without.valid && 'runId' in without.claims).toBe(false);
+  });
+
   it('produces a different token every time', () => {
     expect(issue().token).not.toBe(issue().token);
   });

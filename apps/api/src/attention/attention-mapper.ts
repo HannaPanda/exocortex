@@ -1,6 +1,7 @@
 import {
   type AttentionItem,
   type AttentionKind,
+  type AttentionSubjectPage,
   type AttentionNoteMode,
   attentionOptionSchema,
   attentionResolutionSchema,
@@ -83,6 +84,11 @@ export const ATTENTION_SELECT = {
   aiRun: { select: { id: true, conversationId: true, errorCode: true } },
   options: true,
   noteMode: true,
+  blocking: true,
+  context: true,
+  action: true,
+  workState: true,
+  subject: true,
   settledAt: true,
   settledByKind: true,
   settledById: true,
@@ -105,7 +111,15 @@ function parseResolution(value: Prisma.JsonValue | null): AttentionItem['resolut
   return parsed.success ? parsed.data : {};
 }
 
-export function toAttentionItem(row: AttentionRow): AttentionItem {
+/**
+ * `subject` is the item's subject pages as the reader sees them, from
+ * `subjectPagesFor`; an item bound to pages whose lookup the caller skipped
+ * reads as bound to none.
+ */
+export function toAttentionItem(
+  row: AttentionRow,
+  subject: AttentionSubjectPage[] | null = null,
+): AttentionItem {
   return {
     id: row.id,
     workspaceId: row.workspaceId,
@@ -134,6 +148,11 @@ export function toAttentionItem(row: AttentionRow): AttentionItem {
     run: row.aiRun,
     options: parseOptions(row.options),
     noteMode: NOTE_MODE_FROM[row.noteMode],
+    blocking: row.blocking,
+    context: row.context,
+    action: row.action,
+    workState: row.workState,
+    subject,
     settledAt: row.settledAt?.toISOString() ?? null,
     settledBy:
       row.settledByKind === null

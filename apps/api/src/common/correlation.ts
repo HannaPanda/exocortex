@@ -33,6 +33,12 @@ export interface RequestContext {
    * `WorkspaceAccessService` the only reader.
    */
   pageScopes?: PageScopeRestriction;
+  /**
+   * The AI run whose tool loop is making this request (issue #140), read from
+   * the signed claim of its service token and from nowhere else. `SessionGuard`
+   * is the only writer, and it writes `undefined` for every other credential.
+   */
+  aiRunId?: string;
 }
 
 export interface AutomationOriginContext {
@@ -118,6 +124,17 @@ export function clearAutomationOrigin(): void {
 export function setPageScopeRestriction(restriction: PageScopeRestriction | null): void {
   const context = storage.getStore();
   if (context !== undefined) context.pageScopes = restriction ?? undefined;
+}
+
+/** Records the run a service token was minted for, or forgets it (issue #140). */
+export function setRequestAiRun(runId: string | undefined): void {
+  const context = storage.getStore();
+  if (context !== undefined) context.aiRunId = runId;
+}
+
+/** The AI run making the current request, or `undefined` when none is. */
+export function currentAiRunId(): string | undefined {
+  return storage.getStore()?.aiRunId;
 }
 
 /** The confinement of the current request's credential, or null outside one. */

@@ -25,10 +25,12 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 const KIND_HELP =
   'Arten: decision (zwischen Optionen wählen), approval (Ja oder Nein zu etwas, das du tun ' +
-  'willst), budget (mehr Geld als das Budget des Auftrags), information (eine Auskunft, die nur ' +
-  'ein Mensch hat; ohne Optionen, die Antwort ist Text), conflict (Änderungen von Mensch und ' +
-  'Agent widersprechen sich). review, blocked und run_failed entstehen nur aus dem Status eines ' +
-  'Auftrags und lassen sich nicht direkt anlegen.';
+  'willst; action ist Pflicht und sagt genau, was passiert, subjectPages bindet die Freigabe an ' +
+  'Seiten in ihrer Revision), review (ein Ergebnis prüfen lassen; nur mit workItemId, der ' +
+  'Auftrag geht dann auf review), budget (mehr Geld als das Budget des Auftrags), information ' +
+  '(eine Auskunft, die nur ein Mensch hat; ohne Optionen, die Antwort ist Text), conflict ' +
+  '(Änderungen von Mensch und Agent widersprechen sich). blocked und run_failed entstehen nur ' +
+  'aus dem Status eines Auftrags.';
 
 const OPTION_HELP: Record<string, string> = {
   accept: 'abnehmen (Auftrag wird done)',
@@ -49,6 +51,20 @@ function formatItem(item: AttentionItem): string {
   if (item.run !== null) parts.push(`Lauf ${item.run.id}`);
   const lines = [parts.join(' · ')];
   if (item.reason !== null) lines.push(`  Grund: ${item.reason}`);
+  if (!item.blocking && item.workItem !== null && !item.system) {
+    lines.push('  Nicht blockierend: der Auftrag wartet nicht darauf.');
+  }
+  if (item.action !== null) lines.push(`  Freizugebende Aktion: ${item.action}`);
+  if (item.subject !== null) {
+    const pages = item.subject.map(
+      (page) =>
+        `${page.title ?? page.documentId} (id: ${page.documentId}, Revision ${page.revision}` +
+        `${page.changed ? ', seitdem geändert' : ''})`,
+    );
+    lines.push(`  Gebunden an: ${pages.join('; ')}`);
+  }
+  if (item.context !== null) lines.push(`  Kontext: ${item.context}`);
+  if (item.workState !== null) lines.push(`  Festgehaltener Arbeitsstand: ${item.workState}`);
   if (item.status === 'open' && item.options.length > 0) {
     const options = item.options.map((option) =>
       option.label === null
@@ -65,6 +81,12 @@ function formatItem(item: AttentionItem): string {
       item.resolution.optionId === undefined ? null : `gewählt: ${item.resolution.optionId}`,
       item.resolution.note === undefined ? null : `„${item.resolution.note}“`,
       item.resolution.reason === undefined ? null : `Grund: ${item.resolution.reason}`,
+      item.resolution.resumedRunId === undefined
+        ? null
+        : `fortgesetzt in Lauf ${item.resolution.resumedRunId}`,
+      item.resolution.resumeError === undefined
+        ? null
+        : `Fortsetzen gescheitert: ${item.resolution.resumeError}`,
     ].filter((entry) => entry !== null);
     if (answer.length > 0) lines.push(`  Erledigt: ${answer.join(', ')}`);
   }
@@ -78,12 +100,14 @@ export const attentionListTool: AnyToolDefinition = defineTool({
     'Prüfung, blockierte Aufträge, fehlgeschlagene Läufe, Rückfragen. Über alle Arbeitsbereiche. ' +
     'scope "for_me" (Standard) ist dein Eingang, "raised_by_me" das, was du gefragt hast (so ' +
     'findest du Antworten), "all" alles, was du lesen darfst. status "open" (Standard), ' +
-    '"settled" oder "all".',
+    '"settled" oder "all". conversationId zeigt die Rückfragen, die die Läufe eines Chats gestellt ' +
+    'haben.',
   inputSchema: z.object({
     scope: z.enum(['for_me', 'raised_by_me', 'all']).optional(),
     status: z.enum(['open', 'settled', 'all']).optional(),
     workspaceId: idSchema.optional(),
     workItemId: idSchema.optional(),
+    conversationId: idSchema.optional(),
     kind: attentionKindSchema.optional(),
     limit: z.number().int().min(1).max(200).optional(),
   }),
@@ -99,6 +123,7 @@ export const attentionListTool: AnyToolDefinition = defineTool({
         status: input.status,
         workspaceId: input.workspaceId,
         workItemId: input.workItemId,
+        conversationId: input.conversationId,
         kind: input.kind,
         limit: input.limit,
       },
@@ -137,13 +162,16 @@ export const attentionGetTool: AnyToolDefinition = defineTool({
 export const attentionRequestTool: AnyToolDefinition = defineTool({
   name: 'exo_attention_request',
   description:
-    'Fragt einen Menschen etwas, das du nicht selbst entscheiden kannst oder darfst. Nur für echte ' +
-    'Rückfragen, nie als Fertigmeldung (dafür status review mit exo_work_item_update). Mit ' +
-    'options ([{"id":"global","label":"Global"}, …], höchstens sechs) wird eine Wahl daraus, ohne ' +
-    'options eine Antwort in Worten. Mit workItemId wartet der Auftrag dann auf die Antwort ' +
-    '(waiting_for_human) und geht danach in die Warteschlange zurück; die Antwort steht in seiner ' +
-    'Historie. key macht die Anfrage wiederholbar: derselbe key liefert die offene Anfrage statt ' +
-    `einer zweiten. Die Antwort liest exo_attention_get. ${KIND_HELP}`,
+    'Fragt einen Menschen etwas, das du nicht selbst entscheiden kannst oder darfst: ein Human ' +
+    'Checkpoint. Nur für echte Rückfragen, nie als Fertigmeldung (dafür status review mit ' +
+    'exo_work_item_update oder kind review). Mit options ([{"id":"global","label":"Global"}, …], ' +
+    'höchstens sechs) wird eine Wahl daraus, ohne options eine Antwort in Worten. Mit workItemId ' +
+    'ist die Frage blockierend (blocking, Standard true): der Auftrag wartet (waiting_for_human), ' +
+    'dein Lauf endet nach diesem Aufruf, und die Antwort setzt die Arbeit später fort. Halte ' +
+    'deshalb in workState fest, was erledigt ist und was als Nächstes kommt; du bekommst es mit ' +
+    'der Antwort zurück. context erklärt dem Menschen, was er zum Antworten wissen muss. ' +
+    'blocking false fragt, ohne anzuhalten. key macht die Anfrage wiederholbar: derselbe key ' +
+    `liefert die offene Anfrage statt einer zweiten. ${KIND_HELP}`,
   inputSchema: z.object({ workspaceId: idSchema }).extend(requestAttentionSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'attention',
@@ -157,10 +185,14 @@ export const attentionRequestTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: attentionItemResponseSchema,
     });
+    const item = result.attentionItem;
+    const waits = item.blocking && item.workItem !== null;
     return {
-      text:
-        `Gefragt: ${result.attentionItem.title} (id: ${result.attentionItem.id}). ` +
-        'Die Antwort kommt später; exo_attention_get liest sie.',
+      text: waits
+        ? `Gefragt: ${item.title} (id: ${item.id}). Der Auftrag wartet jetzt auf die Antwort. ` +
+          'Beende diesen Lauf ohne weitere Schritte; die Antwort setzt die Arbeit fort.'
+        : `Gefragt: ${item.title} (id: ${item.id}). Die Antwort kommt später; ` +
+          'exo_attention_get liest sie.',
       data: result,
     };
   },

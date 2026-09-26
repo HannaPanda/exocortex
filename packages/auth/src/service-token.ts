@@ -35,6 +35,15 @@ export interface ServiceTokenClaims {
   purpose: ServiceTokenPurpose;
   /** Unix timestamp in milliseconds. */
   expiresAt: number;
+  /**
+   * The AI run whose tool loop holds this token (issue #140), when one does.
+   *
+   * Signed, so the API can tie what a request raises to the run that raised
+   * it without taking a run id from a request body: a human checkpoint that
+   * pauses a run has to name that run, and a name the caller could choose is
+   * one it could choose wrongly on purpose.
+   */
+  runId?: string;
 }
 
 interface ServiceTokenPayload extends ServiceTokenClaims {
@@ -57,6 +66,8 @@ export interface IssueServiceTokenOptions {
   userId: string;
   purpose: ServiceTokenPurpose;
   ttlSeconds: number;
+  /** See `ServiceTokenClaims.runId`. */
+  runId?: string;
   now?: number;
 }
 
@@ -74,6 +85,7 @@ export function issueServiceToken(options: IssueServiceTokenOptions): IssuedServ
     userId: options.userId,
     purpose: options.purpose,
     expiresAt,
+    ...(options.runId === undefined ? {} : { runId: options.runId }),
     nonce: randomBytes(9).toString('base64url'),
   };
   const encoded = base64UrlEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
@@ -138,7 +150,8 @@ export function verifyServiceToken(
     payload.v !== 1 ||
     typeof payload.userId !== 'string' ||
     !SERVICE_TOKEN_PURPOSES.includes(payload.purpose) ||
-    typeof payload.expiresAt !== 'number'
+    typeof payload.expiresAt !== 'number' ||
+    (payload.runId !== undefined && typeof payload.runId !== 'string')
   ) {
     return { valid: false, reason: 'malformed' };
   }
@@ -161,6 +174,7 @@ export function verifyServiceToken(
       userId: payload.userId,
       purpose: payload.purpose,
       expiresAt: payload.expiresAt,
+      ...(payload.runId === undefined ? {} : { runId: payload.runId }),
     },
   };
 }

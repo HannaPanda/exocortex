@@ -26,6 +26,7 @@ import { AppError } from '../common/app-error';
 import {
   clearAutomationOrigin,
   setPageScopeRestriction,
+  setRequestAiRun,
   setRequestUser,
 } from '../common/correlation';
 import { isHttpContext } from '../common/http-context';
@@ -83,6 +84,8 @@ interface VerifiedBearer {
   scopes?: readonly string[];
   /** Only set for `api_token`; see `AuthenticatedRequest.exocortexPageScopes`. */
   pageScopes?: PageScopeRestriction;
+  /** Only set for a service token minted for one AI run (issue #140). */
+  aiRunId?: string;
 }
 
 /**
@@ -125,6 +128,7 @@ export class SessionGuard implements CanActivate {
       request.exocortexCredential = 'session';
       setRequestUser(cookieSession.userId);
       clearAutomationOrigin();
+      setRequestAiRun(undefined);
       // A browser session is the person themselves and is never confined to a
       // branch. Said explicitly rather than left alone, so a reused context
       // object cannot carry a previous request's confinement.
@@ -137,7 +141,7 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential, scopes, pageScopes, apiTokenId } =
+    const { session, credential, scopes, pageScopes, apiTokenId, aiRunId } =
       await this.verifyBearerToken(bearer);
     request.exocortexSession = session;
     request.exocortexCredential = credential;
@@ -146,6 +150,9 @@ export class SessionGuard implements CanActivate {
     request.exocortexPageScopes = pageScopes;
     setRequestUser(session.userId);
     setPageScopeRestriction(pageScopes ?? null);
+    // Set for every bearer, `undefined` included, so a reused context cannot
+    // lend one request's run to the next (issue #140).
+    setRequestAiRun(aiRunId);
     // The automation origin header is read before authentication runs, because
     // that is where the request context is built. Only the worker may assert
     // it, and a service token is the only way the worker speaks to this API
@@ -209,6 +216,7 @@ export class SessionGuard implements CanActivate {
         expiresAt: new Date(result.claims.expiresAt),
       },
       credential: 'service_token',
+      ...(result.claims.runId === undefined ? {} : { aiRunId: result.claims.runId }),
     };
   }
 

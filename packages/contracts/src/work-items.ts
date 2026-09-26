@@ -142,6 +142,8 @@ export const WORK_ITEM_EVENT_KINDS = [
   'note',
   'attention_raised',
   'attention_resolved',
+  'run_resumed',
+  'resume_failed',
 ] as const;
 export const workItemEventKindSchema = z.enum(WORK_ITEM_EVENT_KINDS);
 export type WorkItemEventKind = z.infer<typeof workItemEventKindSchema>;

@@ -31,13 +31,17 @@ export const attentionKindSchema = z.enum(ATTENTION_KINDS);
 export type AttentionKind = z.infer<typeof attentionKindSchema>;
 
 /**
- * The kinds an agent may raise by asking. `review`, `blocked` and
- * `run_failed` come only from a work item's own state, so that a list of what
- * waits for review is the list of items actually in review.
+ * The kinds an agent may raise by asking. `blocked` and `run_failed` come only
+ * from a work item's own state. `review` may be asked for (issue #140), but
+ * only about a work item, and asking is the same as moving that item into
+ * `review`: the state raises the one review item and the request's context
+ * rides on it, so the list of what waits for review is still the list of
+ * items actually in review.
  */
 export const REQUESTABLE_ATTENTION_KINDS = [
   'decision',
   'approval',
+  'review',
   'budget',
   'conflict',
   'information',
@@ -100,6 +104,37 @@ export type AttentionOption = z.infer<typeof attentionOptionSchema>;
 
 export const ATTENTION_MAX_OPTIONS = 6;
 export const ATTENTION_NOTE_MAX_CHARS = 4_000;
+/** Context and working state a checkpoint carries (issue #140). */
+export const ATTENTION_CONTEXT_MAX_CHARS = 8_000;
+export const ATTENTION_SUBJECT_MAX_PAGES = 10;
+
+/**
+ * What an approval is bound to (issue #140, ADR-068): pages at the revision
+ * the asker saw, `DocumentContent.yjsUpdatedAt`, the same value a write sends
+ * back as `expectedYjsUpdatedAt`. An answer given after one of them changed
+ * does not approve anything; and the run carried on with the approval writes
+ * with that revision, so a change after the answer is refused by the write
+ * itself. A changeset (#141) will be a second member of this union.
+ */
+export const attentionSubjectSchema = z.object({
+  kind: z.literal('pages'),
+  pages: z
+    .array(z.object({ documentId: idSchema, revision: isoDateTimeSchema }))
+    .min(1)
+    .max(ATTENTION_SUBJECT_MAX_PAGES),
+});
+export type AttentionSubject = z.infer<typeof attentionSubjectSchema>;
+
+/** A subject page as a reader sees it, with whether it moved since the question. */
+export const attentionSubjectPageSchema = z.object({
+  documentId: idSchema,
+  revision: isoDateTimeSchema,
+  /** Null when the page is gone or the reader cannot see it. */
+  title: z.string().nullable(),
+  /** True when the page's content is no longer at `revision`, or the page is gone. */
+  changed: z.boolean(),
+});
+export type AttentionSubjectPage = z.infer<typeof attentionSubjectPageSchema>;
 
 /** What settled an item, as facts. */
 export const attentionResolutionSchema = z.object({
@@ -109,8 +144,16 @@ export const attentionResolutionSchema = z.object({
   workItemStatus: workItemStatusSchema.optional(),
   /** The run a retry started, or the newer run that replaced a failed one. */
   runId: idSchema.optional(),
-  /** Why an item became obsolete: `work_item_cancelled`, `work_item_deleted`, `withdrawn`, `superseded`. */
+  /**
+   * Why an item became obsolete: `work_item_cancelled`, `work_item_deleted`,
+   * `withdrawn`, `superseded`, or `subject_changed` when an approval was
+   * answered after what it was bound to had moved (issue #140).
+   */
   reason: z.string().optional(),
+  /** The run the answer carried the paused work on in (issue #140). */
+  resumedRunId: idSchema.optional(),
+  /** Why the answer could not carry the work on, as an error code (issue #140). */
+  resumeError: z.string().optional(),
 });
 export type AttentionResolution = z.infer<typeof attentionResolutionSchema>;
 
@@ -140,6 +183,16 @@ export const attentionItemSchema = z.object({
     .nullable(),
   options: z.array(attentionOptionSchema),
   noteMode: attentionNoteModeSchema,
+  /** A human checkpoint the work waits on (issue #140); false for one that stops nothing. */
+  blocking: z.boolean(),
+  /** What a person needs to know to answer. */
+  context: z.string().nullable(),
+  /** For an approval: exactly what will happen when it is given. */
+  action: z.string().nullable(),
+  /** The asker's account of where the work stands, handed back with the answer. */
+  workState: z.string().nullable(),
+  /** The pages an approval is bound to; null when it is bound to none. */
+  subject: z.array(attentionSubjectPageSchema).nullable(),
   settledAt: isoDateTimeSchema.nullable(),
   settledBy: workItemParticipantSchema.nullable(),
   resolution: attentionResolutionSchema.nullable(),
@@ -161,6 +214,8 @@ export const listAttentionQuerySchema = z.object({
   status: z.enum(['open', 'settled', 'all']).default('open'),
   workspaceId: idSchema.optional(),
   workItemId: idSchema.optional(),
+  /** The checkpoints the runs of one conversation raised, for the chat (issue #140). */
+  conversationId: idSchema.optional(),
   kind: z
     .union([attentionKindSchema, z.array(attentionKindSchema)])
     .transform((value) => (Array.isArray(value) ? value : [value]))
@@ -184,6 +239,12 @@ export type AttentionListResponse = z.infer<typeof attentionListResponseSchema>;
  * note, so an `information` request should leave `options` empty. `key` makes
  * the request idempotent: asking the same key again while the first is open
  * returns the open one instead of a second.
+ *
+ * As a human checkpoint (issue #140): `blocking` (default true on a work
+ * item, always false without one) makes the work wait and pauses the run that
+ * asked; `workState` is handed back verbatim with the answer; an approval
+ * names its `action` and may bind itself to pages, at the revision the asker
+ * read or, without one, at the revision they are at now.
  */
 export const requestAttentionSchema = z
   .object({
@@ -199,6 +260,27 @@ export const requestAttentionSchema = z
       .optional(),
     noteMode: attentionNoteModeSchema.optional(),
     key: z.string().trim().min(1).max(120).optional(),
+    blocking: z.boolean().optional(),
+    context: z.string().trim().min(1).max(ATTENTION_CONTEXT_MAX_CHARS).optional(),
+    action: z.string().trim().min(1).max(2_000).optional(),
+    workState: z.string().trim().min(1).max(ATTENTION_CONTEXT_MAX_CHARS).optional(),
+    subjectPages: z
+      .array(z.object({ documentId: idSchema, revision: isoDateTimeSchema.optional() }))
+      .min(1)
+      .max(ATTENTION_SUBJECT_MAX_PAGES)
+      .optional(),
+  })
+  .refine((value) => value.kind !== 'approval' || value.action !== undefined, {
+    message: 'An approval names the action it approves',
+    path: ['action'],
+  })
+  .refine((value) => value.subjectPages === undefined || value.kind === 'approval', {
+    message: 'Only an approval is bound to pages',
+    path: ['subjectPages'],
+  })
+  .refine((value) => value.kind !== 'review' || value.workItemId !== undefined, {
+    message: 'A review is asked about a work item',
+    path: ['workItemId'],
   })
   .refine(
     (value) =>

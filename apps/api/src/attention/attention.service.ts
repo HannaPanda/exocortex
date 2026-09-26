@@ -38,6 +38,12 @@ import {
   parseOptions,
   toAttentionItem,
 } from './attention-mapper';
+import {
+  parseSubject,
+  subjectChanged,
+  subjectForRequest,
+  subjectPagesFor,
+} from './attention-subject';
 import { settleOne, workItemRecipient } from './attention-sync';
 
 /**
@@ -80,6 +86,7 @@ function requestDraft(
   actor: WorkItemActor,
   request: RequestAttention,
   target: RequestTarget,
+  subject: Prisma.InputJsonValue | undefined,
 ): AttentionDraft {
   const options = request.options ?? [];
   const noteMode = request.noteMode ?? (options.length === 0 ? 'required' : 'optional');
@@ -106,6 +113,16 @@ function requestDraft(
     workItemId: target.workItem?.id ?? null,
     options,
     noteMode: NOTE_MODE_TO_PRISMA[noteMode],
+    // Only work can wait (issue #140): a question about nothing in particular
+    // has nothing to pause and nothing to carry on.
+    blocking: target.workItem === null ? false : (request.blocking ?? true),
+    context: request.context ?? null,
+    action: request.action ?? null,
+    workState: request.workState ?? null,
+    ...(subject === undefined ? {} : { subject }),
+    // From the signed service token, never from the body: the run this
+    // checkpoint pauses is the one whose tool loop asked.
+    aiRunId: actor.runId ?? null,
     dedupeKey:
       request.key === undefined
         ? null
@@ -132,6 +149,9 @@ export class AttentionService {
     if (query.kind !== undefined && query.kind.length > 0) {
       where.kind = { in: query.kind.map((kind) => KIND_TO_PRISMA[kind]) };
     }
+    if (query.conversationId !== undefined) {
+      where.aiRun = { conversationId: query.conversationId };
+    }
 
     const [rows, counts] = await Promise.all([
       this.prisma.attentionItem.findMany({
@@ -157,8 +177,10 @@ export class AttentionService {
       number
     >;
     for (const entry of counts) openCounts[KIND_FROM_PRISMA[entry.kind]] = entry._count._all;
+    const shown = rows.slice(0, query.limit);
+    const subjects = await subjectPagesFor(this.prisma, shown);
     return {
-      attentionItems: rows.slice(0, query.limit).map(toAttentionItem),
+      attentionItems: shown.map((row) => toAttentionItem(row, subjects.get(row.id) ?? null)),
       openCounts,
       truncated: rows.length > query.limit,
     };
@@ -166,7 +188,8 @@ export class AttentionService {
 
   async get(input: { attentionItemId: string; userId: string }): Promise<AttentionItemResponse> {
     const row = await this.loadReadable(input.attentionItemId, input.userId);
-    return { attentionItem: toAttentionItem(row) };
+    const subjects = await subjectPagesFor(this.prisma, [row]);
+    return { attentionItem: toAttentionItem(row, subjects.get(row.id) ?? null) };
   }
 
   async request(input: {
@@ -178,7 +201,12 @@ export class AttentionService {
     const { request, actor } = input;
     const role = await this.access.requireRole(input.workspaceId, actor.userId);
     const target = await this.requestTarget(input.workspaceId, role, request);
-    const draft = requestDraft(input.workspaceId, actor, request, target);
+    const subject =
+      request.subjectPages === undefined
+        ? undefined
+        : await subjectForRequest(this.prisma, input.workspaceId, request.subjectPages);
+    if (actor.runId !== undefined) await this.assertRunInWorkspace(actor.runId, input.workspaceId);
+    const draft = requestDraft(input.workspaceId, actor, request, target, subject);
 
     const id =
       target.workItem === null
@@ -206,6 +234,15 @@ export class AttentionService {
       throw new AppError('attention_item_settled', 'The item is already settled');
     }
     this.validateAnswer(row, request);
+
+    // An approval answered after what it was bound to moved approves nothing
+    // (issue #140): the person saw a state that no longer exists. The item is
+    // settled as obsolete rather than refused, so the asker hears about it and
+    // can ask again about the page as it is now.
+    const subject = parseSubject(row.subject);
+    if (subject !== null && (await subjectChanged(this.prisma, row.workspaceId, subject))) {
+      return this.settleStale(row, actor, input.correlationId);
+    }
 
     const resolving = {
       attentionItemId: row.id,
@@ -246,6 +283,7 @@ export class AttentionService {
         optionId: request.optionId,
         note: request.note,
         reason: undefined,
+        blocking: row.blocking,
         correlationId: input.correlationId,
       });
     } else {
@@ -312,10 +350,61 @@ export class AttentionService {
         optionId: undefined,
         note: undefined,
         reason: input.request.reason,
+        blocking: row.blocking,
         correlationId: input.correlationId,
       });
     }
     return this.get({ attentionItemId: row.id, userId: actor.userId });
+  }
+
+  /** The approval went stale before it was answered: obsolete, never approved. */
+  private async settleStale(
+    row: AttentionRow,
+    actor: WorkItemActor,
+    correlationId: string,
+  ): Promise<AttentionItemResponse> {
+    const workItemId = row.workItem?.id ?? null;
+    if (workItemId === null) {
+      const settled = await settleOne(this.prisma, {
+        attentionItemId: row.id,
+        status: 'OBSOLETE',
+        actor,
+        resolution: { reason: 'subject_changed' },
+      });
+      if (!settled) throw new AppError('attention_item_settled', 'The item is already settled');
+      await this.announce(row.workspaceId, [row.id], 'settled', correlationId);
+    } else {
+      await this.questions.settleRequest({
+        workItemId,
+        attentionItemId: row.id,
+        kind: row.kind,
+        status: 'OBSOLETE',
+        actor,
+        optionId: undefined,
+        note: undefined,
+        reason: undefined,
+        obsoleteReason: 'subject_changed',
+        blocking: row.blocking,
+        correlationId,
+      });
+    }
+    return this.get({ attentionItemId: row.id, userId: actor.userId });
+  }
+
+  /**
+   * The run a service token names belongs to this workspace. The claim is
+   * signed, so this cannot be forged; it catches a run from one workspace
+   * asking about another, which would resume in a conversation nobody here
+   * can read.
+   */
+  private async assertRunInWorkspace(runId: string, workspaceId: string): Promise<void> {
+    const run = await this.prisma.aiRun.findUnique({
+      where: { id: runId },
+      select: { workspaceId: true },
+    });
+    if (run === null || run.workspaceId !== workspaceId) {
+      throw new AppError('attention_target_invalid', 'The asking run belongs to another workspace');
+    }
   }
 
   /** The work item a request is about, and whose inbox it lands in. */

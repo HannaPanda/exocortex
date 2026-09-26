@@ -87,6 +87,8 @@ export const EVENT_KIND_TO_PRISMA: Record<WorkItemEventKind, PrismaEventKind> = 
   note: 'NOTE',
   attention_raised: 'ATTENTION_RAISED',
   attention_resolved: 'ATTENTION_RESOLVED',
+  run_resumed: 'RUN_RESUMED',
+  resume_failed: 'RESUME_FAILED',
 };
 const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   CREATED: 'created',
@@ -98,6 +100,8 @@ const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   NOTE: 'note',
   ATTENTION_RAISED: 'attention_raised',
   ATTENTION_RESOLVED: 'attention_resolved',
+  RUN_RESUMED: 'run_resumed',
+  RESUME_FAILED: 'resume_failed',
 };
 
 const RUN_STATUS_FROM_PRISMA: Record<PrismaAiRunStatus, WorkItemRun['status']> = {

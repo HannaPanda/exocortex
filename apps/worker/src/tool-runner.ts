@@ -170,6 +170,12 @@ export interface CreateToolRunnerInput {
    * one run has to be findable, and undoable, as one thing.
    */
   agentSession: { externalId: string; label: string };
+  /**
+   * The run itself, signed into every service token this loop mints (issue
+   * #140), so a checkpoint it raises names this run without the model ever
+   * handling the id.
+   */
+  runId: string;
 }
 
 /**
@@ -187,6 +193,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'requiredDomains'
   | 'toolCallTimeoutMs'
   | 'agentSession'
+  | 'runId'
 >;
 
 export type ToolRunnerFactory = (input: ToolRunnerFactoryInput) => ToolRunner;
@@ -287,6 +294,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         userId: input.userId,
         purpose: 'ai-tools',
         ttlSeconds: input.serviceTokenTtlSeconds,
+        runId: input.runId,
       });
       tokenExpiresAt = issued.expiresAt;
       client = createFetchApiClient({

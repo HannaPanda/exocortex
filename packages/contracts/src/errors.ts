@@ -142,6 +142,8 @@ export const API_ERROR_CODES = [
   'attention_note_required',
   /** The named recipient is not a member of the workspace, or the work item is not in it. */
   'attention_target_invalid',
+  /** A page an approval is to be bound to changed since the asker read it (issue #140). */
+  'attention_subject_changed',
   /** Pinning context sources is switched off for this workspace (`ai.maxPinnedSources` is 0). */
   'pinned_sources_disabled',
   /** The conversation already pins as many sources as `ai.maxPinnedSources` allows. */
@@ -355,6 +357,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   attention_option_invalid: 422,
   attention_note_required: 422,
   attention_target_invalid: 422,
+  attention_subject_changed: 409,
   // 409 rather than 403: the deployment allows it, this workspace does not, and
   // the caller's next move is a setting rather than a different token.
   pinned_sources_disabled: 409,

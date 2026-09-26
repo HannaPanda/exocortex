@@ -8,6 +8,7 @@ import {
   type AttentionChanges,
   type AttentionResolving,
   type AttentionWorkItem,
+  type CheckpointExtras,
   settleOne,
   syncWorkItemTransition,
 } from '../attention/attention-sync';
@@ -53,6 +54,8 @@ export async function transitionWorkItem(
     reason: string | null;
     actor: WorkItemActor;
     correlationId: string;
+    /** What a requested review hands the item its state raises (issue #140). */
+    checkpoint?: CheckpointExtras;
   },
 ): Promise<AttentionChanges> {
   const { existing, to, reason, actor, correlationId } = input;
@@ -70,6 +73,7 @@ export async function transitionWorkItem(
     to,
     reason,
     actor,
+    checkpoint: input.checkpoint,
   });
 }
 

@@ -3637,6 +3637,11 @@ enum WorkItemEventKind {
   ATTENTION_RAISED
   /// Somebody answered it; the answer is the event's note.
   ATTENTION_RESOLVED
+  /// An answer carried the paused run on in its own conversation (issue #140).
+  RUN_RESUMED
+  /// The answer was recorded but the run could not be carried on; the work
+  /// waits in the queue for somebody to start it (issue #140).
+  RESUME_FAILED
 }
 
 /// Why a page hangs on a piece of work: what it was given, or what it made.
@@ -3859,6 +3864,24 @@ model AttentionItem {
   /// person can take without leaving the inbox.
   options  Json              @default("[]")
   noteMode AttentionNoteMode @default(OPTIONAL)
+
+  /// A human checkpoint (issue #140): true when the work waits on this answer.
+  /// A blocking question moves its work item to `WAITING_FOR_HUMAN` and pauses
+  /// the run that asked; a non-blocking one is recorded and answered without
+  /// stopping anything. Meaningless for a system item, which its state raised.
+  blocking  Boolean @default(true)
+  /// What a person needs to know to answer, beyond the one-line reason.
+  context   String?
+  /// For an approval: what exactly will happen when it is given. Required
+  /// there, because a yes to a sentence that names nothing is a yes to anything.
+  action    String?
+  /// The asker's own account of where the work stands and what comes next,
+  /// handed back verbatim when the answer carries the work on.
+  workState String?
+  /// What an approval is bound to, shaped by `attentionSubjectSchema`: pages
+  /// at the revision the asker saw. An answer given after one of them changed
+  /// settles the item as obsolete instead of approving a state nobody saw.
+  subject   Json?
 
   /// One open item per waiting state: a partial unique index over
   /// `dedupeKey WHERE status = 'OPEN'` (hand-written in the migration), so

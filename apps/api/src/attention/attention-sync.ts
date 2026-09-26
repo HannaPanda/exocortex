@@ -139,6 +139,13 @@ async function settle(
   return settled;
 }
 
+/**
+ * What a checkpoint asked for adds to the item a state raises (issue #140):
+ * an agent that asks for review hands over its context and where the work
+ * stands, and the review item carries them.
+ */
+export type CheckpointExtras = Pick<AttentionDraft, 'context' | 'workState'>;
+
 function systemDraft(input: {
   item: AttentionWorkItem;
   state: NonNullable<(typeof WAITING_STATES)[PrismaStatus]>;
@@ -146,10 +153,14 @@ function systemDraft(input: {
   reason: string | null;
   actor: WorkItemActor;
   recipientId: string | null;
+  checkpoint: CheckpointExtras | undefined;
 }): AttentionDraft {
   const { item, state, status, reason, actor, recipientId } = input;
   const columns = actorColumns(actor);
   return {
+    ...input.checkpoint,
+    // The run that moved the work here is the one an answer carries on.
+    aiRunId: actor.runId ?? null,
     workspaceId: item.workspaceId,
     kind: state.kind,
     title: item.title,
@@ -184,6 +195,7 @@ export async function syncWorkItemTransition(
     reason: string | null;
     actor: WorkItemActor;
     resolving?: AttentionResolving | undefined;
+    checkpoint?: CheckpointExtras | undefined;
   },
 ): Promise<AttentionChanges> {
   const { item, from, to, actor, resolving } = input;
@@ -203,7 +215,10 @@ export async function syncWorkItemTransition(
   const leaving: Prisma.AttentionItemWhereInput[] = [
     { dedupeKey: attentionDedupeKeys.workItemState(item.id, STATUS_FROM_PRISMA[from]) },
   ];
-  if (from === 'WAITING_FOR_HUMAN') leaving.push({ kind: { in: QUESTION_KINDS_PRISMA } });
+  // A question that stops nothing (issue #140) outlives the waiting state.
+  if (from === 'WAITING_FOR_HUMAN') {
+    leaving.push({ kind: { in: QUESTION_KINDS_PRISMA }, blocking: true });
+  }
   const where: Prisma.AttentionItemWhereInput = CLOSED.includes(to)
     ? { workItemId: item.id }
     : { workItemId: item.id, OR: leaving };
@@ -214,13 +229,26 @@ export async function syncWorkItemTransition(
   if (state === undefined || recipientId === undefined) return changes;
   if (to === 'WAITING_FOR_HUMAN') {
     const asked = await tx.attentionItem.count({
-      where: { workItemId: item.id, status: 'OPEN', kind: { in: QUESTION_KINDS_PRISMA } },
+      where: {
+        workItemId: item.id,
+        status: 'OPEN',
+        kind: { in: QUESTION_KINDS_PRISMA },
+        blocking: true,
+      },
     });
     if (asked > 0) return changes;
   }
   changes.raised.push(
     ...(await raiseAttentionItems(tx, [
-      systemDraft({ item, state, status: to, reason: input.reason, actor, recipientId }),
+      systemDraft({
+        item,
+        state,
+        status: to,
+        reason: input.reason,
+        actor,
+        recipientId,
+        checkpoint: input.checkpoint,
+      }),
     ])),
   );
   return changes;

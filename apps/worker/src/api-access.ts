@@ -38,6 +38,7 @@ export function buildToolRunnerFactory(env: WorkerEnv, logger: Logger): ToolRunn
       requiredDomains: input.requiredDomains,
       toolCallTimeoutMs: input.toolCallTimeoutMs,
       agentSession: input.agentSession,
+      runId: input.runId,
       logger,
     });
 }

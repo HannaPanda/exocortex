@@ -509,3 +509,187 @@ describe('AttentionService', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 });
+
+/**
+ * Human checkpoints (issue #140, ADR-068): a question that stops nothing, an
+ * approval bound to the pages it is about, a review asked for, and the run
+ * that asked, taken from the actor and never from the request.
+ */
+describe('AttentionService checkpoints', () => {
+  async function pageWithContent(title: string) {
+    return prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: 'a0',
+        createdById: ownerId,
+        updatedById: ownerId,
+        content: { create: { yjsState: Buffer.from([0, 0]) } },
+      },
+      select: { id: true, content: { select: { yjsUpdatedAt: true } } },
+    });
+  }
+
+  it('lets a non-blocking question stand beside the work without stopping it', async () => {
+    const item = await createItem('Nebenfrage');
+    await setStatus(item.id, 'working');
+    const asked = await attention.request({
+      workspaceId,
+      actor: agent(ownerId),
+      request: {
+        kind: 'information',
+        title: 'Welche Schreibweise bevorzugst du?',
+        workItemId: item.id,
+        blocking: false,
+      },
+      correlationId,
+    });
+    expect(asked.attentionItem.blocking).toBe(false);
+    expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
+      'working',
+    );
+
+    const blocking = await attention.request({
+      workspaceId,
+      actor: agent(ownerId),
+      request: { kind: 'information', title: 'Wohin soll das?', workItemId: item.id },
+      correlationId,
+    });
+    expect(blocking.attentionItem.blocking).toBe(true);
+    expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
+      'waiting_for_human',
+    );
+
+    await attention.resolve({
+      attentionItemId: blocking.attentionItem.id,
+      actor: human(ownerId),
+      request: { note: 'In den Eingang' },
+      correlationId,
+    });
+    expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
+      'queued',
+    );
+    // The question that stopped nothing is still there to be answered.
+    const still = await attention.get({ attentionItemId: asked.attentionItem.id, userId: ownerId });
+    expect(still.attentionItem.status).toBe('open');
+  });
+
+  it('never lets a question about no work item block', async () => {
+    const asked = await attention.request({
+      workspaceId,
+      actor: agent(ownerId),
+      request: { kind: 'information', title: 'Allgemeine Frage', blocking: true },
+      correlationId,
+    });
+    expect(asked.attentionItem.blocking).toBe(false);
+  });
+
+  it('binds an approval to the page revision and voids it when the page moves', async () => {
+    const page = await pageWithContent('Freigabeseite');
+    const item = await createItem('Aufräumen');
+    const asked = await attention.request({
+      workspaceId,
+      actor: agent(ownerId),
+      request: {
+        kind: 'approval',
+        title: 'Darf ich den Abschnitt löschen?',
+        action: 'Abschnitt „Alt“ auf der Freigabeseite löschen',
+        options: [
+          { id: 'yes', label: 'Ja' },
+          { id: 'no', label: 'Nein' },
+        ],
+        workItemId: item.id,
+        subjectPages: [{ documentId: page.id }],
+      },
+      correlationId,
+    });
+    expect(asked.attentionItem.subject).toEqual([
+      {
+        documentId: page.id,
+        revision: page.content!.yjsUpdatedAt.toISOString(),
+        title: 'Freigabeseite',
+        changed: false,
+      },
+    ]);
+
+    await prisma.documentContent.update({
+      where: { documentId: page.id },
+      data: { yjsUpdatedAt: new Date(Date.now() + 60_000) },
+    });
+    const listed = await openFor(item.id);
+    expect(listed.find((entry) => entry.id === asked.attentionItem.id)?.subject?.[0]?.changed).toBe(
+      true,
+    );
+
+    const answered = await attention.resolve({
+      attentionItemId: asked.attentionItem.id,
+      actor: human(ownerId),
+      request: { optionId: 'yes' },
+      correlationId,
+    });
+    expect(answered.attentionItem).toMatchObject({
+      status: 'obsolete',
+      resolution: { reason: 'subject_changed' },
+    });
+    // The work is no longer waiting on an approval that approves nothing.
+    expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
+      'queued',
+    );
+  });
+
+  it('refuses to bind an approval to a revision that is already gone', async () => {
+    const page = await pageWithContent('Veraltet');
+    await expect(
+      attention.request({
+        workspaceId,
+        actor: agent(ownerId),
+        request: {
+          kind: 'approval',
+          title: 'Darf ich?',
+          action: 'Seite umschreiben',
+          subjectPages: [{ documentId: page.id, revision: '2020-01-01T00:00:00.000Z' }],
+        },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'attention_subject_changed' });
+  });
+
+  it('turns a requested review into the review state, carrying the context and the run', async () => {
+    const item = await createItem('Prüfen lassen');
+    await setStatus(item.id, 'working');
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: ownerId,
+        provider: 'mock',
+        model: 'mock/model',
+        messages: [],
+        workItemId: item.id,
+        status: 'RUNNING',
+      },
+    });
+    const asked = await attention.request({
+      workspaceId,
+      actor: { kind: 'assistant', userId: ownerId, agentLabel: null, runId: run.id },
+      request: {
+        kind: 'review',
+        title: 'Bitte den Entwurf prüfen',
+        context: 'Drei Abschnitte sind neu.',
+        workState: 'Entwurf fertig, Quellen folgen nach der Abnahme.',
+        workItemId: item.id,
+      },
+      correlationId,
+    });
+    expect(asked.attentionItem).toMatchObject({
+      kind: 'review',
+      system: true,
+      context: 'Drei Abschnitte sind neu.',
+      workState: 'Entwurf fertig, Quellen folgen nach der Abnahme.',
+      run: { id: run.id },
+    });
+    expect((await workItems.get({ workItemId: item.id, userId: ownerId })).workItem.status).toBe(
+      'review',
+    );
+    expect(await openFor(item.id)).toHaveLength(1);
+  });
+});
