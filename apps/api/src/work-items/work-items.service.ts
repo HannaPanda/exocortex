@@ -18,14 +18,26 @@ import {
   type PrismaClient,
   type PrismaTransactionClient,
   type WorkItemRefRole,
+  type WorkItemStatus as PrismaStatus,
 } from '@exocortex/database';
 
 import { ConversationsService } from '../ai/conversations.service';
+import {
+  type AttentionChanges,
+  type AttentionResolving,
+  emptyChanges,
+  mergeChanges,
+  syncRunStarted,
+  syncWorkItemDeleted,
+  syncWorkItemTransition,
+} from '../attention/attention-sync';
 import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
 import { type WorkItemActor } from './work-item-actor';
+import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
+import { eventActor, writeEvents } from './work-item-events';
 import {
   assigneeColumns,
   assigneeSnapshot,
@@ -150,7 +162,7 @@ export class WorkItemsService {
           data: { assignee: assigneeSnapshot(assignee, assigneeName) },
         });
       }
-      await this.writeEvents(tx, created.id, actor, events, input.correlationId);
+      await writeEvents(tx, created.id, actor, events, input.correlationId);
       return created.id;
     });
 
@@ -163,6 +175,8 @@ export class WorkItemsService {
     actor: WorkItemActor;
     request: UpdateWorkItemRequest;
     correlationId: string;
+    /** An answer from the inbox that this change carries out (issue #139). */
+    resolving?: AttentionResolving;
   }): Promise<WorkItemResponse> {
     const { request, actor } = input;
     const existing = await this.loadRow(input.workItemId);
@@ -183,16 +197,27 @@ export class WorkItemsService {
 
     const plan = planWorkItemUpdate({ existing, request, assigneeName, now: new Date() });
 
-    await this.prisma.$transaction(async (tx) => {
+    const attention = await this.prisma.$transaction(async (tx) => {
       // Written even when only the references changed, so `updatedAt` moves
       // and the item rises in the list like any other change would make it.
       await tx.workItem.update({ where: { id: existing.id }, data: plan.data });
       if (contextIds !== undefined) await this.replaceRefs(tx, existing.id, 'CONTEXT', contextIds);
       if (resultIds !== undefined) await this.replaceRefs(tx, existing.id, 'RESULT', resultIds);
-      await this.writeEvents(tx, existing.id, actor, plan.events, input.correlationId);
+      await writeEvents(tx, existing.id, actor, plan.events, input.correlationId);
+      const next = (plan.data.status as PrismaStatus | undefined) ?? existing.status;
+      return syncAfterTransition(tx, {
+        item: attentionView(existing, request),
+        from: existing.status,
+        to: next,
+        reason: (plan.data.statusReason as string | null | undefined) ?? null,
+        actor,
+        correlationId: input.correlationId,
+        resolving: input.resolving,
+      });
     });
 
     await this.announce(existing.workspaceId, existing.id, 'updated', input.correlationId);
+    await this.announceAttention(existing.workspaceId, attention, input.correlationId);
     return this.get({ workItemId: existing.id, userId: actor.userId });
   }
 
@@ -209,7 +234,7 @@ export class WorkItemsService {
       await tx.workItem.update({ where: { id: existing.id }, data: { updatedAt: new Date() } });
       await tx.workItemEvent.create({
         data: {
-          ...this.eventActor(existing.id, input.actor, input.correlationId),
+          ...eventActor(existing.id, input.actor, input.correlationId),
           kind: 'NOTE',
           note: input.request.note,
         },
@@ -230,6 +255,8 @@ export class WorkItemsService {
     workItemId: string;
     userId: string;
     correlationId: string;
+    /** Who, for the attention items this settles; a person unless said otherwise. */
+    actor?: WorkItemActor;
   }): Promise<DeleteWorkItemResponse> {
     const existing = await this.loadRow(input.workItemId);
     const role = await this.access.requireRole(existing.workspaceId, input.userId);
@@ -239,7 +266,14 @@ export class WorkItemsService {
       throw AppError.forbidden('Only the requester or a workspace admin may delete a work item');
     }
 
+    const actor: WorkItemActor = input.actor ?? {
+      kind: 'human',
+      userId: input.userId,
+      agentLabel: null,
+    };
+    let attention = emptyChanges();
     const detachedChildren = await this.prisma.$transaction(async (tx) => {
+      attention = await syncWorkItemDeleted(tx, { workItemId: existing.id, actor });
       const detached = await tx.workItem.updateMany({
         where: { parentId: existing.id },
         data: { parentId: null },
@@ -249,6 +283,7 @@ export class WorkItemsService {
     });
 
     await this.announce(existing.workspaceId, existing.id, 'deleted', input.correlationId);
+    await this.announceAttention(existing.workspaceId, attention, input.correlationId);
     return { deleted: true, detachedChildren };
   }
 
@@ -266,6 +301,8 @@ export class WorkItemsService {
     actor: WorkItemActor;
     request: StartWorkItemRunRequest;
     correlationId: string;
+    /** A retry chosen in the inbox, settled by this run (issue #139). */
+    resolving?: AttentionResolving;
   }): Promise<StartWorkItemRunResponse> {
     const row = await this.loadReadable(input.workItemId, input.actor.userId);
     const role = await this.access.requireRole(row.workspaceId, input.actor.userId);
@@ -312,7 +349,7 @@ export class WorkItemsService {
     const run = posted.run;
     if (run === null) throw AppError.internal('Starting the run produced no run');
 
-    await this.prisma.$transaction(async (tx) => {
+    const attention = await this.prisma.$transaction(async (tx) => {
       const events: WorkItemEventDraft[] = [{ kind: 'RUN_STARTED', data: { runId: run.id } }];
       const data: Prisma.WorkItemUncheckedUpdateInput = { updatedAt: new Date() };
       if (row.assigneeKind === null) {
@@ -327,10 +364,41 @@ export class WorkItemsService {
         events.push({ kind: 'STATUS_CHANGED', data: { from: 'queued', to: 'working' } });
       }
       await tx.workItem.update({ where: { id: row.id }, data });
-      await this.writeEvents(tx, row.id, input.actor, events, input.correlationId);
+      await writeEvents(tx, row.id, input.actor, events, input.correlationId);
+      const changes = await syncRunStarted(tx, {
+        workItemId: row.id,
+        runId: run.id,
+        actor: input.actor,
+        resolving: input.resolving,
+      });
+      if (
+        input.resolving !== undefined &&
+        changes.settled.includes(input.resolving.attentionItemId)
+      ) {
+        await writeAnswerEvent(
+          tx,
+          row.id,
+          input.actor,
+          input.resolving,
+          'run_failed',
+          input.correlationId,
+        );
+      }
+      mergeChanges(
+        changes,
+        await syncWorkItemTransition(tx, {
+          item: attentionView(row, {}),
+          from: row.status,
+          to: (data.status as PrismaStatus | undefined) ?? row.status,
+          reason: null,
+          actor: input.actor,
+        }),
+      );
+      return changes;
     });
 
     await this.announce(row.workspaceId, row.id, 'updated', input.correlationId);
+    await this.announceAttention(row.workspaceId, attention, input.correlationId);
     const updated = await this.get({ workItemId: row.id, userId: input.actor.userId });
     const linked = updated.workItem.runs.find((entry) => entry.id === run.id);
     return {
@@ -372,7 +440,8 @@ export class WorkItemsService {
     return where;
   }
 
-  private async loadRow(workItemId: string) {
+  /** Also used by `WorkItemQuestionsService`, which shares this module. */
+  async loadRow(workItemId: string) {
     const row = await this.prisma.workItem.findUnique({
       where: { id: workItemId },
       select: {
@@ -383,6 +452,9 @@ export class WorkItemsService {
         assigneeKind: true,
         assigneeId: true,
         requesterId: true,
+        requesterKind: true,
+        title: true,
+        priority: true,
         result: true,
         closedAt: true,
       },
@@ -403,7 +475,7 @@ export class WorkItemsService {
     return row;
   }
 
-  private async assertMayUpdate(
+  async assertMayUpdate(
     existing: { workspaceId: string; assigneeId: string | null },
     userId: string,
     /** True when the change only moves the work along (a note counts). */
@@ -490,35 +562,26 @@ export class WorkItemsService {
     });
   }
 
-  private eventActor(workItemId: string, actor: WorkItemActor, correlationId: string) {
-    return {
-      workItemId,
-      actorKind: PARTICIPANT_TO_PRISMA[actor.kind],
-      actorId: actor.userId,
-      agentLabel: actor.agentLabel,
-      correlationId,
-    };
-  }
-
-  private async writeEvents(
-    tx: PrismaTransactionClient,
-    workItemId: string,
-    actor: WorkItemActor,
-    events: readonly WorkItemEventDraft[],
+  async announceAttention(
+    workspaceId: string,
+    changes: AttentionChanges,
     correlationId: string,
   ): Promise<void> {
-    const base = this.eventActor(workItemId, actor, correlationId);
-    const now = Date.now();
-    // Explicit timestamps one millisecond apart, so the lines of one change
-    // keep the order they were planned in when sorted by time.
-    for (const [index, event] of events.entries()) {
-      await tx.workItemEvent.create({
-        data: { ...base, kind: event.kind, data: event.data, createdAt: new Date(now + index) },
+    if (changes.raised.length > 0) {
+      await this.realtime.emit('attention.changed', workspaceId, correlationId, {
+        attentionItemIds: changes.raised,
+        action: 'raised',
+      });
+    }
+    if (changes.settled.length > 0) {
+      await this.realtime.emit('attention.changed', workspaceId, correlationId, {
+        attentionItemIds: changes.settled,
+        action: 'settled',
       });
     }
   }
 
-  private async announce(
+  async announce(
     workspaceId: string,
     workItemId: string,
     action: Action,

@@ -59,7 +59,7 @@ export const PRIORITY_TO_PRISMA: Record<WorkItemPriority, PrismaPriority> = {
   high: 'HIGH',
   urgent: 'URGENT',
 };
-const PRIORITY_FROM_PRISMA: Record<PrismaPriority, WorkItemPriority> = {
+export const PRIORITY_FROM_PRISMA: Record<PrismaPriority, WorkItemPriority> = {
   LOW: 'low',
   NORMAL: 'normal',
   HIGH: 'high',
@@ -71,7 +71,7 @@ export const PARTICIPANT_TO_PRISMA: Record<WorkItemParticipantKind, PrismaPartic
   agent: 'AGENT',
   assistant: 'ASSISTANT',
 };
-const PARTICIPANT_FROM_PRISMA: Record<PrismaParticipantKind, WorkItemParticipantKind> = {
+export const PARTICIPANT_FROM_PRISMA: Record<PrismaParticipantKind, WorkItemParticipantKind> = {
   HUMAN: 'human',
   AGENT: 'agent',
   ASSISTANT: 'assistant',
@@ -85,6 +85,8 @@ export const EVENT_KIND_TO_PRISMA: Record<WorkItemEventKind, PrismaEventKind> = 
   run_started: 'RUN_STARTED',
   result_recorded: 'RESULT_RECORDED',
   note: 'NOTE',
+  attention_raised: 'ATTENTION_RAISED',
+  attention_resolved: 'ATTENTION_RESOLVED',
 };
 const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   CREATED: 'created',
@@ -94,6 +96,8 @@ const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   RUN_STARTED: 'run_started',
   RESULT_RECORDED: 'result_recorded',
   NOTE: 'note',
+  ATTENTION_RAISED: 'attention_raised',
+  ATTENTION_RESOLVED: 'attention_resolved',
 };
 
 const RUN_STATUS_FROM_PRISMA: Record<PrismaAiRunStatus, WorkItemRun['status']> = {

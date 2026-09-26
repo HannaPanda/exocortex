@@ -1,4 +1,5 @@
 export * from './ai-model-routes';
+export * from './attention';
 export * from './chunking';
 export * from './client';
 export * from './collection-description';

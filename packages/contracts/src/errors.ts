@@ -134,6 +134,14 @@ export const API_ERROR_CODES = [
   'work_item_closed',
   /** The linked runs have already spent the item's budget. */
   'work_item_budget_exhausted',
+  /** The attention item was already resolved or became obsolete; it moves only once. */
+  'attention_item_settled',
+  /** The chosen option is not one the item offers, or the item needs one and none was chosen. */
+  'attention_option_invalid',
+  /** The item asks for an answer in words, and none was given. */
+  'attention_note_required',
+  /** The named recipient is not a member of the workspace, or the work item is not in it. */
+  'attention_target_invalid',
   /** Pinning context sources is switched off for this workspace (`ai.maxPinnedSources` is 0). */
   'pinned_sources_disabled',
   /** The conversation already pins as many sources as `ai.maxPinnedSources` allows. */
@@ -342,6 +350,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // raise the budget) is what changes that.
   work_item_closed: 409,
   work_item_budget_exhausted: 409,
+  // Somebody else settled it first, or the work moved on: re-read, do not retry.
+  attention_item_settled: 409,
+  attention_option_invalid: 422,
+  attention_note_required: 422,
+  attention_target_invalid: 422,
   // 409 rather than 403: the deployment allows it, this workspace does not, and
   // the caller's next move is a setting rather than a different token.
   pinned_sources_disabled: 409,

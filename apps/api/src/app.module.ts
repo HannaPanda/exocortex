@@ -8,6 +8,7 @@ import { AdminModule } from './admin/admin.module';
 import { AgentSessionsModule } from './agent-sessions/agent-sessions.module';
 import { AiModule } from './ai/ai.module';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { AttentionModule } from './attention/attention.module';
 import { AdminGuard } from './auth/admin.guard';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
@@ -76,6 +77,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     ContextModule,
     SavedQueriesModule,
     WorkItemsModule,
+    AttentionModule,
     AttachmentsModule,
     AiModule,
     AdminModule,

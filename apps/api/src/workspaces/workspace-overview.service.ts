@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
 import {
-  type AttentionItem,
+  type OverviewAttention,
   type DocumentPathEntry,
   type DocumentType,
   type OverviewDocument,
@@ -249,7 +249,7 @@ export class WorkspaceOverviewService {
       `,
     ]);
 
-    const collect = (groups: { id: string | null; count: number }[]): AttentionItem => {
+    const collect = (groups: { id: string | null; count: number }[]): OverviewAttention => {
       const visible = groups.filter((group) => group.id !== null && byId.has(group.id));
       return {
         count: visible.reduce((sum, group) => sum + group.count, 0),

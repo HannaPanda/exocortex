@@ -54,6 +54,7 @@ export const APPLICATION_EVENT_TYPES = [
   'automation.disabled',
   'automation.run.failed',
   'work-item.changed',
+  'attention.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -389,6 +390,19 @@ export const workItemChangedPayloadSchema = z.object({
 export type WorkItemChangedPayload = z.infer<typeof workItemChangedPayloadSchema>;
 
 /**
+ * Attention items were raised or settled (issue #139).
+ *
+ * Ids only. The browser re-reads its inbox and the count beside it; who an
+ * item is for is answered by that read, not by the event, because everybody in
+ * the workspace is on this socket.
+ */
+export const attentionChangedPayloadSchema = z.object({
+  attentionItemIds: z.array(idSchema),
+  action: z.enum(['raised', 'settled']),
+});
+export type AttentionChangedPayload = z.infer<typeof attentionChangedPayloadSchema>;
+
+/**
  * A grant on a page was handed out, altered or withdrawn (issue #103).
  *
  * The one event type in this list that never reaches a socket. It is written
@@ -473,6 +487,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('automation.disabled', automationFailurePayloadSchema),
   envelope('automation.run.failed', automationFailurePayloadSchema),
   envelope('work-item.changed', workItemChangedPayloadSchema),
+  envelope('attention.changed', attentionChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

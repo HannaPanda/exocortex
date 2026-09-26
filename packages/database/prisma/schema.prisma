@@ -97,6 +97,9 @@ model User {
   requestedWorkItems          WorkItem[]               @relation("WorkItemRequester")
   assignedWorkItems           WorkItem[]               @relation("WorkItemAssignee")
   workItemEvents              WorkItemEvent[]          @relation("WorkItemEventActor")
+  attentionForMe              AttentionItem[]          @relation("AttentionRecipient")
+  attentionRaised             AttentionItem[]          @relation("AttentionRaisedBy")
+  attentionSettled            AttentionItem[]          @relation("AttentionSettledBy")
 
   @@map("user")
 }
@@ -589,6 +592,7 @@ model Workspace {
   agentMessages           AgentMessage[]
   attachmentUploadTickets AttachmentUploadTicket[]
   workItems               WorkItem[]
+  attentionItems          AttentionItem[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -1987,6 +1991,8 @@ model AiRun {
   /// the usage report.
   workItemId     String?
   workItem       WorkItem?        @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  /// What this run left for a person to decide (issue #139).
+  attention      AttentionItem[]
   /// Tool calls this run made, where `toolIterations` counts the rounds they
   /// arrived in: one round can carry several calls.
   toolCalls      Int              @default(0)
@@ -3627,6 +3633,10 @@ enum WorkItemEventKind {
   RUN_STARTED
   RESULT_RECORDED
   NOTE
+  /// A question or a review was put to a person (issue #139).
+  ATTENTION_RAISED
+  /// Somebody answered it; the answer is the event's note.
+  ATTENTION_RESOLVED
 }
 
 /// Why a page hangs on a piece of work: what it was given, or what it made.
@@ -3695,9 +3705,10 @@ model WorkItem {
   /// When it entered a terminal status. Null while it is open.
   closedAt  DateTime?
 
-  events WorkItemEvent[]
-  refs   WorkItemRef[]
-  runs   AiRun[]
+  events    WorkItemEvent[]
+  refs      WorkItemRef[]
+  runs      AiRun[]
+  attention AttentionItem[]
 
   /// The list: open work first, newest change first, within one workspace.
   @@index([workspaceId, closedAt, updatedAt])
@@ -3756,4 +3767,118 @@ model WorkItemRef {
   @@id([workItemId, role, documentId])
   @@index([documentId])
   @@map("work_item_ref")
+}
+
+// ---------------------------------------------------------------------------
+// What needs a person (issue #139)
+// ---------------------------------------------------------------------------
+
+/// What a person is asked to do.
+///
+/// Every member is a need for action, never information: a finished run, a
+/// new comment or a changed page are not here, they belong to the activity,
+/// the journal and the notifications.
+enum AttentionKind {
+  /// Choose between options an agent laid out.
+  DECISION
+  /// Say yes or no to something an agent wants to do.
+  APPROVAL
+  /// A result waits to be accepted or sent back.
+  REVIEW
+  /// The work cannot go on until somebody removes an obstacle.
+  BLOCKED
+  /// Allow more money than the work item's budget.
+  BUDGET
+  /// A run behind a work item ended without finishing; retry or give up.
+  RUN_FAILED
+  /// A person's change and an agent's change collide.
+  CONFLICT
+  /// An agent needs a fact only a person has.
+  INFORMATION
+}
+
+/// An attention item moves exactly once: out of `OPEN`, never back.
+enum AttentionStatus {
+  OPEN
+  /// Somebody acted: chose an option, answered, or moved the work on.
+  RESOLVED
+  /// Nobody has to any more: the work was cancelled or deleted, a newer run
+  /// replaced the failed one, the agent withdrew the question.
+  OBSOLETE
+}
+
+/// How much text an answer takes.
+enum AttentionNoteMode {
+  NONE
+  OPTIONAL
+  REQUIRED
+}
+
+/// One open need for a person's action (issue #139, ADR-067).
+///
+/// Raised either by the system when a work item enters a state that waits on
+/// a person (`REVIEW`, `BLOCKED`, `WAITING_FOR_HUMAN`, a failed run), or by an
+/// agent that asks a question. The row is its own audit trail: it is written
+/// once when raised and once when settled, both with who and when, and it is
+/// never reopened, so there is no history for a second table to keep.
+model AttentionItem {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  kind   AttentionKind
+  status AttentionStatus @default(OPEN)
+
+  title   String
+  /// Why this needs a person, in one or two sentences.
+  reason  String?
+  urgency WorkItemPriority @default(NORMAL)
+
+  /// Whose inbox this lands in. Null means anybody in the workspace who may
+  /// manage work. `SetNull`: a deleted account leaves the question to the
+  /// workspace rather than taking it along.
+  recipientId String?
+  recipient   User?   @relation("AttentionRecipient", fields: [recipientId], references: [id], onDelete: SetNull)
+
+  /// Who raised it. For a system item this is whoever made the change that
+  /// entered the waiting state.
+  raisedByKind WorkItemParticipantKind
+  raisedById   String?
+  raisedBy     User?                   @relation("AttentionRaisedBy", fields: [raisedById], references: [id], onDelete: SetNull)
+  agentLabel   String?
+  /// True when the system raised it from a state change, false for an
+  /// explicit request. A system item's options have fixed ids with an effect.
+  system       Boolean                 @default(false)
+
+  workItemId String?
+  workItem   WorkItem? @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  aiRunId    String?
+  aiRun      AiRun?    @relation(fields: [aiRunId], references: [id], onDelete: SetNull)
+
+  /// `[{ id, label }]`, shaped by `attentionOptionSchema`. The actions a
+  /// person can take without leaving the inbox.
+  options  Json              @default("[]")
+  noteMode AttentionNoteMode @default(OPTIONAL)
+
+  /// One open item per waiting state: a partial unique index over
+  /// `dedupeKey WHERE status = 'OPEN'` (hand-written in the migration), so
+  /// entering the same state twice, or a sweep running twice, raises nothing
+  /// new. A settled item frees the key.
+  dedupeKey String?
+
+  settledAt     DateTime?
+  settledByKind WorkItemParticipantKind?
+  settledById   String?
+  settledBy     User?                    @relation("AttentionSettledBy", fields: [settledById], references: [id], onDelete: SetNull)
+  /// `{ optionId?, note?, workItemStatus?, runId?, reason? }`: what settled it.
+  resolution    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([workspaceId, status, createdAt])
+  @@index([recipientId, status])
+  @@index([workItemId, status])
+  @@index([aiRunId])
+  @@map("attention_item")
 }

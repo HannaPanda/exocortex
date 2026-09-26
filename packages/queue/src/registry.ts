@@ -467,6 +467,10 @@ export class QueueRegistry {
     await schedule('reap-render-jobs', { every: 120_000 });
     // And the same cadence for project builds, for the same reason (issue #43).
     await schedule('reap-project-builds', { every: 120_000 });
+    // Every minute, the same cadence as the AI run reaper it follows: a run
+    // that failed behind a work item shows up in the attention inbox within
+    // two minutes of failing, whichever of the paths closed it (issue #139).
+    await schedule('raise-run-failure-attention', { every: 60_000 });
     // Hourly, off the hour so it never lands with the nightly sweeps. The
     // safety net under materialization: whoever writes the canonical state
     // enqueues the job that derives everything else, and a lost enqueue is

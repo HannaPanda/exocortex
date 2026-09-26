@@ -59,19 +59,19 @@ export type OverviewSection = z.infer<typeof overviewSectionSchema>;
  * they sit on leaves the reader searching. `documents` carries the first few
  * targets so the item is actionable from the landing view itself.
  */
-export const attentionItemSchema = z.object({
+export const overviewAttentionSchema = z.object({
   count: z.number().int().nonnegative(),
   documents: z.array(overviewDocumentSchema),
 });
-export type AttentionItem = z.infer<typeof attentionItemSchema>;
+export type OverviewAttention = z.infer<typeof overviewAttentionSchema>;
 
 export const workspaceAttentionSchema = z.object({
   /** Comment threads nobody has resolved. */
-  openComments: attentionItemSchema,
+  openComments: overviewAttentionSchema,
   /** Pages carrying a `[[reference]]` that resolves to nothing. */
-  brokenLinks: attentionItemSchema,
+  brokenLinks: overviewAttentionSchema,
   /** Attachments whose text extraction has not finished or has failed. */
-  stalledAttachments: attentionItemSchema,
+  stalledAttachments: overviewAttentionSchema,
   /**
    * Pages that open with a heading resembling their own title.
    *
@@ -80,7 +80,7 @@ export const workspaceAttentionSchema = z.object({
    * there, because deleting content on a resemblance is guessing. It is
    * reported here instead, where a person decides.
    */
-  duplicateTitleHeadings: attentionItemSchema,
+  duplicateTitleHeadings: overviewAttentionSchema,
 });
 export type WorkspaceAttention = z.infer<typeof workspaceAttentionSchema>;
 

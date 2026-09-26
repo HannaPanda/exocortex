@@ -110,6 +110,7 @@ export class WorkItemsController {
       workItemId,
       userId: session.userId,
       correlationId: currentCorrelationId(),
+      actor: workItemActorOf(session),
     });
   }
 

@@ -16,7 +16,7 @@ import { useFormatter, useNow, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import type {
-  AttentionItem,
+  OverviewAttention,
   OverviewDocument,
   WorkspaceOverviewResponse,
 } from '@exocortex/contracts';
@@ -164,7 +164,7 @@ function AttentionRow({
   workspaceId: string;
   icon: LucideIcon;
   labelKey: 'openComments' | 'brokenLinks' | 'stalledAttachments' | 'duplicateTitleHeadings';
-  item: AttentionItem;
+  item: OverviewAttention;
 }) {
   const t = useTranslations('shell.workspaceOverview');
   if (item.count === 0) return null;

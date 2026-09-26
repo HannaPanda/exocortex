@@ -5,6 +5,7 @@ import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocor
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { syncAiModelRoutes } from './maintenance-tasks/ai-model-routes';
+import { raiseRunFailureAttention } from './maintenance-tasks/attention';
 import { runDueAutomations } from './maintenance-tasks/automation-schedules';
 import {
   collectOrphanedCovers,
@@ -111,12 +112,13 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'sync-ai-model-routes': syncAiModelRoutes,
   'reap-render-jobs': reapRenderJobs,
   'reap-project-builds': reapProjectBuilds,
+  'raise-run-failure-attention': raiseRunFailureAttention,
 };
 
 /**
  * Maintenance processor.
  *
- * Twenty-eight unrelated sweeps share one queue and one schedule; what they have
+ * Twenty-nine unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

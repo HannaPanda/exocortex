@@ -140,6 +140,8 @@ export const WORK_ITEM_EVENT_KINDS = [
   'run_started',
   'result_recorded',
   'note',
+  'attention_raised',
+  'attention_resolved',
 ] as const;
 export const workItemEventKindSchema = z.enum(WORK_ITEM_EVENT_KINDS);
 export type WorkItemEventKind = z.infer<typeof workItemEventKindSchema>;
@@ -159,6 +161,10 @@ export const workItemEventDataSchema = z.object({
   fields: z.array(z.string()).optional(),
   assignee: workItemParticipantSchema.nullable().optional(),
   runId: idSchema.optional(),
+  /** The attention item a person was asked, or answered (issue #139). */
+  attentionItemId: idSchema.optional(),
+  attentionKind: z.string().optional(),
+  optionId: z.string().optional(),
 });
 export type WorkItemEventData = z.infer<typeof workItemEventDataSchema>;
 
