@@ -41,16 +41,9 @@ const OPTION_HELP: Record<string, string> = {
   give_up: 'aufgeben (Auftrag wird failed, Notiz wird der Grund)',
 };
 
-function formatItem(item: AttentionItem): string {
-  const parts = [`- ${item.title} (id: ${item.id})`, item.kind, item.status];
-  if (item.urgency !== 'normal') parts.push(`Dringlichkeit ${item.urgency}`);
-  parts.push(`Arbeitsbereich ${item.workspaceName}`);
-  if (item.workItem !== null) {
-    parts.push(`Auftrag „${item.workItem.title}“ (${item.workItem.id}, ${item.workItem.status})`);
-  }
-  if (item.run !== null) parts.push(`Lauf ${item.run.id}`);
-  const lines = [parts.join(' · ')];
-  if (item.reason !== null) lines.push(`  Grund: ${item.reason}`);
+/** What a human checkpoint carries beyond its question (issue #140). */
+function checkpointLines(item: AttentionItem): string[] {
+  const lines: string[] = [];
   if (!item.blocking && item.workItem !== null && !item.system) {
     lines.push('  Nicht blockierend: der Auftrag wartet nicht darauf.');
   }
@@ -65,6 +58,32 @@ function formatItem(item: AttentionItem): string {
   }
   if (item.context !== null) lines.push(`  Kontext: ${item.context}`);
   if (item.workState !== null) lines.push(`  Festgehaltener Arbeitsstand: ${item.workState}`);
+  return lines;
+}
+
+function resolutionParts(resolution: NonNullable<AttentionItem['resolution']>): string[] {
+  return [
+    resolution.optionId === undefined ? null : `gewählt: ${resolution.optionId}`,
+    resolution.note === undefined ? null : `„${resolution.note}“`,
+    resolution.reason === undefined ? null : `Grund: ${resolution.reason}`,
+    resolution.resumedRunId === undefined ? null : `fortgesetzt in Lauf ${resolution.resumedRunId}`,
+    resolution.resumeError === undefined
+      ? null
+      : `Fortsetzen gescheitert: ${resolution.resumeError}`,
+  ].filter((entry) => entry !== null);
+}
+
+function formatItem(item: AttentionItem): string {
+  const parts = [`- ${item.title} (id: ${item.id})`, item.kind, item.status];
+  if (item.urgency !== 'normal') parts.push(`Dringlichkeit ${item.urgency}`);
+  parts.push(`Arbeitsbereich ${item.workspaceName}`);
+  if (item.workItem !== null) {
+    parts.push(`Auftrag „${item.workItem.title}“ (${item.workItem.id}, ${item.workItem.status})`);
+  }
+  if (item.run !== null) parts.push(`Lauf ${item.run.id}`);
+  const lines = [parts.join(' · ')];
+  if (item.reason !== null) lines.push(`  Grund: ${item.reason}`);
+  lines.push(...checkpointLines(item));
   if (item.status === 'open' && item.options.length > 0) {
     const options = item.options.map((option) =>
       option.label === null
@@ -77,17 +96,7 @@ function formatItem(item: AttentionItem): string {
     lines.push('  Antwort in Worten nötig (note).');
   }
   if (item.resolution !== null) {
-    const answer = [
-      item.resolution.optionId === undefined ? null : `gewählt: ${item.resolution.optionId}`,
-      item.resolution.note === undefined ? null : `„${item.resolution.note}“`,
-      item.resolution.reason === undefined ? null : `Grund: ${item.resolution.reason}`,
-      item.resolution.resumedRunId === undefined
-        ? null
-        : `fortgesetzt in Lauf ${item.resolution.resumedRunId}`,
-      item.resolution.resumeError === undefined
-        ? null
-        : `Fortsetzen gescheitert: ${item.resolution.resumeError}`,
-    ].filter((entry) => entry !== null);
+    const answer = resolutionParts(item.resolution);
     if (answer.length > 0) lines.push(`  Erledigt: ${answer.join(', ')}`);
   }
   return lines.join('\n');

@@ -3,9 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { attentionResolutionSchema } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 
+import { ConversationsService } from '../ai/conversations.service';
 import { KIND_FROM_PRISMA, parseOptions } from '../attention/attention-mapper';
 import { parseSubject } from '../attention/attention-subject';
-import { ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 

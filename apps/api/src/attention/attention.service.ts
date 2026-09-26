@@ -81,6 +81,35 @@ interface RequestTarget {
 
 type WorkItemPriorityRow = NonNullable<Prisma.AttentionItemCreateManyInput['urgency']>;
 
+/** A request's urgency, or its work item's with urgent softened to high. */
+function requestUrgency(request: RequestAttention, target: RequestTarget): WorkItemPriorityRow {
+  if (request.urgency !== undefined) return PRIORITY_TO_PRISMA[request.urgency];
+  const inherited = target.workItem?.priority ?? 'NORMAL';
+  return inherited === 'URGENT' ? 'HIGH' : inherited;
+}
+
+/** What makes a request a human checkpoint (issue #140, ADR-068). */
+function checkpointColumns(
+  actor: WorkItemActor,
+  request: RequestAttention,
+  target: RequestTarget,
+  subject: Prisma.InputJsonValue | undefined,
+): Pick<AttentionDraft, 'blocking' | 'context' | 'action' | 'workState' | 'subject' | 'aiRunId'> {
+  return {
+    // Only work can wait: a question about nothing in particular has nothing
+    // to pause and nothing to carry on, and a conflict is about pages rather
+    // than about the work going on.
+    blocking: target.workItem !== null && request.kind !== 'conflict' && (request.blocking ?? true),
+    context: request.context ?? null,
+    action: request.action ?? null,
+    workState: request.workState ?? null,
+    ...(subject === undefined ? {} : { subject }),
+    // From the signed service token, never from the body: the run this
+    // checkpoint pauses is the one whose tool loop asked.
+    aiRunId: actor.runId ?? null,
+  };
+}
+
 /** The row an explicit request becomes. */
 function requestDraft(
   workspaceId: string,
@@ -94,18 +123,12 @@ function requestDraft(
   if (options.length === 0 && noteMode === 'none') {
     throw AppError.validation('A request without options needs an answer in words');
   }
-  const inherited = target.workItem?.priority ?? 'NORMAL';
   return {
     workspaceId,
     kind: KIND_TO_PRISMA[request.kind],
     title: request.title,
     reason: request.reason ?? null,
-    urgency:
-      request.urgency === undefined
-        ? inherited === 'URGENT'
-          ? 'HIGH'
-          : inherited
-        : PRIORITY_TO_PRISMA[request.urgency],
+    urgency: requestUrgency(request, target),
     recipientId: target.recipientId,
     raisedByKind: PARTICIPANT_TO_PRISMA[actor.kind],
     raisedById: actor.userId,
@@ -114,17 +137,7 @@ function requestDraft(
     workItemId: target.workItem?.id ?? null,
     options,
     noteMode: NOTE_MODE_TO_PRISMA[noteMode],
-    // Only work can wait (issue #140): a question about nothing in particular
-    // has nothing to pause and nothing to carry on, and a conflict is about
-    // pages rather than about the work going on.
-    blocking: target.workItem !== null && request.kind !== 'conflict' && (request.blocking ?? true),
-    context: request.context ?? null,
-    action: request.action ?? null,
-    workState: request.workState ?? null,
-    ...(subject === undefined ? {} : { subject }),
-    // From the signed service token, never from the body: the run this
-    // checkpoint pauses is the one whose tool loop asked.
-    aiRunId: actor.runId ?? null,
+    ...checkpointColumns(actor, request, target, subject),
     dedupeKey:
       request.key === undefined
         ? null

@@ -1,11 +1,11 @@
 import {
   type AttentionItem,
   type AttentionKind,
-  type AttentionSubjectPage,
   type AttentionNoteMode,
   attentionOptionSchema,
   attentionResolutionSchema,
   type AttentionStatus,
+  type AttentionSubjectPage,
 } from '@exocortex/contracts';
 import {
   type AttentionKind as PrismaKind,
