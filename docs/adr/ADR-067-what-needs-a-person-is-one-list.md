@@ -86,9 +86,10 @@ cannot be withdrawn because its work item's state is what raised it.
   a separate decision (ADR-052); the realtime event `attention.changed` carries
   ids only, and the browser re-reads every minute for workspaces whose socket
   room it has not joined.
-- A changeset (#141) is not modelled. It will be a third link beside the work
-  item and the run, and a `review` of a changeset will be raised by its state
-  the same way.
+- A changeset came with #141 (ADR-070). It is linked through the item's
+  `subject` rather than a third column: handing one in on a work item moves
+  the work into `review` the same way, and deciding its last change settles
+  that item.
 - Pausing a run and resuming it after an answer came with #140 (ADR-068): an
   answer to a blocking question on work the assistant holds carries the
   paused run on in its own conversation; for everybody else it still puts the

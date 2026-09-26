@@ -667,6 +667,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   from the newest by default, told the decisions settled since, so it may be
   another model without the old conversation. Pages carry their revision.
   Not memory: nothing crosses into the memory workspace.
+- ADR-070: a proposal changes nothing until a person applies it. A
+  changeset is page writes stored as requests, previewed by the write
+  services' own `prepare` and kept with the revision and the block diff;
+  applying replays each through the ordinary write, as the person applying,
+  at the expected revision, so a page that moved makes the change stale
+  instead of receiving it. A set does not go stale on its own writes. The
+  write mode (`direct`, `propose`, `read_only`) is the stricter of
+  `ai.writeMode` and the work item's own, signed into the run's service token
+  and enforced by route class (`requestClassFor`); an external agent gets it
+  as the `propose` token scope. Deciding is a person's: apply and reject are
+  never on the built-in AI's surface.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -700,6 +711,7 @@ Each of these has a step-by-step recipe:
 | new palette command, place, settings group in `Strg + K` | `docs/command-palette.md`   |
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
 | new work item field, status rule, run behaviour          | `docs/work-items.md`        |
+| new kind of proposed change, a route in the propose mode | `docs/changesets.md`        |
 | new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 

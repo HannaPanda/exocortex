@@ -45,6 +45,8 @@ dich"), one list across every workspace.
 | ... and the assistant holds the work and a run asked      | the answers are posted into that run's conversation, the work moves to working  |
 | review asked for on a work item                           | the work moves to `review`; the review item carries the context and the run     |
 | approval answered after a subject page moved              | the item is `obsolete` (`subject_changed`), and the run is told so              |
+| changeset handed in (issue #141)                          | on a work item a review (the work moves to `review`), otherwise an approval     |
+| last change of that changeset decided                     | the item is `resolved` with the decision; a review sends the work to `working`  |
 
 ## Rules worth knowing before changing anything
 
@@ -68,9 +70,16 @@ dich"), one list across every workspace.
   never lost to it. A new way to settle an item that a run could be waiting on
   has to call `WorkItemResumeService.afterAnswer` afterwards.
 - **An approval's subject** is compared on every answer, content revision
-  only. Adding a kind of subject (a changeset, #141) is a member of
-  `attentionSubjectSchema`, a comparison in `attention-subject.ts`, and a line
-  in the resume prompt saying what the run has to send back with its write.
+  only. There are two kinds: pages at a revision, and a changeset by the hash
+  of its changes (issue #141, ADR-070, `subjectChangesetsFor` shows it to the
+  reader). A further kind is a member of `attentionSubjectSchema`, a
+  comparison in `attention-subject.ts`, and a line in the resume prompt saying
+  what the run has to send back with its write.
+- **A changeset settles its own item.** Handing one in raises the review or
+  approval (`ChangesetReviewService.raise`); deciding its last change settles
+  it with the decision in words and, for a review, sends the work back to
+  `working`, which carries the paused run on. A person may still answer the
+  item in the inbox first; the changeset then finds it settled and leaves it.
 - **Who sees it** is `scopeFilter`: addressed to the reader, or unaddressed in
   a workspace where they may manage work. A GUEST never sees unaddressed items.
 

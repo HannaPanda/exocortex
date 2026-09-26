@@ -114,7 +114,7 @@ export const ATTENTION_SUBJECT_MAX_PAGES = 10;
  * back as `expectedYjsUpdatedAt`. An answer given after one of them changed
  * does not approve anything; and the run carried on with the approval writes
  * with that revision, so a change after the answer is refused by the write
- * itself. A changeset (#141) will be a second member of this union.
+ * itself. A changeset (issue #141, ADR-070) is the second member.
  */
 export const attentionSubjectSchema = z.discriminatedUnion('kind', [
   z.object({

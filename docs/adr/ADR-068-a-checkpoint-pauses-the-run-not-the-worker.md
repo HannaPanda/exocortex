@@ -99,7 +99,8 @@ rename or a move does not change what an approval to write a page was about.
   `resume_failed` (`ai_conversation_locked`) and the work waits in the queue.
 - Notifying the recipient by push or mail is still a separate decision
   (ADR-052); the decision itself stays in eXocortex.
-- A changeset (#141) will be a second member of the subject union, bound by a
-  hash the same way a page is bound by its revision. Provider-independent
-  resume from explicit checkpoints (#142) builds on `workState`; today the
-  transcript is what the resumed run reads.
+- A changeset is the second member of the subject union since #141 (ADR-070),
+  bound by the hash of its changes the way a page is bound by its revision;
+  deciding its last change is an answer that carries the paused run on.
+  Provider-independent resume from explicit checkpoints came with #142
+  (ADR-069) and builds on `workState`.

@@ -9,6 +9,7 @@ outlives the runs that attempt it.
 | Piece         | Location                                                                                                       |
 | ------------- | -------------------------------------------------------------------------------------------------------------- |
 | Tables        | `work_item`, `work_item_event`, `work_item_ref`, `work_item_checkpoint`, `ai_run.workItemId` (`schema.prisma`) |
+| Proposals     | `changeset.workItemId`, `work_item.writeMode` (`docs/changesets.md`)                                           |
 | Wire contract | `packages/contracts/src/work-items.ts`                                                                         |
 | REST          | `apps/api/src/work-items/` (controller, service, pure update planner, mapper, run prompt)                      |
 | Tools         | `packages/mcp-tools/src/tools/work-items.ts`, domain `workItems`                                               |
@@ -87,6 +88,17 @@ model. The newest row is the state; rows are never edited.
   paths cannot drift. `fromCheckpoint: 'none'` is the way to start clean.
 - **Not memory.** Nothing here goes into the memory workspace and nothing there
   comes back here; a checkpoint is deleted with its work item.
+
+## Write mode (issue #141, ADR-070)
+
+`writeMode` (`read_only`, `propose`, `direct`, or null to inherit) holds every
+run of the built-in AI on this work to the stricter of it and the workspace's
+`ai.writeMode`. The worker reads both when the run starts
+(`resolveRunWriteMode`), records the result on `ai_run.writeMode`, and signs
+it into the run's service token. Tightening is anybody's who may change the
+item; loosening takes a person or a token with `write`
+(`assertWriteModeChange`). A proposing run hands its changes in as a
+changeset, which moves the work into `review`; see `docs/changesets.md`.
 
 ## Adding a capability
 

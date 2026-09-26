@@ -177,6 +177,12 @@ What is deliberately still missing is listed under
   step and by eXocortex when work waits on a person or a run ends unfinished;
   the next run carries on from the newest one, with another model if need be,
   told every decision since instead of reading the old transcript (ADR-069)
+- proposed changes: an agent in the proposal mode hands page changes in as a
+  changeset instead of writing them, each shown as a diff against the page it
+  was proposed on; a person applies them one by one or all at once, and a
+  change whose page moved since is marked stale instead of landing on a state
+  nobody reviewed. The mode is a workspace setting, a work item's own, or an
+  API token scope, and the server enforces it (ADR-070)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
   (ADR-038), which fire a signed webhook, an AI prompt, or the page by mail to
   the person who wrote the rule and to nobody else (ADR-054)
@@ -348,6 +354,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/sharing.md`](docs/sharing.md)                                   | page shares, public links, page-scoped tokens                           |
 | [`docs/work-items.md`](docs/work-items.md)                             | delegated work: the item, its history, runs, who may change what        |
 | [`docs/attention.md`](docs/attention.md)                               | what waits on a person: raising, settling, answering, who sees what     |
+| [`docs/changesets.md`](docs/changesets.md)                             | proposed changes: proposing, applying, stale changes, the write mode    |
 | [`docs/features.md`](docs/features.md)                                 | the feature registry, the coverage gate, writing an entry               |
 | [`docs/command-palette.md`](docs/command-palette.md)                   | `Strg + K`: the command registry, contexts, the coverage gate           |
 | [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |
