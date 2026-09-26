@@ -275,7 +275,7 @@ export async function loadConversationMessages(
 export function resolveVisionCompanionSlug(
   conversationOverride: string | null,
   modelRowCompanion: string | null,
-): string | 'off' | null {
+): string | null {
   if (conversationOverride === 'off') return 'off';
   if (conversationOverride !== null) return conversationOverride;
   return modelRowCompanion;

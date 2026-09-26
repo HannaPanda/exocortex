@@ -179,13 +179,16 @@ export function parseIcu(message) {
  * checks them against the target language instead.
  */
 export function icuSignature(nodes) {
+  /** @type {Set<string>} */
   const entries = new Set();
   const visit = (list) => {
     for (const node of list) {
       if (node.type === 'argument') {
         entries.add(`argument ${node.name}: ${node.kind}`);
         if (node.kind === 'select') {
-          entries.add(`select ${node.name}: ${[...node.options.keys()].sort().join('|')}`);
+          entries.add(
+            `select ${node.name}: ${Array.from(node.options.keys(), String).sort().join('|')}`,
+          );
         }
         if (node.options !== undefined) for (const option of node.options.values()) visit(option);
       } else if (node.type === 'tag') {

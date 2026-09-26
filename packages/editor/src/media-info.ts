@@ -98,8 +98,13 @@ export interface MediaInfoResolver {
    * Null when `src` is nothing the host can describe.
    */
   read(src: string): Promise<MediaDocumentInfo | null>;
-  /** Asks for an extraction to (re-)run. Absent when the reader may not. */
-  request?(src: string): Promise<MediaDocumentInfo | null>;
+  /**
+   * Asks for an extraction to (re-)run. Absent when the reader may not.
+   *
+   * This and `forceReextract` are function properties rather than methods
+   * because the block hands them to a button as they are, without a `this`.
+   */
+  request?: (src: string) => Promise<MediaDocumentInfo | null>;
   /**
    * Loads the full text for the "Ansehen" dialog (issue #2). Absent when the
    * reader may not view it -- which never happens today, but keeps the same
@@ -111,7 +116,7 @@ export interface MediaInfoResolver {
    * (issue #2). Distinct from `request`, which never re-runs a `ready` one.
    * Absent when the reader may not.
    */
-  forceReextract?(src: string): Promise<MediaDocumentInfo | null>;
+  forceReextract?: (src: string) => Promise<MediaDocumentInfo | null>;
   /**
    * Writes a human correction of the extracted text, or with `text: null`
    * clears one (issue #2). Absent when the reader may not edit.

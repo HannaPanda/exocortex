@@ -109,7 +109,7 @@ const SIGNATURES: Signature[] = [
         matches(
           buffer,
           8,
-          [...brand].map((character) => character.charCodeAt(0)),
+          Array.from(brand, (character) => character.charCodeAt(0)),
         ),
       ),
   },
@@ -332,7 +332,7 @@ function isParsableJson(head: string, buffer: Uint8Array): boolean {
 
 /** Sanitizes a client-provided filename for storage and Content-Disposition. */
 export function sanitizeFilename(filename: string, fallbackExtension: string): string {
-  const base = [...filename]
+  const base = Array.from(filename)
     // Drop C0/C1 control characters and DEL without a control-character regex.
     .filter((character) => {
       const code = character.codePointAt(0) ?? 0;

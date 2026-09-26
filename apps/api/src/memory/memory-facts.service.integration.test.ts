@@ -271,7 +271,7 @@ describe('consolidate', () => {
     ).toBe(1);
     // Both notes are recorded as evidence, and the second one as a confirmation.
     const sources = await prisma.memoryFactSource.findMany({ where: { factId: created.id } });
-    expect(sources.map((source) => source.confirming).sort()).toEqual([false, true]);
+    expect(sources.map((source) => source.confirming).sort((a, b) => Number(a) - Number(b))).toEqual([false, true]);
   });
 
   it('keeps the old wording and points it at its successor when superseded', async () => {

@@ -15,8 +15,11 @@ export interface JobContext<TName extends QueueName, TStep extends string = stri
    * code, never a sentence: whoever shows it to a person words it in their
    * language (ADR-062). A worker that forwards progress to the browser narrows
    * `TStep` to the codes the browser has words for.
+   *
+   * A function property rather than a method: every handler destructures it
+   * out of the context, so it must not depend on a `this`.
    */
-  reportProgress(progress: number, step: TStep): Promise<void>;
+  reportProgress: (progress: number, step: TStep) => Promise<void>;
 }
 
 export type JobHandler<TName extends QueueName, TStep extends string = string> = (

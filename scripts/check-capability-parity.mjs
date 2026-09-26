@@ -139,7 +139,9 @@ function buildRows(tools, webCalls, apiRoutes) {
   }
 
   const rows = [];
-  for (const route of [...new Set([...webCalls.keys(), ...byRoute.keys()])].sort()) {
+  /** @type {Set<string>} */
+  const routes = new Set([...webCalls.keys(), ...byRoute.keys()]);
+  for (const route of [...routes].sort()) {
     const reaching = byRoute.get(route) ?? [];
     rows.push({
       route,

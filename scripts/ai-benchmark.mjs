@@ -317,10 +317,10 @@ function parseArgs(argv) {
     plan: false,
     run: false,
     repeats: 3,
-    out: null,
-    report: null,
-    recheck: null,
-    only: null,
+    out: /** @type {string | null} */ (null),
+    report: /** @type {string | null} */ (null),
+    recheck: /** @type {string | null} */ (null),
+    only: /** @type {string | null} */ (null),
   };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--plan') args.plan = true;

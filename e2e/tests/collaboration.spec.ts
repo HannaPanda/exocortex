@@ -171,9 +171,9 @@ test.describe('collaborative editing', () => {
       // The collaboration socket is unreachable while the page is opened, and
       // stays unreachable for longer than a ticket lives.
       let socketBlocked = true;
-      await first.page.routeWebSocket(/\/collab/, (ws) => {
+      await first.page.routeWebSocket(/\/collab/, async (ws) => {
         if (socketBlocked) {
-          ws.close({ code: 1006 });
+          await ws.close({ code: 1006 });
           return;
         }
         ws.connectToServer();

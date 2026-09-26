@@ -166,7 +166,7 @@ export async function readHookInput() {
  * inside somebody's editing session, and a memory that could not be written or
  * read is never worth interrupting that session for.
  *
- * @returns {Promise<unknown | null>}
+ * @returns {Promise<unknown>}
  */
 export async function callApi(config, { method, path, body, timeoutMs }) {
   const controller = new AbortController();

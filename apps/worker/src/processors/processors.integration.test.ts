@@ -843,8 +843,8 @@ describe('semantic search', () => {
         }).context,
       );
       const again = await prisma.documentEmbedding.findMany({ where: { documentId } });
-      expect(again.map((row) => row.createdAt.getTime()).sort()).toEqual(
-        rows.map((row) => row.createdAt.getTime()).sort(),
+      expect(again.map((row) => row.createdAt.getTime()).sort((a, b) => a - b)).toEqual(
+        rows.map((row) => row.createdAt.getTime()).sort((a, b) => a - b),
       );
     } finally {
       semanticModel = null;
@@ -1380,8 +1380,8 @@ describe('a passage says which section it came from', () => {
       ).toBeGreaterThan(0);
       // The vectors were not rewritten: the passage text never changed, and
       // the heading is not part of what was embedded.
-      expect(after.map((row) => row.createdAt.getTime()).sort()).toEqual(
-        before.map((row) => row.createdAt.getTime()).sort(),
+      expect(after.map((row) => row.createdAt.getTime()).sort((a, b) => a - b)).toEqual(
+        before.map((row) => row.createdAt.getTime()).sort((a, b) => a - b),
       );
     } finally {
       semanticModel = null;

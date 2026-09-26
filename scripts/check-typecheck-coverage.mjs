@@ -84,6 +84,9 @@ const SHARED_BASES = new Set(['tsconfig.base.json', 'tsconfig.node.json', 'tscon
  * The filesystem rather than `git ls-files`, for the same reason
  * `check-test-split.mjs` walks: a gate is only as good as its own test, and the
  * test writes a probe file into the tree without committing it.
+ *
+ * @param {string} [dir]
+ * @param {{ sources: string[], manifests: string[], projects: string[] }} [found]
  */
 function collect(dir = repoRoot, found = { sources: [], manifests: [], projects: [] }) {
   for (const entry of readdirSync(dir)) {

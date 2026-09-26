@@ -43,7 +43,7 @@ function zipEntry(name: string, contents = ''): Uint8Array {
 /** An OLE compound file whose directory names `stream`, as UTF-16LE. */
 function oleWithStream(stream: string): Uint8Array {
   const name = new Uint8Array(stream.length * 2);
-  for (const [index, character] of [...stream].entries()) {
+  for (const [index, character] of Array.from(stream).entries()) {
     name[index * 2] = character.charCodeAt(0) & 0xff;
     name[index * 2 + 1] = character.charCodeAt(0) >> 8;
   }

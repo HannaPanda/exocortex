@@ -156,18 +156,18 @@ process.exit(failed ? 1 : 0);
 async function readTokenFromSources() {
   const { readFileSync } = await import('node:fs');
   const { homedir } = await import('node:os');
-  const { join } = await import('node:path');
-  const read = (path) => {
+  const path = await import('node:path');
+  const read = (file) => {
     try {
-      return JSON.parse(readFileSync(path, 'utf8'));
+      return JSON.parse(readFileSync(file, 'utf8'));
     } catch {
       return null;
     }
   };
   const home = homedir();
-  const ownFile = read(join(home, '.claude', 'exocortex-memory.json'));
+  const ownFile = read(path.join(home, '.claude', 'exocortex-memory.json'));
   if (ownFile?.token) return String(ownFile.token);
-  const claudeConfig = read(join(home, '.claude.json'));
+  const claudeConfig = read(path.join(home, '.claude.json'));
   const fromMcp = claudeConfig?.mcpServers?.exocortex?.env?.EXOCORTEX_API_TOKEN;
   return fromMcp ? String(fromMcp) : '';
 }
