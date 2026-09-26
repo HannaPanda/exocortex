@@ -2,7 +2,7 @@ import { type ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { generateApiToken } from '@exocortex/auth';
+import { generateApiToken, issueServiceToken } from '@exocortex/auth';
 import { type ApiEnv, loadApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
@@ -178,5 +178,46 @@ describe('TokenScopeGuard', () => {
     const request = context.switchToHttp().getRequest<{ exocortexCredential?: string }>();
     request.exocortexCredential = 'service_token';
     expect(scopeGuard.canActivate(context)).toBe(true);
+  });
+});
+
+describe('the proposal mode (issue #141, ADR-070)', () => {
+  it('lets a propose token propose and report, never write a page or decide', async () => {
+    const secret = await tokenWithScopes(['propose']);
+    await expect(callWith(secret, 'POST', '/api/workspaces/ws1/changesets')).resolves.toBe(true);
+    await expect(callWith(secret, 'PATCH', '/api/work-items/w1')).resolves.toBe(true);
+    await expect(callWith(secret, 'POST', '/api/documents/d1/content/patch')).rejects.toMatchObject(
+      { code: 'api_token_insufficient_scope' },
+    );
+    await expect(callWith(secret, 'POST', '/api/changesets/c1/apply')).rejects.toMatchObject({
+      code: 'api_token_insufficient_scope',
+    });
+  });
+
+  it('holds a service token to the write mode signed into it', async () => {
+    const mint = (writeMode?: 'read_only' | 'propose') =>
+      issueServiceToken({
+        secret: env.SERVICE_TOKEN_SECRET!,
+        userId,
+        purpose: 'ai-tools',
+        ttlSeconds: 60,
+        runId: 'run-1',
+        ...(writeMode === undefined ? {} : { writeMode }),
+      }).token;
+
+    const proposing = mint('propose');
+    await expect(callWith(proposing, 'GET', '/api/workspaces')).resolves.toBe(true);
+    await expect(callWith(proposing, 'POST', '/api/changesets/c1/submit')).resolves.toBe(true);
+    await expect(
+      callWith(proposing, 'POST', '/api/documents/d1/content/block'),
+    ).rejects.toMatchObject({ code: 'api_token_insufficient_scope' });
+
+    const reading = mint('read_only');
+    await expect(callWith(reading, 'POST', '/api/work-items/w1/notes')).resolves.toBe(true);
+    await expect(callWith(reading, 'POST', '/api/workspaces/ws1/changesets')).rejects.toMatchObject(
+      { code: 'api_token_insufficient_scope' },
+    );
+
+    await expect(callWith(mint(), 'POST', '/api/documents/d1/content/block')).resolves.toBe(true);
   });
 });
