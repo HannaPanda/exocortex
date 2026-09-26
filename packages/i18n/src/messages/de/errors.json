@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "Eine der verknüpften Seiten liegt nicht in diesem Arbeitsbereich oder ist für dich nicht lesbar.",
     "work_item_closed": "Dieser Auftrag ist abgeschlossen. Öffne ihn wieder, bevor du einen neuen Lauf startest.",
     "work_item_budget_exhausted": "Das Budget dieses Auftrags ist aufgebraucht. Erhöhe es, bevor du einen neuen Lauf startest.",
+    "work_checkpoint_summary_required": "Der erste Arbeitsstand eines Auftrags braucht eine Zusammenfassung. Spätere übernehmen sie, wenn keine neue kommt.",
+    "work_checkpoint_not_found": "Diesen Arbeitsstand gibt es bei diesem Auftrag nicht. Wähle einen aus der Liste der Checkpoints.",
     "attention_item_settled": "Das ist schon erledigt, jemand anderes war schneller oder der Auftrag hat sich weiterbewegt. Lade die Liste neu.",
     "attention_option_invalid": "Diese Auswahl gibt es hier nicht. Wähle eine der angebotenen Möglichkeiten.",
     "attention_note_required": "Hier ist eine Antwort in Worten nötig. Schreib kurz, was du meinst.",

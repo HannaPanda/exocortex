@@ -134,6 +134,10 @@ export const API_ERROR_CODES = [
   'work_item_closed',
   /** The linked runs have already spent the item's budget. */
   'work_item_budget_exhausted',
+  /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
+  'work_checkpoint_summary_required',
+  /** The named checkpoint does not belong to this work item. */
+  'work_checkpoint_not_found',
   /** The attention item was already resolved or became obsolete; it moves only once. */
   'attention_item_settled',
   /** The chosen option is not one the item offers, or the item needs one and none was chosen. */
@@ -352,6 +356,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // raise the budget) is what changes that.
   work_item_closed: 409,
   work_item_budget_exhausted: 409,
+  work_checkpoint_summary_required: 422,
+  work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.
   attention_item_settled: 409,
   attention_option_invalid: 422,

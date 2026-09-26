@@ -97,6 +97,7 @@ model User {
   requestedWorkItems          WorkItem[]               @relation("WorkItemRequester")
   assignedWorkItems           WorkItem[]               @relation("WorkItemAssignee")
   workItemEvents              WorkItemEvent[]          @relation("WorkItemEventActor")
+  workItemCheckpoints         WorkItemCheckpoint[]     @relation("WorkItemCheckpointAuthor")
   attentionForMe              AttentionItem[]          @relation("AttentionRecipient")
   attentionRaised             AttentionItem[]          @relation("AttentionRaisedBy")
   attentionSettled            AttentionItem[]          @relation("AttentionSettledBy")
@@ -1993,6 +1994,8 @@ model AiRun {
   workItem       WorkItem?        @relation(fields: [workItemId], references: [id], onDelete: SetNull)
   /// What this run left for a person to decide (issue #139).
   attention      AttentionItem[]
+  /// Where the work stood while this run did it (issue #142).
+  checkpoints    WorkItemCheckpoint[]
   /// Tool calls this run made, where `toolIterations` counts the rounds they
   /// arrived in: one round can carry several calls.
   toolCalls      Int              @default(0)
@@ -3637,6 +3640,8 @@ enum WorkItemEventKind {
   ATTENTION_RAISED
   /// Somebody answered it; the answer is the event's note.
   ATTENTION_RESOLVED
+  /// Where the work stands was recorded as a checkpoint (issue #142).
+  CHECKPOINT_RECORDED
   /// An answer carried the paused run on in its own conversation (issue #140).
   RUN_RESUMED
   /// The answer was recorded but the run could not be carried on; the work
@@ -3710,10 +3715,11 @@ model WorkItem {
   /// When it entered a terminal status. Null while it is open.
   closedAt  DateTime?
 
-  events    WorkItemEvent[]
-  refs      WorkItemRef[]
-  runs      AiRun[]
-  attention AttentionItem[]
+  events      WorkItemEvent[]
+  refs        WorkItemRef[]
+  runs        AiRun[]
+  attention   AttentionItem[]
+  checkpoints WorkItemCheckpoint[]
 
   /// The list: open work first, newest change first, within one workspace.
   @@index([workspaceId, closedAt, updatedAt])
@@ -3754,6 +3760,79 @@ model WorkItemEvent {
   @@index([workItemId, createdAt])
   @@index([actorId])
   @@map("work_item_event")
+}
+
+/// Why a working state was recorded (issue #142). The first five are said by
+/// whoever does the work; `RUN_INTERRUPTED` only by eXocortex, when a run
+/// behind the work ended without finishing it.
+enum WorkItemCheckpointTrigger {
+  STEP
+  PAUSE
+  WAITING_FOR_HUMAN
+  EXTERNAL_WAIT
+  BUDGET
+  RUN_INTERRUPTED
+}
+
+/// Where a piece of work stands, recorded so a later run can carry it on
+/// (issue #142, ADR-069).
+///
+/// Not memory: memory is what an agent should know about a person or a
+/// project for good, this is what is done and what is left of one task. A
+/// row is never edited; the newest one is the state, the older ones are how
+/// the work got there. A later run reads the newest one instead of the old
+/// transcript, so it may use another model or another provider.
+model WorkItemCheckpoint {
+  id         String   @id @default(cuid(2))
+  workItemId String
+  workItem   WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  /// The run that was doing the work, from the signed claim of its token or,
+  /// for an interruption, the run that ended. `SetNull`: a run's row may go.
+  aiRunId    String?
+  aiRun      AiRun?   @relation(fields: [aiRunId], references: [id], onDelete: SetNull)
+
+  trigger    WorkItemCheckpointTrigger
+  /// Who recorded it. For a system checkpoint the person the run acted for.
+  authorKind WorkItemParticipantKind
+  authorId   String?
+  author     User?                   @relation("WorkItemCheckpointAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  agentLabel String?
+  /// True when eXocortex wrote it at an interruption point, carrying the
+  /// last recorded state forward; false when the worker of the task did.
+  system     Boolean                 @default(false)
+
+  /// Where things stand, in words. Empty only for a system checkpoint of
+  /// work nobody recorded a state for.
+  summary String @default("")
+  /// The structured rest, shaped by `workCheckpointStateSchema`: the plan
+  /// with each step's status, assumptions, findings, the last action that
+  /// succeeded and the next step. JSON, because it is written and read as a
+  /// whole and never queried by its members.
+  state   Json   @default("{}")
+  /// Pages the work made (`artifact`) or relies on (`source`), each at the
+  /// revision (`DocumentContent.yjsUpdatedAt`) it had when this was
+  /// recorded, so a resume can say which of them changed since.
+  refs    Json   @default("[]")
+
+  /// The blocking attention items that were open when this was recorded.
+  pendingAttentionIds String[] @default([])
+  /// For `RUN_INTERRUPTED`: the run's error code, as the run recorded it.
+  interruptionCode    String?
+
+  /// The budget as it stood: what the linked runs had cost, and the limit.
+  spentMicroUsd  Int  @default(0)
+  budgetMicroUsd Int?
+  /// The model and provider of the run, as far as there was one. A resume
+  /// may use another; this is what makes the change visible.
+  provider       String?
+  model          String?
+
+  createdAt DateTime @default(now())
+
+  @@index([workItemId, createdAt])
+  @@index([aiRunId])
+  @@index([authorId])
+  @@map("work_item_checkpoint")
 }
 
 /// A page a work item was handed or produced.

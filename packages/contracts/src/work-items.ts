@@ -144,6 +144,7 @@ export const WORK_ITEM_EVENT_KINDS = [
   'attention_resolved',
   'run_resumed',
   'resume_failed',
+  'checkpoint_recorded',
 ] as const;
 export const workItemEventKindSchema = z.enum(WORK_ITEM_EVENT_KINDS);
 export type WorkItemEventKind = z.infer<typeof workItemEventKindSchema>;
@@ -167,6 +168,12 @@ export const workItemEventDataSchema = z.object({
   attentionItemId: idSchema.optional(),
   attentionKind: z.string().optional(),
   optionId: z.string().optional(),
+  /**
+   * The checkpoint a line is about (issue #142): the one recorded, or the one
+   * a run was started from.
+   */
+  checkpointId: idSchema.optional(),
+  trigger: z.string().optional(),
 });
 export type WorkItemEventData = z.infer<typeof workItemEventDataSchema>;
 
@@ -195,6 +202,9 @@ export const workItemDetailSchema = workItemSummarySchema.extend({
   children: z.array(workItemSummarySchema),
   runs: z.array(workItemRunSchema),
   events: z.array(workItemEventSchema),
+  /** How many working states were recorded (issue #142); read them with the checkpoint list. */
+  checkpointCount: z.number().int(),
+  latestCheckpointAt: isoDateTimeSchema.nullable(),
 });
 export type WorkItemDetail = z.infer<typeof workItemDetailSchema>;
 
@@ -280,17 +290,25 @@ export type AddWorkItemNoteRequest = z.infer<typeof addWorkItemNoteRequestSchema
  * the item (goal, criteria, context pages, its id), so the transcript says
  * what was asked and a later run can continue it. `instructions` is added
  * below that, for "this time, look at the attachments first".
+ *
+ * `fromCheckpoint` (issue #142) carries the work on from a recorded working
+ * state: `latest`, the default, uses the newest one when there is one;
+ * `none` starts from the goal alone; an id names an older one. The model may
+ * be another than the one the work was started with.
  */
 export const startWorkItemRunRequestSchema = z.object({
   instructions: z.string().trim().max(4_000).optional(),
   modelSlug: z.string().min(1).max(200).optional(),
   reasoningLevel: aiReasoningLevelSchema.optional(),
+  fromCheckpoint: z.union([z.enum(['latest', 'none']), idSchema]).optional(),
 });
 export type StartWorkItemRunRequest = z.infer<typeof startWorkItemRunRequestSchema>;
 
 export const startWorkItemRunResponseSchema = z.object({
   run: workItemRunSchema,
   conversationId: idSchema,
+  /** The checkpoint the run carries on from, or null when it starts from the goal. */
+  checkpointId: idSchema.nullable(),
   workItem: workItemDetailSchema,
 });
 export type StartWorkItemRunResponse = z.infer<typeof startWorkItemRunResponseSchema>;

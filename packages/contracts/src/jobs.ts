@@ -287,6 +287,14 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'raise-run-failure-attention',
     /**
+     * Records where the work stood when a run behind an open work item ended
+     * unfinished (issue #142, ADR-069), carrying the last recorded state
+     * forward so a later run -- on another provider, if this one ran out --
+     * starts from it. A sweep for the same reason as the one above, and
+     * deduplicated by a partial unique index over the run's id.
+     */
+    'checkpoint-interrupted-runs',
+    /**
      * Hands every content row whose derived data is behind its canonical Yjs
      * state back to the materialization queue, in small batches.
      *

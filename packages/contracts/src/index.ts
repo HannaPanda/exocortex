@@ -50,6 +50,7 @@ export * from './shares';
 export * from './template-title';
 export * from './templates';
 export * from './transclusion';
+export * from './work-item-checkpoints';
 export * from './work-items';
 export * from './workspace-credentials';
 export * from './workspace-overview';
