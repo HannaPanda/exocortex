@@ -53,6 +53,7 @@ export const APPLICATION_EVENT_TYPES = [
   'document.share.changed',
   'automation.disabled',
   'automation.run.failed',
+  'work-item.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -376,6 +377,18 @@ export const savedQueryChangedPayloadSchema = z.object({
 export type SavedQueryChangedPayload = z.infer<typeof savedQueryChangedPayloadSchema>;
 
 /**
+ * A work item was created, changed or deleted (issue #138).
+ *
+ * The id and what happened, no content: every member of the workspace is on
+ * this socket, and an open list or detail view re-reads what it shows.
+ */
+export const workItemChangedPayloadSchema = z.object({
+  workItemId: idSchema,
+  action: z.enum(['created', 'updated', 'deleted']),
+});
+export type WorkItemChangedPayload = z.infer<typeof workItemChangedPayloadSchema>;
+
+/**
  * A grant on a page was handed out, altered or withdrawn (issue #103).
  *
  * The one event type in this list that never reaches a socket. It is written
@@ -459,6 +472,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('document.share.changed', documentShareChangedPayloadSchema),
   envelope('automation.disabled', automationFailurePayloadSchema),
   envelope('automation.run.failed', automationFailurePayloadSchema),
+  envelope('work-item.changed', workItemChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

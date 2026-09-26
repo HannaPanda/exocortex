@@ -94,6 +94,9 @@ model User {
   pushSubscriptions           PushSubscription[]       @relation("PushSubscriptionOwner")
   notificationPreferences     NotificationPreference[] @relation("NotificationPreferenceOwner")
   commentDigestEntries        CommentDigestEntry[]     @relation("CommentDigestRecipient")
+  requestedWorkItems          WorkItem[]               @relation("WorkItemRequester")
+  assignedWorkItems           WorkItem[]               @relation("WorkItemAssignee")
+  workItemEvents              WorkItemEvent[]          @relation("WorkItemEventActor")
 
   @@map("user")
 }
@@ -585,6 +588,7 @@ model Workspace {
   memoryCheckpoints       MemoryCheckpoint[]
   agentMessages           AgentMessage[]
   attachmentUploadTickets AttachmentUploadTicket[]
+  workItems               WorkItem[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -892,6 +896,8 @@ model Document {
   shares                  DocumentShare[]           @relation("DocumentShareDocument")
   /// API tokens confined to this page or the branch below it.
   tokenScopes             ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
+  /// Work items that were handed this page or produced it (issue #138).
+  workItemRefs            WorkItemRef[]             @relation("WorkItemRefs")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -1976,6 +1982,11 @@ model AiRun {
   reasoningLevel AiReasoningLevel @default(NONE)
   /// Number of tool round-trips this run performed.
   toolIterations Int              @default(0)
+  /// The piece of delegated work this run is an attempt at (issue #138,
+  /// ADR-066). `SetNull`: deleting the item leaves the run and its cost in
+  /// the usage report.
+  workItemId     String?
+  workItem       WorkItem?        @relation(fields: [workItemId], references: [id], onDelete: SetNull)
   /// Tool calls this run made, where `toolIterations` counts the rounds they
   /// arrived in: one round can carry several calls.
   toolCalls      Int              @default(0)
@@ -2038,6 +2049,7 @@ model AiRun {
   @@index([databaseViewId])
   /// reap-stale-ai-runs scans exactly this pair.
   @@index([status, heartbeatAt])
+  @@index([workItemId, createdAt])
   @@map("ai_run")
 }
 
@@ -3560,4 +3572,188 @@ model PushSubscription {
   /// The person's own device list.
   @@index([userId, createdAt])
   @@map("push_subscription")
+}
+
+// ---------------------------------------------------------------------------
+// Delegated work (issue #138, ADR-066)
+// ---------------------------------------------------------------------------
+
+/// Where a piece of delegated work stands.
+///
+/// A property of the work, not of any run behind it: a run that fails leaves
+/// the item `WORKING` or moves it to `BLOCKED` only when somebody says so. The
+/// four terminal members (`DONE`, `FAILED`, `CANCELLED`) set `closedAt`, and
+/// leaving one of them clears it again, because reopening is a decision
+/// somebody is allowed to make.
+enum WorkItemStatus {
+  QUEUED
+  WORKING
+  BLOCKED
+  WAITING_FOR_HUMAN
+  REVIEW
+  DONE
+  FAILED
+  CANCELLED
+}
+
+enum WorkItemPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// Who stands on either end of a piece of work.
+///
+/// `HUMAN` and `AGENT` both name an account, because an agent here is an
+/// account with a token (Claude Code, Hermes, `agent-memory`); which of the
+/// two a request was is read from the agent session header, not from the
+/// account. `ASSISTANT` is the built-in AI, which has no account of its own
+/// and acts for the person who started it: as an assignee it never carries an
+/// id (a check constraint says so), as a requester or an actor the id is the
+/// person it was acting for.
+enum WorkItemParticipantKind {
+  HUMAN
+  AGENT
+  ASSISTANT
+}
+
+/// What one history entry records.
+enum WorkItemEventKind {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  ASSIGNED
+  RUN_STARTED
+  RESULT_RECORDED
+  NOTE
+}
+
+/// Why a page hangs on a piece of work: what it was given, or what it made.
+enum WorkItemRefRole {
+  CONTEXT
+  RESULT
+}
+
+/// One piece of delegated work (issue #138, ADR-066).
+///
+/// The durable unit a conversation and a run are not: it can outlive a failed
+/// run, wait for a person, gain a second run a week later and be handed from a
+/// person to an agent and back. An `AiRun` is one attempt at it, linked through
+/// `AiRun.workItemId`; nothing here is derived from a run's state.
+model WorkItem {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  title String
+  /// What is to be achieved, in the words of whoever asked. Plain text or
+  /// Markdown, never a page: the goal belongs to the item and must not change
+  /// because somebody edited a document.
+  goal  String
+
+  status       WorkItemStatus   @default(QUEUED)
+  /// Why it is in that status, for the states that need a reason: what it
+  /// waits on, what blocks it, why it failed. Cleared by the next status
+  /// change that does not bring a reason of its own.
+  statusReason String?
+  priority     WorkItemPriority @default(NORMAL)
+
+  /// Who asked. `SetNull`, because an account deleted for good must not take
+  /// the work it delegated with it; the history still names it.
+  requesterKind WorkItemParticipantKind
+  requesterId   String?
+  requester     User?                   @relation("WorkItemRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+
+  /// Who is doing it. Both null means nobody has taken it yet.
+  assigneeKind WorkItemParticipantKind?
+  assigneeId   String?
+  assignee     User?                    @relation("WorkItemAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  /// `[{ text, met }]`, shaped by `workItemCriterionSchema`. JSON rather than a
+  /// table: the list is edited as a whole, read as a whole, and never queried
+  /// by its members.
+  acceptanceCriteria Json    @default("[]")
+  /// What came out of it, in words. The pages it produced are `WorkItemRef`
+  /// rows with `role = RESULT`.
+  result             String?
+
+  /// The most the runs of this item may cost, in millionths of a dollar.
+  /// Checked before a run is started, against what the linked runs already
+  /// cost; a run in progress is not stopped by it.
+  budgetMicroUsd Int?
+  dueAt          DateTime?
+
+  /// The item this one is part of. Same workspace, no cycle -- both checked
+  /// by the API, since neither can be a foreign key's job.
+  parentId String?
+  parent   WorkItem?  @relation("WorkItemChildren", fields: [parentId], references: [id], onDelete: SetNull)
+  children WorkItem[] @relation("WorkItemChildren")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  /// When it entered a terminal status. Null while it is open.
+  closedAt  DateTime?
+
+  events WorkItemEvent[]
+  refs   WorkItemRef[]
+  runs   AiRun[]
+
+  /// The list: open work first, newest change first, within one workspace.
+  @@index([workspaceId, closedAt, updatedAt])
+  @@index([assigneeId, closedAt])
+  @@index([requesterId])
+  @@index([parentId])
+  @@map("work_item")
+}
+
+/// One line of a work item's history.
+///
+/// Written in the same transaction as the change it describes, so the history
+/// can never claim something that was rolled back. It carries the fields that
+/// changed and their new values, never a copy of the goal or the result: the
+/// row is a receipt, and those texts can be long.
+model WorkItemEvent {
+  id         String   @id @default(cuid(2))
+  workItemId String
+  workItem   WorkItem @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+
+  kind       WorkItemEventKind
+  actorKind  WorkItemParticipantKind
+  actorId    String?
+  actor      User?                   @relation("WorkItemEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+  /// The agent client that made the change, when an agent did (ADR-022):
+  /// `clientInfo` from the handshake, shown to a person, never decided on.
+  agentLabel String?
+
+  /// Small facts about the change: `{ from, to }` for a status, the names of
+  /// the fields an update touched, the run a start created. Never content.
+  data Json    @default("{}")
+  /// The one free text an event carries: a note somebody added.
+  note String?
+
+  correlationId String
+  createdAt     DateTime @default(now())
+
+  @@index([workItemId, createdAt])
+  @@index([actorId])
+  @@map("work_item_event")
+}
+
+/// A page a work item was handed or produced.
+///
+/// A row with a foreign key rather than an id inside JSON, so a page deleted
+/// for good disappears from the item instead of leaving a dead reference, and
+/// so "which work touched this page" is one index away.
+model WorkItemRef {
+  workItemId String
+  workItem   WorkItem        @relation(fields: [workItemId], references: [id], onDelete: Cascade)
+  documentId String
+  document   Document        @relation("WorkItemRefs", fields: [documentId], references: [id], onDelete: Cascade)
+  role       WorkItemRefRole
+  createdAt  DateTime        @default(now())
+
+  @@id([workItemId, role, documentId])
+  @@index([documentId])
+  @@map("work_item_ref")
 }

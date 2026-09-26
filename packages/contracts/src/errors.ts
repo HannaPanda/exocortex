@@ -120,6 +120,20 @@ export const API_ERROR_CODES = [
    * query has to be edited, and no retry will help (issue #74).
    */
   'saved_query_invalid',
+  /**
+   * The parent a work item was given is in another workspace, is the item
+   * itself, or sits below it (issue #138). One code for the three, because
+   * the fix is the same: name a different parent.
+   */
+  'work_item_parent_invalid',
+  /** The account named as assignee is not a member of the item's workspace. */
+  'work_item_assignee_invalid',
+  /** A page named as context or result is not in the item's workspace, or not readable. */
+  'work_item_ref_invalid',
+  /** The item is done, failed or cancelled; reopen it before starting another run. */
+  'work_item_closed',
+  /** The linked runs have already spent the item's budget. */
+  'work_item_budget_exhausted',
   /** Pinning context sources is switched off for this workspace (`ai.maxPinnedSources` is 0). */
   'pinned_sources_disabled',
   /** The conversation already pins as many sources as `ai.maxPinnedSources` allows. */
@@ -319,6 +333,15 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // 422 rather than 500: the request is well formed and the caller is allowed,
   // but the question it names cannot be asked of the schema as it stands now.
   saved_query_invalid: 422,
+  // Well formed and allowed, but the named parent or page cannot be used for
+  // this item. 422: a different id fixes it, a retry does not.
+  work_item_parent_invalid: 422,
+  work_item_assignee_invalid: 422,
+  work_item_ref_invalid: 422,
+  // 409: the item is in a state that forbids this, and a decision (reopen,
+  // raise the budget) is what changes that.
+  work_item_closed: 409,
+  work_item_budget_exhausted: 409,
   // 409 rather than 403: the deployment allows it, this workspace does not, and
   // the caller's next move is a setting rather than a different token.
   pinned_sources_disabled: 409,

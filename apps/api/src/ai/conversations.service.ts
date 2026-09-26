@@ -308,6 +308,12 @@ export class ConversationsService {
     correlationId: string;
     /** The request's cookie and `Accept-Language`, for a command's answer. */
     headers?: ReaderLocaleHeaders;
+    /**
+     * The work item this turn is an attempt at (issue #138). Internal only:
+     * set by `WorkItemsService`, never read from a request body, so a chat
+     * message cannot attach its run to somebody's work.
+     */
+    workItemId?: string;
   }): Promise<PostConversationMessageResponse> {
     const conversation = await this.loadOwned(input.conversationId, input.userId);
 
@@ -442,6 +448,7 @@ export class ConversationsService {
         messages: [{ role: 'user', content }] as unknown as Prisma.InputJsonValue,
         conversationId: conversation.id,
         reasoningLevel: REASONING_LEVEL_TO_PRISMA[clampedReasoning],
+        workItemId: input.workItemId ?? null,
       },
     });
 

@@ -255,6 +255,23 @@ export function canManageSavedQueries(role: WorkspaceRole | null): PolicyDecisio
 }
 
 /**
+ * Creating, changing and deleting delegated work (issue #138, ADR-066).
+ *
+ * MEMBER, like everything else that writes into a workspace: handing work to
+ * somebody is not more dangerous than writing the page that describes it.
+ * Reading is `canReadWorkspace`, because a guest who was asked to do
+ * something has to be able to see what.
+ */
+export function canManageWorkItems(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
+    return deny('forbidden', 'Managing work items requires at least the MEMBER role');
+  }
+  return ALLOW;
+}
+
+/**
  * Starting a build, or cancelling one (issue #44, ADR-026).
  *
  * MEMBER: it costs CPU on this host and nothing else, and the result is a file
