@@ -180,7 +180,9 @@ behind nginx in production.
 pnpm lint             # dependency boundaries, then oxlint, then ESLint
                       # (both linters walk the whole repository; oxlint
                       #  carries the policy, ESLint the few rules it cannot
-                      #  express -- see eslint.config.mjs)
+                      #  express -- see eslint.config.mjs; oxlint is
+                      #  type-aware and reads the packages' dist, so build
+                      #  first after changing a package's exported types)
 pnpm lint:fix         # the mechanical half of both
 pnpm typecheck
 pnpm test:unit        # everything that needs no infrastructure

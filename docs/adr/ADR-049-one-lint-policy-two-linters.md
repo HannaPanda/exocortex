@@ -105,6 +105,37 @@ they made linting wait for `^build`.
   parser that replaced it peers `eslint: ^7 || ^8 || ^9` too, so ESLint 10 is
   now held by two plugins rather than one. See `docs/deviations.md`.
 
+## Addendum 2026-09-26: types and stale suppressions (issue #137)
+
+oxlint now runs type-aware (`options.typeAware`, through `oxlint-tsgolint`),
+and a disable comment that suppresses nothing is an error
+(`reportUnusedDisableDirectives`). The decisions are in
+`scripts/generate-oxlint-config.mjs` beside the rules:
+
+- `typescript/no-floating-promises` and `typescript/no-misused-promises` are
+  on. The first run found one of each: a Playwright `ws.close()` in an e2e
+  test that nobody awaited, and a `removeListener` call that the rule cannot
+  know never calls its argument (suppressed at the site, with the reason).
+- The type-aware rules `correctness` switches on stay on, with two
+  exceptions: `no-base-to-string` is off (twenty findings, all `String()` on
+  a boundary value or on a type whose `toString` the rule cannot see), and
+  `unbound-method` is off in tests, where `expect(mock.method)` is the idiom.
+  Outside tests it found two interfaces declaring as methods what every
+  caller passes on without a `this`; they are function properties now.
+- `require-array-sort-compare` found four timestamp lists sorted as strings in
+  the worker's integration tests. Harmless there, because both sides were
+  sorted the same wrong way, and exactly the bug the rule exists for.
+
+Cost, measured on the deployment host: oxlint went from 0.9 s and 200 MB to
+about 11.5 s and 1.7 to 1.9 GB peak. The type information across a package
+boundary comes from the packages' `dist` declarations, so `build.sh` keeps
+running the build before the linters; a bare `pnpm lint` after changing a
+package's exported types sees the old ones until that package is rebuilt.
+
+A comment `// eslint-disable-next-line <rule>` for a rule only ESLint runs is
+reported as unused by oxlint, which cannot see that rule. There is none today;
+such a rule is turned off per file in `eslint.config.mjs`, with its reason.
+
 ## Alternatives considered
 
 **Keep the boundaries in ESLint.** It would have avoided generating anything,

@@ -225,6 +225,9 @@ export function createCollaborationServer(
    * in charge of everything we do not claim.
    */
   const hocuspocusRequestHandler = server.requestHandler;
+  // `removeListener` needs the very reference Hocuspocus registered and never
+  // calls it, so there is no promise here for anybody to lose.
+  // oxlint-disable-next-line typescript/no-misused-promises
   server.httpServer.removeListener('request', hocuspocusRequestHandler);
   server.httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
     void (async () => {

@@ -156,6 +156,28 @@ const CORRECTNESS_RULES_THAT_ARE_WRONG_HERE = {
 };
 
 /**
+ * The type-aware half (issue #137). `options.typeAware` hands every TypeScript
+ * file to `oxlint-tsgolint`, which asks typescript-go for the types; that also
+ * wakes the type-aware rules inside the `correctness` category. The first run
+ * over the repository found 65 problems, and each rule below is the decision
+ * taken about them.
+ */
+const TYPE_AWARE_RULES = {
+  // The two the issue was opened for. A promise nobody awaits loses its
+  // rejection, and an async callback handed to something that expects `void`
+  // (an event listener, `forEach`) loses it the same way. The repository
+  // already writes `void` over three hundred times where dropping one is the
+  // decision, which is why the first run found only two.
+  'typescript/no-floating-promises': 'error',
+  'typescript/no-misused-promises': 'error',
+  // `String(value)` on an `unknown` coming out of a request, a JSON column or a
+  // Yjs map is the deliberate way to turn a boundary value into text, and the
+  // rule cannot see the `toString` of `Y.Text` or Prisma's `Decimal`. All
+  // twenty findings were of that kind and none was a bug.
+  'typescript/no-base-to-string': 'off',
+};
+
+/**
  * Every plugin is enabled repository-wide, not only over `apps/web`.
  *
  * This is not the shape `eslint.config.mjs` had, and the reason is mechanical:
@@ -189,6 +211,16 @@ const config = {
   $schema: './node_modules/oxlint/configuration_schema.json',
   plugins: PLUGINS,
   categories: { correctness: 'error' },
+  options: {
+    typeAware: true,
+    // A suppression that suppresses nothing is a stale claim about the code
+    // next to it, so it fails the run like the problem it once excused. This
+    // covers the `eslint-disable` comments oxlint honours as well -- including
+    // one naming a rule only `eslint.config.mjs` runs, which oxlint cannot see
+    // and so calls unused. There is none today; for such a rule, turn it off
+    // for the file in `eslint.config.mjs` with the reason instead.
+    reportUnusedDisableDirectives: 'error',
+  },
   env: { builtin: true, node: true },
   ignorePatterns: [
     '**/node_modules/**',
@@ -213,6 +245,7 @@ const config = {
     ...RECOMMENDED_NOT_ON_BY_DEFAULT,
     ...CORRECTNESS_RULES_THAT_ARE_WRONG_HERE,
     ...SIZE_POLICY,
+    ...TYPE_AWARE_RULES,
     'no-console': ['error', { allow: ['warn', 'error'] }],
     eqeqeq: ['error', 'always', { null: 'ignore' }],
     'no-unused-vars': [
@@ -305,6 +338,9 @@ const config = {
         'max-nested-callbacks': 'off',
         'max-lines': 'off',
         'max-lines-per-function': 'off',
+        // `expect(client.emit).toHaveBeenCalled()` hands a mock to Vitest,
+        // which never calls it with a `this`. Outside tests the rule stays on.
+        'typescript/unbound-method': 'off',
       },
     },
 

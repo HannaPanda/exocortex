@@ -334,8 +334,10 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    `eslint .`, both from the root and both over the whole tree — the root
    scripts, `apps/api/scripts` and `e2e` are covered by the size policy too, and
    a per-package `src` run never saw them. Since issue #84 oxlint carries almost
-   all of the policy in under a second and ESLint is left with the handful of
-   rules it cannot express. Then `pnpm format:check`, `pnpm typecheck`, the gate tests, and
+   all of the policy and ESLint is left with the handful of rules it cannot
+   express. Since issue #137 oxlint also reads the types (about 12 seconds and
+   2 GB instead of one second), which is why it runs after the build: the
+   packages' `dist` declarations are what it sees across a package boundary. Then `pnpm format:check`, `pnpm typecheck`, the gate tests, and
    `pnpm test:unit` — every test in every workspace that needs no
    infrastructure. `--full-tests` adds `pnpm test:integration`, which brings up
    a Postgres and a Redis of its own (`docker-compose.test.yml`), migrates

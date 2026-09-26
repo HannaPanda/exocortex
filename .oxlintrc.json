@@ -10,6 +10,10 @@
   "categories": {
     "correctness": "error"
   },
+  "options": {
+    "typeAware": true,
+    "reportUnusedDisableDirectives": "error"
+  },
   "env": {
     "builtin": true,
     "node": true
@@ -80,6 +84,9 @@
       "error",
       3
     ],
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-base-to-string": "off",
     "no-console": [
       "error",
       {
@@ -3262,7 +3269,8 @@
         "typescript/no-non-null-assertion": "off",
         "max-nested-callbacks": "off",
         "max-lines": "off",
-        "max-lines-per-function": "off"
+        "max-lines-per-function": "off",
+        "typescript/unbound-method": "off"
       }
     },
     {

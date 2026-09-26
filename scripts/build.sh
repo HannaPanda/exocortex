@@ -160,8 +160,9 @@ else
   step "Step 6 — soft checks"
 
   # Two linters over the whole repository, in that order. Since issue #84
-  # oxlint carries almost all of the policy and walks the tree in a fifth of a
-  # second; ESLint is left with the handful of rules oxlint cannot express
+  # oxlint carries almost all of the policy; since issue #137 it reads the
+  # types too (about 12 s and 2 GB, and it needs the packages' dist from the
+  # build above). ESLint is left with the handful of rules oxlint cannot express
   # (`eslint.config.mjs` says which, and why). Both run from the root rather
   # than per package, because the root scripts, the deploy helpers,
   # apps/api/scripts and e2e belong to the size policy too and a per-package
