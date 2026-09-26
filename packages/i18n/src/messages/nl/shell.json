@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Help en functies",
     "helpWithNew": "{count, plural, one {Help en functies (# nieuw)} other {Help en functies (# nieuw)}}",
+    "attention": "Wacht op jou",
     "chats": "Chats",
     "entities": "Entiteiten",
     "shares": "Delingen",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Hulp en functies openen",
         "keywords": "hulp help functies nieuw handleiding wat kan"
+      },
+      "attention": {
+        "label": "„Wacht op jou” openen",
+        "keywords": "wacht op mij aandacht beslissing deling controleren navraag geblokkeerd inbox agent"
       },
       "chats": {
         "label": "Chats openen",

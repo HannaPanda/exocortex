@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Waiting for you"
+  },
+  "page": {
+    "title": "Waiting for you",
+    "intro": "Only things that truly need you appear here: decisions, shares, results to review, blocked work items, and runs that have failed. Everything that just happened can be found in the work item history and notifications.",
+    "filterLabel": "Which entries",
+    "filters": {
+      "open": "Open",
+      "settled": "Done"
+    },
+    "loading": "Loading entries…",
+    "loadFailed": "Could not load entries.",
+    "emptyTitle": "Nothing is waiting for you",
+    "emptyDescription": "As soon as an agent needs a decision, a result is ready, or a work item is stuck, it will appear here.",
+    "emptySettledTitle": "Nothing done yet",
+    "emptySettledDescription": "Whatever you answer here or whatever resolves on its own remains traceable in this list.",
+    "truncated": "The list is truncated. Settle the top entries, and the next ones will move up.",
+    "summaryLabel": "Open by kind",
+    "summary": {
+      "decision": "{count, plural, one {# decision} other {# decisions}}",
+      "approval": "{count, plural, one {# share} other {# shares}}",
+      "review": "{count, plural, one {# result to review} other {# results to review}}",
+      "blocked": "{count, plural, one {# blocked work item} other {# blocked work items}}",
+      "budget": "{count, plural, one {# budget approval} other {# budget approvals}}",
+      "run_failed": "{count, plural, one {# failed run} other {# failed runs}}",
+      "conflict": "{count, plural, one {# conflict} other {# conflicts}}",
+      "information": "{count, plural, one {# question} other {# questions}}"
+    }
+  },
+  "kind": {
+    "decision": "Decision",
+    "approval": "Share",
+    "review": "For review",
+    "blocked": "Blocked",
+    "budget": "Budget",
+    "run_failed": "Run failed",
+    "conflict": "Conflict",
+    "information": "Question"
+  },
+  "urgency": {
+    "high": "Urgent",
+    "urgent": "Urgent"
+  },
+  "item": {
+    "raisedBy": "by {name}",
+    "raisedByAgent": "by agent {name}",
+    "raisedByAssistant": "by the built-in AI",
+    "raisedBySomebody": "by a deleted account",
+    "workspace": "in {name}",
+    "openWorkItem": "Open in work item",
+    "openConversation": "Open conversation",
+    "runError": "Error: {code}",
+    "noteLabel": "Your reply",
+    "notePlaceholderRequired": "Write what the agent needs to know here.",
+    "notePlaceholderOptional": "Optional: a sentence on this, it goes into the history.",
+    "addNote": "Add note",
+    "send": "Reply",
+    "failed": "That couldn’t be saved.",
+    "settledResolved": "Resolved by {name}, {moment}",
+    "settledObsolete": "Became obsolete, {moment}",
+    "settledBySystem": "the system",
+    "chose": "Chosen: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "The work item was cancelled.",
+      "work_item_deleted": "The work item was deleted.",
+      "withdrawn": "The question was withdrawn.",
+      "superseded": "A newer run took over."
+    },
+    "quotedNote": "“{note}”"
+  },
+  "option": {
+    "accept": "Accept",
+    "return": "Send back",
+    "answer": "Reply",
+    "unblock": "Obstacle resolved",
+    "retry": "Try again",
+    "give_up": "Give up"
+  },
+  "topbar": {
+    "label": "{count, plural, one {One item waiting for you} other {# items waiting for you}}",
+    "tooltip": "Waiting for you"
+  },
+  "workItem": {
+    "title": "Waiting for you",
+    "intro": "This work item currently needs a reply or decision."
+  }
+}

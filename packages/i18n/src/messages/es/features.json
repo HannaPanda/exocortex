@@ -906,5 +906,17 @@
       "p5": "Los agentes trabajan con exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run y exo_work_item_delete."
     },
     "where": "Barra lateral en «Tareas», o Ctrl + K y «Abrir tareas» o «Nueva tarea»."
+  },
+  "wartet-auf-dich": {
+    "title": "Te espera: todo lo que necesita de ti ahora mismo",
+    "summary": "Una lista de todos los espacios de trabajo con aquello que no puede avanzar sin ti: decisiones, usos compartidos, resultados para revisar, tareas bloqueadas, ejecuciones de IA fallidas y consultas de agentes. Puedes dar respuestas sencillas directamente desde ahí, sin abrir la tarea.",
+    "details": {
+      "p1": "Las entradas se generan solas: si una tarea pasa a «para aprobación», «bloqueada» o «esperando respuesta», aparece aquí; y en cuanto sale de ese estado, desaparece. Si falla la última ejecución de IA de una tarea abierta, eXocortex te pregunta si quieres intentarlo de nuevo o desistir.",
+      "p2": "Los agentes preguntan de forma explícita, por ejemplo: «¿Conexión MCP global o por espacio de trabajo?», ofreciendo las respuestas como botones. Tu elección y tu nota quedan registradas en el historial de la tarea, donde el agente las lee, y luego la tarea vuelve a la cola.",
+      "p3": "Aquí no aparece lo que simplemente ha sucedido. Las entradas completadas se pueden consultar en «Completado», con quién, cuándo y qué se eligió. Si una tarea se cancela o se elimina, sus entradas pendientes quedan sin efecto.",
+      "p4": "Mientras haya algo pendiente, la cabecera muestra arriba a la derecha una mano con el recuento. Las entradas pendientes de una tarea también aparecen en la parte superior de su página.",
+      "p5": "Los agentes trabajan con exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve y exo_attention_withdraw."
+    },
+    "where": "La mano arriba a la derecha en la cabecera, el menú de la cuenta en «Te espera», o Ctrl + K y «Te espera»."
   }
 }

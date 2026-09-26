@@ -906,5 +906,17 @@
       "p5": "Gli agenti lavorano con exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run ed exo_work_item_delete."
     },
     "where": "Barra laterale sotto «Incarichi», oppure Ctrl + K e «Apri incarichi» o «Nuovo incarico»."
+  },
+  "wartet-auf-dich": {
+    "title": "In attesa di te: tutto ciò che richiede il tuo intervento",
+    "summary": "Un elenco su tutte le aree di lavoro con ciò che non può proseguire senza di te: decisioni, condivisioni, risultati da verificare, incarichi bloccati, esecuzioni IA non riuscite e domande dagli agenti. Puoi dare risposte semplici direttamente da lì, senza aprire l’incarico.",
+    "details": {
+      "p1": "Le voci compaiono automaticamente: se un incarico passa a «da approvare», «bloccato» o «in attesa di riscontro», appare qui, e scompare non appena esce da tale stato. Se l’ultima esecuzione IA di un incarico aperto non riesce, eXocortex ti chiede se vuoi riprovare o rinunciare.",
+      "p2": "Gli agenti pongono domande esplicite, ad esempio «Connessione MCP globale o per area di lavoro?» con le risposte sotto forma di pulsanti. La tua scelta e la tua nota finiscono nella cronologia dell’incarico, dove l’agente le legge, e l’incarico torna poi nella coda.",
+      "p3": "Qui non compare nulla che sia semplicemente accaduto. Le voci completate restano tracciabili sotto «Completati», indicando chi, quando e cosa è stato scelto. Se un incarico viene annullato o eliminato, le sue voci in sospeso decadono.",
+      "p4": "Finché c’è qualcosa in sospeso, l’intestazione in alto a destra mostra una mano con il conteggio. Inoltre, le voci aperte di un incarico compaiono in cima alla relativa pagina.",
+      "p5": "Gli agenti utilizzano exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve ed exo_attention_withdraw."
+    },
+    "where": "L’icona della mano in alto a destra nell’intestazione, il menu dell’account alla voce «In attesa di te», oppure Strg + K e «In attesa di te»."
   }
 }

@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Ajuda e recursos",
     "helpWithNew": "{count, plural, one {Ajuda e recursos (# novo)} many {Ajuda e recursos (# novos)} other {Ajuda e recursos (# novos)}}",
+    "attention": "Aguardando você",
     "chats": "Chats",
     "entities": "Entidades",
     "shares": "Compartilhamentos",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Abrir ajuda e recursos",
         "keywords": "ajuda help recursos novo tutorial o que faz"
+      },
+      "attention": {
+        "label": "Abrir „Aguardando você“",
+        "keywords": "aguardando você atenção decisão compartilhamento revisar dúvida bloqueado caixa de entrada agente"
       },
       "chats": {
         "label": "Abrir chats",

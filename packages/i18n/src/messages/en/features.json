@@ -906,5 +906,17 @@
       "p5": "Agents work with exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run, and exo_work_item_delete."
     },
     "where": "Sidebar under “Work items”, or Ctrl + K and “Open work items” or “New work item”."
+  },
+  "wartet-auf-dich": {
+    "title": "Waiting for you: everything that currently needs your input",
+    "summary": "A list across all workspaces with everything that cannot proceed without you: decisions, shares, deliverables to review, blocked tasks, failed AI runs, and queries from agents. You can give simple answers right there without opening the task.",
+    "details": {
+      "p1": "Entries are created automatically: if a task switches to “ready for review”, “blocked”, or “waiting for input”, it appears here, and once it leaves that status, it disappears again. If the last AI run of an open task fails, eXocortex asks whether you want another try or want to give up.",
+      "p2": "Agents ask explicitly—for example, “MCP connection global or per workspace?” with the answers as buttons. Your choice and your note are added to the task’s history where the agent reads them, and the task then goes back into the queue.",
+      "p3": "Nothing appears here just because it happened. Completed entries remain traceable under “Done”, showing who chose what and when. If a task is canceled or deleted, its open entries become obsolete.",
+      "p4": "As long as something is waiting, the header at the top right shows a hand icon with the count. Open entries for a task are also displayed at the top of its page.",
+      "p5": "Agents work with exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve, and exo_attention_withdraw."
+    },
+    "where": "The hand icon at the top right of the header, the account menu under “Waiting for you”, or Strg + K and “Waiting for you”."
   }
 }

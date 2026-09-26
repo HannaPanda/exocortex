@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Ayuda y funciones",
     "helpWithNew": "{count, plural, one {Ayuda y funciones (# nueva)} many {Ayuda y funciones (# nuevas)} other {Ayuda y funciones (# nuevas)}}",
+    "attention": "Te espera",
     "chats": "Chats",
     "entities": "Entidades",
     "shares": "Usos compartidos",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Abrir ayuda y funciones",
         "keywords": "ayuda help funciones nuevo guía tutorial qué puede hacer"
+      },
+      "attention": {
+        "label": "Abrir «Te espera»",
+        "keywords": "me espera atencion decision uso compartido revisar consulta bloqueado bandeja de entrada agente"
       },
       "chats": {
         "label": "Abrir chats",

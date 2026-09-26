@@ -33,7 +33,9 @@
       "runStarted": "heeft een AI-run gestart",
       "resultRecorded": "heeft het resultaat ingevoerd",
       "note": "heeft een notitie toegevoegd",
-      "updated": "heeft {count, plural, one {één veld} other {# velden}} gewijzigd"
+      "updated": "heeft {count, plural, one {één veld} other {# velden}} gewijzigd",
+      "attentionRaised": "heeft een vraag gesteld",
+      "attentionResolved": "heeft een vraag beantwoord"
     }
   },
   "list": {

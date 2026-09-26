@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Aide et fonctionnalités",
     "helpWithNew": "{count, plural, one {Aide et fonctionnalités (# nouveauté)} many {Aide et fonctionnalités (# nouveautés)} other {Aide et fonctionnalités (# nouveautés)}}",
+    "attention": "En attente de ton action",
     "chats": "Discussions",
     "entities": "Entités",
     "shares": "Partages",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Ouvrir l’aide et les fonctionnalités",
         "keywords": "aide help fonctionnalités nouveau guide que peut faire"
+      },
+      "attention": {
+        "label": "Ouvrir « En attente de ton action »",
+        "keywords": "en attente de moi attention décision partage vérifier question bloqué boîte de réception agent"
       },
       "chats": {
         "label": "Ouvrir les chats",

@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "In attesa di te"
+  },
+  "page": {
+    "title": "In attesa di te",
+    "intro": "Qui trovi solo ciò che richiede davvero il tuo intervento: decisioni, condivisioni, risultati da verificare, incarichi bloccati ed esecuzioni non riuscite. Ciò che è semplicemente accaduto si trova nella cronologia degli incarichi e nelle notifiche.",
+    "filterLabel": "Quali elementi",
+    "filters": {
+      "open": "Aperti",
+      "settled": "Completati"
+    },
+    "loading": "Caricamento degli elementi…",
+    "loadFailed": "Impossibile caricare gli elementi.",
+    "emptyTitle": "Niente in attesa di te",
+    "emptyDescription": "Non appena un agente richiede una decisione, un risultato è pronto o un incarico si blocca, comparirà qui.",
+    "emptySettledTitle": "Ancora niente di completato",
+    "emptySettledDescription": "Ciò a cui rispondi qui o che si risolve da solo resta consultabile in questo elenco.",
+    "truncated": "L’elenco è parziale. Completa i primi elementi per far scorrere i successivi.",
+    "summaryLabel": "Aperti per tipo",
+    "summary": {
+      "decision": "{count, plural, one {# decisione} many {# decisioni} other {# decisioni}}",
+      "approval": "{count, plural, one {# condivisione} many {# condivisioni} other {# condivisioni}}",
+      "review": "{count, plural, one {# risultato da verificare} many {# risultati da verificare} other {# risultati da verificare}}",
+      "blocked": "{count, plural, one {# incarico bloccato} many {# incarichi bloccati} other {# incarichi bloccati}}",
+      "budget": "{count, plural, one {# approvazione del budget} many {# approvazioni del budget} other {# approvazioni del budget}}",
+      "run_failed": "{count, plural, one {# esecuzione non riuscita} many {# esecuzioni non riuscite} other {# esecuzioni non riuscite}}",
+      "conflict": "{count, plural, one {# conflitto} many {# conflitti} other {# conflitti}}",
+      "information": "{count, plural, one {# richiesta di chiarimento} many {# richieste di chiarimento} other {# richieste di chiarimento}}"
+    }
+  },
+  "kind": {
+    "decision": "Decisione",
+    "approval": "Condivisione",
+    "review": "Da verificare",
+    "blocked": "Bloccato",
+    "budget": "Budget",
+    "run_failed": "Esecuzione non riuscita",
+    "conflict": "Conflitto",
+    "information": "Chiarimento"
+  },
+  "urgency": {
+    "high": "Urgente",
+    "urgent": "Urgente"
+  },
+  "item": {
+    "raisedBy": "da {name}",
+    "raisedByAgent": "dall’agente {name}",
+    "raisedByAssistant": "dall’IA integrata",
+    "raisedBySomebody": "da un account eliminato",
+    "workspace": "in {name}",
+    "openWorkItem": "Apri nell’incarico",
+    "openConversation": "Apri conversazione",
+    "runError": "Errore: {code}",
+    "noteLabel": "La tua risposta",
+    "notePlaceholderRequired": "Scrivi qui cosa deve sapere l’agente.",
+    "notePlaceholderOptional": "Opzionale: una riga di spiegazione, rimarrà nella cronologia.",
+    "addNote": "Aggiungi nota",
+    "send": "Rispondi",
+    "failed": "Non è stato possibile salvare.",
+    "settledResolved": "Completato da {name}, {moment}",
+    "settledObsolete": "Non più necessario, {moment}",
+    "settledBySystem": "dal sistema",
+    "chose": "Scelta: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "L’incarico è stato annullato.",
+      "work_item_deleted": "L’incarico è stato eliminato.",
+      "withdrawn": "La domanda è stata ritirata.",
+      "superseded": "È subentrata un’esecuzione più recente."
+    },
+    "quotedNote": "«{note}»"
+  },
+  "option": {
+    "accept": "Approva",
+    "return": "Rimanda indietro",
+    "answer": "Rispondi",
+    "unblock": "Ostacolo rimosso",
+    "retry": "Riprova",
+    "give_up": "Abbandona"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Un elemento attende la tua attenzione} many {# elementi attendono la tua attenzione} other {# elementi attendono la tua attenzione}}",
+    "tooltip": "Attende la tua attenzione"
+  },
+  "workItem": {
+    "title": "Attende la tua attenzione",
+    "intro": "Questo incarico richiede ora una risposta o una decisione."
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Pendiente de ti"
+  },
+  "page": {
+    "title": "Pendiente de ti",
+    "intro": "Aquí solo aparece lo que realmente necesita tu atención: decisiones, usos compartidos, resultados para revisar, tareas bloqueadas y ejecuciones fallidas. Lo que solo ha ocurrido está en el historial de tareas y en las notificaciones.",
+    "filterLabel": "Qué elementos",
+    "filters": {
+      "open": "Pendientes",
+      "settled": "Completados"
+    },
+    "loading": "Cargando elementos…",
+    "loadFailed": "No se han podido cargar los elementos.",
+    "emptyTitle": "No hay nada pendiente",
+    "emptyDescription": "En cuanto un agente necesite una decisión, un resultado esté listo o una tarea se bloquee, aparecerá aquí.",
+    "emptySettledTitle": "Aún no hay nada completado",
+    "emptySettledDescription": "Lo que respondas aquí o lo que se resuelva por sí solo quedará registrado en esta lista.",
+    "truncated": "La lista está acortada. Completa los primeros elementos para que aparezcan los siguientes.",
+    "summaryLabel": "Pendientes por tipo",
+    "summary": {
+      "decision": "{count, plural, one {# decisión} many {# decisiones} other {# decisiones}}",
+      "approval": "{count, plural, one {# uso compartido} many {# usos compartidos} other {# usos compartidos}}",
+      "review": "{count, plural, one {# resultado para revisar} many {# resultados para revisar} other {# resultados para revisar}}",
+      "blocked": "{count, plural, one {# tarea bloqueada} many {# tareas bloqueadas} other {# tareas bloqueadas}}",
+      "budget": "{count, plural, one {# aprobación de presupuesto} many {# aprobaciones de presupuesto} other {# aprobaciones de presupuesto}}",
+      "run_failed": "{count, plural, one {# ejecución fallida} many {# ejecuciones fallidas} other {# ejecuciones fallidas}}",
+      "conflict": "{count, plural, one {# conflicto} many {# conflictos} other {# conflictos}}",
+      "information": "{count, plural, one {# consulta} many {# consultas} other {# consultas}}"
+    }
+  },
+  "kind": {
+    "decision": "Decisión",
+    "approval": "Uso compartido",
+    "review": "Para revisar",
+    "blocked": "Bloqueada",
+    "budget": "Presupuesto",
+    "run_failed": "Ejecución fallida",
+    "conflict": "Conflicto",
+    "information": "Consulta"
+  },
+  "urgency": {
+    "high": "Urgente",
+    "urgent": "Urgente"
+  },
+  "item": {
+    "raisedBy": "de {name}",
+    "raisedByAgent": "del agente {name}",
+    "raisedByAssistant": "de la IA integrada",
+    "raisedBySomebody": "de una cuenta eliminada",
+    "workspace": "en {name}",
+    "openWorkItem": "Abrir en la tarea",
+    "openConversation": "Abrir conversación",
+    "runError": "Error: {code}",
+    "noteLabel": "Tu respuesta",
+    "notePlaceholderRequired": "Escribe aquí lo que el agente necesita saber.",
+    "notePlaceholderOptional": "Opcional: una frase al respecto; quedará en el historial.",
+    "addNote": "Añadir nota",
+    "send": "Responder",
+    "failed": "No se pudo guardar.",
+    "settledResolved": "Resuelto por {name}, {moment}",
+    "settledObsolete": "Quedó obsoleto, {moment}",
+    "settledBySystem": "el sistema",
+    "chose": "Opción elegida: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "Se canceló el encargo.",
+      "work_item_deleted": "Se eliminó el encargo.",
+      "withdrawn": "Se retiró la pregunta.",
+      "superseded": "Una ejecución más reciente tomó el relevo."
+    },
+    "quotedNote": "«{note}»"
+  },
+  "option": {
+    "accept": "Aprobar",
+    "return": "Devolver",
+    "answer": "Responder",
+    "unblock": "Desbloqueado",
+    "retry": "Reintentar",
+    "give_up": "Descartar"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Un elemento pendiente} many {# elementos pendientes} other {# elementos pendientes}}",
+    "tooltip": "Pendiente de ti"
+  },
+  "workItem": {
+    "title": "Pendiente de ti",
+    "intro": "Este encargo necesita ahora mismo una respuesta o decisión."
+  }
+}

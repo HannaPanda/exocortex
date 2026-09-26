@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Guida e funzioni",
     "helpWithNew": "{count, plural, one {Guida e funzioni (# nuova)} many {Guida e funzioni (# nuove)} other {Guida e funzioni (# nuove)}}",
+    "attention": "In attesa per te",
     "chats": "Chat",
     "entities": "Entità",
     "shares": "Condivisioni",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Apri guida e funzionalità",
         "keywords": "guida help funzionalità novità istruzioni cosa fa"
+      },
+      "attention": {
+        "label": "Apri «In attesa per te»",
+        "keywords": "in attesa per me attenzione decisione condivisione verificare domanda bloccato posta in arrivo agente"
       },
       "chats": {
         "label": "Apri chat",

@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Pomoc i funkcje",
     "helpWithNew": "{count, plural, one {Pomoc i funkcje (# nowa)} few {Pomoc i funkcje (# nowe)} many {Pomoc i funkcje (# nowych)} other {Pomoc i funkcje (# nowej)}}",
+    "attention": "Czeka na ciebie",
     "chats": "Czaty",
     "entities": "Encje",
     "shares": "Udostępnienia",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Otwórz pomoc i funkcje",
         "keywords": "pomoc help funkcje nowości instrukcja co potrafi"
+      },
+      "attention": {
+        "label": "Otwórz „Czeka na ciebie”",
+        "keywords": "czeka na mnie uwaga decyzja udostępnienie sprawdź pytanie zablokowane skrzynka odbiorcza agent"
       },
       "chats": {
         "label": "Otwórz czaty",

@@ -2388,6 +2388,266 @@
       "source": "eaa10a795753d17d",
       "output": "a45aae80dcc1570c"
     },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "63565c0485fec4f7"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "3d28a01d92a008ce"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "1c14854fd8dd22a9"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "74a41190a3b48231"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "0a4acb4f8a1e7823"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "7f6c19bdbcaadb7b"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "ed7629adea93d01f"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "a4769419c7ff9b2b"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "225d9e59569e6836"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "493d3066bf5bb64c"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7047b9af7a4cd070"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "db0a3a4b8b8bf832"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "a16386fc6d2a3c2d"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "77567cd0f1b17d7c"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "25f99d27b6d4bd7d"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "7fc527de0f6e3ecd"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "3a4140a0896fe14c"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "6be973f7705f7426"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "c253f451bdd56431"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "f642985603172436"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "b33056a293cc6e75"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "a8f0017e64686e2d"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "e7e1cece49f07db6"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "29887a5ff9846ccc"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "18f2a0947f9d6523"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "1c6225ec7092ad2f"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "014659ab9d98c8fe"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "640ae4baf96061fe"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "289aff12b04274cb"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "1afa6050587eb7a5"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "97fddf2d43e8dfc8"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "9f760ab207394414"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "89713b9c9c1b8f65"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "c253f451bdd56431"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "7af6d450c965ba02"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "d8b8392e2c542950"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "a7b87f6843ab4ba3"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "f3e69b6c2ee434b5"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "5d89dee12efb62c7"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "ad7aa7d188c4413a"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "0b8419ce525c6008"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "a69056b63b4caf68"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "3b96635606e744ca"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "ed077f3d8125d60d"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "11a6767d5674c7e4"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "fabf9585ec2e57f1"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "dbb51c671e6adcde"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "49f7f31dfd4e871a"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "d68d95b1e6389522"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "1c42ff3fb036c920"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "be94afeca1a5c496"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "b2cdb074f11b850e"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "67c8e1a6bc1f07fc"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "9d1ffe7a65f030ee"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "f37cb724b2b83592"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "723c5b6914eb6a01"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "61d2a1f204086017"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "9f760ab207394414"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "794d807e991b9dd1"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "d2d8cbab61bd5312"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "9f760ab207394414"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "6d8624e9f86a8bde"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "9f760ab207394414"
+    },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
       "output": "e213c161d5cefa52"
@@ -7876,6 +8136,22 @@
       "source": "9977703e32828601",
       "output": "736b707e8a001a04"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "1bfbd4867c1b4ab5"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "2c650e4c028e0050"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "2668ec1a28dc26d1"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "ea1d3411fdd09a0c"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "f4f48d6c55d73510"
@@ -10319,6 +10595,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "1d5d921977d21912"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "a9eafde59ecc7a3b"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "f797d046cdc9257b"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "819bb8e2b18ca82a"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "ff0ce8a984251749"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "ff4d9054106f3e1a"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "d9632b3449ccc342"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "f3995653232a50ea"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "bbb2a3d2037ec6a9"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -14348,6 +14656,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "4b42c6690ebeb867"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "9f760ab207394414"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
@@ -14819,6 +15131,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "58606e582452ca98"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "b8099c3429fc0b3b"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "97cd3e6058ff5003"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -15907,6 +16227,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "4d3906146ca7ef58"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "2997254bfa6e6670"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "975e2907b507b4dd"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -18513,6 +18841,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "7f66f12857d0330b"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "555fe228de377647"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "21374879e40a8e29"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "836c7b54cf4d3c85"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "a09bef935cef1d42"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "62720f03fb504fbe"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "94a8a91bf8776a93"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "18871596acb1ef5f"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "28950f5176b9f187"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "c1c6e216a9ea413c"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "7bb93a7b11490553"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "b8badd9c554ae790"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "f209dd14c79cf969"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "6d5fb5429670cc96"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "278ba90617c47bee"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "9dc2b12ce8e0866b"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "0b3c8e6da269ef2c"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "3bc0f1a61b83b263"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "6be973f7705f7426"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "8630a0dc25e2395a"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "5dbad96e196bf718"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "26d5d78ea49e494c"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "e5bc5ec13054359b"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "69c62f3133486fa9"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "4da45b20005c555c"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "0fff1ccde9ea237a"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "f7c9c2d9d560de9f"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "f6400dd8fa4ff39f"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "0caa6150f308280f"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "b10d9bd946d4eb42"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "3efde7a2f9d211e5"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "e123d5fbbeccb4f9"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "8061fb5285755ca4"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "10a00fdf1a44dec2"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "8630a0dc25e2395a"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "1a878a55c594b0f7"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "a9254c5f812829af"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "b4047e5d8e339c5b"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "31b6274491a6ce25"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "9fb5a8653cb5e2fa"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "c46337ee6425e3c9"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "4a87570630fc71a8"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "03ad651b2af52315"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "2b9d9520eb14de6c"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "bb6e430ce0a7eb8b"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "565e9a7561c61838"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "f048f3fc25e6ff3b"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "6a49bffaeab9f916"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "cb1a6c394ba532a4"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "a17d1cc09c30838d"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "23efa0f445b4014d"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "ba59abba5b2cd2ab"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "263c260728fa8de6"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "0526008b4d085a19"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "3f3fb76ce28a1ea3"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "c937acdee9b43577"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "d2e847ba12e0f5e2"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "d17a4442ae2971c6"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "8061fb5285755ca4"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "04bf9170047b4681"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "e8dbd87fe3b3e220"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "8061fb5285755ca4"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "fc350f777eaae30a"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "8061fb5285755ca4"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -24002,6 +24590,22 @@
       "source": "9977703e32828601",
       "output": "886af9688503b413"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "cb2152faab9196ee"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "f0e74506b31dcd6e"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "79b2dc1a7417c987"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "a8e42e2ad496497a"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "82ef50c6cd0f58df"
@@ -26445,6 +27049,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "15a3c6387b1d6a74"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "da3278cf283aabdf"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "8ab5d7ca5fbf2331"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "c7748946d27ebf77"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "c9e2ab58dda63410"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "d182bb16261d9f0e"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "e52fde4c6672a326"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "7e77df575e772bce"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "4f858e9a59519749"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -30474,6 +31110,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "1a1b3e6ecc51b478"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "5f7c38e49bac94ef"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
@@ -30945,6 +31585,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "52a2238650b59571"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "6ed8f493700d79f0"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "9d28ac857712a493"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -32033,6 +32681,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "464d47b122d1cb82"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "2941e67e992e7be2"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "68ca8b4d25e7dc74"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -34639,6 +35295,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "6f265e4bb8c0b313"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "88595eb5c91420ef"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "4af58fd5f467c98d"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "96506dcf075c3aca"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "a35b75ee1fb390bb"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "a1e943acd3374f12"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "8a73ecbc4a18911c"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "5f07c26647c8dd10"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "692fad02df87e48a"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "66d14498d57d10ef"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "00169c404e7b1603"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "71e59b56869b6774"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "c336a813ac89085c"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "8d8d54b6bab9ca7d"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "5aa3121e308a8d42"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "8baa4486c31bf40a"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "80024a7452cf5151"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "458be1586efd1039"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "432f3e5955b8eadc"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "05af80398c58d921"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "ffc0d555b8e1fa32"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "3e76a5aa962c2edf"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "9c429b1545692754"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "e1e09486a0856f18"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "d97e90a32a7e861c"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "43645bfc3bda62f4"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "1c6225ec7092ad2f"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "05b3bac4355cb490"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "d2dc9dcff2a0c2a6"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "289aff12b04274cb"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "03a088312dad261f"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "38859441d1c5bb26"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "7d934b85a0e956b1"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "626ba7a89fc2bf5b"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "05af80398c58d921"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "f488c800e76284b9"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "af273d956b5bec8d"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "58c0fa009a92774b"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "2ae114da97d6c1b2"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "2f072017413cab9a"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "ae5bbe111337e0de"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "a6e38689886037a5"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "21b63bb26842383a"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "e3c0565edf80cc80"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "2f6c8477e92bc6ea"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "cba75eee2297dc2e"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "aeebbf31784eb084"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "5365ffd23691970c"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "a041c8e9e3e9b46e"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "372e50325d5e399c"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "3bac8f4c2055304c"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "6ed628af2191941c"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "39e1735a0d753ef2"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "c8fd5979522a736f"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "a5874a29ec913d33"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "94a603623f3d93da"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "f4e003987592822b"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "19bcd38daf7e42f4"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "7d934b85a0e956b1"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "3cf891c42f1f3783"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "b99ba698af4750ce"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "aafffa3f70df675c"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "3e52a77030628123"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "aafffa3f70df675c"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -40128,6 +41044,22 @@
       "source": "9977703e32828601",
       "output": "f3903cb554023d6d"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "0de926d6f20378c7"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "3eedefdbc6d90f58"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "689742f5b47b66f8"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "25bd44582e04add0"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "e2491f28cb075bbc"
@@ -42571,6 +43503,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "b4a37f9bb547949b"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "bd892b920130a7e2"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "8d3859ab00c562be"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "706c81bd75c2813d"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "85ff7652f92aadb1"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "05f0608ae4ea713d"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "af298d2a5ea0a5a3"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "56e9a4f14f4c3b53"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "5f2f2a0095c287af"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -46600,6 +47564,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "4b42c6690ebeb867"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "7d934b85a0e956b1"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "60157cfcfe3f31c3"
@@ -47071,6 +48039,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "b43863c0d736852a"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "0cf75bd2ef59a7cf"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "97cc0363513c0400"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -48159,6 +49135,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "90fe950bb005b0a9"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "1c532f7f143288ef"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "c21413ad891585c1"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -50765,6 +51749,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "eb345b00e98a9c10"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "717e71cdfe531e3d"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "0cb9062dfaab0ffe"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "4dfe1360ea455b8c"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "54e7aa42955cddb7"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "84edc91c3f8338ed"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "70c5d9e863e197bc"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "1eb41188ea99358a"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "145b67ba48b96948"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "b7db3a944ed99e06"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "141edac32f51a9f1"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1b01fb896aca3936"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "9ef564659e138493"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "6d5fb5429670cc96"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "a14c4fd8802504ed"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "58f2fb6d2b9f2ce9"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "40e79e0ca38f1b40"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "a05f52809e2bd48e"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "58533733901d1051"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "aa991fc69838e3b0"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "9c7fd284e9773b39"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "2d6227d4d0f9f602"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "048de81f6ecd17a6"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "e7e1cece49f07db6"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "e77984b75c1e0a26"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "e3ddf6e22b5d88be"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "1c6225ec7092ad2f"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "dd8161ef643446cb"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "37eeb58415c5a356"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "c03446fcd6df6642"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "ac4e0792e57750ea"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "869aed15743e246c"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "df7ca03fc59b5faa"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "dc501b99debdf250"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "aa991fc69838e3b0"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "d287be2d7e14994c"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "20b5f4b8bfd56e4f"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "873571eaf9844455"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "4b73094923359119"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "25584911fd0a8aac"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "fd589e033d7322d9"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "b5e2c7301fa64247"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "1df0c694412cedef"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "fb16124346e9a435"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "071282545ceedf8f"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "22d8b5d07b0ec6b2"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "56ee439769c4c8c8"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "6b07ca812b8c30aa"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "ee5111d44b436629"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "2a67021214c937cb"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "861eac0d1889d7ec"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "1ec5ed126ac5fc7f"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "4469525ac22fad2f"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "36ce8628c23de1ac"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "3739931a93755069"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "20878ac3e6f70763"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "42cb1100f2dd7c33"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "014ce26dbc727628"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "df7ca03fc59b5faa"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "2ad3d4e0753ef040"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "622788bf43daa6e7"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "2d14c47ad69b63c1"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "ee41ab034866d1a6"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "2d14c47ad69b63c1"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -56254,6 +57498,22 @@
       "source": "9977703e32828601",
       "output": "a0c04ede0086a099"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "864a12995788b218"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "3bc0cb3fd0c9908b"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "0b81c63ae3bc9165"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "6e73772c3e10f90d"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "e364d3cf79bd03ba"
@@ -58697,6 +59957,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "784257ee6559789e"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "92af47b8dc76023e"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "036b13f4453b2811"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "f2ee3bd89165c211"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "f213663dabc1c8cb"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "25472e23c9c34b20"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "f9043c1ee07a2ab8"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "3f129bcc6f853842"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "bf6ad6218fbda61d"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -62726,6 +64018,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "a3573199a663b82b"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "b67291b7fa56a2b8"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "460b3a7da007b7af"
@@ -63197,6 +64493,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "2d6235c4775fcda7"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "9620fd3df63df38d"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "415e6b127938aeda"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -64285,6 +65589,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "79a1672b22fdc0e9"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "c9ab6988986df132"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "5b328a3d179cf3e0"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -66891,6 +68203,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "fa8f9d7a2d2150e6"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "99d462dbdc65fe3d"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "f0566695c6fdacaa"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "365788013c596559"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "7b4ecbb997aa9fab"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "fdf2e8d24ff280bb"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "0029e0ed74a0d4f7"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "c1928b7a28ca5742"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "1f0e5e8c7df53c3b"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "c39315e9a894f223"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "07e23128c8c18192"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1beecf213692d574"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "1c49b0e4305d5419"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "8f1d380ac5f99ddd"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "86c4498f52615d6f"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "3ca4f3f828378116"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "f6499dc63fdcbc7c"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "c44467dad9a3a600"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "c95cd2eb830ff20f"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "298fbcfcfed19ea8"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "06ca9a731fb8c389"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "d2eee8f33fe6d74d"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "843ee17ce89dd24d"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "e7e1cece49f07db6"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "4df3917769ec5d74"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "7e938baa443d52dc"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "1c6225ec7092ad2f"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "014659ab9d98c8fe"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "0f05b8f92efc15fc"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "e2ac34dd72d79b8f"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "0604a69f28f04c5f"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "ac1c417e0bd987d4"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "1f3d531cf0369539"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "984b9d3829d966a0"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "298fbcfcfed19ea8"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "b4cb960921338200"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "576434df7a00aeae"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "d199a3179a027956"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "a8dbf59909363b0d"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "e90b09bf6e87236d"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "63633c99dc417176"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "7088a0a8c46c18de"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "db1cd356ada57527"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "c6f469d49b261c8a"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "ed077f3d8125d60d"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "09d32cbae6b39159"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "4a5a7195bd55dde0"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "5f4414044b1d8578"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "b0b45249ce5c8cda"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "05239d82df77c751"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "dbc7a4c1e19f40b2"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "220232f068109762"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "d27c0325673ff4fa"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "6e1d0313e5469caf"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "b89c42feedaba308"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "e8dd1b3cd936633c"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "c682502d290cbb18"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "81385f19a442db66"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "1f3d531cf0369539"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "8dbbc6cb26e8eb7e"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "a0b862fad5c4e1b4"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "dad689f7631440fd"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "d82fbef41e0ff74d"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "1b015904cc17649e"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "3c14ea7286bd55e8"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "dad689f7631440fd"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -72380,6 +73952,22 @@
       "source": "9977703e32828601",
       "output": "79154c37bc0a9ba7"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "dcb8db9664939236"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "52d41301c76d227e"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "af053a7c79867050"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "e17628bb098efd6a"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "c767b31ab081716e"
@@ -74823,6 +76411,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "136ca53b66a11693"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "3e8f154823d1bc4e"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "9e794341f1fa8152"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "074d6d8564cdb91e"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "cbcc554b2c3275d0"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "6209882184dbbed9"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "3d9c5fbc9ee70cdd"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "d5b98a9e9904bcad"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "1f76ef6d5e25cd48"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -78852,6 +80472,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "c88e8f8aabb68d14"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "1f3d531cf0369539"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
@@ -79323,6 +80947,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "f3047903f4542367"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "c8bd4937475ec393"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "f0046e3aa521fe88"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -80411,6 +82043,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "b013287d089f8c3e"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "d5e627b28ed54581"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "53c1910f26929216"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -83017,6 +84657,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "c40c7abf3cf0d76e"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "38498dc8b5e64c29"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "903006499fb46103"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "e67278ad6eeda9b5"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "51a917a856453651"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "05c840b3c7050e1b"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "b32cbe7d6e055132"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "19381108c909e415"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "4b8b823946312dc2"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "58f6fbe3d45c13d6"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "8d2767786da45d0b"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7dd8120be3ebe142"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "1719690994f74862"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "8f1d380ac5f99ddd"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "68dce9f4f55a88f7"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "10fee6190772af91"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "55e2860284cf1288"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "3ccca9c5b985e72e"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "f55c678f695103cb"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "5408922df6f5b9cf"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "bbc5e661e106c6dc"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "e9ccab60a411222e"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "bca3dab30076d8af"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "5f447438f917ed13"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "40a30d55f07b22a7"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "5e765eb97c2faae3"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "ef34b918b31e52e1"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "a55bfc47cdfe1bd7"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "db9afaa29fef5952"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "9726c44549162531"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "f4d6eb81ec10c77b"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "4e22d5e1555e1998"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "1b531f27fe1974eb"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "2746d68f82173fab"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "5408922df6f5b9cf"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "c7573e61b1e66ae2"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "7237b73bc691a25b"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "4b61d61860a842cb"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "6e608599efef5036"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "28650b49a0de3738"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "0814f51eebf8a4f3"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "073a3a660c675d65"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "e28c236eebccc6a8"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "7fcde21c63b65d71"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "8f2faefb7b477518"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "05a61a8fc3c29d5e"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "549891dd5f0e4e92"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "455bf20c25d40367"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "71f96f83b41926c8"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "9d6d48a34dcede8e"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "099f79be83f24ff2"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "1ab550c066234daf"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "6240cff4f5d9d06d"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "5440c57f2ad2c857"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "532046fa035f4076"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "1a0a51f45ea86ca4"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "e391ce738132845f"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "dd1874973bbca27a"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "1b531f27fe1974eb"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "f6775c1ccb012e9a"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "c92d84ccba09af5a"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "1b531f27fe1974eb"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "35a56fd9e4100997"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "35a56fd9e4100997"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "bbcaaf1be9843581"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "1b531f27fe1974eb"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -88506,6 +90406,22 @@
       "source": "9977703e32828601",
       "output": "e59de886d1db8c35"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "60296b5a548b07a0"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "986f43b3070cee6d"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "ed7c3b27a2b08754"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "26fbea43fbc78c90"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "deed44b88848b00b"
@@ -90949,6 +92865,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "fdb198e136b0cc2a"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "135259203091e1f8"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "750760e00a4ae16c"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "2004a9f216e1d930"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "5dd8d93a08e3ee10"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "bf85b82ea8c53155"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "c72109c66331ef2c"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "69613efe0a69a489"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "30e9e527738b9c63"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -94978,6 +96926,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "6ac745ccb40997a7"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "1b531f27fe1974eb"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "751205c0b70a1a77"
@@ -95449,6 +97401,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "aeef4e6184c525f1"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "f27bc21b63be152f"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "6da86f8ecf1e36d2"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -96537,6 +98497,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "4f45b9365cb009a4"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "93f297f9adfc79f6"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "26ed74bb3ecc91db"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
@@ -99143,6 +101111,266 @@
     "ai.transcript.unavailableTitle": {
       "source": "eaa10a795753d17d",
       "output": "8efa078cd234ef09"
+    },
+    "attention.item.addNote": {
+      "source": "c9ec3d40812694e1",
+      "output": "11dbbf8c0fd9a766"
+    },
+    "attention.item.chose": {
+      "source": "57ec1e04d9e205ac",
+      "output": "71b4def3f1d9f985"
+    },
+    "attention.item.failed": {
+      "source": "89e640d5755ff5ce",
+      "output": "e85a62613f7f0aff"
+    },
+    "attention.item.noteLabel": {
+      "source": "386d23514ccd5b86",
+      "output": "7aecacc096a4e17c"
+    },
+    "attention.item.notePlaceholderOptional": {
+      "source": "dc428fa2944228e4",
+      "output": "85a62e0c654a15ad"
+    },
+    "attention.item.notePlaceholderRequired": {
+      "source": "827164448c6eeca9",
+      "output": "3eb26a099ca27507"
+    },
+    "attention.item.obsoleteReason.superseded": {
+      "source": "83ff391bc6e29560",
+      "output": "13c159b44c0430da"
+    },
+    "attention.item.obsoleteReason.withdrawn": {
+      "source": "d578dca2cc835077",
+      "output": "f66b6d710654a01b"
+    },
+    "attention.item.obsoleteReason.work_item_cancelled": {
+      "source": "6e01e389eb8d85ed",
+      "output": "4dc906d6bb641208"
+    },
+    "attention.item.obsoleteReason.work_item_deleted": {
+      "source": "275791f7781a30d8",
+      "output": "e39e313a4418ff84"
+    },
+    "attention.item.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "a8bba40ab0e0d188"
+    },
+    "attention.item.openWorkItem": {
+      "source": "3cd5ef97ece3baa3",
+      "output": "4aef153f2069f801"
+    },
+    "attention.item.quotedNote": {
+      "source": "f9f09524cef58674",
+      "output": "a16386fc6d2a3c2d"
+    },
+    "attention.item.raisedBy": {
+      "source": "cd019275803b48e9",
+      "output": "278ba90617c47bee"
+    },
+    "attention.item.raisedByAgent": {
+      "source": "ef0cb79927aad078",
+      "output": "14c60f6e3e0ceb41"
+    },
+    "attention.item.raisedByAssistant": {
+      "source": "b8fbf808c197f0fb",
+      "output": "c9aa582c265d721b"
+    },
+    "attention.item.raisedBySomebody": {
+      "source": "3e1e4ef48c0ef015",
+      "output": "cc51d88541998803"
+    },
+    "attention.item.runError": {
+      "source": "8b51473d10de97ef",
+      "output": "6adb82efba3d5689"
+    },
+    "attention.item.send": {
+      "source": "12dfc0a34c26603e",
+      "output": "8630a0dc25e2395a"
+    },
+    "attention.item.settledBySystem": {
+      "source": "a0b542e06fc9e891",
+      "output": "df157db833ee1247"
+    },
+    "attention.item.settledObsolete": {
+      "source": "e2c6e81c29844bc5",
+      "output": "7384a37237e58855"
+    },
+    "attention.item.settledResolved": {
+      "source": "25b689108ee004f3",
+      "output": "ee864fd3fbf3f854"
+    },
+    "attention.item.workspace": {
+      "source": "e7e1cece49f07db6",
+      "output": "ced86e528e158135"
+    },
+    "attention.kind.approval": {
+      "source": "3c540fe0d6fe6146",
+      "output": "6f27b5d22343f7ea"
+    },
+    "attention.kind.blocked": {
+      "source": "931f082bf11e4d82",
+      "output": "d552e8fe73224192"
+    },
+    "attention.kind.budget": {
+      "source": "1c6225ec7092ad2f",
+      "output": "56eddfe3d6edc06c"
+    },
+    "attention.kind.conflict": {
+      "source": "a55bfc47cdfe1bd7",
+      "output": "6d6f698328c5fed3"
+    },
+    "attention.kind.decision": {
+      "source": "84b5bbbb43d143e6",
+      "output": "5d9376a5cefbd523"
+    },
+    "attention.kind.information": {
+      "source": "2788b953aafb7ed7",
+      "output": "bcef4c75d8f4dd29"
+    },
+    "attention.kind.review": {
+      "source": "22f0bf5a7b98494d",
+      "output": "73d549030638e99f"
+    },
+    "attention.kind.run_failed": {
+      "source": "2ff4d2805b0e81d2",
+      "output": "6f32e916cb32d4b6"
+    },
+    "attention.meta.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "31dc334f62c2f9be"
+    },
+    "attention.option.accept": {
+      "source": "1be7f543e8da9cf8",
+      "output": "c764f8c3621fb0ab"
+    },
+    "attention.option.answer": {
+      "source": "12dfc0a34c26603e",
+      "output": "8630a0dc25e2395a"
+    },
+    "attention.option.give_up": {
+      "source": "a050ebd54f0705c2",
+      "output": "b617daca78aac5b6"
+    },
+    "attention.option.retry": {
+      "source": "6e6fbb841755d582",
+      "output": "b9e10688be012d8b"
+    },
+    "attention.option.return": {
+      "source": "96ee1fd465988267",
+      "output": "b4047e5d8e339c5b"
+    },
+    "attention.option.unblock": {
+      "source": "4dd7d300e0a51302",
+      "output": "d4c2d75416f69c74"
+    },
+    "attention.page.emptyDescription": {
+      "source": "211ce51c9b488a1a",
+      "output": "249ef5f1bdd779f6"
+    },
+    "attention.page.emptySettledDescription": {
+      "source": "38c7fad9953bd86e",
+      "output": "891163a46d43aedf"
+    },
+    "attention.page.emptySettledTitle": {
+      "source": "a4bf7b99fb332cd4",
+      "output": "bd48b1fa66f0c8b8"
+    },
+    "attention.page.emptyTitle": {
+      "source": "b6133af7546d5ffc",
+      "output": "42d045874dd0002a"
+    },
+    "attention.page.filterLabel": {
+      "source": "1027caf0c1decfe4",
+      "output": "cd587faadd2116f2"
+    },
+    "attention.page.filters.open": {
+      "source": "64509e1af49cd987",
+      "output": "e5b00b2cc2f4249d"
+    },
+    "attention.page.filters.settled": {
+      "source": "467e01ba533e1a45",
+      "output": "4e9eee0c6f880186"
+    },
+    "attention.page.intro": {
+      "source": "eefbf76f7359432a",
+      "output": "e26ec89f6c10b2d6"
+    },
+    "attention.page.loadFailed": {
+      "source": "cb9e4185ababe5f5",
+      "output": "c3fd56688d7a11b7"
+    },
+    "attention.page.loading": {
+      "source": "db6bf5ea5ad2de67",
+      "output": "e91554a1b7be2c66"
+    },
+    "attention.page.summary.approval": {
+      "source": "562c35cebdb401a2",
+      "output": "a4fcfbaac2ea734b"
+    },
+    "attention.page.summary.blocked": {
+      "source": "b0dc55566e9d40cc",
+      "output": "0abfb0343f39fc49"
+    },
+    "attention.page.summary.budget": {
+      "source": "c2c2e1846313eb26",
+      "output": "a3ad328c064298c5"
+    },
+    "attention.page.summary.conflict": {
+      "source": "2b91bc83bb9b7db5",
+      "output": "860f045b980f99b9"
+    },
+    "attention.page.summary.decision": {
+      "source": "3b80d86e93544c40",
+      "output": "573ac2b1a16a57b5"
+    },
+    "attention.page.summary.information": {
+      "source": "49d127fde6bd88bc",
+      "output": "0e8bec939f053b29"
+    },
+    "attention.page.summary.review": {
+      "source": "cff2865699a3be78",
+      "output": "a8511ef062ed723a"
+    },
+    "attention.page.summary.run_failed": {
+      "source": "cf65fc55096e767d",
+      "output": "5b7474ab6af3c639"
+    },
+    "attention.page.summaryLabel": {
+      "source": "3e5e946b203cc4db",
+      "output": "e2b4e52e915552e9"
+    },
+    "attention.page.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "31dc334f62c2f9be"
+    },
+    "attention.page.truncated": {
+      "source": "3b433d28120f9145",
+      "output": "5fcab5144978ce82"
+    },
+    "attention.topbar.label": {
+      "source": "0730d283035df99f",
+      "output": "61342e73ce1414a7"
+    },
+    "attention.topbar.tooltip": {
+      "source": "21cfb3bee2704a04",
+      "output": "31dc334f62c2f9be"
+    },
+    "attention.urgency.high": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.urgency.urgent": {
+      "source": "d82fbef41e0ff74d",
+      "output": "9dc81c64f1531ab4"
+    },
+    "attention.workItem.intro": {
+      "source": "00627d67874755ac",
+      "output": "27e913a8a0df5bb1"
+    },
+    "attention.workItem.title": {
+      "source": "21cfb3bee2704a04",
+      "output": "31dc334f62c2f9be"
     },
     "auth.consent.accept": {
       "source": "987c0928ab3b0f19",
@@ -104632,6 +106860,22 @@
       "source": "9977703e32828601",
       "output": "b7678b8eee67c50b"
     },
+    "errors.codes.attention_item_settled": {
+      "source": "fd3452b2c58d3716",
+      "output": "2c5c2d6c7e780280"
+    },
+    "errors.codes.attention_note_required": {
+      "source": "1767c333c15e6ad6",
+      "output": "f29989a6f011019b"
+    },
+    "errors.codes.attention_option_invalid": {
+      "source": "f629c25f07da8ba2",
+      "output": "7a82ed6426133b80"
+    },
+    "errors.codes.attention_target_invalid": {
+      "source": "e87d3fa2139e4969",
+      "output": "990c1d7d743ea3dc"
+    },
     "errors.codes.collaboration_read_only": {
       "source": "cd057fa458c970c5",
       "output": "4042b59a94f8d4bf"
@@ -107075,6 +109319,38 @@
     "features.vorlagen.where": {
       "source": "4826a20d99981db3",
       "output": "e99ace5d7ac3e1de"
+    },
+    "features.wartet-auf-dich.details.p1": {
+      "source": "e85b1de4c0651e28",
+      "output": "2bc029542fb8242f"
+    },
+    "features.wartet-auf-dich.details.p2": {
+      "source": "cb996100c8e09ab5",
+      "output": "78ee7ebfd5947529"
+    },
+    "features.wartet-auf-dich.details.p3": {
+      "source": "5b89e94d53441ade",
+      "output": "74b40e41791e4607"
+    },
+    "features.wartet-auf-dich.details.p4": {
+      "source": "5a55994a7b7af639",
+      "output": "3b4498be35146265"
+    },
+    "features.wartet-auf-dich.details.p5": {
+      "source": "da66c6d3ae80a08d",
+      "output": "b13a1fdd0fca8416"
+    },
+    "features.wartet-auf-dich.summary": {
+      "source": "c4199fde510404f6",
+      "output": "26d84e9ae9ca3f22"
+    },
+    "features.wartet-auf-dich.title": {
+      "source": "8c0025890a8f07db",
+      "output": "1e5d870581d37672"
+    },
+    "features.wartet-auf-dich.where": {
+      "source": "9e01b218ec5ba02c",
+      "output": "a554278d840c0c6d"
     },
     "features.web-clipper.details.p1": {
       "source": "9fe5a86e2faa1219",
@@ -111104,6 +113380,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "7d8098b4f7eeea90"
     },
+    "shell.globalLinks.attention": {
+      "source": "21cfb3bee2704a04",
+      "output": "31dc334f62c2f9be"
+    },
     "shell.globalLinks.chats": {
       "source": "ef5b4049bb367b05",
       "output": "ef5b4049bb367b05"
@@ -111575,6 +113855,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "27541cc91679da21"
+    },
+    "shell.paletteCommands.navigation.attention.keywords": {
+      "source": "0e7ff322a575b684",
+      "output": "e304b580ab31ff9b"
+    },
+    "shell.paletteCommands.navigation.attention.label": {
+      "source": "0f8d44c30ad37338",
+      "output": "bbe964a1255ff7a7"
     },
     "shell.paletteCommands.navigation.automations.keywords": {
       "source": "1aeac585ba2a0bc0",
@@ -112663,6 +114951,14 @@
     "workItems.labels.event.assigned": {
       "source": "bc917b33ca3ac47e",
       "output": "42df6d2746938255"
+    },
+    "workItems.labels.event.attentionRaised": {
+      "source": "8c98eeacfc360a5e",
+      "output": "6e56b4f8f8a2b138"
+    },
+    "workItems.labels.event.attentionResolved": {
+      "source": "9e8bdf2824e2385d",
+      "output": "58574c3da7069aef"
     },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",

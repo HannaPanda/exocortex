@@ -33,7 +33,9 @@
       "runStarted": "uruchamia przebieg AI",
       "resultRecorded": "zapisuje wynik",
       "note": "dodaje notatkę",
-      "updated": "zmienia {count, plural, one {jedno pole} few {# pola} many {# pól} other {# pola}}"
+      "updated": "zmienia {count, plural, one {jedno pole} few {# pola} many {# pól} other {# pola}}",
+      "attentionRaised": "zadaje pytanie",
+      "attentionResolved": "odpowiada na pytanie"
     }
   },
   "list": {

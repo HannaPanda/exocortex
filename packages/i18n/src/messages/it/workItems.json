@@ -33,7 +33,9 @@
       "runStarted": "ha avviato un’esecuzione IA",
       "resultRecorded": "ha registrato il risultato",
       "note": "ha aggiunto una nota",
-      "updated": "ha modificato {count, plural, one {un campo} many {# campi} other {# campi}}"
+      "updated": "ha modificato {count, plural, one {un campo} many {# campi} other {# campi}}",
+      "attentionRaised": "ha fatto una domanda",
+      "attentionResolved": "ha risposto a una domanda"
     }
   },
   "list": {

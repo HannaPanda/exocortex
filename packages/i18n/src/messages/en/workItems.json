@@ -33,7 +33,9 @@
       "runStarted": "started an AI run",
       "resultRecorded": "recorded the result",
       "note": "added a note",
-      "updated": "updated {count, plural, one {one field} other {# fields}}"
+      "updated": "updated {count, plural, one {one field} other {# fields}}",
+      "attentionRaised": "asked a question",
+      "attentionResolved": "answered a question"
     }
   },
   "list": {

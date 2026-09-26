@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Wacht op jou"
+  },
+  "page": {
+    "title": "Wacht op jou",
+    "intro": "Hier staat alleen wat echt jouw aandacht vraagt: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten en runs die zijn mislukt. Wat er verder is gebeurd, vind je in de geschiedenis van de opdrachten en bij de meldingen.",
+    "filterLabel": "Welke items",
+    "filters": {
+      "open": "Open",
+      "settled": "Afgehandeld"
+    },
+    "loading": "Items worden geladen …",
+    "loadFailed": "De items konden niet worden geladen.",
+    "emptyTitle": "Niets wacht op jou",
+    "emptyDescription": "Zodra een agent een beslissing nodig heeft, een resultaat klaar is of een opdracht vastloopt, verschijnt het hier.",
+    "emptySettledTitle": "Nog niets afgehandeld",
+    "emptySettledDescription": "Wat je hier beantwoordt of wat vanzelf wordt opgelost, blijft inzichtelijk in deze lijst.",
+    "truncated": "De lijst is ingekort. Handel de bovenste items af, dan schuiven de volgende door.",
+    "summaryLabel": "Open per type",
+    "summary": {
+      "decision": "{count, plural, one {# beslissing} other {# beslissingen}}",
+      "approval": "{count, plural, one {# deling} other {# delingen}}",
+      "review": "{count, plural, one {# resultaat ter controle} other {# resultaten ter controle}}",
+      "blocked": "{count, plural, one {# geblokkeerde opdracht} other {# geblokkeerde opdrachten}}",
+      "budget": "{count, plural, one {# budgetgoedkeuring} other {# budgetgoedkeuringen}}",
+      "run_failed": "{count, plural, one {# mislukte run} other {# mislukte runs}}",
+      "conflict": "{count, plural, one {# conflict} other {# conflicten}}",
+      "information": "{count, plural, one {# vraag} other {# vragen}}"
+    }
+  },
+  "kind": {
+    "decision": "Beslissing",
+    "approval": "Deling",
+    "review": "Ter controle",
+    "blocked": "Geblokkeerd",
+    "budget": "Budget",
+    "run_failed": "Run mislukt",
+    "conflict": "Conflict",
+    "information": "Vraag"
+  },
+  "urgency": {
+    "high": "Dringend",
+    "urgent": "Urgent"
+  },
+  "item": {
+    "raisedBy": "door {name}",
+    "raisedByAgent": "door agent {name}",
+    "raisedByAssistant": "door de ingebouwde AI",
+    "raisedBySomebody": "door een verwijderd account",
+    "workspace": "in {name}",
+    "openWorkItem": "In opdracht openen",
+    "openConversation": "Gesprek openen",
+    "runError": "Fout: {code}",
+    "noteLabel": "Je antwoord",
+    "notePlaceholderRequired": "Schrijf hier wat de agent moet weten.",
+    "notePlaceholderOptional": "Optioneel: een toelichting, deze komt in de geschiedenis.",
+    "addNote": "Notitie toevoegen",
+    "send": "Antwoorden",
+    "failed": "Opslaan is niet gelukt.",
+    "settledResolved": "Afgehandeld door {name}, {moment}",
+    "settledObsolete": "Vervallen, {moment}",
+    "settledBySystem": "het systeem",
+    "chose": "Gekozen: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "De opdracht is geannuleerd.",
+      "work_item_deleted": "De opdracht is verwijderd.",
+      "withdrawn": "De vraag is ingetrokken.",
+      "superseded": "Een nieuwere sessie heeft het overgenomen."
+    },
+    "quotedNote": "„{note}”"
+  },
+  "option": {
+    "accept": "Goedkeuren",
+    "return": "Terugsturen",
+    "answer": "Antwoorden",
+    "unblock": "Obstakel is weg",
+    "retry": "Opnieuw proberen",
+    "give_up": "Opgeven"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Eén item wacht op je} other {# items wachten op je}}",
+    "tooltip": "Wacht op je"
+  },
+  "workItem": {
+    "title": "Wacht op je",
+    "intro": "Deze opdracht heeft nu een antwoord of beslissing nodig."
+  }
+}

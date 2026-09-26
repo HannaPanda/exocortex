@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "En attente de ton action"
+  },
+  "page": {
+    "title": "En attente de ton action",
+    "intro": "Ici figure uniquement ce qui nécessite vraiment ton intervention : décisions, partages, résultats à vérifier, tâches bloquées et exécutions ayant échoué. Ce qui s’est simplement déroulé apparaît dans l’historique des tâches et dans les notifications.",
+    "filterLabel": "Quels éléments",
+    "filters": {
+      "open": "En attente",
+      "settled": "Traités"
+    },
+    "loading": "Chargement des éléments…",
+    "loadFailed": "Impossible de charger les éléments.",
+    "emptyTitle": "Rien en attente",
+    "emptyDescription": "Dès qu’un agent a besoin d’une décision, qu’un résultat est prêt ou qu’une tâche est bloquée, cela apparaîtra ici.",
+    "emptySettledTitle": "Rien de traité pour l’instant",
+    "emptySettledDescription": "Ce que tu traites ici ou ce qui se résout de soi-même reste consultable dans cette liste.",
+    "truncated": "La liste est tronquée. Traite les premiers éléments pour faire apparaître les suivants.",
+    "summaryLabel": "En attente par type",
+    "summary": {
+      "decision": "{count, plural, one {# décision} many {# de décisions} other {# décisions}}",
+      "approval": "{count, plural, one {# partage} many {# de partages} other {# partages}}",
+      "review": "{count, plural, one {# résultat à vérifier} many {# de résultats à vérifier} other {# résultats à vérifier}}",
+      "blocked": "{count, plural, one {# tâche bloquée} many {# de tâches bloquées} other {# tâches bloquées}}",
+      "budget": "{count, plural, one {# validation de budget} many {# de validations de budget} other {# validations de budget}}",
+      "run_failed": "{count, plural, one {# exécution échouée} many {# d’exécutions échouées} other {# exécutions échouées}}",
+      "conflict": "{count, plural, one {# conflit} many {# de conflits} other {# conflits}}",
+      "information": "{count, plural, one {# question} many {# de questions} other {# questions}}"
+    }
+  },
+  "kind": {
+    "decision": "Décision",
+    "approval": "Partage",
+    "review": "À vérifier",
+    "blocked": "Bloqué",
+    "budget": "Budget",
+    "run_failed": "Exécution échouée",
+    "conflict": "Conflit",
+    "information": "Question"
+  },
+  "urgency": {
+    "high": "Urgent",
+    "urgent": "Urgent"
+  },
+  "item": {
+    "raisedBy": "par {name}",
+    "raisedByAgent": "par l’agent {name}",
+    "raisedByAssistant": "par l’IA intégrée",
+    "raisedBySomebody": "par un compte supprimé",
+    "workspace": "dans {name}",
+    "openWorkItem": "Ouvrir dans la tâche",
+    "openConversation": "Ouvrir la conversation",
+    "runError": "Erreur : {code}",
+    "noteLabel": "Ta réponse",
+    "notePlaceholderRequired": "Écris ici ce que l’agent doit savoir.",
+    "notePlaceholderOptional": "Optionnel : une phrase d’explication, conservée dans l’historique.",
+    "addNote": "Ajouter une note",
+    "send": "Répondre",
+    "failed": "Impossible d’enregistrer cela.",
+    "settledResolved": "Traité par {name}, {moment}",
+    "settledObsolete": "Devenu caduc, {moment}",
+    "settledBySystem": "le système",
+    "chose": "Choix : {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "La tâche a été annulée.",
+      "work_item_deleted": "La tâche a été supprimée.",
+      "withdrawn": "La question a été retirée.",
+      "superseded": "Une exécution plus récente a pris le relais."
+    },
+    "quotedNote": "« {note} »"
+  },
+  "option": {
+    "accept": "Valider",
+    "return": "Renvoyer",
+    "answer": "Répondre",
+    "unblock": "Obstacle levé",
+    "retry": "Réessayer",
+    "give_up": "Abandonner"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Un élément t’attend} many {# éléments t’attendent} other {# éléments t’attendent}}",
+    "tooltip": "En attente d’action"
+  },
+  "workItem": {
+    "title": "En attente d’action",
+    "intro": "Cette tâche attend actuellement une réponse ou une décision."
+  }
+}

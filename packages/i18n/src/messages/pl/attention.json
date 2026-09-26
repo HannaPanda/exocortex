@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Czeka na ciebie"
+  },
+  "page": {
+    "title": "Czeka na ciebie",
+    "intro": "Tutaj znajduje się tylko to, co naprawdę wymaga twojego udziału: decyzje, udostępnienia, wyniki do sprawdzenia, zablokowane zadania i nieudane uruchomienia. To, co wydarzyło się w tle, znajdziesz w historii zadań oraz w powiadomieniach.",
+    "filterLabel": "Które wpisy",
+    "filters": {
+      "open": "Otwarte",
+      "settled": "Zakończone"
+    },
+    "loading": "Wczytywanie wpisów…",
+    "loadFailed": "Nie udało się wczytać wpisów.",
+    "emptyTitle": "Nic na ciebie nie czeka",
+    "emptyDescription": "Gdy tylko agent będzie potrzebować decyzji, wynik będzie gotowy lub zadanie utknie, pojawi się to tutaj.",
+    "emptySettledTitle": "Jeszcze nic nie ukończono",
+    "emptySettledDescription": "To, na co odpowiesz w tym miejscu lub co rozwiąże się samo, pozostanie do wglądu na tej liście.",
+    "truncated": "Lista została skrócona. Ukończ pierwsze wpisy, a na ich miejsce pojawią się kolejne.",
+    "summaryLabel": "Otwarte według typu",
+    "summary": {
+      "decision": "{count, plural, one {# decyzja} few {# decyzje} many {# decyzji} other {# decyzji}}",
+      "approval": "{count, plural, one {# udostępnienie} few {# udostępnienia} many {# udostępnień} other {# udostępnień}}",
+      "review": "{count, plural, one {# wynik do sprawdzenia} few {# wyniki do sprawdzenia} many {# wyników do sprawdzenia} other {# wyników do sprawdzenia}}",
+      "blocked": "{count, plural, one {# zablokowane zadanie} few {# zablokowane zadania} many {# zablokowanych zadań} other {# zablokowanych zadań}}",
+      "budget": "{count, plural, one {# zatwierdzenie budżetu} few {# zatwierdzenia budżetu} many {# zatwierdzeń budżetu} other {# zatwierdzeń budżetu}}",
+      "run_failed": "{count, plural, one {# nieudane uruchomienie} few {# nieudane uruchomienia} many {# nieudanych uruchomień} other {# nieudanych uruchomień}}",
+      "conflict": "{count, plural, one {# konflikt} few {# konflikty} many {# konfliktów} other {# konfliktów}}",
+      "information": "{count, plural, one {# zapytanie} few {# zapytania} many {# zapytań} other {# zapytań}}"
+    }
+  },
+  "kind": {
+    "decision": "Decyzja",
+    "approval": "Udostępnienie",
+    "review": "Do sprawdzenia",
+    "blocked": "Zablokowane",
+    "budget": "Budżet",
+    "run_failed": "Uruchomienie nie powiodło się",
+    "conflict": "Konflikt",
+    "information": "Zapytanie"
+  },
+  "urgency": {
+    "high": "Pilne",
+    "urgent": "Pilne"
+  },
+  "item": {
+    "raisedBy": "od: {name}",
+    "raisedByAgent": "od agenta: {name}",
+    "raisedByAssistant": "od wbudowanej AI",
+    "raisedBySomebody": "z usuniętego konta",
+    "workspace": "w: {name}",
+    "openWorkItem": "Otwórz w zadaniu",
+    "openConversation": "Otwórz rozmowę",
+    "runError": "Błąd: {code}",
+    "noteLabel": "Twoja odpowiedź",
+    "notePlaceholderRequired": "Napisz tutaj, co musi wiedzieć agent.",
+    "notePlaceholderOptional": "Opcjonalnie: jedno zdanie wyjaśnienia, trafi do historii.",
+    "addNote": "Dodaj notatkę",
+    "send": "Odpowiedz",
+    "failed": "Nie udało się zapisać.",
+    "settledResolved": "Rozwiązane przez: {name}, {moment}",
+    "settledObsolete": "Zdezaktualizowano, {moment}",
+    "settledBySystem": "system",
+    "chose": "Wybrano: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "Zadanie zostało anulowane.",
+      "work_item_deleted": "Zadanie zostało usunięte.",
+      "withdrawn": "Pytanie zostało wycofane.",
+      "superseded": "Nowszy przebieg przejął zadanie."
+    },
+    "quotedNote": "„{note}”"
+  },
+  "option": {
+    "accept": "Zaakceptuj",
+    "return": "Zwróć",
+    "answer": "Odpowiedz",
+    "unblock": "Przeszkoda usunięta",
+    "retry": "Spróbuj ponownie",
+    "give_up": "Zrezygnuj"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Jeden wpis czeka na ciebie} few {# wpisy czekają na ciebie} many {# wpisów czeka na ciebie} other {# wpisu czeka na ciebie}}",
+    "tooltip": "Czeka na ciebie"
+  },
+  "workItem": {
+    "title": "Czeka na ciebie",
+    "intro": "To zadanie wymaga teraz odpowiedzi lub decyzji."
+  }
+}

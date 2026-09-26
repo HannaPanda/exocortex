@@ -906,5 +906,17 @@
       "p5": "Agenci pracują za pomocą exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run oraz exo_work_item_delete."
     },
     "where": "Pasek boczny w sekcji „Zadania” albo Strg + K i „Otwórz zadania” bądź „Nowe zadanie”."
+  },
+  "wartet-auf-dich": {
+    "title": "Czeka na ciebie: wszystko, co wymaga teraz twojej uwagi",
+    "summary": "Lista obejmująca wszystkie obszary robocze z tym, co nie ruszy dalej bez ciebie: decyzje, udostępnienia, wyniki do weryfikacji, zablokowane zadania, nieudane uruchomienia AI oraz pytania od agentów. Proste odpowiedzi możesz przekazać bezpośrednio tam, bez otwierania zadania.",
+    "details": {
+      "p1": "Wpisy pojawiają się same: gdy zadanie przechodzi w stan „do odbioru”, „zablokowane” lub „czeka na odpowiedź”, pojawia się tutaj, a gdy opuszcza ten stan – znika. Jeśli ostatnie uruchomienie AI otwartego zadania nie powiedzie się, eXocortex pyta, czy ponowić próbę, czy zrezygnować.",
+      "p2": "Agenci pytają wprost, na przykład „Połączenie MCP globalnie czy na obszar roboczy?” z odpowiedziami w formie przycisków. Twój wybór i twoja notatka trafiają do historii zadania, gdzie agent je odczytuje, a zadanie wraca następnie do kolejki.",
+      "p3": "Nie ma tu niczego, co się po prostu wydarzyło. Zakończone wpisy można prześledzić w sekcji „Zrobione” – z informacją o tym, kto, kiedy i co wybrał. Jeśli zadanie zostanie anulowane lub usunięte, jego otwarte wpisy stają się nieaktualne.",
+      "p4": "Dopóki coś czeka, w nagłówku w prawym górnym rogu wyświetla się dłoń z liczbą elementów. Otwarte wpisy zadania znajdują się także u góry jego strony.",
+      "p5": "Agenci korzystają z narzędzi exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve oraz exo_attention_withdraw."
+    },
+    "where": "Dłoń w prawym górnym rogu nagłówka, menu konta w sekcji „Czeka na ciebie” lub Strg + K i „Czeka na ciebie”."
   }
 }

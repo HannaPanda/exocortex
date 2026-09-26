@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Help and features",
     "helpWithNew": "{count, plural, one {Help and features (# new)} other {Help and features (# new)}}",
+    "attention": "Waiting for you",
     "chats": "Chats",
     "entities": "Entities",
     "shares": "Shares",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Open help and features",
         "keywords": "help features new guide what can"
+      },
+      "attention": {
+        "label": "Open “Waiting for you”",
+        "keywords": "waiting for me attention decision share review question blocked inbox agent"
       },
       "chats": {
         "label": "Open chats",

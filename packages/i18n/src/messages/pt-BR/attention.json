@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Aguardando você"
+  },
+  "page": {
+    "title": "Aguardando você",
+    "intro": "Aqui só aparece o que realmente precisa de você: decisões, compartilhamentos, resultados para revisão, tarefas bloqueadas e execuções com falha. O que apenas aconteceu fica no histórico das tarefas e nas notificações.",
+    "filterLabel": "Quais itens",
+    "filters": {
+      "open": "Em aberto",
+      "settled": "Resolvidos"
+    },
+    "loading": "Carregando itens…",
+    "loadFailed": "Não foi possível carregar os itens.",
+    "emptyTitle": "Nada aguardando você",
+    "emptyDescription": "Assim que um agente precisar de uma decisão, um resultado ficar pronto ou uma tarefa travar, aparecerá aqui.",
+    "emptySettledTitle": "Nada resolvido ainda",
+    "emptySettledDescription": "O que você responder aqui ou o que se resolver sozinho continuará acessível nesta lista.",
+    "truncated": "A lista foi reduzida. Resolva os itens do topo para que os próximos apareçam.",
+    "summaryLabel": "Em aberto por tipo",
+    "summary": {
+      "decision": "{count, plural, one {# decisão} many {# decisões} other {# decisões}}",
+      "approval": "{count, plural, one {# compartilhamento} many {# compartilhamentos} other {# compartilhamentos}}",
+      "review": "{count, plural, one {# resultado para revisão} many {# resultados para revisão} other {# resultados para revisão}}",
+      "blocked": "{count, plural, one {# tarefa bloqueada} many {# tarefas bloqueadas} other {# tarefas bloqueadas}}",
+      "budget": "{count, plural, one {# aprovação de orçamento} many {# aprovações de orçamento} other {# aprovações de orçamento}}",
+      "run_failed": "{count, plural, one {# execução com falha} many {# execuções com falha} other {# execuções com falha}}",
+      "conflict": "{count, plural, one {# conflito} many {# conflitos} other {# conflitos}}",
+      "information": "{count, plural, one {# dúvida} many {# dúvidas} other {# dúvidas}}"
+    }
+  },
+  "kind": {
+    "decision": "Decisão",
+    "approval": "Compartilhamento",
+    "review": "Para revisão",
+    "blocked": "Bloqueado",
+    "budget": "Orçamento",
+    "run_failed": "Execução falhou",
+    "conflict": "Conflito",
+    "information": "Dúvida"
+  },
+  "urgency": {
+    "high": "Urgente",
+    "urgent": "Urgente"
+  },
+  "item": {
+    "raisedBy": "de {name}",
+    "raisedByAgent": "do agente {name}",
+    "raisedByAssistant": "da IA integrada",
+    "raisedBySomebody": "de uma conta excluída",
+    "workspace": "em {name}",
+    "openWorkItem": "Abrir na tarefa",
+    "openConversation": "Abrir conversa",
+    "runError": "Erro: {code}",
+    "noteLabel": "Sua resposta",
+    "notePlaceholderRequired": "Escreva aqui o que o agente precisa saber.",
+    "notePlaceholderOptional": "Opcional: adicione uma observação; ela ficará no histórico.",
+    "addNote": "Adicionar nota",
+    "send": "Responder",
+    "failed": "Não foi possível salvar.",
+    "settledResolved": "Concluído por {name}, {moment}",
+    "settledObsolete": "Tornou-se obsoleto, {moment}",
+    "settledBySystem": "o sistema",
+    "chose": "Opção escolhida: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "O trabalho foi cancelado.",
+      "work_item_deleted": "O trabalho foi excluído.",
+      "withdrawn": "A pergunta foi retirada.",
+      "superseded": "Uma execução mais recente assumiu o controle."
+    },
+    "quotedNote": "“{note}”"
+  },
+  "option": {
+    "accept": "Aprovar",
+    "return": "Devolver",
+    "answer": "Responder",
+    "unblock": "Desbloquear",
+    "retry": "Tentar novamente",
+    "give_up": "Desistir"
+  },
+  "topbar": {
+    "label": "{count, plural, one {1 item aguardando você} many {# itens aguardando você} other {# itens aguardando você}}",
+    "tooltip": "Aguardando você"
+  },
+  "workItem": {
+    "title": "Aguardando você",
+    "intro": "Este trabalho precisa de uma resposta ou decisão no momento."
+  }
+}

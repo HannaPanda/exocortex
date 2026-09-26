@@ -906,5 +906,17 @@
       "p5": "Agenten werken met exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run en exo_work_item_delete."
     },
     "where": "Zijbalk onder „Opdrachten”, of Ctrl + K en „Opdrachten openen” respectievelijk „Nieuwe opdracht”."
+  },
+  "wartet-auf-dich": {
+    "title": "Wacht op jou: alles waarvoor op dit moment jouw inbreng nodig is",
+    "summary": "Een overzicht over alle werkruimtes heen van wat zonder jou niet verder kan: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten, mislukte AI-runs en vragen van agenten. Eenvoudige antwoorden geef je direct daar, zonder de opdracht te openen.",
+    "details": {
+      "p1": "Items ontstaan vanzelf: gaat een opdracht naar „ter goedkeuring”, „geblokkeerd” of „wacht op feedback”, dan verschijnt hij hier, en verlaat hij die status, dan verdwijnt hij weer. Mislukt de laatste AI-run van een openstaande opdracht, dan vraagt eXocortex of je een nieuwe poging wilt wagen of wilt opgeven.",
+      "p2": "Agenten stellen expliciete vragen, bijvoorbeeld „MCP-verbinding globaal of per werkruimte?” met de antwoorden als knoppen. Je keuze en je notitie komen in de geschiedenis van de opdracht terecht, waar de agent ze leest, waarna de opdracht terugkeert naar de wachtrij.",
+      "p3": "Hier staat niets dat alleen maar heeft plaatsgevonden. Afgehandelde items blijven onder „Afgerond” inzichtelijk, met wie, wanneer en wat er gekozen is. Wordt een opdracht geannuleerd of verwijderd, dan komen de openstaande items ervan te vervallen.",
+      "p4": "Zolang er iets wacht, toont de kopregel rechtsboven een handje met het aantal. Openstaande items van een opdracht staan bovendien bovenaan de bijbehorende pagina.",
+      "p5": "Agenten werken met exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve en exo_attention_withdraw."
+    },
+    "where": "Het handje rechtsboven in de kopregel, het accountmenu onder „Wacht op jou”, of Strg + K en „Wacht op jou”."
   }
 }
