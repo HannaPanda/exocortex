@@ -92,6 +92,8 @@ function detail() {
         createdAt: NOW,
       },
     ],
+    checkpointCount: 1,
+    latestCheckpointAt: NOW,
   };
 }
 
