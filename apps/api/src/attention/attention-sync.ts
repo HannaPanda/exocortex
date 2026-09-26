@@ -144,7 +144,7 @@ async function settle(
  * an agent that asks for review hands over its context and where the work
  * stands, and the review item carries them.
  */
-export type CheckpointExtras = Pick<AttentionDraft, 'context' | 'workState'>;
+export type CheckpointExtras = Partial<Pick<AttentionDraft, 'context' | 'workState' | 'subject'>>;
 
 function systemDraft(input: {
   item: AttentionWorkItem;

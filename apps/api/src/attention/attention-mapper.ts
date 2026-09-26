@@ -119,6 +119,7 @@ function parseResolution(value: Prisma.JsonValue | null): AttentionItem['resolut
 export function toAttentionItem(
   row: AttentionRow,
   subject: AttentionSubjectPage[] | null = null,
+  changeset: AttentionItem['changeset'] = null,
 ): AttentionItem {
   return {
     id: row.id,
@@ -153,6 +154,7 @@ export function toAttentionItem(
     action: row.action,
     workState: row.workState,
     subject,
+    changeset,
     settledAt: row.settledAt?.toISOString() ?? null,
     settledBy:
       row.settledByKind === null

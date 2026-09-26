@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { TokenScopeGuard } from './auth/token-scope.guard';
 import { AutomationsModule } from './automations/automations.module';
+import { ChangesetsModule } from './changesets/changesets.module';
 import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { isHttpContext } from './common/http-context';
@@ -78,6 +79,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     SavedQueriesModule,
     WorkItemsModule,
     AttentionModule,
+    ChangesetsModule,
     AttachmentsModule,
     AiModule,
     AdminModule,

@@ -116,13 +116,26 @@ export const ATTENTION_SUBJECT_MAX_PAGES = 10;
  * with that revision, so a change after the answer is refused by the write
  * itself. A changeset (#141) will be a second member of this union.
  */
-export const attentionSubjectSchema = z.object({
-  kind: z.literal('pages'),
-  pages: z
-    .array(z.object({ documentId: idSchema, revision: isoDateTimeSchema }))
-    .min(1)
-    .max(ATTENTION_SUBJECT_MAX_PAGES),
-});
+export const attentionSubjectSchema = z.discriminatedUnion('kind', [
+  z.object({
+    kind: z.literal('pages'),
+    pages: z
+      .array(z.object({ documentId: idSchema, revision: isoDateTimeSchema }))
+      .min(1)
+      .max(ATTENTION_SUBJECT_MAX_PAGES),
+  }),
+  /**
+   * A handed-in changeset (issue #141, ADR-070), bound by the hash of its
+   * changes the way a page is bound by its revision. The pages the changes
+   * touch are not bound here: each change carries its own revision, and a
+   * change whose page moved is stale rather than approved.
+   */
+  z.object({
+    kind: z.literal('changeset'),
+    changesetId: idSchema,
+    hash: z.string(),
+  }),
+]);
 export type AttentionSubject = z.infer<typeof attentionSubjectSchema>;
 
 /** A subject page as a reader sees it, with whether it moved since the question. */
@@ -193,6 +206,18 @@ export const attentionItemSchema = z.object({
   workState: z.string().nullable(),
   /** The pages an approval is bound to; null when it is bound to none. */
   subject: z.array(attentionSubjectPageSchema).nullable(),
+  /** The changeset a review or approval is about (issue #141); null otherwise. */
+  changeset: z
+    .object({
+      id: idSchema,
+      title: z.string(),
+      status: z.string(),
+      pending: z.number().int().nonnegative(),
+      total: z.number().int().nonnegative(),
+      /** False when the set was altered after it was handed in, or is gone. */
+      intact: z.boolean(),
+    })
+    .nullable(),
   settledAt: isoDateTimeSchema.nullable(),
   settledBy: workItemParticipantSchema.nullable(),
   resolution: attentionResolutionSchema.nullable(),

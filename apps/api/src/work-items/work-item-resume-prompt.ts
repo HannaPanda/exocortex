@@ -65,7 +65,7 @@ export function answerLines(answer: ResumeAnswer): string[] {
   if (answer.kind === 'approval' && answer.action !== null) {
     lines.push(`Die Antwort gilt genau für diese Aktion: ${answer.action}`);
   }
-  if (answer.subject !== null) {
+  if (answer.subject?.kind === 'pages') {
     const pages = answer.subject.pages.map(
       (page) =>
         `- ${answer.subjectTitles.get(page.documentId) ?? page.documentId} ` +

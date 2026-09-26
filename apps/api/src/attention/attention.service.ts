@@ -42,6 +42,7 @@ import {
 import {
   parseSubject,
   subjectChanged,
+  subjectChangesetsFor,
   subjectForRequest,
   subjectPagesFor,
 } from './attention-subject';
@@ -194,9 +195,14 @@ export class AttentionService {
     >;
     for (const entry of counts) openCounts[KIND_FROM_PRISMA[entry.kind]] = entry._count._all;
     const shown = rows.slice(0, query.limit);
-    const subjects = await subjectPagesFor(this.prisma, shown);
+    const [subjects, changesets] = await Promise.all([
+      subjectPagesFor(this.prisma, shown),
+      subjectChangesetsFor(this.prisma, shown),
+    ]);
     return {
-      attentionItems: shown.map((row) => toAttentionItem(row, subjects.get(row.id) ?? null)),
+      attentionItems: shown.map((row) =>
+        toAttentionItem(row, subjects.get(row.id) ?? null, changesets.get(row.id) ?? null),
+      ),
       openCounts,
       truncated: rows.length > query.limit,
     };
@@ -204,8 +210,17 @@ export class AttentionService {
 
   async get(input: { attentionItemId: string; userId: string }): Promise<AttentionItemResponse> {
     const row = await this.loadReadable(input.attentionItemId, input.userId);
-    const subjects = await subjectPagesFor(this.prisma, [row]);
-    return { attentionItem: toAttentionItem(row, subjects.get(row.id) ?? null) };
+    const [subjects, changesets] = await Promise.all([
+      subjectPagesFor(this.prisma, [row]),
+      subjectChangesetsFor(this.prisma, [row]),
+    ]);
+    return {
+      attentionItem: toAttentionItem(
+        row,
+        subjects.get(row.id) ?? null,
+        changesets.get(row.id) ?? null,
+      ),
+    };
   }
 
   async request(input: {

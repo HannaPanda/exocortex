@@ -212,6 +212,67 @@ export class DocumentContentService {
      */
     growth: 'guarded' | 'exempt';
   }): Promise<DocumentContentWriteResponse> {
+    const { context, existing, applied, liveUpdate, effectiveMarkdown, incoming, warnings } =
+      await this.prepare(input);
+
+    const committed = await this.commits.commit({
+      documentId: input.documentId,
+      workspaceId: context.workspaceId,
+      userId: input.userId,
+      correlationId: input.correlationId,
+      source: input.source,
+      previous: { yjsState: existing.yjsState, schemaVersion: existing.schemaVersion },
+      applied,
+      markdown: effectiveMarkdown,
+      promotedTitle: incoming.promotedTitle,
+      live: { mode: input.request.mode, proseMirrorJson: liveUpdate },
+    });
+    warnings.push(...committed.warnings);
+
+    return {
+      documentId: input.documentId,
+      snapshotId: committed.snapshotId,
+      yjsUpdatedAt: committed.yjsUpdatedAt,
+      schemaVersion: EXOCORTEX_SCHEMA_VERSION,
+      byteSize: applied.yjsState.byteLength,
+      appliedToLiveSession: committed.appliedToLiveSession,
+      warnings,
+    };
+  }
+
+  /**
+   * What a whole-page write would make of the page, without writing it (issue
+   * #141). Runs the same parse, embed and growth checks the write runs.
+   */
+  async preview(input: {
+    documentId: string;
+    userId: string;
+    request: DocumentContentWriteRequest;
+    correlationId: string;
+  }): Promise<{
+    workspaceId: string;
+    revision: Date;
+    before: ProseMirrorDocument;
+    after: ProseMirrorDocument;
+  }> {
+    const prepared = await this.prepare({ ...input, source: 'api', growth: 'guarded' });
+    return {
+      workspaceId: prepared.context.workspaceId,
+      revision: prepared.existing.yjsUpdatedAt,
+      before: yjsStateToProseMirrorJson(prepared.existing.yjsState),
+      after: prepared.applied.proseMirrorJson,
+    };
+  }
+
+  /** Everything a write does before it commits; shared by the write and the preview. */
+  private async prepare(input: {
+    documentId: string;
+    userId: string;
+    request: DocumentContentWriteRequest;
+    correlationId: string;
+    source: 'api' | 'ai';
+    growth: 'guarded' | 'exempt';
+  }) {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
 
@@ -332,29 +393,7 @@ export class DocumentContentService {
       warnings.push(largePageWarning(applied.proseMirrorJson, growth.chars));
     }
 
-    const committed = await this.commits.commit({
-      documentId: input.documentId,
-      workspaceId: context.workspaceId,
-      userId: input.userId,
-      correlationId: input.correlationId,
-      source: input.source,
-      previous: { yjsState: existing.yjsState, schemaVersion: existing.schemaVersion },
-      applied,
-      markdown: effectiveMarkdown,
-      promotedTitle: incoming.promotedTitle,
-      live: { mode: input.request.mode, proseMirrorJson: liveUpdate },
-    });
-    warnings.push(...committed.warnings);
-
-    return {
-      documentId: input.documentId,
-      snapshotId: committed.snapshotId,
-      yjsUpdatedAt: committed.yjsUpdatedAt,
-      schemaVersion: EXOCORTEX_SCHEMA_VERSION,
-      byteSize: applied.yjsState.byteLength,
-      appliedToLiveSession: committed.appliedToLiveSession,
-      warnings,
-    };
+    return { context, existing, applied, liveUpdate, effectiveMarkdown, incoming, warnings };
   }
 
   /**

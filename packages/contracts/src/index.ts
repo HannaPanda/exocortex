@@ -12,6 +12,7 @@ export * from './auth';
 export * from './automation-schedule';
 export * from './automations';
 export * from './calendar';
+export * from './changesets';
 export * from './clips';
 export * from './collaboration';
 export * from './comments';

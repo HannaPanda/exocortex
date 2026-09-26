@@ -2,7 +2,7 @@ import { attentionResolutionSchema } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 
 import { KIND_FROM_PRISMA, parseOptions } from '../attention/attention-mapper';
-import { parseSubject } from '../attention/attention-subject';
+import { parseSubject, subjectPageIds } from '../attention/attention-subject';
 
 import { type ResumeAnswer } from './work-item-resume-prompt';
 
@@ -39,9 +39,7 @@ async function subjectTitles(
   prisma: PrismaClient,
   items: readonly AnsweredItem[],
 ): Promise<Map<string, string>> {
-  const ids = items.flatMap(
-    (item) => parseSubject(item.subject)?.pages.map((page) => page.documentId) ?? [],
-  );
+  const ids = items.flatMap((item) => subjectPageIds(parseSubject(item.subject)));
   if (ids.length === 0) return new Map();
   const rows = await prisma.document.findMany({
     where: { id: { in: ids }, workspaceId: items[0]!.workspaceId },

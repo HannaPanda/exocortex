@@ -1,4 +1,5 @@
 import {
+  type AttentionItem,
   type AttentionSubject,
   type AttentionSubjectPage,
   attentionSubjectSchema,
@@ -91,12 +92,32 @@ export function parseSubject(value: Prisma.JsonValue | null): AttentionSubject |
   return parsed.success ? parsed.data : null;
 }
 
-/** True when any page the subject names has moved since, or is gone. */
+/** The pages a subject names; none for a changeset, whose changes carry their own revisions. */
+export function subjectPageIds(subject: AttentionSubject | null): string[] {
+  return subject?.kind === 'pages' ? subject.pages.map((page) => page.documentId) : [];
+}
+
+/**
+ * True when what the subject names has moved since: a page at another
+ * revision or gone, a changeset whose changes no longer hash the same or
+ * that is gone (issue #141).
+ */
 export async function subjectChanged(
   client: PrismaClient | PrismaTransactionClient,
   workspaceId: string,
   subject: AttentionSubject,
 ): Promise<boolean> {
+  if (subject.kind === 'changeset') {
+    const changeset = await client.changeset.findUnique({
+      where: { id: subject.changesetId },
+      select: { workspaceId: true, contentHash: true },
+    });
+    return (
+      changeset === null ||
+      changeset.workspaceId !== workspaceId ||
+      changeset.contentHash !== subject.hash
+    );
+  }
   const states = await pageStates(
     client,
     subject.pages.map((page) => page.documentId),
@@ -120,8 +141,12 @@ export async function subjectPagesFor(
   const subjects = rows
     .map((row) => ({ row, subject: parseSubject(row.subject) }))
     .filter(
-      (entry): entry is { row: (typeof rows)[number]; subject: AttentionSubject } =>
-        entry.subject !== null,
+      (
+        entry,
+      ): entry is {
+        row: (typeof rows)[number];
+        subject: Extract<AttentionSubject, { kind: 'pages' }>;
+      } => entry.subject?.kind === 'pages',
     );
   const states = await pageStates(
     prisma,
@@ -142,4 +167,51 @@ export async function subjectPagesFor(
       }),
     ]),
   );
+}
+
+/**
+ * The changesets several items are about, as a reader sees them, in one
+ * query (issue #141). Keyed by attention item id.
+ */
+export async function subjectChangesetsFor(
+  prisma: PrismaClient,
+  rows: readonly { id: string; workspaceId: string; subject: Prisma.JsonValue | null }[],
+): Promise<Map<string, NonNullable<AttentionItem['changeset']>>> {
+  const bound = rows
+    .map((row) => ({ row, subject: parseSubject(row.subject) }))
+    .filter(
+      (
+        entry,
+      ): entry is {
+        row: (typeof rows)[number];
+        subject: Extract<AttentionSubject, { kind: 'changeset' }>;
+      } => entry.subject?.kind === 'changeset',
+    );
+  if (bound.length === 0) return new Map();
+  const changesets = await prisma.changeset.findMany({
+    where: { id: { in: bound.map((entry) => entry.subject.changesetId) } },
+    select: {
+      id: true,
+      workspaceId: true,
+      title: true,
+      status: true,
+      contentHash: true,
+      changes: { select: { status: true } },
+    },
+  });
+  const byId = new Map(changesets.map((changeset) => [changeset.id, changeset]));
+  const result = new Map<string, NonNullable<AttentionItem['changeset']>>();
+  for (const { row, subject } of bound) {
+    const changeset = byId.get(subject.changesetId);
+    if (changeset === undefined || changeset.workspaceId !== row.workspaceId) continue;
+    result.set(row.id, {
+      id: changeset.id,
+      title: changeset.title,
+      status: changeset.status.toLowerCase(),
+      pending: changeset.changes.filter((change) => change.status === 'PENDING').length,
+      total: changeset.changes.length,
+      intact: changeset.contentHash === subject.hash,
+    });
+  }
+  return result;
 }

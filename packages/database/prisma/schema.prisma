@@ -101,6 +101,8 @@ model User {
   attentionForMe              AttentionItem[]          @relation("AttentionRecipient")
   attentionRaised             AttentionItem[]          @relation("AttentionRaisedBy")
   attentionSettled            AttentionItem[]          @relation("AttentionSettledBy")
+  changesetsProposed          Changeset[]              @relation("ChangesetProposedBy")
+  changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
 
   @@map("user")
 }
@@ -594,6 +596,7 @@ model Workspace {
   attachmentUploadTickets AttachmentUploadTicket[]
   workItems               WorkItem[]
   attentionItems          AttentionItem[]
+  changesets              Changeset[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -1994,6 +1997,7 @@ model AiRun {
   workItem       WorkItem?        @relation(fields: [workItemId], references: [id], onDelete: SetNull)
   /// What this run left for a person to decide (issue #139).
   attention      AttentionItem[]
+  changesets     Changeset[]
   /// Where the work stood while this run did it (issue #142).
   checkpoints    WorkItemCheckpoint[]
   /// Tool calls this run made, where `toolIterations` counts the rounds they
@@ -3720,6 +3724,7 @@ model WorkItem {
   runs        AiRun[]
   attention   AttentionItem[]
   checkpoints WorkItemCheckpoint[]
+  changesets  Changeset[]
 
   /// The list: open work first, newest change first, within one workspace.
   @@index([workspaceId, closedAt, updatedAt])
@@ -3983,4 +3988,141 @@ model AttentionItem {
   @@index([workItemId, status])
   @@index([aiRunId])
   @@map("attention_item")
+}
+
+/// Where a proposal stands (issue #141, ADR-070). Derived from its changes by
+/// `changesetStatusOf` and stored, so the list can filter on it.
+enum ChangesetStatus {
+  /// Being put together; changes can still be added or taken out.
+  DRAFT
+  /// Handed in and frozen; waits for a person.
+  READY
+  /// Some changes were applied and the rest decided otherwise, or are still pending.
+  PARTIALLY_APPLIED
+  APPLIED
+  REJECTED
+  /// Nothing was applied and what is left no longer fits the pages.
+  STALE
+}
+
+/// What one proposed change does.
+enum ChangesetChangeKind {
+  /// One block replaced, or content put beside it.
+  BLOCK
+  /// Under a heading.
+  SECTION
+  /// A piece of text replaced.
+  PATCH
+  /// The whole page replaced, or content added at its end or start.
+  PAGE
+  /// A new page.
+  CREATE
+}
+
+enum ChangesetChangeStatus {
+  PENDING
+  APPLIED
+  REJECTED
+  /// The page moved under it, or what it addressed is gone.
+  STALE
+}
+
+/// A set of changes an agent (or a person) proposes instead of writing
+/// (issue #141, ADR-070). Nothing here touches a page until a person applies
+/// a change, and applying is an ordinary write with its ordinary snapshot.
+model Changeset {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  title   String
+  /// Why, for the whole set: the commit message.
+  message String?
+  status  ChangesetStatus @default(DRAFT)
+
+  /// Who proposed it; kind as for a work item, read from the credential.
+  proposerKind WorkItemParticipantKind
+  proposedById String?
+  proposedBy   User?                   @relation("ChangesetProposedBy", fields: [proposedById], references: [id], onDelete: SetNull)
+  /// The agent client as it named itself. Shown, never trusted.
+  agentLabel   String?
+
+  workItemId String?
+  workItem   WorkItem? @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  /// The run whose tool loop proposed it, from the signed service token.
+  aiRunId    String?
+  aiRun      AiRun?    @relation(fields: [aiRunId], references: [id], onDelete: SetNull)
+
+  /// The earlier proposal this one reworks after its review.
+  revisesId String?
+  revises   Changeset?  @relation("ChangesetRevisions", fields: [revisesId], references: [id], onDelete: SetNull)
+  revisions Changeset[] @relation("ChangesetRevisions")
+
+  /// sha256 over the changes as handed in; what a review is bound to.
+  contentHash     String?
+  /// The attention item the hand-in raised, settled when the set is decided.
+  attentionItemId String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  submittedAt DateTime?
+  /// When the last pending change was decided.
+  closedAt    DateTime?
+
+  changes ChangesetChange[]
+
+  @@index([workspaceId, closedAt, updatedAt])
+  @@index([workItemId])
+  @@index([aiRunId])
+  @@index([proposedById])
+  @@map("changeset")
+}
+
+/// One proposed change. Decided once, never edited afterwards: the row is
+/// the record of what was proposed, what the page looked like, and what a
+/// person did with it.
+model ChangesetChange {
+  id          String    @id @default(cuid(2))
+  changesetId String
+  changeset   Changeset @relation(fields: [changesetId], references: [id], onDelete: Cascade)
+  position    Int
+
+  kind       ChangesetChangeKind
+  /// The page it changes; null for a new page, and once the page is gone for good.
+  documentId String?
+  /// For a new page: where it goes (null at the top) and its title.
+  parentId   String?
+  title      String?
+  /// The write as it will be sent, without the revision (`changesetChangeRequestSchema`).
+  request    Json
+  /// Why this change, when it needs saying on its own.
+  message    String?
+
+  /// The revision the page had when this was proposed, and the one an apply
+  /// expects now: moved forward when another change of the same set lands on
+  /// the same page, never by anything else.
+  baseRevision     DateTime?
+  expectedRevision DateTime?
+  /// The block diff against the page as it was proposed on, computed once.
+  diff             Json
+
+  status        ChangesetChangeStatus @default(PENDING)
+  decidedAt     DateTime?
+  /// Who decided, read from the credential like a proposer's kind.
+  decidedByKind WorkItemParticipantKind?
+  decidedById   String?
+  decidedBy     User?                 @relation("ChangesetChangeDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  decisionNote  String?
+  /// Why it went stale or failed, as an error code.
+  errorCode     String?
+  /// The snapshot taken before it was applied: restore it to undo.
+  snapshotId    String?
+  /// The page a CREATE made.
+  createdDocumentId String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([changesetId, position])
+  @@index([documentId])
+  @@map("changeset_change")
 }

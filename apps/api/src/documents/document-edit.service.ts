@@ -51,6 +51,49 @@ interface NarrowWrite {
   resolve: (page: ProseMirrorDocument) => PageEditResult<PatchEdit[]>;
 }
 
+/** What a preview answers: the page before and after, and the revision it was read at. */
+export interface WritePreview {
+  workspaceId: string;
+  revision: Date;
+  before: ProseMirrorDocument;
+  after: ProseMirrorDocument;
+}
+
+interface PreparedWrite {
+  workspaceId: string;
+  existing: { yjsState: Uint8Array; schemaVersion: number; yjsUpdatedAt: Date };
+  edits: readonly PatchEdit[];
+  contents: ProseMirrorDocument[];
+  applied: AppliedBlockRange;
+  blockIds: string[];
+  warnings: string[];
+  markdown: string;
+}
+
+/** A block write as the one ranged edit it is. */
+function blockEdit(request: DocumentBlockWriteRequest): PatchEdit {
+  const edit: BlockRangeEdit = {
+    fromBlockId: request.blockId,
+    toBlockId: null,
+    placement:
+      request.mode === 'replace' ? 'replace' : request.mode === 'append' ? 'after' : 'before',
+  };
+  return { edit, markdown: request.markdown, replacements: 1 };
+}
+
+/** A section write, resolved against the page by its heading. */
+function sectionEdits(
+  page: ProseMirrorDocument,
+  request: DocumentSectionWriteRequest,
+): PageEditResult<PatchEdit[]> {
+  const resolved = resolveSectionEdit(page, request.heading, request.mode);
+  if (!resolved.ok) return resolved;
+  return {
+    ok: true,
+    value: [{ edit: resolved.value, markdown: request.markdown, replacements: 1 }],
+  };
+}
+
 /**
  * Writes that change part of a page and leave the rest alone (issue #111).
  *
@@ -91,23 +134,10 @@ export class DocumentEditService {
     correlationId: string;
     source: 'api' | 'ai';
   }): Promise<DocumentGranularWriteResponse> {
-    const edit: BlockRangeEdit = {
-      fromBlockId: input.request.blockId,
-      toBlockId: null,
-      placement:
-        input.request.mode === 'replace'
-          ? 'replace'
-          : input.request.mode === 'append'
-            ? 'after'
-            : 'before',
-    };
     return this.apply({
       ...input,
       expectedYjsUpdatedAt: input.request.expectedYjsUpdatedAt,
-      resolve: () => ({
-        ok: true,
-        value: [{ edit, markdown: input.request.markdown, replacements: 1 }],
-      }),
+      resolve: () => ({ ok: true, value: [blockEdit(input.request)] }),
     });
   }
 
@@ -122,14 +152,7 @@ export class DocumentEditService {
     return this.apply({
       ...input,
       expectedYjsUpdatedAt: input.request.expectedYjsUpdatedAt,
-      resolve: (page) => {
-        const resolved = resolveSectionEdit(page, input.request.heading, input.request.mode);
-        if (!resolved.ok) return resolved;
-        return {
-          ok: true,
-          value: [{ edit: resolved.value, markdown: input.request.markdown, replacements: 1 }],
-        };
-      },
+      resolve: (page) => sectionEdits(page, input.request),
     });
   }
 
@@ -149,14 +172,83 @@ export class DocumentEditService {
   }
 
   /**
-   * The one write path all three take.
-   *
-   * `resolve` is handed the page as it is stored, because a heading or a piece
-   * of text can only be looked up in content, where a block identifier needs no
-   * lookup at all. Everything after that is the same: parse, bind references,
-   * edit the stored state, commit.
+   * What a narrow write would make of the page, without writing it (issue
+   * #141): the page before and after, and the revision it was computed on.
+   * Runs exactly the resolution, parse and growth checks the write runs, so a
+   * proposal that previews cleanly is refused later only because its page moved.
    */
-  private async apply(input: NarrowWrite): Promise<DocumentGranularWriteResponse> {
+  async preview(input: {
+    documentId: string;
+    userId: string;
+    kind: 'block' | 'section' | 'patch';
+    request: DocumentBlockWriteRequest | DocumentSectionWriteRequest | DocumentPatchRequest;
+    correlationId: string;
+  }): Promise<WritePreview> {
+    const narrow = this.narrowWrite(input);
+    const prepared = await this.prepare(narrow);
+    return {
+      workspaceId: prepared.workspaceId,
+      revision: prepared.existing.yjsUpdatedAt,
+      before: yjsStateToProseMirrorJson(prepared.existing.yjsState),
+      after: prepared.applied.proseMirrorJson,
+    };
+  }
+
+  /** The same three entrances, chosen by name; what a changeset stores and replays. */
+  async writeByKind(input: {
+    documentId: string;
+    userId: string;
+    kind: 'block' | 'section' | 'patch';
+    request: DocumentBlockWriteRequest | DocumentSectionWriteRequest | DocumentPatchRequest;
+    correlationId: string;
+    source: 'api' | 'ai';
+  }): Promise<DocumentGranularWriteResponse> {
+    switch (input.kind) {
+      case 'block':
+        return this.writeBlock({ ...input, request: input.request as DocumentBlockWriteRequest });
+      case 'section':
+        return this.writeSection({
+          ...input,
+          request: input.request as DocumentSectionWriteRequest,
+        });
+      default:
+        return this.patch({ ...input, request: input.request as DocumentPatchRequest });
+    }
+  }
+
+  /** The resolver each entrance stands for, for a preview. */
+  private narrowWrite(input: {
+    documentId: string;
+    userId: string;
+    kind: 'block' | 'section' | 'patch';
+    request: DocumentBlockWriteRequest | DocumentSectionWriteRequest | DocumentPatchRequest;
+    correlationId: string;
+  }): NarrowWrite {
+    const base = {
+      documentId: input.documentId,
+      userId: input.userId,
+      correlationId: input.correlationId,
+      source: 'api' as const,
+      expectedYjsUpdatedAt: input.request.expectedYjsUpdatedAt,
+    };
+    if (input.kind === 'block') {
+      const request = input.request as DocumentBlockWriteRequest;
+      return { ...base, resolve: () => ({ ok: true, value: [blockEdit(request)] }) };
+    }
+    if (input.kind === 'section') {
+      const request = input.request as DocumentSectionWriteRequest;
+      return { ...base, resolve: (page) => sectionEdits(page, request) };
+    }
+    const request = input.request as DocumentPatchRequest;
+    return { ...base, resolve: (page) => resolvePatchEdits(page, request) };
+  }
+
+  /**
+   * Everything a narrow write does before it commits: access, revision,
+   * resolution, parse, the edit on the stored state, the growth refusal.
+   * Shared by the write and the preview, so the two cannot disagree.
+   */
+  private async prepare(input: NarrowWrite): Promise<PreparedWrite> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
 
@@ -211,10 +303,33 @@ export class DocumentEditService {
 
     const markdown = serializeMarkdown(applied.proseMirrorJson);
     await this.refuseUnboundedGrowth(context.workspaceId, page, markdown.length);
+    return {
+      workspaceId: context.workspaceId,
+      existing,
+      edits,
+      contents,
+      applied,
+      blockIds,
+      warnings,
+      markdown,
+    };
+  }
+
+  /**
+   * The one write path all three take.
+   *
+   * `resolve` is handed the page as it is stored, because a heading or a piece
+   * of text can only be looked up in content, where a block identifier needs no
+   * lookup at all. Everything after that is the same: parse, bind references,
+   * edit the stored state, commit.
+   */
+  private async apply(input: NarrowWrite): Promise<DocumentGranularWriteResponse> {
+    const { workspaceId, existing, edits, contents, applied, blockIds, warnings, markdown } =
+      await this.prepare(input);
 
     const committed = await this.commits.commit({
       documentId: input.documentId,
-      workspaceId: context.workspaceId,
+      workspaceId,
       userId: input.userId,
       correlationId: input.correlationId,
       source: input.source,

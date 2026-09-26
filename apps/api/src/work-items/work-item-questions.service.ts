@@ -156,7 +156,12 @@ export class WorkItemQuestionsService {
             reason: reason.slice(0, 1_000),
             actor: input.actor,
             correlationId: input.correlationId,
-            checkpoint: { context: draft.context ?? null, workState: draft.workState ?? null },
+            checkpoint: {
+              context: draft.context ?? null,
+              workState: draft.workState ?? null,
+              // A handed-in changeset binds its review to itself (issue #141).
+              ...(draft.subject === undefined ? {} : { subject: draft.subject }),
+            },
           }),
     );
     await this.workItems.announce(

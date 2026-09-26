@@ -148,6 +148,14 @@ export const API_ERROR_CODES = [
   'attention_target_invalid',
   /** A page an approval is to be bound to changed since the asker read it (issue #140). */
   'attention_subject_changed',
+  /** The changeset was already handed in; only a draft takes or loses changes (issue #141). */
+  'changeset_not_draft',
+  /** Every change of the changeset is decided; nothing is left to apply or reject. */
+  'changeset_closed',
+  /** A changeset without a single change cannot be handed in. */
+  'changeset_empty',
+  /** A page, parent, work item or earlier changeset named here is not in this workspace. */
+  'changeset_target_invalid',
   /** Pinning context sources is switched off for this workspace (`ai.maxPinnedSources` is 0). */
   'pinned_sources_disabled',
   /** The conversation already pins as many sources as `ai.maxPinnedSources` allows. */
@@ -364,6 +372,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   attention_note_required: 422,
   attention_target_invalid: 422,
   attention_subject_changed: 409,
+  // The changeset is past the state this asks for: handed in, or decided.
+  changeset_not_draft: 409,
+  changeset_closed: 409,
+  changeset_empty: 422,
+  changeset_target_invalid: 422,
   // 409 rather than 403: the deployment allows it, this workspace does not, and
   // the caller's next move is a setting rather than a different token.
   pinned_sources_disabled: 409,

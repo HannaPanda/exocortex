@@ -55,6 +55,7 @@ export const APPLICATION_EVENT_TYPES = [
   'automation.run.failed',
   'work-item.changed',
   'attention.changed',
+  'changeset.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -403,6 +404,16 @@ export const attentionChangedPayloadSchema = z.object({
 export type AttentionChangedPayload = z.infer<typeof attentionChangedPayloadSchema>;
 
 /**
+ * A proposal was started, handed in, decided or discarded (issue #141). Ids
+ * only; the list and the open changeset re-read.
+ */
+export const changesetChangedPayloadSchema = z.object({
+  changesetId: idSchema,
+  action: z.enum(['created', 'updated', 'submitted', 'decided', 'deleted']),
+});
+export type ChangesetChangedPayload = z.infer<typeof changesetChangedPayloadSchema>;
+
+/**
  * A grant on a page was handed out, altered or withdrawn (issue #103).
  *
  * The one event type in this list that never reaches a socket. It is written
@@ -488,6 +499,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('automation.run.failed', automationFailurePayloadSchema),
   envelope('work-item.changed', workItemChangedPayloadSchema),
   envelope('attention.changed', attentionChangedPayloadSchema),
+  envelope('changeset.changed', changesetChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 
