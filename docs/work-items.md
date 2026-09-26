@@ -30,8 +30,8 @@ outlives the runs that attempt it.
 ## Rules worth knowing before changing anything
 
 - **The status is never derived from a run.** Only the two moves in
-  `startRun` (`queued` → `working`, unassigned → assistant) happen on their
-  own. Do not add a hook in the worker that closes items when a run
+  `startRun` (`queued` → `working`, unassigned → assistant), and the same
+  first one when an answer resumes a paused run, happen on their own. Do not add a hook in the worker that closes items when a run
   completes; that is exactly the coupling the unit exists to avoid.
 - **The actor kind is provenance.** `workItemActorOf` reads it from the
   credential and the agent session header. Never branch a permission on it.
@@ -45,6 +45,13 @@ outlives the runs that attempt it.
   tools means changing `work-item-prompt.ts` and the domain keywords together.
 - **The assignee's rights** are the set `ASSIGNEE_FIELDS` in the service. A
   field added there is one a GUEST who was assigned the item can change.
+- **An answer can carry a paused run on** (issue #140, ADR-068). The one
+  other place the status moves by itself is `WorkItemResumeService`, which
+  makes exactly the move `startRun` makes (`queued` to `working`) when it
+  posts the answers into the paused run's conversation. It only resumes work
+  the assistant holds. `run_resumed` and `resume_failed` are its history
+  lines; `reportingInstructions` in `work-item-prompt.ts` is shared with the
+  resume message, so a change to how a run reports back reaches both.
 - **A status that waits on a person raises an attention item** (issue #139,
   ADR-067, `docs/attention.md`). Every status change goes through
   `syncAfterTransition` or `transitionWorkItem` inside its transaction; a new

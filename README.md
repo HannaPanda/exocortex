@@ -166,6 +166,12 @@ What is deliberately still missing is listed under
   results to review, blocked work, questions and decisions an agent asked with
   its answers as buttons, failed runs to retry or give up; raised and settled
   in the transaction of the work item change, never informational (ADR-067)
+- human checkpoints: a question the work waits on pauses the built-in AI's
+  run instead of keeping a worker open, and the answer, given minutes or days
+  later, carries the work on in the same conversation with the state the run
+  left; an approval names its action and is bound to the pages it is about at
+  the revision the agent read, so an answer after a page moved approves
+  nothing (ADR-068)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
   (ADR-038), which fire a signed webhook, an AI prompt, or the page by mail to
   the person who wrote the rule and to nobody else (ADR-054)

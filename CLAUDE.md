@@ -650,6 +650,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   deriving the work item's status. A question an agent asks is the
   `waiting_for_human` state, and answering a system item is the work item
   change it stands for, applied in one transaction.
+- ADR-068: a human checkpoint is an attention item with `blocking`,
+  `context`, `action`, `workState` and `subject`, not a second table. A
+  blocking question pauses the run that asked by ending it (`pausesRun`), and
+  the last answer on work the assistant holds is posted into that run's own
+  conversation, which starts the next run; a resume that cannot happen is
+  recorded, never thrown, and the answer is never lost. The run is read from
+  the signed `runId` claim of the service token, never from a request. An
+  approval is bound to page revisions (`yjsUpdatedAt`) and an answer after a
+  page moved approves nothing.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
