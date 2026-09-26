@@ -104,6 +104,10 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_attachment_correct_text',
       'exo_attachment_reextract_text',
       'exo_automation_delete',
+      // Applying a proposal writes pages; each apply is snapshotted first.
+      'exo_changeset_apply',
+      // Throwing away one's own draft: nothing a person wrote goes with it.
+      'exo_changeset_discard',
       'exo_comment_delete',
       'exo_comment_update',
       'exo_database_option_delete',

@@ -197,8 +197,9 @@ export const changesetDiscardTool: AnyToolDefinition = defineTool({
   domain: 'changesets',
   mutating: true,
   writeClass: 'proposal',
+  // Destructive, not irreversible: nothing a person wrote goes with a draft
+  // only its proposer ever shaped, so a second round trip would guard nothing.
   destructive: true,
-  irreversible: true,
   target: (input) => `changeset:${input.changesetId}`,
   async execute(client, input) {
     await client.request({

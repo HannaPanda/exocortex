@@ -63,6 +63,7 @@ function detail() {
     ],
     result: null,
     budgetMicroUsd: 500_000,
+    writeMode: null,
     spentMicroUsd: 12_000,
     parent: null,
     contextRefs: [{ documentId: 'page123456', title: 'Notizen' }],
