@@ -47,12 +47,15 @@ export function attentionView(
 /** A status move made on the item's behalf, with its history line and its attention. */
 export async function transitionWorkItem(
   tx: PrismaTransactionClient,
-  existing: AttentionWorkItemRow,
-  to: PrismaStatus,
-  reason: string | null,
-  actor: WorkItemActor,
-  correlationId: string,
+  input: {
+    existing: AttentionWorkItemRow;
+    to: PrismaStatus;
+    reason: string | null;
+    actor: WorkItemActor;
+    correlationId: string;
+  },
 ): Promise<AttentionChanges> {
+  const { existing, to, reason, actor, correlationId } = input;
   const plan = planWorkItemUpdate({
     existing,
     request: { status: STATUS_FROM_PRISMA[to], statusReason: reason },
@@ -73,12 +76,15 @@ export async function transitionWorkItem(
 /** The answer, in the work item's history, where the agent that asked reads it. */
 export async function writeAnswerEvent(
   tx: PrismaTransactionClient,
-  workItemId: string,
-  actor: WorkItemActor,
-  resolving: AttentionResolving,
-  attentionKind: string,
-  correlationId: string,
+  input: {
+    workItemId: string;
+    actor: WorkItemActor;
+    resolving: AttentionResolving;
+    attentionKind: string;
+    correlationId: string;
+  },
 ): Promise<void> {
+  const { workItemId, actor, resolving, attentionKind, correlationId } = input;
   await tx.workItem.update({ where: { id: workItemId }, data: { updatedAt: new Date() } });
   await tx.workItemEvent.create({
     data: {
@@ -134,13 +140,12 @@ export async function syncAfterTransition(
     where: { id: resolving.attentionItemId },
     select: { kind: true },
   });
-  await writeAnswerEvent(
-    tx,
-    input.item.id,
-    input.actor,
+  await writeAnswerEvent(tx, {
+    workItemId: input.item.id,
+    actor: input.actor,
     resolving,
-    kind?.kind.toLowerCase() ?? 'information',
-    input.correlationId,
-  );
+    attentionKind: kind?.kind.toLowerCase() ?? 'information',
+    correlationId: input.correlationId,
+  });
   return changes;
 }

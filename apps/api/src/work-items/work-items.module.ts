@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { AiModule } from '../ai/ai.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
-import { WorkItemsController } from './work-items.controller';
 import { WorkItemQuestionsService } from './work-item-questions.service';
+import { WorkItemsController } from './work-items.controller';
 import { WorkItemsService } from './work-items.service';
 
 /**

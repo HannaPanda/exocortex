@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
 import {
-  type OverviewAttention,
   type DocumentPathEntry,
   type DocumentType,
+  type OverviewAttention,
   type OverviewDocument,
   type WorkspaceOverviewResponse,
 } from '@exocortex/contracts';

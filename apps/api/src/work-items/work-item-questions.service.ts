@@ -87,14 +87,13 @@ export class WorkItemQuestionsService {
       if (question && existing.status !== 'WAITING_FOR_HUMAN') {
         mergeChanges(
           changes,
-          await transitionWorkItem(
-            tx,
+          await transitionWorkItem(tx, {
             existing,
-            'WAITING_FOR_HUMAN',
-            input.draft.title.slice(0, 1_000),
-            input.actor,
-            input.correlationId,
-          ),
+            to: 'WAITING_FOR_HUMAN',
+            reason: input.draft.title.slice(0, 1_000),
+            actor: input.actor,
+            correlationId: input.correlationId,
+          }),
         );
       }
       return { id: created, attention: changes };
@@ -146,14 +145,17 @@ export class WorkItemQuestionsService {
       if (!settled) throw new AppError('attention_item_settled', 'The item is already settled');
       changes.settled.push(input.attentionItemId);
       if (input.status === 'RESOLVED') {
-        await writeAnswerEvent(
-          tx,
-          existing.id,
-          input.actor,
-          { attentionItemId: input.attentionItemId, optionId: input.optionId, note: input.note },
-          input.kind.toLowerCase(),
-          input.correlationId,
-        );
+        await writeAnswerEvent(tx, {
+          workItemId: existing.id,
+          actor: input.actor,
+          resolving: {
+            attentionItemId: input.attentionItemId,
+            optionId: input.optionId,
+            note: input.note,
+          },
+          attentionKind: input.kind.toLowerCase(),
+          correlationId: input.correlationId,
+        });
       } else {
         await tx.workItem.update({ where: { id: existing.id }, data: { updatedAt: new Date() } });
       }
@@ -164,14 +166,13 @@ export class WorkItemQuestionsService {
         if (stillAsked === 0) {
           mergeChanges(
             changes,
-            await transitionWorkItem(
-              tx,
+            await transitionWorkItem(tx, {
               existing,
-              'QUEUED',
-              null,
-              input.actor,
-              input.correlationId,
-            ),
+              to: 'QUEUED',
+              reason: null,
+              actor: input.actor,
+              correlationId: input.correlationId,
+            }),
           );
         }
       }

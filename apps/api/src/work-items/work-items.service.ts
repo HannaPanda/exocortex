@@ -37,13 +37,13 @@ import { RealtimeService } from '../realtime/realtime.service';
 
 import { type WorkItemActor } from './work-item-actor';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
-import { eventActor, writeEvents } from './work-item-events';
 import {
   assigneeColumns,
   assigneeSnapshot,
   planWorkItemUpdate,
   type WorkItemEventDraft,
 } from './work-item-changes';
+import { eventActor, writeEvents } from './work-item-events';
 import {
   parseCriteria,
   PARTICIPANT_TO_PRISMA,
@@ -375,14 +375,13 @@ export class WorkItemsService {
         input.resolving !== undefined &&
         changes.settled.includes(input.resolving.attentionItemId)
       ) {
-        await writeAnswerEvent(
-          tx,
-          row.id,
-          input.actor,
-          input.resolving,
-          'run_failed',
-          input.correlationId,
-        );
+        await writeAnswerEvent(tx, {
+          workItemId: row.id,
+          actor: input.actor,
+          resolving: input.resolving,
+          attentionKind: 'run_failed',
+          correlationId: input.correlationId,
+        });
       }
       mergeChanges(
         changes,

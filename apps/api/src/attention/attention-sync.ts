@@ -1,7 +1,7 @@
 import { type AttentionResolution, QUESTION_ATTENTION_KINDS } from '@exocortex/contracts';
 import {
-  type AttentionDraft,
   attentionDedupeKeys,
+  type AttentionDraft,
   type AttentionKind as PrismaAttentionKind,
   type AttentionNoteMode as PrismaNoteMode,
   type Prisma,
@@ -139,14 +139,15 @@ async function settle(
   return settled;
 }
 
-function systemDraft(
-  item: AttentionWorkItem,
-  state: NonNullable<(typeof WAITING_STATES)[PrismaStatus]>,
-  status: PrismaStatus,
-  reason: string | null,
-  actor: WorkItemActor,
-  recipientId: string | null,
-): AttentionDraft {
+function systemDraft(input: {
+  item: AttentionWorkItem;
+  state: NonNullable<(typeof WAITING_STATES)[PrismaStatus]>;
+  status: PrismaStatus;
+  reason: string | null;
+  actor: WorkItemActor;
+  recipientId: string | null;
+}): AttentionDraft {
+  const { item, state, status, reason, actor, recipientId } = input;
   const columns = actorColumns(actor);
   return {
     workspaceId: item.workspaceId,
@@ -219,7 +220,7 @@ export async function syncWorkItemTransition(
   }
   changes.raised.push(
     ...(await raiseAttentionItems(tx, [
-      systemDraft(item, state, to, input.reason, actor, recipientId),
+      systemDraft({ item, state, status: to, reason: input.reason, actor, recipientId }),
     ])),
   );
   return changes;

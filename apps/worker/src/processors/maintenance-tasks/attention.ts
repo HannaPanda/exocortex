@@ -1,4 +1,4 @@
-import { type AttentionDraft, attentionDedupeKeys, raiseAttentionItems } from '@exocortex/database';
+import { attentionDedupeKeys, type AttentionDraft, raiseAttentionItems } from '@exocortex/database';
 
 import { DAY_MS, type MaintenanceTask } from './context';
 

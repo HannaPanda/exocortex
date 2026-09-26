@@ -14,8 +14,8 @@ import {
   type WorkItemStatus,
 } from '@exocortex/contracts';
 import {
-  type AttentionDraft,
   attentionDedupeKeys,
+  type AttentionDraft,
   type Prisma,
   type PrismaClient,
   raiseAttentionItems,
