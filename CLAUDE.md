@@ -632,6 +632,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the browser alone decides a conflict, from where its reader was typing; a
   refused narrow write is announced at the blocks it aimed at. Nothing is
   stored and nothing is locked.
+- ADR-066: delegated work is its own unit and a run is one attempt at it. A
+  `WorkItem` holds the goal, criteria, status and result, pages hang on it as
+  `WorkItemRef` rows, and `AiRun.workItemId` ties a run back. The status is a
+  decision and is never derived from a run; the requester and the assignee are
+  each a person, an agent account or the built-in assistant, and which one a
+  request was is read from how it arrived, never from the account. The history
+  is written in the transaction of the change, a run is an ordinary chat turn
+  whose first message is written from the item, and the budget is checked
+  before a run starts, not while it runs.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -664,6 +673,7 @@ Each of these has a step-by-step recipe:
 | new feature entry, the help page, the coverage gate      | `docs/features.md`          |
 | new palette command, place, settings group in `Strg + K` | `docs/command-palette.md`   |
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
+| new work item field, status rule, run behaviour          | `docs/work-items.md`        |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 
 ## Deployment on this machine

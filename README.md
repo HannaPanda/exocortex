@@ -157,6 +157,11 @@ What is deliberately still missing is listed under
   foreign text, so writes stay closed for the rest of that run (ADR-030,
   ADR-033)
 - per-workspace API keys (BYOK), a one-time budget per run and a usage view
+- work items for delegated work: a goal, acceptance criteria, context and
+  result pages, a budget and a due date, handed between people, agent
+  accounts and the built-in AI in any direction, with a status that is a
+  decision rather than a mirror of the last run, a history written with every
+  change, and runs of the built-in AI linked underneath (ADR-066)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
   (ADR-038), which fire a signed webhook, an AI prompt, or the page by mail to
   the person who wrote the rule and to nobody else (ADR-054)
@@ -326,6 +331,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/templates.md`](docs/templates.md)                               | page templates: the sidecar, the copy, the title pattern                |
 | [`docs/saved-queries.md`](docs/saved-queries.md)                       | saved searches, smart views, query blocks, the query model              |
 | [`docs/sharing.md`](docs/sharing.md)                                   | page shares, public links, page-scoped tokens                           |
+| [`docs/work-items.md`](docs/work-items.md)                             | delegated work: the item, its history, runs, who may change what        |
 | [`docs/features.md`](docs/features.md)                                 | the feature registry, the coverage gate, writing an entry               |
 | [`docs/command-palette.md`](docs/command-palette.md)                   | `Strg + K`: the command registry, contexts, the coverage gate           |
 | [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |

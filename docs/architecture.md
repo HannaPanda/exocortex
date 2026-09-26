@@ -303,6 +303,7 @@ index so nothing has to be found by grep.
 | projects            | a `PROJECT` page whose Yjs state is a file tree (ADR-027)           | `docs/projects.md`          |
 | overview pages      | text composed from the children's digests (ADR-028)                 | `docs/overview-pages.md`    |
 | saved queries       | one stored question, three surfaces, no stored answer (ADR-042)     | `docs/saved-queries.md`     |
+| work items          | delegated work with a history; a run is one attempt (ADR-066)       | `docs/work-items.md`        |
 
 Entities (issue #47) have no document of their own: an entity is a row in an
 ordinary database, its mentions are written by the materialization pass, and
