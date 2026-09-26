@@ -4,6 +4,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   ClipboardListIcon,
+  GitPullRequestIcon,
   ListFilterIcon,
   SearchIcon,
 } from 'lucide-react';
@@ -124,6 +125,15 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
       >
         <ClipboardListIcon className="size-3.5" />
         {t('openWorkItems')}
+      </Link>
+      {/* What agents proposed instead of writing (issue #141). */}
+      <Link
+        href={`/arbeitsbereich/${workspaceId}/vorschlaege`}
+        data-testid="open-changesets"
+        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+      >
+        <GitPullRequestIcon className="size-3.5" />
+        {t('openChangesets')}
       </Link>
     </div>
   );

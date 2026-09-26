@@ -66,6 +66,10 @@
         "label": "Schrijven na externe inhoud",
         "help": "Teksten uit geüploade documenten en uit afbeeldingsbeschrijvingen kunnen instructies voor de AI bevatten die niemand hier heeft geschreven. Standaard mag een run na het lezen van dergelijke inhoud niets meer wijzigen; hij geeft dan aan wat hij zou hebben geschreven. „Altijd toegestaan” is alleen nodig voor workflows die externe documenten lezen en op basis daarvan zelf moeten schrijven."
       },
+      "writeMode": {
+        "label": "Schrijfmodus van de AI",
+        "help": "Of de ingebouwde AI pagina’s zelf schrijft, wijzigingen alleen voorstelt of alleen leest. In de voorstelmodus maakt ze wijzigingsvoorstellen aan die je afzonderlijk accepteert of weigert; rapporteren over haar taken mag ze in elke modus. Een taak kan de modus voor haar uitvoeringen verder beperken, maar nooit versoepelen."
+      },
       "maxToolIterations": {
         "label": "Maximaal aantal tooliteraties",
         "help": "Bovengrens voor toolaanroepen binnen een run."
@@ -474,6 +478,11 @@
         "guarded": "Geblokkeerd zodra externe inhoud is gelezen (aanbevolen)",
         "deny": "Nooit: de AI mag bij geen enkele run iets wijzigen",
         "allow": "Altijd toegestaan, ook na externe inhoud"
+      },
+      "writeMode": {
+        "direct": "Direct schrijven",
+        "propose": "Alleen voorstellen: wijzigingen wachten op jouw controle",
+        "read_only": "Alleen lezen"
       }
     },
     "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen."

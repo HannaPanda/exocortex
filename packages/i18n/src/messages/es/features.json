@@ -907,6 +907,18 @@
     },
     "where": "Barra lateral en «Tareas», o Ctrl + K y «Abrir tareas» o «Nueva tarea»."
   },
+  "aenderungsvorschlaege": {
+    "title": "Propuestas de cambio: los agentes proponen, tú decides",
+    "summary": "En lugar de escribir páginas directamente, un agente o la IA integrada pueden proponer cambios. Ves cada cambio comparado con la página, los aceptas de uno en uno o todos a la vez, y rechazas el resto indicando el motivo.",
+    "details": {
+      "p1": "Una propuesta reúne cambios en una o varias páginas: un bloque, una sección, un fragmento de texto, la página entera o una página nueva. Nada de esto se aplica en una página antes de que lo aceptes.",
+      "p2": "Se aplica tomando como base la versión sobre la que se propuso. Si la página ha cambiado desde entonces, el cambio ya no se escribe y se marca como obsoleto, para evitar que algo se aplique sobre un estado que nadie ha revisado. Antes de cada aplicación se crea una instantánea.",
+      "p3": "El modo de escritura de la IA (en Configuración o por tarea) determina si escribe directamente, solo propone o solo lee. Para agentes externos existe el alcance de token «Leer y proponer». Ambas restricciones se aplican en el servidor, no son solo una petición al modelo.",
+      "p4": "Si una propuesta pertenece a una tarea, esta pasa a revisión al enviarse y aparece en «Esperando tu respuesta». En cuanto se decide sobre todos los cambios, la IA continúa trabajando según tu decisión.",
+      "p5": "Los agentes usan exo_changeset_propose, exo_changeset_submit, exo_changeset_get y exo_changeset_list; exo_changeset_apply y exo_changeset_reject solo están disponibles para accesos externos de una persona, nunca para la IA integrada."
+    },
+    "where": "Barra lateral en «Propuestas», en la tarea, en «Esperando tu respuesta», o con Strg + K y «Abrir propuestas de cambio»."
+  },
   "arbeitsstaende": {
     "title": "Puntos de control: reanudar una tarea interrumpida justo donde se quedó",
     "summary": "Una tarea recuerda el progreso del trabajo: qué se ha completado, qué queda pendiente, qué supuestos y hallazgos existen y qué páginas se han creado. Si una ejecución de IA se interrumpe porque un proveedor no responde, se agota la cuota o la ejecución espera una respuesta, la siguiente ejecución continúa exactamente desde ahí, incluso con otro modelo.",

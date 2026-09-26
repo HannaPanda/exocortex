@@ -907,6 +907,18 @@
     },
     "where": "Sidebar under “Work items”, or Ctrl + K and “Open work items” or “New work item”."
   },
+  "aenderungsvorschlaege": {
+    "title": "Change proposals: agents propose, you decide",
+    "summary": "Instead of editing pages directly, an agent or the built-in AI can propose changes. You see every change as a diff against the page, apply them one by one or all at once, and reject the rest with a reason.",
+    "details": {
+      "p1": "A proposal gathers changes to one or more pages: a block, a section, a passage of text, the entire page, or a new page. None of it appears on a page until you accept it.",
+      "p2": "Changes are applied against the state they were proposed on. If a page has changed since then, the change is no longer written, but marked as outdated so nothing ever lands on an unreviewed state. A snapshot is created before every acceptance.",
+      "p3": "The AI’s write mode (in Settings, or per task) sets whether it writes directly, only proposes, or only reads. For external agents, there is the token scope “Read and propose”. Both are enforced on the server, not just as a prompt request to the model.",
+      "p4": "If a proposal belongs to a task, submitting it moves the task into review and shows it under “Waiting for you”. Once all changes are decided, the AI continues working based on your decision.",
+      "p5": "Agents work with exo_changeset_propose, exo_changeset_submit, exo_changeset_get, and exo_changeset_list; exo_changeset_apply and exo_changeset_reject are only available for a person’s external access, never for the built-in AI."
+    },
+    "where": "Sidebar under “Proposals”, on the task, under “Waiting for you”, or Ctrl + K and “Open change proposals”."
+  },
   "arbeitsstaende": {
     "title": "Work checkpoints: resume an interrupted task right where it left off",
     "summary": "A work item remembers how far the work has progressed: what is done, what is still missing, what assumptions and insights exist, and which pages have been created. If an AI run aborts because a provider fails to respond, the quota is exhausted, or the run waits for an answer, the next run picks up right there, even with a different model.",

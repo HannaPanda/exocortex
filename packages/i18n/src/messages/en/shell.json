@@ -127,7 +127,8 @@
     "moveUp": "Move “{name}” up",
     "moveDown": "Move “{name}” down",
     "openSearch": "Search and saved searches",
-    "openWorkItems": "Work items"
+    "openWorkItems": "Work items",
+    "openChangesets": "Suggestions"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Open work items",
         "keywords": "work item work items task delegate delegated agent complete assignee work item"
+      },
+      "changesets": {
+        "label": "Open change suggestions",
+        "keywords": "suggestion suggestions change proposal review accept reject share diff changeset"
       },
       "automations": {
         "label": "Open automations",

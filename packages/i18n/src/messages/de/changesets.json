@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Änderungsvorschläge",
+    "detailTitle": "Änderungsvorschlag"
+  },
+  "list": {
+    "title": "Änderungsvorschläge",
+    "intro": "Änderungen, die Agenten vorschlagen, statt sie selbst zu schreiben. Nichts davon steht in einer Seite, bevor du es übernimmst.",
+    "filterLabel": "Welche Vorschläge",
+    "filters": {
+      "open": "Offen",
+      "closed": "Entschieden",
+      "all": "Alle"
+    },
+    "loading": "Vorschläge werden geladen",
+    "loadFailed": "Die Vorschläge konnten nicht geladen werden.",
+    "emptyTitle": "Nichts wartet auf deine Prüfung",
+    "emptyAllTitle": "Noch keine Vorschläge",
+    "emptyDescription": "Arbeitet eine KI im Vorschlagsmodus, landen ihre Änderungen hier, bevor sie eine Seite berühren.",
+    "truncated": "Die Liste ist gekürzt. Die ältesten Vorschläge fehlen.",
+    "columns": {
+      "title": "Vorschlag",
+      "status": "Stand",
+      "proposedBy": "Vorgeschlagen von",
+      "changes": "Änderungen",
+      "updated": "Zuletzt"
+    },
+    "counts": "{pending, plural, =0 {nichts offen} one {# offen} other {# offen}} von {total}",
+    "workItem": "Auftrag: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Entwurf",
+      "ready": "Wartet auf Prüfung",
+      "partially_applied": "Teilweise übernommen",
+      "applied": "Übernommen",
+      "rejected": "Abgelehnt",
+      "stale": "Veraltet"
+    },
+    "changeStatus": {
+      "pending": "Offen",
+      "applied": "Übernommen",
+      "rejected": "Abgelehnt",
+      "stale": "Veraltet"
+    },
+    "kind": {
+      "block": "Block ändern",
+      "section": "Abschnitt ändern",
+      "patch": "Textstelle ersetzen",
+      "page": "Ganze Seite",
+      "create": "Neue Seite"
+    },
+    "mode": {
+      "replace": "ersetzen",
+      "append": "danach einfügen",
+      "prepend": "davor einfügen"
+    }
+  },
+  "detail": {
+    "back": "Alle Vorschläge",
+    "loading": "Vorschlag wird geladen",
+    "loadFailed": "Der Vorschlag konnte nicht geladen werden.",
+    "notFound": "Diesen Vorschlag gibt es nicht, oder du kannst ihn nicht sehen.",
+    "proposed": "{who} · {when}",
+    "workItem": "Gehört zum Auftrag",
+    "revises": "Überarbeitet einen früheren Vorschlag",
+    "revisedBy": "Wurde überarbeitet",
+    "draftNotice": "Das ist noch ein Entwurf. Wer ihn vorschlägt, stellt ihn noch zusammen; entschieden wird erst nach dem Einreichen.",
+    "closedNotice": "Über alle Änderungen ist entschieden.",
+    "selectAll": "Alle offenen auswählen",
+    "selected": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
+    "applySelected": "Ausgewählte übernehmen",
+    "applyAll": "Alle übernehmen",
+    "rejectSelected": "Ausgewählte ablehnen",
+    "rejectAll": "Alle ablehnen",
+    "noteLabel": "Begründung (geht an den Vorschlagenden zurück)",
+    "notePlaceholder": "Optional: warum, oder was anders sein sollte",
+    "failed": "Die Entscheidung konnte nicht gespeichert werden.",
+    "outcome": "{applied, plural, =0 {} one {# übernommen. } other {# übernommen. }}{rejected, plural, =0 {} one {# abgelehnt. } other {# abgelehnt. }}{stale, plural, =0 {} one {# veraltet, weil sich die Seite geändert hat. } other {# veraltet, weil sich die Seiten geändert haben. }}{failed, plural, =0 {} one {# nicht übernommen, sie bleibt offen.} other {# nicht übernommen, sie bleiben offen.}}",
+    "undoHint": "Jede Übernahme legt vorher einen Snapshot an; im Versionsverlauf der Seite lässt sie sich zurücknehmen."
+  },
+  "change": {
+    "select": "Änderung {position} auswählen",
+    "position": "Änderung {position}",
+    "target": "bei „{target}“",
+    "newPage": "unter {parent}",
+    "newPageTop": "oben im Arbeitsbereich",
+    "gone": "Seite nicht mehr vorhanden",
+    "notApplicable": "Die Seite hat sich seit dem Vorschlag geändert. Diese Änderung wird nicht mehr übernommen; der Vorschlagende kann sie neu vorschlagen.",
+    "decided": "{status} von {who} · {when}",
+    "staleCode": "Grund: {code}",
+    "failedCode": "Letzter Versuch nicht übernommen: {code}",
+    "openCreated": "Neue Seite öffnen",
+    "openPage": "Seite öffnen",
+    "diffTruncated": "Der Vergleich ist gekürzt; die Änderung selbst ist vollständig.",
+    "noDiff": "Keine sichtbare Änderung am Text.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Änderungsvorschläge",
+    "empty": "Zu diesem Auftrag gibt es keine Vorschläge.",
+    "writeModeLabel": "Schreibmodus der KI",
+    "writeModeInherit": "Wie im Arbeitsbereich",
+    "writeModeHelp": "Gilt für jeden Lauf der eingebauten KI an diesem Auftrag. Er kann den Modus des Arbeitsbereichs nur einschränken."
+  }
+}

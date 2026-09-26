@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Suggested changes",
+    "detailTitle": "Suggested change"
+  },
+  "list": {
+    "title": "Suggested changes",
+    "intro": "Changes that agents suggest instead of writing them directly. None of this appears in a page until you apply it.",
+    "filterLabel": "Which suggestions",
+    "filters": {
+      "open": "Open",
+      "closed": "Resolved",
+      "all": "All"
+    },
+    "loading": "Loading suggestions",
+    "loadFailed": "Could not load suggestions.",
+    "emptyTitle": "Nothing waiting for your review",
+    "emptyAllTitle": "No suggestions yet",
+    "emptyDescription": "When an AI works in suggestion mode, its changes land here before touching a page.",
+    "truncated": "The list is truncated. The oldest suggestions are missing.",
+    "columns": {
+      "title": "Suggestion",
+      "status": "Status",
+      "proposedBy": "Suggested by",
+      "changes": "Changes",
+      "updated": "Updated"
+    },
+    "counts": "{pending, plural, =0 {nothing open} one {# open} other {# open}} of {total}",
+    "workItem": "Task: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Draft",
+      "ready": "Pending review",
+      "partially_applied": "Partially applied",
+      "applied": "Applied",
+      "rejected": "Rejected",
+      "stale": "Outdated"
+    },
+    "changeStatus": {
+      "pending": "Open",
+      "applied": "Applied",
+      "rejected": "Rejected",
+      "stale": "Outdated"
+    },
+    "kind": {
+      "block": "Change block",
+      "section": "Change section",
+      "patch": "Replace text snippet",
+      "page": "Entire page",
+      "create": "New page"
+    },
+    "mode": {
+      "replace": "replace",
+      "append": "insert after",
+      "prepend": "insert before"
+    }
+  },
+  "detail": {
+    "back": "All suggestions",
+    "loading": "Loading proposal",
+    "loadFailed": "The proposal couldn’t be loaded.",
+    "notFound": "This proposal doesn’t exist, or you don’t have access to it.",
+    "proposed": "{who} · {when}",
+    "workItem": "Part of task",
+    "revises": "Revises an earlier proposal",
+    "revisedBy": "Has been revised",
+    "draftNotice": "This is still a draft. The author is still putting it together; decisions are made only after submission.",
+    "closedNotice": "All changes have been decided.",
+    "selectAll": "Select all open",
+    "selected": "{count, plural, one {# selected} other {# selected}}",
+    "applySelected": "Apply selected",
+    "applyAll": "Apply all",
+    "rejectSelected": "Reject selected",
+    "rejectAll": "Reject all",
+    "noteLabel": "Reason (sent back to the author)",
+    "notePlaceholder": "Optional: why, or what should be different",
+    "failed": "The decision couldn’t be saved.",
+    "outcome": "{applied, plural, =0 {} one {# applied. } other {# applied. }}{rejected, plural, =0 {} one {# rejected. } other {# rejected. }}{stale, plural, =0 {} one {# outdated because the page changed. } other {# outdated because the pages changed. }}{failed, plural, =0 {} one {# not applied, it remains open.} other {# not applied, they remain open.}}",
+    "undoHint": "Each application creates a snapshot beforehand; it can be undone in the page’s version history."
+  },
+  "change": {
+    "select": "Select change {position}",
+    "position": "Change {position}",
+    "target": "at “{target}”",
+    "newPage": "under {parent}",
+    "newPageTop": "at the top of the workspace",
+    "gone": "Page no longer exists",
+    "notApplicable": "The page has changed since this proposal. This change can no longer be applied; the author can propose it again.",
+    "decided": "{status} by {who} · {when}",
+    "staleCode": "Reason: {code}",
+    "failedCode": "Last attempt not applied: {code}",
+    "openCreated": "Open new page",
+    "openPage": "Open page",
+    "diffTruncated": "The diff is truncated; the change itself is complete.",
+    "noDiff": "No visible change to the text.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Proposed changes",
+    "empty": "There are no proposals for this task.",
+    "writeModeLabel": "AI write mode",
+    "writeModeInherit": "Same as workspace",
+    "writeModeHelp": "Applies to every run of the built-in AI on this task. It can only restrict the workspace mode."
+  }
+}

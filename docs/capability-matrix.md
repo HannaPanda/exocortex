@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-249 routes are reachable from at least one client; 155 from all three.
+251 routes are reachable from at least one client; 157 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -73,7 +73,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
 | `GET /api/attention/:x` | · | ✓ | ✓ | `exo_attention_get` |
-| `GET /api/changesets/:x` | · | ✓ | ✓ | `exo_changeset_get` |
+| `GET /api/changesets/:x` | ✓ | ✓ | ✓ | `exo_changeset_get` |
 | `GET /api/context` | · | ✓ | ✓ | `exo_context_compile` |
 | `GET /api/documents/:x` | ✓ | ✓ | ✓ | `exo_database_schema`, `fetch` |
 | `GET /api/documents/:x/activity` | ✓ | ✓ | ✓ | `exo_page_activity` |
@@ -130,7 +130,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/attachments/upload-tickets/:x` | · | · | ✓ | `exo_attachment_upload_ticket_get` |
 | `GET /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_list` |
 | `GET /api/workspaces/:x/automations/runs` | ✓ | ✓ | ✓ | `exo_automation_runs` |
-| `GET /api/workspaces/:x/changesets` | · | ✓ | ✓ | `exo_changeset_list` |
+| `GET /api/workspaces/:x/changesets` | ✓ | ✓ | ✓ | `exo_changeset_list` |
 | `GET /api/workspaces/:x/credentials` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/documents/resolve` | ✓ | ✓ | ✓ | `exo_page_resolve_link` |
 | `GET /api/workspaces/:x/documents/tree` | ✓ | ✓ | ✓ | `exo_page_tree` |
@@ -192,7 +192,9 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
 | `POST /api/auth/oauth2/consent` | ✓ | · | · | — |
 | `POST /api/automations/:x/trigger` | ✓ | ✓ | ✓ | `exo_automation_trigger` |
+| `POST /api/changesets/:x/apply` | · | · | ✓ | `exo_changeset_apply` |
 | `POST /api/changesets/:x/changes` | · | ✓ | ✓ | `exo_changeset_propose` |
+| `POST /api/changesets/:x/reject` | · | · | ✓ | `exo_changeset_reject` |
 | `POST /api/changesets/:x/submit` | · | ✓ | ✓ | `exo_changeset_submit` |
 | `POST /api/comments/:x/resolve` | ✓ | ✓ | ✓ | `exo_comment_resolve` |
 | `POST /api/documents/:x/archive` | ✓ | ✓ | ✓ | `exo_page_archive` |
@@ -339,6 +341,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_ai_usage` — mcp: The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.
 - `exo_attachment_upload_ticket` — mcp: Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.
 - `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.
+- `exo_changeset_apply` — mcp: Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.
+- `exo_changeset_reject` — mcp: Rejects a proposed changeset. Same reason: a decision on a proposal, and the built-in AI is never the one who decides.
 - `exo_page_delete` — mcp: The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).
 - `exo_toolbox` — ai: Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.
 

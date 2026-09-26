@@ -907,6 +907,18 @@
     },
     "where": "Zijbalk onder „Opdrachten”, of Ctrl + K en „Opdrachten openen” respectievelijk „Nieuwe opdracht”."
   },
+  "aenderungsvorschlaege": {
+    "title": "Wijzigingsvoorstellen: agenten stellen voor, jij beslist",
+    "summary": "In plaats van pagina’s zelf te schrijven, kan een agent of de ingebouwde AI wijzigingen voorstellen. Je ziet elke wijziging als een vergelijking met de pagina, accepteert ze afzonderlijk of allemaal tegelijk en wijst de rest af met een toelichting.",
+    "details": {
+      "p1": "Een voorstel verzamelt wijzigingen aan een of meer pagina’s: een blok, een sectie, een stuk tekst, de hele pagina of een nieuwe pagina. Niets daarvan staat op een pagina voordat je het accepteert.",
+      "p2": "Accepteren gebeurt op basis van de versie waarop het voorstel is gedaan. Is een pagina sindsdien gewijzigd, dan wordt de wijziging niet meer doorgevoerd, maar als verouderd gemarkeerd, zodat er nooit iets wordt toegepast op een versie die niemand heeft gecontroleerd. Vóór elke acceptatie wordt een snapshot gemaakt.",
+      "p3": "De schrijfmodus van de AI (instellingen, of per taak) bepaalt of deze direct schrijft, alleen voorstelt of alleen leest. Voor externe agenten is er hiervoor de token-scope „Lezen en voorstellen”. Beide gelden ook op de server, niet alleen als verzoek aan het model.",
+      "p4": "Hoort een voorstel bij een taak, dan gaat de taak bij het indienen ter beoordeling en verschijnt onder „Wacht op jou”. Zodra over alle wijzigingen is beslist, gaat de AI verder met jouw beslissing.",
+      "p5": "Agenten werken met exo_changeset_propose, exo_changeset_submit, exo_changeset_get en exo_changeset_list; exo_changeset_apply en exo_changeset_reject zijn er alleen voor externe toegangen van een persoon, nooit voor de ingebouwde AI."
+    },
+    "where": "Zijbalk onder „Voorstellen”, bij de taak, onder „Wacht op jou”, of Strg + K en „Wijzigingsvoorstellen openen”."
+  },
   "arbeitsstaende": {
     "title": "Werkstatussen: een onderbroken taak voortzetten waar hij gebleven was",
     "summary": "Een opdracht onthoudt hoe ver het werk gevorderd is: wat er al gedaan is, wat er nog ontbreekt, welke aannames en inzichten er zijn en welke pagina’s er zijn ontstaan. Als een AI-sessie afbreekt doordat een provider niet reageert, het quotum op is of de sessie op een antwoord wacht, gaat de volgende sessie precies daar verder, ook met een ander model.",

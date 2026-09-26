@@ -8,6 +8,7 @@ import de_attention from './messages/de/attention.json';
 import de_auth from './messages/de/auth.json';
 import de_automations from './messages/de/automations.json';
 import de_calendar from './messages/de/calendar.json';
+import de_changesets from './messages/de/changesets.json';
 import de_commands from './messages/de/commands.json';
 import de_database from './messages/de/database.json';
 import de_diagnostics from './messages/de/diagnostics.json';
@@ -37,6 +38,7 @@ import en_attention from './messages/en/attention.json';
 import en_auth from './messages/en/auth.json';
 import en_automations from './messages/en/automations.json';
 import en_calendar from './messages/en/calendar.json';
+import en_changesets from './messages/en/changesets.json';
 import en_commands from './messages/en/commands.json';
 import en_database from './messages/en/database.json';
 import en_diagnostics from './messages/en/diagnostics.json';
@@ -66,6 +68,7 @@ import es_attention from './messages/es/attention.json';
 import es_auth from './messages/es/auth.json';
 import es_automations from './messages/es/automations.json';
 import es_calendar from './messages/es/calendar.json';
+import es_changesets from './messages/es/changesets.json';
 import es_commands from './messages/es/commands.json';
 import es_database from './messages/es/database.json';
 import es_diagnostics from './messages/es/diagnostics.json';
@@ -95,6 +98,7 @@ import fr_attention from './messages/fr/attention.json';
 import fr_auth from './messages/fr/auth.json';
 import fr_automations from './messages/fr/automations.json';
 import fr_calendar from './messages/fr/calendar.json';
+import fr_changesets from './messages/fr/changesets.json';
 import fr_commands from './messages/fr/commands.json';
 import fr_database from './messages/fr/database.json';
 import fr_diagnostics from './messages/fr/diagnostics.json';
@@ -124,6 +128,7 @@ import it_attention from './messages/it/attention.json';
 import it_auth from './messages/it/auth.json';
 import it_automations from './messages/it/automations.json';
 import it_calendar from './messages/it/calendar.json';
+import it_changesets from './messages/it/changesets.json';
 import it_commands from './messages/it/commands.json';
 import it_database from './messages/it/database.json';
 import it_diagnostics from './messages/it/diagnostics.json';
@@ -153,6 +158,7 @@ import nl_attention from './messages/nl/attention.json';
 import nl_auth from './messages/nl/auth.json';
 import nl_automations from './messages/nl/automations.json';
 import nl_calendar from './messages/nl/calendar.json';
+import nl_changesets from './messages/nl/changesets.json';
 import nl_commands from './messages/nl/commands.json';
 import nl_database from './messages/nl/database.json';
 import nl_diagnostics from './messages/nl/diagnostics.json';
@@ -182,6 +188,7 @@ import pl_attention from './messages/pl/attention.json';
 import pl_auth from './messages/pl/auth.json';
 import pl_automations from './messages/pl/automations.json';
 import pl_calendar from './messages/pl/calendar.json';
+import pl_changesets from './messages/pl/changesets.json';
 import pl_commands from './messages/pl/commands.json';
 import pl_database from './messages/pl/database.json';
 import pl_diagnostics from './messages/pl/diagnostics.json';
@@ -211,6 +218,7 @@ import pt_BR_attention from './messages/pt-BR/attention.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
 import pt_BR_automations from './messages/pt-BR/automations.json';
 import pt_BR_calendar from './messages/pt-BR/calendar.json';
+import pt_BR_changesets from './messages/pt-BR/changesets.json';
 import pt_BR_commands from './messages/pt-BR/commands.json';
 import pt_BR_database from './messages/pt-BR/database.json';
 import pt_BR_diagnostics from './messages/pt-BR/diagnostics.json';
@@ -234,7 +242,7 @@ import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","ai","attention","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
@@ -245,6 +253,7 @@ export const CATALOG = {
     "auth": de_auth,
     "automations": de_automations,
     "calendar": de_calendar,
+    "changesets": de_changesets,
     "commands": de_commands,
     "database": de_database,
     "diagnostics": de_diagnostics,
@@ -276,6 +285,7 @@ export const CATALOG = {
     "auth": en_auth,
     "automations": en_automations,
     "calendar": en_calendar,
+    "changesets": en_changesets,
     "commands": en_commands,
     "database": en_database,
     "diagnostics": en_diagnostics,
@@ -307,6 +317,7 @@ export const CATALOG = {
     "auth": es_auth,
     "automations": es_automations,
     "calendar": es_calendar,
+    "changesets": es_changesets,
     "commands": es_commands,
     "database": es_database,
     "diagnostics": es_diagnostics,
@@ -338,6 +349,7 @@ export const CATALOG = {
     "auth": fr_auth,
     "automations": fr_automations,
     "calendar": fr_calendar,
+    "changesets": fr_changesets,
     "commands": fr_commands,
     "database": fr_database,
     "diagnostics": fr_diagnostics,
@@ -369,6 +381,7 @@ export const CATALOG = {
     "auth": it_auth,
     "automations": it_automations,
     "calendar": it_calendar,
+    "changesets": it_changesets,
     "commands": it_commands,
     "database": it_database,
     "diagnostics": it_diagnostics,
@@ -400,6 +413,7 @@ export const CATALOG = {
     "auth": nl_auth,
     "automations": nl_automations,
     "calendar": nl_calendar,
+    "changesets": nl_changesets,
     "commands": nl_commands,
     "database": nl_database,
     "diagnostics": nl_diagnostics,
@@ -431,6 +445,7 @@ export const CATALOG = {
     "auth": pl_auth,
     "automations": pl_automations,
     "calendar": pl_calendar,
+    "changesets": pl_changesets,
     "commands": pl_commands,
     "database": pl_database,
     "diagnostics": pl_diagnostics,
@@ -462,6 +477,7 @@ export const CATALOG = {
     "auth": pt_BR_auth,
     "automations": pt_BR_automations,
     "calendar": pt_BR_calendar,
+    "changesets": pt_BR_changesets,
     "commands": pt_BR_commands,
     "database": pt_BR_database,
     "diagnostics": pt_BR_diagnostics,

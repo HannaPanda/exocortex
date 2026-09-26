@@ -41,6 +41,7 @@
     "columnActions": "Acties",
     "scopeLabels": {
       "read": "Lezen",
+      "propose": "Voorstellen",
       "write": "Schrijven",
       "admin": "Beheer"
     },
@@ -59,6 +60,10 @@
       "read": {
         "label": "Alleen lezen",
         "hint": "Pagina’s en databases lezen, niets wijzigen."
+      },
+      "propose": {
+        "label": "Lezen en voorstellen",
+        "hint": "Bovendien wijzigingen voorstellen en rapporteren over opdrachten. Pagina’s worden pas gewijzigd door degene die het voorstel accepteert."
       },
       "write": {
         "label": "Lezen en schrijven",

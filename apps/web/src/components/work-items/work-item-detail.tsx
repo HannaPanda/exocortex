@@ -39,6 +39,7 @@ import {
 } from '@exocortex/ui';
 
 import { WorkItemAttention } from '@/components/attention/work-item-attention';
+import { WorkItemChangesets } from '@/components/changesets/work-item-changesets';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import {
@@ -184,6 +185,7 @@ function WorkItemView({
       <CriteriaSection item={item} canProgress={canProgress} />
       <ContextSection item={item} />
       <ResultSection item={item} canProgress={canProgress} />
+      <WorkItemChangesets item={item} canWrite={canWrite} />
       <CheckpointSection item={item} />
       <RunsSection
         item={item}

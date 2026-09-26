@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Modifiche proposte",
+    "detailTitle": "Modifica proposta"
+  },
+  "list": {
+    "title": "Modifiche proposte",
+    "intro": "Modifiche proposte dagli agenti invece di scriverle direttamente. Nessuna modifica appare in una pagina prima che tu la accetti.",
+    "filterLabel": "Quali proposte",
+    "filters": {
+      "open": "Aperte",
+      "closed": "Risolte",
+      "all": "Tutte"
+    },
+    "loading": "Caricamento delle proposte in corso",
+    "loadFailed": "Impossibile caricare le proposte.",
+    "emptyTitle": "Niente in attesa di revisione",
+    "emptyAllTitle": "Ancora nessuna proposta",
+    "emptyDescription": "Quando un’IA lavora in modalità proposta, le sue modifiche arrivano qui prima di toccare una pagina.",
+    "truncated": "L’elenco è troncato. Mancano le proposte più vecchie.",
+    "columns": {
+      "title": "Proposta",
+      "status": "Stato",
+      "proposedBy": "Proposta da",
+      "changes": "Modifiche",
+      "updated": "Ultimo aggiornamento"
+    },
+    "counts": "{pending, plural, =0 {nessuna aperta} one {# aperta} many {# aperte} other {# aperte}} su {total}",
+    "workItem": "Attività: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Bozza",
+      "ready": "In attesa di revisione",
+      "partially_applied": "Applicata parzialmente",
+      "applied": "Applicata",
+      "rejected": "Rifiutata",
+      "stale": "Obsoleta"
+    },
+    "changeStatus": {
+      "pending": "Aperta",
+      "applied": "Applicata",
+      "rejected": "Rifiutata",
+      "stale": "Obsoleta"
+    },
+    "kind": {
+      "block": "Modifica blocco",
+      "section": "Modifica sezione",
+      "patch": "Sostituisci testo",
+      "page": "Intera pagina",
+      "create": "Nuova pagina"
+    },
+    "mode": {
+      "replace": "sostituisci",
+      "append": "inserisci dopo",
+      "prepend": "inserisci prima"
+    }
+  },
+  "detail": {
+    "back": "Tutte le proposte",
+    "loading": "Caricamento della proposta in corso",
+    "loadFailed": "Impossibile caricare la proposta.",
+    "notFound": "Questa proposta non esiste oppure non hai i permessi per vederla.",
+    "proposed": "{who} · {when}",
+    "workItem": "Appartiene all’incarico",
+    "revises": "Revisiona una proposta precedente",
+    "revisedBy": "È stata revisionata",
+    "draftNotice": "Questa è ancora una bozza. Chi l’ha proposta la sta ancora preparando; la decisione avverrà solo dopo l’invio.",
+    "closedNotice": "Tutte le modifiche sono state valutate.",
+    "selectAll": "Seleziona tutte quelle in sospeso",
+    "selected": "{count, plural, one {# selezionata} many {# selezionate} other {# selezionate}}",
+    "applySelected": "Applica selezionate",
+    "applyAll": "Applica tutte",
+    "rejectSelected": "Rifiuta selezionate",
+    "rejectAll": "Rifiuta tutte",
+    "noteLabel": "Motivazione (verrà inviata a chi ha proposto)",
+    "notePlaceholder": "Facoltativo: perché o cosa dovrebbe cambiare",
+    "failed": "Impossibile salvare la decisione.",
+    "outcome": "{applied, plural, =0 {} one {# applicata. } many {# applicate. } other {# applicate. }}{rejected, plural, =0 {} one {# rifiutata. } many {# rifiutate. } other {# rifiutate. }}{stale, plural, =0 {} one {# obsoleta, perché la pagina è cambiata. } many {# obsolete, perché le pagine sono cambiate. } other {# obsolete, perché le pagine sono cambiate. }}{failed, plural, =0 {} one {# non applicata, rimane aperta.} many {# non applicate, rimangono aperte.} other {# non applicate, rimangono aperte.}}",
+    "undoHint": "Ogni applicazione crea prima uno snapshot; può essere annullata nella cronologia delle versioni della pagina."
+  },
+  "change": {
+    "select": "Seleziona la modifica {position}",
+    "position": "Modifica {position}",
+    "target": "in «{target}»",
+    "newPage": "sotto {parent}",
+    "newPageTop": "in cima all’area di lavoro",
+    "gone": "Pagina non più presente",
+    "notApplicable": "La pagina è cambiata rispetto alla proposta. Questa modifica non verrà più applicata; chi l’ha avanzata può riproporla.",
+    "decided": "{status} da {who} · {when}",
+    "staleCode": "Motivo: {code}",
+    "failedCode": "Ultimo tentativo non applicato: {code}",
+    "openCreated": "Apri nuova pagina",
+    "openPage": "Apri pagina",
+    "diffTruncated": "Il confronto è troncato; la modifica in sé è completa.",
+    "noDiff": "Nessuna modifica visibile al testo.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Proposte di modifica",
+    "empty": "Non ci sono proposte per questo incarico.",
+    "writeModeLabel": "Modalità di scrittura dell’IA",
+    "writeModeInherit": "Come nell’area di lavoro",
+    "writeModeHelp": "Vale per ogni esecuzione dell’IA integrata su questo incarico. Può solo limitare la modalità dell’area di lavoro."
+  }
+}

@@ -127,7 +127,8 @@
     "moveUp": "Sposta “{name}” in alto",
     "moveDown": "Sposta “{name}” in basso",
     "openSearch": "Ricerca e ricerche salvate",
-    "openWorkItems": "Incarichi"
+    "openWorkItems": "Incarichi",
+    "openChangesets": "Proposte"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Apri incarichi",
         "keywords": "incarico incarichi compito delegare delegato agente svolgere responsabile assegnatario work item"
+      },
+      "changesets": {
+        "label": "Apri proposte di modifica",
+        "keywords": "proposta proposte proposta di modifica verificare applicare rifiutare condivisione diff changeset review"
       },
       "automations": {
         "label": "Apri automazioni",

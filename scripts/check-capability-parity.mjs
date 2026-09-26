@@ -65,6 +65,16 @@ const MATRIX_PATH = join(repoRoot, 'docs/capability-matrix.md');
  */
 const SURFACE_EXEMPT = [
   {
+    tool: 'exo_changeset_apply',
+    reason:
+      "Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.",
+  },
+  {
+    tool: 'exo_changeset_reject',
+    reason:
+      'Rejects a proposed changeset. Same reason: a decision on a proposal, and the built-in AI is never the one who decides.',
+  },
+  {
     tool: 'exo_ai_run_get',
     reason:
       'Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.',

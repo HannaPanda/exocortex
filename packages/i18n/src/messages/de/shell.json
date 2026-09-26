@@ -127,7 +127,8 @@
     "moveUp": "„{name}“ nach oben",
     "moveDown": "„{name}“ nach unten",
     "openSearch": "Suche und gespeicherte Suchen",
-    "openWorkItems": "Aufträge"
+    "openWorkItems": "Aufträge",
+    "openChangesets": "Vorschläge"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Aufträge öffnen",
         "keywords": "auftrag aufträge aufgabe delegieren delegiert agent erledigen zuständig bearbeiter work item"
+      },
+      "changesets": {
+        "label": "Änderungsvorschläge öffnen",
+        "keywords": "vorschlag vorschläge änderungsvorschlag prüfen übernehmen ablehnen freigabe diff changeset review"
       },
       "automations": {
         "label": "Automationen öffnen",

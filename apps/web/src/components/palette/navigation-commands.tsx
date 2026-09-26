@@ -8,6 +8,7 @@ import {
   CircleQuestionMarkIcon,
   ClipboardListIcon,
   CpuIcon,
+  GitPullRequestIcon,
   HandIcon,
   HouseIcon,
   KeyIcon,
@@ -61,6 +62,7 @@ interface Place {
     | 'workspaceSearch'
     | 'workspaceShares'
     | 'workItems'
+    | 'changesets'
     | 'automations'
     | 'templates'
     | 'workspaceSettings'
@@ -131,6 +133,12 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/auftraege',
     audience: 'workspace',
     icon: ClipboardListIcon,
+  },
+  {
+    key: 'changesets',
+    screen: '/arbeitsbereich/:x/vorschlaege',
+    audience: 'workspace',
+    icon: GitPullRequestIcon,
   },
   {
     key: 'automations',

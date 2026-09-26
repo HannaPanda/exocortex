@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Propozycje zmian",
+    "detailTitle": "Propozycja zmiany"
+  },
+  "list": {
+    "title": "Propozycje zmian",
+    "intro": "Zmiany proponowane przez agentów zamiast wprowadzania ich bezpośrednio. Nic z tego nie trafi na stronę, dopóki tego nie zaakceptujesz.",
+    "filterLabel": "Które propozycje",
+    "filters": {
+      "open": "Otwarte",
+      "closed": "Rozstrzygnięte",
+      "all": "Wszystkie"
+    },
+    "loading": "Ładowanie propozycji",
+    "loadFailed": "Nie udało się załadować propozycji.",
+    "emptyTitle": "Nic nie czeka na twoje sprawdzenie",
+    "emptyAllTitle": "Brak propozycji",
+    "emptyDescription": "Gdy SI pracuje w trybie propozycji, jej zmiany trafiają tutaj, zanim wpłyną na stronę.",
+    "truncated": "Lista została skrócona. Brakuje najstarszych propozycji.",
+    "columns": {
+      "title": "Propozycja",
+      "status": "Stan",
+      "proposedBy": "Zaproponowane przez",
+      "changes": "Zmiany",
+      "updated": "Ostatnio"
+    },
+    "counts": "{pending, plural, =0 {brak otwartych} one {# otwarta} few {# otwarte} many {# otwartych} other {# otwartej}} z {total}",
+    "workItem": "Zadanie: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Szkic",
+      "ready": "Czeka na sprawdzenie",
+      "partially_applied": "Częściowo zastosowane",
+      "applied": "Zastosowane",
+      "rejected": "Odrzucone",
+      "stale": "Nieaktualne"
+    },
+    "changeStatus": {
+      "pending": "Otwarte",
+      "applied": "Zastosowane",
+      "rejected": "Odrzucone",
+      "stale": "Nieaktualne"
+    },
+    "kind": {
+      "block": "Zmień blok",
+      "section": "Zmień sekcję",
+      "patch": "Zastąp fragment tekstu",
+      "page": "Cała strona",
+      "create": "Nowa strona"
+    },
+    "mode": {
+      "replace": "zastąp",
+      "append": "wstaw po",
+      "prepend": "wstaw przed"
+    }
+  },
+  "detail": {
+    "back": "Wszystkie propozycje",
+    "loading": "Wczytywanie propozycji",
+    "loadFailed": "Nie udało się wczytać propozycji.",
+    "notFound": "Ta propozycja nie istnieje lub nie masz do niej dostępu.",
+    "proposed": "{who} · {when}",
+    "workItem": "Należy do zadania",
+    "revises": "Poprawia wcześniejszą propozycję",
+    "revisedBy": "Została poprawiona",
+    "draftNotice": "To jest jeszcze wersja robocza. Autor wciąż ją przygotowuje; decyzja zostanie podjęta dopiero po przesłaniu.",
+    "closedNotice": "Wszystkie zmiany zostały rozpatrzone.",
+    "selectAll": "Zaznacz wszystkie otwarte",
+    "selected": "{count, plural, one {# zaznaczona} few {# zaznaczone} many {# zaznaczonych} other {# zaznaczonych}}",
+    "applySelected": "Zastosuj zaznaczone",
+    "applyAll": "Zastosuj wszystkie",
+    "rejectSelected": "Odrzuć zaznaczone",
+    "rejectAll": "Odrzuć wszystkie",
+    "noteLabel": "Uzasadnienie (trafi do autora propozycji)",
+    "notePlaceholder": "Opcjonalnie: dlaczego lub co należy zmienić",
+    "failed": "Nie udało się zapisać decyzji.",
+    "outcome": "{applied, plural, =0 {} one {Zastosowano #. } few {Zastosowano #. } many {Zastosowano #. } other {Zastosowano #. }}{rejected, plural, =0 {} one {Odrzucono #. } few {Odrzucono #. } many {Odrzucono #. } other {Odrzucono #. }}{stale, plural, =0 {} one {# jest nieaktualna, ponieważ strona uległa zmianie. } few {# są nieaktualne, ponieważ strony uległy zmianie. } many {# jest nieaktualnych, ponieważ strony uległy zmianie. } other {# jest nieaktualnych, ponieważ strony uległy zmianie. }}{failed, plural, =0 {} one {Nie udało się zastosować #, pozostaje otwarta.} few {Nie udało się zastosować #, pozostają otwarte.} many {Nie udało się zastosować #, pozostają otwarte.} other {Nie udało się zastosować #, pozostają otwarte.}}",
+    "undoHint": "Każde zastosowanie tworzy wcześniej migawkę; można je cofnąć w historii wersji strony."
+  },
+  "change": {
+    "select": "Wybierz zmianę {position}",
+    "position": "Zmiana {position}",
+    "target": "przy „{target}”",
+    "newPage": "pod {parent}",
+    "newPageTop": "na samej górze w obszarze roboczym",
+    "gone": "Strona już nie istnieje",
+    "notApplicable": "Strona zmieniła się od momentu zgłoszenia propozycji. Ta zmiana nie zostanie już zastosowana; autor może zaproponować ją ponownie.",
+    "decided": "{status} przez {who} · {when}",
+    "staleCode": "Powód: {code}",
+    "failedCode": "Ostatnia próba niezastosowana: {code}",
+    "openCreated": "Otwórz nową stronę",
+    "openPage": "Otwórz stronę",
+    "diffTruncated": "Porównanie zostało skrócone; sama zmiana jest kompletna.",
+    "noDiff": "Brak widocznych zmian w tekście.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Propozycje zmian",
+    "empty": "Brak propozycji dla tego zadania.",
+    "writeModeLabel": "Tryb zapisu AI",
+    "writeModeInherit": "Taki jak w obszarze roboczym",
+    "writeModeHelp": "Dotyczy każdego uruchomienia wbudowanej AI w tym zadaniu. Może jedynie zawęzić tryb obszaru roboczego."
+  }
+}

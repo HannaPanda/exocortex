@@ -907,6 +907,18 @@
     },
     "where": "Barre latérale sous « Tâches », ou Strg + K et « Ouvrir les tâches » ou « Nouvelle tâche »."
   },
+  "aenderungsvorschlaege": {
+    "title": "Suggestions de modifications : les agents proposent, tu décides",
+    "summary": "Au lieu d’écrire directement sur les pages, un agent ou l’IA intégrée peut suggérer des modifications. Tu visualises chaque modification sous forme de comparaison avec la page, tu les acceptes une par une ou toutes d’un coup, et tu refuses le reste en indiquant un motif.",
+    "details": {
+      "p1": "Une suggestion regroupe des modifications sur une ou plusieurs pages : un bloc, une section, un passage de texte, la page entière ou une nouvelle page. Rien de tout cela n’apparaît sur une page avant que tu ne l’aies accepté.",
+      "p2": "L’application s’effectue sur la base de la version au moment où la suggestion a été faite. Si une page a changé depuis, la modification n’est plus appliquée mais marquée comme obsolète, afin que rien ne vienne s’insérer sur une version que personne n’a vérifiée. Un instantané est créé avant chaque application.",
+      "p3": "Le mode d’écriture de l’IA (Paramètres, ou par tâche) définit si elle écrit directement, propose uniquement ou lit uniquement. Pour les agents externes, il existe la portée de jeton « Lire et suggérer ». Les deux règles s’appliquent également sur le serveur, et non pas seulement comme une consigne adressée au modèle.",
+      "p4": "Si une suggestion est liée à une tâche, la tâche passe en révision dès sa soumission et apparaît sous « En attente de ton action ». Dès que toutes les modifications ont été tranchées, l’IA poursuit son travail en tenant compte de ta décision.",
+      "p5": "Les agents utilisent exo_changeset_propose, exo_changeset_submit, exo_changeset_get et exo_changeset_list ; exo_changeset_apply et exo_changeset_reject ne sont disponibles que pour les accès externes d’une personne, jamais pour l’IA intégrée."
+    },
+    "where": "Barre latérale sous « Suggestions », sur la tâche, sous « En attente de ton action », ou avec Ctrl + K et « Ouvrir les suggestions de modifications »."
+  },
   "arbeitsstaende": {
     "title": "États d’avancement : reprendre une tâche interrompue là où elle s’était arrêtée",
     "summary": "Une tâche garde en mémoire la progression du travail : ce qui est fait, ce qui manque encore, les hypothèses et conclusions formulées, ainsi que les pages créées. Si une exécution d’IA s’interrompt parce qu’un fournisseur ne répond pas, que le quota est épuisé ou qu’elle attend une réponse, la prochaine exécution reprend exactement là, y compris avec un autre modèle.",

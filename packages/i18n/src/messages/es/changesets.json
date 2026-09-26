@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Propuestas de cambio",
+    "detailTitle": "Propuesta de cambio"
+  },
+  "list": {
+    "title": "Propuestas de cambio",
+    "intro": "Cambios propuestos por los agentes en lugar de escribirlos directamente. Nada de esto se incluirá en una página hasta que lo aceptes.",
+    "filterLabel": "Qué propuestas",
+    "filters": {
+      "open": "Pendientes",
+      "closed": "Resueltas",
+      "all": "Todas"
+    },
+    "loading": "Cargando propuestas",
+    "loadFailed": "No se han podido cargar las propuestas.",
+    "emptyTitle": "No hay nada pendiente de revisión",
+    "emptyAllTitle": "Aún no hay propuestas",
+    "emptyDescription": "Si una IA trabaja en modo de propuesta, sus cambios aparecerán aquí antes de modificar una página.",
+    "truncated": "La lista está truncada. Faltan las propuestas más antiguas.",
+    "columns": {
+      "title": "Propuesta",
+      "status": "Estado",
+      "proposedBy": "Propuesto por",
+      "changes": "Cambios",
+      "updated": "Última modificación"
+    },
+    "counts": "{pending, plural, =0 {nada pendiente} one {# pendiente} many {# pendientes} other {# pendientes}} de {total}",
+    "workItem": "Tarea: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Borrador",
+      "ready": "Pendiente de revisión",
+      "partially_applied": "Aplicada parcialmente",
+      "applied": "Aplicada",
+      "rejected": "Rechazada",
+      "stale": "Obsoleta"
+    },
+    "changeStatus": {
+      "pending": "Pendiente",
+      "applied": "Aplicado",
+      "rejected": "Rechazado",
+      "stale": "Obsoleto"
+    },
+    "kind": {
+      "block": "Modificar bloque",
+      "section": "Modificar sección",
+      "patch": "Reemplazar texto",
+      "page": "Página completa",
+      "create": "Página nueva"
+    },
+    "mode": {
+      "replace": "reemplazar",
+      "append": "insertar después",
+      "prepend": "insertar antes"
+    }
+  },
+  "detail": {
+    "back": "Todas las propuestas",
+    "loading": "Cargando propuesta",
+    "loadFailed": "No se ha podido cargar la propuesta.",
+    "notFound": "Esta propuesta no existe o no tienes permiso para verla.",
+    "proposed": "{who} · {when}",
+    "workItem": "Pertenece a la tarea",
+    "revises": "Revisa una propuesta anterior",
+    "revisedBy": "Se ha revisado",
+    "draftNotice": "Aún es un borrador. Quien propone todavía lo está preparando; la decisión se tomará tras enviarlo.",
+    "closedNotice": "Ya se ha tomado una decisión sobre todos los cambios.",
+    "selectAll": "Seleccionar todos los pendientes",
+    "selected": "{count, plural, one {# seleccionado} many {# seleccionados} other {# seleccionados}}",
+    "applySelected": "Aplicar seleccionados",
+    "applyAll": "Aplicar todos",
+    "rejectSelected": "Rechazar seleccionados",
+    "rejectAll": "Rechazar todos",
+    "noteLabel": "Motivo (se enviará a quien propuso el cambio)",
+    "notePlaceholder": "Opcional: por qué o qué debería ser diferente",
+    "failed": "No se ha podido guardar la decisión.",
+    "outcome": "{applied, plural, =0 {} one {# aplicado. } many {# aplicados. } other {# aplicados. }}{rejected, plural, =0 {} one {# rechazado. } many {# rechazados. } other {# rechazados. }}{stale, plural, =0 {} one {# obsoleto, porque la página ha cambiado. } many {# obsoletos, porque las páginas han cambiado. } other {# obsoletos, porque las páginas han cambiado. }}{failed, plural, =0 {} one {# no aplicado; sigue pendiente.} many {# no aplicados; siguen pendientes.} other {# no aplicados; siguen pendientes.}}",
+    "undoHint": "Cada aplicación crea primero una instantánea; se puede revertir en el historial de versiones de la página."
+  },
+  "change": {
+    "select": "Seleccionar cambio {position}",
+    "position": "Cambio {position}",
+    "target": "en «{target}»",
+    "newPage": "bajo {parent}",
+    "newPageTop": "en la parte superior del espacio de trabajo",
+    "gone": "La página ya no existe",
+    "notApplicable": "La página ha cambiado desde la propuesta. Este cambio ya no se aplicará; quien lo propuso puede volver a proponerlo.",
+    "decided": "{status} por {who} · {when}",
+    "staleCode": "Motivo: {code}",
+    "failedCode": "Último intento no aplicado: {code}",
+    "openCreated": "Abrir página nueva",
+    "openPage": "Abrir página",
+    "diffTruncated": "La comparación está truncada; el cambio en sí está completo.",
+    "noDiff": "Sin cambios visibles en el texto.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Propuestas de cambio",
+    "empty": "No hay propuestas para esta tarea.",
+    "writeModeLabel": "Modo de escritura de la IA",
+    "writeModeInherit": "Como en el espacio de trabajo",
+    "writeModeHelp": "Se aplica a cada ejecución de la IA integrada en esta tarea. Solo puede restringir el modo del espacio de trabajo."
+  }
+}

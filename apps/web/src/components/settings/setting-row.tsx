@@ -48,6 +48,7 @@ const AUTO_VALUE = '__automatic__';
 const SETTING_CHOICES = {
   'ai.pdfExtractor': ['docling', 'openrouter'],
   'ai.untrustedContentPolicy': ['guarded', 'deny', 'allow'],
+  'ai.writeMode': ['direct', 'propose', 'read_only'],
 } as const satisfies Partial<Record<SettingKey, readonly string[]>>;
 
 type ChoiceKey = keyof typeof SETTING_CHOICES;
@@ -69,6 +70,9 @@ function useSettingChoices(): (
           value,
           label: t(`pdfExtractor.${value}`),
         }));
+      }
+      if (key === 'ai.writeMode') {
+        return SETTING_CHOICES[key].map((value) => ({ value, label: t(`writeMode.${value}`) }));
       }
       return SETTING_CHOICES[key].map((value) => ({
         value,

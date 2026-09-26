@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Suggestions de modifications",
+    "detailTitle": "Suggestion de modification"
+  },
+  "list": {
+    "title": "Suggestions de modifications",
+    "intro": "Modifications suggérées par les agents au lieu de les écrire directement. Rien n’apparaît dans une page avant que tu ne l’acceptes.",
+    "filterLabel": "Quelles suggestions",
+    "filters": {
+      "open": "En attente",
+      "closed": "Traitées",
+      "all": "Toutes"
+    },
+    "loading": "Chargement des suggestions…",
+    "loadFailed": "Impossible de charger les suggestions.",
+    "emptyTitle": "Rien n’attend ta révision",
+    "emptyAllTitle": "Aucune suggestion pour l’instant",
+    "emptyDescription": "Lorsqu’une IA travaille en mode suggestion, ses modifications arrivent ici avant de toucher une page.",
+    "truncated": "La liste est raccourcie. Les suggestions les plus anciennes n’apparaissent pas.",
+    "columns": {
+      "title": "Suggestion",
+      "status": "Statut",
+      "proposedBy": "Suggéré par",
+      "changes": "Modifications",
+      "updated": "Dernière mise à jour"
+    },
+    "counts": "{pending, plural, =0 {rien en attente} one {# en attente} many {# en attente} other {# en attente}} sur {total}",
+    "workItem": "Tâche : {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Brouillon",
+      "ready": "En attente de révision",
+      "partially_applied": "Partiellement appliquée",
+      "applied": "Appliquée",
+      "rejected": "Rejetée",
+      "stale": "Obsolète"
+    },
+    "changeStatus": {
+      "pending": "En attente",
+      "applied": "Appliquée",
+      "rejected": "Rejetée",
+      "stale": "Obsolète"
+    },
+    "kind": {
+      "block": "Modifier le bloc",
+      "section": "Modifier la section",
+      "patch": "Remplacer le texte",
+      "page": "Page entière",
+      "create": "Nouvelle page"
+    },
+    "mode": {
+      "replace": "remplacer",
+      "append": "insérer après",
+      "prepend": "insérer avant"
+    }
+  },
+  "detail": {
+    "back": "Toutes les suggestions",
+    "loading": "Chargement de la proposition",
+    "loadFailed": "Impossible de charger la proposition.",
+    "notFound": "Cette proposition n’existe pas, ou tu ne peux pas la voir.",
+    "proposed": "{who} · {when}",
+    "workItem": "Appartient à la tâche",
+    "revises": "Révise une proposition antérieure",
+    "revisedBy": "A été révisée",
+    "draftNotice": "C’est encore un brouillon en cours de préparation ; la décision ne sera prise qu’après soumission.",
+    "closedNotice": "Toutes les modifications ont été tranchées.",
+    "selectAll": "Sélectionner toutes les modifications en attente",
+    "selected": "{count, plural, one {# sélectionnée} many {# sélectionnées} other {# sélectionnées}}",
+    "applySelected": "Appliquer la sélection",
+    "applyAll": "Tout appliquer",
+    "rejectSelected": "Rejeter la sélection",
+    "rejectAll": "Tout rejeter",
+    "noteLabel": "Motif (transmis à la personne à l’origine de la proposition)",
+    "notePlaceholder": "Facultatif : raison, ou ce qui devrait changer",
+    "failed": "Impossible d’enregistrer la décision.",
+    "outcome": "{applied, plural, =0 {} one {# appliquée. } many {# appliquées. } other {# appliquées. }}{rejected, plural, =0 {} one {# rejetée. } many {# rejetées. } other {# rejetées. }}{stale, plural, =0 {} one {# obsolète, car la page a changé. } many {# obsolètes, car les pages ont changé. } other {# obsolètes, car les pages ont changé. }}{failed, plural, =0 {} one {# non appliquée, elle reste ouverte.} many {# non appliquées, elles restent ouvertes.} other {# non appliquées, elles restent ouvertes.}}",
+    "undoHint": "Chaque application crée au préalable un instantané ; tu peux l’annuler dans l’historique des versions de la page."
+  },
+  "change": {
+    "select": "Sélectionner la modification {position}",
+    "position": "Modification {position}",
+    "target": "sur « {target} »",
+    "newPage": "sous {parent}",
+    "newPageTop": "en haut de l’espace de travail",
+    "gone": "La page n’existe plus",
+    "notApplicable": "La page a changé depuis la proposition. Cette modification n’est plus appliquée ; une nouvelle proposition peut être soumise.",
+    "decided": "{status} par {who} · {when}",
+    "staleCode": "Raison : {code}",
+    "failedCode": "Dernière tentative non appliquée : {code}",
+    "openCreated": "Ouvrir la nouvelle page",
+    "openPage": "Ouvrir la page",
+    "diffTruncated": "Le comparatif est tronqué ; la modification elle-même est complète.",
+    "noDiff": "Aucune modification visible du texte.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Propositions de modification",
+    "empty": "Il n’y a aucune proposition pour cette tâche.",
+    "writeModeLabel": "Mode d’écriture de l’IA",
+    "writeModeInherit": "Comme dans l’espace de travail",
+    "writeModeHelp": "S’applique à chaque exécution de l’IA intégrée sur cette tâche. Il peut seulement restreindre le mode de l’espace de travail."
+  }
+}

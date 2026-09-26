@@ -41,6 +41,7 @@
     "columnActions": "Actions",
     "scopeLabels": {
       "read": "Read",
+      "propose": "Propose",
       "write": "Write",
       "admin": "Administration"
     },
@@ -59,6 +60,10 @@
       "read": {
         "label": "Read only",
         "hint": "Read pages and databases, change nothing."
+      },
+      "propose": {
+        "label": "Read and propose",
+        "hint": "Also propose changes and report on tasks. Pages are only modified once someone accepts the proposal."
       },
       "write": {
         "label": "Read and write",

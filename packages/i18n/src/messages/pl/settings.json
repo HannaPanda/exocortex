@@ -66,6 +66,10 @@
         "label": "Zapis po treściach zewnętrznych",
         "help": "Teksty z przesłanych dokumentów i opisów obrazów mogą zawierać instrukcje dla AI, których nikt tutaj nie napisał. Domyślnie uruchomienie po przeczytaniu takich treści nie może już niczego zmieniać; podaje wtedy, co by zapisało. Opcja „Zawsze dozwolone” jest potrzebna tylko w przypadku procesów, które mają czytać zewnętrzne dokumenty i samodzielnie na ich podstawie zapisywać."
       },
+      "writeMode": {
+        "label": "Tryb zapisu AI",
+        "help": "Określa, czy wbudowana AI sama modyfikuje strony, jedynie proponuje zmiany, czy ma dostęp wyłącznie do odczytu. W trybie propozycji tworzy propozycje zmian, które możesz pojedynczo akceptować lub odrzucać; raportowanie z zadań jest dozwolone w każdym trybie. Zadanie może dla swoich uruchomień dodatkowo ograniczyć ten tryb, ale nigdy go złagodzić."
+      },
       "maxToolIterations": {
         "label": "Maksymalna liczba iteracji narzędzi",
         "help": "Górny limit wywołań narzędzi w ramach jednego uruchomienia."
@@ -474,6 +478,11 @@
         "guarded": "Blokowane po odczytaniu treści zewnętrznych (zalecane)",
         "deny": "Nigdy: AI nie może niczego zmieniać w żadnym przebiegu",
         "allow": "Zawsze dozwolone, również po treściach zewnętrznych"
+      },
+      "writeMode": {
+        "direct": "Bezpośredni zapis",
+        "propose": "Tylko propozycje: zmiany czekają na twoją weryfikację",
+        "read_only": "Tylko do odczytu"
       }
     },
     "jsonInvalid": "To nie jest prawidłowa wartość. Zostanie zapisany ostatni poprawny stan."

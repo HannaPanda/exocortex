@@ -127,7 +127,8 @@
     "moveUp": "“{name}” para cima",
     "moveDown": "“{name}” para baixo",
     "openSearch": "Busca e buscas salvas",
-    "openWorkItems": "Tarefas de trabalho"
+    "openWorkItems": "Tarefas de trabalho",
+    "openChangesets": "Sugestões"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Abrir tarefas de trabalho",
         "keywords": "tarefa tarefas trabalho delegar delegado agente concluir responsavel executor work item"
+      },
+      "changesets": {
+        "label": "Abrir sugestões de alteração",
+        "keywords": "sugestão sugestões sugestão de alteração verificar aplicar rejeitar compartilhamento diff changeset revisão"
       },
       "automations": {
         "label": "Abrir automações",

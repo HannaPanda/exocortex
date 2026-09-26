@@ -66,6 +66,10 @@
         "label": "Escritura tras contenido externo",
         "help": "Los textos de documentos subidos y de descripciones de imágenes pueden contener instrucciones para la IA que nadie ha escrito aquí. Por defecto, una ejecución ya no puede modificar nada tras leer dicho contenido; en su lugar, indicará lo que habría escrito. Solo se necesita «Siempre permitido» para flujos de trabajo que deban leer documentos externos y escribir a partir de ellos."
       },
+      "writeMode": {
+        "label": "Modo de escritura de la IA",
+        "help": "Indica si la IA integrada escribe páginas directamente, solo propone cambios o solo lee. En el modo de propuesta, crea sugerencias de cambio que puedes aceptar o rechazar individualmente; informar sobre sus tareas se permite en cualquier modo. Una tarea puede restringir aún más el modo para sus ejecuciones, pero nunca flexibilizarlo."
+      },
       "maxToolIterations": {
         "label": "Iteraciones máximas de herramientas",
         "help": "Límite superior para las llamadas a herramientas dentro de una ejecución."
@@ -474,6 +478,11 @@
         "guarded": "Bloqueado en cuanto se lea contenido externo (recomendado)",
         "deny": "Nunca: la IA no puede modificar nada en ninguna ejecución",
         "allow": "Permitido siempre, incluso tras leer contenido externo"
+      },
+      "writeMode": {
+        "direct": "Escribir directamente",
+        "propose": "Solo proponer: los cambios esperan tu revisión",
+        "read_only": "Solo lectura"
       }
     },
     "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido."

@@ -907,6 +907,18 @@
     },
     "where": "Pasek boczny w sekcji „Zadania” albo Strg + K i „Otwórz zadania” bądź „Nowe zadanie”."
   },
+  "aenderungsvorschlaege": {
+    "title": "Propozycje zmian: agenci proponują, ty decydujesz",
+    "summary": "Zamiast samodzielnie edytować strony, agent lub wbudowana sztuczna inteligencja może proponować zmiany. Widzisz każdą zmianę jako porównanie ze stroną, akceptujesz je pojedynczo lub wszystkie naraz, a resztę odrzucasz z uzasadnieniem.",
+    "details": {
+      "p1": "Propozycja gromadzi zmiany na jednej lub wielu stronach: blok, sekcję, fragment tekstu, całą stronę lub nową stronę. Nic z tego nie trafia na stronę, dopóki tego nie zaakceptujesz.",
+      "p2": "Zmiany są stosowane w odniesieniu do stanu, na którym bazowała propozycja. Jeśli strona zmieniła się od tego czasu, zmiana nie zostanie już zapisana, lecz oznaczona jako nieaktualna, aby nic nie trafiło na stan, którego nikt nie sprawdził. Przed każdą akceptacją tworzony jest snapshot.",
+      "p3": "Tryb zapisu sztucznej inteligencji (w ustawieniach lub dla danego zadania) określa, czy zapisuje ona bezpośrednio, tylko proponuje, czy tylko czyta. Dla zewnętrznych agentów służy do tego zakres tokena „Odczyt i proponowanie”. Obie zasady obowiązują również na serwerze, nie tylko jako prośba skierowana do modelu.",
+      "p4": "Jeśli propozycja należy do zadania, trafia ono po przesłaniu do sprawdzenia i pojawia się w sekcji „Czeka na ciebie”. Gdy wszystkie zmiany zostaną rozstrzygnięte, sztuczna inteligencja kontynuuje pracę z uwzględnieniem twojej decyzji.",
+      "p5": "Agenci korzystają z exo_changeset_propose, exo_changeset_submit, exo_changeset_get i exo_changeset_list; exo_changeset_apply oraz exo_changeset_reject są dostępne tylko dla zewnętrznych dostępów użytkownika, nigdy dla wbudowanej sztucznej inteligencji."
+    },
+    "where": "Pasek boczny w sekcji „Propozycje”, przy zadaniu, w „Czeka na ciebie” lub Strg + K i „Otwórz propozycje zmian”."
+  },
   "arbeitsstaende": {
     "title": "Stany prac: wznawianie przerwanego zadania w miejscu, w którym zostało zatrzymane",
     "summary": "Zadanie pamięta postęp prac: co zostało zrobione, czego jeszcze brakuje, jakie poczyniono założenia i ustalenia oraz jakie strony powstały. Jeśli uruchomienie AI zostanie przerwane, bo dostawca nie odpowiada, wyczerpał się limit lub działanie oczekuje na odpowiedź, kolejne uruchomienie podejmuje pracę dokładnie w tym miejscu – nawet z innym modelem.",

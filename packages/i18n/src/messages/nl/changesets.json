@@ -1,0 +1,106 @@
+{
+  "route": {
+    "listTitle": "Wijzigingsvoorstellen",
+    "detailTitle": "Wijzigingsvoorstel"
+  },
+  "list": {
+    "title": "Wijzigingsvoorstellen",
+    "intro": "Wijzigingen die agents voorstellen in plaats van ze zelf te schrijven. Niets hiervan komt op een pagina totdat je het accepteert.",
+    "filterLabel": "Welke voorstellen",
+    "filters": {
+      "open": "Open",
+      "closed": "Besloten",
+      "all": "Alle"
+    },
+    "loading": "Voorstellen laden…",
+    "loadFailed": "De voorstellen konden niet worden geladen.",
+    "emptyTitle": "Niets wacht op je beoordeling",
+    "emptyAllTitle": "Nog geen voorstellen",
+    "emptyDescription": "Als een AI in de voorstelmodus werkt, komen de wijzigingen hier terecht voordat ze een pagina aanpassen.",
+    "truncated": "De lijst is ingekort. De oudste voorstellen ontbreken.",
+    "columns": {
+      "title": "Voorstel",
+      "status": "Status",
+      "proposedBy": "Voorgesteld door",
+      "changes": "Wijzigingen",
+      "updated": "Laatst bewerkt"
+    },
+    "counts": "{pending, plural, =0 {niets open} one {# open} other {# open}} van {total}",
+    "workItem": "Opdracht: {title}"
+  },
+  "labels": {
+    "status": {
+      "draft": "Concept",
+      "ready": "Wacht op beoordeling",
+      "partially_applied": "Gedeeltelijk toegepast",
+      "applied": "Toegepast",
+      "rejected": "Afgewezen",
+      "stale": "Verouderd"
+    },
+    "changeStatus": {
+      "pending": "Open",
+      "applied": "Toegepast",
+      "rejected": "Afgewezen",
+      "stale": "Verouderd"
+    },
+    "kind": {
+      "block": "Blok wijzigen",
+      "section": "Sectie wijzigen",
+      "patch": "Tekstfragment vervangen",
+      "page": "Hele pagina",
+      "create": "Nieuwe pagina"
+    },
+    "mode": {
+      "replace": "vervangen",
+      "append": "erna invoegen",
+      "prepend": "ervoor invoegen"
+    }
+  },
+  "detail": {
+    "back": "Alle voorstellen",
+    "loading": "Voorstel laden",
+    "loadFailed": "Het voorstel kon niet worden geladen.",
+    "notFound": "Dit voorstel bestaat niet of je kunt het niet bekijken.",
+    "proposed": "{who} · {when}",
+    "workItem": "Hoort bij de opdracht",
+    "revises": "Herziening van een eerder voorstel",
+    "revisedBy": "Is herzien",
+    "draftNotice": "Dit is nog een concept. De indiener stelt het nog samen; een beslissing volgt pas na het indienen.",
+    "closedNotice": "Over alle wijzigingen is beslist.",
+    "selectAll": "Alle openstaande selecteren",
+    "selected": "{count, plural, one {# geselecteerd} other {# geselecteerd}}",
+    "applySelected": "Geselecteerde toepassen",
+    "applyAll": "Alles toepassen",
+    "rejectSelected": "Geselecteerde afwijzen",
+    "rejectAll": "Alles afwijzen",
+    "noteLabel": "Toelichting (gaat terug naar de indiener)",
+    "notePlaceholder": "Optioneel: waarom, of wat er anders zou moeten",
+    "failed": "De beslissing kon niet worden opgeslagen.",
+    "outcome": "{applied, plural, =0 {} one {# toegepast. } other {# toegepast. }}{rejected, plural, =0 {} one {# afgewezen. } other {# afgewezen. }}{stale, plural, =0 {} one {# verouderd omdat de pagina gewijzigd is. } other {# verouderd omdat de pagina’s gewijzigd zijn. }}{failed, plural, =0 {} one {# niet toegepast, blijft openstaan.} other {# niet toegepast, blijven openstaan.}}",
+    "undoHint": "Bij elke toepassing wordt eerst een momentopname gemaakt; in de versiegeschiedenis van de pagina kan dit ongedaan worden gemaakt."
+  },
+  "change": {
+    "select": "Wijziging {position} selecteren",
+    "position": "Wijziging {position}",
+    "target": "bij „{target}”",
+    "newPage": "onder {parent}",
+    "newPageTop": "bovenaan in de werkruimte",
+    "gone": "Pagina bestaat niet meer",
+    "notApplicable": "De pagina is sinds het voorstel gewijzigd. Deze wijziging wordt niet meer toegepast; de indiener kan een nieuw voorstel indienen.",
+    "decided": "{status} door {who} · {when}",
+    "staleCode": "Reden: {code}",
+    "failedCode": "Laatste poging niet toegepast: {code}",
+    "openCreated": "Nieuwe pagina openen",
+    "openPage": "Pagina openen",
+    "diffTruncated": "De vergelijking is ingekort; de wijziging zelf is volledig.",
+    "noDiff": "Geen zichtbare wijziging in de tekst.",
+    "summary": "+{added} −{removed} ~{changed}"
+  },
+  "workItem": {
+    "title": "Wijzigingsvoorstellen",
+    "empty": "Er zijn geen voorstellen voor deze opdracht.",
+    "writeModeLabel": "Schrijfmodus van de AI",
+    "writeModeInherit": "Zoals in de werkruimte",
+    "writeModeHelp": "Geldt voor elke uitvoering van de ingebouwde AI bij deze opdracht. Deze kan de modus van de werkruimte alleen beperken."
+  }
+}

@@ -127,7 +127,8 @@
     "moveUp": "„{name}“ omhoog",
     "moveDown": "„{name}“ omlaag",
     "openSearch": "Zoeken en opgeslagen zoekopdrachten",
-    "openWorkItems": "Opdrachten"
+    "openWorkItems": "Opdrachten",
+    "openChangesets": "Voorstellen"
   },
   "connectionStatus": {
     "offlineShort": "offline",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Opdrachten openen",
         "keywords": "opdracht opdrachten taak delegeren gedelegeerd agent uitvoeren verantwoordelijk behandelaar work item"
+      },
+      "changesets": {
+        "label": "Wijzigingsvoorstellen openen",
+        "keywords": "voorstel voorstellen wijzigingsvoorstel controleren overnemen afwijzen deling diff changeset review"
       },
       "automations": {
         "label": "Automatiseringen openen",

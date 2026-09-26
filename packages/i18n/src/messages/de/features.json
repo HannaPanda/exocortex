@@ -907,6 +907,18 @@
     },
     "where": "Seitenleiste unter „Aufträge“, oder Strg + K und „Aufträge öffnen“ beziehungsweise „Neuer Auftrag“."
   },
+  "aenderungsvorschlaege": {
+    "title": "Änderungsvorschläge: Agenten schlagen vor, du entscheidest",
+    "summary": "Statt Seiten selbst zu schreiben, kann ein Agent oder die eingebaute KI Änderungen vorschlagen. Du siehst jede Änderung als Vergleich mit der Seite, übernimmst sie einzeln oder alle auf einmal und lehnst den Rest mit einer Begründung ab.",
+    "details": {
+      "p1": "Ein Vorschlag sammelt Änderungen an einer oder mehreren Seiten: einen Block, einen Abschnitt, eine Textstelle, die ganze Seite oder eine neue Seite. Nichts davon steht in einer Seite, bevor du es übernimmst.",
+      "p2": "Übernommen wird mit dem Stand, auf dem vorgeschlagen wurde. Hat sich eine Seite seither geändert, wird die Änderung nicht mehr geschrieben, sondern als veraltet markiert, damit nie etwas auf einen Stand trifft, den niemand geprüft hat. Vor jeder Übernahme entsteht ein Snapshot.",
+      "p3": "Der Schreibmodus der KI (Einstellungen, oder je Auftrag) legt fest, ob sie direkt schreibt, nur vorschlägt oder nur liest. Für externe Agenten gibt es dafür den Token-Umfang „Lesen und vorschlagen“. Beides gilt auch auf dem Server, nicht nur als Bitte an das Modell.",
+      "p4": "Gehört ein Vorschlag zu einem Auftrag, geht der Auftrag beim Einreichen in die Prüfung und erscheint unter „Wartet auf dich“. Sobald über alle Änderungen entschieden ist, arbeitet die KI mit deiner Entscheidung weiter.",
+      "p5": "Agenten arbeiten mit exo_changeset_propose, exo_changeset_submit, exo_changeset_get und exo_changeset_list; exo_changeset_apply und exo_changeset_reject gibt es nur für externe Zugänge einer Person, nie für die eingebaute KI."
+    },
+    "where": "Seitenleiste unter „Vorschläge“, am Auftrag, unter „Wartet auf dich“, oder Strg + K und „Änderungsvorschläge öffnen“."
+  },
   "arbeitsstaende": {
     "title": "Arbeitsstände: eine unterbrochene Aufgabe dort fortsetzen, wo sie stand",
     "summary": "Ein Auftrag merkt sich, wie weit die Arbeit gekommen ist: was erledigt ist, was noch fehlt, welche Annahmen und Erkenntnisse es gibt und welche Seiten entstanden sind. Bricht ein KI-Lauf ab, weil ein Anbieter nicht antwortet, das Kontingent aufgebraucht ist oder der Lauf auf eine Antwort wartet, setzt der nächste Lauf genau dort an, auch mit einem anderen Modell.",

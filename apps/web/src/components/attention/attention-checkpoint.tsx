@@ -34,6 +34,30 @@ export function AttentionCheckpoint({ item }: { item: AttentionItem }) {
         </div>
       )}
 
+      {item.changeset === null ? null : (
+        <div className="flex flex-col gap-1" data-testid="attention-changeset">
+          <p className="text-xs font-medium text-muted-foreground">{t('changesetLabel')}</p>
+          <Link
+            href={`/arbeitsbereich/${item.workspaceId}/vorschlaege/${item.changeset.id}`}
+            className="w-fit font-medium hover:underline"
+          >
+            {item.changeset.title}
+          </Link>
+          <p className="text-muted-foreground">
+            {t('changesetCounts', {
+              pending: item.changeset.pending,
+              total: item.changeset.total,
+            })}
+          </p>
+          {item.changeset.intact ? null : (
+            <p className="text-destructive-text">{t('changesetAltered')}</p>
+          )}
+          {open && item.changeset.pending > 0 ? (
+            <p className="max-w-measure text-muted-foreground">{t('changesetHint')}</p>
+          ) : null}
+        </div>
+      )}
+
       {item.subject === null ? null : (
         <div className="flex flex-col gap-1">
           <p className="text-xs font-medium text-muted-foreground">{t('subjectLabel')}</p>

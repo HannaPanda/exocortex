@@ -907,6 +907,18 @@
     },
     "where": "Barra lateral em „Tarefas“, ou Strg + K e „Abrir tarefas“ ou „Nova tarefa“."
   },
+  "aenderungsvorschlaege": {
+    "title": "Sugestões de alteração: agentes sugerem, você decide",
+    "summary": "Em vez de escrever nas páginas por conta própria, um agente ou a IA integrada pode sugerir alterações. Você visualiza cada alteração como uma comparação com a página, aceita uma a uma ou todas de uma vez e rejeita o restante com uma justificativa.",
+    "details": {
+      "p1": "Uma sugestão reúne alterações em uma ou mais páginas: um bloco, uma seção, um trecho de texto, a página inteira ou uma nova página. Nada disso é inserido em uma página antes da sua aprovação.",
+      "p2": "A aplicação considera a versão na qual a sugestão foi criada. Se uma página tiver sido modificada desde então, a alteração não será mais aplicada, mas sim marcada como desatualizada, garantindo que nada seja aplicado a uma versão não revisada. Antes de cada aplicação, um snapshot é criado.",
+      "p3": "O modo de escrita da IA (Configurações, ou por tarefa) determina se ela escreve diretamente, apenas sugere ou apenas lê. Para agentes externos, existe o escopo de token „Ler e sugerir“. Ambas as regras se aplicam também no servidor, e não apenas como instrução ao modelo.",
+      "p4": "Se uma sugestão pertencer a uma tarefa, a tarefa entrará em revisão ao ser enviada e aparecerá em „Aguardando você“. Assim que todas as alterações forem decididas, a IA continuará o trabalho com base na sua decisão.",
+      "p5": "Os agentes usam exo_changeset_propose, exo_changeset_submit, exo_changeset_get e exo_changeset_list; exo_changeset_apply e exo_changeset_reject estão disponíveis apenas para acessos externos de uma pessoa, nunca para a IA integrada."
+    },
+    "where": "Barra lateral em „Sugestões“, na tarefa, em „Aguardando você“, ou Strg + K e „Abrir sugestões de alteração“."
+  },
   "arbeitsstaende": {
     "title": "Pontos de progresso: continuar uma tarefa interrompida de onde ela parou",
     "summary": "Uma tarefa se lembra de até onde o trabalho avançou: o que foi concluído, o que ainda falta, quais suposições e aprendizados existem e quais páginas foram criadas. Se uma execução de IA for interrompida porque um provedor não responde, a cota se esgotou ou a execução está aguardando uma resposta, a próxima execução continua exatamente daquele ponto, mesmo com outro modelo.",

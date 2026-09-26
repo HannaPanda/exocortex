@@ -907,6 +907,18 @@
     },
     "where": "Barra laterale sotto «Incarichi», oppure Ctrl + K e «Apri incarichi» o «Nuovo incarico»."
   },
+  "aenderungsvorschlaege": {
+    "title": "Proposte di modifica: gli agenti propongono, tu decidi",
+    "summary": "Invece di modificare direttamente le pagine, un agente o l’IA integrata può proporre modifiche. Vedi ogni modifica a confronto con la pagina, la accetti singolarmente o tutte insieme e rifiuti il resto con una motivazione.",
+    "details": {
+      "p1": "Una proposta raccoglie modifiche a una o più pagine: un blocco, una sezione, una porzione di testo, l’intera pagina o una nuova pagina. Nulla di tutto questo finisce in una pagina prima che tu lo accetti.",
+      "p2": "L’applicazione avviene sulla base dello stato in cui la proposta è stata creata. Se nel frattempo una pagina è cambiata, la modifica non viene più applicata, ma contrassegnata come obsoleta, affinché nulla vada a toccare uno stato non verificato. Prima di ogni applicazione viene creato uno snapshot.",
+      "p3": "La modalità di scrittura dell’IA (nelle impostazioni o per ogni incarico) stabilisce se scrive direttamente, propone soltanto o legge solo. Per gli agenti esterni esiste a tale scopo l’ambito del token „Lettura e proposta”. Entrambe le opzioni si applicano anche sul server, non solo come richiesta al modello.",
+      "p4": "Se una proposta appartiene a un incarico, al momento dell’invio l’incarico passa in revisione e compare sotto „In attesa per te”. Non appena si è presa una decisione su tutte le modifiche, l’IA prosegue il lavoro in base alla tua decisione.",
+      "p5": "Gli agenti lavorano con exo_changeset_propose, exo_changeset_submit, exo_changeset_get ed exo_changeset_list; exo_changeset_apply ed exo_changeset_reject sono disponibili solo per gli accessi esterni di una persona, mai per l’IA integrata."
+    },
+    "where": "Barra laterale sotto „Proposte”, nell’incarico, sotto „In attesa per te”, oppure con Ctrl + K e „Apri proposte di modifica”."
+  },
   "arbeitsstaende": {
     "title": "Stati di avanzamento: riprendere un’attività interrotta da dove era rimasta",
     "summary": "Un’attività tiene traccia di quanto è avanzato il lavoro: cosa è fatto, cosa manca ancora, quali ipotesi e conclusioni sono emerse e quali pagine sono state create. Se un’esecuzione IA si interrompe perché un provider non risponde, la quota è esaurita o l’esecuzione attende una risposta, quella successiva riprende esattamente da lì, anche con un modello diverso.",

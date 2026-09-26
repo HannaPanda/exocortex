@@ -66,6 +66,10 @@
         "label": "Scrittura dopo contenuti esterni",
         "help": "I testi provenienti da documenti caricati e dalle descrizioni di immagini possono contenere istruzioni per l’IA che nessuno ha scritto qui. Per impostazione predefinita, dopo aver letto tali contenuti un’esecuzione non può più modificare nulla; indicherà invece cosa avrebbe scritto. «Sempre consentito» serve solo per flussi di lavoro che devono leggere documenti esterni e scrivere direttamente a partire da essi."
       },
+      "writeMode": {
+        "label": "Modalità di scrittura dell’IA",
+        "help": "Stabilisce se l’IA integrata scrive direttamente le pagine, si limita a proporre modifiche o legge soltanto. Nella modalità di proposta crea suggerimenti di modifica che puoi accettare o rifiutare singolarmente; può comunque riferire sulle proprie attività in qualsiasi modalità. Un’attività può restringere ulteriormente la modalità per le sue esecuzioni, ma mai allentarla."
+      },
       "maxToolIterations": {
         "label": "Iterazioni massime degli strumenti",
         "help": "Limite massimo per le chiamate agli strumenti all’interno di un’esecuzione."
@@ -474,6 +478,11 @@
         "guarded": "Bloccato non appena vengono letti contenuti esterni (consigliato)",
         "deny": "Mai: l’IA non può apportare modifiche in nessuna esecuzione",
         "allow": "Sempre consentito, anche dopo contenuti esterni"
+      },
+      "writeMode": {
+        "direct": "Scrittura diretta",
+        "propose": "Solo proposte: le modifiche attendono la tua revisione",
+        "read_only": "Sola lettura"
       }
     },
     "jsonInvalid": "Questo non è un valore valido. Verrà salvata l’ultima versione valida."

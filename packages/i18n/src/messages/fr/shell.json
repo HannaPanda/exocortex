@@ -127,7 +127,8 @@
     "moveUp": "Monter « {name} »",
     "moveDown": "Descendre « {name} »",
     "openSearch": "Recherche et recherches enregistrées",
-    "openWorkItems": "Tâches"
+    "openWorkItems": "Tâches",
+    "openChangesets": "Suggestions"
   },
   "connectionStatus": {
     "offlineShort": "hors ligne",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Ouvrir les tâches",
         "keywords": "tâche tâches mission déléguer délégué agent accomplir responsable assigné work item"
+      },
+      "changesets": {
+        "label": "Ouvrir les suggestions de modification",
+        "keywords": "suggestion suggestions proposition vérifier accepter rejeter partage diff changeset review"
       },
       "automations": {
         "label": "Ouvrir les automatisations",

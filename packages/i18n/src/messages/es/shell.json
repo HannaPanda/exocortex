@@ -127,7 +127,8 @@
     "moveUp": "Subir «{name}»",
     "moveDown": "Bajar «{name}»",
     "openSearch": "Búsqueda y búsquedas guardadas",
-    "openWorkItems": "Tareas"
+    "openWorkItems": "Tareas",
+    "openChangesets": "Sugerencias"
   },
   "connectionStatus": {
     "offlineShort": "sin conexión",
@@ -231,6 +232,10 @@
       "workItems": {
         "label": "Abrir tareas",
         "keywords": "tarea tareas encargo delegar delegado agente completar responsable asignado work item"
+      },
+      "changesets": {
+        "label": "Abrir sugerencias de cambios",
+        "keywords": "sugerencia sugerencias sugerencia de cambio revisar aceptar rechazar uso compartido diff changeset review"
       },
       "automations": {
         "label": "Abrir automatizaciones",

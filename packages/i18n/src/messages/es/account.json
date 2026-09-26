@@ -41,6 +41,7 @@
     "columnActions": "Acciones",
     "scopeLabels": {
       "read": "Lectura",
+      "propose": "Proponer",
       "write": "Escritura",
       "admin": "Administración"
     },
@@ -59,6 +60,10 @@
       "read": {
         "label": "Solo lectura",
         "hint": "Leer páginas y bases de datos, sin modificar nada."
+      },
+      "propose": {
+        "label": "Leer y proponer",
+        "hint": "Además, proponer cambios e informar sobre tareas. Las páginas solo se modifican cuando alguien acepta la propuesta."
       },
       "write": {
         "label": "Lectura y escritura",

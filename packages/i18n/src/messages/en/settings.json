@@ -66,6 +66,10 @@
         "label": "Writing after untrusted content",
         "help": "Text from uploaded documents and image descriptions can contain instructions to the AI that nobody here wrote. By default, a run may no longer modify anything after reading such content; it then states what it would have written. “Always allowed” is only needed for workflows that read external documents and should write from them directly."
       },
+      "writeMode": {
+        "label": "AI write mode",
+        "help": "Whether the built-in AI writes pages directly, only proposes changes, or only reads. In proposal mode, it creates change proposals that you accept or reject individually; it may report on its jobs in any mode. A job can further restrict the mode for its runs, never loosen it."
+      },
       "maxToolIterations": {
         "label": "Maximum tool iterations",
         "help": "Upper limit for tool calls within a run."
@@ -474,6 +478,11 @@
         "guarded": "Blocked once untrusted content has been read (recommended)",
         "deny": "Never: the AI may not make changes in any run",
         "allow": "Always allowed, even after untrusted content"
+      },
+      "writeMode": {
+        "direct": "Write directly",
+        "propose": "Propose only: changes wait for your review",
+        "read_only": "Read-only"
       }
     },
     "jsonInvalid": "This is not a valid value. The last valid state will be saved."

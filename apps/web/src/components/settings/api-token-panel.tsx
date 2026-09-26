@@ -61,7 +61,7 @@ type ExpiryOption = (typeof EXPIRY_OPTIONS)[number];
  * tick "admin" without "read" and wonder why nothing works. Worded by
  * `account.tokens.scopeOptions.<value>`.
  */
-const SCOPE_OPTIONS = ['read', 'write', 'admin'] as const;
+const SCOPE_OPTIONS = ['read', 'propose', 'write', 'admin'] as const;
 
 type ScopeOption = (typeof SCOPE_OPTIONS)[number];
 

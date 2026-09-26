@@ -255,49 +255,64 @@ export const changesetListTool: AnyToolDefinition = defineTool({
   },
 });
 
-function decisionTool(verb: 'apply' | 'reject'): AnyToolDefinition {
-  return defineTool({
-    name: verb === 'apply' ? 'exo_changeset_apply' : 'exo_changeset_reject',
-    description:
-      verb === 'apply'
-        ? 'Übernimmt Änderungen eines eingereichten Vorschlags in die Seiten, als die Person hinter ' +
-          'diesem Zugang. Ohne changeIds alle offenen. Jede wird mit der Revision geschrieben, auf ' +
-          'der sie vorgeschlagen wurde; hat sich eine Seite seither geändert, wird die Änderung ' +
-          'nicht geschrieben, sondern als veraltet markiert. Vor jeder Übernahme entsteht ein ' +
-          'Snapshot. Nur auf ausdrücklichen Wunsch eines Menschen aufrufen.'
-        : 'Lehnt Änderungen eines eingereichten Vorschlags ab, ohne changeIds alle offenen; note ' +
-          'sagt warum und geht an den Vorschlagenden zurück.',
-    inputSchema: z.object({ changesetId: idSchema }).extend(decideChangesetRequestSchema.shape),
-    // Deciding is a person's (ADR-070). The built-in AI never decides on a
-    // proposal, its own included; an external client holds a person's token.
-    surfaces: ['mcp'],
-    domain: 'changesets',
-    mutating: true,
-    destructive: verb === 'apply',
-    target: (input) => `changeset:${input.changesetId}`,
-    async execute(client, input) {
-      const { changesetId, ...body } = input;
-      const result = await client.request({
-        method: 'POST',
-        path:
-          verb === 'apply'
-            ? `/api/changesets/${changesetId}/apply`
-            : `/api/changesets/${changesetId}/reject`,
-        body,
-        responseSchema: changesetDecisionResponseSchema,
-      });
-      const outcomes = result.outcomes.map(
-        (outcome) =>
-          `- ${outcome.changeId}: ${outcome.outcome}` +
-          (outcome.errorCode === null ? '' : ` (${outcome.errorCode})`),
-      );
-      return {
-        text: `${formatDetail(result.changeset)}\n\nErgebnis:\n${outcomes.join('\n')}`,
-        data: result,
-      };
-    },
-  });
+function formatDecision(result: z.infer<typeof changesetDecisionResponseSchema>): string {
+  const outcomes = result.outcomes.map(
+    (outcome) =>
+      `- ${outcome.changeId}: ${outcome.outcome}` +
+      (outcome.errorCode === null ? '' : ` (${outcome.errorCode})`),
+  );
+  return `${formatDetail(result.changeset)}\n\nErgebnis:\n${outcomes.join('\n')}`;
 }
+
+// Deciding is a person's (ADR-070). The built-in AI never decides on a
+// proposal, its own included; an external client holds a person's token.
+export const changesetApplyTool: AnyToolDefinition = defineTool({
+  name: 'exo_changeset_apply',
+  description:
+    'Übernimmt Änderungen eines eingereichten Vorschlags in die Seiten, als die Person hinter ' +
+    'diesem Zugang. Ohne changeIds alle offenen. Jede wird mit der Revision geschrieben, auf der ' +
+    'sie vorgeschlagen wurde; hat sich eine Seite seither geändert, wird die Änderung nicht ' +
+    'geschrieben, sondern als veraltet markiert. Vor jeder Übernahme entsteht ein Snapshot. Nur ' +
+    'auf ausdrücklichen Wunsch eines Menschen aufrufen.',
+  inputSchema: z.object({ changesetId: idSchema }).extend(decideChangesetRequestSchema.shape),
+  surfaces: ['mcp'],
+  domain: 'changesets',
+  mutating: true,
+  destructive: true,
+  target: (input) => `changeset:${input.changesetId}`,
+  async execute(client, input) {
+    const { changesetId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/changesets/${changesetId}/apply`,
+      body,
+      responseSchema: changesetDecisionResponseSchema,
+    });
+    return { text: formatDecision(result), data: result };
+  },
+});
+
+export const changesetRejectTool: AnyToolDefinition = defineTool({
+  name: 'exo_changeset_reject',
+  description:
+    'Lehnt Änderungen eines eingereichten Vorschlags ab, ohne changeIds alle offenen; note sagt ' +
+    'warum und geht an den Vorschlagenden zurück.',
+  inputSchema: z.object({ changesetId: idSchema }).extend(decideChangesetRequestSchema.shape),
+  surfaces: ['mcp'],
+  domain: 'changesets',
+  mutating: true,
+  target: (input) => `changeset:${input.changesetId}`,
+  async execute(client, input) {
+    const { changesetId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/changesets/${changesetId}/reject`,
+      body,
+      responseSchema: changesetDecisionResponseSchema,
+    });
+    return { text: formatDecision(result), data: result };
+  },
+});
 
 export const CHANGESET_TOOLS: readonly AnyToolDefinition[] = [
   changesetProposeTool,
@@ -306,6 +321,6 @@ export const CHANGESET_TOOLS: readonly AnyToolDefinition[] = [
   changesetDiscardTool,
   changesetGetTool,
   changesetListTool,
-  decisionTool('apply'),
-  decisionTool('reject'),
+  changesetApplyTool,
+  changesetRejectTool,
 ];

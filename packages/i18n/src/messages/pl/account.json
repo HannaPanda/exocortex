@@ -41,6 +41,7 @@
     "columnActions": "Działania",
     "scopeLabels": {
       "read": "Odczyt",
+      "propose": "Proponowanie",
       "write": "Zapis",
       "admin": "Administracja"
     },
@@ -59,6 +60,10 @@
       "read": {
         "label": "Tylko do odczytu",
         "hint": "Odczyt stron i baz danych, bez wprowadzania zmian."
+      },
+      "propose": {
+        "label": "Odczyt i proponowanie",
+        "hint": "Dodatkowo proponowanie zmian i raportowanie zadań. Strony zmieniają się dopiero po zaakceptowaniu propozycji."
       },
       "write": {
         "label": "Odczyt i zapis",

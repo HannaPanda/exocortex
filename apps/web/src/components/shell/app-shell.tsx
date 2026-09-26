@@ -35,6 +35,7 @@ import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
 import { ContextPanel, type ContextTab } from './context-panel';
+import { useDelegatedWorkRealtime } from './delegated-work-realtime';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
@@ -220,21 +221,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     });
   });
 
-  // A work item changed, possibly through an agent (issue #138). Lists and the
-  // open detail view re-read; the payload carries only the id.
-  useRealtimeEvent('work-item.changed', (event) => {
-    void queryClient.invalidateQueries({
-      queryKey: ['workspace', event.workspaceId, 'work-items'],
-    });
-    void queryClient.invalidateQueries({ queryKey: ['work-item', event.payload.workItemId] });
-  });
-
-  // Something now waits on somebody, or no longer does (issue #139). The
-  // inbox and the count in the top bar re-read; who an item is for is the
-  // read's answer, not the event's.
-  useRealtimeEvent('attention.changed', () => {
-    void queryClient.invalidateQueries({ queryKey: ['attention'] });
-  });
+  // Delegated work, what waits on somebody, and proposals (issues #138, #139, #141).
+  useDelegatedWorkRealtime();
 
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
   // The text itself arrives through the collaboration socket (ADR-016); what

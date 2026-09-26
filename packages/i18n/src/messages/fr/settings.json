@@ -66,6 +66,10 @@
         "label": "Écriture après des contenus externes",
         "help": "Les textes issus de documents importés et de descriptions d’images peuvent contenir des instructions destinées à l’IA que personne ici n’a rédigées. Par défaut, une exécution ne peut plus rien modifier après avoir lu de tels contenus ; elle indique alors ce qu’elle aurait écrit. L’option « Toujours autorisée » n’est nécessaire que pour les processus qui doivent lire des documents externes et écrire eux-mêmes à partir de ceux-ci."
       },
+      "writeMode": {
+        "label": "Mode d’écriture de l’IA",
+        "help": "Détermine si l’IA intégrée modifie directement les pages, propose seulement des modifications ou a un accès en lecture seule. En mode suggestion, elle crée des propositions de modification que tu acceptes ou refuses une par une ; elle peut rendre compte de ses tâches dans tous les modes. Une tâche peut restreindre davantage ce mode pour ses exécutions, mais jamais l’assouplir."
+      },
       "maxToolIterations": {
         "label": "Nombre maximal d’itérations d’outils",
         "help": "Limite supérieure pour les appels d’outils au cours d’une même exécution."
@@ -474,6 +478,11 @@
         "guarded": "Bloqué dès que du contenu externe est lu (recommandé)",
         "deny": "Jamais : l’IA ne peut rien modifier, quelle que soit l’exécution",
         "allow": "Toujours autorisé, même après la lecture de contenu externe"
+      },
+      "writeMode": {
+        "direct": "Écriture directe",
+        "propose": "Proposer uniquement : les modifications attendent ta validation",
+        "read_only": "Lecture seule"
       }
     },
     "jsonInvalid": "Ce n’est pas une valeur valide. La dernière version valide sera enregistrée."

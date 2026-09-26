@@ -159,4 +159,25 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     ],
     claims: { screens: ['/wartet'] },
   }),
+  defineFeature({
+    id: 'aenderungsvorschlaege',
+    area: 'zusammenarbeit',
+    since: '2026-09-27',
+    references: ['#141', 'ADR-070'],
+    ui: {},
+    settings: ['ai.writeMode'],
+    tools: [
+      'exo_changeset_propose',
+      'exo_changeset_submit',
+      'exo_changeset_remove_change',
+      'exo_changeset_discard',
+      'exo_changeset_get',
+      'exo_changeset_list',
+      'exo_changeset_apply',
+      'exo_changeset_reject',
+    ],
+    claims: {
+      screens: ['/arbeitsbereich/:x/vorschlaege', '/arbeitsbereich/:x/vorschlaege/:x'],
+    },
+  }),
 ];

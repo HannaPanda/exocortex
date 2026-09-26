@@ -41,6 +41,7 @@
     "columnActions": "Aktionen",
     "scopeLabels": {
       "read": "Lesen",
+      "propose": "Vorschlagen",
       "write": "Schreiben",
       "admin": "Administration"
     },
@@ -59,6 +60,10 @@
       "read": {
         "label": "Nur lesen",
         "hint": "Seiten und Datenbanken lesen, nichts ändern."
+      },
+      "propose": {
+        "label": "Lesen und vorschlagen",
+        "hint": "Zusätzlich Änderungen vorschlagen und über Aufträge berichten. Seiten ändert erst, wer den Vorschlag übernimmt."
       },
       "write": {
         "label": "Lesen und schreiben",
