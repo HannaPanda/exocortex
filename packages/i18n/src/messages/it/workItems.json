@@ -37,7 +37,17 @@
       "attentionRaised": "ha fatto una domanda",
       "attentionResolved": "ha risposto a una domanda",
       "runResumed": "ha fatto proseguire il lavoro con la risposta",
-      "resumeFailed": "ha risposto, ma non è stato possibile riprendere il lavoro ({code}). L’incarico è in attesa nella coda."
+      "resumeFailed": "ha risposto, ma non è stato possibile riprendere il lavoro ({code}). L’incarico è in attesa nella coda.",
+      "runStartedFromCheckpoint": "ha avviato un’esecuzione dell’IA dal punto di avanzamento salvato",
+      "checkpointRecorded": "ha salvato lo stato di avanzamento ({trigger})"
+    },
+    "trigger": {
+      "step": "stato intermedio",
+      "pause": "pausa",
+      "waiting_for_human": "in attesa di risposta",
+      "external_wait": "in attesa di altro",
+      "budget": "budget in esaurimento",
+      "run_interrupted": "esecuzione interrotta"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Avvia esecuzione dell’IA",
     "description": "L’IA integrata riceve l’incarico con obiettivo, criteri e pagine di contesto in una conversazione dedicata e ne inserisce il risultato nell’incarico. Un incarico senza responsabile viene assegnato all’IA.",
+    "fromCheckpoint": "Continua dallo stato di avanzamento del {moment}",
+    "fromCheckpointHint": "La nuova esecuzione riceve lo stato salvato e tutte le decisioni prese da allora, non la cronologia precedente della chat. Deselezionando la casella, si riparte dall’obiettivo iniziale.",
+    "modelLabel": "Modello",
+    "modelDefault": "Modello predefinito",
     "instructionsLabel": "Istruzioni per questo tentativo (facoltativo)",
     "instructionsPlaceholder": "Per esempio: guarda prima gli allegati.",
     "cancel": "Annulla",
@@ -142,5 +156,37 @@
     "description": "L’incarico e la sua cronologia andranno persi. Le sotto-attività rimarranno e saranno indipendenti, le esecuzioni dell’IA resteranno nel conteggio dei consumi. Se l’incarico non serve più, impostalo invece su «Annullato».",
     "cancel": "Annulla",
     "confirm": "Elimina definitivamente"
+  },
+  "checkpoint": {
+    "heading": "Stato di avanzamento",
+    "none": "Nessuno stato di avanzamento ancora salvato. L’IA lo salva durante il lavoro; se l’incarico è in attesa di risposta o un’esecuzione si interrompe, eXocortex rileva l’ultimo stato.",
+    "loading": "Caricamento dello stato di avanzamento…",
+    "loadFailed": "Impossibile caricare lo stato di avanzamento.",
+    "showEarlier": "{count, plural, one {Uno stato precedente} many {# stati precedenti} other {# stati precedenti}}",
+    "hideEarlier": "Nascondi stati precedenti",
+    "bySystem": "rilevato da eXocortex",
+    "model": "Modello: {model}",
+    "interrupted": "L’esecuzione si è conclusa senza completamento ({code}). La prossima esecuzione ripartirà da qui.",
+    "planHeading": "Piano",
+    "step": {
+      "done": "completato",
+      "in_progress": "iniziato",
+      "open": "aperto"
+    },
+    "findingsHeading": "Risultati e scoperte",
+    "assumptionsHeading": "Ipotesi",
+    "lastAction": "Ultima azione:",
+    "nextStep": "Passaggio successivo:",
+    "artifactsHeading": "Pagine create",
+    "sourcesHeading": "Fonti",
+    "deleted": "Pagina eliminata",
+    "changedSince": "modificata da allora",
+    "pendingHeading": "In attesa di",
+    "decision": {
+      "open": "ancora aperta",
+      "resolved": "risolta",
+      "obsolete": "superata"
+    },
+    "budget": "Budget a questo punto: {spent} su {budget}"
   }
 }

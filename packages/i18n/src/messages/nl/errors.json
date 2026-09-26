@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "Een van de gekoppelde pagina’s bevindt zich niet in deze werkruimte of is niet leesbaar voor jou.",
     "work_item_closed": "Deze taak is afgerond. Heropen deze taak voordat je een nieuwe run start.",
     "work_item_budget_exhausted": "Het budget van deze taak is opgebruikt. Verhoog het voordat je een nieuwe run start.",
+    "work_checkpoint_summary_required": "De eerste werkstatus van een opdracht heeft een samenvatting nodig. Latere nemen deze over als er geen nieuwe komt.",
+    "work_checkpoint_not_found": "Deze werkstatus bestaat niet bij deze opdracht. Kies er een uit de lijst met checkpoints.",
     "attention_item_settled": "Dit is al afgehandeld, iemand anders was sneller of de taak is al verder gegaan. Vernieuw de lijst.",
     "attention_option_invalid": "Deze keuze bestaat hier niet. Kies een van de aangeboden opties.",
     "attention_note_required": "Hier is een antwoord in woorden nodig. Schrijf kort wat je bedoelt.",

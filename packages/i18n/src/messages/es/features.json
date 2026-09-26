@@ -907,6 +907,18 @@
     },
     "where": "Barra lateral en «Tareas», o Ctrl + K y «Abrir tareas» o «Nueva tarea»."
   },
+  "arbeitsstaende": {
+    "title": "Puntos de control: reanudar una tarea interrumpida justo donde se quedó",
+    "summary": "Una tarea recuerda el progreso del trabajo: qué se ha completado, qué queda pendiente, qué supuestos y hallazgos existen y qué páginas se han creado. Si una ejecución de IA se interrumpe porque un proveedor no responde, se agota la cuota o la ejecución espera una respuesta, la siguiente ejecución continúa exactamente desde ahí, incluso con otro modelo.",
+    "details": {
+      "p1": "El punto de control lo registra principalmente la propia IA, tras cada paso importante y antes de detenerse. eXocortex lo complementa automáticamente si el trabajo espera una aclaración o si una ejecución termina sin completarse: en ese caso, se guarda el último estado junto con el motivo de la interrupción.",
+      "p2": "«Iniciar ejecución de IA» continúa por defecto desde el punto de control más reciente. La nueva ejecución recibe el estado en lugar del historial de chat anterior, además de todas las decisiones tomadas desde entonces y una indicación de qué páginas han cambiado mientras tanto. En el mismo cuadro de diálogo puedes elegir otro modelo o empezar completamente desde cero.",
+      "p3": "En la página de la tarea se muestra el estado actual con el plan, los supuestos, los hallazgos y las páginas; los estados anteriores se pueden desplegar. Cada punto de control aparece también en el historial.",
+      "p4": "Un punto de control no es una memoria: pertenece a una tarea y se descarta cuando esta se completa. Lo que deba conservarse de forma permanente pertenece a la memoria de los agentes.",
+      "p5": "Los agentes trabajan con exo_work_item_checkpoint y exo_work_item_checkpoints; exo_work_item_start_run admite fromCheckpoint y modelSlug."
+    },
+    "where": "En la página de una tarea, bajo «Punto de control», y en el cuadro de diálogo «Iniciar ejecución de IA»."
+  },
   "wartet-auf-dich": {
     "title": "Te espera: todo lo que necesita de ti ahora mismo",
     "summary": "Una lista que abarca todos los espacios de trabajo con aquello que no puede continuar sin ti: decisiones, aprobaciones de uso compartido, resultados para revisar, tareas bloqueadas, ejecuciones de IA fallidas y consultas de agentes. Respondes directamente ahí, y el trabajo continúa con tu respuesta justo en el punto en el que se detuvo.",

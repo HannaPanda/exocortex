@@ -907,6 +907,18 @@
     },
     "where": "Barre latérale sous « Tâches », ou Strg + K et « Ouvrir les tâches » ou « Nouvelle tâche »."
   },
+  "arbeitsstaende": {
+    "title": "États d’avancement : reprendre une tâche interrompue là où elle s’était arrêtée",
+    "summary": "Une tâche garde en mémoire la progression du travail : ce qui est fait, ce qui manque encore, les hypothèses et conclusions formulées, ainsi que les pages créées. Si une exécution d’IA s’interrompt parce qu’un fournisseur ne répond pas, que le quota est épuisé ou qu’elle attend une réponse, la prochaine exécution reprend exactement là, y compris avec un autre modèle.",
+    "details": {
+      "p1": "L’état d’avancement est principalement consigné par l’IA elle-même, après chaque étape majeure et avant de s’arrêter. eXocortex le complète automatiquement si le travail attend une précision ou si une exécution s’arrête sans conclusion : le dernier état est alors repris avec la raison de l’interruption.",
+      "p2": "« Lancer une exécution IA » reprend par défaut au niveau du dernier état d’avancement. La nouvelle exécution reçoit cet état au lieu de l’ancien historique de discussion, ainsi que toutes les décisions prises depuis et l’indication des pages modifiées entre-temps. Dans la même boîte de dialogue, tu peux choisir un autre modèle ou tout recommencer depuis le début.",
+      "p3": "Sur la page de la tâche se trouve l’état actuel avec le plan, les hypothèses, les conclusions et les pages ; les états précédents peuvent être dépliés. Chaque état apparaît aussi dans l’historique.",
+      "p4": "Un état d’avancement n’est pas une mémoire : il est rattaché à une tâche et prend fin lorsqu’elle est terminée. Ce qui doit durer a sa place dans la mémoire des agents.",
+      "p5": "Les agents utilisent exo_work_item_checkpoint et exo_work_item_checkpoints ; exo_work_item_start_run accepte fromCheckpoint et modelSlug."
+    },
+    "where": "Sur la page d’une tâche sous « État d’avancement », et dans la boîte de dialogue « Lancer une exécution IA »."
+  },
   "wartet-auf-dich": {
     "title": "Attend ton action : tout ce qui a besoin de toi en ce moment",
     "summary": "Une liste sur l’ensemble des espaces de travail regroupant tout ce qui ne peut pas avancer sans toi : décisions, partages, résultats à vérifier, tâches bloquées, exécutions d’IA ayant échoué et questions d’agents. Tu y réponds directement, et le travail reprend grâce à ta réponse exactement là où il s’était arrêté.",

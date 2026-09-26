@@ -157,9 +157,12 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
     keywords: ['gespeicherte suche', 'smart view', 'abfrage', 'saved query', 'suchblock'],
   },
   workItems: {
-    label: 'Aufträge: delegierte Arbeit mit Ziel, Status, Bearbeiter, Ergebnis und Läufen.',
+    label:
+      'Aufträge: delegierte Arbeit mit Ziel, Status, Bearbeiter, Ergebnis, Läufen und Arbeitsständen.',
     keywords: [
       'auftrag',
+      'arbeitsstand',
+      'arbeitsständ',
       'aufträg',
       'auftraeg',
       'delegier',

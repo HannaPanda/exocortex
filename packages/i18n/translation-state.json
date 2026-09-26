@@ -8488,6 +8488,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "86cc66793bb0f40d"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "84cd4c12e4bb8e94"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "b568455662ce1d7d"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "2335d2428c45a867"
@@ -8823,6 +8831,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "16c73e1d785ec8ec"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "94e2f5a327bd8999"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "0a11d205b04e496f"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "e79681ad6dd1f99b"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "224fa77b5e836b16"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "529cb9731afa1e50"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "9359a3cf3cbd301c"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "3acce6c91541cb0e"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "7d2c0f6b13243b54"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -16056,6 +16096,110 @@
       "source": "948643cb59e8274f",
       "output": "d8b8392e2c542950"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "d6358b73f55b3213"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "69ef1ef347b53ec3"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "17647427762f95b1"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "4299a98b6047899a"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "25d6e933f9507ac7"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "b80cd861051aa590"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "b0daa8ccb4b38341"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "dc676b42859915c8"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "2ada8bded86d93d8"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "e171c2ff25b55e5a"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "ee325afd9b4e907b"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "e689e0b62c5e8282"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "8e8988b58ed40b53"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "189cd4546eb844d7"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "f8ff5540e79a206c"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "9a082cf7812fa481"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "b0ab6c0e435dc2ef"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "707b05c5e5c78503"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "c160eba014556b65"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "a8d9289735a3fa7a"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "2872b9e448d4d2c7"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "caf85b0888d78f1f"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "a4c3ed04a95a3da1"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "2b6b853c9e59dbf4"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "2348f99874421257"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
@@ -16296,6 +16440,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "975e2907b507b4dd"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "1bbb7f0e9880e518"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "e14d94b5fe173a8a"
@@ -16319,6 +16467,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "b9e6cf9c437b48f8"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "c074fa14dfbdf40e"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -16391,6 +16543,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "c1f88e9d6c4145cf"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "1a18ed267b265936"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "c3f6046ed185adda"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "6210c0bf05396716"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "50b39381a68fe770"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "fd30a602cd42576b"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "54cb5114f0e2171a"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -16504,6 +16680,14 @@
       "source": "b264b1ab90807f86",
       "output": "1c2441ee56ad4f0d"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "d5c00719ec876007"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "571db262d4082d68"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "a2b0e8567b675739"
@@ -16511,6 +16695,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "1241392f49411921"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "3840d9d29421c46c"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -25010,6 +25202,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "cdc203e2c5196342"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "c8dd08b27ac0e9a5"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "75ccee207b4e0306"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "49ea0222efbaecc6"
@@ -25345,6 +25545,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "c46b51fd5c8d1f43"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "2679ba8efda17491"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "d3a1eeb2200cff2c"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "f6ca9cabe029b928"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "1c7a9c8fd36322d5"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "784c694b49c18f46"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "116cb34a3d44bd9d"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "caac76854c9a1359"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "edd48c9235b9d713"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -32578,6 +32810,110 @@
       "source": "948643cb59e8274f",
       "output": "a9254c5f812829af"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "d1cf269c0d7cf39f"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "fc183222b9ac51ce"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "f9bc45545c84a866"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "08e407a84f5f4cff"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "f99c5728713fea15"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "7706a38f317ea5a2"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "e7ac884585e9be99"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "519cc75dc7648fb5"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "7a76115cb4bdf485"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "14311fa4669bfc01"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "d44d0aa9fc91df31"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "3b967a3a3fa08d85"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "3c9ae54e8cd4c5ff"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "b830f9ba15f8b9b5"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "80a712725407a376"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "d9a3bd286bcc34b7"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "af4eb1b53d62316b"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "a9db36508830af30"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "842326be80c176b2"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "e329477dae06079e"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "f6a3be4554b451f0"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "dd5e2f140e71d016"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "e3dc8f246eaada6d"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "b8dbd126781166cb"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "b66292585132b8e9"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -32818,6 +33154,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "68ca8b4d25e7dc74"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "94253dbe2ce6b809"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "33c75277f361fc13"
@@ -32841,6 +33181,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "ad8345d153507b9d"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "01addbfaaf62517d"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -32913,6 +33257,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "75f1f75e33377448"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "decac3f74c6717fa"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "cf08d12168606426"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "9bd4d1e04ad51df3"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "51006bec53202ca1"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "7e8b07e5a590bca2"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "1a4f2679c5a57d63"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -33026,6 +33394,14 @@
       "source": "b264b1ab90807f86",
       "output": "9c6f7d2c8af3df0c"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "6c9b86c901c20d3d"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "2e28209ca74ae4c8"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "17c9afebd726ccfb"
@@ -33033,6 +33409,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "554ebaa3db05164f"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "a1e90f7fdbbf8c0a"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "a5ab3212dad17406"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -41532,6 +41916,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "c2c5b0af5694680a"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "3d604da5d0edf545"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "3ef3d72fdf9e9a7e"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "57d3d35d919982cb"
@@ -41867,6 +42259,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "db4b19357202bbce"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "8b2309038805c1b1"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "19e60a6111136338"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "8da027e9117b743e"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "de0d23f412596328"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "8dbf4fe72baa1015"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "8e774a7aabd6a9c9"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "51620e0c405bbbe1"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "8f3a76013417851f"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -49100,6 +49524,110 @@
       "source": "948643cb59e8274f",
       "output": "af273d956b5bec8d"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "c8fa3ff0f894d5a1"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "b92643bd6c4096ff"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "3cc75aed517e38ba"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "75436dcda193d4f4"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "a68c9dc891d7b82b"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "0e8e8d12ad7fb04a"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "dcb295f470f3223a"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "e85a90d06c58e08f"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "b4378627a98671b5"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "046a5aceb1962603"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "b3456d08e7e96e89"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "4877bee53528ce65"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "de5a059f65b97709"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "0062fb623b547303"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "1a0e7c5c2a96ffd1"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "992f2ff64242ab52"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "3b26940aa3c32ac7"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "534a737a509ffc5d"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "d7c2be7dda9dfde6"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "aac0615b2c611dcf"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "c86403b34a688613"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "caf85b0888d78f1f"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "dca0ef73e20eaa30"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "fa09f6e34291e731"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "44910a89e5f5799e"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
@@ -49340,6 +49868,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "c21413ad891585c1"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "4a567dc6656ea2fe"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "a467120dca47870c"
@@ -49363,6 +49895,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "b4558ee1f5741033"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "f9736d074fbd9e6d"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -49435,6 +49971,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "797f5dcd0217e2b9"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "17f0795ec3fec2df"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "05a9e402da9ba958"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "6210c0bf05396716"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "55eebbbba614b6b1"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "8a26e73eabb023ad"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "d497e46ac8b889d8"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -49548,6 +50108,14 @@
       "source": "b264b1ab90807f86",
       "output": "0960d03a893f7eb2"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "879559da8024d945"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "40176e91c8f4bfda"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "a6a965ea61c80c90"
@@ -49555,6 +50123,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "9a0e8aa687bd9756"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "5758d1577e505772"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "e61bbb839ef8d8cb"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -58054,6 +58630,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "c49b454f30006c93"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "52d2bad290814740"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "82658d265f03350c"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "e160a478e0605427"
@@ -58389,6 +58973,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "57252f00a4b0731c"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "be33631eb48eeaf7"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "d2b0a8415f4eff9a"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "6ef99b3f5cad9784"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "c33b371b1d067aea"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "c57934dce4d6774f"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "8e1098afe3d43808"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "c21139ae6a822548"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "9f29779722bf9fd2"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -65622,6 +66238,110 @@
       "source": "948643cb59e8274f",
       "output": "20b5f4b8bfd56e4f"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "dc304d8a784bb911"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "90c25634cf368a1a"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "e587ae7b350ab55d"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "50dc9a5e0ce554e8"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "9b87dc268a2f8bc9"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "79d5bcd80f5c56af"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "3603988f8d6979d7"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "1bc2d3af7bbd89b7"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "e785fe2fc5593a3f"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "ef3d56ed9cabb297"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "158493dc06087f6d"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "9563b735cc5535d9"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "e6b980efdce3a2a3"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "51c141481fa50ce4"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "7e1a648010d967c6"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "94e0ba17f11ee104"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "4925fe49b2c0f0aa"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "d5662e5d07574335"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "c8dec0115690dfae"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "8eea642ca1b94f80"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa2bd181d8ba5e8b"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "a9b58b3b596f4c76"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "be93b740931ae262"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "60dd8ae8215fbf90"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "8e6d39ae5bcbf928"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "74fcf35caea035ea"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
@@ -65862,6 +66582,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "5b328a3d179cf3e0"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "69a9e18cb7d9758c"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "dcce3f06865c8531"
@@ -65885,6 +66609,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "5f407328d4fa95d5"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "d8fb26b3e712709a"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -65957,6 +66685,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "52fcfde046ffcd01"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "2195e55132227fe2"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "7a615aa682096a67"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "a04f890b2c4261ad"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "ee950dd1b8495ba1"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "aaa3593d7234c398"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "98d0616305658299"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -66070,6 +66822,14 @@
       "source": "b264b1ab90807f86",
       "output": "b51398bb7d6b7bef"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "24455abc03045a0c"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "1d62c2fb335cdb4e"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "aaff0f071ef8c7f0"
@@ -66077,6 +66837,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "4af0c8846371997c"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "28be58a3b7074b59"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "90c2d339a9d57c99"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -74576,6 +75344,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "f83f1b040696eee3"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "3e972f247c33f023"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "9a462088b2aebb76"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "9108b2c9f172ac2c"
@@ -74911,6 +75687,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "3d34670f65b99ab7"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "52da2a4292dc6985"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "ffe73b78f7002cd2"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "3f90924bdf3d9531"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "753bd27ee972246d"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "be2add12c9b56a72"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "d35055d63992acce"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "e90ffe8719d39c40"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "94e1c747b7214472"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -82144,6 +82952,110 @@
       "source": "948643cb59e8274f",
       "output": "576434df7a00aeae"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "e090454e9173e4ec"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "69e5f21142fb38d0"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "c20aada4f4bbafa6"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "59837cba596721db"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "5620e05400ae0077"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "0f2a0aeed3747e44"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "1c2c1a4cf6b5c22a"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "a17c226c66ea414c"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "ebf287c36a70033e"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "c2beac19f89bbc1d"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "90163c12e5bc6f20"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "6197884f0d12e28f"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "056d73cea0530deb"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "075086ea72a8a8f7"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "5dc938851259fb19"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "28e35dff9b3b6040"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "b0ab6c0e435dc2ef"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "3bd52ebf1058d9e4"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "f61d49ba801382ea"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "ab6f6518a3cb534b"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "3cdfecb698fc929e"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "8fc141c35866c806"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "41d2ee0dc9e3c660"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "56b65615507edc60"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "2348f99874421257"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
@@ -82384,6 +83296,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "53c1910f26929216"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "ce4f22dc650b168a"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "cdd5f1fbedeb33de"
@@ -82407,6 +83323,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "85d4b65856ee8dbd"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "cb21cf368fd09db3"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -82479,6 +83399,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "77b6fda7b5b59011"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "73a64e1c90dfc46a"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "39ef434950ca9305"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "bce889f722fa8106"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "5e898b6e4386c4b3"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "5fdd9ff21a16d3cc"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "d3120636fa54777a"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -82592,6 +83536,14 @@
       "source": "b264b1ab90807f86",
       "output": "3d0b12e99b608ce3"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "b346a3c3e5ad0216"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "3475e8c687e2f73f"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "ef9cc5408077a83b"
@@ -82599,6 +83551,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "264b4025b4795735"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "73e75ff64bcaede8"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -91098,6 +92058,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "6da130e09513f304"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "514d10b167b25236"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "2b8c07fa1b3d1d97"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "cfaeed8e21c68e01"
@@ -91433,6 +92401,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "8acd949cd5ab5de6"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "e7907f509796780f"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "79f7b9dfdc65f3ed"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "39bd449a3e8cccc0"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "9f4ec5d312ae1264"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "8f6ef5ea2d3a727f"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "215ab9cbe20e6dd4"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "ff650c34f8a089aa"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "33425a0230584ba3"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -98666,6 +99666,110 @@
       "source": "948643cb59e8274f",
       "output": "7237b73bc691a25b"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "b8117e0e8a52278d"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "119a75069d045cad"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "b827f8d02e872439"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "ccfadb74fb13877a"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "e72c9bbc054cc4a9"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "2f8f04e03751c949"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "8bd1de67075845a1"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "fc15f0f33ad5bdc5"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "dce7433d458a6ae0"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "02fec33ad879c7ee"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "1e736f384f1200ad"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "e3fa49f92c162486"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "80be1ec5f363f008"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "3e5a3e97b2c49728"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "3a41ce7c0f6f7b73"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "e0d80b64c6d555d6"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "b0ab6c0e435dc2ef"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "b6401807e3637edf"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "a9bee56783115de1"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "3a09f0f44f1f4ea9"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "12cbf915b861b69c"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "b9b4e78aeb20ca84"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "47c9a2e96da17ab0"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "ba22dba2372b6262"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "0e02cfd21167d2e8"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
@@ -98906,6 +100010,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "26ed74bb3ecc91db"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "7125e94c74e813e6"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "19d69c7147cc3979"
@@ -98929,6 +100037,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "7e928ee9d2044ee4"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "d831cf22685ced63"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -99001,6 +100113,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "4c870f05321b855c"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "a4be1d5598b7bb10"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "27d555afdf6d1f44"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "2c799b4ed92d1ad3"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "e242c5ab2f7f2714"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "d3e505b4afd24fce"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "8549ab6a034d0a94"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -99114,6 +100250,14 @@
       "source": "b264b1ab90807f86",
       "output": "47d757e153367a89"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "2565a126c386bade"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "8ae702a1523f175c"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "93918b153b05b54e"
@@ -99121,6 +100265,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "6fb71f9da27ea3fe"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "9eb2f5c42014921d"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",
@@ -107620,6 +108772,14 @@
       "source": "f7ba6fb9894cc83d",
       "output": "6539a8f722094648"
     },
+    "errors.codes.work_checkpoint_not_found": {
+      "source": "3d0e37286258ef44",
+      "output": "607ff7e5d3291b96"
+    },
+    "errors.codes.work_checkpoint_summary_required": {
+      "source": "97a91b97c2cb5c53",
+      "output": "5a6f7ad052bdf1fc"
+    },
     "errors.codes.work_item_assignee_invalid": {
       "source": "a1fe04ab59a136e0",
       "output": "6d2662da4adcff4e"
@@ -107955,6 +109115,38 @@
     "features.arbeitsbereiche.where": {
       "source": "a18b807ba351fc51",
       "output": "b4e7f0957d06ad02"
+    },
+    "features.arbeitsstaende.details.p1": {
+      "source": "1f9ad13748b97fe1",
+      "output": "72a72a48f2e65e67"
+    },
+    "features.arbeitsstaende.details.p2": {
+      "source": "589814d5d8251260",
+      "output": "d2d2dd8053791d4e"
+    },
+    "features.arbeitsstaende.details.p3": {
+      "source": "a87cffe02b4b7130",
+      "output": "85e933555e9c3756"
+    },
+    "features.arbeitsstaende.details.p4": {
+      "source": "f4a6fff6ba077303",
+      "output": "ebeeb8019b67ed12"
+    },
+    "features.arbeitsstaende.details.p5": {
+      "source": "41f46740baec02be",
+      "output": "78705de6bb8048f8"
+    },
+    "features.arbeitsstaende.summary": {
+      "source": "d4ccf3c4c6cbf0c9",
+      "output": "b76cfdd967d7ffe9"
+    },
+    "features.arbeitsstaende.title": {
+      "source": "d35fed7847b66d62",
+      "output": "c5adb52f2235900b"
+    },
+    "features.arbeitsstaende.where": {
+      "source": "7d88db049f8cf244",
+      "output": "8c920632eaad5390"
     },
     "features.auftraege.details.p1": {
       "source": "0250f693521e394a",
@@ -115188,6 +116380,110 @@
       "source": "948643cb59e8274f",
       "output": "b9e10688be012d8b"
     },
+    "workItems.checkpoint.artifactsHeading": {
+      "source": "f35f81a57320192b",
+      "output": "851bea91ee12cbee"
+    },
+    "workItems.checkpoint.assumptionsHeading": {
+      "source": "500b60e163adf458",
+      "output": "cb21f7fcabe08b6e"
+    },
+    "workItems.checkpoint.budget": {
+      "source": "21e2c59f1c87dda5",
+      "output": "912ca8598bf99c8b"
+    },
+    "workItems.checkpoint.bySystem": {
+      "source": "606f77a2715609fe",
+      "output": "82385bde6aeac8ec"
+    },
+    "workItems.checkpoint.changedSince": {
+      "source": "a9a041b2515145e2",
+      "output": "0a8f0c6e5a96baf1"
+    },
+    "workItems.checkpoint.decision.obsolete": {
+      "source": "274524e1adb49ead",
+      "output": "7706a38f317ea5a2"
+    },
+    "workItems.checkpoint.decision.open": {
+      "source": "280216d3508df87a",
+      "output": "903b775b928813df"
+    },
+    "workItems.checkpoint.decision.resolved": {
+      "source": "651759471bd31d42",
+      "output": "519cc75dc7648fb5"
+    },
+    "workItems.checkpoint.deleted": {
+      "source": "4cfbe28b2715226b",
+      "output": "0bc2c068099b0d74"
+    },
+    "workItems.checkpoint.findingsHeading": {
+      "source": "39503b5af92d0450",
+      "output": "85b5023687657411"
+    },
+    "workItems.checkpoint.heading": {
+      "source": "e647516763935a1f",
+      "output": "d97c2efc68b41c31"
+    },
+    "workItems.checkpoint.hideEarlier": {
+      "source": "2737e2d0883a33a4",
+      "output": "ce3a0715a5dd0e99"
+    },
+    "workItems.checkpoint.interrupted": {
+      "source": "95f802acd728500a",
+      "output": "561032cd3511746c"
+    },
+    "workItems.checkpoint.lastAction": {
+      "source": "9b4c1f21d2d15e62",
+      "output": "bc6cd433e42775bd"
+    },
+    "workItems.checkpoint.loadFailed": {
+      "source": "04342261e8e6d988",
+      "output": "0553150a428fa482"
+    },
+    "workItems.checkpoint.loading": {
+      "source": "bb28c8579299c3ad",
+      "output": "f24f7010f07afaec"
+    },
+    "workItems.checkpoint.model": {
+      "source": "7ee644ce4310d025",
+      "output": "af4eb1b53d62316b"
+    },
+    "workItems.checkpoint.nextStep": {
+      "source": "6a224b133d012ca5",
+      "output": "b62fc0a45be01fb9"
+    },
+    "workItems.checkpoint.none": {
+      "source": "6a2a38cda4ec5a32",
+      "output": "d8896e2d189f0b92"
+    },
+    "workItems.checkpoint.pendingHeading": {
+      "source": "ed93a42744e4ecc3",
+      "output": "eac833e6ce529425"
+    },
+    "workItems.checkpoint.planHeading": {
+      "source": "fa8ed0bdabdd6bcb",
+      "output": "6c55806376abf353"
+    },
+    "workItems.checkpoint.showEarlier": {
+      "source": "2c40932d5c3e0b13",
+      "output": "b0d15b176e48c34b"
+    },
+    "workItems.checkpoint.sourcesHeading": {
+      "source": "c7860048458ffe3b",
+      "output": "ebddcc6f04e1c9df"
+    },
+    "workItems.checkpoint.step.done": {
+      "source": "967f15af47f9e087",
+      "output": "9a77d3ffe4e3377d"
+    },
+    "workItems.checkpoint.step.in_progress": {
+      "source": "df5c0d372c65dba4",
+      "output": "b8dbd126781166cb"
+    },
+    "workItems.checkpoint.step.open": {
+      "source": "9a80891df52590c2",
+      "output": "9a83e9b5c5ab0fbf"
+    },
     "workItems.deleteDialog.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -115428,6 +116724,10 @@
       "source": "9e8bdf2824e2385d",
       "output": "58574c3da7069aef"
     },
+    "workItems.labels.event.checkpointRecorded": {
+      "source": "1435003706e2974c",
+      "output": "1fe1d0386a9bbc0a"
+    },
     "workItems.labels.event.created": {
       "source": "12e726cec9b93c27",
       "output": "a4849844f8b72d5b"
@@ -115451,6 +116751,10 @@
     "workItems.labels.event.runStarted": {
       "source": "ff67a290f6f01762",
       "output": "221101b460894dc8"
+    },
+    "workItems.labels.event.runStartedFromCheckpoint": {
+      "source": "268902d128766409",
+      "output": "1aedb7128a6b0da0"
     },
     "workItems.labels.event.statusChanged": {
       "source": "987d63d185a30c4b",
@@ -115523,6 +116827,30 @@
     "workItems.labels.status.working": {
       "source": "e94e8adc17be38a7",
       "output": "d6f779583776b1e7"
+    },
+    "workItems.labels.trigger.budget": {
+      "source": "afd7e09ff455b0a6",
+      "output": "497c896b2d655df5"
+    },
+    "workItems.labels.trigger.external_wait": {
+      "source": "cf634f93da1b1f19",
+      "output": "57970d12df3f2116"
+    },
+    "workItems.labels.trigger.pause": {
+      "source": "858e4ba7a29fd38b",
+      "output": "a04f890b2c4261ad"
+    },
+    "workItems.labels.trigger.run_interrupted": {
+      "source": "08ebe520bb2ee35c",
+      "output": "e7c2351cca65d4ca"
+    },
+    "workItems.labels.trigger.step": {
+      "source": "9ac2f1ee9eee4900",
+      "output": "629acad9b85202de"
+    },
+    "workItems.labels.trigger.waiting_for_human": {
+      "source": "3f40df0225fd3aae",
+      "output": "deb8c93e6bb36903"
     },
     "workItems.list.children": {
       "source": "f633141c09a28c01",
@@ -115636,6 +116964,14 @@
       "source": "b264b1ab90807f86",
       "output": "34ab3de2accf9b17"
     },
+    "workItems.startRun.fromCheckpoint": {
+      "source": "a2ce7fcc614bb300",
+      "output": "a2c542de676c12a5"
+    },
+    "workItems.startRun.fromCheckpointHint": {
+      "source": "9ec77ab8ed9d86dc",
+      "output": "5e430669fc450cef"
+    },
     "workItems.startRun.instructionsLabel": {
       "source": "6fd6433e9cf40067",
       "output": "dd22103414762384"
@@ -115643,6 +116979,14 @@
     "workItems.startRun.instructionsPlaceholder": {
       "source": "1dc7c54d650b7d87",
       "output": "aca21fb2b5091a7c"
+    },
+    "workItems.startRun.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "91c637c807f499f9"
+    },
+    "workItems.startRun.modelLabel": {
+      "source": "ff461e69984d7e2f",
+      "output": "a5ab3212dad17406"
     },
     "workItems.startRun.start": {
       "source": "a6a8d7c2c67ccef9",

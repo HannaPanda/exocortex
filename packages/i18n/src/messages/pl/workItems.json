@@ -37,7 +37,17 @@
       "attentionRaised": "zadaje pytanie",
       "attentionResolved": "odpowiada na pytanie",
       "runResumed": "wznowiono pracę wraz z odpowiedzią",
-      "resumeFailed": "udzielono odpowiedzi, ale nie udało się wznowić pracy ({code}). Zadanie oczekuje w kolejce."
+      "resumeFailed": "udzielono odpowiedzi, ale nie udało się wznowić pracy ({code}). Zadanie oczekuje w kolejce.",
+      "runStartedFromCheckpoint": "uruchamia przebieg AI od zapisanego stanu pracy",
+      "checkpointRecorded": "zapisuje stan pracy ({trigger})"
+    },
+    "trigger": {
+      "step": "stan pośredni",
+      "pause": "pauza",
+      "waiting_for_human": "oczekiwanie na odpowiedź",
+      "external_wait": "oczekiwanie na coś innego",
+      "budget": "kończący się budżet",
+      "run_interrupted": "przerwany przebieg"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Uruchom AI",
     "description": "Wbudowana AI otrzyma zadanie wraz z celem, kryteriami i stronami kontekstowymi w osobnej rozmowie, a następnie wpisze swój wynik w zadaniu. Zadanie bez osoby realizującej zostanie przekazane do AI.",
+    "fromCheckpoint": "Kontynuuj od stanu pracy z {moment}",
+    "fromCheckpointHint": "Nowy przebieg otrzyma zapisany stan i wszystkie decyzje od tego momentu, a nie całą historię czatu. Bez zaznaczenia rozpocznie od celu.",
+    "modelLabel": "Model",
+    "modelDefault": "Domyślny model",
     "instructionsLabel": "Wskazówki do tej próby (opcjonalnie)",
     "instructionsPlaceholder": "Na przykład: Najpierw przejrzyj załączniki.",
     "cancel": "Anuluj",
@@ -142,5 +156,37 @@
     "description": "Zadanie i jego historia zostaną bezpowrotnie usunięte. Podzadania pozostaną jako samodzielne zadania, a uruchomienia AI pozostaną w zużyciu. Jeśli zadanie po prostu nie jest już potrzebne, zmień jego status na „Anulowano”.",
     "cancel": "Anuluj",
     "confirm": "Usuń na zawsze"
+  },
+  "checkpoint": {
+    "heading": "Stan pracy",
+    "none": "Nie zapisano jeszcze żadnego stanu pracy. AI zapisuje go w trakcie pracy; jeśli zadanie czeka na odpowiedź lub przebieg zostanie przerwany, eXocortex przejmuje ostatni stan.",
+    "loading": "Ładowanie stanu pracy…",
+    "loadFailed": "Nie udało się załadować stanu pracy.",
+    "showEarlier": "{count, plural, one {Jeden wcześniejszy stan} few {# wcześniejsze stany} many {# wcześniejszych stanów} other {# wcześniejszego stanu}}",
+    "hideEarlier": "Ukryj wcześniejsze stany",
+    "bySystem": "przejęte przez eXocortex",
+    "model": "Model: {model}",
+    "interrupted": "Przebieg zakończył się bez powodzenia ({code}). Następny przebieg wznowi pracę w tym miejscu.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "ukończono",
+      "in_progress": "rozpoczęto",
+      "open": "do zrobienia"
+    },
+    "findingsHeading": "Wnioski",
+    "assumptionsHeading": "Założenia",
+    "lastAction": "Ostatnie działanie:",
+    "nextStep": "Następny krok:",
+    "artifactsHeading": "Utworzone strony",
+    "sourcesHeading": "Źródła",
+    "deleted": "strona usunięta",
+    "changedSince": "zmieniono od tego czasu",
+    "pendingHeading": "Oczekiwanie na",
+    "decision": {
+      "open": "nadal otwarte",
+      "resolved": "odpowiedziano",
+      "obsolete": "nieaktualne"
+    },
+    "budget": "Budżet w tym momencie: {spent} z {budget}"
   }
 }

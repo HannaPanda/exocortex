@@ -98,6 +98,13 @@ function formatDetail(item: WorkItemDetail): string {
   if (item.budgetMicroUsd !== null) {
     lines.push('', `Budget: ${item.spentMicroUsd} von ${item.budgetMicroUsd} Mikro-USD verbraucht`);
   }
+  if (item.latestCheckpointAt !== null) {
+    lines.push(
+      '',
+      `Arbeitsstände: ${item.checkpointCount}, zuletzt ${item.latestCheckpointAt.slice(0, 16)} ` +
+        '(exo_work_item_checkpoints liest sie)',
+    );
+  }
   const recent = item.events.slice(0, 10).map((event) => {
     const note = event.note === null ? '' : `: ${event.note}`;
     return `- ${event.createdAt.slice(0, 16)} ${event.kind} (${participant(event.actor)})${note}`;
@@ -256,8 +263,10 @@ export const workItemStartRunTool: AnyToolDefinition = defineTool({
     'Lässt die eingebaute KI einen Versuch an einem Auftrag machen: ein neuer KI-Lauf in einer ' +
     'eigenen Unterhaltung, deren erste Nachricht aus dem Auftrag geschrieben wird. Ein Auftrag ohne ' +
     'Bearbeiter geht dabei an die eingebaute KI, ein angelegter wechselt auf working. Abgelehnt, ' +
-    'wenn der Auftrag abgeschlossen oder sein Budget verbraucht ist. Den Stand des Laufs liest ' +
-    'exo_ai_run_get mit der zurückgegebenen id.',
+    'wenn der Auftrag abgeschlossen oder sein Budget verbraucht ist. Gibt es einen festgehaltenen ' +
+    'Arbeitsstand, setzt der Lauf dort an (fromCheckpoint: "latest" ist Standard, "none" beginnt ' +
+    'beim Ziel, eine Checkpoint-id nimmt einen älteren); modelSlug wählt ein anderes Modell. Den ' +
+    'Stand des Laufs liest exo_ai_run_get mit der zurückgegebenen id.',
   inputSchema: z.object({ workItemId: idSchema }).extend(startWorkItemRunRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'workItems',
@@ -271,9 +280,10 @@ export const workItemStartRunTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: startWorkItemRunResponseSchema,
     });
+    const from = result.checkpointId === null ? '' : ` am Arbeitsstand ${result.checkpointId}`;
     return {
       text:
-        `Lauf ${result.run.id} gestartet (Unterhaltung ${result.conversationId}). ` +
+        `Lauf ${result.run.id} gestartet${from} (Unterhaltung ${result.conversationId}). ` +
         'exo_ai_run_get zeigt, wie weit er ist.',
       data: result,
     };

@@ -907,6 +907,18 @@
     },
     "where": "Pasek boczny w sekcji „Zadania” albo Strg + K i „Otwórz zadania” bądź „Nowe zadanie”."
   },
+  "arbeitsstaende": {
+    "title": "Stany prac: wznawianie przerwanego zadania w miejscu, w którym zostało zatrzymane",
+    "summary": "Zadanie pamięta postęp prac: co zostało zrobione, czego jeszcze brakuje, jakie poczyniono założenia i ustalenia oraz jakie strony powstały. Jeśli uruchomienie AI zostanie przerwane, bo dostawca nie odpowiada, wyczerpał się limit lub działanie oczekuje na odpowiedź, kolejne uruchomienie podejmuje pracę dokładnie w tym miejscu – nawet z innym modelem.",
+    "details": {
+      "p1": "Stan prac zapisuje przede wszystkim samo AI – po każdym większym kroku i zanim zakończy działanie. eXocortex uzupełnia go automatycznie, gdy praca oczekuje na odpowiedź lub uruchomienie kończy się bez finalizacji: wtedy zapisywany jest ostatni stan wraz z powodem przerwania.",
+      "p2": "Opcja „Uruchom przebieg AI” domyślnie wznawia pracę od najnowszego stanu prac. Nowy przebieg otrzymuje ten stan zamiast pełnej historii czatu, a do tego wszystkie decyzje podjęte od tamtego czasu oraz informację, które strony w międzyczasie uległy zmianie. W tym samym oknie dialogowym można wybrać inny model lub zacząć zupełnie od początku.",
+      "p3": "Na stronie zadania widoczny jest aktualny stan wraz z planem, założeniami, ustaleniami i stronami; wcześniejsze stany można rozwinąć. Każdy stan pojawia się również w historii.",
+      "p4": "Stan prac to nie pamięć: jest przypisany do konkretnego zadania i kończy się wraz z jego realizacją. To, co ma zachować trwałość, powinno trafić do pamięci agentów.",
+      "p5": "Agenci korzystają z narzędzi exo_work_item_checkpoint i exo_work_item_checkpoints; exo_work_item_start_run przyjmuje fromCheckpoint i modelSlug."
+    },
+    "where": "Na stronie zadania w sekcji „Stan prac” oraz w oknie dialogowym „Uruchom przebieg AI”."
+  },
   "wartet-auf-dich": {
     "title": "Czeka na ciebie: wszystko, co wymaga teraz twojej uwagi",
     "summary": "Lista obejmująca wszystkie obszary robocze z rzeczami, które nie ruszą bez ciebie: decyzje, udostępnienia, wyniki do weryfikacji, zablokowane zadania, nieudane uruchomienia SI i pytania od agentów. Odpowiadasz bezpośrednio tam, a praca toczy się dalej dzięki twojej odpowiedzi dokładnie od miejsca, w którym została wstrzymana.",

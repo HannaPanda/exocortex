@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "One of the linked pages is not in this workspace or is not readable by you.",
     "work_item_closed": "This task is closed. Reopen it before starting a new run.",
     "work_item_budget_exhausted": "This task’s budget is exhausted. Increase it before starting a new run.",
+    "work_checkpoint_summary_required": "The first checkpoint of a task needs a summary. Subsequent ones inherit it if no new one is provided.",
+    "work_checkpoint_not_found": "This checkpoint does not exist for this task. Choose one from the checkpoint list.",
     "attention_item_settled": "This has already been taken care of, someone else was faster, or the task has moved on. Please reload the list.",
     "attention_option_invalid": "This option is not available here. Please choose one of the available choices.",
     "attention_note_required": "A written reply is needed here. Briefly describe what you mean.",

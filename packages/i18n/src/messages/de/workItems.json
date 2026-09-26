@@ -37,7 +37,17 @@
       "attentionRaised": "hat eine Frage gestellt",
       "attentionResolved": "hat eine Frage beantwortet",
       "runResumed": "hat die Arbeit mit der Antwort weiterlaufen lassen",
-      "resumeFailed": "hat geantwortet, aber die Arbeit ließ sich nicht fortsetzen ({code}). Der Auftrag wartet in der Warteschlange."
+      "resumeFailed": "hat geantwortet, aber die Arbeit ließ sich nicht fortsetzen ({code}). Der Auftrag wartet in der Warteschlange.",
+      "runStartedFromCheckpoint": "hat einen KI-Lauf am festgehaltenen Arbeitsstand gestartet",
+      "checkpointRecorded": "hat den Arbeitsstand festgehalten ({trigger})"
+    },
+    "trigger": {
+      "step": "Zwischenstand",
+      "pause": "Pause",
+      "waiting_for_human": "wartet auf Antwort",
+      "external_wait": "wartet auf etwas anderes",
+      "budget": "Budget knapp",
+      "run_interrupted": "Lauf unterbrochen"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "KI-Lauf starten",
     "description": "Die eingebaute KI bekommt den Auftrag mit Ziel, Kriterien und Kontextseiten in einer eigenen Unterhaltung und trägt ihr Ergebnis am Auftrag ein. Ein Auftrag ohne Bearbeiter geht dabei an die KI.",
+    "fromCheckpoint": "Am Arbeitsstand vom {moment} weitermachen",
+    "fromCheckpointHint": "Der neue Lauf bekommt den festgehaltenen Stand und alle Entscheidungen seitdem, nicht den alten Chatverlauf. Ohne Haken beginnt er beim Ziel.",
+    "modelLabel": "Modell",
+    "modelDefault": "Standardmodell",
     "instructionsLabel": "Hinweise für diesen Versuch (optional)",
     "instructionsPlaceholder": "Zum Beispiel: Sieh dir zuerst die Anhänge an.",
     "cancel": "Abbrechen",
@@ -142,5 +156,37 @@
     "description": "Der Auftrag und seine Historie sind danach weg. Teilaufträge bleiben und stehen für sich, KI-Läufe bleiben im Verbrauch. Wenn der Auftrag nur nicht mehr gebraucht wird, setze ihn stattdessen auf „Abgebrochen“.",
     "cancel": "Abbrechen",
     "confirm": "Endgültig löschen"
+  },
+  "checkpoint": {
+    "heading": "Arbeitsstand",
+    "none": "Noch kein Arbeitsstand festgehalten. Die KI hält ihn während der Arbeit fest; wartet der Auftrag auf eine Antwort oder bricht ein Lauf ab, übernimmt eXocortex den letzten Stand.",
+    "loading": "Arbeitsstand wird geladen …",
+    "loadFailed": "Der Arbeitsstand ließ sich nicht laden.",
+    "showEarlier": "{count, plural, one {Ein früherer Stand} other {# frühere Stände}}",
+    "hideEarlier": "Frühere Stände ausblenden",
+    "bySystem": "von eXocortex übernommen",
+    "model": "Modell: {model}",
+    "interrupted": "Der Lauf endete ohne Abschluss ({code}). Der nächste Lauf setzt hier an.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "erledigt",
+      "in_progress": "begonnen",
+      "open": "offen"
+    },
+    "findingsHeading": "Erkenntnisse",
+    "assumptionsHeading": "Annahmen",
+    "lastAction": "Letzte Aktion:",
+    "nextStep": "Nächster Schritt:",
+    "artifactsHeading": "Erzeugte Seiten",
+    "sourcesHeading": "Quellen",
+    "deleted": "Seite gelöscht",
+    "changedSince": "seitdem geändert",
+    "pendingHeading": "Wartete auf",
+    "decision": {
+      "open": "noch offen",
+      "resolved": "beantwortet",
+      "obsolete": "hinfällig"
+    },
+    "budget": "Budget zu diesem Zeitpunkt: {spent} von {budget}"
   }
 }

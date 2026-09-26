@@ -907,6 +907,18 @@
     },
     "where": "Sidebar under “Work items”, or Ctrl + K and “Open work items” or “New work item”."
   },
+  "arbeitsstaende": {
+    "title": "Work checkpoints: resume an interrupted task right where it left off",
+    "summary": "A work item remembers how far the work has progressed: what is done, what is still missing, what assumptions and insights exist, and which pages have been created. If an AI run aborts because a provider fails to respond, the quota is exhausted, or the run waits for an answer, the next run picks up right there, even with a different model.",
+    "details": {
+      "p1": "The checkpoint is mainly recorded by the AI itself, after each major step and before it stops. eXocortex adds to it automatically if the work is waiting for an inquiry or a run ends without completion: in that case, the last status is saved along with the reason for the interruption.",
+      "p2": "“Start AI run” resumes from the latest checkpoint by default. The new run receives the checkpoint instead of the old chat history, plus all decisions made since then, and a note indicating which pages have changed in the meantime. In the same dialog, you can select a different model or start completely from scratch.",
+      "p3": "On the work item’s page, the current checkpoint is displayed with its plan, assumptions, insights, and pages; earlier checkpoints can be expanded. Each checkpoint also appears in the history.",
+      "p4": "A checkpoint is not a memory: it belongs to a task and is done when the task is done. Anything meant to last belongs in the agents’ memory.",
+      "p5": "Agents work with exo_work_item_checkpoint and exo_work_item_checkpoints; exo_work_item_start_run accepts fromCheckpoint and modelSlug."
+    },
+    "where": "On the page of a work item under “Checkpoint”, and in the “Start AI run” dialog."
+  },
   "wartet-auf-dich": {
     "title": "Waiting for you: everything that currently needs your input",
     "summary": "A workspace-wide list of everything that cannot proceed without you: decisions, shares, results to review, blocked tasks, failed AI runs, and questions from agents. You reply right there, and the work picks up with your answer at the exact spot where it stopped.",

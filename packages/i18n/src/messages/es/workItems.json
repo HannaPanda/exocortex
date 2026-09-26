@@ -37,7 +37,17 @@
       "attentionRaised": "ha hecho una pregunta",
       "attentionResolved": "ha respondido a una pregunta",
       "runResumed": "ha reanudado el trabajo con la respuesta",
-      "resumeFailed": "ha respondido, pero el trabajo no se ha podido reanudar ({code}). La tarea está esperando en la cola."
+      "resumeFailed": "ha respondido, pero el trabajo no se ha podido reanudar ({code}). La tarea está esperando en la cola.",
+      "runStartedFromCheckpoint": "ha iniciado una ejecución de la IA en el punto de control guardado",
+      "checkpointRecorded": "ha guardado el punto de control ({trigger})"
+    },
+    "trigger": {
+      "step": "Paso intermedio",
+      "pause": "Pausa",
+      "waiting_for_human": "esperando respuesta",
+      "external_wait": "esperando otra cosa",
+      "budget": "Presupuesto casi agotado",
+      "run_interrupted": "Ejecución interrumpida"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Iniciar ejecución de IA",
     "description": "La IA integrada recibe la tarea con el objetivo, los criterios y las páginas de contexto en una conversación propia y registra su resultado en la tarea. Si la tarea no tiene responsable, se asigna a la IA.",
+    "fromCheckpoint": "Continuar desde el punto de control del {moment}",
+    "fromCheckpointHint": "La nueva ejecución recibe el punto de control guardado y todas las decisiones tomadas desde entonces, no el historial del chat anterior. Si desmarcas la casilla, empezará desde el objetivo.",
+    "modelLabel": "Modelo",
+    "modelDefault": "Modelo predeterminado",
     "instructionsLabel": "Indicaciones para este intento (opcional)",
     "instructionsPlaceholder": "Por ejemplo: Revisa primero los archivos adjuntos.",
     "cancel": "Cancelar",
@@ -142,5 +156,37 @@
     "description": "La tarea y su historial desaparecerán. Las subtareas se conservarán de forma independiente y las ejecuciones de IA seguirán contando en el consumo. Si la tarea ya no es necesaria, cámbiala a «Cancelada».",
     "cancel": "Cancelar",
     "confirm": "Eliminar definitivamente"
+  },
+  "checkpoint": {
+    "heading": "Punto de control",
+    "none": "Todavía no se ha guardado ningún punto de control. La IA lo va guardando durante el trabajo; si la tarea pasa a esperar una respuesta o se interrumpe una ejecución, eXocortex conserva el último estado.",
+    "loading": "Cargando punto de control…",
+    "loadFailed": "No se ha podido cargar el punto de control.",
+    "showEarlier": "{count, plural, one {Un punto de control anterior} many {# puntos de control anteriores} other {# puntos de control anteriores}}",
+    "hideEarlier": "Ocultar puntos de control anteriores",
+    "bySystem": "conservado por eXocortex",
+    "model": "Modelo: {model}",
+    "interrupted": "La ejecución terminó sin completarse ({code}). La próxima ejecución continuará desde aquí.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "hecho",
+      "in_progress": "iniciado",
+      "open": "pendiente"
+    },
+    "findingsHeading": "Hallazgos",
+    "assumptionsHeading": "Suposiciones",
+    "lastAction": "Última acción:",
+    "nextStep": "Próximo paso:",
+    "artifactsHeading": "Páginas creadas",
+    "sourcesHeading": "Fuentes",
+    "deleted": "Página eliminada",
+    "changedSince": "modificada desde entonces",
+    "pendingHeading": "Esperaba a",
+    "decision": {
+      "open": "aún pendiente",
+      "resolved": "respondida",
+      "obsolete": "obsoleta"
+    },
+    "budget": "Presupuesto en ese momento: {spent} de {budget}"
   }
 }

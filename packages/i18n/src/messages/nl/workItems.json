@@ -37,7 +37,17 @@
       "attentionRaised": "heeft een vraag gesteld",
       "attentionResolved": "heeft een vraag beantwoord",
       "runResumed": "heeft het werk hervat met het antwoord",
-      "resumeFailed": "heeft geantwoord, maar het werk kon niet worden voortgezet ({code}). De taak staat in de wachtrij."
+      "resumeFailed": "heeft geantwoord, maar het werk kon niet worden voortgezet ({code}). De taak staat in de wachtrij.",
+      "runStartedFromCheckpoint": "heeft een AI-sessie gestart vanaf de vastgelegde werkstatus",
+      "checkpointRecorded": "heeft de werkstatus vastgelegd ({trigger})"
+    },
+    "trigger": {
+      "step": "tussenstand",
+      "pause": "pauze",
+      "waiting_for_human": "wacht op reactie",
+      "external_wait": "wacht op iets anders",
+      "budget": "budget krap",
+      "run_interrupted": "sessie onderbroken"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "AI-run starten",
     "description": "De ingebouwde AI ontvangt de taak met doel, criteria en contextpagina’s in een eigen gesprek en vult het resultaat bij de taak in. Een taak zonder bewerker wordt daarbij aan de AI toegewezen.",
+    "fromCheckpoint": "Verdergaan vanaf werkstatus van {moment}",
+    "fromCheckpointHint": "De nieuwe sessie krijgt de vastgelegde status en alle beslissingen van daarna mee, niet de oude chatgeschiedenis. Zonder vinkje begint de sessie bij het doel.",
+    "modelLabel": "Model",
+    "modelDefault": "Standaardmodel",
     "instructionsLabel": "Aanwijzingen voor deze poging (optioneel)",
     "instructionsPlaceholder": "Bijvoorbeeld: bekijk eerst de bijlagen.",
     "cancel": "Annuleren",
@@ -142,5 +156,37 @@
     "description": "De taak en de bijbehorende geschiedenis zijn daarna definitief verdwenen. Deeltaken blijven behouden als zelfstandige taken, en AI-runs blijven meetellen in het verbruik. Als de taak alleen niet meer nodig is, zet deze dan op „Geannuleerd”.",
     "cancel": "Annuleren",
     "confirm": "Definitief verwijderen"
+  },
+  "checkpoint": {
+    "heading": "Werkstatus",
+    "none": "Nog geen werkstatus vastgelegd. De AI legt deze tijdens het werk vast; wacht de opdracht op een reactie of breekt een sessie af, dan neemt eXocortex de laatste status over.",
+    "loading": "Werkstatus laden…",
+    "loadFailed": "De werkstatus kon niet worden geladen.",
+    "showEarlier": "{count, plural, one {Eén eerdere status} other {# eerdere statussen}}",
+    "hideEarlier": "Eerdere statussen verbergen",
+    "bySystem": "overgenomen door eXocortex",
+    "model": "Model: {model}",
+    "interrupted": "De sessie is geëindigd zonder voltooiing ({code}). De volgende sessie gaat hier verder.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "afgerond",
+      "in_progress": "bezig",
+      "open": "open"
+    },
+    "findingsHeading": "Inzichten",
+    "assumptionsHeading": "Aannames",
+    "lastAction": "Laatste actie:",
+    "nextStep": "Volgende stap:",
+    "artifactsHeading": "Aangemaakte pagina’s",
+    "sourcesHeading": "Bronnen",
+    "deleted": "pagina verwijderd",
+    "changedSince": "nadien gewijzigd",
+    "pendingHeading": "Wachtte op",
+    "decision": {
+      "open": "nog open",
+      "resolved": "beantwoord",
+      "obsolete": "vervallen"
+    },
+    "budget": "Budget op dat moment: {spent} van {budget}"
   }
 }

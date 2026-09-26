@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "Una de las páginas vinculadas no está en este espacio de trabajo o no tienes permiso para leerla.",
     "work_item_closed": "Esta tarea está cerrada. Vuelve a abrirla antes de iniciar una nueva ejecución.",
     "work_item_budget_exhausted": "El presupuesto de esta tarea se ha agotado. Auméntalo antes de iniciar una nueva ejecución.",
+    "work_checkpoint_summary_required": "El primer punto de control de un encargo necesita un resumen. Los posteriores lo heredan si no se añade uno nuevo.",
+    "work_checkpoint_not_found": "Este punto de control no existe en este encargo. Elige uno de la lista de puntos de control.",
     "attention_item_settled": "Esto ya se ha resuelto: otra persona se adelantó o la tarea avanzó. Vuelve a cargar la lista.",
     "attention_option_invalid": "Esta opción no está disponible aquí. Elige una de las alternativas ofrecidas.",
     "attention_note_required": "Aquí se necesita una respuesta por escrito. Explica brevemente lo que quieres decir.",

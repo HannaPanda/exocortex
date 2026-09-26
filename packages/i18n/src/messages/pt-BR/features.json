@@ -907,6 +907,18 @@
     },
     "where": "Barra lateral em „Tarefas“, ou Strg + K e „Abrir tarefas“ ou „Nova tarefa“."
   },
+  "arbeitsstaende": {
+    "title": "Pontos de progresso: continuar uma tarefa interrompida de onde ela parou",
+    "summary": "Uma tarefa se lembra de até onde o trabalho avançou: o que foi concluído, o que ainda falta, quais suposições e aprendizados existem e quais páginas foram criadas. Se uma execução de IA for interrompida porque um provedor não responde, a cota se esgotou ou a execução está aguardando uma resposta, a próxima execução continua exatamente daquele ponto, mesmo com outro modelo.",
+    "details": {
+      "p1": "O ponto de progresso é registrado principalmente pela própria IA, após cada etapa importante e antes de parar. O eXocortex o complementa por conta própria se o trabalho estiver aguardando uma resposta a uma dúvida ou se uma execução terminar sem conclusão: nesse caso, o último estado é registrado com o motivo da interrupção.",
+      "p2": "„Iniciar execução de IA“ continua, por padrão, a partir do ponto de progresso mais recente. A nova execução recebe esse ponto de progresso em vez do histórico de chat antigo, além de todas as decisões tomadas desde então e a indicação de quais páginas foram alteradas nesse meio-tempo. No mesmo diálogo, você pode escolher outro modelo ou recomeçar do zero.",
+      "p3": "Na página da tarefa, você encontra o progresso atual com plano, suposições, aprendizados e páginas; estados anteriores podem ser expandidos. Cada ponto de progresso também aparece no histórico.",
+      "p4": "Um ponto de progresso não é uma memória: ele pertence a uma tarefa e é descartado quando ela é concluída. O que deve ser permanente pertence à memória dos agentes.",
+      "p5": "Agentes trabalham com exo_work_item_checkpoint e exo_work_item_checkpoints; exo_work_item_start_run aceita fromCheckpoint e modelSlug."
+    },
+    "where": "Na página de uma tarefa em „Ponto de progresso“ e no diálogo „Iniciar execução de IA“."
+  },
   "wartet-auf-dich": {
     "title": "Aguardando você: tudo o que precisa da sua atenção agora",
     "summary": "Uma lista em todos os espaços de trabalho com aquilo que não avança sem você: decisões, compartilhamentos, resultados para revisão, tarefas bloqueadas, execuções de IA com falha e perguntas de agentes. Você responde diretamente lá, e o trabalho continua com a sua resposta exatamente do ponto em que parou.",

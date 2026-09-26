@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "L’une des pages associées ne se trouve pas dans cet espace de travail ou n’est pas accessible en lecture pour toi.",
     "work_item_closed": "Cette tâche est terminée. Rouvre-la avant de lancer une nouvelle exécution.",
     "work_item_budget_exhausted": "Le budget de cette tâche est épuisé. Augmente-le avant de lancer une nouvelle exécution.",
+    "work_checkpoint_summary_required": "Le premier point d’avancement d’une tâche nécessite un résumé. Les suivants le reprennent si aucun nouveau n’est fourni.",
+    "work_checkpoint_not_found": "Ce point d’avancement n’existe pas pour cette tâche. Choisis-en un dans la liste des checkpoints.",
     "attention_item_settled": "C’est déjà réglé, quelqu’un d’autre a été plus rapide ou la tâche a avancé. Recharge la liste.",
     "attention_option_invalid": "Ce choix n’existe pas ici. Choisis l’une des options proposées.",
     "attention_note_required": "Une réponse textuelle est requise ici. Écris brièvement ce que tu veux dire.",

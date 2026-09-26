@@ -37,7 +37,17 @@
       "attentionRaised": "fez uma pergunta",
       "attentionResolved": "respondeu a uma pergunta",
       "runResumed": "continuou o trabalho com a resposta",
-      "resumeFailed": "respondeu, mas não foi possível retomar o trabalho ({code}). O trabalho está aguardando na fila."
+      "resumeFailed": "respondeu, mas não foi possível retomar o trabalho ({code}). O trabalho está aguardando na fila.",
+      "runStartedFromCheckpoint": "iniciou uma execução de IA a partir do ponto de verificação",
+      "checkpointRecorded": "registrou o ponto de verificação ({trigger})"
+    },
+    "trigger": {
+      "step": "progresso intermediário",
+      "pause": "pausa",
+      "waiting_for_human": "aguardando resposta",
+      "external_wait": "aguardando algo externo",
+      "budget": "orçamento baixo",
+      "run_interrupted": "execução interrompida"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Iniciar execução de IA",
     "description": "A IA integrada recebe a tarefa com objetivo, critérios e páginas de contexto em uma conversa própria e insere seu resultado na tarefa. Uma tarefa sem responsável é atribuída à IA nesse processo.",
+    "fromCheckpoint": "Continuar a partir do ponto de verificação de {moment}",
+    "fromCheckpointHint": "A nova execução recebe o estado registrado e todas as decisões tomadas desde então, e não o histórico antigo de mensagens. Sem marcar a caixa, ela começa a partir do objetivo.",
+    "modelLabel": "Modelo",
+    "modelDefault": "Modelo padrão",
     "instructionsLabel": "Instruções para esta tentativa (opcional)",
     "instructionsPlaceholder": "Por exemplo: veja os anexos primeiro.",
     "cancel": "Cancelar",
@@ -142,5 +156,37 @@
     "description": "A tarefa e seu histórico serão removidos definitivamente. As subtarefas continuam existindo de forma independente, e as execuções de IA permanecem no consumo. Se a tarefa apenas não for mais necessária, marque-a como “Cancelada”.",
     "cancel": "Cancelar",
     "confirm": "Excluir permanentemente"
+  },
+  "checkpoint": {
+    "heading": "Ponto de verificação",
+    "none": "Nenhum ponto de verificação registrado ainda. A IA registra o progresso durante o trabalho; se a tarefa aguardar uma resposta ou se uma execução for interrompida, o eXocortex assume o último estado.",
+    "loading": "Carregando ponto de verificação…",
+    "loadFailed": "Não foi possível carregar o ponto de verificação.",
+    "showEarlier": "{count, plural, one {Um ponto anterior} many {# pontos anteriores} other {# pontos anteriores}}",
+    "hideEarlier": "Ocultar pontos anteriores",
+    "bySystem": "assumido pelo eXocortex",
+    "model": "Modelo: {model}",
+    "interrupted": "A execução terminou sem ser concluída ({code}). A próxima execução continuará a partir daqui.",
+    "planHeading": "Plano",
+    "step": {
+      "done": "concluído",
+      "in_progress": "iniciado",
+      "open": "em aberto"
+    },
+    "findingsHeading": "Descobertas",
+    "assumptionsHeading": "Suposições",
+    "lastAction": "Última ação:",
+    "nextStep": "Próximo passo:",
+    "artifactsHeading": "Páginas criadas",
+    "sourcesHeading": "Fontes",
+    "deleted": "Página excluída",
+    "changedSince": "alterada desde então",
+    "pendingHeading": "Aguardando",
+    "decision": {
+      "open": "ainda em aberto",
+      "resolved": "respondida",
+      "obsolete": "obsoleta"
+    },
+    "budget": "Orçamento neste momento: {spent} de {budget}"
   }
 }

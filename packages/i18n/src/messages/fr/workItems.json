@@ -37,7 +37,17 @@
       "attentionRaised": "a posé une question",
       "attentionResolved": "a répondu à une question",
       "runResumed": "a relancé le travail avec la réponse",
-      "resumeFailed": "a répondu, mais le travail n’a pas pu reprendre ({code}). La tâche attend dans la file d’attente."
+      "resumeFailed": "a répondu, mais le travail n’a pas pu reprendre ({code}). La tâche attend dans la file d’attente.",
+      "runStartedFromCheckpoint": "a lancé une exécution d’IA à partir du point d’étape enregistré",
+      "checkpointRecorded": "a enregistré le point d’étape ({trigger})"
+    },
+    "trigger": {
+      "step": "étape intermédiaire",
+      "pause": "pause",
+      "waiting_for_human": "en attente d’une réponse",
+      "external_wait": "en attente d’autre chose",
+      "budget": "budget presque épuisé",
+      "run_interrupted": "exécution interrompue"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Lancer une exécution de l’IA",
     "description": "L’IA intégrée reçoit la tâche avec l’objectif, les critères et les pages de contexte dans une conversation dédiée, puis consigne son résultat sur la tâche. Une tâche sans personne assignée est alors attribuée à l’IA.",
+    "fromCheckpoint": "Reprendre au point d’étape du {moment}",
+    "fromCheckpointHint": "La nouvelle exécution reprend le point enregistré et toutes les décisions prises depuis, sans l’ancien historique de discussion. Si cette case est décochée, elle repart de l’objectif.",
+    "modelLabel": "Modèle",
+    "modelDefault": "Modèle par défaut",
     "instructionsLabel": "Consignes pour cette tentative (facultatif)",
     "instructionsPlaceholder": "Par exemple : Regarde d’abord les pièces jointes.",
     "cancel": "Annuler",
@@ -142,5 +156,37 @@
     "description": "La tâche et son historique seront supprimés. Les sous-tâches sont conservées et deviennent indépendantes, les exécutions de l’IA restent comptabilisées dans la consommation. Si la tâche n’est simplement plus utile, passe-la plutôt au statut « Annulée ».",
     "cancel": "Annuler",
     "confirm": "Supprimer définitivement"
+  },
+  "checkpoint": {
+    "heading": "Point d’étape",
+    "none": "Aucun point d’étape enregistré pour l’instant. L’IA l’enregistre pendant son travail ; si la tâche attend une réponse ou qu’une exécution s’interrompt, eXocortex conserve le dernier état.",
+    "loading": "Chargement du point d’étape…",
+    "loadFailed": "Impossible de charger le point d’étape.",
+    "showEarlier": "{count, plural, one {Un point antérieur} many {# points antérieurs} other {# points antérieurs}}",
+    "hideEarlier": "Masquer les points antérieurs",
+    "bySystem": "enregistré par eXocortex",
+    "model": "Modèle : {model}",
+    "interrupted": "L’exécution s’est terminée sans aller au bout ({code}). La prochaine exécution reprendra ici.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "terminé",
+      "in_progress": "commencé",
+      "open": "à faire"
+    },
+    "findingsHeading": "Constats",
+    "assumptionsHeading": "Hypothèses",
+    "lastAction": "Dernière action :",
+    "nextStep": "Prochaine étape :",
+    "artifactsHeading": "Pages créées",
+    "sourcesHeading": "Sources",
+    "deleted": "Page supprimée",
+    "changedSince": "modifiée depuis",
+    "pendingHeading": "En attente de",
+    "decision": {
+      "open": "encore en attente",
+      "resolved": "résolu",
+      "obsolete": "caduc"
+    },
+    "budget": "Budget à ce stade : {spent} sur {budget}"
   }
 }

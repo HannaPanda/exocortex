@@ -18,6 +18,7 @@ import {
   AppPage,
   Badge,
   Button,
+  Checkbox,
   Dialog,
   DialogBody,
   DialogContent,
@@ -38,6 +39,7 @@ import {
 } from '@exocortex/ui';
 
 import { WorkItemAttention } from '@/components/attention/work-item-attention';
+import { useAiModels } from '@/lib/api/ai-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import {
   useDeleteWorkItem,
@@ -47,6 +49,7 @@ import {
 } from '@/lib/api/work-item-queries';
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
+import { CheckpointSection } from './work-item-checkpoint';
 import { WorkItemDialog } from './work-item-dialog';
 import { statusVariant, useWorkItemWording } from './work-item-labels';
 import {
@@ -181,6 +184,7 @@ function WorkItemView({
       <CriteriaSection item={item} canProgress={canProgress} />
       <ContextSection item={item} />
       <ResultSection item={item} canProgress={canProgress} />
+      <CheckpointSection item={item} />
       <RunsSection
         item={item}
         action={
@@ -315,14 +319,22 @@ function StartRunDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations('workItems.startRun');
+  const wording = useWorkItemWording();
   const start = useStartWorkItemRun(item.workspaceId);
   const [instructions, setInstructions] = React.useState('');
+  const [fromCheckpoint, setFromCheckpoint] = React.useState(true);
+  const [modelSlug, setModelSlug] = React.useState<string | null>(null);
+  const resumable = item.latestCheckpointAt !== null;
 
   const submit = async (): Promise<void> => {
     const text = instructions.trim();
     await start.mutateAsync({
       workItemId: item.id,
-      request: text.length === 0 ? {} : { instructions: text },
+      request: {
+        ...(text.length === 0 ? {} : { instructions: text }),
+        ...(modelSlug === null ? {} : { modelSlug }),
+        ...(resumable && !fromCheckpoint ? { fromCheckpoint: 'none' as const } : {}),
+      },
     });
     setInstructions('');
     onOpenChange(false);
@@ -342,6 +354,23 @@ function StartRunDialog({
                 <AlertDescription>{start.error.message}</AlertDescription>
               </Alert>
             )}
+            {item.latestCheckpointAt === null ? null : (
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="work-item-from-checkpoint"
+                  checked={fromCheckpoint}
+                  onCheckedChange={(checked) => setFromCheckpoint(checked === true)}
+                  data-testid="work-item-from-checkpoint"
+                />
+                <div className="flex flex-col gap-0.5">
+                  <Label htmlFor="work-item-from-checkpoint">
+                    {t('fromCheckpoint', { moment: wording.moment(item.latestCheckpointAt) })}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">{t('fromCheckpointHint')}</p>
+                </div>
+              </div>
+            )}
+            <RunModelSelect value={modelSlug} onChange={setModelSlug} />
             <Label htmlFor="work-item-instructions">{t('instructionsLabel')}</Label>
             <Textarea
               id="work-item-instructions"
@@ -366,6 +395,52 @@ function StartRunDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * Which model the attempt uses (issue #142): a run carried on from a working
+ * state may well be another model than the one that began the work, because
+ * the provider it used is out of quota or simply because somebody chose.
+ */
+function RunModelSelect({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (value: string | null) => void;
+}) {
+  const t = useTranslations('workItems.startRun');
+  const models = useAiModels();
+  const usable = (models.data?.models ?? []).filter((model) => model.supportsTools);
+  if (usable.length === 0) return null;
+  const DEFAULT = '__default__';
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="work-item-run-model">{t('modelLabel')}</Label>
+      <Select
+        value={value ?? DEFAULT}
+        onValueChange={(next) => onChange(next === DEFAULT || next === null ? null : next)}
+      >
+        <SelectTrigger id="work-item-run-model" data-testid="work-item-run-model">
+          <SelectValue>
+            {() =>
+              value === null
+                ? t('modelDefault')
+                : (usable.find((model) => model.slug === value)?.displayName ?? value)
+            }
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={DEFAULT}>{t('modelDefault')}</SelectItem>
+          {usable.map((model) => (
+            <SelectItem key={model.slug} value={model.slug}>
+              {model.displayName}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 

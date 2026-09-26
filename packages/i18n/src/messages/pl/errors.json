@@ -83,6 +83,8 @@
     "work_item_ref_invalid": "Jedna z powiązanych stron nie znajduje się w tym obszarze roboczym lub nie masz do niej uprawnień do odczytu.",
     "work_item_closed": "To zadanie jest zakończone. Otwórz je ponownie, zanim uruchomisz nowy przebieg.",
     "work_item_budget_exhausted": "Budżet tego zadania został wyczerpany. Zwiększ go, zanim uruchomisz nowy przebieg.",
+    "work_checkpoint_summary_required": "Pierwszy stan prac zadania wymaga podsumowania. Kolejne go przejmują, jeśli nie pojawi się nowe.",
+    "work_checkpoint_not_found": "Ten stan prac nie istnieje w tym zadaniu. Wybierz jeden z listy punktów kontrolnych.",
     "attention_item_settled": "To zadanie jest już załatwione, ktoś inny był szybszy lub sprawa posunęła się dalej. Odśwież listę.",
     "attention_option_invalid": "Taki wybór tutaj nie istnieje. Wybierz jedną z dostępnych opcji.",
     "attention_note_required": "Tutaj wymagana jest odpowiedź słowna. Napisz krótko, co masz na myśli.",

@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  workCheckpointTriggerSchema,
   type WorkItemEvent,
   type WorkItemParticipant,
   type WorkItemPriority,
@@ -86,7 +87,9 @@ export function useWorkItemWording() {
         case 'assigned':
           return t('event.assigned', { assignee: participant(value.data.assignee ?? null) });
         case 'run_started':
-          return t('event.runStarted');
+          return value.data.checkpointId === undefined
+            ? t('event.runStarted')
+            : t('event.runStartedFromCheckpoint');
         case 'result_recorded':
           return t('event.resultRecorded');
         case 'note':
@@ -101,6 +104,12 @@ export function useWorkItemWording() {
           return t('event.runResumed');
         case 'resume_failed':
           return t('event.resumeFailed', { code: value.data.reason ?? '' });
+        case 'checkpoint_recorded':
+          return t('event.checkpointRecorded', {
+            trigger: t(
+              `trigger.${workCheckpointTriggerSchema.catch('step').parse(value.data.trigger)}`,
+            ),
+          });
       }
     };
 

@@ -137,6 +137,14 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/auftraege', '/arbeitsbereich/:x/auftraege/:x'] },
   }),
   defineFeature({
+    id: 'arbeitsstaende',
+    area: 'zusammenarbeit',
+    since: '2026-09-26',
+    references: ['#142', 'ADR-069'],
+    ui: {},
+    tools: ['exo_work_item_checkpoint', 'exo_work_item_checkpoints'],
+  }),
+  defineFeature({
     id: 'wartet-auf-dich',
     area: 'zusammenarbeit',
     since: '2026-09-26',

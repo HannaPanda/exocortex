@@ -907,6 +907,18 @@
     },
     "where": "Zijbalk onder „Opdrachten”, of Ctrl + K en „Opdrachten openen” respectievelijk „Nieuwe opdracht”."
   },
+  "arbeitsstaende": {
+    "title": "Werkstatussen: een onderbroken taak voortzetten waar hij gebleven was",
+    "summary": "Een opdracht onthoudt hoe ver het werk gevorderd is: wat er al gedaan is, wat er nog ontbreekt, welke aannames en inzichten er zijn en welke pagina’s er zijn ontstaan. Als een AI-sessie afbreekt doordat een provider niet reageert, het quotum op is of de sessie op een antwoord wacht, gaat de volgende sessie precies daar verder, ook met een ander model.",
+    "details": {
+      "p1": "De werkstatus wordt vooral door de AI zelf vastgelegd, na elke grotere stap en voordat ze stopt. eXocortex vult deze automatisch aan als het werk op een vraag wacht of als een sessie zonder afronding eindigt: dan wordt de laatste status met de reden van de onderbreking overgenomen.",
+      "p2": "„AI-sessie starten” gaat standaard verder vanaf de nieuwste werkstatus. De nieuwe sessie krijgt deze status in plaats van de oude chatgeschiedenis, plus alle beslissingen die sindsdien zijn genomen en een melding van welke pagina’s intussen zijn gewijzigd. In hetzelfde dialoogvenster kun je een ander model kiezen of helemaal opnieuw beginnen.",
+      "p3": "Op de pagina van de opdracht staat de huidige status met het plan, de aannames, inzichten en pagina’s; eerdere statussen kun je uitklappen. Elke status verschijnt ook in de geschiedenis.",
+      "p4": "Een werkstatus is geen geheugen: hij hoort bij een taak en is voltooid zodra de taak klaar is. Wat blijvend moet gelden, hoort thuis in het geheugen van de agents.",
+      "p5": "Agents werken met exo_work_item_checkpoint en exo_work_item_checkpoints; exo_work_item_start_run accepteert fromCheckpoint en modelSlug."
+    },
+    "where": "Op de pagina van een opdracht onder „Werkstatus”, en in het dialoogvenster „AI-sessie starten”."
+  },
   "wartet-auf-dich": {
     "title": "Wacht op jou: alles waarvoor op dit moment jouw inbreng nodig is",
     "summary": "Een overzicht over alle werkruimtes met alles wat zonder jou niet verder kan: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten, mislukte AI-runs en vragen van agents. Je antwoordt direct daar, en het werk gaat met jouw antwoord precies verder waar het gestopt was.",

@@ -9,6 +9,7 @@ import {
   type StartWorkItemRunRequest,
   type StartWorkItemRunResponse,
   type UpdateWorkItemRequest,
+  type WorkCheckpointListResponse,
   type WorkItemListResponse,
   type WorkItemResponse,
 } from '@exocortex/contracts';
@@ -37,6 +38,8 @@ export const workItemKeys = {
   list: (workspaceId: string, filter: WorkItemListFilter) =>
     ['workspace', workspaceId, 'work-items', filter] as const,
   detail: (workItemId: string) => ['work-item', workItemId] as const,
+  /** Under the detail's key, so the same `work-item.changed` re-reads both. */
+  checkpoints: (workItemId: string) => ['work-item', workItemId, 'checkpoints'] as const,
 };
 
 function queryString(filter: WorkItemListFilter): string {
@@ -64,6 +67,20 @@ export function useWorkItem(workItemId: string): UseQueryResult<WorkItemResponse
   return useQuery({
     queryKey: workItemKeys.detail(workItemId),
     queryFn: () => apiRequest<WorkItemResponse>(`/api/work-items/${workItemId}`),
+    staleTime: 30_000,
+  });
+}
+
+/** Where the work stands, newest first (issue #142). Not read while there is none. */
+export function useWorkItemCheckpoints(
+  workItemId: string,
+  enabled: boolean,
+): UseQueryResult<WorkCheckpointListResponse> {
+  return useQuery({
+    queryKey: workItemKeys.checkpoints(workItemId),
+    queryFn: () =>
+      apiRequest<WorkCheckpointListResponse>(`/api/work-items/${workItemId}/checkpoints?limit=20`),
+    enabled,
     staleTime: 30_000,
   });
 }

@@ -907,6 +907,18 @@
     },
     "where": "Seitenleiste unter „Aufträge“, oder Strg + K und „Aufträge öffnen“ beziehungsweise „Neuer Auftrag“."
   },
+  "arbeitsstaende": {
+    "title": "Arbeitsstände: eine unterbrochene Aufgabe dort fortsetzen, wo sie stand",
+    "summary": "Ein Auftrag merkt sich, wie weit die Arbeit gekommen ist: was erledigt ist, was noch fehlt, welche Annahmen und Erkenntnisse es gibt und welche Seiten entstanden sind. Bricht ein KI-Lauf ab, weil ein Anbieter nicht antwortet, das Kontingent aufgebraucht ist oder der Lauf auf eine Antwort wartet, setzt der nächste Lauf genau dort an, auch mit einem anderen Modell.",
+    "details": {
+      "p1": "Den Arbeitsstand hält vor allem die KI selbst fest, nach jedem größeren Schritt und bevor sie aufhört. eXocortex ergänzt ihn von sich aus, wenn die Arbeit auf eine Rückfrage wartet oder ein Lauf ohne Abschluss endet: dann wird der letzte Stand mit dem Grund der Unterbrechung übernommen.",
+      "p2": "„KI-Lauf starten“ setzt standardmäßig am neuesten Arbeitsstand an. Der neue Lauf bekommt den Stand statt des alten Chatverlaufs, dazu alle Entscheidungen, die seitdem gefallen sind, und den Hinweis, welche Seiten sich inzwischen geändert haben. Im selben Dialog lässt sich ein anderes Modell wählen oder ganz von vorn beginnen.",
+      "p3": "Auf der Seite des Auftrags steht der aktuelle Stand mit Plan, Annahmen, Erkenntnissen und Seiten; frühere Stände lassen sich aufklappen. Jeder Stand erscheint auch in der Historie.",
+      "p4": "Ein Arbeitsstand ist kein Gedächtnis: er gehört zu einer Aufgabe und ist erledigt, wenn sie erledigt ist. Was dauerhaft gelten soll, gehört ins Gedächtnis der Agenten.",
+      "p5": "Agenten arbeiten mit exo_work_item_checkpoint und exo_work_item_checkpoints; exo_work_item_start_run nimmt fromCheckpoint und modelSlug."
+    },
+    "where": "Auf der Seite eines Auftrags unter „Arbeitsstand“, und im Dialog „KI-Lauf starten“."
+  },
   "wartet-auf-dich": {
     "title": "Wartet auf dich: alles, wofür es gerade dich braucht",
     "summary": "Eine Liste über alle Arbeitsbereiche mit dem, was ohne dich nicht weitergeht: Entscheidungen, Freigaben, Ergebnisse zur Prüfung, blockierte Aufträge, gescheiterte KI-Läufe und Rückfragen von Agenten. Du antwortest direkt dort, und die Arbeit läuft mit deiner Antwort genau an der Stelle weiter, an der sie angehalten hat.",

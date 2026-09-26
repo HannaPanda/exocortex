@@ -907,6 +907,18 @@
     },
     "where": "Barra laterale sotto «Incarichi», oppure Ctrl + K e «Apri incarichi» o «Nuovo incarico»."
   },
+  "arbeitsstaende": {
+    "title": "Stati di avanzamento: riprendere un’attività interrotta da dove era rimasta",
+    "summary": "Un’attività tiene traccia di quanto è avanzato il lavoro: cosa è fatto, cosa manca ancora, quali ipotesi e conclusioni sono emerse e quali pagine sono state create. Se un’esecuzione IA si interrompe perché un provider non risponde, la quota è esaurita o l’esecuzione attende una risposta, quella successiva riprende esattamente da lì, anche con un modello diverso.",
+    "details": {
+      "p1": "Lo stato di avanzamento viene registrato principalmente dall’IA stessa, dopo ogni passaggio importante e prima di terminare. eXocortex lo integra automaticamente se il lavoro è in attesa di un chiarimento o se un’esecuzione si interrompe senza concludersi: in tal caso l’ultimo stato viene salvato indicando il motivo dell’interruzione.",
+      "p2": "«Avvia esecuzione IA» riparte per impostazione predefinita dall’ultimo stato di avanzamento. La nuova esecuzione riceve questo stato invece della vecchia cronologia della chat, insieme a tutte le decisioni prese nel frattempo e alla segnalazione di quali pagine sono state modificate. Dalla stessa finestra di dialogo puoi scegliere un altro modello o ricominciare completamente da capo.",
+      "p3": "Sulla pagina dell’attività trovi lo stato attuale con piano, ipotesi, conclusioni e pagine; gli stati precedenti si possono espandere. Ogni stato compare anche nella cronologia.",
+      "p4": "Uno stato di avanzamento non è una memoria: appartiene a un’attività specifica e si conclude insieme ad essa. Ciò che deve rimanere valido nel tempo va salvato nella memoria degli agenti.",
+      "p5": "Gli agenti utilizzano exo_work_item_checkpoint ed exo_work_item_checkpoints; exo_work_item_start_run accetta fromCheckpoint e modelSlug."
+    },
+    "where": "Sulla pagina di un’attività alla voce «Stato di avanzamento» e nella finestra di dialogo «Avvia esecuzione IA»."
+  },
   "wartet-auf-dich": {
     "title": "In attesa di te: tutto ciò che richiede il tuo intervento",
     "summary": "Un elenco che copre tutte le aree di lavoro con ciò che non può proseguire senza di te: decisioni, condivisioni, risultati da verificare, incarichi bloccati, esecuzioni dell’IA non riuscite e chiarimenti richiesti dagli agenti. Rispondi direttamente lì e il lavoro riprende esattamente dal punto in cui si era interrotto.",

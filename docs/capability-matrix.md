@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-240 routes are reachable from at least one client; 154 from all three.
+242 routes are reachable from at least one client; 155 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -120,6 +120,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/saved-queries/:x/results` | ✓ | ✓ | ✓ | `exo_saved_query_run` |
 | `GET /api/session` | ✓ | · | · | — |
 | `GET /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_get` |
+| `GET /api/work-items/:x/checkpoints` | ✓ | ✓ | ✓ | `exo_work_item_checkpoints` |
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/ai-rules` | ✓ | ✓ | ✓ | `exo_rules_list` |
@@ -238,6 +239,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/render/jobs/:x/cancel` | ✓ | ✓ | ✓ | `exo_render_cancel` |
 | `POST /api/saved-queries/:x/position` | ✓ | ✓ | ✓ | `exo_saved_query_reorder` |
 | `POST /api/templates/:x/pages` | ✓ | ✓ | ✓ | `exo_template_use` |
+| `POST /api/work-items/:x/checkpoints` | · | ✓ | ✓ | `exo_work_item_checkpoint` |
 | `POST /api/work-items/:x/notes` | ✓ | ✓ | ✓ | `exo_work_item_note` |
 | `POST /api/work-items/:x/runs` | ✓ | ✓ | ✓ | `exo_work_item_start_run` |
 | `POST /api/workspaces` | ✓ | · | · | — |

@@ -37,7 +37,17 @@
       "attentionRaised": "asked a question",
       "attentionResolved": "answered a question",
       "runResumed": "resumed the run with the response",
-      "resumeFailed": "replied, but the work could not be resumed ({code}). The work item is waiting in the queue."
+      "resumeFailed": "replied, but the work could not be resumed ({code}). The work item is waiting in the queue.",
+      "runStartedFromCheckpoint": "started an AI run from the saved checkpoint",
+      "checkpointRecorded": "saved the checkpoint ({trigger})"
+    },
+    "trigger": {
+      "step": "interim progress",
+      "pause": "pause",
+      "waiting_for_human": "waiting for a reply",
+      "external_wait": "waiting for something else",
+      "budget": "budget running low",
+      "run_interrupted": "run interrupted"
     }
   },
   "list": {
@@ -132,6 +142,10 @@
   "startRun": {
     "title": "Start AI run",
     "description": "The built-in AI receives the work item with its goal, criteria, and context pages in a dedicated conversation, and records its result on the work item. A work item without an assignee will be assigned to the AI.",
+    "fromCheckpoint": "Continue from checkpoint of {moment}",
+    "fromCheckpointHint": "The new run receives the saved state and all decisions made since then, not the old chat history. Unchecked, it starts from the goal.",
+    "modelLabel": "Model",
+    "modelDefault": "Default model",
     "instructionsLabel": "Instructions for this attempt (optional)",
     "instructionsPlaceholder": "For example: Look at the attachments first.",
     "cancel": "Cancel",
@@ -142,5 +156,37 @@
     "description": "The work item and its history will be permanently deleted. Subtasks will remain as standalone items, and AI runs will still count toward usage. If the work item is simply no longer needed, set it to “Cancelled” instead.",
     "cancel": "Cancel",
     "confirm": "Delete permanently"
+  },
+  "checkpoint": {
+    "heading": "Checkpoint",
+    "none": "No checkpoint saved yet. The AI saves one as it works; if the work item is waiting for a reply or a run is interrupted, eXocortex captures the latest state.",
+    "loading": "Loading checkpoint…",
+    "loadFailed": "The checkpoint could not be loaded.",
+    "showEarlier": "{count, plural, one {One earlier checkpoint} other {# earlier checkpoints}}",
+    "hideEarlier": "Hide earlier checkpoints",
+    "bySystem": "captured by eXocortex",
+    "model": "Model: {model}",
+    "interrupted": "The run ended without finishing ({code}). The next run will resume from here.",
+    "planHeading": "Plan",
+    "step": {
+      "done": "done",
+      "in_progress": "in progress",
+      "open": "open"
+    },
+    "findingsHeading": "Findings",
+    "assumptionsHeading": "Assumptions",
+    "lastAction": "Last action:",
+    "nextStep": "Next step:",
+    "artifactsHeading": "Created pages",
+    "sourcesHeading": "Sources",
+    "deleted": "Page deleted",
+    "changedSince": "changed since then",
+    "pendingHeading": "Was waiting for",
+    "decision": {
+      "open": "still open",
+      "resolved": "resolved",
+      "obsolete": "obsolete"
+    },
+    "budget": "Budget at this point: {spent} of {budget}"
   }
 }
