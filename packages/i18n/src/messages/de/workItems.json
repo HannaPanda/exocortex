@@ -33,7 +33,9 @@
       "runStarted": "hat einen KI-Lauf gestartet",
       "resultRecorded": "hat das Ergebnis eingetragen",
       "note": "hat eine Notiz hinzugefügt",
-      "updated": "hat {count, plural, one {ein Feld} other {# Felder}} geändert"
+      "updated": "hat {count, plural, one {ein Feld} other {# Felder}} geändert",
+      "attentionRaised": "hat eine Frage gestellt",
+      "attentionResolved": "hat eine Frage beantwortet"
     }
   },
   "list": {

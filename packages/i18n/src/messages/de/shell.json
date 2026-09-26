@@ -25,6 +25,7 @@
   "globalLinks": {
     "help": "Hilfe und Funktionen",
     "helpWithNew": "{count, plural, one {Hilfe und Funktionen (# neu)} other {Hilfe und Funktionen (# neu)}}",
+    "attention": "Wartet auf dich",
     "chats": "Chats",
     "entities": "Entitäten",
     "shares": "Freigaben",
@@ -178,6 +179,10 @@
       "help": {
         "label": "Hilfe und Funktionen öffnen",
         "keywords": "hilfe help funktionen neu anleitung was kann"
+      },
+      "attention": {
+        "label": "„Wartet auf dich“ öffnen",
+        "keywords": "wartet auf mich aufmerksamkeit entscheidung freigabe prüfen rückfrage blockiert eingang agent"
       },
       "chats": {
         "label": "Chats öffnen",

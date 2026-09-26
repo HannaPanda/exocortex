@@ -229,6 +229,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     void queryClient.invalidateQueries({ queryKey: ['work-item', event.payload.workItemId] });
   });
 
+  // Something now waits on somebody, or no longer does (issue #139). The
+  // inbox and the count in the top bar re-read; who an item is for is the
+  // read's answer, not the event's.
+  useRealtimeEvent('attention.changed', () => {
+    void queryClient.invalidateQueries({ queryKey: ['attention'] });
+  });
+
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
   // The text itself arrives through the collaboration socket (ADR-016); what
   // the cache still holds is everything around it, from the version list to the

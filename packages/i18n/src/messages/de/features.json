@@ -906,5 +906,17 @@
       "p5": "Agenten arbeiten mit exo_work_item_list, exo_work_item_get, exo_work_item_create, exo_work_item_update, exo_work_item_note, exo_work_item_start_run und exo_work_item_delete."
     },
     "where": "Seitenleiste unter „Aufträge“, oder Strg + K und „Aufträge öffnen“ beziehungsweise „Neuer Auftrag“."
+  },
+  "wartet-auf-dich": {
+    "title": "Wartet auf dich: alles, wofür es gerade dich braucht",
+    "summary": "Eine Liste über alle Arbeitsbereiche mit dem, was ohne dich nicht weitergeht: Entscheidungen, Freigaben, Ergebnisse zur Prüfung, blockierte Aufträge, gescheiterte KI-Läufe und Rückfragen von Agenten. Einfache Antworten gibst du direkt dort, ohne den Auftrag zu öffnen.",
+    "details": {
+      "p1": "Einträge entstehen von selbst: Geht ein Auftrag auf „zur Abnahme“, „blockiert“ oder „wartet auf Rückmeldung“, erscheint er hier, und verlässt er den Status, verschwindet er wieder. Scheitert der letzte KI-Lauf eines offenen Auftrags, fragt eXocortex, ob du einen neuen Versuch willst oder aufgibst.",
+      "p2": "Agenten fragen ausdrücklich, zum Beispiel „MCP-Verbindung global oder pro Arbeitsbereich?“ mit den Antworten als Knöpfen. Deine Wahl und deine Notiz landen in der Historie des Auftrags, wo der Agent sie liest, und der Auftrag geht danach zurück in die Warteschlange.",
+      "p3": "Hier steht nichts, was nur passiert ist. Erledigte Einträge bleiben unter „Erledigt“ nachvollziehbar, mit wer, wann und was gewählt wurde. Wird ein Auftrag abgebrochen oder gelöscht, werden seine offenen Einträge hinfällig.",
+      "p4": "Solange etwas wartet, zeigt die Kopfzeile oben rechts eine Hand mit der Anzahl. Offene Einträge eines Auftrags stehen außerdem oben auf seiner Seite.",
+      "p5": "Agenten arbeiten mit exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve und exo_attention_withdraw."
+    },
+    "where": "Die Hand oben rechts in der Kopfzeile, das Kontomenü unter „Wartet auf dich“, oder Strg + K und „Wartet auf dich“."
   }
 }

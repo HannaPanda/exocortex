@@ -8,6 +8,7 @@ import {
   CircleQuestionMarkIcon,
   ClipboardListIcon,
   CpuIcon,
+  HandIcon,
   HouseIcon,
   KeyIcon,
   LanguagesIcon,
@@ -47,6 +48,7 @@ interface Place {
   /** The key under `shell.paletteCommands.navigation`. */
   key:
     | 'help'
+    | 'attention'
     | 'chats'
     | 'entities'
     | 'shares'
@@ -89,6 +91,7 @@ interface Place {
  */
 const PLACES: readonly Place[] = [
   { key: 'help', screen: '/hilfe', audience: 'everyone', icon: CircleQuestionMarkIcon },
+  { key: 'attention', screen: '/wartet', audience: 'everyone', icon: HandIcon },
   { key: 'chats', screen: '/chats', audience: 'everyone', icon: MessagesSquareIcon },
   { key: 'entities', screen: '/entitaeten', audience: 'everyone', icon: NetworkIcon },
   { key: 'shares', screen: '/geteilt', audience: 'everyone', icon: Share2Icon },

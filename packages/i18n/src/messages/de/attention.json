@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Wartet auf dich"
+  },
+  "page": {
+    "title": "Wartet auf dich",
+    "intro": "Hier steht nur, wofür es wirklich dich braucht: Entscheidungen, Freigaben, Ergebnisse zur Prüfung, blockierte Aufträge und Läufe, die gescheitert sind. Was nur passiert ist, steht in der Historie der Aufträge und bei den Benachrichtigungen.",
+    "filterLabel": "Welche Einträge",
+    "filters": {
+      "open": "Offen",
+      "settled": "Erledigt"
+    },
+    "loading": "Einträge werden geladen …",
+    "loadFailed": "Die Einträge ließen sich nicht laden.",
+    "emptyTitle": "Nichts wartet auf dich",
+    "emptyDescription": "Sobald ein Agent eine Entscheidung braucht, ein Ergebnis fertig ist oder ein Auftrag hängt, erscheint es hier.",
+    "emptySettledTitle": "Noch nichts erledigt",
+    "emptySettledDescription": "Was du hier beantwortest oder was sich von selbst erledigt, bleibt nachvollziehbar in dieser Liste.",
+    "truncated": "Die Liste ist gekürzt. Erledige die obersten Einträge, dann rücken die nächsten nach.",
+    "summaryLabel": "Offen nach Art",
+    "summary": {
+      "decision": "{count, plural, one {# Entscheidung} other {# Entscheidungen}}",
+      "approval": "{count, plural, one {# Freigabe} other {# Freigaben}}",
+      "review": "{count, plural, one {# Ergebnis zur Prüfung} other {# Ergebnisse zur Prüfung}}",
+      "blocked": "{count, plural, one {# blockierter Auftrag} other {# blockierte Aufträge}}",
+      "budget": "{count, plural, one {# Budgetfreigabe} other {# Budgetfreigaben}}",
+      "run_failed": "{count, plural, one {# fehlgeschlagener Lauf} other {# fehlgeschlagene Läufe}}",
+      "conflict": "{count, plural, one {# Konflikt} other {# Konflikte}}",
+      "information": "{count, plural, one {# Rückfrage} other {# Rückfragen}}"
+    }
+  },
+  "kind": {
+    "decision": "Entscheidung",
+    "approval": "Freigabe",
+    "review": "Zur Prüfung",
+    "blocked": "Blockiert",
+    "budget": "Budget",
+    "run_failed": "Lauf gescheitert",
+    "conflict": "Konflikt",
+    "information": "Rückfrage"
+  },
+  "urgency": {
+    "high": "Dringend",
+    "urgent": "Dringend"
+  },
+  "item": {
+    "raisedBy": "von {name}",
+    "raisedByAgent": "von Agent {name}",
+    "raisedByAssistant": "von der eingebauten KI",
+    "raisedBySomebody": "von einem gelöschten Konto",
+    "workspace": "in {name}",
+    "openWorkItem": "Im Auftrag öffnen",
+    "openConversation": "Unterhaltung öffnen",
+    "runError": "Fehler: {code}",
+    "noteLabel": "Deine Antwort",
+    "notePlaceholderRequired": "Schreib hier, was der Agent wissen muss.",
+    "notePlaceholderOptional": "Optional: ein Satz dazu, er landet in der Historie.",
+    "addNote": "Notiz dazu",
+    "send": "Antworten",
+    "failed": "Das ließ sich nicht speichern.",
+    "settledResolved": "Erledigt von {name}, {moment}",
+    "settledObsolete": "Hinfällig geworden, {moment}",
+    "settledBySystem": "dem System",
+    "chose": "Gewählt: {option}",
+    "obsoleteReason": {
+      "work_item_cancelled": "Der Auftrag wurde abgebrochen.",
+      "work_item_deleted": "Der Auftrag wurde gelöscht.",
+      "withdrawn": "Die Frage wurde zurückgezogen.",
+      "superseded": "Ein neuerer Lauf hat übernommen."
+    },
+    "quotedNote": "„{note}“"
+  },
+  "option": {
+    "accept": "Abnehmen",
+    "return": "Zurückgeben",
+    "answer": "Antworten",
+    "unblock": "Hindernis ist weg",
+    "retry": "Neuer Versuch",
+    "give_up": "Aufgeben"
+  },
+  "topbar": {
+    "label": "{count, plural, one {Ein Eintrag wartet auf dich} other {# Einträge warten auf dich}}",
+    "tooltip": "Wartet auf dich"
+  },
+  "workItem": {
+    "title": "Wartet auf dich",
+    "intro": "Dieser Auftrag braucht gerade eine Antwort oder Entscheidung."
+  }
+}

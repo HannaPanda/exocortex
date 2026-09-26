@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-240 routes are reachable from at least one client; 152 from all three.
+240 routes are reachable from at least one client; 154 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -69,7 +69,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
 | `GET /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
-| `GET /api/attention` | · | ✓ | ✓ | `exo_attention_list` |
+| `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
 | `GET /api/attention/:x` | · | ✓ | ✓ | `exo_attention_get` |
 | `GET /api/context` | · | ✓ | ✓ | `exo_context_compile` |
 | `GET /api/documents/:x` | ✓ | ✓ | ✓ | `exo_database_schema`, `fetch` |
@@ -183,7 +183,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
-| `POST /api/attention/:x/resolve` | · | ✓ | ✓ | `exo_attention_resolve` |
+| `POST /api/attention/:x/resolve` | ✓ | ✓ | ✓ | `exo_attention_resolve` |
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
 | `POST /api/auth/oauth2/consent` | ✓ | · | · | — |
 | `POST /api/automations/:x/trigger` | ✓ | ✓ | ✓ | `exo_automation_trigger` |

@@ -4,6 +4,7 @@ import {
   BellIcon,
   BrainIcon,
   CircleQuestionMarkIcon,
+  HandIcon,
   KeyIcon,
   LanguagesIcon,
   LogOutIcon,
@@ -79,6 +80,16 @@ function globalLinks(
       icon: CircleQuestionMarkIcon,
       badge: newCount,
       group: 'help',
+    },
+    // What waits on the reader (issue #139). The top bar shows it only while
+    // something does; this is the way in when nothing does, to what was
+    // settled.
+    {
+      href: '/wartet',
+      label: t('attention'),
+      testId: 'open-attention-menu',
+      icon: HandIcon,
+      group: 'rooms',
     },
     {
       href: '/chats',

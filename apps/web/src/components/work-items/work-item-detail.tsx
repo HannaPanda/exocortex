@@ -37,6 +37,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { WorkItemAttention } from '@/components/attention/work-item-attention';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import {
   useDeleteWorkItem,
@@ -168,6 +169,8 @@ function WorkItemView({
           {item.dueAt === null ? null : <span>{t('due', { day: wording.day(item.dueAt) })}</span>}
         </div>
       </div>
+
+      <WorkItemAttention workItemId={item.id} />
 
       <StatusControl item={item} disabled={!canProgress} />
 

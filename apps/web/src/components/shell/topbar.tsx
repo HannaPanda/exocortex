@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { AttentionButton } from '@/components/attention/attention-button';
 import { useSessionQuery } from '@/lib/api/session-queries';
 
 import { ConnectionStatus } from './connection-status';
@@ -187,6 +188,11 @@ export function Topbar({
       {/* Never squeezed: everything to its left gives way first, which is what
           keeps the bar inside a 360-pixel viewport (issue #100). */}
       <div className="ml-auto flex shrink-0 items-center gap-2">
+        {/* What waits on the reader, and only while something does (issue
+            #139): the one entry here that is about the person rather than
+            the page, placed first so it is the first thing the eye meets on
+            the right. */}
+        <AttentionButton />
         <PresenceAvatars />
         <ConnectionStatus />
 

@@ -4,6 +4,7 @@
 import de_account from './messages/de/account.json';
 import de_admin from './messages/de/admin.json';
 import de_ai from './messages/de/ai.json';
+import de_attention from './messages/de/attention.json';
 import de_auth from './messages/de/auth.json';
 import de_automations from './messages/de/automations.json';
 import de_calendar from './messages/de/calendar.json';
@@ -32,6 +33,7 @@ import de_workItems from './messages/de/workItems.json';
 import en_account from './messages/en/account.json';
 import en_admin from './messages/en/admin.json';
 import en_ai from './messages/en/ai.json';
+import en_attention from './messages/en/attention.json';
 import en_auth from './messages/en/auth.json';
 import en_automations from './messages/en/automations.json';
 import en_calendar from './messages/en/calendar.json';
@@ -60,6 +62,7 @@ import en_workItems from './messages/en/workItems.json';
 import es_account from './messages/es/account.json';
 import es_admin from './messages/es/admin.json';
 import es_ai from './messages/es/ai.json';
+import es_attention from './messages/es/attention.json';
 import es_auth from './messages/es/auth.json';
 import es_automations from './messages/es/automations.json';
 import es_calendar from './messages/es/calendar.json';
@@ -88,6 +91,7 @@ import es_workItems from './messages/es/workItems.json';
 import fr_account from './messages/fr/account.json';
 import fr_admin from './messages/fr/admin.json';
 import fr_ai from './messages/fr/ai.json';
+import fr_attention from './messages/fr/attention.json';
 import fr_auth from './messages/fr/auth.json';
 import fr_automations from './messages/fr/automations.json';
 import fr_calendar from './messages/fr/calendar.json';
@@ -116,6 +120,7 @@ import fr_workItems from './messages/fr/workItems.json';
 import it_account from './messages/it/account.json';
 import it_admin from './messages/it/admin.json';
 import it_ai from './messages/it/ai.json';
+import it_attention from './messages/it/attention.json';
 import it_auth from './messages/it/auth.json';
 import it_automations from './messages/it/automations.json';
 import it_calendar from './messages/it/calendar.json';
@@ -144,6 +149,7 @@ import it_workItems from './messages/it/workItems.json';
 import nl_account from './messages/nl/account.json';
 import nl_admin from './messages/nl/admin.json';
 import nl_ai from './messages/nl/ai.json';
+import nl_attention from './messages/nl/attention.json';
 import nl_auth from './messages/nl/auth.json';
 import nl_automations from './messages/nl/automations.json';
 import nl_calendar from './messages/nl/calendar.json';
@@ -172,6 +178,7 @@ import nl_workItems from './messages/nl/workItems.json';
 import pl_account from './messages/pl/account.json';
 import pl_admin from './messages/pl/admin.json';
 import pl_ai from './messages/pl/ai.json';
+import pl_attention from './messages/pl/attention.json';
 import pl_auth from './messages/pl/auth.json';
 import pl_automations from './messages/pl/automations.json';
 import pl_calendar from './messages/pl/calendar.json';
@@ -200,6 +207,7 @@ import pl_workItems from './messages/pl/workItems.json';
 import pt_BR_account from './messages/pt-BR/account.json';
 import pt_BR_admin from './messages/pt-BR/admin.json';
 import pt_BR_ai from './messages/pt-BR/ai.json';
+import pt_BR_attention from './messages/pt-BR/attention.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
 import pt_BR_automations from './messages/pt-BR/automations.json';
 import pt_BR_calendar from './messages/pt-BR/calendar.json';
@@ -226,13 +234,14 @@ import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","ai","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","ai","attention","auth","automations","calendar","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
     "account": de_account,
     "admin": de_admin,
     "ai": de_ai,
+    "attention": de_attention,
     "auth": de_auth,
     "automations": de_automations,
     "calendar": de_calendar,
@@ -263,6 +272,7 @@ export const CATALOG = {
     "account": en_account,
     "admin": en_admin,
     "ai": en_ai,
+    "attention": en_attention,
     "auth": en_auth,
     "automations": en_automations,
     "calendar": en_calendar,
@@ -293,6 +303,7 @@ export const CATALOG = {
     "account": es_account,
     "admin": es_admin,
     "ai": es_ai,
+    "attention": es_attention,
     "auth": es_auth,
     "automations": es_automations,
     "calendar": es_calendar,
@@ -323,6 +334,7 @@ export const CATALOG = {
     "account": fr_account,
     "admin": fr_admin,
     "ai": fr_ai,
+    "attention": fr_attention,
     "auth": fr_auth,
     "automations": fr_automations,
     "calendar": fr_calendar,
@@ -353,6 +365,7 @@ export const CATALOG = {
     "account": it_account,
     "admin": it_admin,
     "ai": it_ai,
+    "attention": it_attention,
     "auth": it_auth,
     "automations": it_automations,
     "calendar": it_calendar,
@@ -383,6 +396,7 @@ export const CATALOG = {
     "account": nl_account,
     "admin": nl_admin,
     "ai": nl_ai,
+    "attention": nl_attention,
     "auth": nl_auth,
     "automations": nl_automations,
     "calendar": nl_calendar,
@@ -413,6 +427,7 @@ export const CATALOG = {
     "account": pl_account,
     "admin": pl_admin,
     "ai": pl_ai,
+    "attention": pl_attention,
     "auth": pl_auth,
     "automations": pl_automations,
     "calendar": pl_calendar,
@@ -443,6 +458,7 @@ export const CATALOG = {
     "account": pt_BR_account,
     "admin": pt_BR_admin,
     "ai": pt_BR_ai,
+    "attention": pt_BR_attention,
     "auth": pt_BR_auth,
     "automations": pt_BR_automations,
     "calendar": pt_BR_calendar,

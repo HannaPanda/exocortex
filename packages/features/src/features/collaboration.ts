@@ -136,4 +136,19 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     ],
     claims: { screens: ['/arbeitsbereich/:x/auftraege', '/arbeitsbereich/:x/auftraege/:x'] },
   }),
+  defineFeature({
+    id: 'wartet-auf-dich',
+    area: 'zusammenarbeit',
+    since: '2026-09-26',
+    references: ['#139', 'ADR-067'],
+    ui: {},
+    tools: [
+      'exo_attention_list',
+      'exo_attention_get',
+      'exo_attention_request',
+      'exo_attention_resolve',
+      'exo_attention_withdraw',
+    ],
+    claims: { screens: ['/wartet'] },
+  }),
 ];

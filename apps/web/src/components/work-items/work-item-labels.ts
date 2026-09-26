@@ -93,6 +93,10 @@ export function useWorkItemWording() {
           return t('event.note');
         case 'updated':
           return t('event.updated', { count: value.data.fields?.length ?? 0 });
+        case 'attention_raised':
+          return t('event.attentionRaised');
+        case 'attention_resolved':
+          return t('event.attentionResolved');
       }
     };
 
