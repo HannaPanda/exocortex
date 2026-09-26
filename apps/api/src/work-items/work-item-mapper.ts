@@ -1,4 +1,5 @@
 import {
+  type AiWriteMode,
   type WorkItemCriterion,
   workItemCriterionSchema,
   type WorkItemDetail,
@@ -149,6 +150,7 @@ export const WORK_ITEM_DETAIL_SELECT = {
   goal: true,
   result: true,
   budgetMicroUsd: true,
+  writeMode: true,
   _count: { select: { children: true, runs: true, checkpoints: true } },
   checkpoints: { select: { createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 },
   parent: { select: { id: true, title: true } },
@@ -294,6 +296,7 @@ export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
     acceptanceCriteria: parseCriteria(row.acceptanceCriteria),
     result: row.result,
     budgetMicroUsd: row.budgetMicroUsd,
+    writeMode: row.writeMode === null ? null : (row.writeMode.toLowerCase() as AiWriteMode),
     spentMicroUsd: runs.reduce((sum, run) => sum + (run.costMicroUsd ?? 0), 0),
     parent: row.parent,
     contextRefs: refsOf(row, 'CONTEXT'),

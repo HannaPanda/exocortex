@@ -27,6 +27,7 @@ import {
   taskTextFor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
+import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
 
 export { type ResolvedModelRow } from './ai-run/contract';
 export { toolCallTarget } from './ai-run/wire';
@@ -290,8 +291,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             return null;
           })
         : null;
-    const messages: AiMessage[] =
-      imageContext === null ? [...base, ...rest] : [...base, imageContext, ...rest];
+    // The mode this run is held to (issue #141): told to the model up front,
+    // enforced by the loop and, through its signed token, by the API.
+    const writeMode = await resolveRunWriteMode({ prisma, run, settings });
+    const modeNote = writeModeMessage(writeMode);
+    const messages: AiMessage[] = [
+      ...base,
+      ...(modeNote === null ? [] : [modeNote]),
+      ...(imageContext === null ? [] : [imageContext]),
+      ...rest,
+    ];
 
     // Derived once, ahead of the tool runner: a tool call needs its own
     // timeout before the run's clocks are otherwise started below.
@@ -301,6 +310,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           userId: run.createdById,
           includeMutating: settings['ai.mutatingToolsEnabled'],
           mutationPolicy: settings['ai.untrustedContentPolicy'],
+          writeMode,
           // Zero when web research is off, which is also how the fetch tool
           // disappears from the catalogue instead of refusing every call.
           webFetchesPerRun: settings['ai.webResearchEnabled']
@@ -311,7 +321,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           // a database view is open, so the row and column tools are needed
           // before anybody writes the word "Datenbank".
           taskText: taskTextFor(rest),
-          requiredDomains: run.databaseViewId === null ? [] : ['databases'],
+          requiredDomains: [
+            ...(run.databaseViewId === null ? [] : (['databases'] as const)),
+            // A proposing run needs the proposal tools whatever its words say.
+            ...(writeMode === 'propose' ? (['changesets'] as const) : []),
+          ],
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
           // One run, one session (ADR-022): the unit somebody would want back
           // is "what the assistant did while answering that question".
@@ -333,6 +347,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         // Written when the run starts, not when it finishes: a run that fails
         // halfway still spent whoever's money it was spending.
         usedOwnKey: key.usedOwnKey,
+        writeMode: writeModeColumn(writeMode),
       },
     });
     await reportProgress(5, 'generating');

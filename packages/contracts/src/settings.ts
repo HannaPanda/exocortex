@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { AI_MUTATION_POLICIES, aiMutationPolicySchema } from './ai-trust';
+import {
+  AI_MUTATION_POLICIES,
+  AI_WRITE_MODES,
+  aiMutationPolicySchema,
+  aiWriteModeSchema,
+} from './ai-trust';
 import { providerRoutingSchema } from './provider-routing';
 import { isUsableTimeZone } from './zoned-time';
 
@@ -46,6 +51,13 @@ export const settingsSchema = z.object({
    * boundary, it is a suggestion.
    */
   'ai.untrustedContentPolicy': aiMutationPolicySchema.default('guarded'),
+  /**
+   * How the built-in AI may change things (issue #141, ADR-070): write pages
+   * itself, only propose changes a person applies, or only read. A workspace
+   * may tighten it and a work item may tighten it further; the run carries
+   * the result signed in its token, so the API holds it to it too.
+   */
+  'ai.writeMode': aiWriteModeSchema.default('direct'),
   /**
    * Tool round-trips one run may take. Deliberately generous (issue #28): the
    * cost of a long run is already bounded by `ai.budgetMicroUsdPerRun`, checked
@@ -804,6 +816,7 @@ export const SETTING_SCOPES = {
   'ai.toolsEnabled': 'workspace',
   'ai.mutatingToolsEnabled': 'workspace',
   'ai.untrustedContentPolicy': 'workspace',
+  'ai.writeMode': 'workspace',
   'ai.maxToolIterations': 'workspace',
   'ai.visionEnabled': 'workspace',
   'ai.visionMaxImagesPerRun': 'workspace',
@@ -973,6 +986,7 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.budgetMicroUsdPerRun',
   'ai.maxToolIterations',
   'ai.untrustedContentPolicy',
+  'ai.writeMode',
   'ai.visionMaxImagesPerRun',
   'ai.pageContextMaxChars',
   'ai.maxPinnedSources',
@@ -1009,6 +1023,7 @@ const CEILING_KEYS = new Set<string>(SETTING_CEILINGS);
  */
 export const SETTING_VALUE_RANKS: Readonly<Partial<Record<SettingKey, readonly string[]>>> = {
   'ai.untrustedContentPolicy': AI_MUTATION_POLICIES,
+  'ai.writeMode': AI_WRITE_MODES,
 };
 
 /** The inclusive bounds of one numeric setting. */

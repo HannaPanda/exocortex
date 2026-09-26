@@ -33,6 +33,7 @@ export function buildToolRunnerFactory(env: WorkerEnv, logger: Logger): ToolRunn
       userId: input.userId,
       includeMutating: input.includeMutating,
       mutationPolicy: input.mutationPolicy,
+      writeMode: input.writeMode,
       webFetchesPerRun: input.webFetchesPerRun,
       taskText: input.taskText,
       requiredDomains: input.requiredDomains,

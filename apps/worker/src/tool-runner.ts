@@ -2,6 +2,7 @@ import { type AiToolDefinition } from '@exocortex/ai';
 import { issueServiceToken } from '@exocortex/auth';
 import {
   type AiMutationPolicy,
+  type AiWriteMode,
   decideMutation,
   fenceUntrustedContent,
   type UntrustedOrigin,
@@ -146,6 +147,11 @@ export interface CreateToolRunnerInput {
   /** `ai.untrustedContentPolicy`: what this run may still change after reading foreign text. */
   mutationPolicy: AiMutationPolicy;
   /**
+   * The write mode this run is held to (issue #141): decided here per call,
+   * and signed into the service token so the API holds the run to it too.
+   */
+  writeMode: AiWriteMode;
+  /**
    * `ai.webResearchMaxFetchesPerRun`: web pages this run may read (issue #26).
    *
    * Counted here rather than in the API because only the loop knows what a run
@@ -196,6 +202,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'userId'
   | 'includeMutating'
   | 'mutationPolicy'
+  | 'writeMode'
   | 'webFetchesPerRun'
   | 'taskText'
   | 'requiredDomains'
@@ -230,8 +237,18 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
   // `deny` takes the mutating tools out of the catalogue entirely rather than
   // refusing them one by one: a model that is never offered a write does not
   // spend a turn proposing one. `guarded` keeps them, because whether they are
-  // allowed depends on what the run reads next.
+  // allowed depends on what the run reads next. A restricted write mode
+  // (issue #141) keeps only what that mode may call.
   const includeMutating = input.includeMutating && input.mutationPolicy !== 'deny';
+  const offeredInMode = (tool: AnyToolDefinition): boolean =>
+    !tool.mutating ||
+    decideMutation({
+      policy: 'allow',
+      mutating: true,
+      untrustedOrigins: [],
+      writeMode: input.writeMode,
+      writeClass: tool.writeClass,
+    }).allowed;
   const domains = new Set<ToolDomain>(
     selectToolDomains({ text: input.taskText, required: input.requiredDomains }),
   );
@@ -239,7 +256,8 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
   return {
     tools: () =>
       toolsFor('ai', { includeMutating, domains: [...domains] }).filter(
-        (tool) => tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0,
+        (tool) =>
+          (tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0) && offeredInMode(tool),
       ),
     open: (domain) => {
       if (domains.has(domain)) return false;
@@ -303,6 +321,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         purpose: 'ai-tools',
         ttlSeconds: input.serviceTokenTtlSeconds,
         runId: input.runId,
+        ...(input.writeMode === 'direct' ? {} : { writeMode: input.writeMode }),
       });
       tokenExpiresAt = issued.expiresAt;
       client = createFetchApiClient({
@@ -352,6 +371,8 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       policy: input.mutationPolicy,
       mutating: tool.mutating,
       untrustedOrigins,
+      writeMode: input.writeMode,
+      writeClass: tool.writeClass,
     });
     if (!decision.allowed) {
       input.logger.warn('Refused a mutating tool call', {

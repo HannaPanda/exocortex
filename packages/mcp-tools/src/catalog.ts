@@ -5,6 +5,7 @@ import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { ATTENTION_TOOLS } from './tools/attention.js';
 import { AUTOMATION_TOOLS } from './tools/automations.js';
+import { CHANGESET_TOOLS } from './tools/changesets.js';
 import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
@@ -62,6 +63,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...WORK_ITEM_TOOLS,
   ...WORK_CHECKPOINT_TOOLS,
   ...ATTENTION_TOOLS,
+  ...CHANGESET_TOOLS,
   ...WEB_TOOLS,
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,

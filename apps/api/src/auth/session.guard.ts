@@ -70,6 +70,11 @@ export interface AuthenticatedRequest extends FastifyRequest {
    * token rather than trusting what it could do when the ticket was minted.
    */
   exocortexApiTokenId?: string;
+  /**
+   * The write mode a service token's run is held to (issue #141), read by
+   * `TokenScopeGuard`. Unset for every other credential and for `direct`.
+   */
+  exocortexWriteMode?: 'read_only' | 'propose';
 }
 
 /** A far-future expiry for tokens that never expire (`ApiToken.expiresAt === null`). */
@@ -86,6 +91,8 @@ interface VerifiedBearer {
   pageScopes?: PageScopeRestriction;
   /** Only set for a service token minted for one AI run (issue #140). */
   aiRunId?: string;
+  /** Only set for a service token of a run held to a write mode (issue #141). */
+  writeMode?: 'read_only' | 'propose';
 }
 
 /**
@@ -141,8 +148,9 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential, scopes, pageScopes, apiTokenId, aiRunId } =
+    const { session, credential, scopes, pageScopes, apiTokenId, aiRunId, writeMode } =
       await this.verifyBearerToken(bearer);
+    request.exocortexWriteMode = writeMode;
     request.exocortexSession = session;
     request.exocortexCredential = credential;
     request.exocortexApiTokenId = apiTokenId;
@@ -217,6 +225,7 @@ export class SessionGuard implements CanActivate {
       },
       credential: 'service_token',
       ...(result.claims.runId === undefined ? {} : { aiRunId: result.claims.runId }),
+      ...(result.claims.writeMode === undefined ? {} : { writeMode: result.claims.writeMode }),
     };
   }
 

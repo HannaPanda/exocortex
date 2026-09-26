@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-242 routes are reachable from at least one client; 155 from all three.
+249 routes are reachable from at least one client; 155 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -31,6 +31,8 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/ai/conversations/:x/permanent` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
 | `DELETE /api/automations/:x` | ✓ | ✓ | ✓ | `exo_automation_delete` |
+| `DELETE /api/changesets/:x` | · | ✓ | ✓ | `exo_changeset_discard` |
+| `DELETE /api/changesets/:x/changes/:x` | · | ✓ | ✓ | `exo_changeset_remove_change` |
 | `DELETE /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_delete` |
 | `DELETE /api/documents/:x` | · | · | ✓ | `exo_page_delete` |
 | `DELETE /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_delete` |
@@ -71,6 +73,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
 | `GET /api/attention/:x` | · | ✓ | ✓ | `exo_attention_get` |
+| `GET /api/changesets/:x` | · | ✓ | ✓ | `exo_changeset_get` |
 | `GET /api/context` | · | ✓ | ✓ | `exo_context_compile` |
 | `GET /api/documents/:x` | ✓ | ✓ | ✓ | `exo_database_schema`, `fetch` |
 | `GET /api/documents/:x/activity` | ✓ | ✓ | ✓ | `exo_page_activity` |
@@ -127,6 +130,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/attachments/upload-tickets/:x` | · | · | ✓ | `exo_attachment_upload_ticket_get` |
 | `GET /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_list` |
 | `GET /api/workspaces/:x/automations/runs` | ✓ | ✓ | ✓ | `exo_automation_runs` |
+| `GET /api/workspaces/:x/changesets` | · | ✓ | ✓ | `exo_changeset_list` |
 | `GET /api/workspaces/:x/credentials` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/documents/resolve` | ✓ | ✓ | ✓ | `exo_page_resolve_link` |
 | `GET /api/workspaces/:x/documents/tree` | ✓ | ✓ | ✓ | `exo_page_tree` |
@@ -188,6 +192,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
 | `POST /api/auth/oauth2/consent` | ✓ | · | · | — |
 | `POST /api/automations/:x/trigger` | ✓ | ✓ | ✓ | `exo_automation_trigger` |
+| `POST /api/changesets/:x/changes` | · | ✓ | ✓ | `exo_changeset_propose` |
+| `POST /api/changesets/:x/submit` | · | ✓ | ✓ | `exo_changeset_submit` |
 | `POST /api/comments/:x/resolve` | ✓ | ✓ | ✓ | `exo_comment_resolve` |
 | `POST /api/documents/:x/archive` | ✓ | ✓ | ✓ | `exo_page_archive` |
 | `POST /api/documents/:x/collaboration-ticket` | ✓ | · | · | — |
@@ -249,6 +255,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/attention` | · | ✓ | ✓ | `exo_attention_request` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |
 | `POST /api/workspaces/:x/capture` | ✓ | ✓ | ✓ | `exo_capture` |
+| `POST /api/workspaces/:x/changesets` | · | ✓ | ✓ | `exo_changeset_propose` |
 | `POST /api/workspaces/:x/clip` | ✓ | ✓ | ✓ | `exo_clip` |
 | `POST /api/workspaces/:x/documents` | ✓ | ✓ | ✓ | `exo_database_create`, `exo_page_create` |
 | `POST /api/workspaces/:x/documents/suggest-parent` | ✓ | ✓ | ✓ | `exo_page_suggest_parent` |

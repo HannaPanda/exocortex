@@ -4,7 +4,7 @@ import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { type ChangesetResponse, type PostConversationMessageResponse } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
-import { serializeMarkdown,yjsStateToProseMirrorJson } from '@exocortex/editor';
+import { serializeMarkdown, yjsStateToProseMirrorJson } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
@@ -267,7 +267,9 @@ describe('proposing', () => {
     const [change] = created.changeset.changes;
     expect(change?.kind).toBe('section');
     expect(change?.applicable).toBe(true);
-    expect(change?.diff.summary.changed + (change?.diff.summary.added ?? 0)).toBeGreaterThan(0);
+    expect((change?.diff.summary.changed ?? 0) + (change?.diff.summary.added ?? 0)).toBeGreaterThan(
+      0,
+    );
     expect(JSON.stringify(change?.diff.blocks)).toContain('Neu und klar.');
     expect(await markdownOf(pageId)).toBe(before);
   });

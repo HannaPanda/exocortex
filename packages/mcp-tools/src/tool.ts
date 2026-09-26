@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type UntrustedOrigin } from '@exocortex/contracts';
+import { type ToolWriteClass, type UntrustedOrigin } from '@exocortex/contracts';
 
 import { type ExocortexApiClient } from './client.js';
 
@@ -43,6 +43,7 @@ export const TOOL_DOMAINS = [
   'savedQueries',
   'workItems',
   'attention',
+  'changesets',
   'shares',
   'entities',
   'memory',
@@ -81,6 +82,15 @@ export interface ToolDefinition<TInput> {
    * `ai.mutatingToolsEnabled` setting.
    */
   mutating: boolean;
+  /**
+   * What a mutating tool changes, beside data in general (issue #141):
+   * `report` says how delegated work is going, `proposal` puts a change
+   * forward without making it. A run held to `propose` or `read_only` is
+   * offered only those, and the API enforces the same split by route, so a
+   * tool marked here has to call a route of its class. Absent means
+   * `content`, which is what every other mutating tool is.
+   */
+  writeClass?: ToolWriteClass;
   /**
    * True when the write can take something away that was there before: a
    * deletion, or an overwrite of content a person authored. Creating,
@@ -173,6 +183,8 @@ export interface AnyToolDefinition {
   /** See `ToolDefinition.domain`. */
   domain: ToolDomain;
   mutating: boolean;
+  /** See `ToolDefinition.writeClass`. `content` for every mutating tool that says nothing. */
+  writeClass: ToolWriteClass;
   /** See `ToolDefinition.destructive`. Always `false` for a read-only tool. */
   destructive: boolean;
   /** See `ToolDefinition.irreversible`. Always `false` for a read-only tool. */
@@ -252,6 +264,7 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
     surfaces: definition.surfaces,
     domain: definition.domain,
     mutating: definition.mutating,
+    writeClass: definition.writeClass ?? 'content',
     // A tool that changes nothing cannot destroy anything, whatever it claims.
     destructive: definition.mutating && (definition.destructive ?? false),
     irreversible: definition.mutating && (definition.irreversible ?? false),

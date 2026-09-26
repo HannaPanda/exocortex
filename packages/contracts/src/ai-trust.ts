@@ -74,8 +74,49 @@ export const AI_MUTATION_POLICIES = ['deny', 'guarded', 'allow'] as const;
 export const aiMutationPolicySchema = z.enum(AI_MUTATION_POLICIES);
 export type AiMutationPolicy = z.infer<typeof aiMutationPolicySchema>;
 
+/**
+ * How a run of the built-in AI may change things at all (issue #141, ADR-070).
+ *
+ * `direct` writes pages like a person would. `propose` may not write a page,
+ * but may put changes forward as a changeset a person decides, and report on
+ * its work. `read_only` may only read and report. Reporting (a work item's
+ * progress, a checkpoint, a question to a person) stays open in every mode,
+ * because delegated work that cannot say where it stands cannot be delegated.
+ *
+ * Strictest first, for `SETTING_VALUE_RANKS`: a workspace may tighten the
+ * deployment's choice and a work item may tighten the workspace's, never the
+ * other way round. The mode is signed into the run's service token, so the
+ * API refuses what the mode does not allow as well as the loop.
+ */
+export const AI_WRITE_MODES = ['read_only', 'propose', 'direct'] as const;
+export const aiWriteModeSchema = z.enum(AI_WRITE_MODES);
+export type AiWriteMode = z.infer<typeof aiWriteModeSchema>;
+
+/** The stricter of two modes; `null` stands for "no opinion". */
+export function strictestWriteMode(
+  ...modes: readonly (AiWriteMode | null | undefined)[]
+): AiWriteMode {
+  let strictest: AiWriteMode = 'direct';
+  for (const mode of modes) {
+    if (mode != null && AI_WRITE_MODES.indexOf(mode) < AI_WRITE_MODES.indexOf(strictest)) {
+      strictest = mode;
+    }
+  }
+  return strictest;
+}
+
+/**
+ * What a mutating tool does, beside changing data (issue #141).
+ *
+ * `content` changes what people read and is the default. `report` tells
+ * eXocortex how delegated work is going. `proposal` puts a change forward
+ * without making it. The last two are what a run held to `propose` or
+ * `read_only` may still do, matching the request classes the API enforces.
+ */
+export type ToolWriteClass = 'content' | 'report' | 'proposal';
+
 /** Why a tool call was refused. English, like every other code on the wire. */
-export type MutationRefusalCode = 'mutations_disabled' | 'untrusted_context';
+export type MutationRefusalCode = 'mutations_disabled' | 'untrusted_context' | 'write_mode';
 
 export type MutationDecision =
   { allowed: true } | { allowed: false; code: MutationRefusalCode; message: string };
@@ -99,8 +140,18 @@ export function decideMutation(input: {
   mutating: boolean;
   /** Origins of the foreign text this run has read so far, in the order it arrived. */
   untrustedOrigins: readonly UntrustedOrigin[];
+  /** The run's write mode (issue #141); absent means `direct`. */
+  writeMode?: AiWriteMode;
+  /** `AnyToolDefinition.writeClass`; absent means `content`. */
+  writeClass?: ToolWriteClass;
 }): MutationDecision {
   if (!input.mutating) return ALLOWED;
+  const writeClass = input.writeClass ?? 'content';
+  const mode = input.writeMode ?? 'direct';
+  if (mode !== 'direct') {
+    const allowed = writeClass === 'report' || (mode === 'propose' && writeClass === 'proposal');
+    if (!allowed) return writeModeRefusal(mode);
+  }
   if (input.policy === 'allow') return ALLOWED;
   if (input.policy === 'deny') {
     return {
@@ -113,6 +164,9 @@ export function decideMutation(input: {
     };
   }
   if (input.untrustedOrigins.length === 0) return ALLOWED;
+  // A proposal changes nothing until a person has read it and applied it,
+  // which is exactly the review foreign text needs (issue #141).
+  if (writeClass === 'proposal') return ALLOWED;
 
   const origins = [...new Set(input.untrustedOrigins)]
     .map((origin) => CONTENT_ORIGIN_LABEL[origin])
@@ -123,8 +177,22 @@ export function decideMutation(input: {
     message:
       `Dieser Aufruf wurde abgelehnt: Dieser Lauf hat Inhalte aus ${origins} gelesen, und danach ` +
       'sind verändernde Werkzeuge gesperrt. Das ist kein Fehler, sondern der Schutz davor, dass ' +
-      'fremder Text Anweisungen erteilt. Fasse stattdessen zusammen, was du schreiben würdest, ' +
-      'damit die Nutzerin es selbst übernehmen kann.',
+      'fremder Text Anweisungen erteilt. Schlage die Änderung stattdessen mit ' +
+      'exo_changeset_propose vor; ein Mensch prüft sie dann und übernimmt sie.',
+  };
+}
+
+function writeModeRefusal(mode: Exclude<AiWriteMode, 'direct'>): MutationDecision {
+  return {
+    allowed: false,
+    code: 'write_mode',
+    message:
+      mode === 'propose'
+        ? 'Dieser Aufruf wurde abgelehnt: Dieser Lauf arbeitet im Vorschlagsmodus und schreibt ' +
+          'keine Seiten selbst. Schlage die Änderung mit exo_changeset_propose vor und reiche ' +
+          'den Vorschlag mit exo_changeset_submit ein; ein Mensch prüft und übernimmt ihn.'
+        : 'Dieser Aufruf wurde abgelehnt: Dieser Lauf darf nur lesen und über seinen Auftrag ' +
+          'berichten. Sage offen, was du ändern würdest.',
   };
 }
 

@@ -27,6 +27,7 @@ function runnerWith(overrides: Partial<CreateToolRunnerInput> = {}) {
     userId: 'user-1',
     includeMutating: true,
     mutationPolicy: 'guarded',
+    writeMode: 'direct',
     webFetchesPerRun: 8,
     taskText: 'Schreib etwas auf eine Seite.',
     requiredDomains: [],
@@ -111,6 +112,48 @@ describe('the tool runner as a trust boundary', () => {
     });
     expect(result.isError).toBe(true);
     expect(result.refused).toBe(false);
+  });
+});
+
+/** The write modes (issue #141, ADR-070). */
+describe('the write mode of a run', () => {
+  const PROPOSE_TASK = 'Schlag eine Änderung als Vorschlag vor.';
+  const A_PROPOSAL = {
+    name: 'exo_changeset_propose',
+    argumentsJson: JSON.stringify({
+      workspaceId: 'ws-00000001',
+      title: 'Vorschlag',
+      change: { kind: 'create', title: 'Neu', markdown: 'x' },
+    }),
+    correlationId: 'corr-1',
+  };
+
+  it('offers a proposing run the proposal tools and no page writes', () => {
+    const names = runnerWith({ writeMode: 'propose', taskText: PROPOSE_TASK }).definitions.map(
+      (definition) => definition.name,
+    );
+    expect(names).toContain('exo_changeset_propose');
+    expect(names).toContain('exo_page_read');
+    expect(names).not.toContain('exo_page_write');
+    expect(names).not.toContain('exo_changeset_apply');
+  });
+
+  it('refuses a page write in the propose mode and names the way out', async () => {
+    const result = await runnerWith({ writeMode: 'propose' }).run(A_WRITE);
+    expect(result.refused).toBe(true);
+    expect(result.text).toContain('exo_changeset_propose');
+  });
+
+  it('lets a proposing run propose, and a read-only run not', async () => {
+    expect((await runnerWith({ writeMode: 'propose' }).run(A_PROPOSAL)).refused).toBe(false);
+    expect((await runnerWith({ writeMode: 'read_only' }).run(A_PROPOSAL)).refused).toBe(true);
+  });
+
+  it('lets a proposal through after foreign content, and a page write not', async () => {
+    const runner = runnerWith();
+    runner.noteUntrustedContent('attachment');
+    expect((await runner.run(A_PROPOSAL)).refused).toBe(false);
+    expect((await runner.run(A_WRITE)).refused).toBe(true);
   });
 });
 

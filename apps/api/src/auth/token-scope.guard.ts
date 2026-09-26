@@ -1,6 +1,11 @@
 import { type CanActivate, type ExecutionContext, Injectable } from '@nestjs/common';
 
-import { requiredScopeForRequest, tokenHasScope } from '@exocortex/auth';
+import {
+  requestClassFor,
+  requiredScopeForRequest,
+  tokenHasScope,
+  writeModeAllows,
+} from '@exocortex/auth';
 
 import { AppError } from '../common/app-error';
 import { isHttpContext } from '../common/http-context';
@@ -23,7 +28,8 @@ import { type AuthenticatedRequest } from './session.guard';
  *
  * Cookie sessions and the worker's service tokens pass through untouched. A
  * human at a browser already is the account, and a service token is minted per
- * AI run from a session that was itself authorized.
+ * AI run from a session that was itself authorized -- except when that run is
+ * held to a write mode (issue #141), which its token carries and this enforces.
  */
 @Injectable()
 export class TokenScopeGuard implements CanActivate {
@@ -31,6 +37,20 @@ export class TokenScopeGuard implements CanActivate {
     if (!isHttpContext(context)) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    // A run of the built-in AI held to a write mode (issue #141): the mode is
+    // signed into its service token, so the refusal happens here, on the
+    // server, whatever the tool loop decided.
+    if (
+      request.exocortexCredential === 'service_token' &&
+      request.exocortexWriteMode !== undefined
+    ) {
+      const requestClass = requestClassFor(request.method, pathOf(request.url));
+      if (writeModeAllows(request.exocortexWriteMode, requestClass)) return true;
+      throw new AppError(
+        'api_token_insufficient_scope',
+        `This run may not make a '${requestClass}' request in the '${request.exocortexWriteMode}' mode`,
+      );
+    }
     if (request.exocortexCredential !== 'api_token') return true;
 
     const required = requiredScopeForRequest(request.method, pathOf(request.url));

@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { type VerifiedSession } from '@exocortex/auth';
+import { tokenHasScope, type VerifiedSession } from '@exocortex/auth';
 import {
   type AddWorkItemNoteRequest,
   addWorkItemNoteRequestSchema,
@@ -31,13 +31,27 @@ import {
   workItemResponseSchema,
 } from '@exocortex/contracts';
 
-import { CurrentSession } from '../auth/session.guard';
+import { type AuthenticatedRequest, CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { workItemActorOf } from './work-item-actor';
 import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { WorkItemsService } from './work-items.service';
+
+/**
+ * Whether this credential may loosen a work item's write mode (issue #141):
+ * a person in the browser, or a token that may write pages itself. Not the
+ * built-in AI's service token, and not a token that may only propose, since
+ * either would be lifting the mode it is itself held to.
+ */
+function mayLoosenWriteMode(request: AuthenticatedRequest): boolean {
+  if (request.exocortexCredential === 'session') return true;
+  return (
+    request.exocortexCredential === 'api_token' &&
+    tokenHasScope(request.exocortexTokenScopes ?? [], 'write')
+  );
+}
 
 /**
  * Delegated work (issue #138, ADR-066).
@@ -103,12 +117,14 @@ export class WorkItemsController {
     @CurrentSession() session: VerifiedSession,
     @Param('workItemId') workItemId: string,
     @Body(zodPipe(updateWorkItemRequestSchema)) body: UpdateWorkItemRequest,
+    @Req() request: AuthenticatedRequest,
   ): Promise<WorkItemResponse> {
     return this.workItems.update({
       workItemId,
       actor: workItemActorOf(session),
       request: body,
       correlationId: currentCorrelationId(),
+      mayLoosenWriteMode: mayLoosenWriteMode(request),
     });
   }
 

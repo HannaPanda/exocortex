@@ -44,6 +44,13 @@ export interface ServiceTokenClaims {
    * one it could choose wrongly on purpose.
    */
   runId?: string;
+  /**
+   * The write mode the run is held to (issue #141), when it is not `direct`.
+   * Signed for the reason `runId` is: `TokenScopeGuard` refuses every request
+   * the mode does not allow, so the model cannot write around the worker's own
+   * check, and nothing a request says can loosen it.
+   */
+  writeMode?: 'read_only' | 'propose';
 }
 
 interface ServiceTokenPayload extends ServiceTokenClaims {
@@ -68,12 +75,28 @@ export interface IssueServiceTokenOptions {
   ttlSeconds: number;
   /** See `ServiceTokenClaims.runId`. */
   runId?: string;
+  /** See `ServiceTokenClaims.writeMode`. */
+  writeMode?: 'read_only' | 'propose';
   now?: number;
 }
 
 export interface IssuedServiceToken {
   token: string;
   expiresAt: number;
+}
+
+/** The payload has every field of the current format, each of the right type. */
+function isWellFormed(payload: ServiceTokenPayload): boolean {
+  return (
+    payload.v === 1 &&
+    typeof payload.userId === 'string' &&
+    SERVICE_TOKEN_PURPOSES.includes(payload.purpose) &&
+    typeof payload.expiresAt === 'number' &&
+    (payload.runId === undefined || typeof payload.runId === 'string') &&
+    (payload.writeMode === undefined ||
+      payload.writeMode === 'read_only' ||
+      payload.writeMode === 'propose')
+  );
 }
 
 /** Issues a service token. */
@@ -86,6 +109,7 @@ export function issueServiceToken(options: IssueServiceTokenOptions): IssuedServ
     purpose: options.purpose,
     expiresAt,
     ...(options.runId === undefined ? {} : { runId: options.runId }),
+    ...(options.writeMode === undefined ? {} : { writeMode: options.writeMode }),
     nonce: randomBytes(9).toString('base64url'),
   };
   const encoded = base64UrlEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
@@ -146,15 +170,7 @@ export function verifyServiceToken(
     return { valid: false, reason: 'malformed' };
   }
 
-  if (
-    payload.v !== 1 ||
-    typeof payload.userId !== 'string' ||
-    !SERVICE_TOKEN_PURPOSES.includes(payload.purpose) ||
-    typeof payload.expiresAt !== 'number' ||
-    (payload.runId !== undefined && typeof payload.runId !== 'string')
-  ) {
-    return { valid: false, reason: 'malformed' };
-  }
+  if (!isWellFormed(payload)) return { valid: false, reason: 'malformed' };
 
   const accepted = Array.isArray(options.expectedPurpose)
     ? options.expectedPurpose
@@ -175,6 +191,7 @@ export function verifyServiceToken(
       purpose: payload.purpose,
       expiresAt: payload.expiresAt,
       ...(payload.runId === undefined ? {} : { runId: payload.runId }),
+      ...(payload.writeMode === undefined ? {} : { writeMode: payload.writeMode }),
     },
   };
 }

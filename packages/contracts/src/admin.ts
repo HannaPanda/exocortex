@@ -170,15 +170,18 @@ export type AiUsageResponse = z.infer<typeof aiUsageResponseSchema>;
  * machine, so it should be able to carry less authority than the person who
  * issued it -- otherwise every leaked token is a full account takeover.
  *
- * The three levels are cumulative and deliberately coarse: a finer grid would
+ * The four levels are cumulative and deliberately coarse: a finer grid would
  * have to be re-decided on every new route, and a scope nobody can reason about
  * is a scope nobody sets correctly.
  *
- *   read   - safe requests (GET, HEAD)
- *   write  - additionally creating, changing and deleting content
- *   admin  - additionally the deployment-wide admin API and token management
+ *   read    - safe requests (GET, HEAD)
+ *   propose - additionally proposing changes and reporting on delegated work:
+ *             changesets, work item progress, questions to a person (issue
+ *             #141, ADR-070). Nothing that changes a page.
+ *   write   - additionally creating, changing and deleting content
+ *   admin   - additionally the deployment-wide admin API and token management
  */
-export const API_TOKEN_SCOPES = ['read', 'write', 'admin'] as const;
+export const API_TOKEN_SCOPES = ['read', 'propose', 'write', 'admin'] as const;
 export const apiTokenScopeSchema = z.enum(API_TOKEN_SCOPES);
 export type ApiTokenScope = z.infer<typeof apiTokenScopeSchema>;
 

@@ -35,7 +35,7 @@ import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
-import { assertMayProgress } from './work-item-access';
+import { assertMayProgress, assertWriteModeChange } from './work-item-access';
 import { type WorkItemActor } from './work-item-actor';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
 import {
@@ -43,6 +43,7 @@ import {
   assigneeSnapshot,
   planWorkItemUpdate,
   type WorkItemEventDraft,
+  writeModeToPrisma,
 } from './work-item-changes';
 import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { eventActor, writeEvents } from './work-item-events';
@@ -151,6 +152,7 @@ export class WorkItemsService {
           ...assigneeColumns(assignee),
           acceptanceCriteria: request.acceptanceCriteria ?? [],
           budgetMicroUsd: request.budgetMicroUsd ?? null,
+          writeMode: writeModeToPrisma(request.writeMode ?? null),
           dueAt:
             request.dueAt === undefined || request.dueAt === null ? null : new Date(request.dueAt),
           parentId: request.parentId ?? null,
@@ -180,9 +182,12 @@ export class WorkItemsService {
     correlationId: string;
     /** An answer from the inbox that this change carries out (issue #139). */
     resolving?: AttentionResolving;
+    /** Whether the credential may loosen the write mode (issue #141); see the controller. */
+    mayLoosenWriteMode?: boolean;
   }): Promise<WorkItemResponse> {
     const { request, actor } = input;
     const existing = await this.loadRow(input.workItemId);
+    assertWriteModeChange(existing.writeMode, request.writeMode, input.mayLoosenWriteMode ?? false);
     const progressOnly = Object.keys(request).every((key) =>
       ASSIGNEE_FIELDS.has(key as keyof UpdateWorkItemRequest),
     );
@@ -479,6 +484,7 @@ export class WorkItemsService {
         title: true,
         priority: true,
         result: true,
+        writeMode: true,
         closedAt: true,
       },
     });

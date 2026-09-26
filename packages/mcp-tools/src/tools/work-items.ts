@@ -220,6 +220,7 @@ export const workItemUpdateTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   domain: 'workItems',
   mutating: true,
+  writeClass: 'report',
   target: (input) => `work-item:${input.workItemId}`,
   async execute(client, input) {
     const { workItemId, ...changes } = input;
@@ -245,6 +246,7 @@ export const workItemNoteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   domain: 'workItems',
   mutating: true,
+  writeClass: 'report',
   target: (input) => `work-item:${input.workItemId}`,
   async execute(client, input) {
     const result = await client.request({

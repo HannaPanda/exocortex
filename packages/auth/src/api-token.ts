@@ -41,8 +41,42 @@ export function apiTokenHashesMatch(a: string, b: string): boolean {
 }
 
 /**
- * Which scope a request needs, derived from the request itself.
+ * What a request does, derived from the request itself (issue #141).
  *
+ * `read` changes nothing. `report` tells eXocortex how delegated work is
+ * going: a work item's progress and notes, a checkpoint, a question to a
+ * person and taking it back. `propose` puts forward a change without making
+ * it: a changeset, its changes, handing it in, throwing a draft away. `write`
+ * is everything else that changes state, deciding a changeset included,
+ * because applying one is writing the pages. `admin` is the deployment and
+ * the credentials themselves.
+ *
+ * The two middle classes are what a proposing agent needs and nothing more:
+ * an API token with the `propose` scope, and the built-in AI in the propose
+ * or read-only mode (which the worker signs into its service token), are
+ * held to them here, on the server, whatever the tool loop decides.
+ */
+export type RequestClass = 'read' | 'report' | 'propose' | 'write' | 'admin';
+
+const REPORT_ROUTES: readonly [string, RegExp][] = [
+  ['PATCH', /^\/api\/work-items\/[^/]+$/],
+  ['POST', /^\/api\/work-items\/[^/]+\/(notes|checkpoints)$/],
+  ['POST', /^\/api\/workspaces\/[^/]+\/attention$/],
+  ['POST', /^\/api\/attention\/[^/]+\/withdraw$/],
+];
+
+const PROPOSE_ROUTES: readonly [string, RegExp][] = [
+  ['POST', /^\/api\/workspaces\/[^/]+\/changesets$/],
+  ['DELETE', /^\/api\/changesets\/[^/]+$/],
+  ['POST', /^\/api\/changesets\/[^/]+\/(changes|submit)$/],
+  ['DELETE', /^\/api\/changesets\/[^/]+\/changes\/[^/]+$/],
+];
+
+function matches(routes: readonly [string, RegExp][], method: string, path: string): boolean {
+  return routes.some(([verb, pattern]) => verb === method && pattern.test(path));
+}
+
+/**
  * Derived rather than declared on purpose. A `@RequiredScope()` decorator would
  * have to be remembered on every new route, and the one that gets forgotten is
  * the one that ends up reachable by a read-only token. Deriving it means a route
@@ -51,7 +85,8 @@ export function apiTokenHashesMatch(a: string, b: string): boolean {
  *
  * `path` is the request path without the query string.
  */
-export function requiredScopeForRequest(method: string, path: string): ApiTokenScope {
+export function requestClassFor(method: string, path: string): RequestClass {
+  const verb = method.toUpperCase();
   // Managing credentials with a credential is how a narrow one widens itself
   // into a broad one, so it sits at the top level together with the admin API.
   // `/api/me/connections` belongs here for the mirror image of that reason: it
@@ -70,17 +105,26 @@ export function requiredScopeForRequest(method: string, path: string): ApiTokenS
   // created it has been forgotten about. Reading the rules and their run log is
   // an ordinary read, because what an automation has been doing is exactly what
   // the people it acts on should be able to check.
-  if (path.includes('/automations') && !SAFE_METHODS.has(method.toUpperCase())) {
+  if (path.includes('/automations') && !SAFE_METHODS.has(verb)) {
     return 'admin';
   }
-  return SAFE_METHODS.has(method.toUpperCase()) ? 'read' : 'write';
+  if (SAFE_METHODS.has(verb)) return 'read';
+  if (matches(REPORT_ROUTES, verb, path)) return 'report';
+  if (matches(PROPOSE_ROUTES, verb, path)) return 'propose';
+  return 'write';
+}
+
+/** Which scope a request needs: its class, with reporting counted as proposing. */
+export function requiredScopeForRequest(method: string, path: string): ApiTokenScope {
+  const requestClass = requestClassFor(method, path);
+  return requestClass === 'report' ? 'propose' : requestClass;
 }
 
 /** Safe methods in the HTTP sense: they do not change server state. */
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /** Rank of each scope; a scope implies every scope below it. */
-const SCOPE_RANK: Record<ApiTokenScope, number> = { read: 0, write: 1, admin: 2 };
+const SCOPE_RANK: Record<ApiTokenScope, number> = { read: 0, propose: 1, write: 2, admin: 3 };
 
 /**
  * Whether a token carrying `granted` may perform something that needs
@@ -97,7 +141,20 @@ export function tokenHasScope(granted: readonly string[], required: ApiTokenScop
 }
 
 function isApiTokenScope(value: string): value is ApiTokenScope {
-  return value === 'read' || value === 'write' || value === 'admin';
+  return Object.hasOwn(SCOPE_RANK, value);
+}
+
+/**
+ * Whether the built-in AI in a restricted write mode may make this request
+ * (issue #141). `read_only` may read and report on its work; `propose` may
+ * also propose. `direct` is not restricted here.
+ */
+export function writeModeAllows(
+  mode: 'read_only' | 'propose',
+  requestClass: RequestClass,
+): boolean {
+  if (requestClass === 'read' || requestClass === 'report') return true;
+  return mode === 'propose' && requestClass === 'propose';
 }
 
 /** Extracts a bearer credential from raw Node headers. Returns null when absent. */

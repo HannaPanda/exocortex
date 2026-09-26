@@ -187,6 +187,20 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'attention',
     ],
   },
+  changesets: {
+    label:
+      'Änderungsvorschläge: Seitenänderungen vorschlagen statt schreiben, einreichen und nachsehen, was übernommen wurde.',
+    keywords: [
+      'vorschlag',
+      'vorschläg',
+      'vorschlaeg',
+      'vorschlagen',
+      'changeset',
+      'exo_changeset',
+      'zur prüfung',
+      'zur freigabe',
+    ],
+  },
   shares: {
     label: 'Freigaben und öffentliche Links.',
     keywords: ['freigab', 'freigeb', 'teilen', 'geteilt', 'share', 'öffentlicher link', 'zugriff'],

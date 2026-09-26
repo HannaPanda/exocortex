@@ -75,6 +75,7 @@ export const workItemCheckpointTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   domain: 'workItems',
   mutating: true,
+  writeClass: 'report',
   target: (input) => `work-item:${input.workItemId}`,
   async execute(client, input) {
     const { workItemId, ...body } = input;

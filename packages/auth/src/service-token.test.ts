@@ -91,3 +91,19 @@ describe('service tokens', () => {
     ).toBe(true);
   });
 });
+
+describe('the write mode claim (issue #141)', () => {
+  it('carries a restricted mode through signing and verification', () => {
+    const secret = 'x'.repeat(40);
+    const issued = issueServiceToken({
+      secret,
+      userId: 'user-1',
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+      runId: 'run-1',
+      writeMode: 'propose',
+    });
+    const result = verifyServiceToken({ secret, token: issued.token, expectedPurpose: 'ai-tools' });
+    expect(result.valid && result.claims.writeMode).toBe('propose');
+  });
+});

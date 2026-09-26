@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { aiRunStatusSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
+import { aiWriteModeSchema } from './ai-trust';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -194,6 +195,12 @@ export const workItemDetailSchema = workItemSummarySchema.extend({
   acceptanceCriteria: z.array(workItemCriterionSchema),
   result: z.string().nullable(),
   budgetMicroUsd: z.number().int().nullable(),
+  /**
+   * How a run of the built-in AI on this work may change things (issue
+   * #141); null inherits the workspace's `ai.writeMode`, and the stricter of
+   * the two applies.
+   */
+  writeMode: aiWriteModeSchema.nullable(),
   /** What the linked runs have cost so far, measured where known, estimated otherwise. */
   spentMicroUsd: z.number().int(),
   parent: z.object({ id: idSchema, title: z.string() }).nullable(),
@@ -247,6 +254,7 @@ export const createWorkItemRequestSchema = z.object({
   acceptanceCriteria: criteriaSchema.optional(),
   contextDocumentIds: refIdsSchema.optional(),
   budgetMicroUsd: budgetSchema.nullable().optional(),
+  writeMode: aiWriteModeSchema.nullable().optional(),
   dueAt: isoDateTimeSchema.nullable().optional(),
   parentId: idSchema.nullable().optional(),
 });
@@ -272,6 +280,11 @@ export const updateWorkItemRequestSchema = z
     contextDocumentIds: refIdsSchema.optional(),
     resultDocumentIds: refIdsSchema.optional(),
     budgetMicroUsd: budgetSchema.nullable().optional(),
+    /**
+     * Only a person, or a token that may write, may loosen it (issue #141):
+     * a run that could lift its own mode would not be held to it.
+     */
+    writeMode: aiWriteModeSchema.nullable().optional(),
     dueAt: isoDateTimeSchema.nullable().optional(),
     parentId: idSchema.nullable().optional(),
   })

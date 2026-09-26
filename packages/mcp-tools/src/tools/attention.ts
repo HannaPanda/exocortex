@@ -185,6 +185,7 @@ export const attentionRequestTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   domain: 'attention',
   mutating: true,
+  writeClass: 'report',
   target: (input) => `workspace:${input.workspaceId}:attention`,
   async execute(client, input) {
     const { workspaceId, ...body } = input;
@@ -246,6 +247,7 @@ export const attentionWithdrawTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   domain: 'attention',
   mutating: true,
+  writeClass: 'report',
   target: (input) => `attention:${input.attentionItemId}`,
   async execute(client, input) {
     const { attentionItemId, ...body } = input;

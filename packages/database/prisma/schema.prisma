@@ -1990,6 +1990,8 @@ model AiRun {
   reasoningLevel AiReasoningLevel @default(NONE)
   /// Number of tool round-trips this run performed.
   toolIterations Int              @default(0)
+  /// The write mode this run was held to, written when it starts (issue #141).
+  writeMode      AiWriteMode?
   /// The piece of delegated work this run is an attempt at (issue #138,
   /// ADR-066). `SetNull`: deleting the item leaves the run and its cost in
   /// the usage report.
@@ -3707,6 +3709,10 @@ model WorkItem {
   /// cost; a run in progress is not stopped by it.
   budgetMicroUsd Int?
   dueAt          DateTime?
+  /// How a run of the built-in AI on this work may change things (issue
+  /// #141): only ever stricter than the workspace's `ai.writeMode`. Null
+  /// inherits it.
+  writeMode      AiWriteMode?
 
   /// The item this one is part of. Same workspace, no cycle -- both checked
   /// by the API, since neither can be a foreign key's job.
@@ -3988,6 +3994,13 @@ model AttentionItem {
   @@index([workItemId, status])
   @@index([aiRunId])
   @@map("attention_item")
+}
+
+/// How the built-in AI may change things (issue #141, ADR-070).
+enum AiWriteMode {
+  READ_ONLY
+  PROPOSE
+  DIRECT
 }
 
 /// Where a proposal stands (issue #141, ADR-070). Derived from its changes by

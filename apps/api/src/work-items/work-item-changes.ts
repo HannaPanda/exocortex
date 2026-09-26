@@ -1,4 +1,5 @@
 import {
+  type AiWriteMode,
   isClosedWorkItemStatus,
   type UpdateWorkItemRequest,
   type WorkItemAssigneeInput,
@@ -56,6 +57,7 @@ const PLAIN_FIELDS = [
   'acceptanceCriteria',
   'contextDocumentIds',
   'budgetMicroUsd',
+  'writeMode',
   'dueAt',
   'parentId',
 ] as const satisfies readonly (keyof UpdateWorkItemRequest)[];
@@ -171,6 +173,7 @@ function planPlainFields(request: UpdateWorkItemRequest, plan: WorkItemUpdatePla
     plan.data.acceptanceCriteria = request.acceptanceCriteria;
   }
   if (request.budgetMicroUsd !== undefined) plan.data.budgetMicroUsd = request.budgetMicroUsd;
+  if (request.writeMode !== undefined) plan.data.writeMode = writeModeToPrisma(request.writeMode);
   if (request.dueAt !== undefined) {
     plan.data.dueAt = request.dueAt === null ? null : new Date(request.dueAt);
   }
@@ -196,4 +199,11 @@ export function planWorkItemUpdate(input: {
   if (touched.length > 0) plan.events.push({ kind: 'UPDATED', data: { fields: touched } });
 
   return plan;
+}
+
+/** A write mode as the column spells it; null inherits the workspace's. */
+export function writeModeToPrisma(
+  mode: AiWriteMode | null,
+): 'READ_ONLY' | 'PROPOSE' | 'DIRECT' | null {
+  return mode === null ? null : (mode.toUpperCase() as 'READ_ONLY' | 'PROPOSE' | 'DIRECT');
 }

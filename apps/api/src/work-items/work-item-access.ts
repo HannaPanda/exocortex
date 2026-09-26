@@ -1,4 +1,5 @@
 import { assertPolicy, canManageWorkItems, type WorkspaceAccessService } from '@exocortex/auth';
+import { AI_WRITE_MODES, type AiWriteMode } from '@exocortex/contracts';
 
 import { AppError } from '../common/app-error';
 
@@ -23,4 +24,25 @@ export async function assertMayProgress(
   if (canManageWorkItems(role).allowed) return;
   if (existing.assigneeId === userId && progressOnly) return;
   assertPolicy(canManageWorkItems(role));
+}
+
+/**
+ * A work item's write mode may be tightened by anybody who may change the
+ * item, and loosened only by a credential that could write itself: a person,
+ * or a token with the `write` scope (issue #141). Neither the built-in AI nor
+ * a proposing agent can lift the mode it is held to, which is what makes the
+ * mode a boundary rather than a suggestion. Null counts as `direct` here,
+ * because inheriting may well mean inheriting `direct`.
+ */
+export function assertWriteModeChange(
+  current: 'READ_ONLY' | 'PROPOSE' | 'DIRECT' | null,
+  next: AiWriteMode | null | undefined,
+  mayLoosen: boolean,
+): void {
+  if (next === undefined || mayLoosen) return;
+  const rank = (mode: AiWriteMode | null) => AI_WRITE_MODES.indexOf(mode ?? 'direct');
+  const now = current === null ? null : (current.toLowerCase() as AiWriteMode);
+  if (rank(next) > rank(now)) {
+    throw AppError.forbidden('Only a person or a token that may write can loosen the write mode');
+  }
 }

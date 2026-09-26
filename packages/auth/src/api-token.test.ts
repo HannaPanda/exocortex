@@ -5,8 +5,10 @@ import {
   generateApiToken,
   hashApiToken,
   readBearerToken,
+  requestClassFor,
   requiredScopeForRequest,
   tokenHasScope,
+  writeModeAllows,
 } from './api-token';
 
 describe('generateApiToken', () => {
@@ -105,5 +107,45 @@ describe('tokenHasScope', () => {
   it('takes the strongest scope in the list', () => {
     expect(tokenHasScope(['read', 'write'], 'write')).toBe(true);
     expect(tokenHasScope(['read', 'nonsense'], 'write')).toBe(false);
+  });
+});
+
+describe('request classes (issue #141)', () => {
+  it('lets a propose token report on work and propose, and nothing else', () => {
+    expect(requestClassFor('PATCH', '/api/work-items/abc123')).toBe('report');
+    expect(requestClassFor('POST', '/api/work-items/abc123/notes')).toBe('report');
+    expect(requestClassFor('POST', '/api/workspaces/ws1/attention')).toBe('report');
+    expect(requestClassFor('POST', '/api/workspaces/ws1/changesets')).toBe('propose');
+    expect(requestClassFor('POST', '/api/changesets/cs1/changes')).toBe('propose');
+    expect(requestClassFor('POST', '/api/changesets/cs1/submit')).toBe('propose');
+    expect(requestClassFor('POST', '/api/changesets/cs1/apply')).toBe('write');
+    expect(requestClassFor('POST', '/api/changesets/cs1/reject')).toBe('write');
+    expect(requestClassFor('POST', '/api/workspaces/ws1/work-items')).toBe('write');
+    expect(requestClassFor('POST', '/api/documents/d1/content/patch')).toBe('write');
+
+    expect(
+      tokenHasScope(['propose'], requiredScopeForRequest('POST', '/api/changesets/cs1/submit')),
+    ).toBe(true);
+    expect(tokenHasScope(['propose'], requiredScopeForRequest('PATCH', '/api/work-items/w1'))).toBe(
+      true,
+    );
+    expect(
+      tokenHasScope(['propose'], requiredScopeForRequest('POST', '/api/changesets/cs1/apply')),
+    ).toBe(false);
+    expect(
+      tokenHasScope(['read'], requiredScopeForRequest('POST', '/api/changesets/cs1/submit')),
+    ).toBe(false);
+    expect(
+      tokenHasScope(['write'], requiredScopeForRequest('POST', '/api/changesets/cs1/submit')),
+    ).toBe(true);
+  });
+
+  it('holds a restricted run to its mode', () => {
+    expect(writeModeAllows('read_only', 'read')).toBe(true);
+    expect(writeModeAllows('read_only', 'report')).toBe(true);
+    expect(writeModeAllows('read_only', 'propose')).toBe(false);
+    expect(writeModeAllows('propose', 'propose')).toBe(true);
+    expect(writeModeAllows('propose', 'write')).toBe(false);
+    expect(writeModeAllows('propose', 'admin')).toBe(false);
   });
 });
