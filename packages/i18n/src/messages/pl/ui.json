@@ -15,7 +15,8 @@
     "title": "Paleta poleceń",
     "description": "Szukaj stron i wykonuj polecenia",
     "placeholder": "Szukaj lub wpisz polecenie …",
-    "empty": "Brak wyników"
+    "empty": "Brak wyników",
+    "trail": "Wybrana ścieżka"
   },
   "datePicker": {
     "placeholder": "Wybierz datę",

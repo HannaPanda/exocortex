@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings2Icon, SparklesIcon, UsersIcon } from 'lucide-react';
+import { Settings2Icon, SettingsIcon, SparklesIcon, UsersIcon } from 'lucide-react';
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -83,4 +83,71 @@ export function settingsCommands(
   }
 
   return commands;
+}
+
+const ACCOUNT_PLACES = new Set([
+  'navigate-connections',
+  'navigate-notifications',
+  'navigate-language',
+]);
+const WORKSPACE_PLACES = new Set(['navigate-workspaceSettings']);
+const ADMIN_PLACES = new Set(['navigate-adminSettings', 'navigate-adminModels']);
+
+/**
+ * "Einstellungen → Verwaltung → KI" (issue #148): every settings place and
+ * group again, sorted by whose settings they are, for somebody who does not
+ * know the word to type and wants to look.
+ *
+ * Built from the commands that already exist rather than a second list, so
+ * a group added to `SETTING_GROUPS` shows up here the same day. Not
+ * searchable: each entry is already found by its own name at the top, and
+ * listing it twice would say nothing new. Inside the menu a group is named
+ * by itself, "KI" under "Verwaltung" rather than "Einstellungen: KI".
+ */
+export function settingsMenu(
+  navigation: readonly PaletteCommand[],
+  settings: readonly PaletteCommand[],
+  t: ReturnType<typeof useTranslations<'shell.paletteCommands.settings'>>,
+  groupLabel: (group: string) => string,
+): PaletteCommand[] {
+  const pick = (ids: Set<string>) => navigation.filter((command) => ids.has(command.id));
+  const adminGroups = settings
+    .filter((command) => command.id.startsWith('settings-group-'))
+    .map((command) => ({
+      ...command,
+      label: groupLabel(command.id.slice('settings-group-'.length)),
+      hint: undefined,
+    }));
+  const sections = [
+    { id: 'account', label: t('menuAccount'), entries: pick(ACCOUNT_PLACES) },
+    {
+      id: 'workspace',
+      label: t('menuWorkspace'),
+      entries: [
+        ...pick(WORKSPACE_PLACES),
+        ...settings.filter((command) => command.id.startsWith('settings-workspace-')),
+      ],
+    },
+    { id: 'admin', label: t('menuAdmin'), entries: [...pick(ADMIN_PLACES), ...adminGroups] },
+  ].filter((section) => section.entries.length > 0);
+
+  return [
+    {
+      id: 'settings-menu',
+      group: 'settings',
+      label: t('menu'),
+      placeholder: t('menuPlaceholder'),
+      icon: <SettingsIcon className={ICON} />,
+      keywords: keywordsOf(t('menuKeywords')),
+      children: () =>
+        sections.map<PaletteCommand>((section) => ({
+          id: `settings-menu-${section.id}`,
+          group: 'settings',
+          label: section.label,
+          icon: <Settings2Icon className={ICON} />,
+          keywords: [],
+          children: () => section.entries,
+        })),
+    },
+  ];
 }

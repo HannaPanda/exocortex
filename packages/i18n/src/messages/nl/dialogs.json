@@ -68,6 +68,10 @@
     "currentPlace": "Staat hier",
     "moveHere": "Hierheen"
   },
+  "guardedMove": {
+    "title": "Naar een gedeelde ruimte verplaatsen?",
+    "failedTitle": "Pagina niet verplaatst"
+  },
   "templatePicker": {
     "title": "Nieuwe pagina uit sjabloon",
     "description": "De inhoud van het sjabloon wordt gekopieerd. De nieuwe pagina is daarna een gewone pagina zonder koppeling met het sjabloon.",

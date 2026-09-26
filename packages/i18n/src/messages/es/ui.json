@@ -15,7 +15,8 @@
     "title": "Paleta de comandos",
     "description": "Buscar páginas y ejecutar comandos",
     "placeholder": "Buscar o escribir un comando …",
-    "empty": "Sin resultados"
+    "empty": "Sin resultados",
+    "trail": "Ruta seleccionada"
   },
   "datePicker": {
     "placeholder": "Seleccionar fecha",

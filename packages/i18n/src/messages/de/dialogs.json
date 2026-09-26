@@ -68,6 +68,10 @@
     "currentPlace": "Liegt hier",
     "moveHere": "Hierhin"
   },
+  "guardedMove": {
+    "title": "In einen freigegebenen Bereich verschieben?",
+    "failedTitle": "Seite nicht verschoben"
+  },
   "templatePicker": {
     "title": "Neue Seite aus Vorlage",
     "description": "Der Inhalt der Vorlage wird kopiert. Die neue Seite ist danach eine gewöhnliche Seite ohne Verbindung zur Vorlage.",

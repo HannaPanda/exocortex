@@ -12,10 +12,14 @@ import { type CommandItem, CommandPalette } from '@exocortex/ui';
 import { DocumentIcon } from '@/components/document/document-icon';
 import {
   isLinkCommand,
+  isMenuCommand,
+  nestedCommands,
+  nestedHint,
   PALETTE_GROUPS,
   type PaletteCommand,
   type PaletteGroup,
   paletteMatcher,
+  resolveMenus,
 } from '@/components/palette/palette-command';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
 import { useSearch } from '@/lib/api/search-queries';
@@ -66,9 +70,10 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
   const router = useRouter();
   const t = useTranslations('search.command');
   const [query, setQuery] = React.useState('');
-  const search = useSearch(workspaceId ?? undefined, query);
   // The command chosen, kept until the dialog has closed: see `onClosed`.
   const [pendingRun, setPendingRun] = React.useState<(() => void) | null>(null);
+  // The ids of the menus entered, outermost first (issue #148).
+  const [menuIds, setMenuIds] = React.useState<readonly string[]>([]);
   // Both only while the palette is open. The overview is usually already in the
   // cache from the workspace's landing page, so opening the palette costs
   // nothing; a workspace's stored questions are small but not worth a request
@@ -83,7 +88,17 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
   if (wasOpen !== open) {
     setWasOpen(open);
     if (!open && query !== '') setQuery('');
+    if (!open && menuIds.length > 0) setMenuIds([]);
   }
+
+  const menus = React.useMemo(() => resolveMenus(commands, menuIds), [commands, menuIds]);
+  const menu = menus[menus.length - 1];
+  const enter = React.useCallback((id: string) => {
+    setMenuIds((ids) => [...ids, id]);
+    setQuery('');
+  }, []);
+  // Inside a menu the words are a filter, not a question for the index.
+  const search = useSearch(workspaceId ?? undefined, menu === undefined ? query : '');
 
   const typed = query.trim().length > 0;
 
@@ -93,6 +108,42 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       onOpenChange(false);
       router.push(href);
     };
+
+    // One row for a command, wherever it was found. A menu is entered, a
+    // link goes, anything else runs once the dialog has closed.
+    const toItem = (command: PaletteCommand, group: string, hint = command.hint): CommandItem => {
+      const base = { id: command.id, group, label: command.label, hint, icon: command.icon };
+      if (isMenuCommand(command)) {
+        return { ...base, submenu: true, onSelect: () => enter(command.id) };
+      }
+      if (isLinkCommand(command)) {
+        const href = command.href;
+        return { ...base, link: <Link href={href} />, onSelect: () => go(href) };
+      }
+      return {
+        ...base,
+        onSelect: () => {
+          setPendingRun(() => command.run);
+          onOpenChange(false);
+        },
+      };
+    };
+
+    // Inside a menu only its own choices, and typing searches everything
+    // below it: "arch" in "Seite verschieben" finds the page three levels
+    // down with the way to it as the hint. Pages, recent pages and saved
+    // searches stay at the top, where the question is still open.
+    if (menu !== undefined) {
+      const level = menu.children();
+      if (!typed) return level.map((command) => toItem(command, menu.label));
+      const direct = level.filter((command) => matches(command.label, ...command.keywords));
+      const below = nestedCommands(level, () => true)
+        .filter((nested) => matches(nested.command.label, ...nested.command.keywords))
+        .map((nested) =>
+          toItem(nested.command, menu.label, nestedHint(nested) || nested.command.hint),
+        );
+      return [...direct.map((command) => toItem(command, menu.label)), ...below].slice(0, 50);
+    }
 
     const actions: CommandItem[] = [];
     const groupLabel: Record<PaletteGroup, string> = {
@@ -112,25 +163,18 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       // Before a key is pressed only the handful marked for it; the rest
       // wait to be asked for by name.
       if (!typed && command.idle !== true) continue;
-      if (!matches(command.label, groupLabel[command.group], ...command.keywords)) continue;
-      const base = {
-        id: command.id,
-        group: groupLabel[command.group],
-        label: command.label,
-        hint: command.hint,
-        icon: command.icon,
-      };
-      if (isLinkCommand(command)) {
-        const href = command.href;
-        actions.push({ ...base, link: <Link href={href} />, onSelect: () => go(href) });
-      } else {
-        actions.push({
-          ...base,
-          onSelect: () => {
-            setPendingRun(() => command.run);
-            onOpenChange(false);
-          },
-        });
+      if (matches(command.label, groupLabel[command.group], ...command.keywords)) {
+        actions.push(toItem(command, groupLabel[command.group]));
+      }
+      // A menu of a few named choices answers with them too, so "breit" is
+      // one Enter away and not two.
+      if (typed && isMenuCommand(command) && command.searchable === true) {
+        for (const nested of nestedCommands([command], (entered) => entered.searchable === true)) {
+          if (!matches(nested.command.label, ...command.keywords, ...nested.command.keywords)) {
+            continue;
+          }
+          actions.push(toItem(nested.command, groupLabel[command.group], nestedHint(nested)));
+        }
       }
     }
 
@@ -218,6 +262,8 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
     return typed ? [...actions, ...stored, ...results] : [...recent, ...actions, ...stored];
   }, [
     commands,
+    enter,
+    menu,
     onOpenChange,
     overview.data,
     query,
@@ -236,17 +282,31 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       query={query}
       onQueryChange={setQuery}
       items={items}
+      trail={menus.map((entered) => entered.label)}
+      onBack={(depth) => {
+        setMenuIds((ids) => ids.slice(0, depth ?? ids.length - 1));
+        setQuery('');
+      }}
+      placeholder={menu?.placeholder}
       onClosed={() => {
         // After the dialog has given focus back, so an action that focuses
         // the title or opens a popover is not undone by it.
         setPendingRun(null);
         pendingRun?.();
       }}
-      emptyLabel={query.trim().length === 1 ? t('minimumLength') : t('empty')}
+      emptyLabel={
+        menu !== undefined
+          ? (menu.empty ?? t('empty'))
+          : query.trim().length === 1
+            ? t('minimumLength')
+            : t('empty')
+      }
       footer={
         // A count, a duration and an engine name: a readout, so it gets the
         // instrument face. The fallback sentence is prose and stays sans.
-        search.data !== undefined && query.trim().length > 1 ? (
+        menu !== undefined ? (
+          <span>{t('menuHint')}</span>
+        ) : search.data !== undefined && query.trim().length > 1 ? (
           <span className="exocortex-numeric">
             {t('readout', {
               count: search.data.results.length,

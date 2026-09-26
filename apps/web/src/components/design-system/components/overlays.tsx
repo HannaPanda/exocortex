@@ -176,23 +176,53 @@ export function MenusSection() {
 }
 
 const PALETTE_PAGES = ['Wochenplanung', 'Protokoll Infrastruktur', 'Leseliste', 'Rezepte'];
+const PALETTE_WIDTHS = ['Schmal', 'Breit', 'Volle Breite'];
 
 export function DialogsSection() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [paletteOpen, setPaletteOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
+  // One menu deep is enough to show the trail and the way back.
+  const [inLayout, setInLayout] = React.useState(false);
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
 
-  const items: CommandItem[] = PALETTE_PAGES.filter((title) =>
-    title.toLowerCase().includes(query.toLowerCase()),
-  ).map((title) => ({
-    id: title,
-    label: title,
-    group: 'Seiten',
-    icon: <FileTextIcon className="size-4" />,
-    onSelect: () => setPaletteOpen(false),
-  }));
+  const matches = (title: string): boolean => title.toLowerCase().includes(query.toLowerCase());
+  const closePalette = (open: boolean): void => {
+    setPaletteOpen(open);
+    if (!open) setInLayout(false);
+  };
+  const items: CommandItem[] = inLayout
+    ? PALETTE_WIDTHS.filter(matches).map((width) => ({
+        id: width,
+        label: width,
+        group: 'Layout ändern',
+        hint: width === 'Schmal' ? 'aktuell' : undefined,
+        onSelect: () => closePalette(false),
+      }))
+    : [
+        ...(matches('Layout ändern')
+          ? [
+              {
+                id: 'layout',
+                label: 'Layout ändern',
+                group: 'Diese Seite',
+                submenu: true,
+                onSelect: () => {
+                  setInLayout(true);
+                  setQuery('');
+                },
+              },
+            ]
+          : []),
+        ...PALETTE_PAGES.filter(matches).map((title) => ({
+          id: title,
+          label: title,
+          group: 'Seiten',
+          icon: <FileTextIcon className="size-4" />,
+          onSelect: () => closePalette(false),
+        })),
+      ];
 
   return (
     <DsSection
@@ -277,7 +307,7 @@ export function DialogsSection() {
         id="befehlspalette"
         title="Befehlspalette"
         source="packages/ui/src/components/ui/command-palette.tsx"
-        note="Combobox mit Listbox und aria-activedescendant: der Fokus bleibt im Feld, die Pfeiltasten wandern durch die Treffer."
+        note="Combobox mit Listbox und aria-activedescendant: der Fokus bleibt im Feld, die Pfeiltasten wandern durch die Treffer. Ein Eintrag mit Pfeil ist ein Menü: er stellt eine zweite Frage, der gewählte Weg steht vor dem Feld, die Rücktaste im leeren Feld geht zurück."
       >
         <Button variant="outline" onClick={() => setPaletteOpen(true)}>
           <SearchIcon />
@@ -285,11 +315,16 @@ export function DialogsSection() {
         </Button>
         <CommandPalette
           open={paletteOpen}
-          onOpenChange={setPaletteOpen}
+          onOpenChange={closePalette}
           query={query}
           onQueryChange={setQuery}
           items={items}
-          placeholder="Seite suchen …"
+          trail={inLayout ? ['Layout ändern'] : []}
+          onBack={() => {
+            setInLayout(false);
+            setQuery('');
+          }}
+          placeholder={inLayout ? 'Welche Breite?' : 'Seite suchen …'}
           emptyLabel="Keine Treffer"
         />
       </DsExample>

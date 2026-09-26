@@ -68,6 +68,10 @@
     "currentPlace": "Se trouve ici",
     "moveHere": "Déplacer ici"
   },
+  "guardedMove": {
+    "title": "Déplacer vers un espace partagé ?",
+    "failedTitle": "Page non déplacée"
+  },
   "templatePicker": {
     "title": "Nouvelle page à partir d’un modèle",
     "description": "Le contenu du modèle est copié. La nouvelle page devient ensuite une page ordinaire, sans lien avec le modèle.",

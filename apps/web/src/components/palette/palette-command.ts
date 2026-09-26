@@ -49,10 +49,104 @@ export interface PaletteRunCommand extends PaletteCommandBase {
   run: () => void;
 }
 
-export type PaletteCommand = PaletteLinkCommand | PaletteRunCommand;
+/**
+ * A command that asks a second question: "Layout ändern" and then which one,
+ * "Seite verschieben" and then where (issue #148). Choosing it keeps the
+ * palette open and lists `children` instead; Backspace in the empty field
+ * goes back up. A child may be a menu itself, which is how a page tree is
+ * walked one level at a time.
+ */
+export interface PaletteMenuCommand extends PaletteCommandBase {
+  /** Asked for when the menu is entered, so it lists what is true by then. */
+  children: () => readonly PaletteCommand[];
+  /**
+   * Its choices also answer what is typed a level above: "breit" finds
+   * "Layout ändern → Breit" without the detour. Right for a handful of named
+   * choices, wrong for a page tree, which would flood every search.
+   */
+  searchable?: boolean;
+  /** What the field says once the menu is entered. */
+  placeholder?: string;
+  /** What an empty menu says, "Keine Vorlagen" rather than "Keine Treffer". */
+  empty?: string;
+}
+
+export type PaletteCommand = PaletteLinkCommand | PaletteRunCommand | PaletteMenuCommand;
 
 export function isLinkCommand(command: PaletteCommand): command is PaletteLinkCommand {
   return 'href' in command;
+}
+
+export function isMenuCommand(command: PaletteCommand): command is PaletteMenuCommand {
+  return 'children' in command;
+}
+
+/**
+ * The menus a list of ids leads through, outermost first.
+ *
+ * The palette keeps the ids it entered, not the menus: a menu's children are
+ * read again on every render, so a list that was still loading when it was
+ * entered fills in, and an id that has gone away ends the way there.
+ */
+export function resolveMenus(
+  commands: readonly PaletteCommand[],
+  ids: readonly string[],
+): PaletteMenuCommand[] {
+  const menus: PaletteMenuCommand[] = [];
+  let level = commands;
+  for (const id of ids) {
+    const menu = level.find((command) => command.id === id);
+    if (menu === undefined || !isMenuCommand(menu)) break;
+    menus.push(menu);
+    level = menu.children();
+  }
+  return menus;
+}
+
+/** A choice found below the level it is shown on, with the menus it is under. */
+export interface NestedCommand {
+  command: PaletteLinkCommand | PaletteRunCommand;
+  /** The labels of the menus between the level searched and the choice. */
+  path: readonly string[];
+}
+
+/**
+ * Every choice below `commands`, depth first, with the way to it.
+ *
+ * Only the choices, not the menus: a menu found by name is entered, a choice
+ * found by name is done, and searching is asking for the second. `descend`
+ * says which menus are opened; `limit` stops a large tree from being read
+ * to the end for a list of which only the top is shown.
+ */
+export function nestedCommands(
+  commands: readonly PaletteCommand[],
+  descend: (menu: PaletteMenuCommand) => boolean,
+  limit = 200,
+): NestedCommand[] {
+  const found: NestedCommand[] = [];
+  const walk = (level: readonly PaletteCommand[], path: readonly string[]): void => {
+    for (const command of level) {
+      if (found.length >= limit) return;
+      if (!isMenuCommand(command)) {
+        if (path.length > 0) found.push({ command, path });
+      } else if (descend(command)) {
+        walk(command.children(), [...path, command.label]);
+      }
+    }
+  };
+  walk(commands, []);
+  return found;
+}
+
+/**
+ * The way to a nested choice as a hint, "Projekte / eXocortex".
+ *
+ * A choice that repeats its menu's name is that menu's own ("Projekte" first
+ * under "Projekte" moves the page into it), so the name is not said twice.
+ */
+export function nestedHint({ command, path }: NestedCommand): string {
+  const shown = path[path.length - 1] === command.label ? path.slice(0, -1) : path;
+  return shown.join(' / ');
 }
 
 /**

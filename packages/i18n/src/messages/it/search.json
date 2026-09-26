@@ -125,6 +125,7 @@
     "minimumLength": "Inserisci almeno due caratteri per le pagine",
     "empty": "Nessun risultato",
     "readout": "{count, plural, one {# risultato} many {# di risultati} other {# risultati}} · {tookMs} ms · {adapter}",
-    "idleHint": "Modificati di recente, oppure digita per la ricerca a testo intero"
+    "idleHint": "Modificati di recente, oppure digita per la ricerca a testo intero",
+    "menuHint": "Backspace nel campo vuoto: torna indietro di un livello"
   }
 }

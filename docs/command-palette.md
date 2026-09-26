@@ -14,17 +14,18 @@ count.
 
 ```
 apps/web/src/components/palette/
-  palette-command.ts       the types, PALETTE_GROUPS, PaletteContext, keywordsOf, fillScreen
+  palette-command.ts       the types, PALETTE_GROUPS, PaletteContext, keywordsOf, fillScreen,
+                           resolveMenus, nestedCommands, nestedHint
   registry.tsx             usePaletteCommands: the list of providers
   navigation-commands.tsx  PLACES: every screen one goes to by name
-  settings-commands.tsx    the deployment's settings groups, the workspace tabs
+  settings-commands.tsx    the deployment's settings groups, the workspace tabs, the settings menu
   settings-addresses.ts    ?gruppe= and ?tab=, read by the settings pages
-  shell-commands.tsx       capture, panels and their tabs, new chat, focus, fullscreen, trash
-  create-commands.tsx      a new page, database, project, saved search in the workspace
-  workspace-commands.tsx   "Wechseln zu: …" for every other workspace
+  shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, focus, fullscreen, trash
+  create-commands.tsx      a new page, database, project, saved search, a page from a template
+  workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
   contributions.tsx        usePaletteContribution: commands a mounted surface offers
   palette-requests.tsx     usePaletteRequest: asking a control elsewhere to act
-  page-commands.tsx        the open page's actions (body and top-bar menu)
+  page-commands.tsx        the open page's actions (body and top-bar menu), layout and move menus
   database-commands.tsx    the open database's rows and views
 ```
 
@@ -41,6 +42,7 @@ A command is a `PaletteCommand`:
 | `idle`     | offered before anything is typed; off by default, see below                            |
 | `href`     | a place: rendered as a real link, so it opens in a new tab and can be copied           |
 | `run`      | an action here: runs once the palette has closed and handed focus back                 |
+| `children` | a menu: a second question, see below                                                   |
 
 Whether a command is offered is decided by its provider from the
 `PaletteContext` (open workspace, open page, deployment role, workspace role),
@@ -93,6 +95,33 @@ listener that is about to mount (a new chat opens the panel first), then is
 dropped.
 
 Then run `pnpm i18n:translate --all` for the new words.
+
+## Menus: a command that asks a second question
+
+A command with `children` is a menu, "Layout ändern → Breit" or "Seite
+verschieben → Projekte → eXocortex → Architektur". Choosing it keeps the
+palette open, shows the menus entered so far in front of the field, and lists
+its choices; Backspace in the empty field goes up one level, and a click on
+an entry of that trail goes back to it. A choice may be a menu itself, which
+is how the move menu walks the page tree: a page with pages under it is a menu
+whose first choice is the page itself.
+
+- `children` is a function, called on every render while the menu is open.
+  The palette remembers the ids it entered, not the menus, so a list that was
+  still loading when it was entered fills in (`resolveMenus`).
+- Typing inside a menu searches everything below it, with the way to a
+  choice as its hint (`nestedCommands`, `nestedHint`). Pages, recent pages and
+  saved searches are not searched there; the question is already narrower.
+- `searchable: true` lets the choices answer a query typed at the top too, so
+  "breit" or "second brain" is one Enter away. Right for a handful of named
+  choices (widths, tabs, workspaces, views, templates), wrong for a tree, which
+  would flood every search.
+- `placeholder` is what the field says inside the menu, `empty` what an empty
+  one says ("Vorlagen werden geladen …").
+
+Use a menu instead of one command per variant whenever the variants are a
+choice of the same thing. A variant that is also the common case can stay a
+command of its own beside it.
 
 ## What it shows, and in which order
 

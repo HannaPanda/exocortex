@@ -12,7 +12,7 @@ import { usePaletteContributions } from './contributions';
 import { useCreateCommands } from './create-commands';
 import { navigationCommands } from './navigation-commands';
 import { type PaletteCommand, type PaletteContext } from './palette-command';
-import { settingsCommands } from './settings-commands';
+import { settingsCommands, settingsMenu } from './settings-commands';
 import { workspaceCommands } from './workspace-commands';
 
 /**
@@ -37,17 +37,20 @@ export function usePaletteCommands({
   documentId,
   role,
   shell,
+  open,
 }: {
   workspaceId: string | null;
   documentId: string | null;
   role: UserRole;
   shell: readonly PaletteCommand[];
+  /** Whether the palette is showing, for lists only worth loading then. */
+  open: boolean;
 }): PaletteCommand[] {
   const tNavigation = useTranslations('shell.paletteCommands.navigation');
   const tSettings = useTranslations('shell.paletteCommands.settings');
   const tWorkspace = useTranslations('shell.paletteCommands.workspace');
   const groupLabel = useSettingGroupLabel();
-  const create = useCreateCommands(workspaceId);
+  const create = useCreateCommands(workspaceId, open);
   const contributed = usePaletteContributions();
   const workspaces = useWorkspaces();
   // Usually in the cache already: the workspace switcher and the settings
@@ -57,13 +60,16 @@ export function usePaletteCommands({
 
   return React.useMemo(() => {
     const context: PaletteContext = { workspaceId, documentId, role, workspaceRole };
+    const navigation = navigationCommands(context, tNavigation);
+    const settings = settingsCommands(context, tSettings, groupLabel);
     return [
       ...contributed,
       ...create,
       ...shell,
-      ...navigationCommands(context, tNavigation),
+      ...navigation,
       ...workspaceCommands(context, workspaces.data ?? [], tWorkspace),
-      ...settingsCommands(context, tSettings, groupLabel),
+      ...settings,
+      ...settingsMenu(navigation, settings, tSettings, groupLabel),
     ];
   }, [
     contributed,

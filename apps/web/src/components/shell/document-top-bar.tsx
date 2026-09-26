@@ -28,11 +28,16 @@ import {
 } from '@exocortex/ui';
 
 import { usePageMenuCommands } from '@/components/palette/page-commands';
-import { useArchiveDocument, useRestoreDocument } from '@/lib/api/document-queries';
+import {
+  useArchiveDocument,
+  useDocumentTree,
+  useRestoreDocument,
+} from '@/lib/api/document-queries';
 import { useInbox } from '@/lib/api/inbox-queries';
 import { useDocumentShares } from '@/lib/api/share-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 
+import { useGuardedMove } from './guarded-move';
 import { PageBreadcrumb } from './page-breadcrumb';
 import { SaveIndicator } from './save-indicator';
 import { ShareDialog } from './share-dialog';
@@ -100,14 +105,23 @@ export function DocumentTopBar({
       .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
   };
 
-  // The same menu, reachable by name from Strg + K (issue #148).
-  usePageMenuCommands(detail, archived, {
-    openTemplate: () => setTemplateSettings(true),
-    openShare: () => setSharing(true),
-    file: () => setFiling(true),
-    archive,
-    restore: () => void restoreDocument.mutateAsync(documentId),
-  });
+  // The same menu, reachable by name from Strg + K (issue #148), plus
+  // moving by walking the tree, which the sidebar has usually loaded already.
+  const tree = useDocumentTree(detail.viaShare ? undefined : workspaceId);
+  const guardedMove = useGuardedMove({ workspaceId, documentId, title: detail.title });
+  usePageMenuCommands(
+    detail,
+    archived,
+    {
+      openTemplate: () => setTemplateSettings(true),
+      openShare: () => setSharing(true),
+      file: () => setFiling(true),
+      moveTo: guardedMove.propose,
+      archive,
+      restore: () => void restoreDocument.mutateAsync(documentId),
+    },
+    tree.data?.nodes,
+  );
 
   return (
     <div className="flex items-center gap-2 border-b border-border px-6 py-2">
@@ -168,6 +182,8 @@ export function DocumentTopBar({
         node={filing ? { id: documentId, title: detail.title, parentId: detail.parentId } : null}
         onClose={() => setFiling(false)}
       />
+
+      {guardedMove.dialog}
 
       <TemplateSettingsDialog
         workspaceId={workspaceId}

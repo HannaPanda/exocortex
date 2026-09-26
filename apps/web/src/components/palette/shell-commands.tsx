@@ -151,17 +151,28 @@ function panelCommands(input: ShellCommandInput): PaletteCommand[] {
     });
   }
 
-  for (const entry of CONTEXT_TAB_COMMANDS) {
-    if (entry.needsPage && !hasDocument) continue;
-    commands.push({
-      id: `command-context-${entry.tab}`,
-      group: 'view',
-      label: t(`context${entry.key}`),
-      icon: <entry.icon className={ICON} />,
-      keywords: keywordsOf(t(`context${entry.key}Keywords`)),
-      run: () => input.onOpenContextTab(entry.tab),
-    });
-  }
+  // One question with its answers, "Kontextbereich öffnen → Kommentare".
+  // Searchable, so "kommentare" alone still lands on the tab.
+  const tabs: PaletteCommand[] = CONTEXT_TAB_COMMANDS.filter(
+    (entry) => hasDocument || !entry.needsPage,
+  ).map((entry) => ({
+    id: `command-context-${entry.tab}`,
+    group: 'view',
+    label: t(`context${entry.key}`),
+    icon: <entry.icon className={ICON} />,
+    keywords: keywordsOf(t(`context${entry.key}Keywords`)),
+    run: () => input.onOpenContextTab(entry.tab),
+  }));
+  commands.push({
+    id: 'command-context-open',
+    group: 'view',
+    label: t('contextOpen'),
+    placeholder: t('contextOpenPlaceholder'),
+    icon: <PanelRightIcon className={ICON} />,
+    keywords: keywordsOf(t('contextOpenKeywords')),
+    searchable: true,
+    children: () => tabs,
+  });
 
   // Both panels away at once. Only offered while one of them is there,
   // because otherwise it would do nothing.

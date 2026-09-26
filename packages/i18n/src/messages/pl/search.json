@@ -125,6 +125,7 @@
     "minimumLength": "Wpisz co najmniej dwa znaki, aby szukać stron",
     "empty": "Nic nie znaleziono",
     "readout": "{count, plural, one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}} · {tookMs} ms · {adapter}",
-    "idleHint": "Ostatnio edytowane lub zacznij pisać, aby przeszukać cały tekst"
+    "idleHint": "Ostatnio edytowane lub zacznij pisać, aby przeszukać cały tekst",
+    "menuHint": "Backspace w pustym polu: jeden poziom wstecz"
   }
 }

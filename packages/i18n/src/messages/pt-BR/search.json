@@ -125,6 +125,7 @@
     "minimumLength": "Digite pelo menos dois caracteres para páginas",
     "empty": "Nada encontrado",
     "readout": "{count, plural, one {# resultado} many {# resultados} other {# resultados}} · {tookMs} ms · {adapter}",
-    "idleHint": "Editadas recentemente, ou digite para buscar em texto completo"
+    "idleHint": "Editadas recentemente, ou digite para buscar em texto completo",
+    "menuHint": "Backspace no campo vazio: volta um nível"
   }
 }

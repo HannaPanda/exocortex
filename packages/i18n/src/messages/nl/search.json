@@ -125,6 +125,7 @@
     "minimumLength": "Typ minimaal twee tekens voor pagina’s",
     "empty": "Niets gevonden",
     "readout": "{count, plural, one {# resultaat} other {# resultaten}} · {tookMs} ms · {adapter}",
-    "idleHint": "Recent bewerkt, of typ voor zoeken in volledige tekst"
+    "idleHint": "Recent bewerkt, of typ voor zoeken in volledige tekst",
+    "menuHint": "Backspace in een leeg veld: één niveau terug"
   }
 }

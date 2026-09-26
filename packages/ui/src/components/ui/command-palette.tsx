@@ -1,7 +1,7 @@
 'use client';
 
 import { useRender } from '@base-ui/react/use-render';
-import { SearchIcon } from 'lucide-react';
+import { ChevronRightIcon, SearchIcon } from 'lucide-react';
 import * as React from 'react';
 import { useTranslations } from 'use-intl';
 
@@ -30,6 +30,8 @@ export interface CommandItem {
    * replacement.
    */
   link?: useRender.RenderProp<React.ComponentPropsWithRef<'a'>>;
+  /** Choosing it opens a further list instead of acting; drawn with a chevron. */
+  submenu?: boolean;
 }
 
 /** The row body: rendered plain, or inside whatever anchor `link` supplies. */
@@ -66,6 +68,16 @@ export interface CommandPaletteProps {
    * this, or the dialog returns focus to where it was opened and undoes it.
    */
   onClosed?: () => void;
+  /**
+   * The menus entered so far, outermost first (issue #148). Shown in front of
+   * the field, so a second question is never mistaken for the first.
+   */
+  trail?: readonly string[];
+  /**
+   * Goes up one menu, or to `depth` menus deep when given. Backspace in the
+   * empty field calls it, and so does a click on an entry of the trail.
+   */
+  onBack?: (depth?: number) => void;
 }
 
 /**
@@ -85,6 +97,8 @@ export function CommandPalette({
   emptyLabel,
   footer,
   onClosed,
+  trail = [],
+  onBack,
 }: CommandPaletteProps) {
   const t = useTranslations('ui.commandPalette');
   // The active item is tracked by id, not by index: when the result list changes
@@ -114,6 +128,12 @@ export function CommandPalette({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+    // Before the empty-list return: a menu nothing matches is still left this way.
+    if (event.key === 'Backspace' && query === '' && trail.length > 0) {
+      event.preventDefault();
+      onBack?.();
+      return;
+    }
     if (flat.length === 0) return;
     if (event.key === 'ArrowDown') {
       event.preventDefault();
@@ -150,6 +170,30 @@ export function CommandPalette({
 
         <div className="flex items-center gap-2 border-b border-border px-3">
           <SearchIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          {trail.length > 0 ? (
+            <nav aria-label={t('trail')} className="flex max-w-[60%] shrink-0 items-center gap-1">
+              {trail.map((entry, index) => (
+                <React.Fragment key={`${index}-${entry}`}>
+                  {index > 0 ? (
+                    <ChevronRightIcon
+                      className="size-3 shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    // Back to this entry's own list: the one it was chosen in plus one.
+                    onClick={() => onBack?.(index + 1)}
+                    className="max-w-32 truncate rounded-sm bg-muted px-1.5 py-0.5 text-xs text-foreground hover:bg-accent"
+                    data-testid="command-palette-trail"
+                  >
+                    {entry}
+                  </button>
+                </React.Fragment>
+              ))}
+            </nav>
+          ) : null}
           <input
             autoFocus
             role="combobox"
@@ -210,6 +254,12 @@ export function CommandPalette({
                             <span className="shrink-0 truncate text-xs text-muted-foreground">
                               {item.hint}
                             </span>
+                          ) : null}
+                          {item.submenu === true ? (
+                            <ChevronRightIcon
+                              className="size-4 shrink-0 text-muted-foreground"
+                              aria-hidden
+                            />
                           ) : null}
                         </CommandItemBody>
                       </li>

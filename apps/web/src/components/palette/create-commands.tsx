@@ -1,14 +1,22 @@
 'use client';
 
-import { FilePlusIcon, FolderCodeIcon, ListFilterIcon, TableIcon } from 'lucide-react';
+import {
+  FilePlusIcon,
+  FolderCodeIcon,
+  LayoutTemplateIcon,
+  ListFilterIcon,
+  TableIcon,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type CreatableDocumentType } from '@exocortex/contracts';
+import { type CreatableDocumentType, type DocumentTemplate } from '@exocortex/contracts';
 
+import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useCreateProject } from '@/lib/api/project-queries';
+import { useInstantiateTemplate, useTemplates } from '@/lib/api/template-queries';
 import { documentHref } from '@/lib/document-href';
 
 import { useLatest } from './contributions';
@@ -25,16 +33,46 @@ const ICON = 'size-4 text-muted-foreground';
  * `page-commands.tsx`; capture and a new chat come from the shell, which owns
  * the dialog and the panel they open.
  */
-export function useCreateCommands(workspaceId: string | null): PaletteCommand[] {
+export function useCreateCommands(workspaceId: string | null, open: boolean): PaletteCommand[] {
   const t = useTranslations('shell.paletteCommands.create');
   const tTree = useTranslations('shell.pageTree');
   const router = useRouter();
   const createDocument = useCreateDocument(workspaceId ?? undefined);
   const createProject = useCreateProject(workspaceId ?? '');
-  const latest = useLatest({ createDocument, createProject, router });
+  const instantiate = useInstantiateTemplate(workspaceId ?? '');
+  // Only while the palette is open: not worth a request on every page load.
+  const templates = useTemplates(open && workspaceId !== null ? workspaceId : undefined);
+  const latest = useLatest({ createDocument, createProject, instantiate, router });
 
   return React.useMemo(() => {
     if (workspaceId === null) return [];
+
+    // "Seite aus Vorlage erstellen → Besprechung". The copy goes where the
+    // template suggests, with the title its pattern makes, exactly as the
+    // picker in the page tree does when its title field is left empty.
+    const fromTemplate = (template: DocumentTemplate): PaletteCommand => ({
+      id: `create-from-template-${template.document.id}`,
+      group: 'create',
+      label: template.document.title,
+      hint: template.description ?? undefined,
+      icon: (
+        <DocumentIcon
+          icon={template.document.icon}
+          iconColor={template.document.iconColor}
+          type="PAGE"
+          className="text-muted-foreground"
+        />
+      ),
+      keywords: keywordsOf(t('fromTemplateKeywords')),
+      run: () => {
+        void latest.current.instantiate
+          .mutateAsync({ documentId: template.document.id, request: {} })
+          .then((result) =>
+            latest.current.router.push(documentHref(workspaceId, result.document.id, 'PAGE')),
+          );
+      },
+    });
+    const templateList = templates.data?.templates;
 
     const create = (type: CreatableDocumentType, title: string): void => {
       void latest.current.createDocument
@@ -90,6 +128,17 @@ export function useCreateCommands(workspaceId: string | null): PaletteCommand[] 
         // where searches are built and saved.
         href: `/arbeitsbereich/${workspaceId}/suche`,
       },
+      {
+        id: 'create-from-template',
+        group: 'create',
+        label: t('fromTemplate'),
+        placeholder: t('fromTemplatePlaceholder'),
+        empty: templateList === undefined ? t('templatesLoading') : t('templatesEmpty'),
+        icon: <LayoutTemplateIcon className={ICON} />,
+        keywords: keywordsOf(t('fromTemplateKeywords')),
+        searchable: true,
+        children: () => (templateList ?? []).map(fromTemplate),
+      },
     ];
-  }, [latest, t, tTree, workspaceId]);
+  }, [latest, t, templates.data, tTree, workspaceId]);
 }

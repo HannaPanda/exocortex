@@ -15,7 +15,8 @@
     "title": "Opdrachtenpalet",
     "description": "Pagina’s zoeken en opdrachten uitvoeren",
     "placeholder": "Zoeken of opdracht invoeren …",
-    "empty": "Geen resultaten"
+    "empty": "Geen resultaten",
+    "trail": "Gekozen pad"
   },
   "datePicker": {
     "placeholder": "Datum kiezen",

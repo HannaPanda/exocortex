@@ -15,7 +15,8 @@
     "title": "Command palette",
     "description": "Search pages and run commands",
     "placeholder": "Search or type a command…",
-    "empty": "No results"
+    "empty": "No results",
+    "trail": "Selected path"
   },
   "datePicker": {
     "placeholder": "Select date",

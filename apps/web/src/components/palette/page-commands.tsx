@@ -5,6 +5,7 @@ import {
   DownloadIcon,
   FilePlusIcon,
   FileTextIcon,
+  FolderInputIcon,
   FolderTreeIcon,
   ImageIcon,
   LayoutDashboardIcon,
@@ -25,7 +26,13 @@ import {
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type DocumentDetail, type DocumentLayout } from '@exocortex/contracts';
+import {
+  type DocumentDetail,
+  type DocumentLayout,
+  type DocumentTreeNode,
+} from '@exocortex/contracts';
+
+import { DocumentIcon } from '@/components/document/document-icon';
 
 import { useLatest, usePaletteContribution } from './contributions';
 import { keywordsOf, type PaletteCommand } from './palette-command';
@@ -131,21 +138,31 @@ export function pageBodyCommands(
     ),
   );
 
-  // The two widths the page does not have; the one it has is not a change.
-  for (const { layout, key } of LAYOUTS) {
-    if (layout === detail.layout) continue;
-    commands.push(
-      command(
-        `layout-${layout}`,
-        t(`layout${key}`),
-        t('layoutKeywords'),
-        <RulerIcon className={ICON} />,
-        () => h().setLayout(layout),
-      ),
-    );
-  }
-
+  // "Layout ändern → Breit". The width the page has is listed as the current
+  // one, so the menu answers "which is it now" as well.
+  const layouts = LAYOUTS.map(({ layout, key }) => ({
+    ...command(
+      `layout-${layout}`,
+      t(`layout${key}`),
+      t('layoutKeywords'),
+      <RulerIcon className={ICON} />,
+      () => {
+        if (layout !== detail.layout) h().setLayout(layout);
+      },
+    ),
+    hint: layout === detail.layout ? t('current') : undefined,
+  }));
   commands.push(
+    {
+      id: 'page-layout',
+      group: 'page',
+      label: t('layout'),
+      placeholder: t('layoutPlaceholder'),
+      icon: <RulerIcon className={ICON} />,
+      keywords: keywordsOf(t('layoutKeywords')),
+      searchable: true,
+      children: () => layouts,
+    },
     command(
       'overview',
       detail.overviewMode === 'off' ? t('overviewOn') : t('overviewOff'),
@@ -206,6 +223,7 @@ export interface PageMenuHandlers {
   openTemplate: () => void;
   openShare: () => void;
   file: () => void;
+  moveTo: (target: { parentId: string | null; title: string }) => void;
   archive: () => void;
   restore: () => void;
 }
@@ -219,6 +237,7 @@ export function pageMenuCommands(
   archived: boolean,
   handlers: React.RefObject<PageMenuHandlers>,
   t: PageT,
+  tree?: readonly DocumentTreeNode[],
 ): PaletteCommand[] {
   const h = (): PageMenuHandlers => handlers.current;
   if (archived) {
@@ -253,16 +272,103 @@ export function pageMenuCommands(
       <LayoutTemplateIcon className={ICON} />,
       () => h().openTemplate(),
     ),
-    // Filing is the one way to move a page by choosing where it goes; the
-    // candidates are the suggestion's, the choice is the reader's.
-    command('move', t('move'), t('moveKeywords'), <FolderTreeIcon className={ICON} />, () =>
-      h().file(),
+    // Asking where it belongs: the candidates are the suggestion's, the
+    // choice is the reader's.
+    command(
+      'suggest-parent',
+      t('suggestParent'),
+      t('suggestParentKeywords'),
+      <FolderTreeIcon className={ICON} />,
+      () => h().file(),
     ),
     command('archive', t('archive'), t('archiveKeywords'), <TrashIcon className={ICON} />, () =>
       h().archive(),
     ),
   );
+  // Choosing the place yourself, by walking the tree. Only with the tree at
+  // hand, which a page opened through a share does not have.
+  if (tree !== undefined) commands.push(moveMenu(detail, tree, h, t));
   return commands;
+}
+
+/**
+ * "Seite verschieben → Projekte → eXocortex → Architektur" (issue #148).
+ *
+ * The page tree one level at a time. A page with pages under it is a menu
+ * whose first choice is the page itself, so every level can be the answer;
+ * typing searches the whole tree below the level shown. The page and what
+ * hangs under it are left out, because a page cannot move into itself, and
+ * so are databases and projects, whose children are rows and files.
+ */
+function moveMenu(
+  detail: DocumentDetail,
+  tree: readonly DocumentTreeNode[],
+  h: () => PageMenuHandlers,
+  t: PageT,
+): PaletteCommand {
+  const current = (parentId: string | null): string | undefined =>
+    parentId === detail.parentId ? t('current') : undefined;
+  const targets = (nodes: readonly DocumentTreeNode[]): PaletteCommand[] =>
+    nodes
+      .filter((node) => node.id !== detail.id && node.type === 'PAGE')
+      .map((node) => {
+        const title = node.title.trim() === '' ? t('untitled') : node.title;
+        const icon = (
+          <DocumentIcon
+            icon={node.icon}
+            iconColor={node.iconColor}
+            type={node.type}
+            className="text-muted-foreground"
+          />
+        );
+        const here: PaletteCommand = {
+          id: `page-move-to-${node.id}`,
+          group: 'page',
+          label: title,
+          hint: current(node.id) ?? t('moveHere'),
+          icon,
+          keywords: [],
+          run: () => {
+            if (node.id !== detail.parentId) h().moveTo({ parentId: node.id, title });
+          },
+        };
+        const below = node.children.filter(
+          (child) => child.id !== detail.id && child.type === 'PAGE',
+        );
+        if (below.length === 0) return here;
+        return {
+          id: `page-move-into-${node.id}`,
+          group: 'page',
+          label: title,
+          icon,
+          keywords: [],
+          children: () => [here, ...targets(node.children)],
+        };
+      });
+
+  return {
+    id: 'page-move',
+    group: 'page',
+    label: t('move'),
+    placeholder: t('movePlaceholder'),
+    empty: t('moveEmpty'),
+    icon: <FolderInputIcon className={ICON} />,
+    keywords: keywordsOf(t('moveKeywords')),
+    children: () => [
+      {
+        id: 'page-move-root',
+        group: 'page',
+        label: t('moveRoot'),
+        hint: current(null) ?? t('moveRootHint'),
+        icon: <FolderInputIcon className={ICON} />,
+        keywords: [],
+        run: () => {
+          if (detail.parentId !== null) h().moveTo({ parentId: null, title: t('moveRoot') });
+        },
+      },
+      ...targets(tree),
+    ],
+  };
 }
 
 const NONE: readonly PaletteCommand[] = [];
@@ -287,12 +393,13 @@ export function usePageMenuCommands(
   detail: DocumentDetail,
   archived: boolean,
   handlers: PageMenuHandlers,
+  tree: readonly DocumentTreeNode[] | undefined,
 ): void {
   const t = useTranslations('shell.paletteCommands.page');
   const latest = useLatest(handlers);
   const commands = React.useMemo(
-    () => pageMenuCommands(detail, archived, latest, t),
-    [archived, detail, latest, t],
+    () => pageMenuCommands(detail, archived, latest, t, tree),
+    [archived, detail, latest, t, tree],
   );
   usePaletteContribution('page-menu', commands);
 }

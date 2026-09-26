@@ -9,11 +9,12 @@ import { type Workspace } from '@exocortex/contracts';
 import { keywordsOf, type PaletteCommand, type PaletteContext } from './palette-command';
 
 /**
- * One command per other workspace, "Wechseln zu: Second Brain" (issue #148).
+ * "Arbeitsbereich wechseln → Second Brain" (issue #148).
  *
- * Flat for now, in the order the switcher shows them (each person's own
- * order). Only asked for by name: with nothing typed a person with six
- * workspaces would see six rows above their recent pages.
+ * One menu, its choices in the order the switcher shows them (each person's
+ * own order), and searchable: typing the workspace's name finds it from the
+ * top, with the menu as the hint. Only offered when there is somewhere else
+ * to go.
  */
 export function workspaceCommands(
   context: PaletteContext,
@@ -21,14 +22,27 @@ export function workspaceCommands(
   t: ReturnType<typeof useTranslations<'shell.paletteCommands.workspace'>>,
 ): PaletteCommand[] {
   const keywords = keywordsOf(t('switchKeywords'));
-  return workspaces
+  const others: PaletteCommand[] = workspaces
     .filter((workspace) => workspace.id !== context.workspaceId)
     .map((workspace) => ({
       id: `workspace-switch-${workspace.id}`,
       group: 'navigation',
-      label: t('switch', { name: workspace.name }),
+      label: workspace.name,
       icon: <ArrowRightLeftIcon className="size-4 text-muted-foreground" />,
       keywords,
       href: `/arbeitsbereich/${workspace.id}`,
     }));
+  if (others.length === 0) return [];
+  return [
+    {
+      id: 'workspace-switch',
+      group: 'navigation',
+      label: t('menu'),
+      placeholder: t('menuPlaceholder'),
+      icon: <ArrowRightLeftIcon className="size-4 text-muted-foreground" />,
+      keywords,
+      searchable: true,
+      children: () => others,
+    },
+  ];
 }

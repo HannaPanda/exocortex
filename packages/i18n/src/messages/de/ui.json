@@ -15,7 +15,8 @@
     "title": "Befehlspalette",
     "description": "Seiten suchen und Befehle ausführen",
     "placeholder": "Suchen oder Befehl eingeben …",
-    "empty": "Keine Treffer"
+    "empty": "Keine Treffer",
+    "trail": "Gewählter Weg"
   },
   "datePicker": {
     "placeholder": "Datum wählen",

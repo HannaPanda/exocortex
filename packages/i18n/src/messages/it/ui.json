@@ -15,7 +15,8 @@
     "title": "Palette dei comandi",
     "description": "Cerca pagine ed esegui comandi",
     "placeholder": "Cerca o inserisci un comando…",
-    "empty": "Nessun risultato"
+    "empty": "Nessun risultato",
+    "trail": "Percorso selezionato"
   },
   "datePicker": {
     "placeholder": "Seleziona data",

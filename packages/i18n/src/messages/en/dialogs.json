@@ -68,6 +68,10 @@
     "currentPlace": "Located here",
     "moveHere": "Move here"
   },
+  "guardedMove": {
+    "title": "Move to a shared space?",
+    "failedTitle": "Page not moved"
+  },
   "templatePicker": {
     "title": "New page from template",
     "description": "The content of the template is copied. The new page is then a regular page with no link to the template.",

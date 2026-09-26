@@ -278,6 +278,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     documentId,
     role: session.data?.user?.role ?? 'user',
     shell: shellPaletteCommands,
+    open: searchOpen,
   });
 
   // Global keyboard shortcuts.

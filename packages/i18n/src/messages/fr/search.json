@@ -125,6 +125,7 @@
     "minimumLength": "Saisis au moins deux caractères pour les pages",
     "empty": "Rien trouvé",
     "readout": "{count, plural, one {# résultat} many {# de résultats} other {# résultats}} · {tookMs} ms · {adapter}",
-    "idleHint": "Récemment modifiées, ou tape du texte pour la recherche en texte intégral"
+    "idleHint": "Récemment modifiées, ou tape du texte pour la recherche en texte intégral",
+    "menuHint": "Touche Retour arrière dans un champ vide : revenir d’un niveau"
   }
 }

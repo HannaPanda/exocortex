@@ -90,8 +90,11 @@ What is deliberately still missing is listed under
   generous search words ("modell", "connector", "sprache"), and runs what
   makes sense on the open surface: the page's actions (rename, symbol, cover,
   width, overview, move, share), creating pages, databases and chats, the
-  context panel at a tab, a database's rows and views, switching workspace; a
-  hard gate refuses a screen nobody can open from it (issue #148)
+  context panel at a tab, a database's rows and views, switching workspace.
+  A command can ask a second question: "Layout ändern → Breit", "Seite
+  verschieben → Projekte → Architektur" walks the page tree, "Seite aus Vorlage
+  erstellen → …", "Einstellungen → Verwaltung → KI"; a hard gate refuses a
+  screen nobody can open from it (issue #148)
 - sharing a single page outward (ADR-044): an unguessable read-only link, or a
   grant to another account that reads or writes without becoming a member of
   anything, for one page or the branch below it, optionally with an expiry and

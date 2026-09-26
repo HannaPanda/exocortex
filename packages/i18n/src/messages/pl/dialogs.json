@@ -68,6 +68,10 @@
     "currentPlace": "Znajduje się tutaj",
     "moveHere": "Tutaj"
   },
+  "guardedMove": {
+    "title": "Przenieść do udostępnionego obszaru?",
+    "failedTitle": "Strona nie została przeniesiona"
+  },
   "templatePicker": {
     "title": "Nowa strona z szablonu",
     "description": "Zawartość szablonu zostanie skopiowana. Nowa strona będzie potem zwykłą stroną bez powiązania z szablonem.",
