@@ -87,6 +87,7 @@
     "attention_option_invalid": "Questa opzione non è disponibile qui. Scegli una delle possibilità proposte.",
     "attention_note_required": "Qui è necessaria una risposta a parole. Scrivi brevemente cosa intendi.",
     "attention_target_invalid": "La persona o l’attività non appartiene a questa area di lavoro.",
+    "attention_subject_changed": "Una delle pagine di cui si richiede la condivisione è cambiata dopo la lettura. Rileggila e riprova con la versione attuale.",
     "pinned_sources_disabled": "La funzione per fissare le fonti è disattivata in quest’area di lavoro. Puoi riattivarla nelle impostazioni alla voce IA.",
     "pinned_sources_limit_reached": "Questa chat ha già raggiunto il numero massimo consentito di fonti fissate. Rimuovine una oppure aumenta il limite nelle impostazioni.",
     "saved_query_access_denied": "Questa ricerca salvata non appartiene a quest’area di lavoro.",

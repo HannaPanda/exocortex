@@ -66,9 +66,20 @@
       "work_item_cancelled": "De opdracht is geannuleerd.",
       "work_item_deleted": "De opdracht is verwijderd.",
       "withdrawn": "De vraag is ingetrokken.",
-      "superseded": "Een nieuwere sessie heeft het overgenomen."
+      "superseded": "Een nieuwere sessie heeft het overgenomen.",
+      "subject_changed": "Niet goedgekeurd: een van de pagina’s is gewijzigd sinds de vraag werd gesteld."
     },
-    "quotedNote": "„{note}”"
+    "quotedNote": "„{note}”",
+    "nonBlocking": "De opdracht loopt door zolang deze vraag openstaat.",
+    "actionLabel": "Wat wordt goedgekeurd",
+    "subjectLabel": "Geldt voor deze pagina’s in hun huidige staat",
+    "subjectChanged": "gewijzigd sinds de vraag",
+    "subjectChangedHint": "Een van deze pagina’s is gewijzigd sinds de vraag werd gesteld. Een antwoord keurt nu niets meer goed; de agent krijgt hiervan bericht en vraagt het opnieuw met de nieuwe versie.",
+    "subjectUnavailable": "Pagina niet meer bereikbaar",
+    "contextLabel": "Achtergrond",
+    "workStateLabel": "Status van het werk",
+    "resumed": "Het werk gaat door met dit antwoord.",
+    "resumeFailed": "Het antwoord is opgeslagen, maar het werk kon niet worden voortgezet ({code}). De opdracht staat in de wachtrij en kan daar opnieuw worden gestart."
   },
   "option": {
     "accept": "Goedkeuren",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Wacht op je",
     "intro": "Deze opdracht heeft nu een antwoord of beslissing nodig."
+  },
+  "conversation": {
+    "title": "Vraag uit deze chat",
+    "intro": "De run is gepauzeerd en wacht op jouw antwoord. Zodra je antwoordt, gaat het hier weer verder."
   }
 }

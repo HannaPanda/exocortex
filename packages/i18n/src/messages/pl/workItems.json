@@ -35,7 +35,9 @@
       "note": "dodaje notatkę",
       "updated": "zmienia {count, plural, one {jedno pole} few {# pola} many {# pól} other {# pola}}",
       "attentionRaised": "zadaje pytanie",
-      "attentionResolved": "odpowiada na pytanie"
+      "attentionResolved": "odpowiada na pytanie",
+      "runResumed": "wznowiono pracę wraz z odpowiedzią",
+      "resumeFailed": "udzielono odpowiedzi, ale nie udało się wznowić pracy ({code}). Zadanie oczekuje w kolejce."
     }
   },
   "list": {

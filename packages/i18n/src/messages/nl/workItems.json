@@ -35,7 +35,9 @@
       "note": "heeft een notitie toegevoegd",
       "updated": "heeft {count, plural, one {één veld} other {# velden}} gewijzigd",
       "attentionRaised": "heeft een vraag gesteld",
-      "attentionResolved": "heeft een vraag beantwoord"
+      "attentionResolved": "heeft een vraag beantwoord",
+      "runResumed": "heeft het werk hervat met het antwoord",
+      "resumeFailed": "heeft geantwoord, maar het werk kon niet worden voortgezet ({code}). De taak staat in de wachtrij."
     }
   },
   "list": {

@@ -7,6 +7,8 @@ import type * as React from 'react';
 import { type AiConversationMessage } from '@exocortex/contracts';
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
+import { ConversationCheckpoints } from '@/components/attention/conversation-checkpoints';
+
 import { ChatMessage } from './chat-message';
 import { toolActivityLine, useRunLabels } from './run-labels';
 import { Transcript } from './transcript';
@@ -29,6 +31,7 @@ export function AiTranscriptArea({
   streaming,
   notice,
   error,
+  conversationId,
 }: {
   scrollRef: React.RefObject<HTMLDivElement | null>;
   errored: boolean;
@@ -42,6 +45,8 @@ export function AiTranscriptArea({
   streaming: boolean;
   notice: string | null;
   error: string | null;
+  /** For the questions this chat's runs wait on (issue #140). */
+  conversationId: string | null;
 }) {
   const t = useTranslations('ai.transcript');
   const runLabel = useRunLabels();
@@ -71,6 +76,7 @@ export function AiTranscriptArea({
           ) : null}
 
           <Transcript messages={messages} />
+          {streaming ? null : <ConversationCheckpoints conversationId={conversationId} />}
           {commandNotice !== null ? <ChatMessage message={commandNotice} /> : null}
 
           {toolActivity.length > 0 ? (

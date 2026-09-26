@@ -140,7 +140,7 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     id: 'wartet-auf-dich',
     area: 'zusammenarbeit',
     since: '2026-09-26',
-    references: ['#139', 'ADR-067'],
+    references: ['#139', 'ADR-067', '#140', 'ADR-068'],
     ui: {},
     tools: [
       'exo_attention_list',

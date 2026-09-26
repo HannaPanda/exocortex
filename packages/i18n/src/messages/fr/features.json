@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Attend ton action : tout ce qui a besoin de toi en ce moment",
-    "summary": "Une liste sur tous les espaces de travail regroupant ce qui est bloqué sans toi : décisions, partages, résultats à vérifier, tâches bloquées, exécutions d’IA échouées et questions des agents. Tu réponds directement sur place aux demandes simples, sans ouvrir la tâche.",
+    "summary": "Une liste sur l’ensemble des espaces de travail regroupant tout ce qui ne peut pas avancer sans toi : décisions, partages, résultats à vérifier, tâches bloquées, exécutions d’IA ayant échoué et questions d’agents. Tu y réponds directement, et le travail reprend grâce à ta réponse exactement là où il s’était arrêté.",
     "details": {
       "p1": "Les éléments apparaissent d’eux-mêmes : dès qu’une tâche passe à « à valider », « bloquée » ou « en attente de réponse », elle s’affiche ici, et dès qu’elle quitte cet état, elle disparaît. Si la dernière exécution d’IA d’une tâche ouverte échoue, eXocortex te demande si tu souhaites faire une nouvelle tentative ou abandonner.",
-      "p2": "Les agents posent des questions explicites, par exemple « Connexion MCP globale ou par espace de travail ? » avec les réponses sous forme de boutons. Ton choix et ta note s’enregistrent dans l’historique de la tâche, où l’agent les consulte, puis la tâche retourne dans la file d’attente.",
+      "p2": "Les agents posent des questions précises, par exemple « Connexion MCP globale ou par espace de travail ? » avec les réponses sous forme de boutons. Si l’IA intégrée a besoin de ta décision au milieu d’une tâche, elle s’interrompt plutôt que de deviner : la tâche se met en attente, l’exécution s’arrête, et personne n’a besoin de rester devant le chat. Si tu réponds, des minutes ou des jours plus tard, le processus reprend dans le même chat avec ta réponse et l’état d’avancement conservé.",
       "p3": "Rien de ce qui s’est simplement produit ne figure ici. Les éléments traités restent consultables sous « Terminé », avec qui a fait quoi, quand et quelle option a été choisie. Si une tâche est annulée ou supprimée, ses éléments en attente deviennent caducs.",
       "p4": "Tant que des éléments attendent, l’en-tête en haut à droite affiche une main avec le décompte. Les éléments en attente d’une tâche apparaissent également en haut de sa page.",
-      "p5": "Les agents utilisent exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve et exo_attention_withdraw."
+      "p5": "Les agents utilisent exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve et exo_attention_withdraw.",
+      "p6": "Lors d’un partage, ce qui doit se passer et les pages concernées sont clairement indiqués. Si l’une de ces pages est modifiée avant que tu ne répondes, ta réponse ne valide plus rien et l’agent repose la question avec le nouvel état. Une question peut aussi s’exécuter en parallèle sans interrompre la tâche ; la carte indique alors que le travail continue."
     },
     "where": "La main en haut à droite dans l’en-tête, le menu du compte sous « Attend ton action », ou Ctrl + K et « Attend ton action »."
   }

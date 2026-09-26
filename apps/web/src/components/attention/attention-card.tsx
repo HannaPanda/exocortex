@@ -14,6 +14,8 @@ import { Badge, Button, Textarea } from '@exocortex/ui';
 
 import { useResolveAttention } from '@/lib/api/attention-queries';
 
+import { AttentionCheckpoint } from './attention-checkpoint';
+
 /**
  * One thing that waits on the reader (issue #139).
  *
@@ -121,6 +123,7 @@ export function AttentionCard({
           {item.kind === 'run_failed' ? t('item.runError', { code: item.reason }) : item.reason}
         </p>
       )}
+      <AttentionCheckpoint item={item} />
 
       {open ? (
         <>
@@ -240,9 +243,11 @@ function Settled({
     reason === 'work_item_cancelled' ||
     reason === 'work_item_deleted' ||
     reason === 'withdrawn' ||
-    reason === 'superseded'
+    reason === 'superseded' ||
+    reason === 'subject_changed'
       ? reason
       : null;
+  const resumeError = item.resolution?.resumeError;
 
   return (
     <div className="mt-3 flex flex-col gap-1 text-sm text-muted-foreground">
@@ -257,6 +262,10 @@ function Settled({
         <p className="whitespace-pre-wrap text-foreground">
           {t('quotedNote', { note: item.resolution.note })}
         </p>
+      )}
+      {item.resolution?.resumedRunId === undefined ? null : <p>{t('resumed')}</p>}
+      {resumeError === undefined ? null : (
+        <p className="text-destructive-text">{t('resumeFailed', { code: resumeError })}</p>
       )}
       {workItemHref === null ? null : (
         <Link href={workItemHref} className="w-fit hover:text-foreground hover:underline">

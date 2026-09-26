@@ -35,7 +35,9 @@
       "note": "hat eine Notiz hinzugefügt",
       "updated": "hat {count, plural, one {ein Feld} other {# Felder}} geändert",
       "attentionRaised": "hat eine Frage gestellt",
-      "attentionResolved": "hat eine Frage beantwortet"
+      "attentionResolved": "hat eine Frage beantwortet",
+      "runResumed": "hat die Arbeit mit der Antwort weiterlaufen lassen",
+      "resumeFailed": "hat geantwortet, aber die Arbeit ließ sich nicht fortsetzen ({code}). Der Auftrag wartet in der Warteschlange."
     }
   },
   "list": {

@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Wartet auf dich: alles, wofür es gerade dich braucht",
-    "summary": "Eine Liste über alle Arbeitsbereiche mit dem, was ohne dich nicht weitergeht: Entscheidungen, Freigaben, Ergebnisse zur Prüfung, blockierte Aufträge, gescheiterte KI-Läufe und Rückfragen von Agenten. Einfache Antworten gibst du direkt dort, ohne den Auftrag zu öffnen.",
+    "summary": "Eine Liste über alle Arbeitsbereiche mit dem, was ohne dich nicht weitergeht: Entscheidungen, Freigaben, Ergebnisse zur Prüfung, blockierte Aufträge, gescheiterte KI-Läufe und Rückfragen von Agenten. Du antwortest direkt dort, und die Arbeit läuft mit deiner Antwort genau an der Stelle weiter, an der sie angehalten hat.",
     "details": {
       "p1": "Einträge entstehen von selbst: Geht ein Auftrag auf „zur Abnahme“, „blockiert“ oder „wartet auf Rückmeldung“, erscheint er hier, und verlässt er den Status, verschwindet er wieder. Scheitert der letzte KI-Lauf eines offenen Auftrags, fragt eXocortex, ob du einen neuen Versuch willst oder aufgibst.",
-      "p2": "Agenten fragen ausdrücklich, zum Beispiel „MCP-Verbindung global oder pro Arbeitsbereich?“ mit den Antworten als Knöpfen. Deine Wahl und deine Notiz landen in der Historie des Auftrags, wo der Agent sie liest, und der Auftrag geht danach zurück in die Warteschlange.",
+      "p2": "Agenten fragen ausdrücklich, zum Beispiel „MCP-Verbindung global oder pro Arbeitsbereich?“ mit den Antworten als Knöpfen. Braucht die eingebaute KI mitten in einem Auftrag deine Entscheidung, hält sie an, statt zu raten: der Auftrag wartet, der Lauf endet, und niemand muss im Chat sitzen bleiben. Antwortest du, Minuten oder Tage später, geht es im selben Chat mit deiner Antwort und dem festgehaltenen Arbeitsstand weiter.",
       "p3": "Hier steht nichts, was nur passiert ist. Erledigte Einträge bleiben unter „Erledigt“ nachvollziehbar, mit wer, wann und was gewählt wurde. Wird ein Auftrag abgebrochen oder gelöscht, werden seine offenen Einträge hinfällig.",
       "p4": "Solange etwas wartet, zeigt die Kopfzeile oben rechts eine Hand mit der Anzahl. Offene Einträge eines Auftrags stehen außerdem oben auf seiner Seite.",
-      "p5": "Agenten arbeiten mit exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve und exo_attention_withdraw."
+      "p5": "Agenten arbeiten mit exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve und exo_attention_withdraw.",
+      "p6": "Bei einer Freigabe steht genau da, was passieren soll und welche Seiten es betrifft. Ändert sich eine dieser Seiten, bevor du antwortest, gibt deine Antwort nichts mehr frei, und der Agent fragt mit dem neuen Stand noch einmal. Eine Rückfrage kann auch nebenher laufen, ohne den Auftrag anzuhalten; die Karte sagt dann, dass die Arbeit weitergeht."
     },
     "where": "Die Hand oben rechts in der Kopfzeile, das Kontomenü unter „Wartet auf dich“, oder Strg + K und „Wartet auf dich“."
   }

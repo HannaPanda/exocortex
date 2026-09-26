@@ -66,9 +66,20 @@
       "work_item_cancelled": "The work item was cancelled.",
       "work_item_deleted": "The work item was deleted.",
       "withdrawn": "The question was withdrawn.",
-      "superseded": "A newer run took over."
+      "superseded": "A newer run took over.",
+      "subject_changed": "Not approved: one of the pages had changed since the question was asked."
     },
-    "quotedNote": "“{note}”"
+    "quotedNote": "“{note}”",
+    "nonBlocking": "Work continues while this question is open.",
+    "actionLabel": "What will be approved",
+    "subjectLabel": "Applies to these pages in their current state",
+    "subjectChanged": "changed since the question was asked",
+    "subjectChangedHint": "One of these pages has changed since the question was asked. Replying will no longer approve anything; the agent will be notified and will ask again with the new state.",
+    "subjectUnavailable": "Page no longer accessible",
+    "contextLabel": "Context",
+    "workStateLabel": "Status of work",
+    "resumed": "Work continues with this reply.",
+    "resumeFailed": "The reply was saved, but work could not be resumed ({code}). The work item is waiting in the queue and can be restarted there."
   },
   "option": {
     "accept": "Accept",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Waiting for you",
     "intro": "This work item currently needs a reply or decision."
+  },
+  "conversation": {
+    "title": "Follow-up question from this chat",
+    "intro": "The run paused and is waiting for your reply. As soon as you reply, it will continue here."
   }
 }

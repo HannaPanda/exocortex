@@ -66,9 +66,20 @@
       "work_item_cancelled": "La tâche a été annulée.",
       "work_item_deleted": "La tâche a été supprimée.",
       "withdrawn": "La question a été retirée.",
-      "superseded": "Une exécution plus récente a pris le relais."
+      "superseded": "Une exécution plus récente a pris le relais.",
+      "subject_changed": "Non validé : l’une des pages a été modifiée depuis la question."
     },
-    "quotedNote": "« {note} »"
+    "quotedNote": "« {note} »",
+    "nonBlocking": "La tâche continue pendant que cette question reste en attente.",
+    "actionLabel": "Ce qui sera validé",
+    "subjectLabel": "S’applique à ces pages dans leur état actuel",
+    "subjectChanged": "modifiée depuis la question",
+    "subjectChangedHint": "L’une de ces pages a été modifiée depuis la question. Répondre ne validera plus rien ; l’agent en sera informé et reposera sa question avec le nouvel état.",
+    "subjectUnavailable": "Page inaccessible",
+    "contextLabel": "Contexte",
+    "workStateLabel": "État du travail",
+    "resumed": "Le travail reprend avec cette réponse.",
+    "resumeFailed": "La réponse est enregistrée, mais impossible de reprendre le travail ({code}). La tâche attend dans la file et peut y être relancée."
   },
   "option": {
     "accept": "Valider",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "En attente d’action",
     "intro": "Cette tâche attend actuellement une réponse ou une décision."
+  },
+  "conversation": {
+    "title": "Question issue de ce chat",
+    "intro": "L’exécution s’est arrêtée et attend ta réponse. Dès que tu auras répondu, la suite reprendra ici."
   }
 }

@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Aguardando você: tudo o que precisa da sua atenção agora",
-    "summary": "Uma lista em todos os espaços de trabalho com o que não avança sem você: decisões, compartilhamentos, resultados para revisão, tarefas bloqueadas, execuções de IA com falha e perguntas de agentes. Você responde de forma simples diretamente por lá, sem precisar abrir a tarefa.",
+    "summary": "Uma lista em todos os espaços de trabalho com aquilo que não avança sem você: decisões, compartilhamentos, resultados para revisão, tarefas bloqueadas, execuções de IA com falha e perguntas de agentes. Você responde diretamente lá, e o trabalho continua com a sua resposta exatamente do ponto em que parou.",
     "details": {
       "p1": "Os itens são criados automaticamente: se uma tarefa muda para „para aprovação“, „bloqueada“ ou „aguardando resposta“, ela aparece aqui; quando sai desse status, desaparece novamente. Se a última execução de IA de uma tarefa aberta falhar, o eXocortex pergunta se você quer tentar de novo ou desistir.",
-      "p2": "Os agentes fazem perguntas explícitas, por exemplo, „Conexão MCP global ou por espaço de trabalho?“, com as respostas em botões. Sua escolha e sua observação vão para o histórico da tarefa, onde o agente pode lê-las, e a tarefa volta para a fila em seguida.",
+      "p2": "Os agentes perguntam de forma explícita, por exemplo: “Conexão MCP global ou por espaço de trabalho?”, com as respostas em forma de botões. Se a IA integrada precisar da sua decisão no meio de uma tarefa, ela para em vez de tentar adivinhar: a tarefa espera, a execução termina e ninguém precisa ficar preso no chat. Quando você responde, minutos ou dias depois, tudo continua no mesmo chat com a sua resposta e o estado de trabalho preservado.",
       "p3": "Nada aqui é apenas informativo. Itens concluídos permanecem rastreáveis em „Concluído“, com quem, quando e o que foi escolhido. Se uma tarefa for cancelada ou excluída, seus itens pendentes são descartados.",
       "p4": "Enquanto houver algo esperando, o cabeçalho no canto superior direito mostra uma mão com a contagem. Os itens pendentes de uma tarefa também aparecem no topo da página dela.",
-      "p5": "Os agentes trabalham com exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve e exo_attention_withdraw."
+      "p5": "Os agentes trabalham com exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve e exo_attention_withdraw.",
+      "p6": "Em um compartilhamento, fica claro exatamente o que deve acontecer e quais páginas são afetadas. Se uma dessas páginas for alterada antes de você responder, a sua resposta não libera mais nada, e o agente pergunta novamente com o estado atualizado. Uma pergunta também pode acontecer em segundo plano, sem interromper a tarefa; o cartão informa, então, que o trabalho continua."
     },
     "where": "O ícone da mão no canto superior direito do cabeçalho, no menu da conta em „Aguardando você“, ou com Ctrl + K e „Aguardando você“."
   }

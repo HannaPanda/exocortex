@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Waiting for you: everything that currently needs your input",
-    "summary": "A list across all workspaces with everything that cannot proceed without you: decisions, shares, deliverables to review, blocked tasks, failed AI runs, and queries from agents. You can give simple answers right there without opening the task.",
+    "summary": "A workspace-wide list of everything that cannot proceed without you: decisions, shares, results to review, blocked tasks, failed AI runs, and questions from agents. You reply right there, and the work picks up with your answer at the exact spot where it stopped.",
     "details": {
       "p1": "Entries are created automatically: if a task switches to “ready for review”, “blocked”, or “waiting for input”, it appears here, and once it leaves that status, it disappears again. If the last AI run of an open task fails, eXocortex asks whether you want another try or want to give up.",
-      "p2": "Agents ask explicitly—for example, “MCP connection global or per workspace?” with the answers as buttons. Your choice and your note are added to the task’s history where the agent reads them, and the task then goes back into the queue.",
+      "p2": "Agents ask explicitly, for instance “MCP connection global or per workspace?” with the answers presented as buttons. If the built-in AI needs your decision in the middle of a task, it pauses instead of guessing: the task waits, the run finishes, and no one has to stay in the chat. When you answer, minutes or days later, it continues in the same chat with your answer and the recorded state of the work.",
       "p3": "Nothing appears here just because it happened. Completed entries remain traceable under “Done”, showing who chose what and when. If a task is canceled or deleted, its open entries become obsolete.",
       "p4": "As long as something is waiting, the header at the top right shows a hand icon with the count. Open entries for a task are also displayed at the top of its page.",
-      "p5": "Agents work with exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve, and exo_attention_withdraw."
+      "p5": "Agents work with exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve, and exo_attention_withdraw.",
+      "p6": "For a share, it says precisely what is supposed to happen and which pages are affected. If one of those pages changes before you answer, your reply will no longer approve anything, and the agent asks again with the updated state. A question can also run in the background without pausing the task; the card will then let you know that work continues."
     },
     "where": "The hand icon at the top right of the header, the account menu under “Waiting for you”, or Strg + K and “Waiting for you”."
   }

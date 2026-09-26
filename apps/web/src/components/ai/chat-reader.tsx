@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { type AiConversation } from '@exocortex/contracts';
 import { Badge, Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
+import { ConversationCheckpoints } from '@/components/attention/conversation-checkpoints';
 import { useAiConversation } from '@/lib/api/ai-queries';
 import { useRelativeTime } from '@/lib/relative-time';
 
@@ -93,7 +94,10 @@ export function ChatReader({
         {messages.length === 0 ? (
           <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
-          <Transcript messages={messages} />
+          <>
+            <Transcript messages={messages} />
+            <ConversationCheckpoints conversationId={conversation.id} />
+          </>
         )}
       </div>
     </div>

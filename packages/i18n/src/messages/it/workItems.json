@@ -35,7 +35,9 @@
       "note": "ha aggiunto una nota",
       "updated": "ha modificato {count, plural, one {un campo} many {# campi} other {# campi}}",
       "attentionRaised": "ha fatto una domanda",
-      "attentionResolved": "ha risposto a una domanda"
+      "attentionResolved": "ha risposto a una domanda",
+      "runResumed": "ha fatto proseguire il lavoro con la risposta",
+      "resumeFailed": "ha risposto, ma non è stato possibile riprendere il lavoro ({code}). L’incarico è in attesa nella coda."
     }
   },
   "list": {

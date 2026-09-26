@@ -35,7 +35,9 @@
       "note": "adicionou uma nota",
       "updated": "alterou {count, plural, one {um campo} many {# campos} other {# campos}}",
       "attentionRaised": "fez uma pergunta",
-      "attentionResolved": "respondeu a uma pergunta"
+      "attentionResolved": "respondeu a uma pergunta",
+      "runResumed": "continuou o trabalho com a resposta",
+      "resumeFailed": "respondeu, mas não foi possível retomar o trabalho ({code}). O trabalho está aguardando na fila."
     }
   },
   "list": {

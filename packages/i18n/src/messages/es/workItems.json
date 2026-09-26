@@ -35,7 +35,9 @@
       "note": "ha añadido una nota",
       "updated": "ha modificado {count, plural, one {un campo} many {# campos} other {# campos}}",
       "attentionRaised": "ha hecho una pregunta",
-      "attentionResolved": "ha respondido a una pregunta"
+      "attentionResolved": "ha respondido a una pregunta",
+      "runResumed": "ha reanudado el trabajo con la respuesta",
+      "resumeFailed": "ha respondido, pero el trabajo no se ha podido reanudar ({code}). La tarea está esperando en la cola."
     }
   },
   "list": {

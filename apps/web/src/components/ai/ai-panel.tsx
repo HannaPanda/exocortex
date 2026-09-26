@@ -250,6 +250,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         streaming={activeRunId !== null}
         notice={notice}
         error={error}
+        conversationId={activeConversationId}
       />
 
       {activeRunId !== null ? (

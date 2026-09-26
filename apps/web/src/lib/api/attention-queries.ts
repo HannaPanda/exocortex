@@ -23,6 +23,13 @@ import { workItemKeys } from './work-item-queries';
 export interface AttentionFilter {
   status: 'open' | 'settled';
   workItemId?: string;
+  /**
+   * The checkpoints one conversation's runs raised (issue #140). Read across
+   * everything the reader may see rather than their own inbox: the person in
+   * the chat is not always the one the question is addressed to, and the
+   * card says so by refusing an answer they may not give.
+   */
+  conversationId?: string;
 }
 
 export const attentionKeys = {
@@ -31,13 +38,22 @@ export const attentionKeys = {
 };
 
 function queryString(filter: AttentionFilter): string {
-  const params = new URLSearchParams({ scope: 'for_me', status: filter.status, limit: '200' });
+  const params = new URLSearchParams({
+    scope: filter.conversationId === undefined ? 'for_me' : 'all',
+    status: filter.status,
+    limit: '200',
+  });
   if (filter.workItemId !== undefined) params.set('workItemId', filter.workItemId);
+  if (filter.conversationId !== undefined) params.set('conversationId', filter.conversationId);
   return params.toString();
 }
 
-export function useAttention(filter: AttentionFilter): UseQueryResult<AttentionListResponse> {
+export function useAttention(
+  filter: AttentionFilter,
+  options: { enabled?: boolean } = {},
+): UseQueryResult<AttentionListResponse> {
   return useQuery({
+    enabled: options.enabled ?? true,
     queryKey: attentionKeys.list(filter),
     queryFn: () => apiRequest<AttentionListResponse>(`/api/attention?${queryString(filter)}`),
     staleTime: 30_000,

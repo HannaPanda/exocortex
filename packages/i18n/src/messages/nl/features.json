@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Wacht op jou: alles waarvoor op dit moment jouw inbreng nodig is",
-    "summary": "Een overzicht over alle werkruimtes heen van wat zonder jou niet verder kan: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten, mislukte AI-runs en vragen van agenten. Eenvoudige antwoorden geef je direct daar, zonder de opdracht te openen.",
+    "summary": "Een overzicht over alle werkruimtes met alles wat zonder jou niet verder kan: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten, mislukte AI-runs en vragen van agents. Je antwoordt direct daar, en het werk gaat met jouw antwoord precies verder waar het gestopt was.",
     "details": {
       "p1": "Items ontstaan vanzelf: gaat een opdracht naar „ter goedkeuring”, „geblokkeerd” of „wacht op feedback”, dan verschijnt hij hier, en verlaat hij die status, dan verdwijnt hij weer. Mislukt de laatste AI-run van een openstaande opdracht, dan vraagt eXocortex of je een nieuwe poging wilt wagen of wilt opgeven.",
-      "p2": "Agenten stellen expliciete vragen, bijvoorbeeld „MCP-verbinding globaal of per werkruimte?” met de antwoorden als knoppen. Je keuze en je notitie komen in de geschiedenis van de opdracht terecht, waar de agent ze leest, waarna de opdracht terugkeert naar de wachtrij.",
+      "p2": "Agents vragen er expliciet naar, bijvoorbeeld „MCP-verbinding globaal of per werkruimte?” met de antwoorden als knoppen. Heeft de ingebouwde AI midden in een opdracht jouw beslissing nodig, dan pauzeert ze in plaats van te gokken: de opdracht wacht, de run eindigt en niemand hoeft in de chat te blijven wachten. Antwoord je, minuten of dagen later, dan gaat het in dezelfde chat verder met jouw antwoord en de vastgelegde tussenstand.",
       "p3": "Hier staat niets dat alleen maar heeft plaatsgevonden. Afgehandelde items blijven onder „Afgerond” inzichtelijk, met wie, wanneer en wat er gekozen is. Wordt een opdracht geannuleerd of verwijderd, dan komen de openstaande items ervan te vervallen.",
       "p4": "Zolang er iets wacht, toont de kopregel rechtsboven een handje met het aantal. Openstaande items van een opdracht staan bovendien bovenaan de bijbehorende pagina.",
-      "p5": "Agenten werken met exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve en exo_attention_withdraw."
+      "p5": "Agenten werken met exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve en exo_attention_withdraw.",
+      "p6": "Bij een deling staat precies beschreven wat er moet gebeuren en om welke pagina’s het gaat. Verandert een van deze pagina’s voordat je antwoordt, dan geeft je antwoord niets meer vrij en vraagt de agent het met de nieuwe status opnieuw. Een vraag kan ook op de achtergrond lopen zonder de opdracht te pauzeren; de kaart geeft dan aan dat het werk doorgaat."
     },
     "where": "Het handje rechtsboven in de kopregel, het accountmenu onder „Wacht op jou”, of Strg + K en „Wacht op jou”."
   }

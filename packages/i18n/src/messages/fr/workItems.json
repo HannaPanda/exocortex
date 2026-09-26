@@ -35,7 +35,9 @@
       "note": "a ajouté une note",
       "updated": "a modifié {count, plural, one {# champ} many {# champs} other {# champs}}",
       "attentionRaised": "a posé une question",
-      "attentionResolved": "a répondu à une question"
+      "attentionResolved": "a répondu à une question",
+      "runResumed": "a relancé le travail avec la réponse",
+      "resumeFailed": "a répondu, mais le travail n’a pas pu reprendre ({code}). La tâche attend dans la file d’attente."
     }
   },
   "list": {

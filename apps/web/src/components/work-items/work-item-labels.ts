@@ -97,6 +97,10 @@ export function useWorkItemWording() {
           return t('event.attentionRaised');
         case 'attention_resolved':
           return t('event.attentionResolved');
+        case 'run_resumed':
+          return t('event.runResumed');
+        case 'resume_failed':
+          return t('event.resumeFailed', { code: value.data.reason ?? '' });
       }
     };
 

@@ -909,13 +909,14 @@
   },
   "wartet-auf-dich": {
     "title": "Te espera: todo lo que necesita de ti ahora mismo",
-    "summary": "Una lista de todos los espacios de trabajo con aquello que no puede avanzar sin ti: decisiones, usos compartidos, resultados para revisar, tareas bloqueadas, ejecuciones de IA fallidas y consultas de agentes. Puedes dar respuestas sencillas directamente desde ahí, sin abrir la tarea.",
+    "summary": "Una lista que abarca todos los espacios de trabajo con aquello que no puede continuar sin ti: decisiones, aprobaciones de uso compartido, resultados para revisar, tareas bloqueadas, ejecuciones de IA fallidas y consultas de agentes. Respondes directamente ahí, y el trabajo continúa con tu respuesta justo en el punto en el que se detuvo.",
     "details": {
       "p1": "Las entradas se generan solas: si una tarea pasa a «para aprobación», «bloqueada» o «esperando respuesta», aparece aquí; y en cuanto sale de ese estado, desaparece. Si falla la última ejecución de IA de una tarea abierta, eXocortex te pregunta si quieres intentarlo de nuevo o desistir.",
-      "p2": "Los agentes preguntan de forma explícita, por ejemplo: «¿Conexión MCP global o por espacio de trabajo?», ofreciendo las respuestas como botones. Tu elección y tu nota quedan registradas en el historial de la tarea, donde el agente las lee, y luego la tarea vuelve a la cola.",
+      "p2": "Los agentes preguntan de forma explícita, por ejemplo «¿Conexión MCP global o por espacio de trabajo?» con las respuestas en forma de botones. Si la IA integrada necesita tu decisión en mitad de una tarea, se detiene en lugar de adivinar: la tarea espera, la ejecución finaliza y no hace falta quedarse esperando en el chat. Cuando respondes, minutos o días después, todo continúa en el mismo chat con tu respuesta y el estado de trabajo guardado.",
       "p3": "Aquí no aparece lo que simplemente ha sucedido. Las entradas completadas se pueden consultar en «Completado», con quién, cuándo y qué se eligió. Si una tarea se cancela o se elimina, sus entradas pendientes quedan sin efecto.",
       "p4": "Mientras haya algo pendiente, la cabecera muestra arriba a la derecha una mano con el recuento. Las entradas pendientes de una tarea también aparecen en la parte superior de su página.",
-      "p5": "Los agentes trabajan con exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve y exo_attention_withdraw."
+      "p5": "Los agentes trabajan con exo_attention_list, exo_attention_get, exo_attention_request, exo_attention_resolve y exo_attention_withdraw.",
+      "p6": "En una solicitud de uso compartido, se indica con exactitud qué va a ocurrir y qué páginas se ven afectadas. Si alguna de estas páginas cambia antes de que respondas, tu respuesta ya no aprueba nada y el agente vuelve a preguntar con el nuevo estado. Una consulta también puede ejecutarse en paralelo sin detener la tarea; en ese caso, la tarjeta indica que el trabajo continúa."
     },
     "where": "La mano arriba a la derecha en la cabecera, el menú de la cuenta en «Te espera», o Ctrl + K y «Te espera»."
   }

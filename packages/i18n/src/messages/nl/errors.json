@@ -87,6 +87,7 @@
     "attention_option_invalid": "Deze keuze bestaat hier niet. Kies een van de aangeboden opties.",
     "attention_note_required": "Hier is een antwoord in woorden nodig. Schrijf kort wat je bedoelt.",
     "attention_target_invalid": "De persoon of de taak hoort niet bij deze werkruimte.",
+    "attention_subject_changed": "Een van de pagina’s die gedeeld moeten worden, is gewijzigd sinds het lezen. Lees deze opnieuw en probeer het nogmaals met de huidige versie.",
     "pinned_sources_disabled": "Het vastpinnen van bronnen is uitgeschakeld in deze werkruimte. Je kunt dit weer inschakelen in de instellingen onder AI.",
     "pinned_sources_limit_reached": "Deze chat heeft al het maximaal toegestane aantal bronnen vastgepind. Verwijder er een of verhoog de limiet in de instellingen.",
     "saved_query_access_denied": "Deze opgeslagen zoekopdracht hoort niet bij deze werkruimte.",

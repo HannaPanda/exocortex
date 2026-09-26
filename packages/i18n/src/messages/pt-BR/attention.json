@@ -66,9 +66,20 @@
       "work_item_cancelled": "O trabalho foi cancelado.",
       "work_item_deleted": "O trabalho foi excluído.",
       "withdrawn": "A pergunta foi retirada.",
-      "superseded": "Uma execução mais recente assumiu o controle."
+      "superseded": "Uma execução mais recente assumiu o controle.",
+      "subject_changed": "Não aprovado: uma das páginas foi alterada desde a pergunta."
     },
-    "quotedNote": "“{note}”"
+    "quotedNote": "“{note}”",
+    "nonBlocking": "A tarefa continua em andamento enquanto esta pergunta estiver aberta.",
+    "actionLabel": "O que será aprovado",
+    "subjectLabel": "Válido para estas páginas no estado atual",
+    "subjectChanged": "alterada desde a pergunta",
+    "subjectChangedHint": "Uma destas páginas foi alterada desde a pergunta. Responder agora não liberará nada; o agente será informado e perguntará novamente com a versão mais recente.",
+    "subjectUnavailable": "Página não está mais acessível",
+    "contextLabel": "Contexto",
+    "workStateLabel": "Status do trabalho",
+    "resumed": "O trabalho continua com esta resposta.",
+    "resumeFailed": "A resposta foi salva, mas não foi possível retomar o trabalho ({code}). A tarefa aguarda na fila e pode ser reiniciada por lá."
   },
   "option": {
     "accept": "Aprovar",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Aguardando você",
     "intro": "Este trabalho precisa de uma resposta ou decisão no momento."
+  },
+  "conversation": {
+    "title": "Pergunta pendente deste chat",
+    "intro": "A execução foi pausada e aguarda sua resposta. Assim que você responder, o fluxo continuará por aqui."
   }
 }

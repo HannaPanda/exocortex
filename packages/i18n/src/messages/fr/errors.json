@@ -87,6 +87,7 @@
     "attention_option_invalid": "Ce choix n’existe pas ici. Choisis l’une des options proposées.",
     "attention_note_required": "Une réponse textuelle est requise ici. Écris brièvement ce que tu veux dire.",
     "attention_target_invalid": "La personne ou la tâche n’appartient pas à cet espace de travail.",
+    "attention_subject_changed": "L’une des pages concernées par le partage a changé depuis sa lecture. Recharge-la et réessaie avec la version actuelle.",
     "pinned_sources_disabled": "L’épinglage de sources est désactivé dans cet espace de travail. Tu peux le réactiver dans les paramètres sous IA.",
     "pinned_sources_limit_reached": "Ce chat a déjà épinglé le nombre maximal de sources autorisées. Retire une source ou augmente la limite dans les paramètres.",
     "saved_query_access_denied": "Cette recherche enregistrée n’appartient pas à cet espace de travail.",

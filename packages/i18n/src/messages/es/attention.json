@@ -66,9 +66,20 @@
       "work_item_cancelled": "Se canceló el encargo.",
       "work_item_deleted": "Se eliminó el encargo.",
       "withdrawn": "Se retiró la pregunta.",
-      "superseded": "Una ejecución más reciente tomó el relevo."
+      "superseded": "Una ejecución más reciente tomó el relevo.",
+      "subject_changed": "No se ha aprobado: una de las páginas ha cambiado desde que se hizo la pregunta."
     },
-    "quotedNote": "«{note}»"
+    "quotedNote": "«{note}»",
+    "nonBlocking": "La tarea sigue en marcha mientras esta pregunta siga abierta.",
+    "actionLabel": "Qué se aprueba",
+    "subjectLabel": "Aplica a estas páginas en su estado actual",
+    "subjectChanged": "modificada desde la pregunta",
+    "subjectChangedHint": "Una de estas páginas ha cambiado desde que se hizo la pregunta. Responder ahora ya no aprobará nada; el agente lo sabrá y volverá a preguntar con la versión actualizada.",
+    "subjectUnavailable": "Página ya no disponible",
+    "contextLabel": "Contexto",
+    "workStateLabel": "Estado del trabajo",
+    "resumed": "El trabajo se reanuda con esta respuesta.",
+    "resumeFailed": "Se ha guardado la respuesta, pero no se ha podido reanudar el trabajo ({code}). La tarea espera en la cola y se puede reiniciar allí."
   },
   "option": {
     "accept": "Aprobar",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Pendiente de ti",
     "intro": "Este encargo necesita ahora mismo una respuesta o decisión."
+  },
+  "conversation": {
+    "title": "Pregunta de este chat",
+    "intro": "La ejecución se ha detenido y espera tu respuesta. En cuanto respondas, continuará aquí."
   }
 }

@@ -35,7 +35,9 @@
       "note": "added a note",
       "updated": "updated {count, plural, one {one field} other {# fields}}",
       "attentionRaised": "asked a question",
-      "attentionResolved": "answered a question"
+      "attentionResolved": "answered a question",
+      "runResumed": "resumed the run with the response",
+      "resumeFailed": "replied, but the work could not be resumed ({code}). The work item is waiting in the queue."
     }
   },
   "list": {

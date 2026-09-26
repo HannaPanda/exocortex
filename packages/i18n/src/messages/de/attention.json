@@ -66,9 +66,20 @@
       "work_item_cancelled": "Der Auftrag wurde abgebrochen.",
       "work_item_deleted": "Der Auftrag wurde gelöscht.",
       "withdrawn": "Die Frage wurde zurückgezogen.",
-      "superseded": "Ein neuerer Lauf hat übernommen."
+      "superseded": "Ein neuerer Lauf hat übernommen.",
+      "subject_changed": "Nicht freigegeben: eine der Seiten hatte sich seit der Frage geändert."
     },
-    "quotedNote": "„{note}“"
+    "quotedNote": "„{note}“",
+    "nonBlocking": "Der Auftrag läuft weiter, während diese Frage offen ist.",
+    "actionLabel": "Was freigegeben wird",
+    "subjectLabel": "Gilt für diese Seiten in ihrem jetzigen Stand",
+    "subjectChanged": "seit der Frage geändert",
+    "subjectChangedHint": "Eine dieser Seiten hat sich seit der Frage geändert. Eine Antwort gibt jetzt nichts mehr frei; der Agent erfährt das und fragt mit dem neuen Stand noch einmal.",
+    "subjectUnavailable": "Seite nicht mehr erreichbar",
+    "contextLabel": "Hintergrund",
+    "workStateLabel": "Stand der Arbeit",
+    "resumed": "Die Arbeit läuft mit dieser Antwort weiter.",
+    "resumeFailed": "Die Antwort ist gespeichert, aber die Arbeit ließ sich nicht fortsetzen ({code}). Der Auftrag wartet in der Warteschlange und lässt sich dort neu starten."
   },
   "option": {
     "accept": "Abnehmen",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Wartet auf dich",
     "intro": "Dieser Auftrag braucht gerade eine Antwort oder Entscheidung."
+  },
+  "conversation": {
+    "title": "Rückfrage aus diesem Chat",
+    "intro": "Der Lauf hat angehalten und wartet auf deine Antwort. Sobald du antwortest, geht es hier weiter."
   }
 }

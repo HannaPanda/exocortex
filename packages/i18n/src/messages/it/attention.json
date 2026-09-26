@@ -66,9 +66,20 @@
       "work_item_cancelled": "L’incarico è stato annullato.",
       "work_item_deleted": "L’incarico è stato eliminato.",
       "withdrawn": "La domanda è stata ritirata.",
-      "superseded": "È subentrata un’esecuzione più recente."
+      "superseded": "È subentrata un’esecuzione più recente.",
+      "subject_changed": "Non approvato: una delle pagine è cambiata rispetto al momento della domanda."
     },
-    "quotedNote": "«{note}»"
+    "quotedNote": "«{note}»",
+    "nonBlocking": "L’attività prosegue mentre questa domanda resta aperta.",
+    "actionLabel": "Cosa viene approvato",
+    "subjectLabel": "Vale per queste pagine nello stato attuale",
+    "subjectChanged": "modificato dopo la domanda",
+    "subjectChangedHint": "Una di queste pagine è cambiata rispetto al momento della domanda. Una risposta adesso non approva più nulla; l’agente ne viene informato e chiederà di nuovo in base al nuovo stato.",
+    "subjectUnavailable": "Pagina non più accessibile",
+    "contextLabel": "Contesto",
+    "workStateLabel": "Stato del lavoro",
+    "resumed": "Il lavoro prosegue con questa risposta.",
+    "resumeFailed": "La risposta è stata salvata, ma non è stato possibile riprendere il lavoro ({code}). L’attività è in attesa nella coda e può essere riavviata da lì."
   },
   "option": {
     "accept": "Approva",
@@ -85,5 +96,9 @@
   "workItem": {
     "title": "Attende la tua attenzione",
     "intro": "Questo incarico richiede ora una risposta o una decisione."
+  },
+  "conversation": {
+    "title": "Richiesta di chiarimento da questa chat",
+    "intro": "L’esecuzione si è interrotta e attende la tua risposta. Non appena rispondi, proseguirà qui."
   }
 }
