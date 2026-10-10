@@ -36,6 +36,7 @@ import { createToolboxTool } from './tools/toolbox.js';
 import { TRANSCLUSION_TOOLS } from './tools/transclusion.js';
 import { WEB_TOOLS } from './tools/web.js';
 import { WORK_CHECKPOINT_TOOLS } from './tools/work-item-checkpoints.js';
+import { WORK_ITEM_DELEGATION_TOOLS } from './tools/work-item-delegation.js';
 import { WORK_ITEM_TOOLS } from './tools/work-items.js';
 import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 
@@ -62,6 +63,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...SEARCH_TOOLS,
   ...SAVED_QUERY_TOOLS,
   ...WORK_ITEM_TOOLS,
+  ...WORK_ITEM_DELEGATION_TOOLS,
   ...AGENT_PROFILE_TOOLS,
   ...WORK_CHECKPOINT_TOOLS,
   ...ATTENTION_TOOLS,

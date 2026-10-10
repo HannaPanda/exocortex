@@ -83,7 +83,27 @@ function formatDetail(item: WorkItemDetail): string {
   if (item.parent !== null)
     lines.push('', `Teil von: ${item.parent.title} (id: ${item.parent.id})`);
   if (item.children.length > 0) {
-    lines.push('', 'Teilaufträge:', ...item.children.map(formatSummary));
+    const p = item.childProgress;
+    const counts = [
+      p.open > 0 ? `${p.open} offen` : null,
+      p.waiting > 0 ? `${p.waiting} wartend` : null,
+      p.review > 0 ? `${p.review} zur Abnahme` : null,
+      p.done > 0 ? `${p.done} erledigt` : null,
+      p.failed > 0 ? `${p.failed} gescheitert` : null,
+      p.cancelled > 0 ? `${p.cancelled} abgebrochen` : null,
+    ].filter((part) => part !== null);
+    lines.push(
+      '',
+      `Teilaufträge (${counts.join(', ')}; Ergebnisse mit exo_work_item_child_results):`,
+      ...item.children.map(formatSummary),
+    );
+  }
+  if (item.awaiting !== null) {
+    lines.push(
+      '',
+      `Wartet seit ${item.awaiting.since.slice(0, 16)} auf ${item.awaiting.pendingChildIds.length} ` +
+        `von ${item.awaiting.childIds.length} Teilaufträgen.`,
+    );
   }
   if (item.runs.length > 0) {
     lines.push(
@@ -104,9 +124,17 @@ function formatDetail(item: WorkItemDetail): string {
     lines.push('', `Agentenprofil: ${item.agentProfile.name} (id: ${item.agentProfile.id}${how})`);
   }
   if (item.effectiveBudgetMicroUsd !== null) {
+    const below =
+      item.subtreeSpentMicroUsd > item.spentMicroUsd ? ' (mit Teilaufträgen)' : '';
     lines.push(
       '',
-      `Budget: ${item.spentMicroUsd} von ${item.effectiveBudgetMicroUsd} Mikro-USD verbraucht`,
+      `Budget: ${item.subtreeSpentMicroUsd} von ${item.effectiveBudgetMicroUsd} Mikro-USD verbraucht${below}`,
+    );
+  }
+  if (item.budgetLimitedBy !== null && item.budgetRemainingMicroUsd !== null) {
+    lines.push(
+      `Restbudget ${item.budgetRemainingMicroUsd} Mikro-USD, begrenzt durch „${item.budgetLimitedBy.title}“ ` +
+        `(id: ${item.budgetLimitedBy.id})`,
     );
   }
   if (item.latestCheckpointAt !== null) {
