@@ -77,6 +77,14 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('DELETE', '/api/me/connections/client123')).toBe('admin');
   });
 
+  it('asks for admin to change an agent profile, and only read to see one (issue #143)', () => {
+    expect(requiredScopeForRequest('POST', '/api/workspaces/ws1/agent-profiles')).toBe('admin');
+    expect(requiredScopeForRequest('PATCH', '/api/agent-profiles/p1')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/agent-profiles/p1/duplicate')).toBe('admin');
+    expect(requiredScopeForRequest('DELETE', '/api/agent-profiles/p1')).toBe('admin');
+    expect(requiredScopeForRequest('GET', '/api/workspaces/ws1/agent-profiles')).toBe('read');
+  });
+
   it('does not confuse a lookalike path with the admin API', () => {
     expect(requiredScopeForRequest('GET', '/api/me')).toBe('read');
     expect(requiredScopeForRequest('POST', '/api/documents/admin-notes')).toBe('write');

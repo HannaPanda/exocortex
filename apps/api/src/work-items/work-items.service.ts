@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { assertPolicy, canManageWorkItems, WorkspaceAccessService } from '@exocortex/auth';
 import {
+  type AiReasoningLevel,
   type AddWorkItemNoteRequest,
   type CreateWorkItemRequest,
   type DeleteWorkItemResponse,
@@ -21,6 +22,7 @@ import {
   type WorkItemStatus as PrismaStatus,
 } from '@exocortex/database';
 
+import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
 import { ConversationsService } from '../ai/conversations.service';
 import {
   type AttentionChanges,
@@ -35,7 +37,12 @@ import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
-import { assertMayProgress, assertWriteModeChange } from './work-item-access';
+import {
+  assertMayChooseProfile,
+  assertMayProgress,
+  assertRunMayClose,
+  assertWriteModeChange,
+} from './work-item-access';
 import { type WorkItemActor } from './work-item-actor';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
 import {
@@ -94,6 +101,7 @@ export class WorkItemsService {
     private readonly realtime: RealtimeService,
     private readonly conversations: ConversationsService,
     private readonly checkpoints: WorkItemCheckpointsService,
+    private readonly profiles: AgentProfilesService,
   ) {}
 
   async list(input: {
@@ -128,10 +136,17 @@ export class WorkItemsService {
     actor: WorkItemActor;
     request: CreateWorkItemRequest;
     correlationId: string;
+    /** Whether the credential may choose a profile (issue #143); see the controller. */
+    mayChooseProfile?: boolean;
   }): Promise<WorkItemResponse> {
     const { request, actor } = input;
     const role = await this.access.requireRole(input.workspaceId, actor.userId);
     assertPolicy(canManageWorkItems(role));
+    const agentProfileId = await this.profileForNewItem(
+      input.workspaceId,
+      request,
+      input.mayChooseProfile ?? false,
+    );
 
     const assignee = request.assignee ?? null;
     const assigneeName = await this.validateAssignee(input.workspaceId, assignee);
@@ -153,6 +168,7 @@ export class WorkItemsService {
           acceptanceCriteria: request.acceptanceCriteria ?? [],
           budgetMicroUsd: request.budgetMicroUsd ?? null,
           writeMode: writeModeToPrisma(request.writeMode ?? null),
+          agentProfileId,
           dueAt:
             request.dueAt === undefined || request.dueAt === null ? null : new Date(request.dueAt),
           parentId: request.parentId ?? null,
@@ -188,6 +204,13 @@ export class WorkItemsService {
     const { request, actor } = input;
     const existing = await this.loadRow(input.workItemId);
     assertWriteModeChange(existing.writeMode, request.writeMode, input.mayLoosenWriteMode ?? false);
+    if (request.agentProfileId !== undefined) {
+      assertMayChooseProfile(input.mayLoosenWriteMode ?? false);
+      if (request.agentProfileId !== null) {
+        await this.profiles.assertUsable(existing.workspaceId, request.agentProfileId);
+      }
+    }
+    if (request.status === 'done') await assertRunMayClose(this.prisma, existing.status);
     const progressOnly = Object.keys(request).every((key) =>
       ASSIGNEE_FIELDS.has(key as keyof UpdateWorkItemRequest),
     );
@@ -320,7 +343,9 @@ export class WorkItemsService {
     if (row.closedAt !== null) {
       throw new AppError('work_item_closed', 'The work item is closed');
     }
-    if (item.budgetMicroUsd !== null && item.spentMicroUsd >= item.budgetMicroUsd) {
+    // The stricter of the item's own budget and its profile's (issue #143).
+    const budget = item.effectiveBudgetMicroUsd;
+    if (budget !== null && item.spentMicroUsd >= budget) {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }
     // Carried on from where the work stands (issue #142), unless asked not to.
@@ -332,19 +357,23 @@ export class WorkItemsService {
             workspaceId: row.workspaceId,
             which: input.request.fromCheckpoint ?? 'latest',
             spentMicroUsd: item.spentMicroUsd,
-            budgetMicroUsd: item.budgetMicroUsd,
+            budgetMicroUsd: budget,
           });
 
+    // The profile's preferences fill in what the request left open (issue
+    // #143). The conversation keeps them, so a run that carries on in it
+    // keeps them too.
+    const preferences = await this.profilePreferences(item.agentProfile?.id ?? null);
+    const modelSlug = input.request.modelSlug ?? preferences.modelSlug;
+    const reasoningLevel = input.request.reasoningLevel ?? preferences.reasoningLevel;
     const { conversation } = await this.conversations.create({
       userId: input.actor.userId,
       request: {
         workspaceId: row.workspaceId,
         documentId: null,
         title: row.title.slice(0, 60),
-        ...(input.request.modelSlug === undefined ? {} : { modelSlug: input.request.modelSlug }),
-        ...(input.request.reasoningLevel === undefined
-          ? {}
-          : { reasoningLevel: input.request.reasoningLevel }),
+        ...(modelSlug === undefined ? {} : { modelSlug }),
+        ...(reasoningLevel === undefined ? {} : { reasoningLevel }),
       },
     });
 
@@ -439,6 +468,7 @@ export class WorkItemsService {
         finishedAt: null,
         costMicroUsd: null,
         errorCode: null,
+        agentProfile: null,
       },
       conversationId: conversation.id,
       checkpointId: resume?.checkpointId ?? null,
@@ -535,6 +565,63 @@ export class WorkItemsService {
    * Walked upwards from the candidate: if the walk meets the item, the item
    * would become its own ancestor.
    */
+  /**
+   * The model and reasoning level a profile prefers, as far as they can be
+   * honoured (issue #143). A model that is no longer enabled is skipped
+   * rather than refused: a profile names a preference, not a binding, and
+   * the run then uses the default model.
+   */
+  private async profilePreferences(profileId: string | null): Promise<{
+    modelSlug?: string;
+    reasoningLevel?: AiReasoningLevel;
+  }> {
+    if (profileId === null) return {};
+    const profile = await this.prisma.agentProfile.findUnique({
+      where: { id: profileId },
+      select: { modelSlug: true, reasoningLevel: true },
+    });
+    if (profile === null) return {};
+    const model =
+      profile.modelSlug === null
+        ? null
+        : await this.prisma.aiModel.findUnique({
+            where: { slug: profile.modelSlug },
+            select: { enabled: true },
+          });
+    return {
+      ...(model?.enabled === true && profile.modelSlug !== null
+        ? { modelSlug: profile.modelSlug }
+        : {}),
+      ...(profile.reasoningLevel === null
+        ? {}
+        : { reasoningLevel: profile.reasoningLevel.toLowerCase() as AiReasoningLevel }),
+    };
+  }
+
+  /**
+   * The profile a new item gets (issue #143): the one it names, when the
+   * credential may choose one, or else its parent's, so that a part of a
+   * larger piece of work stays under the rules of the whole.
+   */
+  private async profileForNewItem(
+    workspaceId: string,
+    request: CreateWorkItemRequest,
+    mayChoose: boolean,
+  ): Promise<string | null> {
+    if (request.agentProfileId !== undefined) {
+      assertMayChooseProfile(mayChoose);
+      if (request.agentProfileId === null) return null;
+      await this.profiles.assertUsable(workspaceId, request.agentProfileId);
+      return request.agentProfileId;
+    }
+    if (request.parentId === undefined || request.parentId === null) return null;
+    const parent = await this.prisma.workItem.findUnique({
+      where: { id: request.parentId },
+      select: { agentProfileId: true },
+    });
+    return parent?.agentProfileId ?? null;
+  }
+
   private async validateParent(
     workspaceId: string,
     workItemId: string | null,

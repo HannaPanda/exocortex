@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { agentProfileRefSchema } from './agent-profiles';
 import { aiRunStatusSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
 import { aiWriteModeSchema } from './ai-trust';
@@ -130,6 +131,10 @@ export const workItemRunSchema = z.object({
   /** Measured or, failing that, estimated cost; null when the run reported neither. */
   costMicroUsd: z.number().int().nullable(),
   errorCode: z.string().nullable(),
+  /** The profile the run worked under (issue #143), as it was when the run started. */
+  agentProfile: z
+    .object({ id: idSchema.nullable(), name: z.string(), revision: z.number().int() })
+    .nullable(),
 });
 export type WorkItemRun = z.infer<typeof workItemRunSchema>;
 
@@ -201,6 +206,16 @@ export const workItemDetailSchema = workItemSummarySchema.extend({
    * the two applies.
    */
   writeMode: aiWriteModeSchema.nullable(),
+  /**
+   * The agent profile its runs use (issue #143): the item's own, or the
+   * workspace's default when it names none (`inherited`), or null for none.
+   */
+  agentProfile: agentProfileRefSchema.nullable(),
+  /**
+   * The budget that actually holds: the stricter of the item's own and its
+   * profile's per-task budget.
+   */
+  effectiveBudgetMicroUsd: z.number().int().nullable(),
   /** What the linked runs have cost so far, measured where known, estimated otherwise. */
   spentMicroUsd: z.number().int(),
   parent: z.object({ id: idSchema, title: z.string() }).nullable(),
@@ -255,6 +270,11 @@ export const createWorkItemRequestSchema = z.object({
   contextDocumentIds: refIdsSchema.optional(),
   budgetMicroUsd: budgetSchema.nullable().optional(),
   writeMode: aiWriteModeSchema.nullable().optional(),
+  /**
+   * The agent profile its runs use (issue #143). Left out, a part of a larger
+   * item takes its parent's; null uses the workspace's default.
+   */
+  agentProfileId: idSchema.nullable().optional(),
   dueAt: isoDateTimeSchema.nullable().optional(),
   parentId: idSchema.nullable().optional(),
 });
@@ -285,6 +305,8 @@ export const updateWorkItemRequestSchema = z
      * a run that could lift its own mode would not be held to it.
      */
     writeMode: aiWriteModeSchema.nullable().optional(),
+    /** Changed only by a person or a token that may write, like `writeMode`. */
+    agentProfileId: idSchema.nullable().optional(),
     dueAt: isoDateTimeSchema.nullable().optional(),
     parentId: idSchema.nullable().optional(),
   })

@@ -90,6 +90,7 @@ export class WorkItemsController {
   @ApiCreatedResponse({ schema: openApiResponseSchema(workItemResponseSchema) })
   async create(
     @CurrentSession() session: VerifiedSession,
+    @Req() request: AuthenticatedRequest,
     @Param('workspaceId') workspaceId: string,
     @Body(zodPipe(createWorkItemRequestSchema)) body: CreateWorkItemRequest,
   ): Promise<WorkItemResponse> {
@@ -98,6 +99,8 @@ export class WorkItemsController {
       actor: workItemActorOf(session),
       request: body,
       correlationId: currentCorrelationId(),
+      // The same credentials that may loosen a write mode (issue #143).
+      mayChooseProfile: mayLoosenWriteMode(request),
     });
   }
 

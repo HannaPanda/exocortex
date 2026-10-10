@@ -49,6 +49,15 @@ export const AUDIT_ACTIONS = [
    */
   'workspace.credential.set',
   'workspace.credential.removed',
+  /**
+   * An agent profile was created, changed or deleted (issue #143, ADR-071).
+   * It decides what every run under it may use, write and spend, so changing
+   * one is permission-relevant. The entry names the fields and the revision,
+   * never the instructions themselves.
+   */
+  'agent_profile.created',
+  'agent_profile.updated',
+  'agent_profile.deleted',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -66,7 +75,8 @@ export interface WriteAuditInput {
     | 'database_property'
     | 'setting'
     | 'workspace_credential'
-    | 'invitation';
+    | 'invitation'
+    | 'agent_profile';
   targetId: string;
   correlationId: string;
   /**

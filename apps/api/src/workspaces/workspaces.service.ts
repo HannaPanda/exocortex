@@ -23,6 +23,7 @@ import {
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
@@ -63,7 +64,7 @@ export class WorkspacesService {
 
   async listForUser(userId: string): Promise<Workspace[]> {
     const memberships = await this.prisma.workspaceMember.findMany({
-      where: { userId, workspace: { archivedAt: null } },
+      where: { userId, workspace: { archivedAt: null }, ...confinedMembershipWhere() },
       include: {
         workspace: { include: { _count: { select: { members: true } } } },
       },

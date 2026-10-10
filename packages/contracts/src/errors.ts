@@ -134,6 +134,18 @@ export const API_ERROR_CODES = [
   'work_item_closed',
   /** The linked runs have already spent the item's budget. */
   'work_item_budget_exhausted',
+  /**
+   * The work item's agent profile says a person closes it (issue #143): a run
+   * under that profile sets it to `review` instead of `done`.
+   */
+  'work_item_review_required',
+  /** Another agent profile in this workspace already has that name. */
+  'agent_profile_name_taken',
+  /**
+   * A profile names something that is not there: a rule page outside the
+   * workspace, or a model that is not enabled.
+   */
+  'agent_profile_invalid',
   /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
   'work_checkpoint_summary_required',
   /** The named checkpoint does not belong to this work item. */
@@ -364,6 +376,9 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // raise the budget) is what changes that.
   work_item_closed: 409,
   work_item_budget_exhausted: 409,
+  work_item_review_required: 409,
+  agent_profile_name_taken: 409,
+  agent_profile_invalid: 400,
   work_checkpoint_summary_required: 422,
   work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.

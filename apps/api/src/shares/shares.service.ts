@@ -35,6 +35,7 @@ import {
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
@@ -639,7 +640,7 @@ export class SharesService {
    */
   async listMine(userId: string): Promise<MyShareListResponse> {
     const memberships = await this.prisma.workspaceMember.findMany({
-      where: { userId },
+      where: { userId, ...confinedMembershipWhere() },
       select: { workspaceId: true, role: true, workspace: { select: { name: true } } },
     });
 

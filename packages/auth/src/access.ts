@@ -109,6 +109,29 @@ export class WorkspaceAccessService {
   }
 
   /**
+   * Whether the credential is held to a workspace other than this one (issue
+   * #143, ADR-071).
+   *
+   * A run under a confining agent profile carries its work item's workspace
+   * as a signed claim. Every other workspace then answers as if the account
+   * were not a member of it, through the same functions that decide
+   * membership for everybody, so no route has to know that profiles exist.
+   */
+  private outsideConfinement(workspaceId: string): boolean {
+    const confined = this.restrictions?.workspace?.() ?? null;
+    return confined !== null && confined !== workspaceId;
+  }
+
+  private refuseOutsideConfinement(workspaceId: string): void {
+    if (this.outsideConfinement(workspaceId)) {
+      throw new AuthorizationError(
+        'token_scope_exceeded',
+        'This run is confined to another workspace by its agent profile',
+      );
+    }
+  }
+
+  /**
    * The membership row, and nothing else.
    *
    * Deliberately blind to the credential's confinement, so it is the wrong
@@ -144,6 +167,7 @@ export class WorkspaceAccessService {
         'This credential is limited to certain pages and cannot act on the whole workspace',
       );
     }
+    if (this.outsideConfinement(workspaceId)) return null;
     return this.findMembershipRole(workspaceId, userId);
   }
 
@@ -162,6 +186,7 @@ export class WorkspaceAccessService {
     userId: string,
     documentId: string | null,
   ): Promise<WorkspaceRole | null> {
+    this.refuseOutsideConfinement(workspaceId);
     const restriction = this.currentRestriction();
     if (isRestricted(restriction)) {
       if (documentId === null) {
@@ -203,6 +228,7 @@ export class WorkspaceAccessService {
    * honest refusal, which is the failure mode this split exists to guarantee.
    */
   async requireRole(workspaceId: string, userId: string): Promise<WorkspaceRole> {
+    this.refuseOutsideConfinement(workspaceId);
     const role = await this.findMembershipRole(workspaceId, userId);
     assertPolicy(canReadWorkspace(role));
     if (isRestricted(this.currentRestriction())) {
@@ -223,6 +249,7 @@ export class WorkspaceAccessService {
    * pages the caller may not name.
    */
   async requireScopedRole(workspaceId: string, userId: string): Promise<ScopedWorkspaceAccess> {
+    this.refuseOutsideConfinement(workspaceId);
     const role = await this.findMembershipRole(workspaceId, userId);
     assertPolicy(canReadWorkspace(role));
 
@@ -261,6 +288,7 @@ export class WorkspaceAccessService {
       },
     });
     if (document === null) return null;
+    if (this.outsideConfinement(document.workspaceId)) return null;
 
     const restriction = this.currentRestriction();
     const role = await this.findMembershipRole(document.workspaceId, userId);
@@ -439,6 +467,7 @@ export class WorkspaceAccessService {
     }
 
     if (isRestricted(this.currentRestriction())) return null;
+    if (this.outsideConfinement(attachment.workspaceId)) return null;
     const role = await this.findMembershipRole(attachment.workspaceId, userId);
     if (role === null) return null;
     return { attachment, role };
@@ -480,6 +509,12 @@ export class WorkspaceAccessService {
       throw new AuthorizationError(
         'token_scope_exceeded',
         'A page-scoped credential can never administer the deployment',
+      );
+    }
+    if ((this.restrictions?.workspace?.() ?? null) !== null) {
+      throw new AuthorizationError(
+        'token_scope_exceeded',
+        'A run confined to one workspace can never administer the deployment',
       );
     }
     const role = await this.findGlobalRole(userId);

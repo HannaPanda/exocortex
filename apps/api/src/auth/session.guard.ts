@@ -26,6 +26,7 @@ import { AppError } from '../common/app-error';
 import {
   clearAutomationOrigin,
   setPageScopeRestriction,
+  setConfinedWorkspace,
   setRequestAiRun,
   setRequestUser,
 } from '../common/correlation';
@@ -93,6 +94,8 @@ interface VerifiedBearer {
   aiRunId?: string;
   /** Only set for a service token of a run held to a write mode (issue #141). */
   writeMode?: 'read_only' | 'propose';
+  /** Only set for a service token of a run confined to one workspace (issue #143). */
+  confinedWorkspaceId?: string;
 }
 
 /**
@@ -136,6 +139,7 @@ export class SessionGuard implements CanActivate {
       setRequestUser(cookieSession.userId);
       clearAutomationOrigin();
       setRequestAiRun(undefined);
+      setConfinedWorkspace(undefined);
       // A browser session is the person themselves and is never confined to a
       // branch. Said explicitly rather than left alone, so a reused context
       // object cannot carry a previous request's confinement.
@@ -148,8 +152,16 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential, scopes, pageScopes, apiTokenId, aiRunId, writeMode } =
-      await this.verifyBearerToken(bearer);
+    const {
+      session,
+      credential,
+      scopes,
+      pageScopes,
+      apiTokenId,
+      aiRunId,
+      writeMode,
+      confinedWorkspaceId,
+    } = await this.verifyBearerToken(bearer);
     request.exocortexWriteMode = writeMode;
     request.exocortexSession = session;
     request.exocortexCredential = credential;
@@ -161,6 +173,7 @@ export class SessionGuard implements CanActivate {
     // Set for every bearer, `undefined` included, so a reused context cannot
     // lend one request's run to the next (issue #140).
     setRequestAiRun(aiRunId);
+    setConfinedWorkspace(confinedWorkspaceId);
     // The automation origin header is read before authentication runs, because
     // that is where the request context is built. Only the worker may assert
     // it, and a service token is the only way the worker speaks to this API
@@ -226,6 +239,9 @@ export class SessionGuard implements CanActivate {
       credential: 'service_token',
       ...(result.claims.runId === undefined ? {} : { aiRunId: result.claims.runId }),
       ...(result.claims.writeMode === undefined ? {} : { writeMode: result.claims.writeMode }),
+      ...(result.claims.workspaceId === undefined
+        ? {}
+        : { confinedWorkspaceId: result.claims.workspaceId }),
     };
   }
 

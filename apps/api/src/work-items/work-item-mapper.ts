@@ -1,5 +1,8 @@
 import {
+  type AgentProfileRef,
+  agentProfileSnapshotSchema,
   type AiWriteMode,
+  stricterLimit,
   type WorkItemCriterion,
   workItemCriterionSchema,
   type WorkItemDetail,
@@ -145,12 +148,26 @@ export type WorkItemSummaryRow = Prisma.WorkItemGetPayload<{
   select: typeof WORK_ITEM_SUMMARY_SELECT;
 }>;
 
+const AGENT_PROFILE_REF_SELECT = {
+  id: true,
+  name: true,
+  budgetMicroUsdPerTask: true,
+} satisfies Prisma.AgentProfileSelect;
+
 export const WORK_ITEM_DETAIL_SELECT = {
   ...WORK_ITEM_SUMMARY_SELECT,
   goal: true,
   result: true,
   budgetMicroUsd: true,
   writeMode: true,
+  // The item's own profile and the workspace's default, in the same read
+  // (issue #143): the detail says which one holds and what budget follows.
+  agentProfile: { select: AGENT_PROFILE_REF_SELECT },
+  workspace: {
+    select: {
+      agentProfiles: { where: { isDefault: true }, select: AGENT_PROFILE_REF_SELECT, take: 1 },
+    },
+  },
   _count: { select: { children: true, runs: true, checkpoints: true } },
   checkpoints: { select: { createdAt: true }, orderBy: { createdAt: 'desc' }, take: 1 },
   parent: { select: { id: true, title: true } },
@@ -174,6 +191,8 @@ export const WORK_ITEM_DETAIL_SELECT = {
       providerCostMicroUsd: true,
       estimatedCostMicroUsd: true,
       errorCode: true,
+      agentProfileId: true,
+      agentProfileSnapshot: true,
     },
     orderBy: { createdAt: 'desc' },
   },
@@ -262,6 +281,36 @@ function toRun(run: WorkItemDetailRow['runs'][number]): WorkItemRun {
     finishedAt: run.finishedAt?.toISOString() ?? null,
     costMicroUsd: runCost(run),
     errorCode: run.errorCode,
+    agentProfile: runProfile(run),
+  };
+}
+
+/** The profile a run kept, named by its snapshot even when the profile is gone. */
+function runProfile(run: WorkItemDetailRow['runs'][number]): WorkItemRun['agentProfile'] {
+  const parsed = agentProfileSnapshotSchema.safeParse(run.agentProfileSnapshot);
+  if (!parsed.success) return null;
+  return { id: run.agentProfileId, name: parsed.data.name, revision: parsed.data.revision };
+}
+
+/**
+ * The profile the item's runs use (issue #143): its own, or the workspace's
+ * default, with the budget that follows from it.
+ */
+export function workItemProfileOf(row: Pick<WorkItemDetailRow, 'agentProfile' | 'workspace'>): {
+  ref: AgentProfileRef | null;
+  budgetMicroUsdPerTask: number | null;
+} {
+  if (row.agentProfile !== null) {
+    return {
+      ref: { id: row.agentProfile.id, name: row.agentProfile.name, inherited: false },
+      budgetMicroUsdPerTask: row.agentProfile.budgetMicroUsdPerTask,
+    };
+  }
+  const fallback = row.workspace.agentProfiles[0];
+  if (fallback === undefined) return { ref: null, budgetMicroUsdPerTask: null };
+  return {
+    ref: { id: fallback.id, name: fallback.name, inherited: true },
+    budgetMicroUsdPerTask: fallback.budgetMicroUsdPerTask,
   };
 }
 
@@ -290,6 +339,7 @@ function refsOf(row: WorkItemDetailRow, role: 'CONTEXT' | 'RESULT'): WorkItemRef
 
 export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
   const runs = row.runs.map(toRun);
+  const profile = workItemProfileOf(row);
   return {
     ...toWorkItemSummary(row),
     goal: row.goal,
@@ -297,6 +347,8 @@ export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
     result: row.result,
     budgetMicroUsd: row.budgetMicroUsd,
     writeMode: row.writeMode === null ? null : (row.writeMode.toLowerCase() as AiWriteMode),
+    agentProfile: profile.ref,
+    effectiveBudgetMicroUsd: stricterLimit(row.budgetMicroUsd, profile.budgetMicroUsdPerTask),
     spentMicroUsd: runs.reduce((sum, run) => sum + (run.costMicroUsd ?? 0), 0),
     parent: row.parent,
     contextRefs: refsOf(row, 'CONTEXT'),

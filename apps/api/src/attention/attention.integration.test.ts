@@ -10,6 +10,8 @@ import {
   raiseAttentionItems,
 } from '@exocortex/database';
 
+import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
+import { type OutboxService } from '../common/outbox.service';
 import { type ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
 import { type RealtimeService } from '../realtime/realtime.service';
@@ -107,6 +109,7 @@ beforeAll(async () => {
     realtime,
     conversations,
     new WorkItemCheckpointsService(prisma, access, realtime),
+    new AgentProfilesService(prisma, access, {} as OutboxService),
   );
   attention = new AttentionService(
     prisma,

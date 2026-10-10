@@ -102,6 +102,8 @@ model User {
   attentionRaised             AttentionItem[]          @relation("AttentionRaisedBy")
   attentionSettled            AttentionItem[]          @relation("AttentionSettledBy")
   changesetsProposed          Changeset[]              @relation("ChangesetProposedBy")
+  agentProfilesCreated        AgentProfile[]           @relation("AgentProfileCreatedBy")
+  agentProfilesUpdated        AgentProfile[]           @relation("AgentProfileUpdatedBy")
   changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
 
   @@map("user")
@@ -597,6 +599,7 @@ model Workspace {
   workItems               WorkItem[]
   attentionItems          AttentionItem[]
   changesets              Changeset[]
+  agentProfiles           AgentProfile[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -1985,26 +1988,33 @@ model AiRun {
   /// No `@map`: every other column on this model keeps Prisma's default
   /// camelCase-to-camelCase mapping (see e.g. `workspaceId`), so this one does
   /// too -- verified against the generated migration SQL.
-  conversationId String?
-  conversation   AiConversation?  @relation(fields: [conversationId], references: [id], onDelete: SetNull)
-  reasoningLevel AiReasoningLevel @default(NONE)
+  conversationId       String?
+  conversation         AiConversation?      @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  reasoningLevel       AiReasoningLevel     @default(NONE)
   /// Number of tool round-trips this run performed.
-  toolIterations Int              @default(0)
+  toolIterations       Int                  @default(0)
   /// The write mode this run was held to, written when it starts (issue #141).
-  writeMode      AiWriteMode?
+  writeMode            AiWriteMode?
   /// The piece of delegated work this run is an attempt at (issue #138,
   /// ADR-066). `SetNull`: deleting the item leaves the run and its cost in
   /// the usage report.
-  workItemId     String?
-  workItem       WorkItem?        @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  workItemId           String?
+  workItem             WorkItem?            @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  /// The agent profile this run worked under (issue #143, ADR-071), written
+  /// when it starts. The snapshot beside it is what the profile said at that
+  /// moment, so a profile edited or deleted later does not rewrite history.
+  agentProfileId       String?
+  agentProfile         AgentProfile?        @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+  /// Shaped by `agentProfileSnapshotSchema`.
+  agentProfileSnapshot Json?
   /// What this run left for a person to decide (issue #139).
-  attention      AttentionItem[]
-  changesets     Changeset[]
+  attention            AttentionItem[]
+  changesets           Changeset[]
   /// Where the work stood while this run did it (issue #142).
-  checkpoints    WorkItemCheckpoint[]
+  checkpoints          WorkItemCheckpoint[]
   /// Tool calls this run made, where `toolIterations` counts the rounds they
   /// arrived in: one round can carry several calls.
-  toolCalls      Int              @default(0)
+  toolCalls            Int                  @default(0)
 
   /// What the model was offered, and what that weighed (issue #121).
   ///
@@ -3713,6 +3723,11 @@ model WorkItem {
   /// #141): only ever stricter than the workspace's `ai.writeMode`. Null
   /// inherits it.
   writeMode      AiWriteMode?
+  /// The agent profile its runs work under (issue #143, ADR-071). Null uses
+  /// the workspace's default profile when there is one, and no profile
+  /// otherwise. `SetNull`: deleting a profile leaves the work, unprofiled.
+  agentProfileId String?
+  agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
 
   /// The item this one is part of. Same workspace, no cycle -- both checked
   /// by the API, since neither can be a foreign key's job.
@@ -3737,6 +3752,7 @@ model WorkItem {
   @@index([assigneeId, closedAt])
   @@index([requesterId])
   @@index([parentId])
+  @@index([agentProfileId])
   @@map("work_item")
 }
 
@@ -3806,11 +3822,11 @@ model WorkItemCheckpoint {
   /// Who recorded it. For a system checkpoint the person the run acted for.
   authorKind WorkItemParticipantKind
   authorId   String?
-  author     User?                   @relation("WorkItemCheckpointAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  author     User?                     @relation("WorkItemCheckpointAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   agentLabel String?
   /// True when eXocortex wrote it at an interruption point, carrying the
   /// last recorded state forward; false when the worker of the task did.
-  system     Boolean                 @default(false)
+  system     Boolean                   @default(false)
 
   /// Where things stand, in words. Empty only for a system checkpoint of
   /// work nobody recorded a state for.
@@ -3831,7 +3847,7 @@ model WorkItemCheckpoint {
   interruptionCode    String?
 
   /// The budget as it stood: what the linked runs had cost, and the limit.
-  spentMicroUsd  Int  @default(0)
+  spentMicroUsd  Int     @default(0)
   budgetMicroUsd Int?
   /// The model and provider of the run, as far as there was one. A resume
   /// may use another; this is what makes the change visible.
@@ -4119,17 +4135,17 @@ model ChangesetChange {
   /// The block diff against the page as it was proposed on, computed once.
   diff             Json
 
-  status        ChangesetChangeStatus @default(PENDING)
-  decidedAt     DateTime?
+  status            ChangesetChangeStatus    @default(PENDING)
+  decidedAt         DateTime?
   /// Who decided, read from the credential like a proposer's kind.
-  decidedByKind WorkItemParticipantKind?
-  decidedById   String?
-  decidedBy     User?                 @relation("ChangesetChangeDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
-  decisionNote  String?
+  decidedByKind     WorkItemParticipantKind?
+  decidedById       String?
+  decidedBy         User?                    @relation("ChangesetChangeDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  decisionNote      String?
   /// Why it went stale or failed, as an error code.
-  errorCode     String?
+  errorCode         String?
   /// The snapshot taken before it was applied: restore it to undo.
-  snapshotId    String?
+  snapshotId        String?
   /// The page a CREATE made.
   createdDocumentId String?
 
@@ -4138,4 +4154,79 @@ model ChangesetChange {
   @@unique([changesetId, position])
   @@index([documentId])
   @@map("changeset_change")
+}
+
+// ---------------------------------------------------------------------------
+// Agent profiles (issue #143, ADR-071)
+// ---------------------------------------------------------------------------
+
+/// Whether a run under a profile may close its work itself.
+enum AgentApprovalPolicy {
+  /// The run may set its work to done.
+  NONE
+  /// The run hands its work in for review; only a person sets it to done.
+  REVIEW_BEFORE_DONE
+}
+
+/// A role the built-in AI can work in: what it is told, which model it
+/// prefers, which tools it may use, how it may write and what it may spend.
+///
+/// A profile only ever narrows. Every limit here is combined with the
+/// workspace's settings and the work item's own by taking the stricter, and
+/// the run still acts with the authority of the person it runs for, so a
+/// profile cannot grant anything that person, workspace or token lacks. It
+/// names a preferred model, never a provider: routing stays configuration
+/// (ADR-063), and a profile's routing keys are laid over it like a model's.
+model AgentProfile {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  name            String
+  description     String?
+  /// The role, in words: put before the conversation as a system message.
+  instructions    String?
+  /// Rule pages (`aiRule` pages of this workspace) whose text is added to the
+  /// role. Ids, not a relation: a page that is gone is skipped, never fatal.
+  ruleDocumentIds String[] @default([])
+
+  /// A preference, not a binding: a model that is no longer enabled is
+  /// skipped and the run uses the default.
+  modelSlug       String?
+  reasoningLevel  AiReasoningLevel?
+  /// Laid over the configured routing (ADR-063), shaped by
+  /// `providerRoutingOverrideSchema`.
+  providerRouting Json?
+
+  /// Tool domains the run may use, a list of `TOOL_DOMAINS` members. Null
+  /// means every domain.
+  toolDomains           Json?
+  writeMode             AiWriteMode         @default(PROPOSE)
+  approvalPolicy        AgentApprovalPolicy @default(NONE)
+  /// Millionths of a dollar, like every cost column.
+  budgetMicroUsdPerRun  Int?
+  budgetMicroUsdPerTask Int?
+  maxToolIterations     Int?
+  maxRunSeconds         Int?
+  /// Holds the run's service token to the work item's workspace.
+  confineToWorkspace    Boolean             @default(true)
+
+  /// The profile work without one of its own uses. At most one per
+  /// workspace, kept by a hand-written partial unique index.
+  isDefault Boolean @default(false)
+  /// Moves on every change, so a run's snapshot says which version it had.
+  revision  Int     @default(1)
+
+  createdById String?
+  createdBy   User?    @relation("AgentProfileCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById String?
+  updatedBy   User?    @relation("AgentProfileUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workItems WorkItem[]
+  runs      AiRun[]
+
+  @@unique([workspaceId, name])
+  @@map("agent_profile")
 }

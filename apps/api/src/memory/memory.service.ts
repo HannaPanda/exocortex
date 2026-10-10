@@ -19,6 +19,7 @@ import { matchEntityAliases } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { DocumentContentService } from '../documents/document-content.service';
@@ -461,7 +462,7 @@ export class MemoryService {
 
   private async readableWorkspaces(userId: string): Promise<{ id: string; name: string }[]> {
     const memberships = await this.prisma.workspaceMember.findMany({
-      where: { userId, workspace: { archivedAt: null } },
+      where: { userId, workspace: { archivedAt: null }, ...confinedMembershipWhere() },
       select: { workspace: { select: { id: true, name: true } } },
       orderBy: { createdAt: 'asc' },
     });

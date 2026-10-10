@@ -21,6 +21,7 @@ import {
   raiseAttentionItems,
 } from '@exocortex/database';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
@@ -516,6 +517,7 @@ export class AttentionService {
       where: {
         userId,
         ...(query.workspaceId === undefined ? {} : { workspaceId: query.workspaceId }),
+        ...confinedMembershipWhere(),
       },
       select: { workspaceId: true, role: true },
     });

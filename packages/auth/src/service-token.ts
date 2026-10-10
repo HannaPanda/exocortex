@@ -51,6 +51,13 @@ export interface ServiceTokenClaims {
    * check, and nothing a request says can loosen it.
    */
   writeMode?: 'read_only' | 'propose';
+  /**
+   * The one workspace the run may act in (issue #143), when its agent profile
+   * confines it. Signed for the same reason: `WorkspaceAccessService` answers
+   * every other workspace as if the account were not a member of it, and a
+   * request must not be able to name a different one.
+   */
+  workspaceId?: string;
 }
 
 interface ServiceTokenPayload extends ServiceTokenClaims {
@@ -77,6 +84,8 @@ export interface IssueServiceTokenOptions {
   runId?: string;
   /** See `ServiceTokenClaims.writeMode`. */
   writeMode?: 'read_only' | 'propose';
+  /** See `ServiceTokenClaims.workspaceId`. */
+  workspaceId?: string;
   now?: number;
 }
 
@@ -95,7 +104,8 @@ function isWellFormed(payload: ServiceTokenPayload): boolean {
     (payload.runId === undefined || typeof payload.runId === 'string') &&
     (payload.writeMode === undefined ||
       payload.writeMode === 'read_only' ||
-      payload.writeMode === 'propose')
+      payload.writeMode === 'propose') &&
+    (payload.workspaceId === undefined || typeof payload.workspaceId === 'string')
   );
 }
 
@@ -110,6 +120,7 @@ export function issueServiceToken(options: IssueServiceTokenOptions): IssuedServ
     expiresAt,
     ...(options.runId === undefined ? {} : { runId: options.runId }),
     ...(options.writeMode === undefined ? {} : { writeMode: options.writeMode }),
+    ...(options.workspaceId === undefined ? {} : { workspaceId: options.workspaceId }),
     nonce: randomBytes(9).toString('base64url'),
   };
   const encoded = base64UrlEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
@@ -192,6 +203,7 @@ export function verifyServiceToken(
       expiresAt: payload.expiresAt,
       ...(payload.runId === undefined ? {} : { runId: payload.runId }),
       ...(payload.writeMode === undefined ? {} : { writeMode: payload.writeMode }),
+      ...(payload.workspaceId === undefined ? {} : { workspaceId: payload.workspaceId }),
     },
   };
 }

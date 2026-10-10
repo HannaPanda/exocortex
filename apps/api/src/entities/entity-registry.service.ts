@@ -9,6 +9,7 @@ import {
 } from '@exocortex/contracts';
 import { type EntityRecord, loadEntityRegistry, type PrismaClient } from '@exocortex/database';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
@@ -86,7 +87,7 @@ export class EntityRegistryService {
   /** Workspace ids the user may read. The filter every mention list runs through. */
   async readableWorkspaceIds(userId: string): Promise<Set<string>> {
     const memberships = await this.prisma.workspaceMember.findMany({
-      where: { userId, workspace: { archivedAt: null } },
+      where: { userId, workspace: { archivedAt: null }, ...confinedMembershipWhere() },
       select: { workspaceId: true },
     });
     return new Set(memberships.map((membership) => membership.workspaceId));

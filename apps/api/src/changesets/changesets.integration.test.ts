@@ -9,6 +9,7 @@ import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
 import { type ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
@@ -196,7 +197,14 @@ beforeAll(async () => {
     },
   } as unknown as ConversationsService;
   const checkpoints = new WorkItemCheckpointsService(prisma, access, realtime);
-  const workItems = new WorkItemsService(prisma, access, realtime, conversations, checkpoints);
+  const workItems = new WorkItemsService(
+    prisma,
+    access,
+    realtime,
+    conversations,
+    checkpoints,
+    new AgentProfilesService(prisma, access, outbox),
+  );
   const questions = new WorkItemQuestionsService(prisma, workItems);
   const resume = new WorkItemResumeService(prisma, workItems, conversations);
 

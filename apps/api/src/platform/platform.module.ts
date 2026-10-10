@@ -9,7 +9,7 @@ import { createMailerFromEnv, type Mailer } from '@exocortex/mail';
 import { QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
-import { currentPageScopeRestriction } from '../common/correlation';
+import { currentConfinedWorkspace, currentPageScopeRestriction } from '../common/correlation';
 import { API_ENV, apiEnvProvider, LOGGER, loggerProvider } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 
@@ -149,7 +149,12 @@ export class PlatformLifecycle implements OnApplicationShutdown {
         // context (issue #83, ADR-044), so a page-scoped token narrows every
         // access decision in the process without a single service learning
         // that page scopes exist.
-        new WorkspaceAccessService(prisma, { current: currentPageScopeRestriction }),
+        // The same goes for the workspace a run's agent profile holds it to
+        // (issue #143).
+        new WorkspaceAccessService(prisma, {
+          current: currentPageScopeRestriction,
+          workspace: currentConfinedWorkspace,
+        }),
     },
     OutboxService,
     SettingsService,

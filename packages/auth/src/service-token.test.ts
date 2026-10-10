@@ -107,3 +107,30 @@ describe('the write mode claim (issue #141)', () => {
     expect(result.valid && result.claims.writeMode).toBe('propose');
   });
 });
+
+describe('the workspace claim (issue #143)', () => {
+  it('carries the confining workspace through signing and verification', () => {
+    const secret = 'x'.repeat(40);
+    const issued = issueServiceToken({
+      secret,
+      userId: 'user-1',
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+      workspaceId: 'ws-1',
+    });
+    const result = verifyServiceToken({ secret, token: issued.token, expectedPurpose: 'ai-tools' });
+    expect(result.valid && result.claims.workspaceId).toBe('ws-1');
+  });
+
+  it('leaves an unconfined token without one', () => {
+    const secret = 'x'.repeat(40);
+    const issued = issueServiceToken({
+      secret,
+      userId: 'user-1',
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+    });
+    const result = verifyServiceToken({ secret, token: issued.token, expectedPurpose: 'ai-tools' });
+    expect(result.valid && 'workspaceId' in result.claims).toBe(false);
+  });
+});

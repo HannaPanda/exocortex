@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type ToolWriteClass, type UntrustedOrigin } from '@exocortex/contracts';
+import { type ToolDomain, type ToolWriteClass, type UntrustedOrigin } from '@exocortex/contracts';
 
 import { type ExocortexApiClient } from './client.js';
 
@@ -21,42 +21,17 @@ export type ToolSurface = 'mcp' | 'ai' | 'research' | 'memory';
 /**
  * The parts of the product the catalogue is divided into (issue #121).
  *
- * The vocabulary lives here, beside the descriptor that carries it, so a new
- * tool cannot be written without saying where it belongs: `domain` is
- * required, and the compiler is the coverage gate. What each one means, which
- * words switch it on and which are always offered is in `domains.ts`.
+ * The vocabulary lives in the contracts since issue #143, because an agent
+ * profile names the domains its runs may use and the API validates that list
+ * without depending on the catalogue. A new tool still cannot be written
+ * without saying where it belongs: `domain` is required, and the compiler is
+ * the coverage gate. What each one means, which words switch it on and which
+ * are always offered is in `domains.ts`.
  *
- * It is a description of the catalogue, never a permission. See the note at
- * the top of `domains.ts`.
+ * For the keyword selection it is a description, never a permission (see
+ * `domains.ts`); a profile's list is the one place it becomes a limit.
  */
-export const TOOL_DOMAINS = [
-  'core',
-  'pages',
-  'history',
-  'lifecycle',
-  'appearance',
-  'inbox',
-  'comments',
-  'databases',
-  'attachments',
-  'templates',
-  'savedQueries',
-  'workItems',
-  'attention',
-  'changesets',
-  'shares',
-  'entities',
-  'memory',
-  'chats',
-  'automations',
-  'notifications',
-  'projects',
-  'render',
-  'web',
-  'admin',
-] as const;
-
-export type ToolDomain = (typeof TOOL_DOMAINS)[number];
+export { TOOL_DOMAINS, type ToolDomain } from '@exocortex/contracts';
 
 export interface ToolDefinition<TInput> {
   /**

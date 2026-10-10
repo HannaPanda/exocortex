@@ -56,6 +56,12 @@ export interface PageScopeRestriction {
 /** Reads the restriction of the credential making the current request, if any. */
 export interface PageScopeRestrictionProvider {
   current(): PageScopeRestriction | null;
+  /**
+   * The one workspace the credential may act in, when it is confined to one
+   * (issue #143): a run whose agent profile holds it to its work item's
+   * workspace. Absent or null means no such confinement.
+   */
+  workspace?(): string | null;
 }
 
 /**

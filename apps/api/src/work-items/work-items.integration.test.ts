@@ -4,9 +4,13 @@ import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { type PostConversationMessageResponse } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import { createLogger } from '@exocortex/logger';
 
+import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
 import { type ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
+import { runWithRequestContext } from '../common/correlation';
+import { OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { type WorkItemActor } from './work-item-actor';
@@ -29,6 +33,9 @@ const correlationId = 'test-correlation';
 let prisma: PrismaClient;
 let service: WorkItemsService;
 let checkpoints: WorkItemCheckpointsService;
+let profiles: AgentProfilesService;
+const lastConversationRequest: { value: Record<string, unknown> | null } = { value: null };
+const logger = createLogger({ name: 'api-test', level: 'silent' });
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -50,6 +57,7 @@ beforeAll(async () => {
 
   const conversations = {
     create: async (input: { userId: string; request: { workspaceId: string; title?: string } }) => {
+      lastConversationRequest.value = input.request;
       const conversation = await prisma.aiConversation.create({
         data: {
           workspaceId: input.request.workspaceId,
@@ -90,7 +98,8 @@ beforeAll(async () => {
   } as unknown as ConversationsService;
 
   checkpoints = new WorkItemCheckpointsService(prisma, access, realtime);
-  service = new WorkItemsService(prisma, access, realtime, conversations, checkpoints);
+  profiles = new AgentProfilesService(prisma, access, new OutboxService(prisma, logger));
+  service = new WorkItemsService(prisma, access, realtime, conversations, checkpoints, profiles);
 
   const suffix = Date.now().toString(36);
   const owner = await prisma.user.create({
@@ -523,5 +532,234 @@ describe('work checkpoints (issue #142)', () => {
     await expect(
       checkpoints.list({ workItemId: item.id, userId: strangerId, query: { limit: 20 } }),
     ).rejects.toBeInstanceOf(AppError);
+  });
+});
+
+describe('agent profiles (issue #143)', () => {
+  it('keeps names unique, one default, and every change in the audit history', async () => {
+    const first = await profiles.create({
+      workspaceId,
+      userId: ownerId,
+      request: { name: 'Rechercheur', writeMode: 'read_only', isDefault: true },
+      correlationId,
+    });
+    expect(first.profile).toMatchObject({ writeMode: 'read_only', isDefault: true, revision: 1 });
+
+    await expect(
+      profiles.create({
+        workspaceId,
+        userId: ownerId,
+        request: { name: 'Rechercheur' },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'agent_profile_name_taken' });
+
+    const second = await profiles.create({
+      workspaceId,
+      userId: ownerId,
+      request: { name: 'Archivar', isDefault: true, toolDomains: ['pages', 'pages'] },
+      correlationId,
+    });
+    // A new profile starts careful, and taking the default moves it.
+    expect(second.profile).toMatchObject({ writeMode: 'propose', toolDomains: ['pages'] });
+    const list = await profiles.list({ workspaceId, userId: ownerId });
+    expect(list.profiles.filter((profile) => profile.isDefault).map((p) => p.name)).toEqual([
+      'Archivar',
+    ]);
+
+    const updated = await profiles.update({
+      profileId: first.profile.id,
+      userId: ownerId,
+      request: { budgetMicroUsdPerRun: 500 },
+      correlationId,
+    });
+    expect(updated.profile.revision).toBe(2);
+    expect(updated.history.map((entry) => entry.action)).toEqual(['updated', 'created']);
+    expect(updated.history[0]?.fields).toEqual(['budgetMicroUsdPerRun']);
+
+    const copy = await profiles.duplicate({
+      profileId: first.profile.id,
+      userId: ownerId,
+      request: { name: 'Rechercheur 2' },
+      correlationId,
+    });
+    expect(copy.profile).toMatchObject({
+      writeMode: 'read_only',
+      budgetMicroUsdPerRun: 500,
+      isDefault: false,
+    });
+  });
+
+  it('lets only an admin write, and never a run of the built-in AI', async () => {
+    await expect(
+      profiles.create({ workspaceId, userId: guestId, request: { name: 'Gast' }, correlationId }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+    await expect(
+      runWithRequestContext({ correlationId, aiRunId: 'some-run' }, () =>
+        profiles.create({ workspaceId, userId: ownerId, request: { name: 'KI' }, correlationId }),
+      ),
+    ).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(
+      profiles.create({
+        workspaceId,
+        userId: ownerId,
+        request: { name: 'Fremd', ruleDocumentIds: [foreignPageId] },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'agent_profile_invalid' });
+  });
+
+  it('lets a person choose a profile, a child inherit it and the default fill in', async () => {
+    const profile = await profiles.create({
+      workspaceId,
+      userId: ownerId,
+      request: { name: 'Entwickler', reasoningLevel: 'high', budgetMicroUsdPerTask: 1_000 },
+      correlationId,
+    });
+
+    await expect(
+      service.create({
+        workspaceId,
+        actor: human(ownerId),
+        request: { title: 'Ohne Recht', goal: 'x', agentProfileId: profile.profile.id },
+        correlationId,
+        mayChooseProfile: false,
+      }),
+    ).rejects.toMatchObject({ code: 'forbidden' });
+
+    const parent = await service.create({
+      workspaceId,
+      actor: human(ownerId),
+      request: { title: 'Mit Profil', goal: 'x', agentProfileId: profile.profile.id },
+      correlationId,
+      mayChooseProfile: true,
+    });
+    expect(parent.workItem.agentProfile).toEqual({
+      id: profile.profile.id,
+      name: 'Entwickler',
+      inherited: false,
+    });
+    // The stricter of no budget and the profile's.
+    expect(parent.workItem.effectiveBudgetMicroUsd).toBe(1_000);
+
+    const child = await createItem('Teil', { parentId: parent.workItem.id });
+    expect(child.agentProfile?.id).toBe(profile.profile.id);
+
+    const plain = await createItem('Ohne Angabe');
+    expect(plain.agentProfile).toMatchObject({ name: 'Archivar', inherited: true });
+
+    await expect(
+      service.update({
+        workItemId: plain.id,
+        actor: human(ownerId),
+        request: { agentProfileId: profile.profile.id },
+        correlationId,
+        mayLoosenWriteMode: false,
+      }),
+    ).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(
+      service.update({
+        workItemId: plain.id,
+        actor: human(ownerId),
+        request: { agentProfileId: 'nonexistentprofile0000' },
+        correlationId,
+        mayLoosenWriteMode: true,
+      }),
+    ).rejects.toMatchObject({ code: 'not_found' });
+
+    nextRunCost.value = 1_200;
+    await service.startRun({
+      workItemId: parent.workItem.id,
+      actor: human(ownerId),
+      request: {},
+      correlationId,
+    });
+    expect(lastConversationRequest.value).toMatchObject({ reasoningLevel: 'high' });
+    await expect(
+      service.startRun({
+        workItemId: parent.workItem.id,
+        actor: human(ownerId),
+        request: {},
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'work_item_budget_exhausted' });
+  });
+
+  it('refuses done from a run whose profile leaves closing to a person', async () => {
+    const item = await createItem('Abnahme');
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: ownerId,
+        provider: 'mock',
+        model: 'mock/model',
+        messages: [],
+        workItemId: item.id,
+        status: 'RUNNING',
+        agentProfileSnapshot: {
+          id: 'profile-under-test',
+          name: 'Prüfling',
+          revision: 1,
+          source: 'work_item',
+          writeMode: 'direct',
+          approvalPolicy: 'review_before_done',
+          toolDomains: null,
+          modelSlug: null,
+          reasoningLevel: null,
+          budgetMicroUsdPerRun: null,
+          budgetMicroUsdPerTask: null,
+          maxToolIterations: null,
+          maxRunSeconds: null,
+          confineToWorkspace: true,
+        },
+      },
+    });
+    const asRun = <T>(operation: () => Promise<T>) =>
+      runWithRequestContext({ correlationId, aiRunId: run.id }, operation);
+
+    await expect(
+      asRun(() =>
+        service.update({
+          workItemId: item.id,
+          actor: human(ownerId),
+          request: { status: 'done' },
+          correlationId,
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'work_item_review_required' });
+    const review = await asRun(() =>
+      service.update({
+        workItemId: item.id,
+        actor: human(ownerId),
+        request: { status: 'review' },
+        correlationId,
+      }),
+    );
+    expect(review.workItem.status).toBe('review');
+    // The person closes it.
+    const done = await service.update({
+      workItemId: item.id,
+      actor: human(ownerId),
+      request: { status: 'done' },
+      correlationId,
+    });
+    expect(done.workItem.status).toBe('done');
+  });
+
+  it('holds a confined run to its own workspace, through the access service', async () => {
+    const confined = new WorkspaceAccessService(prisma, {
+      current: () => null,
+      workspace: () => workspaceId,
+    });
+    expect(await confined.findRole(workspaceId, ownerId)).toBe('OWNER');
+    expect(await confined.findRole(otherWorkspaceId, ownerId)).toBeNull();
+    await expect(confined.requireRole(otherWorkspaceId, ownerId)).rejects.toMatchObject({
+      code: 'token_scope_exceeded',
+    });
+    expect(await confined.findDocumentContext(foreignPageId, ownerId)).toBeNull();
+    expect(await confined.findDocumentContext(pageId, ownerId)).not.toBeNull();
+    await expect(confined.requireGlobalAdmin(ownerId)).rejects.toMatchObject({
+      code: 'token_scope_exceeded',
+    });
   });
 });

@@ -153,7 +153,8 @@ export class WorkItemResumeService {
   }): Promise<string> {
     const { work } = input;
     const detail = await this.workItems.get({ workItemId: work.id, userId: input.ownerId });
-    const { budgetMicroUsd, spentMicroUsd } = detail.workItem;
+    // The stricter of the item's budget and its profile's (issue #143).
+    const { effectiveBudgetMicroUsd: budgetMicroUsd, spentMicroUsd } = detail.workItem;
     if (budgetMicroUsd !== null && spentMicroUsd >= budgetMicroUsd) {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }

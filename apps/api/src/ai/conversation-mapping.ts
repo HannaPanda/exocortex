@@ -11,6 +11,7 @@ import {
   type PrismaClient,
 } from '@exocortex/database';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
 
 import {
@@ -200,7 +201,7 @@ export async function loadOwnedConversation(
 /** Workspace ids the user is a member of, newest membership irrelevant: order comes later. */
 export async function memberWorkspaceIds(prisma: PrismaClient, userId: string): Promise<string[]> {
   const memberships = await prisma.workspaceMember.findMany({
-    where: { userId },
+    where: { userId, ...confinedMembershipWhere() },
     select: { workspaceId: true },
   });
   return memberships.map((membership) => membership.workspaceId);

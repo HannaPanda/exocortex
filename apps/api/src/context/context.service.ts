@@ -16,6 +16,7 @@ import {
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
+import { confinedMembershipWhere } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 import { PASSAGE_SEARCH, SearchService } from '../search/search.service';
@@ -150,7 +151,11 @@ export class ContextService {
       return unique.map((id) => byId.get(id) ?? { id, name: '', isMemory: false });
     }
     const memberships = await this.prisma.workspaceMember.findMany({
-      where: { userId, workspace: { archivedAt: null, isMemory: false } },
+      where: {
+        userId,
+        workspace: { archivedAt: null, isMemory: false },
+        ...confinedMembershipWhere(),
+      },
       select: { workspace: { select: { id: true, name: true, isMemory: true } } },
       orderBy: { createdAt: 'asc' },
     });

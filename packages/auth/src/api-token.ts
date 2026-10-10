@@ -108,6 +108,12 @@ export function requestClassFor(method: string, path: string): RequestClass {
   if (path.includes('/automations') && !SAFE_METHODS.has(verb)) {
     return 'admin';
   }
+  // An agent profile is the same kind of standing decision (issue #143,
+  // ADR-071): it says what every run under it may use, write and spend, so a
+  // token that may merely write pages must not be able to loosen it.
+  if (path.includes('/agent-profiles') && !SAFE_METHODS.has(verb)) {
+    return 'admin';
+  }
   if (SAFE_METHODS.has(verb)) return 'read';
   if (matches(REPORT_ROUTES, verb, path)) return 'report';
   if (matches(PROPOSE_ROUTES, verb, path)) return 'propose';

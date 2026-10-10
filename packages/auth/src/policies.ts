@@ -272,6 +272,27 @@ export function canManageWorkItems(role: WorkspaceRole | null): PolicyDecision {
 }
 
 /**
+ * Writing an agent profile (issue #143, ADR-071).
+ *
+ * ADMIN. A profile is workspace furniture that decides, for every piece of
+ * work that names it, which tools the assistant may use, how it may write and
+ * what it may spend. It can only narrow what the person running it may do,
+ * but loosening a profile loosens every run under it at once, which is not a
+ * decision one member makes for everybody else's work.
+ *
+ * Reading is `canReadWorkspace`: whoever hands work over should see the rules
+ * it will run under.
+ */
+export function canManageAgentProfiles(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Managing agent profiles requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
  * Starting a build, or cancelling one (issue #44, ADR-026).
  *
  * MEMBER: it costs CPU on this host and nothing else, and the result is a file

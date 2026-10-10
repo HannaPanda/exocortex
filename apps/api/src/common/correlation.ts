@@ -39,6 +39,12 @@ export interface RequestContext {
    * is the only writer, and it writes `undefined` for every other credential.
    */
   aiRunId?: string;
+  /**
+   * The one workspace this request may act in (issue #143), read from the
+   * signed claim of a run's service token when its agent profile confines it.
+   * `SessionGuard` is the only writer; `WorkspaceAccessService` the reader.
+   */
+  confinedWorkspaceId?: string;
 }
 
 export interface AutomationOriginContext {
@@ -130,6 +136,28 @@ export function setPageScopeRestriction(restriction: PageScopeRestriction | null
 export function setRequestAiRun(runId: string | undefined): void {
   const context = storage.getStore();
   if (context !== undefined) context.aiRunId = runId;
+}
+
+/** Records the workspace a run's token confines it to, or forgets it (issue #143). */
+export function setConfinedWorkspace(workspaceId: string | undefined): void {
+  const context = storage.getStore();
+  if (context !== undefined) context.confinedWorkspaceId = workspaceId;
+}
+
+/** The workspace the current request is confined to, or null when it is not. */
+export function currentConfinedWorkspace(): string | null {
+  return storage.getStore()?.confinedWorkspaceId ?? null;
+}
+
+/**
+ * A `workspaceMember` filter that keeps a confined run inside its workspace
+ * (issue #143): empty for everybody else. For the listings that read
+ * memberships across workspaces directly, because they never ask
+ * `WorkspaceAccessService` about one workspace at a time.
+ */
+export function confinedMembershipWhere(): { workspaceId?: string } {
+  const workspaceId = currentConfinedWorkspace();
+  return workspaceId === null ? {} : { workspaceId };
 }
 
 /** The AI run making the current request, or `undefined` when none is. */

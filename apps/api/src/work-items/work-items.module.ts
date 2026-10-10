@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AgentProfilesModule } from '../agent-profiles/agent-profiles.module';
 import { AiModule } from '../ai/ai.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
@@ -14,10 +15,11 @@ import { WorkItemsService } from './work-items.service';
  *
  * `AiModule` for the conversation a run is started in: an attempt at a work
  * item is an ordinary chat turn with its run tagged, not a second way into
- * the queue.
+ * the queue. `AgentProfilesModule` to check the profile an item names (issue
+ * #143).
  */
 @Module({
-  imports: [AiModule, RealtimeModule],
+  imports: [AgentProfilesModule, AiModule, RealtimeModule],
   controllers: [WorkItemsController],
   providers: [
     WorkItemsService,

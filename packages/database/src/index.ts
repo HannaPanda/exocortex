@@ -1,3 +1,4 @@
+export * from './agent-profiles';
 export * from './ai-model-routes';
 export * from './attention';
 export * from './chunking';

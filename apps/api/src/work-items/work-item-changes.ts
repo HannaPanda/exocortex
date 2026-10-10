@@ -58,6 +58,7 @@ const PLAIN_FIELDS = [
   'contextDocumentIds',
   'budgetMicroUsd',
   'writeMode',
+  'agentProfileId',
   'dueAt',
   'parentId',
 ] as const satisfies readonly (keyof UpdateWorkItemRequest)[];
@@ -174,6 +175,7 @@ function planPlainFields(request: UpdateWorkItemRequest, plan: WorkItemUpdatePla
   }
   if (request.budgetMicroUsd !== undefined) plan.data.budgetMicroUsd = request.budgetMicroUsd;
   if (request.writeMode !== undefined) plan.data.writeMode = writeModeToPrisma(request.writeMode);
+  if (request.agentProfileId !== undefined) plan.data.agentProfileId = request.agentProfileId;
   if (request.dueAt !== undefined) {
     plan.data.dueAt = request.dueAt === null ? null : new Date(request.dueAt);
   }
