@@ -907,6 +907,17 @@
     },
     "where": "Barre latérale sous « Tâches », ou Strg + K et « Ouvrir les tâches » ou « Nouvelle tâche »."
   },
+  "teilauftraege": {
+    "title": "Sous-tâches : diviser le travail et le déléguer à l’IA, à des agents ou à des personnes",
+    "summary": "Une grande tâche peut être divisée en plusieurs parties qui constituent chacune leur propre tâche : avec leur propre exécution, budget, profil et résultat. Seul le résultat de chaque partie revient formulé en mots, sans tout le journal, et une IA en attente reprend le travail dès que toutes les parties sont revenues.",
+    "details": {
+      "p1": "Tu peux déléguer une partie à l’IA intégrée, à un compte d’agent ou à une personne. Si l’IA la reçoit, son exécution peut démarrer immédiatement. Les parties qui ne font que lire ou proposer des modifications s’exécutent en parallèle ; celles qui écrivent directement se déroulent l’une après l’autre.",
+      "p2": "Le budget d’une tâche s’applique à tout ce qui a été délégué en dessous d’elle. Une partie ne reçoit au maximum que ce qui reste, et ne peut jamais écrire plus librement que la tâche elle-même. Une IA peut attribuer à une partie un rôle qui autorise moins de droits que le sien, mais jamais un qui en autorise davantage.",
+      "p3": "Une partie est revenue dès qu’elle est prête pour validation ou terminée. Si l’IA attend ses parties, son exécution s’interrompt ; dès qu’elles sont toutes revenues, elle reprend dans le même chat avec leurs résultats. Une tâche n’est achevée que lorsqu’aucune partie n’est encore en cours.",
+      "p4": "Les agents utilisent exo_work_item_delegate, exo_work_item_child_results et exo_work_item_await_children."
+    },
+    "where": "Sur la page d’une tâche sous « Sous-tâches » avec « Déléguer une sous-tâche »."
+  },
   "aenderungsvorschlaege": {
     "title": "Suggestions de modifications : les agents proposent, tu décides",
     "summary": "Au lieu d’écrire directement sur les pages, un agent ou l’IA intégrée peut suggérer des modifications. Tu visualises chaque modification sous forme de comparaison avec la page, tu les acceptes une par une ou toutes d’un coup, et tu refuses le reste en indiquant un motif.",

@@ -907,6 +907,17 @@
     },
     "where": "Seitenleiste unter „Aufträge“, oder Strg + K und „Aufträge öffnen“ beziehungsweise „Neuer Auftrag“."
   },
+  "teilauftraege": {
+    "title": "Teilaufträge: Arbeit aufteilen und an KI, Agenten oder Menschen abgeben",
+    "summary": "Ein großer Auftrag lässt sich in Teile zerlegen, die jeweils ein eigener Auftrag sind: mit eigenem Lauf, Budget, Profil und Ergebnis. Zurück kommt das Ergebnis jedes Teils in Worten, nicht das ganze Protokoll, und eine wartende KI arbeitet weiter, sobald alle Teile zurück sind.",
+    "details": {
+      "p1": "Einen Teil abgeben kannst du an die eingebaute KI, an ein Agentenkonto oder an eine Person. Bekommt ihn die KI, startet ihr Lauf auf Wunsch sofort. Teile, die nur lesen oder Änderungen vorschlagen, laufen gleichzeitig; Teile, die direkt schreiben, nacheinander.",
+      "p2": "Das Budget eines Auftrags gilt für alles, was darunter abgegeben wurde. Ein Teil bekommt höchstens, was noch übrig ist, und darf nie freier schreiben als der Auftrag selbst. Eine KI kann einem Teil eine Rolle geben, die weniger erlaubt als ihre eigene, aber keine, die mehr erlaubt.",
+      "p3": "Ein Teil ist zurück, sobald er zur Abnahme steht oder abgeschlossen ist. Wartet die KI auf ihre Teile, endet ihr Lauf; sind alle zurück, geht er im selben Chat mit deren Ergebnissen weiter. Erledigt ist ein Auftrag erst, wenn kein Teil mehr offen ist.",
+      "p4": "Agenten arbeiten mit exo_work_item_delegate, exo_work_item_child_results und exo_work_item_await_children."
+    },
+    "where": "Auf der Seite eines Auftrags unter „Teilaufträge“ mit „Teil abgeben“."
+  },
   "aenderungsvorschlaege": {
     "title": "Änderungsvorschläge: Agenten schlagen vor, du entscheidest",
     "summary": "Statt Seiten selbst zu schreiben, kann ein Agent oder die eingebaute KI Änderungen vorschlagen. Du siehst jede Änderung als Vergleich mit der Seite, übernimmst sie einzeln oder alle auf einmal und lehnst den Rest mit einer Begründung ab.",

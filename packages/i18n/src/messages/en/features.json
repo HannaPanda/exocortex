@@ -907,6 +907,17 @@
     },
     "where": "Sidebar under “Work items”, or Ctrl + K and “Open work items” or “New work item”."
   },
+  "teilauftraege": {
+    "title": "Subtasks: Divide work and delegate it to AI, agents, or humans",
+    "summary": "A large task can be broken down into parts that are each their own task: with their own run, budget, profile, and result. What comes back is the result of each part in words, not the entire log, and a waiting AI continues working as soon as all parts are back.",
+    "details": {
+      "p1": "You can delegate a part to the built-in AI, to an agent account, or to a person. If the AI gets it, its run starts immediately if desired. Parts that only read or suggest changes run concurrently; parts that write directly run one after another.",
+      "p2": "A task’s budget applies to everything delegated under it. A part receives at most what is left over, and may never write more freely than the task itself. An AI can assign a part a role that permits less than its own, but never one that permits more.",
+      "p3": "A part is back as soon as it is up for review or completed. If the AI is waiting for its parts, its run ends; once all are back, it resumes in the same chat with their results. A task is only done when no parts remain open.",
+      "p4": "Agents work with exo_work_item_delegate, exo_work_item_child_results, and exo_work_item_await_children."
+    },
+    "where": "On a task’s page under “Subtasks” via “Delegate part”."
+  },
   "aenderungsvorschlaege": {
     "title": "Change proposals: agents propose, you decide",
     "summary": "Instead of editing pages directly, an agent or the built-in AI can propose changes. You see every change as a diff against the page, apply them one by one or all at once, and reject the rest with a reason.",

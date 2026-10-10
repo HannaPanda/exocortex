@@ -907,6 +907,17 @@
     },
     "where": "Barra lateral em „Tarefas“, ou Strg + K e „Abrir tarefas“ ou „Nova tarefa“."
   },
+  "teilauftraege": {
+    "title": "Subtarefas: dividir o trabalho e delegar para IA, agentes ou pessoas",
+    "summary": "Uma tarefa grande pode ser dividida em partes, cada uma sendo uma tarefa própria: com execução, orçamento, perfil e resultado próprios. O resultado de cada parte retorna em palavras, sem o registro completo, e uma IA em espera continua trabalhando assim que todas as partes retornarem.",
+    "details": {
+      "p1": "Você pode delegar uma parte para a IA integrada, para uma conta de agente ou para uma pessoa. Se a IA a receber, a execução dela pode começar imediatamente, se desejado. Partes que apenas leem ou sugerem alterações são executadas simultaneamente; partes que gravam diretamente rodam uma após a outra.",
+      "p2": "O orçamento de uma tarefa vale para tudo o que for delegado abaixo dela. Uma parte recebe, no máximo, o que ainda resta e nunca pode gravar com mais liberdade do que a própria tarefa. Uma IA pode atribuir a uma parte uma função que permita menos do que a sua própria, mas nunca uma que permita mais.",
+      "p3": "Uma parte retorna assim que estiver pronta para aprovação ou for concluída. Se a IA estiver aguardando suas partes, sua execução termina; quando todas retornarem, ela continua no mesmo chat com os resultados delas. Uma tarefa só é considerada concluída quando não houver mais nenhuma parte pendente.",
+      "p4": "Os agentes trabalham com exo_work_item_delegate, exo_work_item_child_results e exo_work_item_await_children."
+    },
+    "where": "Na página de uma tarefa, em „Subtarefas“, usando „Delegar parte“."
+  },
   "aenderungsvorschlaege": {
     "title": "Sugestões de alteração: agentes sugerem, você decide",
     "summary": "Em vez de escrever nas páginas por conta própria, um agente ou a IA integrada pode sugerir alterações. Você visualiza cada alteração como uma comparação com a página, aceita uma a uma ou todas de uma vez e rejeita o restante com uma justificativa.",

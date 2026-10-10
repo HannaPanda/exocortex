@@ -907,6 +907,17 @@
     },
     "where": "Barra lateral en «Tareas», o Ctrl + K y «Abrir tareas» o «Nueva tarea»."
   },
+  "teilauftraege": {
+    "title": "Subtareas: dividir el trabajo y delegarlo a la IA, agentes o personas",
+    "summary": "Una tarea grande se puede dividir en partes, siendo cada una de ellas una tarea propia: con su propia ejecución, presupuesto, perfil y resultado. De vuelta se recibe el resultado de cada parte en palabras, no todo el registro, y una IA en espera continúa trabajando en cuanto todas las partes hayan vuelto.",
+    "details": {
+      "p1": "Puedes delegar una parte a la IA integrada, a una cuenta de agente o a una persona. Si la recibe la IA, su ejecución puede iniciarse de inmediato si lo deseas. Las partes que solo leen o proponen cambios se ejecutan en paralelo; las que escriben directamente, una tras otra.",
+      "p2": "El presupuesto de una tarea se aplica a todo lo delegado bajo ella. Una parte recibe como máximo lo que aún quede disponible y nunca puede tener más permisos de escritura que la propia tarea. Una IA puede asignar a una parte un rol con menos permisos que el suyo, pero nunca uno con más.",
+      "p3": "Una parte está de vuelta en cuanto está lista para su aprobación o completada. Si la IA espera por sus partes, su ejecución termina; cuando todas hayan vuelto, continúa en el mismo chat con sus resultados. Una tarea solo se considera terminada cuando ya no queda ninguna parte pendiente.",
+      "p4": "Los agentes trabajan con exo_work_item_delegate, exo_work_item_child_results y exo_work_item_await_children."
+    },
+    "where": "En la página de una tarea bajo «Subtareas» con «Delegar parte»."
+  },
   "aenderungsvorschlaege": {
     "title": "Propuestas de cambio: los agentes proponen, tú decides",
     "summary": "En lugar de escribir páginas directamente, un agente o la IA integrada pueden proponer cambios. Ves cada cambio comparado con la página, los aceptas de uno en uno o todos a la vez, y rechazas el resto indicando el motivo.",

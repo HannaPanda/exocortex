@@ -907,6 +907,17 @@
     },
     "where": "Pasek boczny w sekcji „Zadania” albo Strg + K i „Otwórz zadania” bądź „Nowe zadanie”."
   },
+  "teilauftraege": {
+    "title": "Podzadania: dzielenie pracy i delegowanie jej do AI, agentów lub ludzi",
+    "summary": "Duże zadanie można podzielić na części, z których każda jest osobnym zadaniem: z własnym przebiegiem, budżetem, profilem i wynikiem. W odpowiedzi zwracany jest wynik każdej części w formie słownej, a nie cały protokół, a oczekująca AI kontynuuje pracę, gdy tylko wszystkie części zostaną ukończone.",
+    "details": {
+      "p1": "Część możesz przekazać wbudowanej AI, na konto agenta lub osobie. Jeśli otrzyma ją AI, jej przebieg może na życzenie wystartować natychmiast. Części, które tylko czytają lub proponują zmiany, działają równolegle; części, które zapisują bezpośrednio – sekwencyjnie.",
+      "p2": "Budżet zadania obejmuje wszystko, co zostało z niego wydelegowane. Dana część otrzymuje maksymalnie tyle, ile jeszcze zostało, i nigdy nie może mieć większych uprawnień do zapisu niż samo zadanie. AI może nadać części rolę, która pozwala na mniej niż jej własna, ale nigdy na więcej.",
+      "p3": "Część jest gotowa, gdy tylko oczekuje na odbiór lub zostanie ukończona. Jeśli AI czeka na swoje części, jej przebieg się kończy; gdy wszystkie zostaną zwrócone, jest wznawiany w tym samym czacie z ich wynikami. Zadanie jest uznane za zakończone dopiero wtedy, gdy żadna część nie jest już otwarta.",
+      "p4": "Agenci korzystają z narzędzi exo_work_item_delegate, exo_work_item_child_results oraz exo_work_item_await_children."
+    },
+    "where": "Na stronie zadania w sekcji „Podzadania” za pomocą „Deleguj podzadanie”."
+  },
   "aenderungsvorschlaege": {
     "title": "Propozycje zmian: agenci proponują, ty decydujesz",
     "summary": "Zamiast samodzielnie edytować strony, agent lub wbudowana sztuczna inteligencja może proponować zmiany. Widzisz każdą zmianę jako porównanie ze stroną, akceptujesz je pojedynczo lub wszystkie naraz, a resztę odrzucasz z uzasadnieniem.",

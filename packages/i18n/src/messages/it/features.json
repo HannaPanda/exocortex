@@ -907,6 +907,17 @@
     },
     "where": "Barra laterale sotto «Incarichi», oppure Ctrl + K e «Apri incarichi» o «Nuovo incarico»."
   },
+  "teilauftraege": {
+    "title": "Sotto-incarichi: suddividere il lavoro e delegarlo a IA, agenti o persone",
+    "summary": "Un incarico grande può essere suddiviso in parti, ciascuna delle quali è un incarico a sé stante: con una propria esecuzione, budget, profilo e risultato. Come risposta arriva il risultato di ogni parte espresso a parole, non l’intero registro, e un’IA in attesa riprende a lavorare non appena tutte le parti sono rientrate.",
+    "details": {
+      "p1": "Puoi delegare una parte all’IA integrata, a un account agente o a una persona. Se la riceve l’IA, la sua esecuzione può avviarsi subito, se lo desideri. Le parti che leggono soltanto o propongono modifiche vengono eseguite in parallelo; le parti che scrivono direttamente, una dopo l’altra.",
+      "p2": "Il budget di un incarico vale per tutto ciò che è stato delegato al suo interno. Una parte riceve al massimo ciò che è ancora disponibile e non può mai scrivere con permessi più ampi rispetto all’incarico stesso. Un’IA può assegnare a una parte un ruolo con meno permessi del proprio, ma mai uno con più permessi.",
+      "p3": "Una parte è rientrata non appena è pronta per l’approvazione o viene completata. Se l’IA attende le sue parti, la sua esecuzione si conclude; una volta rientrate tutte, prosegue nella stessa chat con i relativi risultati. Un incarico è completato solo quando non vi sono più parti aperte.",
+      "p4": "Gli agenti lavorano con exo_work_item_delegate, exo_work_item_child_results e exo_work_item_await_children."
+    },
+    "where": "Sulla pagina di un incarico sotto „Sotto-incarichi“ con „Delega parte“."
+  },
   "aenderungsvorschlaege": {
     "title": "Proposte di modifica: gli agenti propongono, tu decidi",
     "summary": "Invece di modificare direttamente le pagine, un agente o l’IA integrata può proporre modifiche. Vedi ogni modifica a confronto con la pagina, la accetti singolarmente o tutte insieme e rifiuti il resto con una motivazione.",

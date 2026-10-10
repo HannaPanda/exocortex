@@ -907,6 +907,17 @@
     },
     "where": "Zijbalk onder „Opdrachten”, of Ctrl + K en „Opdrachten openen” respectievelijk „Nieuwe opdracht”."
   },
+  "teilauftraege": {
+    "title": "Deeltaken: werk opsplitsen en delegeren aan AI, agents of mensen",
+    "summary": "Een grote taak kan worden opgedeeld in delen die elk een eigen taak vormen: met een eigen run, budget, profiel en resultaat. Wat terugkomt is het resultaat van elk deel in woorden, niet het hele logboek, en een wachtende AI gaat verder zodra alle delen terug zijn.",
+    "details": {
+      "p1": "Je kunt een deel delegeren aan de ingebouwde AI, aan een agentaccount of aan een persoon. Krijgt de AI het deel, dan start haar run desgewenst meteen. Delen die alleen lezen of wijzigingen voorstellen, draaien gelijktijdig; delen die direct schrijven, na elkaar.",
+      "p2": "Het budget van een taak geldt voor alles wat daaronder is gedelegeerd. Een deel krijgt hoogstens wat er nog over is, en mag nooit vrijer schrijven dan de taak zelf. Een AI kan een deel een rol geven die minder toestaat dan haar eigen rol, maar nooit een die meer toestaat.",
+      "p3": "Een deel is terug zodra het ter goedkeuring staat of is afgerond. Als de AI op haar delen wacht, eindigt haar run; zodra ze allemaal terug zijn, gaat ze in dezelfde chat verder met de resultaten ervan. Een taak is pas voltooid als er geen deel meer openstaat.",
+      "p4": "Agents werken met exo_work_item_delegate, exo_work_item_child_results en exo_work_item_await_children."
+    },
+    "where": "Op de pagina van een taak onder „Deeltaken” met „Deel overdragen”."
+  },
   "aenderungsvorschlaege": {
     "title": "Wijzigingsvoorstellen: agenten stellen voor, jij beslist",
     "summary": "In plaats van pagina’s zelf te schrijven, kan een agent of de ingebouwde AI wijzigingen voorstellen. Je ziet elke wijziging als een vergelijking met de pagina, accepteert ze afzonderlijk of allemaal tegelijk en wijst de rest af met een toelichting.",
