@@ -3676,6 +3676,13 @@ enum WorkItemEventKind {
   /// The answer was recorded but the run could not be carried on; the work
   /// waits in the queue for somebody to start it (issue #140).
   RESUME_FAILED
+  /// A part of the work was handed on as a child item (issue #144); written on
+  /// the parent, naming the child.
+  DELEGATED
+  /// The work waits until the named children have come back (issue #144).
+  CHILDREN_AWAITED
+  /// The children it waited for came back; the run may have been carried on.
+  CHILDREN_RETURNED
 }
 
 /// Why a page hangs on a piece of work: what it was given, or what it made.
@@ -3747,6 +3754,18 @@ model WorkItem {
   parentId String?
   parent   WorkItem?  @relation("WorkItemChildren", fields: [parentId], references: [id], onDelete: SetNull)
   children WorkItem[] @relation("WorkItemChildren")
+
+  /// The children this work waits for (issue #144, ADR-072). Empty when it
+  /// waits for nothing. The wait ends once each of them is in review or
+  /// closed (or gone), and whoever clears `awaitingSince` first owns the
+  /// resume, which is what keeps two children returning at once from
+  /// carrying the work on twice.
+  awaitingChildIds String[]  @default([])
+  /// The run that paused to wait, from the signed claim of its token; its
+  /// conversation is where the children's results are posted. Not a foreign
+  /// key: a run row may go, and the resume then starts a new run instead.
+  awaitingRunId    String?
+  awaitingSince    DateTime?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

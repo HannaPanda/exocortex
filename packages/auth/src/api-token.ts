@@ -61,6 +61,9 @@ export type RequestClass = 'read' | 'report' | 'propose' | 'write' | 'admin';
 const REPORT_ROUTES: readonly [string, RegExp][] = [
   ['PATCH', /^\/api\/work-items\/[^/]+$/],
   ['POST', /^\/api\/work-items\/[^/]+\/(notes|checkpoints)$/],
+  // Handing a part on and waiting for it (issue #144): organising delegated
+  // work rather than writing content. A child is held to the caller's mode.
+  ['POST', /^\/api\/work-items\/[^/]+\/(delegate|await-children)$/],
   ['POST', /^\/api\/workspaces\/[^/]+\/attention$/],
   ['POST', /^\/api\/attention\/[^/]+\/withdraw$/],
 ];

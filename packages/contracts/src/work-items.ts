@@ -151,6 +151,9 @@ export const WORK_ITEM_EVENT_KINDS = [
   'run_resumed',
   'resume_failed',
   'checkpoint_recorded',
+  'delegated',
+  'children_awaited',
+  'children_returned',
 ] as const;
 export const workItemEventKindSchema = z.enum(WORK_ITEM_EVENT_KINDS);
 export type WorkItemEventKind = z.infer<typeof workItemEventKindSchema>;
@@ -180,6 +183,10 @@ export const workItemEventDataSchema = z.object({
    */
   checkpointId: idSchema.optional(),
   trigger: z.string().optional(),
+  /** The child a delegation created (issue #144). */
+  childId: idSchema.optional(),
+  /** The children a wait names, or the ones that came back. */
+  childIds: z.array(idSchema).optional(),
 });
 export type WorkItemEventData = z.infer<typeof workItemEventDataSchema>;
 
@@ -194,6 +201,33 @@ export const workItemEventSchema = z.object({
   createdAt: isoDateTimeSchema,
 });
 export type WorkItemEvent = z.infer<typeof workItemEventSchema>;
+
+/**
+ * How the children of a piece of work stand (issue #144), counted by what
+ * their status means for the parent: still running, waiting on somebody,
+ * back for review, or closed one way or the other.
+ */
+export const workItemChildProgressSchema = z.object({
+  total: z.number().int(),
+  open: z.number().int(),
+  waiting: z.number().int(),
+  review: z.number().int(),
+  done: z.number().int(),
+  failed: z.number().int(),
+  cancelled: z.number().int(),
+});
+export type WorkItemChildProgress = z.infer<typeof workItemChildProgressSchema>;
+
+/** What a piece of work waits for (issue #144): children, until each has come back. */
+export const workItemAwaitingSchema = z.object({
+  childIds: z.array(idSchema),
+  /** The ones of them that are not back yet. */
+  pendingChildIds: z.array(idSchema),
+  /** The run that paused to wait, when a run of the built-in AI did. */
+  runId: idSchema.nullable(),
+  since: isoDateTimeSchema,
+});
+export type WorkItemAwaiting = z.infer<typeof workItemAwaitingSchema>;
 
 export const workItemDetailSchema = workItemSummarySchema.extend({
   goal: z.string(),
@@ -218,6 +252,21 @@ export const workItemDetailSchema = workItemSummarySchema.extend({
   effectiveBudgetMicroUsd: z.number().int().nullable(),
   /** What the linked runs have cost so far, measured where known, estimated otherwise. */
   spentMicroUsd: z.number().int(),
+  /**
+   * What this work and everything delegated below it has cost (issue #144).
+   * A budget holds for the whole subtree, so delegating cannot escape it.
+   */
+  subtreeSpentMicroUsd: z.number().int(),
+  /**
+   * What is left to spend: the smallest remainder of this item's budget and
+   * every ancestor's, each measured against its own subtree. Null when no
+   * budget applies anywhere above; zero or less refuses a new run.
+   */
+  budgetRemainingMicroUsd: z.number().int().nullable(),
+  /** The item whose budget is the tight one, when that is an ancestor. */
+  budgetLimitedBy: z.object({ id: idSchema, title: z.string() }).nullable(),
+  childProgress: workItemChildProgressSchema,
+  awaiting: workItemAwaitingSchema.nullable(),
   parent: z.object({ id: idSchema, title: z.string() }).nullable(),
   contextRefs: z.array(workItemRefSchema),
   resultRefs: z.array(workItemRefSchema),

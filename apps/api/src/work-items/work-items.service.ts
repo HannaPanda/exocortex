@@ -43,6 +43,7 @@ import {
   assertWriteModeChange,
 } from './work-item-access';
 import { type WorkItemActor } from './work-item-actor';
+import { budgetStanding } from './work-item-budget';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
 import {
   assigneeColumns,
@@ -65,6 +66,7 @@ import {
 } from './work-item-mapper';
 import { profileForNewItem, profilePreferences } from './work-item-profile';
 import { buildWorkItemPrompt } from './work-item-prompt';
+import { assertChildrenClosed, assertSiblingsAllowRun } from './work-item-siblings';
 
 /**
  * Delegated work (issue #138, ADR-066).
@@ -93,6 +95,17 @@ const MAX_PARENT_DEPTH = 64;
 
 type Action = 'created' | 'updated' | 'deleted';
 
+/**
+ * Told when a child's status may have changed what its parent waits for
+ * (issue #144). The delegation service registers itself here rather than
+ * being a dependency, because it depends on this service.
+ */
+export type ChildChangeListener = (
+  parentId: string,
+  actor: WorkItemActor,
+  correlationId: string,
+) => Promise<void>;
+
 @Injectable()
 export class WorkItemsService {
   constructor(
@@ -103,6 +116,26 @@ export class WorkItemsService {
     private readonly checkpoints: WorkItemCheckpointsService,
     private readonly profiles: AgentProfilesService,
   ) {}
+
+  private readonly childListeners: ChildChangeListener[] = [];
+
+  onChildChange(listener: ChildChangeListener): void {
+    this.childListeners.push(listener);
+  }
+
+  /**
+   * After a change to an item that has a parent: whatever waits on it hears
+   * about it. Called after the transaction, so a listener reads what is
+   * committed; a listener's failure is its own and never the change's.
+   */
+  async afterChildChange(
+    parentId: string | null,
+    actor: WorkItemActor,
+    correlationId: string,
+  ): Promise<void> {
+    if (parentId === null) return;
+    for (const listener of this.childListeners) await listener(parentId, actor, correlationId);
+  }
 
   async list(input: {
     workspaceId: string;
@@ -128,7 +161,7 @@ export class WorkItemsService {
 
   async get(input: { workItemId: string; userId: string }): Promise<WorkItemResponse> {
     const row = await this.loadReadable(input.workItemId, input.userId);
-    return { workItem: toWorkItemDetail(row) };
+    return { workItem: toWorkItemDetail(row, await budgetStanding(this.prisma, row.id)) };
   }
 
   async create(input: {
@@ -138,6 +171,8 @@ export class WorkItemsService {
     correlationId: string;
     /** Whether the credential may choose a profile (issue #143); see the controller. */
     mayChooseProfile?: boolean;
+    /** Set by a delegation (issue #144): the parent's history names the child. */
+    delegated?: boolean;
   }): Promise<WorkItemResponse> {
     const { request, actor } = input;
     const role = await this.access.requireRole(input.workspaceId, actor.userId);
@@ -186,6 +221,24 @@ export class WorkItemsService {
         });
       }
       await writeEvents(tx, created.id, actor, events, input.correlationId);
+      if (input.delegated === true && request.parentId != null) {
+        await tx.workItem.update({ where: { id: request.parentId }, data: { updatedAt: new Date() } });
+        await writeEvents(
+          tx,
+          request.parentId,
+          actor,
+          [
+            {
+              kind: 'DELEGATED',
+              data: {
+                childId: created.id,
+                ...(assignee === null ? {} : { assignee: assigneeSnapshot(assignee, assigneeName) }),
+              },
+            },
+          ],
+          input.correlationId,
+        );
+      }
       return created.id;
     });
 
@@ -212,7 +265,10 @@ export class WorkItemsService {
         await this.profiles.assertUsable(existing.workspaceId, request.agentProfileId);
       }
     }
-    if (request.status === 'done') await assertRunMayClose(this.prisma, existing.status);
+    if (request.status === 'done') {
+      await assertRunMayClose(this.prisma, existing.status);
+      await assertChildrenClosed(this.prisma, existing.id);
+    }
     const progressOnly = Object.keys(request).every((key) =>
       ASSIGNEE_FIELDS.has(key as keyof UpdateWorkItemRequest),
     );
@@ -251,6 +307,9 @@ export class WorkItemsService {
 
     await this.announce(existing.workspaceId, existing.id, 'updated', input.correlationId);
     await this.announceAttention(existing.workspaceId, attention, input.correlationId);
+    if (plan.data.status !== undefined) {
+      await this.afterChildChange(existing.parentId, actor, input.correlationId);
+    }
     return this.get({ workItemId: existing.id, userId: actor.userId });
   }
 
@@ -317,6 +376,8 @@ export class WorkItemsService {
 
     await this.announce(existing.workspaceId, existing.id, 'deleted', input.correlationId);
     await this.announceAttention(existing.workspaceId, attention, input.correlationId);
+    // A child that is gone cannot be waited for any more.
+    await this.afterChildChange(existing.parentId, actor, input.correlationId);
     return { deleted: true, detachedChildren };
   }
 
@@ -340,16 +401,18 @@ export class WorkItemsService {
     const row = await this.loadReadable(input.workItemId, input.actor.userId);
     const role = await this.access.requireRole(row.workspaceId, input.actor.userId);
     assertPolicy(canManageWorkItems(role));
-    const item = toWorkItemDetail(row);
+    const item = toWorkItemDetail(row, await budgetStanding(this.prisma, row.id));
 
     if (row.closedAt !== null) {
       throw new AppError('work_item_closed', 'The work item is closed');
     }
-    // The stricter of the item's own budget and its profile's (issue #143).
+    // The stricter of the item's own budget and its profile's (issue #143),
+    // over its whole subtree, and every ancestor's the same way (issue #144).
     const budget = item.effectiveBudgetMicroUsd;
-    if (budget !== null && item.spentMicroUsd >= budget) {
+    if (item.budgetRemainingMicroUsd !== null && item.budgetRemainingMicroUsd <= 0) {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }
+    await assertSiblingsAllowRun(this.prisma, row);
     // Carried on from where the work stands (issue #142), unless asked not to.
     const resume =
       input.request.fromCheckpoint === 'none'
@@ -358,7 +421,7 @@ export class WorkItemsService {
             workItemId: row.id,
             workspaceId: row.workspaceId,
             which: input.request.fromCheckpoint ?? 'latest',
-            spentMicroUsd: item.spentMicroUsd,
+            spentMicroUsd: item.subtreeSpentMicroUsd,
             budgetMicroUsd: budget,
           });
 
@@ -394,6 +457,7 @@ export class WorkItemsService {
           previousResult: row.result,
           checkpoint: resume?.text ?? null,
           instructions: input.request.instructions ?? null,
+          parent: row.parent,
         }),
       },
     });
@@ -411,6 +475,13 @@ export class WorkItemsService {
         },
       ];
       const data: Prisma.WorkItemUncheckedUpdateInput = { updatedAt: new Date() };
+      // A new run supersedes a wait for children (issue #144): it is the
+      // attempt that would have been carried on.
+      if (row.awaitingSince !== null) {
+        data.awaitingChildIds = [];
+        data.awaitingRunId = null;
+        data.awaitingSince = null;
+      }
       if (row.assigneeKind === null) {
         data.assigneeKind = 'ASSISTANT';
         events.push({
@@ -517,6 +588,7 @@ export class WorkItemsService {
         priority: true,
         result: true,
         writeMode: true,
+        parentId: true,
         closedAt: true,
       },
     });

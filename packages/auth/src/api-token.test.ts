@@ -122,6 +122,8 @@ describe('request classes (issue #141)', () => {
   it('lets a propose token report on work and propose, and nothing else', () => {
     expect(requestClassFor('PATCH', '/api/work-items/abc123')).toBe('report');
     expect(requestClassFor('POST', '/api/work-items/abc123/notes')).toBe('report');
+    expect(requestClassFor('POST', '/api/work-items/abc123/delegate')).toBe('report');
+    expect(requestClassFor('POST', '/api/work-items/abc123/await-children')).toBe('report');
     expect(requestClassFor('POST', '/api/workspaces/ws1/attention')).toBe('report');
     expect(requestClassFor('POST', '/api/workspaces/ws1/changesets')).toBe('propose');
     expect(requestClassFor('POST', '/api/changesets/cs1/changes')).toBe('propose');

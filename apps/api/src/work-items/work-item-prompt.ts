@@ -20,10 +20,20 @@ export interface WorkItemPromptInput {
   /** Where a recorded working state left the work (issue #142), already worded. */
   checkpoint?: string | null;
   instructions: string | null;
+  /** The work this is a part of (issue #144), when it was handed on. */
+  parent?: { id: string; title: string } | null;
 }
 
 export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
   const sections = [`Auftrag „${input.title}“ (id: ${input.id})`, `Ziel:\n${input.goal}`];
+
+  if (input.parent != null) {
+    sections.push(
+      `Dies ist ein Teilauftrag von „${input.parent.title}“ (id: ${input.parent.id}). ` +
+        'Dort kommt nur dein Ergebnis an, nicht dieser Chat: schreib es so in result, dass es ' +
+        'ohne Rückfrage weiterverwendet werden kann, knapp und vollständig.',
+    );
+  }
 
   if (input.criteria.length > 0) {
     const lines = input.criteria.map(
@@ -64,5 +74,6 @@ export function reportingInstructions(workItemId: string): string {
     `- Brauchst du eine Entscheidung, eine Freigabe oder eine Information von einem Menschen, frag mit exo_attention_request (workItemId ${workItemId}): mit options für eine Wahl, ohne für eine Antwort in Worten, bei einer Freigabe mit action und den betroffenen Seiten als subjectPages. Halte in workState fest, was erledigt ist und was danach kommt. Der Auftrag wartet dann, dieser Lauf endet, und die Antwort setzt die Arbeit in diesem Chat fort.`,
     `- Halte nach jedem größeren Arbeitsschritt und bevor du aufhörst deinen Arbeitsstand mit exo_work_item_checkpoint (workItemId ${workItemId}) fest: summary, plan mit status done/in_progress/open, Annahmen, Erkenntnisse, lastAction, nextStep und die erzeugten Seiten. Weggelassene Felder bleiben wie beim letzten Mal. Ein späterer Lauf, auch mit einem anderen Modell, setzt genau dort an.`,
     '- Kurze Hinweise für Menschen kannst du mit exo_work_item_note in die Historie schreiben.',
+    `- Zerfällt die Arbeit in unabhängige Teile, gib sie mit exo_work_item_delegate (workItemId ${workItemId}) als Teilaufträge ab, warte mit exo_work_item_await_children auf sie und lies ihre Ergebnisse mit exo_work_item_child_results. Lesende und vorschlagende Teilaufträge laufen gleichzeitig.`,
   ].join('\n');
 }

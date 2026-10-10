@@ -45,7 +45,7 @@ import { WorkItemsService } from './work-items.service';
  * built-in AI's service token, and not a token that may only propose, since
  * either would be lifting the mode it is itself held to.
  */
-function mayLoosenWriteMode(request: AuthenticatedRequest): boolean {
+export function mayLoosenWriteMode(request: AuthenticatedRequest): boolean {
   if (request.exocortexCredential === 'session') return true;
   return (
     request.exocortexCredential === 'api_token' &&

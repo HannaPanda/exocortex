@@ -5,6 +5,8 @@ import { AiModule } from '../ai/ai.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
 import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
+import { WorkItemDelegationController } from './work-item-delegation.controller';
+import { WorkItemDelegationService } from './work-item-delegation.service';
 import { WorkItemQuestionsService } from './work-item-questions.service';
 import { WorkItemResumeService } from './work-item-resume.service';
 import { WorkItemsController } from './work-items.controller';
@@ -20,12 +22,13 @@ import { WorkItemsService } from './work-items.service';
  */
 @Module({
   imports: [AgentProfilesModule, AiModule, RealtimeModule],
-  controllers: [WorkItemsController],
+  controllers: [WorkItemsController, WorkItemDelegationController],
   providers: [
     WorkItemsService,
     WorkItemQuestionsService,
     WorkItemResumeService,
     WorkItemCheckpointsService,
+    WorkItemDelegationService,
   ],
   exports: [WorkItemsService, WorkItemQuestionsService, WorkItemResumeService],
 })

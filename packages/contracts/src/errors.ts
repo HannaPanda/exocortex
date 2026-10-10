@@ -139,6 +139,19 @@ export const API_ERROR_CODES = [
    * under that profile sets it to `review` instead of `done`.
    */
   'work_item_review_required',
+  /**
+   * A child that writes directly cannot start while a directly writing
+   * sibling has a run in flight (issue #144); proposing children run together.
+   */
+  'work_item_sibling_writing',
+  /** An id named as a child to wait for or read is not a child of this item. */
+  'work_item_child_invalid',
+  /** The item has as many children as one piece of work may hand on. */
+  'work_item_children_limit',
+  /** Only a child the built-in AI holds can be started on handing it on. */
+  'work_item_start_needs_assistant',
+  /** `done` while a child is still open; close or cancel the children first. */
+  'work_item_children_open',
   /** Another agent profile in this workspace already has that name. */
   'agent_profile_name_taken',
   /**
@@ -377,6 +390,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   work_item_closed: 409,
   work_item_budget_exhausted: 409,
   work_item_review_required: 409,
+  work_item_sibling_writing: 409,
+  work_item_child_invalid: 422,
+  work_item_children_limit: 409,
+  work_item_start_needs_assistant: 422,
+  work_item_children_open: 409,
   agent_profile_name_taken: 409,
   agent_profile_invalid: 400,
   work_checkpoint_summary_required: 422,

@@ -17,6 +17,7 @@ import {
   type WorkItemRun,
   type WorkItemStatus,
   type WorkItemSummary,
+  type WorkItemAwaiting,
 } from '@exocortex/contracts';
 import {
   type AiRunStatus as PrismaAiRunStatus,
@@ -26,6 +27,9 @@ import {
   type WorkItemPriority as PrismaPriority,
   type WorkItemStatus as PrismaStatus,
 } from '@exocortex/database';
+
+import { type BudgetStanding } from './work-item-budget';
+import { childProgressOf, hasReturned } from './work-item-delegation-rules';
 
 /**
  * Between the rows and the wire (issue #138).
@@ -94,6 +98,9 @@ export const EVENT_KIND_TO_PRISMA: Record<WorkItemEventKind, PrismaEventKind> = 
   run_resumed: 'RUN_RESUMED',
   resume_failed: 'RESUME_FAILED',
   checkpoint_recorded: 'CHECKPOINT_RECORDED',
+  delegated: 'DELEGATED',
+  children_awaited: 'CHILDREN_AWAITED',
+  children_returned: 'CHILDREN_RETURNED',
 };
 const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   CREATED: 'created',
@@ -108,6 +115,9 @@ const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   RUN_RESUMED: 'run_resumed',
   RESUME_FAILED: 'resume_failed',
   CHECKPOINT_RECORDED: 'checkpoint_recorded',
+  DELEGATED: 'delegated',
+  CHILDREN_AWAITED: 'children_awaited',
+  CHILDREN_RETURNED: 'children_returned',
 };
 
 const RUN_STATUS_FROM_PRISMA: Record<PrismaAiRunStatus, WorkItemRun['status']> = {
@@ -160,6 +170,9 @@ export const WORK_ITEM_DETAIL_SELECT = {
   result: true,
   budgetMicroUsd: true,
   writeMode: true,
+  awaitingChildIds: true,
+  awaitingRunId: true,
+  awaitingSince: true,
   // The item's own profile and the workspace's default, in the same read
   // (issue #143): the detail says which one holds and what budget follows.
   agentProfile: { select: AGENT_PROFILE_REF_SELECT },
@@ -337,7 +350,31 @@ function refsOf(row: WorkItemDetailRow, role: 'CONTEXT' | 'RESULT'): WorkItemRef
     .map((ref) => ({ documentId: ref.document.id, title: ref.document.title }));
 }
 
-export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
+/**
+ * What the detail needs beyond the row (issue #144): the budget over the
+ * subtree and its ancestors, which takes queries of its own.
+ */
+export type WorkItemDetailExtras = BudgetStanding;
+
+/** What the item waits for, with the children that are not back yet. */
+function awaitingOf(row: WorkItemDetailRow): WorkItemAwaiting | null {
+  if (row.awaitingSince === null) return null;
+  const status = new Map(row.children.map((child) => [child.id, child.status]));
+  return {
+    childIds: row.awaitingChildIds,
+    pendingChildIds: row.awaitingChildIds.filter((id) => {
+      const current = status.get(id);
+      return current !== undefined && !hasReturned(current);
+    }),
+    runId: row.awaitingRunId,
+    since: row.awaitingSince.toISOString(),
+  };
+}
+
+export function toWorkItemDetail(
+  row: WorkItemDetailRow,
+  extras: WorkItemDetailExtras,
+): WorkItemDetail {
   const runs = row.runs.map(toRun);
   const profile = workItemProfileOf(row);
   return {
@@ -350,6 +387,11 @@ export function toWorkItemDetail(row: WorkItemDetailRow): WorkItemDetail {
     agentProfile: profile.ref,
     effectiveBudgetMicroUsd: stricterLimit(row.budgetMicroUsd, profile.budgetMicroUsdPerTask),
     spentMicroUsd: runs.reduce((sum, run) => sum + (run.costMicroUsd ?? 0), 0),
+    subtreeSpentMicroUsd: extras.subtreeSpentMicroUsd,
+    budgetRemainingMicroUsd: extras.budgetRemainingMicroUsd,
+    budgetLimitedBy: extras.budgetLimitedBy,
+    childProgress: childProgressOf(row.children),
+    awaiting: awaitingOf(row),
     parent: row.parent,
     contextRefs: refsOf(row, 'CONTEXT'),
     resultRefs: refsOf(row, 'RESULT'),

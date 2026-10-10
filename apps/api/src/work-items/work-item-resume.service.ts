@@ -153,9 +153,10 @@ export class WorkItemResumeService {
   }): Promise<string> {
     const { work } = input;
     const detail = await this.workItems.get({ workItemId: work.id, userId: input.ownerId });
-    // The stricter of the item's budget and its profile's (issue #143).
-    const { effectiveBudgetMicroUsd: budgetMicroUsd, spentMicroUsd } = detail.workItem;
-    if (budgetMicroUsd !== null && spentMicroUsd >= budgetMicroUsd) {
+    // The stricter of the item's budget and its profile's (issue #143), over
+    // its subtree and its ancestors' (issue #144).
+    const remaining = detail.workItem.budgetRemainingMicroUsd;
+    if (remaining !== null && remaining <= 0) {
       throw new AppError('work_item_budget_exhausted', 'The work item has spent its budget');
     }
 
