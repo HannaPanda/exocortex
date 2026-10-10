@@ -56,6 +56,12 @@ export const automationActionSchema = z.enum([
    * a field on the rule, so there is nothing here to point anywhere.
    */
   'EMAIL_SELF',
+  /**
+   * A work item about the page (issue #143, ADR-071): the rule's prompt as
+   * its goal, the page as its context, an agent profile, and optionally a
+   * first run by the built-in AI. It delegates rather than answers.
+   */
+  'WORK_ITEM',
 ]);
 export type AutomationAction = z.infer<typeof automationActionSchema>;
 
@@ -121,6 +127,8 @@ export const automationFailureReasonSchema = z.enum([
   'OWNER_UNAVAILABLE',
   /** The mail action could not send its page. */
   'MAIL_FAILED',
+  /** The work item action could not hand the page over (issue #143). */
+  'WORK_ITEM_FAILED',
 ]);
 export type AutomationFailureReason = z.infer<typeof automationFailureReasonSchema>;
 
@@ -364,6 +372,10 @@ export const automationRuleSchema = z.object({
   modelSlug: z.string().nullable(),
   /** `EMAIL_SELF`: the subject line, or null when the rule's name serves. */
   mailSubject: z.string().nullable(),
+  /** `WORK_ITEM`: the agent profile the new work runs under; null for the default. */
+  agentProfileId: idSchema.nullable(),
+  /** `WORK_ITEM`: whether the built-in AI starts on it at once. */
+  startWorkItemRun: z.boolean(),
   output: automationOutputSchema,
   consecutiveFailures: z.number().int().nonnegative(),
   /** English, developer-facing; set when the rule switched itself off. */
@@ -462,6 +474,13 @@ const automationRuleBody = z.object({
    * where that mail goes: the rule's owner, who wrote it.
    */
   mailSubject: z.string().trim().min(1).max(200).nullable().default(null),
+  /**
+   * `WORK_ITEM` (issue #143): the agent profile, or null for the workspace's
+   * default. Only the rule's owner writes it, and the work item route
+   * accepts it from this rule because it is what the rule names.
+   */
+  agentProfileId: idSchema.nullable().default(null),
+  startWorkItemRun: z.boolean().default(false),
   output: automationOutputSchema.default('COMMENT'),
 });
 
@@ -480,6 +499,8 @@ export function automationRuleProblems(rule: {
   webhookUrl: string | null;
   prompt: string | null;
   mailSubject?: string | null;
+  agentProfileId?: string | null;
+  startWorkItemRun?: boolean;
   triggers: readonly AutomationTrigger[];
   scheduleKind?: AutomationScheduleKind | null;
   scheduleAt?: string | Date | null;
@@ -522,6 +543,8 @@ function actionProblems(rule: {
   webhookUrl: string | null;
   prompt: string | null;
   mailSubject?: string | null;
+  agentProfileId?: string | null;
+  startWorkItemRun?: boolean;
 }): string[] {
   const problems: string[] = [];
   switch (rule.action) {
@@ -539,6 +562,17 @@ function actionProblems(rule: {
       if (rule.webhookUrl !== null) problems.push('A mail rule has no target URL');
       if (rule.prompt !== null) problems.push('A mail rule has no prompt');
       break;
+    case 'WORK_ITEM':
+      // The prompt is the goal of the work it hands over.
+      if (rule.prompt === null) problems.push('A work item rule needs a goal in its prompt');
+      if (rule.webhookUrl !== null) problems.push('A work item rule has no target URL');
+      break;
+  }
+  if (rule.action !== 'WORK_ITEM') {
+    if (rule.agentProfileId !== null && rule.agentProfileId !== undefined) {
+      problems.push('Only a work item rule names an agent profile');
+    }
+    if (rule.startWorkItemRun === true) problems.push('Only a work item rule starts a run');
   }
   if (rule.action !== 'EMAIL_SELF' && rule.mailSubject !== null && rule.mailSubject !== undefined) {
     problems.push('Only a mail rule carries a subject line');

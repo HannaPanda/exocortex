@@ -105,6 +105,7 @@ export class AutomationsService {
     this.assertCoherent(request);
     await this.assertScopeDocument(input.workspaceId, input.userId, request.scopeDocumentId);
     await this.assertWebhookAllowed(input.workspaceId, request.webhookUrl);
+    await this.assertAgentProfile(input.workspaceId, request.agentProfileId);
 
     // The secret exists for exactly as long as this call: it is encrypted into
     // the row, handed back once in the response, and then it is gone from this
@@ -141,6 +142,8 @@ export class AutomationsService {
         prompt: request.prompt,
         modelSlug: request.modelSlug,
         mailSubject: request.mailSubject,
+        agentProfileId: request.agentProfileId,
+        startWorkItemRun: request.startWorkItemRun,
         output: request.output,
         createdById: input.userId,
       },
@@ -180,6 +183,7 @@ export class AutomationsService {
     this.assertCoherent(merged);
     await this.assertScopeDocument(row.workspaceId, input.userId, merged.scopeDocumentId);
     await this.assertWebhookAllowed(row.workspaceId, merged.webhookUrl);
+    await this.assertAgentProfile(row.workspaceId, merged.agentProfileId);
 
     // Switching a rule back on clears the automatic disabling with it. Anything
     // else would mean a rule the person just enabled stays one failure away
@@ -248,6 +252,22 @@ export class AutomationsService {
       take: MAX_LISTED_RUNS,
     });
     return { runs: rows.map(mapAutomationRun) };
+  }
+
+  /**
+   * A work item rule's profile must be one of this workspace's (issue #143).
+   * The rule's owner chooses it here, once; the work item route later accepts
+   * it from this rule's action because it is exactly what the rule names.
+   */
+  private async assertAgentProfile(workspaceId: string, profileId: string | null): Promise<void> {
+    if (profileId === null) return;
+    const profile = await this.prisma.agentProfile.findUnique({
+      where: { id: profileId },
+      select: { workspaceId: true },
+    });
+    if (profile === null || profile.workspaceId !== workspaceId) {
+      throw AppError.validation('The agent profile is not one of this workspace');
+    }
   }
 
   private async requireManageableRule(ruleId: string, userId: string) {
@@ -377,6 +397,8 @@ function mergeableFields(row: {
   prompt: string | null;
   modelSlug: string | null;
   mailSubject: string | null;
+  agentProfileId: string | null;
+  startWorkItemRun: boolean;
   output: AutomationOutput;
 }) {
   return {
@@ -398,6 +420,8 @@ function mergeableFields(row: {
     prompt: row.prompt,
     modelSlug: row.modelSlug,
     mailSubject: row.mailSubject,
+    agentProfileId: row.agentProfileId,
+    startWorkItemRun: row.startWorkItemRun,
     output: row.output,
   };
 }

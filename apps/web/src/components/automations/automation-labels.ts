@@ -35,7 +35,12 @@ export const TRIGGER_ORDER: readonly AutomationTrigger[] = [
 
 export const SCOPE_ORDER: readonly AutomationScope[] = ['WORKSPACE', 'SUBTREE', 'DATABASE'];
 
-export const ACTION_ORDER: readonly AutomationAction[] = ['WEBHOOK', 'AI_RUN', 'EMAIL_SELF'];
+export const ACTION_ORDER: readonly AutomationAction[] = [
+  'WEBHOOK',
+  'AI_RUN',
+  'EMAIL_SELF',
+  'WORK_ITEM',
+];
 
 export const OUTPUT_ORDER: readonly AutomationOutput[] = ['COMMENT', 'CHILD_PAGE'];
 

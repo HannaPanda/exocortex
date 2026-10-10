@@ -219,3 +219,42 @@ describe('a mail rule', () => {
     expect(problems).toContain('Only a mail rule carries a subject line');
   });
 });
+
+describe('the work item action (issue #143)', () => {
+  const base = {
+    scope: 'WORKSPACE' as const,
+    scopeDocumentId: null,
+    webhookUrl: null,
+    triggers: ['DOCUMENT_CONTENT_CHANGED' as const],
+  };
+
+  it('needs a goal and may name a profile and a run', () => {
+    expect(
+      automationRuleProblems({
+        ...base,
+        action: 'WORK_ITEM',
+        prompt: 'Prüfen',
+        agentProfileId: 'profile-1',
+        startWorkItemRun: true,
+      }),
+    ).toEqual([]);
+    expect(automationRuleProblems({ ...base, action: 'WORK_ITEM', prompt: null })).toContain(
+      'A work item rule needs a goal in its prompt',
+    );
+  });
+
+  it('keeps the profile and the run off every other action', () => {
+    expect(
+      automationRuleProblems({
+        ...base,
+        action: 'AI_RUN',
+        prompt: 'Fass zusammen',
+        agentProfileId: 'profile-1',
+        startWorkItemRun: true,
+      }),
+    ).toEqual([
+      'Only a work item rule names an agent profile',
+      'Only a work item rule starts a run',
+    ]);
+  });
+});

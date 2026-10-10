@@ -762,4 +762,50 @@ describe('agent profiles (issue #143)', () => {
       code: 'token_scope_exceeded',
     });
   });
+
+  it('accepts from an automation exactly the profile its rule names', async () => {
+    const profile = await profiles.create({
+      workspaceId,
+      userId: ownerId,
+      request: { name: 'Automatisch' },
+      correlationId,
+    });
+    const rule = await prisma.automationRule.create({
+      data: {
+        workspaceId,
+        name: 'Übergabe',
+        triggers: ['DOCUMENT_CONTENT_CHANGED'],
+        action: 'WORK_ITEM',
+        prompt: 'Prüfen',
+        agentProfileId: profile.profile.id,
+        createdById: ownerId,
+      },
+    });
+    const asRule = <T>(operation: () => Promise<T>) =>
+      runWithRequestContext(
+        { correlationId, automation: { ruleId: rule.id, depth: 0 } },
+        operation,
+      );
+    const create = (agentProfileId: string) =>
+      service.create({
+        workspaceId,
+        actor: human(ownerId),
+        request: { title: 'Von der Regel', goal: 'Prüfen', agentProfileId },
+        correlationId,
+        mayChooseProfile: false,
+      });
+
+    const created = await asRule(() => create(profile.profile.id));
+    expect(created.workItem.agentProfile?.id).toBe(profile.profile.id);
+
+    const other = await profiles.create({
+      workspaceId,
+      userId: ownerId,
+      request: { name: 'Anderes' },
+      correlationId,
+    });
+    await expect(asRule(() => create(other.profile.id))).rejects.toMatchObject({
+      code: 'forbidden',
+    });
+  });
 });

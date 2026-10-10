@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { assertPolicy, canManageWorkItems, WorkspaceAccessService } from '@exocortex/auth';
 import {
-  type AiReasoningLevel,
   type AddWorkItemNoteRequest,
   type CreateWorkItemRequest,
   type DeleteWorkItemResponse,
@@ -64,6 +63,7 @@ import {
   WORK_ITEM_DETAIL_SELECT,
   WORK_ITEM_SUMMARY_SELECT,
 } from './work-item-mapper';
+import { profileForNewItem, profilePreferences } from './work-item-profile';
 import { buildWorkItemPrompt } from './work-item-prompt';
 
 /**
@@ -142,8 +142,10 @@ export class WorkItemsService {
     const { request, actor } = input;
     const role = await this.access.requireRole(input.workspaceId, actor.userId);
     assertPolicy(canManageWorkItems(role));
-    const agentProfileId = await this.profileForNewItem(
+    const agentProfileId = await profileForNewItem(
+      { prisma: this.prisma, profiles: this.profiles },
       input.workspaceId,
+      actor.userId,
       request,
       input.mayChooseProfile ?? false,
     );
@@ -363,7 +365,7 @@ export class WorkItemsService {
     // The profile's preferences fill in what the request left open (issue
     // #143). The conversation keeps them, so a run that carries on in it
     // keeps them too.
-    const preferences = await this.profilePreferences(item.agentProfile?.id ?? null);
+    const preferences = await profilePreferences(this.prisma, item.agentProfile?.id ?? null);
     const modelSlug = input.request.modelSlug ?? preferences.modelSlug;
     const reasoningLevel = input.request.reasoningLevel ?? preferences.reasoningLevel;
     const { conversation } = await this.conversations.create({
@@ -565,63 +567,6 @@ export class WorkItemsService {
    * Walked upwards from the candidate: if the walk meets the item, the item
    * would become its own ancestor.
    */
-  /**
-   * The model and reasoning level a profile prefers, as far as they can be
-   * honoured (issue #143). A model that is no longer enabled is skipped
-   * rather than refused: a profile names a preference, not a binding, and
-   * the run then uses the default model.
-   */
-  private async profilePreferences(profileId: string | null): Promise<{
-    modelSlug?: string;
-    reasoningLevel?: AiReasoningLevel;
-  }> {
-    if (profileId === null) return {};
-    const profile = await this.prisma.agentProfile.findUnique({
-      where: { id: profileId },
-      select: { modelSlug: true, reasoningLevel: true },
-    });
-    if (profile === null) return {};
-    const model =
-      profile.modelSlug === null
-        ? null
-        : await this.prisma.aiModel.findUnique({
-            where: { slug: profile.modelSlug },
-            select: { enabled: true },
-          });
-    return {
-      ...(model?.enabled === true && profile.modelSlug !== null
-        ? { modelSlug: profile.modelSlug }
-        : {}),
-      ...(profile.reasoningLevel === null
-        ? {}
-        : { reasoningLevel: profile.reasoningLevel.toLowerCase() as AiReasoningLevel }),
-    };
-  }
-
-  /**
-   * The profile a new item gets (issue #143): the one it names, when the
-   * credential may choose one, or else its parent's, so that a part of a
-   * larger piece of work stays under the rules of the whole.
-   */
-  private async profileForNewItem(
-    workspaceId: string,
-    request: CreateWorkItemRequest,
-    mayChoose: boolean,
-  ): Promise<string | null> {
-    if (request.agentProfileId !== undefined) {
-      assertMayChooseProfile(mayChoose);
-      if (request.agentProfileId === null) return null;
-      await this.profiles.assertUsable(workspaceId, request.agentProfileId);
-      return request.agentProfileId;
-    }
-    if (request.parentId === undefined || request.parentId === null) return null;
-    const parent = await this.prisma.workItem.findUnique({
-      where: { id: request.parentId },
-      select: { agentProfileId: true },
-    });
-    return parent?.agentProfileId ?? null;
-  }
-
   private async validateParent(
     workspaceId: string,
     workItemId: string | null,

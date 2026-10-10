@@ -23,6 +23,7 @@ import { sendPageToOwner } from './automation/mail';
 import { type AutomationRuleRecord, createRunRecorder, loadRule } from './automation/run-recorder';
 import { signWebhookBody } from './automation/webhook';
 import { createWebhookSender, type WebhookSender } from './automation/webhook-request';
+import { handOverWork } from './automation/work-item';
 
 /**
  * Running one automation (issue #50, ADR-024).
@@ -144,6 +145,14 @@ async function act(
         { dependencies: input.dependencies, rule: input.rule, payload: input.payload },
         runId,
       );
+    case 'WORK_ITEM':
+      return handOverWork({
+        rule: input.rule,
+        aiEnabled: input.settings['ai.enabled'],
+        prisma: input.dependencies.prisma,
+        apiClientFor: input.dependencies.apiClientFor,
+        payload: input.payload,
+      });
   }
 }
 

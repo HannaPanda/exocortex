@@ -34,5 +34,7 @@ export function classifyAutomationFailure(
       return 'AI_FAILED';
     case 'EMAIL_SELF':
       return 'MAIL_FAILED';
+    case 'WORK_ITEM':
+      return 'WORK_ITEM_FAILED';
   }
 }

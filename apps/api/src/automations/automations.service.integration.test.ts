@@ -154,6 +154,8 @@ function webhookRule(overrides: Record<string, unknown> = {}) {
     prompt: null,
     modelSlug: null,
     mailSubject: null,
+    agentProfileId: null,
+    startWorkItemRun: false,
     output: 'COMMENT' as const,
     ...overrides,
   };

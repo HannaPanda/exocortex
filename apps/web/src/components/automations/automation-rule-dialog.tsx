@@ -34,6 +34,7 @@ import {
 } from '@exocortex/ui';
 
 import { CopyBlock } from '@/components/settings/copy-block';
+import { useAgentProfiles } from '@/lib/api/agent-profile-queries';
 import { useCreateAutomationRule, useUpdateAutomationRule } from '@/lib/api/automation-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
@@ -64,6 +65,9 @@ interface Draft extends ScheduleDraft {
   prompt: string;
   modelSlug: string;
   mailSubject: string;
+  /** `WORK_ITEM` (issue #143): empty for the workspace's default profile. */
+  agentProfileId: string;
+  startWorkItemRun: boolean;
   output: AutomationOutput;
 }
 
@@ -88,6 +92,8 @@ const EMPTY_DRAFT: Draft = {
   prompt: '',
   modelSlug: '',
   mailSubject: '',
+  agentProfileId: '',
+  startWorkItemRun: false,
   output: 'COMMENT',
 };
 
@@ -109,6 +115,7 @@ function draftFrom(rule: AutomationRule | null): Draft {
     prompt: rule.prompt ?? '',
     modelSlug: rule.modelSlug ?? '',
     mailSubject: rule.mailSubject ?? '',
+    agentProfileId: rule.agentProfileId ?? '',
     scheduleKind: rule.scheduleKind ?? EMPTY_DRAFT.scheduleKind,
     scheduleAt: toLocalInput(rule.scheduleAt),
     scheduleTime: rule.scheduleTime ?? EMPTY_DRAFT.scheduleTime,
@@ -131,6 +138,7 @@ function requestFrom(draft: Draft) {
   const forWebhook = draft.action === 'WEBHOOK';
   const forAi = draft.action === 'AI_RUN';
   const forMail = draft.action === 'EMAIL_SELF';
+  const forWork = draft.action === 'WORK_ITEM';
   return {
     name: draft.name.trim(),
     scope: draft.scope,
@@ -140,9 +148,12 @@ function requestFrom(draft: Draft) {
     debounceSeconds: draft.debounceSeconds,
     action: draft.action,
     webhookUrl: forWebhook ? emptyToNull(draft.webhookUrl) : null,
-    prompt: forAi ? emptyToNull(draft.prompt) : null,
+    // The prompt is the AI rule's question and the work item rule's goal.
+    prompt: forAi || forWork ? emptyToNull(draft.prompt) : null,
     modelSlug: forAi ? emptyToNull(draft.modelSlug) : null,
     mailSubject: forMail ? emptyToNull(draft.mailSubject) : null,
+    agentProfileId: forWork ? emptyToNull(draft.agentProfileId) : null,
+    startWorkItemRun: forWork && draft.startWorkItemRun,
     output: draft.output,
   };
 }
@@ -321,7 +332,13 @@ export function AutomationRuleDialog({
                 <p className="text-xs text-muted-foreground">{t('debounceHint')}</p>
               </div>
 
-              <ActionFields draft={draft} set={set} allowedHosts={allowedHosts} isNew={isNew} />
+              <ActionFields
+                draft={draft}
+                set={set}
+                allowedHosts={allowedHosts}
+                isNew={isNew}
+                workspaceId={workspaceId}
+              />
             </div>
           )}
         </DialogBody>
@@ -452,7 +469,8 @@ function ActionFields({
   set,
   allowedHosts,
   isNew,
-}: FieldProps & { allowedHosts: readonly string[]; isNew: boolean }) {
+  workspaceId,
+}: FieldProps & { allowedHosts: readonly string[]; isNew: boolean; workspaceId: string }) {
   const t = useTranslations('automations.dialog');
   const wording = useAutomationWording();
   return (
@@ -484,7 +502,68 @@ function ActionFields({
         <WebhookFields draft={draft} set={set} allowedHosts={allowedHosts} />
       ) : null}
       {draft.action === 'AI_RUN' ? <AiFields draft={draft} set={set} /> : null}
+      {draft.action === 'WORK_ITEM' ? (
+        <WorkItemFields draft={draft} set={set} workspaceId={workspaceId} />
+      ) : null}
     </div>
+  );
+}
+
+const DEFAULT_PROFILE = '__default__';
+
+/**
+ * The work item action (issue #143): the goal, the agent profile the work
+ * runs under, and whether the assistant starts at once.
+ */
+function WorkItemFields({ draft, set, workspaceId }: FieldProps & { workspaceId: string }) {
+  const t = useTranslations('automations.dialog');
+  const profiles = useAgentProfiles(workspaceId);
+  const list = profiles.data?.profiles ?? [];
+  const chosen = list.find((profile) => profile.id === draft.agentProfileId) ?? null;
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="automation-goal">{t('workGoal')}</Label>
+        <Textarea
+          id="automation-goal"
+          data-testid="automation-goal"
+          rows={4}
+          value={draft.prompt}
+          onChange={(event) => set('prompt', event.target.value)}
+          placeholder={t('workGoalPlaceholder')}
+        />
+        <p className="text-xs text-muted-foreground">{t('workGoalHint')}</p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="automation-agent-profile">{t('workProfile')}</Label>
+        <Select
+          value={draft.agentProfileId === '' ? DEFAULT_PROFILE : draft.agentProfileId}
+          onValueChange={(value) =>
+            set('agentProfileId', value === DEFAULT_PROFILE || value === null ? '' : value)
+          }
+        >
+          <SelectTrigger id="automation-agent-profile" data-testid="automation-agent-profile">
+            <SelectValue>{() => chosen?.name ?? t('workProfileDefault')}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={DEFAULT_PROFILE}>{t('workProfileDefault')}</SelectItem>
+            {list.map((profile) => (
+              <SelectItem key={profile.id} value={profile.id}>
+                {profile.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <label className="flex items-center gap-2 text-sm">
+        <Checkbox
+          checked={draft.startWorkItemRun}
+          onCheckedChange={(checked) => set('startWorkItemRun', checked === true)}
+          data-testid="automation-start-run"
+        />
+        {t('workStartRun')}
+      </label>
+    </>
   );
 }
 

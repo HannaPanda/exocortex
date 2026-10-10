@@ -31,6 +31,9 @@ export interface AutomationRuleRecord {
   prompt: string | null;
   modelSlug: string | null;
   mailSubject: string | null;
+  /** `WORK_ITEM` (issue #143). */
+  agentProfileId: string | null;
+  startWorkItemRun: boolean;
   createdById: string | null;
 }
 
@@ -55,6 +58,8 @@ export async function loadRule(
       prompt: true,
       modelSlug: true,
       mailSubject: true,
+      agentProfileId: true,
+      startWorkItemRun: true,
       createdById: true,
     },
   });

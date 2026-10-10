@@ -2817,6 +2817,10 @@ enum AutomationAction {
   /// an automation that could name one would be a relay, and the address is
   /// read from `createdBy` at the moment the mail is queued.
   EMAIL_SELF
+  /// A work item about the page, with the rule's prompt as its goal, the page
+  /// as its context and an agent profile (issue #143). Delegates rather than
+  /// answers: what happens next is the work item's, not the rule's.
+  WORK_ITEM
 }
 
 /// Where an `AI_RUN` rule puts its answer.
@@ -2933,6 +2937,15 @@ model AutomationRule {
   /// column rather than a rendered message for the reason ADR-051 gives: what
   /// a mail says is chosen in `packages/mail`, and a rule supplies values.
   mailSubject String?
+
+  /// `WORK_ITEM` (issue #143): the agent profile the new work runs under, or
+  /// null for the workspace's default. Chosen by the rule's owner when the
+  /// rule is written; the work item route accepts it from this rule's action
+  /// because it is exactly what the rule names.
+  agentProfileId   String?
+  agentProfile     AgentProfile? @relation(fields: [agentProfileId], references: [id], onDelete: SetNull)
+  /// `WORK_ITEM`: whether the built-in AI starts on the new work at once.
+  startWorkItemRun Boolean       @default(false)
 
   /// Failures since the last success. The rule switches itself off when this
   /// reaches `automations.maxConsecutiveFailures`, and the reason lands in
@@ -4186,8 +4199,8 @@ model AgentProfile {
   description     String?
   /// The role, in words: put before the conversation as a system message.
   instructions    String?
-  /// Rule pages (`aiRule` pages of this workspace) whose text is added to the
-  /// role. Ids, not a relation: a page that is gone is skipped, never fatal.
+  /// Pages of this workspace whose text is added to the role, rules usually.
+  /// Ids, not a relation: a page that is gone is skipped, never fatal.
   ruleDocumentIds String[] @default([])
 
   /// A preference, not a binding: a model that is no longer enabled is
@@ -4224,8 +4237,9 @@ model AgentProfile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  workItems WorkItem[]
-  runs      AiRun[]
+  workItems       WorkItem[]
+  runs            AiRun[]
+  automationRules AutomationRule[]
 
   @@unique([workspaceId, name])
   @@map("agent_profile")

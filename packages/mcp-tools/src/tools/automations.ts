@@ -64,6 +64,11 @@ function describeAction(rule: AutomationRule): string {
       return `KI-Lauf → ${rule.output === 'COMMENT' ? 'Kommentar' : 'Unterseite'}`;
     case 'EMAIL_SELF':
       return `E-Mail an den Besitzer der Regel → „${rule.mailSubject ?? rule.name}"`;
+    case 'WORK_ITEM':
+      return (
+        `Auftrag anlegen → Profil ${rule.agentProfileId ?? 'Standard'}` +
+        (rule.startWorkItemRun ? ', KI startet sofort' : '')
+      );
   }
 }
 
@@ -169,7 +174,10 @@ const ruleBodySchema = z.object({
     .max(4_000)
     .nullable()
     .default(null)
-    .describe('Was das Modell gefragt wird. Die geänderte Seite ist sein Material.'),
+    .describe(
+      'Bei AI_RUN: was das Modell gefragt wird, die geänderte Seite ist sein Material. Bei ' +
+        'WORK_ITEM: das Ziel des Auftrags, die Seite wird sein Kontext.',
+    ),
   modelSlug: z.string().min(1).max(200).nullable().default(null),
   mailSubject: z
     .string()
@@ -182,6 +190,17 @@ const ruleBodySchema = z.object({
         'Eine Empfängeradresse gibt es bewusst nicht: die Mail geht immer an das Konto, ' +
         'dem die Regel gehört.',
     ),
+  agentProfileId: idSchema
+    .nullable()
+    .default(null)
+    .describe(
+      'Nur bei WORK_ITEM: das Agentenprofil des neuen Auftrags (exo_agent_profile_list), null ' +
+        'für das Standardprofil des Arbeitsbereichs.',
+    ),
+  startWorkItemRun: z
+    .boolean()
+    .default(false)
+    .describe('Nur bei WORK_ITEM: ob die eingebaute KI sofort einen Lauf daran startet.'),
   output: automationOutputSchema
     .default('COMMENT')
     .describe('Wohin die Antwort geht. Eine Automation überschreibt niemals den Seiteninhalt.'),
@@ -220,11 +239,12 @@ export const automationCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_automation_create',
   description:
     'Legt eine Automationsregel an: „wenn sich hier etwas ändert, dann das tun" oder, mit dem ' +
-    'Auslöser SCHEDULE, „jeden Sonntag um 07:00 das tun". Drei Aktionen: ' +
+    'Auslöser SCHEDULE, „jeden Sonntag um 07:00 das tun". Vier Aktionen: ' +
     'WEBHOOK schickt einen signierten POST an eine URL, AI_RUN stellt einen Prompt gegen die ' +
     'geänderte Seite und legt die Antwort als Kommentar oder Unterseite ab, EMAIL_SELF schickt ' +
     'die Seite per Mail an das Konto, dem die Regel gehört, und ausdrücklich an kein anderes: ' +
-    'es gibt kein Feld für eine Empfängeradresse. Braucht die ' +
+    'es gibt kein Feld für eine Empfängeradresse, WORK_ITEM legt einen Auftrag über die Seite an ' +
+    '(prompt ist sein Ziel, agentProfileId sein Profil, startWorkItemRun startet die KI). Braucht die ' +
     'OWNER-Rolle im Arbeitsbereich und einen Token mit admin-Rechten. Das Signiergeheimnis eines ' +
     'Webhooks steht genau einmal in dieser Antwort und lässt sich später nicht mehr auslesen.',
   inputSchema: ruleBodySchema.extend({ workspaceId: idSchema }),

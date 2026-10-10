@@ -1,6 +1,5 @@
 import { assertPolicy, canManageWorkItems, type WorkspaceAccessService } from '@exocortex/auth';
 import { AI_WRITE_MODES, type AiWriteMode } from '@exocortex/contracts';
-
 import { agentProfileSnapshotSchema } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
