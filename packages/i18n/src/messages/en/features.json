@@ -943,5 +943,18 @@
       "p6": "For a share, it says precisely what is supposed to happen and which pages are affected. If one of those pages changes before you answer, your reply will no longer approve anything, and the agent asks again with the updated state. A question can also run in the background without pausing the task; the card will then let you know that work continues."
     },
     "where": "The hand icon at the top right of the header, the account menu under “Waiting for you”, or Strg + K and “Waiting for you”."
+  },
+  "agentenprofile": {
+    "title": "Agent profiles: Roles for the AI on tasks",
+    "summary": "An agent profile determines what role the built-in AI works in on a task: what it is told, which model it prefers, which tools it can use, whether it writes, suggests, or only reads, and how much a run and a task are allowed to cost.",
+    "details": {
+      "p1": "A profile only restricts. Each limit is compared with the workspace setting and the task setting; the stricter one applies. The AI continues to act with your permissions, never with more.",
+      "p2": "A task specifies its profile, subtasks inherit the profile of their parent task, and a task without its own uses the workspace’s default profile. Only a human or a write token can choose the profile, never the AI itself.",
+      "p3": "Profile, model, and provider are three separate things: the profile is the role, the model is a preference that gets skipped if it is no longer enabled, and the provider comes from provider routing, which a profile can only refine.",
+      "p4": "With “A human completes”, a run cannot mark its task as done, but can only submit it for approval. “Keep runs in this workspace” ensures that the run cannot reach any other workspace.",
+      "p5": "Each run remembers which version of the profile it worked with, and every change to the profile is recorded with the person and fields in its history. Workspace admins can create and edit them; agents read profiles using exo_agent_profile_list and exo_agent_profile_get.",
+      "p6": "An automation can hand off work: the “Create task” action turns the modified page into a task with the rule’s target and the selected profile; if desired, the AI starts right away."
+    },
+    "where": "Under Tasks via “Manage profiles”, on the task at the agent profile, or Strg + K and “Open agent profiles”."
   }
 }

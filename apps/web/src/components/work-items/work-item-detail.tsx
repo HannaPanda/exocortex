@@ -321,6 +321,7 @@ function StartRunDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations('workItems.startRun');
+  const tProfile = useTranslations('agentProfiles.workItem');
   const wording = useWorkItemWording();
   const start = useStartWorkItemRun(item.workspaceId);
   const [instructions, setInstructions] = React.useState('');
@@ -371,6 +372,11 @@ function StartRunDialog({
                   <p className="text-xs text-muted-foreground">{t('fromCheckpointHint')}</p>
                 </div>
               </div>
+            )}
+            {item.agentProfile === null ? null : (
+              <p className="text-xs text-muted-foreground" data-testid="work-item-run-profile">
+                {tProfile('runsUnder', { name: item.agentProfile.name })}
+              </p>
             )}
             <RunModelSelect value={modelSlug} onChange={setModelSlug} />
             <Label htmlFor="work-item-instructions">{t('instructionsLabel')}</Label>

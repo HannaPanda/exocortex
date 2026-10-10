@@ -98,7 +98,8 @@
       "AI_FAILED": "Zadanie AI dla tej reguły nie powiodło się, na przykład z powodu braku odpowiedzi modelu lub wyłączenia AI.",
       "PAGE_UNAVAILABLE": "Z twojego konta nie udało się odczytać ani zapisać strony, na której działa reguła.",
       "OWNER_UNAVAILABLE": "Twoje konto nie może obecnie wykonać tej reguły, na przykład z powodu niepotwierdzonego adresu e-mail.",
-      "MAIL_FAILED": "Regule nie udało się wysłać strony pocztą elektroniczną."
+      "MAIL_FAILED": "Regule nie udało się wysłać strony pocztą elektroniczną.",
+      "WORK_ITEM_FAILED": "Reguła nie mogła utworzyć zadania ani uruchomić w nim przebiegu AI, na przykład dlatego, że profil agenta już nie pasuje lub AI jest wyłączona."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

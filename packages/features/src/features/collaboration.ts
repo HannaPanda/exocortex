@@ -180,4 +180,23 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
       screens: ['/arbeitsbereich/:x/vorschlaege', '/arbeitsbereich/:x/vorschlaege/:x'],
     },
   }),
+  defineFeature({
+    id: 'agentenprofile',
+    area: 'zusammenarbeit',
+    since: '2026-10-10',
+    references: ['#143', 'ADR-071'],
+    ui: {},
+    tools: [
+      'exo_agent_profile_list',
+      'exo_agent_profile_get',
+      'exo_agent_profile_create',
+      'exo_agent_profile_update',
+      'exo_agent_profile_duplicate',
+      'exo_agent_profile_delete',
+    ],
+    claims: {
+      screens: ['/arbeitsbereich/:x/agentenprofile', '/arbeitsbereich/:x/agentenprofile/:x'],
+      automationActions: ['WORK_ITEM'],
+    },
+  }),
 ];

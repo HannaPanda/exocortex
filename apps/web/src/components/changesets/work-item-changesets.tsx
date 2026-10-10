@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
+import { WorkItemProfile } from '@/components/agent-profiles/work-item-profile';
 import { useChangesets } from '@/lib/api/changeset-queries';
 import { useUpdateWorkItem } from '@/lib/api/work-item-queries';
 
@@ -43,6 +44,7 @@ export function WorkItemChangesets({
 
   return (
     <Section title={t('title')}>
+      <WorkItemProfile item={item} canWrite={canWrite} />
       <div className="flex max-w-sm flex-col gap-1">
         <Label htmlFor={`write-mode-${item.id}`}>{t('writeModeLabel')}</Label>
         <Select

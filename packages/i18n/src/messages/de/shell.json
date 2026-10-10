@@ -237,6 +237,10 @@
         "label": "Änderungsvorschläge öffnen",
         "keywords": "vorschlag vorschläge änderungsvorschlag prüfen übernehmen ablehnen freigabe diff changeset review"
       },
+      "agentProfiles": {
+        "label": "Agentenprofile öffnen",
+        "keywords": "agentenprofil profil rolle agent ki rechte werkzeuge budget schreibmodus entwickler rechercheur archivar agent profile"
+      },
       "automations": {
         "label": "Automationen öffnen",
         "keywords": "automation regel zeitplan auslöser workflow"

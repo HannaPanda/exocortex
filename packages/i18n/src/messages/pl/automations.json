@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (podpisany POST)",
     "AI_RUN": "Uruchomienie AI dla zmienionej strony",
-    "EMAIL_SELF": "E-mail do ciebie"
+    "EMAIL_SELF": "E-mail do ciebie",
+    "WORK_ITEM": "Utwórz zadanie"
   },
   "outputs": {
     "COMMENT": "Jako komentarz do strony",
@@ -101,7 +102,13 @@
     "promptHint": "Zmieniona strona stanowi materiał dla modelu. Odpowiedź trafia obok niej, a nie do jej wnętrza.",
     "output": "Wynik",
     "model": "Model (opcjonalnie)",
-    "modelPlaceholder": "Zostaw puste dla domyślnego modelu"
+    "modelPlaceholder": "Zostaw puste dla domyślnego modelu",
+    "workGoal": "Cel zadania",
+    "workGoalPlaceholder": "Na przykład: sprawdź stronę pod kątem nieaktualnych informacji i zaproponuj poprawki.",
+    "workGoalHint": "Zadanie otrzyma ten cel oraz stronę jako kontekst. Jego tytuł będzie połączeniem nazwy reguły i tytułu strony.",
+    "workProfile": "Profil agenta",
+    "workProfileDefault": "Domyślny profil obszaru roboczego",
+    "workStartRun": "Zleć natychmiastowe rozpoczęcie pracy przez AI"
   },
   "page": {
     "loading": "Ładowanie automatyzacji…",

@@ -98,7 +98,8 @@
       "AI_FAILED": "De AI-taak van de regel is mislukt, bijvoorbeeld omdat het model niet antwoordde of AI is uitgeschakeld.",
       "PAGE_UNAVAILABLE": "De pagina waarop de regel werkt, kon niet worden gelezen of bewerkt met jouw account.",
       "OWNER_UNAVAILABLE": "Je account kan de regel op dit moment niet uitvoeren, bijvoorbeeld zonder bevestigd e-mailadres.",
-      "MAIL_FAILED": "De regel kon de pagina niet per e-mail versturen."
+      "MAIL_FAILED": "De regel kon de pagina niet per e-mail versturen.",
+      "WORK_ITEM_FAILED": "De regel kon geen taak aanmaken of er geen AI-sessie voor starten, bijvoorbeeld omdat het agentprofiel niet meer klopt of de AI is uitgeschakeld."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

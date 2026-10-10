@@ -237,6 +237,10 @@
         "label": "Abrir sugestões de alteração",
         "keywords": "sugestão sugestões sugestão de alteração verificar aplicar rejeitar compartilhamento diff changeset revisão"
       },
+      "agentProfiles": {
+        "label": "Abrir perfis de agentes",
+        "keywords": "perfil de agente perfil função agente ia permissões ferramentas orçamento modo de escrita desenvolvedor pesquisador arquivista agent profile"
+      },
       "automations": {
         "label": "Abrir automações",
         "keywords": "automação regra agendamento gatilho workflow"

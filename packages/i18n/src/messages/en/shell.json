@@ -237,6 +237,10 @@
         "label": "Open change suggestions",
         "keywords": "suggestion suggestions change proposal review accept reject share diff changeset"
       },
+      "agentProfiles": {
+        "label": "Open agent profiles",
+        "keywords": "agent profile profile role agent ai permissions tools budget write mode developer researcher archivist agent profile"
+      },
       "automations": {
         "label": "Open automations",
         "keywords": "automation rule schedule trigger workflow"

@@ -98,7 +98,8 @@
       "AI_FAILED": "The rule’s AI task failed, for example because the model did not respond or AI is turned off.",
       "PAGE_UNAVAILABLE": "The page the rule operates on could not be read or written to with your account.",
       "OWNER_UNAVAILABLE": "Your account cannot run the rule right now, for example without a verified email address.",
-      "MAIL_FAILED": "The rule could not send the page as an email."
+      "MAIL_FAILED": "The rule could not send the page as an email.",
+      "WORK_ITEM_FAILED": "The rule couldn’t create a task or start an AI run on it, for example because the agent profile no longer fits or AI is turned off."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

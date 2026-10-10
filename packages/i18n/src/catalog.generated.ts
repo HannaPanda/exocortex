@@ -3,6 +3,7 @@
 
 import de_account from './messages/de/account.json';
 import de_admin from './messages/de/admin.json';
+import de_agentProfiles from './messages/de/agentProfiles.json';
 import de_ai from './messages/de/ai.json';
 import de_attention from './messages/de/attention.json';
 import de_auth from './messages/de/auth.json';
@@ -33,6 +34,7 @@ import de_ui from './messages/de/ui.json';
 import de_workItems from './messages/de/workItems.json';
 import en_account from './messages/en/account.json';
 import en_admin from './messages/en/admin.json';
+import en_agentProfiles from './messages/en/agentProfiles.json';
 import en_ai from './messages/en/ai.json';
 import en_attention from './messages/en/attention.json';
 import en_auth from './messages/en/auth.json';
@@ -63,6 +65,7 @@ import en_ui from './messages/en/ui.json';
 import en_workItems from './messages/en/workItems.json';
 import es_account from './messages/es/account.json';
 import es_admin from './messages/es/admin.json';
+import es_agentProfiles from './messages/es/agentProfiles.json';
 import es_ai from './messages/es/ai.json';
 import es_attention from './messages/es/attention.json';
 import es_auth from './messages/es/auth.json';
@@ -93,6 +96,7 @@ import es_ui from './messages/es/ui.json';
 import es_workItems from './messages/es/workItems.json';
 import fr_account from './messages/fr/account.json';
 import fr_admin from './messages/fr/admin.json';
+import fr_agentProfiles from './messages/fr/agentProfiles.json';
 import fr_ai from './messages/fr/ai.json';
 import fr_attention from './messages/fr/attention.json';
 import fr_auth from './messages/fr/auth.json';
@@ -123,6 +127,7 @@ import fr_ui from './messages/fr/ui.json';
 import fr_workItems from './messages/fr/workItems.json';
 import it_account from './messages/it/account.json';
 import it_admin from './messages/it/admin.json';
+import it_agentProfiles from './messages/it/agentProfiles.json';
 import it_ai from './messages/it/ai.json';
 import it_attention from './messages/it/attention.json';
 import it_auth from './messages/it/auth.json';
@@ -153,6 +158,7 @@ import it_ui from './messages/it/ui.json';
 import it_workItems from './messages/it/workItems.json';
 import nl_account from './messages/nl/account.json';
 import nl_admin from './messages/nl/admin.json';
+import nl_agentProfiles from './messages/nl/agentProfiles.json';
 import nl_ai from './messages/nl/ai.json';
 import nl_attention from './messages/nl/attention.json';
 import nl_auth from './messages/nl/auth.json';
@@ -183,6 +189,7 @@ import nl_ui from './messages/nl/ui.json';
 import nl_workItems from './messages/nl/workItems.json';
 import pl_account from './messages/pl/account.json';
 import pl_admin from './messages/pl/admin.json';
+import pl_agentProfiles from './messages/pl/agentProfiles.json';
 import pl_ai from './messages/pl/ai.json';
 import pl_attention from './messages/pl/attention.json';
 import pl_auth from './messages/pl/auth.json';
@@ -213,6 +220,7 @@ import pl_ui from './messages/pl/ui.json';
 import pl_workItems from './messages/pl/workItems.json';
 import pt_BR_account from './messages/pt-BR/account.json';
 import pt_BR_admin from './messages/pt-BR/admin.json';
+import pt_BR_agentProfiles from './messages/pt-BR/agentProfiles.json';
 import pt_BR_ai from './messages/pt-BR/ai.json';
 import pt_BR_attention from './messages/pt-BR/attention.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
@@ -242,12 +250,13 @@ import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
     "account": de_account,
     "admin": de_admin,
+    "agentProfiles": de_agentProfiles,
     "ai": de_ai,
     "attention": de_attention,
     "auth": de_auth,
@@ -280,6 +289,7 @@ export const CATALOG = {
   'en': {
     "account": en_account,
     "admin": en_admin,
+    "agentProfiles": en_agentProfiles,
     "ai": en_ai,
     "attention": en_attention,
     "auth": en_auth,
@@ -312,6 +322,7 @@ export const CATALOG = {
   'es': {
     "account": es_account,
     "admin": es_admin,
+    "agentProfiles": es_agentProfiles,
     "ai": es_ai,
     "attention": es_attention,
     "auth": es_auth,
@@ -344,6 +355,7 @@ export const CATALOG = {
   'fr': {
     "account": fr_account,
     "admin": fr_admin,
+    "agentProfiles": fr_agentProfiles,
     "ai": fr_ai,
     "attention": fr_attention,
     "auth": fr_auth,
@@ -376,6 +388,7 @@ export const CATALOG = {
   'it': {
     "account": it_account,
     "admin": it_admin,
+    "agentProfiles": it_agentProfiles,
     "ai": it_ai,
     "attention": it_attention,
     "auth": it_auth,
@@ -408,6 +421,7 @@ export const CATALOG = {
   'nl': {
     "account": nl_account,
     "admin": nl_admin,
+    "agentProfiles": nl_agentProfiles,
     "ai": nl_ai,
     "attention": nl_attention,
     "auth": nl_auth,
@@ -440,6 +454,7 @@ export const CATALOG = {
   'pl': {
     "account": pl_account,
     "admin": pl_admin,
+    "agentProfiles": pl_agentProfiles,
     "ai": pl_ai,
     "attention": pl_attention,
     "auth": pl_auth,
@@ -472,6 +487,7 @@ export const CATALOG = {
   'pt-BR': {
     "account": pt_BR_account,
     "admin": pt_BR_admin,
+    "agentProfiles": pt_BR_agentProfiles,
     "ai": pt_BR_ai,
     "attention": pt_BR_attention,
     "auth": pt_BR_auth,

@@ -1688,6 +1688,582 @@
       "source": "0b6722a8adfb9354",
       "output": "08b041935798fbf6"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "ee8daa8206c3c4ef"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "18f6aff3fee00cc6"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "989e967d7b4d8928"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "17bd77f719d89437"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "87bb59ba2f92f2a5"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "9e72e003ef38e722"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "3f765aec70b29e4b"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "3e997a24172df1df"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "e2d0a54968ead24e"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "280b10c89cc41d57"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "8ac45e0d93534031"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "f531bb1758b62fd0"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "02cdaabfca805d6a"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "982a7984a6a48773"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "ed7db8da1a1d7b88"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "da50c072e24515fe"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "6ef6a470ec186949"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "464c4ffd019e1e96"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "9b1d0a5f102cd0f8"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "2448d6cb22864e42"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "7e846ce45ea3a656"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "67812888e5310d28"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "5842634516f02a59"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "211b99e865d514fd"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "b01562537decb82f"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "cb703cadd8399307"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "96234b235b0170d5"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "3535ababfaeb87c6"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "d09b4dd6265a2202"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "3840d9d29421c46c"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "ec99e48f1819680f"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "3fbe95070b55e426"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "7ce2e8cb44f9fe26"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "3236aeec43e563ca"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "fc20838c106a6ac1"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "60c9d7aa74194748"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "d5f8ecb44ed7fc94"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "886d1fc9abafa8f0"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "f7c220486184baa6"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "df5680f85da625b4"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "70d0a9cc10169da3"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "64239c7701b93293"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "0e76960093379060"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "5f25947bd69dcefe"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "a2fa7e0cc4dcf2be"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "46b63dc8793eb71e"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "14736a2eb9f4159f"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "ea93d6a262ecb87a"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "8935da61c63b293f"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "ae19da3a7d3468b1"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "864c855e3d64399d"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "fef52cc1289073dd"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "8e1ee6b7a76dee4f"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "557fe004f344e1cc"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "fef52cc1289073dd"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "becec746347337a9"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "dcd9c831cf365a59"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "cdd692d49b2266de"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "4759498ac2a719c6"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "1bfe1db4e7652746"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "a7d0e20b11231ee1"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "796aecd3d1a23738"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "80968473f0229de1"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "14736a2eb9f4159f"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "5642b16c0175df2d"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "67812888e5310d28"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "f7c220486184baa6"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "3840d9d29421c46c"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "ec99e48f1819680f"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "dcd1d5223f73b3a9"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "6b9e9a482c97bb2e"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "f43270eec9a2e19b"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "b527fc001be5ff3f"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "6dbc2366fc60da23"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "7b5b799f932589eb"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "0a61b4c0218261b3"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "6f095faa9afadaf0"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "6a2f133fe27a5f96"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "1ad636ebb6ed387c"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "70d0a9cc10169da3"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "96a6705da931ed0d"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "c8677fd26333999a"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "d104b986191f620e"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "829f194746ed61c4"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "1509f561f2416598"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "b8978c791e5a18aa"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "fb36dfb5a979caae"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "8e1ee6b7a76dee4f"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "0242511e8faf617a"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "3d25965884a77e13"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "4b42c6690ebeb867"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "282f21dc752ef8b3"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "634de114775082f0"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "fdf672ed5e932a5f"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "ad1fb9ec0cb3c7a4"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "6628ad6c640ea157"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "1d432f58690c2b4a"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "355f79f29d7d3c2d"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "4b9545c97cd95709"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "61d2afe2349913ce"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "7fdb3ccec0e0d236"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "02e3308b9954e286"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "94835ea2fcf775cd"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "e5fd70f9ae4e8c27"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "c3963aedaac6c83c"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "788011833a5a0f22"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "eb6362fd199c3d95"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "04e2a9728af75840"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "31edff65eac1983d"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "3e3e125453ca1f3b"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "d4ea333d8b1f432c"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "56b564b75c7fdb48"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "85087f84feeeb859"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "5759a416f2b3b4ff"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "2828d910c046ace8"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "e029e95edc010512"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "d696a35bdd1883da"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "ea93d6a262ecb87a"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "d76fc7f041b11fce"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "a8bfae3eee941527"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "21b111cbfe6e8fca"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "6c48219f4c16f05a"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "9a5a6ec1fa6137a1"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "3babc525a1d63b62"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "76dfc693d5286a81"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "df7ac0976680ba8c"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "fcf4f3f4d5f73ef8"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "406e963715b6c9de"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "5ef5ef0364b6939c"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "9668dfb02f8ad966"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "9a677dcd959f90b7"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "c00881f8285678b5"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "406e963715b6c9de"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "4b6698dc485d98bb"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "cda7d2408b322cb7"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "6d1df10e8ac8b338"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "c00881f8285678b5"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "4be8b4595698be3d"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "2e827ba15882a76e"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "c4dedcac27f4e584"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "66f4804ee23ddc09"
@@ -2968,6 +3544,10 @@
       "source": "36cb0f4ead625284",
       "output": "9c41fe2f40bd67cd"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "6f541e1b25319db5"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "64cff1319d2fd2cb"
@@ -3103,6 +3683,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "5b341c960fb7166e"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "b0309b4ed24d78e3"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "09f36c29f6f80613"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "032b3d3be2207b70"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "c00881f8285678b5"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "6aa2c10594d7e371"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "82cf03824bf38f0c"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -8480,6 +9084,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "03c52209d6b11932"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "e524ef037c184334"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "8473d5145f04e04e"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "0e5fb450386410bd"
@@ -8880,6 +9492,10 @@
       "source": "970e2f4b247470ae",
       "output": "6c61a7ad34bb32ff"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "4a8e9de88e87f4ac"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "46d1d61abb1f13e7"
@@ -9035,6 +9651,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "03dfddb690f58983"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "592d59d1fb003c79"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "d441343f7a533d5d"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "0d2e5bb71ab87dd3"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "cf44b013839b8aaf"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "ecb2b682f233c289"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "f1230b76693999d2"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "2d2b92726c13ff15"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "39544af3b28512b2"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "0d05e88e29954057"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -11727,6 +12379,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "989a74446b612b79"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "2539e385e2cfa7e7"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -15648,6 +16304,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "58606e582452ca98"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "23b4e12aaa586cec"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "e86e5adc406e8e33"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "b8099c3429fc0b3b"
@@ -18830,6 +19494,582 @@
       "source": "0b6722a8adfb9354",
       "output": "b02c02324c13fb41"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "88f66d5ba0f9be9a"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "f75c4690d204f17f"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "135072ebe171b17d"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "77e2c8c916d0862f"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "b326fc96874e1a06"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "b63557d937556971"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "ccfb99c98f5c9758"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "14417cbb068c53de"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "c9894cf002f90bd0"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "be4089a3f07e35f8"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "94c5c28f239aab96"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "3c5f7e4d36054468"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "bd0b33016e3df877"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "f69f788d18beaa48"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "6366cbd64563e181"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "e0e08270c43d81db"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "a276cefb6934e5bc"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "4ca627f4359f5a06"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "f40139561b14066e"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "eafea678d963844a"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "c2701d64bced85fa"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "72c56133bb8905b1"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "55ea1490278d16ac"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "f50b0a8cec72a2a9"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "f52a3b22165c8922"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "ff40fae988d2ec05"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "e806100cfae64c10"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "a1e90f7fdbbf8c0a"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "9f33aa77259589d1"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "c5b5c15925ff09b9"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "a3750ea989dc712f"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "5fcbc09878388a37"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "efa17fdd7a9dfac6"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "d2978235126bddf0"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "69cb1dfaa97d1cda"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "693a32894569196e"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "0637eb67a10f902a"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "6da581764eeb8ccf"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "d418a6fa5b791b6f"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "014c433501746c37"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "8544c53630607f75"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "aef5726bb690265c"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "0eb94a470d644d2f"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "be3bff8bdd6dce89"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "a558a4d8c3e61bcd"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "c0a2cf733efdb2e5"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "1ff6a2443be9c146"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "254e6867d8abc649"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "036f668a0066e932"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "00bd9c92a1fdd250"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "88f66d5ba0f9be9a"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "036f668a0066e932"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "b08e21cef16bb8a8"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "f5632c50a4dfec23"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "1e624508abf412a3"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "3fe5ff266fc3ceac"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "625ff97627142bf7"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "f09a6a28f52d6356"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "e31ab425002a029e"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "cd39d6d9c1d55dac"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "700d09e2ee1cea1a"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "eafea678d963844a"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "63b0e1e94f46c167"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "a1e90f7fdbbf8c0a"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "9f33aa77259589d1"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "562bb15757a8b593"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "1ac6b297fe0224a0"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "ea290de7b9ffbe5f"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "a3750ea989dc712f"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "5fcbc09878388a37"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "68d9d42ecc2341a6"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "8543620e73d6f93c"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "5a4f624de5c65a07"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "a71f188b5e7d6230"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "14ffbab66f69dcf5"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "d418a6fa5b791b6f"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "2d57b39ba8fdbd13"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "7e4ea686b99cbf2a"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "b1dadda2691cc1a4"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "a0e3cc7b21d67690"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "13e51a210f45ed1b"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "27a54f27e3beaec7"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "239740a2feebc4b0"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "00bd9c92a1fdd250"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "35b56d898482c64f"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "b4afae08483953dc"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "1a1b3e6ecc51b478"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "3852731bb5e24407"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "a85fad96eea98af3"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "b1f6fff75735e5d2"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "49320c9accf83065"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "8c6c0d9456078b32"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "abc7a1d8786469c1"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "b144e59660fc23c1"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "1a6b6b8a81b70117"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "9acdbace08c167e2"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "a3346c788a2a24be"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "b085de0866999009"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "f5b889e0254434fc"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "54142058998c5d59"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "0316333303fcb29d"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "80dade6fab6f9387"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "cc4d270fc3c1f8b5"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "3c83b0107d0ecb99"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "9bfdce7f474a8818"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "1f7e1c5a6f8bfff8"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "9b4f199e93518f35"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "cf9a907442af6aa6"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "f264466183f23f82"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "ab434464d1900142"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "23e249b5e1b0f496"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "3eaa5af2faf41966"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "a5ab3212dad17406"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "00d551e63dd540fc"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "a558a4d8c3e61bcd"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "5491a247a6cd732b"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "53fd99edb999f5db"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "13bd6e86a13953ee"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "f16a6d8c9e91c5c9"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "af7e57dbb2aec0e2"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "72d81e7c49885400"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "0e9a8bae50c64b58"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "ede703eb9bf7c7ff"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "3b0a50926b89cfd0"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "e1af279f61c5a39e"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "e266ea0f7ee3ddc5"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "7e9a6b4e2062ba70"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "27f8d8a8a14004d4"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "e1af279f61c5a39e"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "deeb5d5d11308952"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "c5174df44c006243"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "df70cdc657a42586"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "05751475636f5e60"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "580a2a5c74eef2f7"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "3400b741514018b8"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "f35f9141f4427c34"
@@ -20110,6 +21350,10 @@
       "source": "36cb0f4ead625284",
       "output": "23dfeecba9aff92b"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "5e41faee42167a7f"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "212e06c386ff2f18"
@@ -20245,6 +21489,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "cb0108f07f84c5de"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "f761fc155c8233a3"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "9de176ad4b89fea4"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "e221873fbefceef2"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "7e6cc7ea5a2d7231"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "a3fd7e41bb986558"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -25622,6 +26890,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "292079df26ddaf24"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "10da5d18a41423bd"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "07fee0cab4d60c4a"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "b12ccc175be0795b"
@@ -26022,6 +27298,10 @@
       "source": "970e2f4b247470ae",
       "output": "bf21d37bd16f631f"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "fabce628c3b15604"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "384825e76c344ed0"
@@ -26177,6 +27457,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "96855ebe6ea320e2"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "b9e16b70b90fb1dd"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "b098ab89ea5d169a"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "4604a93597856053"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "c0e8e1475375605b"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "43f87a3c4b6b7920"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "292dba6caa9f15b3"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "0d76e5fbcc3d4413"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "64393a8bda1798ed"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "87e8f2b0fcf6982d"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -28869,6 +30185,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "44ec492e423bbb0f"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "8beea0a68052466e"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -32790,6 +34110,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "52a2238650b59571"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "ec581cbff7a3678e"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "5b5692d1b2fd3a67"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "6ed8f493700d79f0"
@@ -35972,6 +37300,582 @@
       "source": "0b6722a8adfb9354",
       "output": "946f503d47417b5b"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "209fb58569aedfb0"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "40fa76980d0f538a"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "071dd45d9eda9755"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "23ebc5226842c484"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "3f680c5fc8ca2079"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "fd8373a28623c407"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "2df863a0788781fa"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "30d8d50474ef3528"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "5e5d0216ce0b5b9e"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "1a797b980d16ce8e"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "84c46f2c3cd43c4d"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "88661ff41083fdca"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "9d726e2b316de2ac"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "150470286c88508b"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "9c1f30ce37c66f94"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "e61389b02646f03c"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "9ffccf86f7f72bef"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "42e37604b638b627"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "6d985c30edf3b65f"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "263f4000cfbb4cd2"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "61f14d357146969f"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "1160badd9645f7ac"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "88ee2fcda5d7bef2"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "76722d6e3ab3a986"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "2422e2e4f1193c33"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "76e03d1b3f33e2f0"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "3608ffad07000d5e"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "475c415626154fc6"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "cf8ac7fef45fb7a5"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "5758d1577e505772"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "adb848e8ce8c2403"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "88508f7390b4f02a"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "c4c9e15d44f98a5a"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "ccb55b1ba36ec884"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "535eb5bb323b932c"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "c94dbdf5f3dc6277"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "041cfb8360836507"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "2c6b7a192e2e176d"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "31b0e1cc0d581d7f"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "d2d9c9edbb07c9f8"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "1f319ef087779d16"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "62c9c6b7efbc620e"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "8b3ba0d31742e3bf"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "b43dc10ee4a4f30f"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "3e7622d04e773d30"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "269340238a5fc471"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "a1fc967c55879693"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "8c54187d131cad9a"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "a2675f04e4213941"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "b26841fcd53d97a6"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "958467adcc9e89e3"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "e6c4c8de5456b1a3"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "c8431b3480474710"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "209fb58569aedfb0"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "37ad39593538b69b"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "79d2097d588784ff"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "deee7631ff9bb29b"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "be6994a76e3ee449"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "969418f4d5aea880"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "d913a8cfc6e00932"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "069a89be9136db8e"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "8aa79d5f85b36191"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "2ed7a8b6a86594da"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "a1fc967c55879693"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "ceabebe8d37096fb"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "1160badd9645f7ac"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "bbdafeff13e0c6cc"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "5758d1577e505772"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "adb848e8ce8c2403"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "b2c124536d218059"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "e67b852b0a8e3163"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "b57c0034ee6992e0"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "92d95f7740e6745b"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "ccb55b1ba36ec884"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "f70b8492f438ee6f"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "ece506aad5707678"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "b132e4da9cd44976"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "8bfcdb7dac7d6442"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "ff8b183dec43e5ca"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "1f319ef087779d16"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "e3c55d10c6b0545b"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "27fd39dcf9293eba"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "578f7cbb3bd0cba4"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "84b76ceebce99796"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "71dc74873e23107d"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "a675ecc712a56766"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "f111ecb2bad56a66"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "c8431b3480474710"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "d851148b46cdfd67"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "3c4c57415513cd94"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "4b42c6690ebeb867"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "c030bf7d78eade59"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "4bd35b0f537af7c5"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "55bc53f16c8872af"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "2c5ec11246b50896"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "aaecb084bb710c86"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "1d432f58690c2b4a"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "f79d7a8b3783b5fd"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "0514a7875ec8f431"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "1c940d57068fc214"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "bc4ba6ceee475507"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "f885f4556a590995"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "1be28e157b5866fa"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "8b7f736a9e6c6e5d"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "90c30abceeb2f8fe"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "788011833a5a0f22"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "00c3daa4a3202b1d"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "0dad61b6318ac60d"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "094e89c16b47528c"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "c8be2098b2ae4a69"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "eb8399ef9e73e354"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "c9e3eb68316c86bb"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "5f51d7784fcc319c"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "8c7e07ce9d89c682"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "14e0cfdb5653c102"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "23ebc5226842c484"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "e61bbb839ef8d8cb"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "e267d343821f264e"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "8c54187d131cad9a"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "ad3cb2195bd9da6a"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "da05253335e2c205"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "291b4fc834dc08c6"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "3114c9a59ada084e"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "358e271ed42ffdfe"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "0b3bd9a9af41afff"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "86380bf270719b1e"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "f877fd5fc8f3277a"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "cc7be51f640549cf"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "0504e2fdc0e7b82c"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "7df7e76a14366ddb"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "8f5c428750e8f9c7"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "0838a250f2772586"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "977fa287b252242e"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "0504e2fdc0e7b82c"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "a4382ae8bd5d6c48"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "571fb417e53ee0cd"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "34923cf75c418e7f"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "977fa287b252242e"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "9c910a73854be9c9"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "5ef1d3c486f07d26"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "8d404c23c96986e8"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "8614cf0058703cc9"
@@ -37252,6 +39156,10 @@
       "source": "36cb0f4ead625284",
       "output": "66a50bba2aa3cd03"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "502e6ba2e5ca9d79"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "64cff1319d2fd2cb"
@@ -37387,6 +39295,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "a746f286627803ba"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "d97e67c24c505371"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "26749d4e2e61314f"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "3c9c9da16a69704a"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "977fa287b252242e"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "c7e1302dde37320b"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "6320c36777781820"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -42764,6 +44696,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "8615cd1ca019dc31"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "ad23eed0527c1520"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "ea42be393606522d"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "66e9dc65bd89104e"
@@ -43164,6 +45104,10 @@
       "source": "970e2f4b247470ae",
       "output": "37cafc72dab02eb3"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "5a0e92a027c84aba"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "5d656ebd95dd5c05"
@@ -43319,6 +45263,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "58db0a5be26fd0f2"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "2ddf5d1ec81e2a9e"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "76907748397da772"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "a748a0fda234c551"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "8ba95620220ea2d1"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "548591b671c1eaf4"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "036e6f1773bc1d64"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "2da2f76b3cb5d2fe"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "e99784d89494ad9f"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "f3e0d9805a915573"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -46011,6 +47991,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "b329cbfd634b962f"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "aeb190f48ebb3ffc"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -49932,6 +51916,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "b43863c0d736852a"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "5fd9d2ceb547ad32"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "4ac8d9352b377c3e"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "0cf75bd2ef59a7cf"
@@ -53114,6 +55106,582 @@
       "source": "0b6722a8adfb9354",
       "output": "62afcc74654de6ab"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "563cc416b91b7113"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "4150eeec491abebe"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "f7629bd419d15dd9"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "7a093f5ac76cb31c"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "026d43ca59eae536"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "e874db4efa4bba54"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "89b09e23c5afa00b"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "f796a786078bc2c1"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "7efe336bd548c1eb"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "8a62e526a03702d6"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "613c7d25560022bb"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "4734b93a9b9447ae"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "3b30f34b8e9b7d0d"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "b008f124003d8051"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "f69f788d18beaa48"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "32efd8365abab5d1"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "f64d34214ccba177"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "49e493ba9d9cdaee"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "bc9b8aebd3b99afb"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "26b8b28bac5ebe47"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "60c662ce2008ab9c"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "8238944df0a544de"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "0cbf6be12e097a05"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "63ed584edcdb93e0"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "98ab2ff2c759553b"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "ae43b2a32bc1a799"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "ba0f26137cff0d53"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "0bace08502b61412"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "f67b8be7d41e0b34"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "28be58a3b7074b59"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "153b2993ff5be86f"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "f9c32eb820fbc8ac"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "c9f14d30d3de5165"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "6d1a40b633dc2db5"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "2fd753d2de42c81c"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "c10f816ddcafed53"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "7764fc11e73960e5"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "524b4efd596511a8"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "4fe1c4622397b3f5"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "b95da865ec529f34"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "59eeb57204da6fef"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "420171799b6224a9"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "c2b079cc1e8534ee"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "7b948dd79b992971"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "8f8e120ba0936341"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "d0baf34a9c94ca92"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "7a972bbc14808919"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "bb1ca9a0ad66edf4"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "11dedb2f3a4f401e"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "f44bd9e4a3100728"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "d90265c06c46e4c3"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "a71bf4196adf985b"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "3bc2bea492b72de6"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "563cc416b91b7113"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "1bd1fb5f55753b4c"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "a5fd464eab9af3d1"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "d494bc642ce50d20"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "0e7b97a44216e530"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "9bf626657ea30339"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "c9b1543335466d9b"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "7210e7a02cf42955"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "2b9b69d0d409b586"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "041a9b9da5170f75"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "7a972bbc14808919"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "cd1a06a1b6422f35"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "8238944df0a544de"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "924ccb2beaf015d3"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "28be58a3b7074b59"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "153b2993ff5be86f"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "5086900635fec3ef"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "7893661e364664a2"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "dbca1ab538c1a108"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "c9f14d30d3de5165"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "6d1a40b633dc2db5"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "20da65e0e253b71d"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "0954a8389f7ba5d9"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "bf7730afb7d6bf6e"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "2de4b5ebe67f63a9"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "a87b814a7035ddac"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "59eeb57204da6fef"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "093e4c1ebea8d7cd"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "3d379c8979d6cda3"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "6edfccd36436c180"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "5d10c6d3d238cdca"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "c5997e85ae513c07"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "6735a96e541f7c71"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "b860ad204bcfd24a"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "3bc2bea492b72de6"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "f83b65afbe56e9ae"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "82b3bdf7dcb5d316"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "a3573199a663b82b"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "a45f00271bc74158"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "92a776eacf2a343c"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "0acd251e7de7cbb1"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "a85c1bf7fb61a6ec"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "4c12336cdb97960f"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "6f69a9351aeed9ad"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "b8f128c97fcde65d"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "4c2ad790729ea30e"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "fa7fe67124e94375"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "2fdf94e2f33027e0"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "7dbea1fc9bf134cc"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "e46c8ab3cd021e29"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "cb3ca113d01ccf26"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "0316333303fcb29d"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "b49faefbb7aa6700"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "d4648b97e5368981"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "d7805e0ddd7792cc"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "056e862d001d0ac6"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "e7d6deabbe4fa62d"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "ca454b144d941bed"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "7351fc8f354e305c"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "33a01b353d22ddd9"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "65f179dcd199cc00"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "a0ceefc94cbf021e"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "7a093f5ac76cb31c"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "90c2d339a9d57c99"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "056365107c10185a"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "bb1ca9a0ad66edf4"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "26b49a448fa0e78a"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "5e954c1bd3a7930a"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "7315f406dbc3c7eb"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "8a49fabf797bbce7"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "d7a7a81b1240b8a8"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "ab5aed7b45e8cf07"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "c9baebd1c7481d67"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "e308cebb9ef03abb"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "ff60be88a35dc3be"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "b338b4c9727ad1cd"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "69f0e78fe6b3b38b"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "2fc49a9795cc9533"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "707cdd3bc35b648c"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "539779702461fded"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "b338b4c9727ad1cd"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "92982fdf1036c0b8"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "eede171b445e37fc"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "5a4278240e932c91"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "539779702461fded"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "9e129c33e649fa9d"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "75008591d9a3691c"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "3a8eb73d33724452"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "33a02a3c7988f5b7"
@@ -54394,6 +56962,10 @@
       "source": "36cb0f4ead625284",
       "output": "46d52251d880df7e"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "c4d5af544c93d074"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "b4d17ea7c696e58b"
@@ -54529,6 +57101,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "46e5101c930d5ed4"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "76d2950619eee0c0"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "8021f52f23d39780"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "59add6fe213a49f9"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "539779702461fded"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "42b5d396f7d6cecc"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "eed0f3662ac5062d"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -59906,6 +62502,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "5b6ac7a35a6b5f9a"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "11e2a339645b1433"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "181655b02952071f"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "3d83b7ae4f307061"
@@ -60306,6 +62910,10 @@
       "source": "970e2f4b247470ae",
       "output": "9a9d23cefca2c175"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "ee583bc79d7f107d"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "f32e56bde89e50d4"
@@ -60461,6 +63069,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "5298f92e313c7d25"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "ab32ef3cdfdf9e8b"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "b02c1641dc29555a"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "e3045c69fa71e174"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "0ff6b9a971e34783"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "ac38f9dca0654913"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "533d61c1dcedb646"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "aeca6a8d5f958c2a"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "05850b632d643140"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "7c85a04097e10d26"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -63153,6 +65797,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "33b80666693c959c"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "b29a4e9c6f63ec0c"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -67074,6 +69722,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "2d6235c4775fcda7"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "0241789e02d30696"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "1b567961c75aae0f"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "9620fd3df63df38d"
@@ -70256,6 +72912,582 @@
       "source": "0b6722a8adfb9354",
       "output": "9582eb5f0edb5559"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "69ed5dd602f76cf9"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "c18e1866edcc5f87"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "dd2fdddbb3901f54"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "12a71dd267142100"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "86545a62dcbb4a9e"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "375f092b1fed5680"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "c5ecc1cc3acd513b"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "1b9635b244294c1c"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "d6c44c3e95df5008"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "d948be582b0ed1cc"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "858f63af9f376fdc"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "de3797f2e5c3364f"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "92b14b074d5dc6a2"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "c413528ce475f60f"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "f4b68930385e8908"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "9ba201af82054818"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "dbb465a347c08fe7"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "ea89b5636546c3cc"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "53096e2749bf53e1"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "a5019b520fff9e5f"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "79359dea4369d6f7"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "23ed1e45a33fc79d"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "896fc450e72116e5"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "56ddf87992ba953e"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "dd25018e37a1b09c"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "dae9dc320762c83a"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "7b5fef9f0ae2c824"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "82c2e68ae8ea8b20"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "c773b32f8b7ab112"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "73e75ff64bcaede8"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "9511e40756a729bb"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "419a3255400340d9"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "7fe4bfc4a01eadd2"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "ab7123a07203fc04"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "8f3416c4f31ed128"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "e21bf68aff08b179"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "cbe052f6239b94bb"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "14b5535d640ec122"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "539688dab453f839"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "3059afe67dc0ed4f"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "8bbd2a911a40439e"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "e354b9a42dc133fa"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "40201ffc6672c4f6"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "3aff4942a703a499"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "3c6874ed760b9c80"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "0e85eb09747deb20"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "ea93d6a262ecb87a"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "57feb36a86a7bf92"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "805265c73b41a45b"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "59e06029422ff772"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "ad1916cad6e7974c"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "481ecb7e076b7a8e"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "69ed5dd602f76cf9"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "ad1916cad6e7974c"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "becec746347337a9"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "f54821a2c802885b"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "cf73ee3857a3af4b"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "20094fdb4eefdb03"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "b90a842da89053bd"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "35f55a88e2db97d1"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "e97d275de4569dd8"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "cbf8bc5fee443976"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "7b8726c9a4e8e4c9"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "9ab53d8a813ecf7c"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "93f5493cf0a23ad0"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "73e75ff64bcaede8"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "9511e40756a729bb"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "eca46fcab2ab68be"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "c9c5656477eb944f"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "62b27026ce4a363f"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "7fe4bfc4a01eadd2"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "ab7123a07203fc04"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "d62e3c37f2966f83"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "985046ce8f463043"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "92af85dc93b506d4"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "c629b3d68fca5a6c"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "eb41b3511192b2b1"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "8bbd2a911a40439e"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "1e5d64156b70ce84"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "e14417e0df3bce5a"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "e1f08b3fe1cbbea2"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "c9c99781d3ad0039"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "3caa6d88a258af55"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "44ce235f2410447d"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "019ce403ab62d294"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "481ecb7e076b7a8e"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "60c2e359cb360a62"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "ada042c25d5bd98d"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "c88e8f8aabb68d14"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "9fbf33843928f81f"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "1c07751594fd4158"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "d5a4a1d9d290fd7b"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "851452b625fd2bb4"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "eb9641c5370f33b6"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "de845d42b4a62111"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "2f4abc2e5018fdf4"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "4d1a84fb3fb8b69e"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "61d2afe2349913ce"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "02062c946e54489d"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "13e3bca8fc457265"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "94835ea2fcf775cd"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "066c63e78549e108"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "db01404e10cee67f"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "a761d4ca3766cfd7"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "a478e4cdfae59128"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "1a083ec70b5ec94a"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "f171d245fa64033c"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "28a85aae46c79f25"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "6c2db927145d2741"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "a710f4c54e5e357d"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "5c3d9cfc7d0ef8b4"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "406a25e02c7354d3"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "b07375d3f1991f5c"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "d458b13843afcb28"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "6eb1a5e8cfdd32bb"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "ea93d6a262ecb87a"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "ec5ac8cc6a116cbb"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "997e229dd32cf737"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "ee5c2e8c51cf80b8"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "3342fc407da4fd63"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "33633aa33643e230"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "22d9d0b2e8e2bb94"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "65e454c8419557ba"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "0263919671ad80e4"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "3a82c8db28d8c2e1"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "8c85e549c8e8ab68"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "2146a029ad5e62ec"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "7817ea2732866c6e"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "1266b7020bfc4f40"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "050ed2ceb03895d3"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "8c85e549c8e8ab68"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "cd976bc83cc3442c"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "2a4769e0bd5a1f41"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "492281da1f5017a0"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "050ed2ceb03895d3"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "ff11c2f9f8fd2018"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "a90a6201d0bd2d90"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "32cc29f800723993"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "0edde6b90ca275a5"
@@ -71536,6 +74768,10 @@
       "source": "36cb0f4ead625284",
       "output": "d887b21c1ec6373b"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "47e7e85029f7df5a"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "42c1e7aeeae0345f"
@@ -71671,6 +74907,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "9a9a8e4bdfb1f9bb"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "2f3f57f436dfcf76"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "341d047722bda7c8"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "bc3aa1f473ead5b4"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "050ed2ceb03895d3"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "2bbab5d35b56a356"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "5c6cf621fae16f17"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -77048,6 +80308,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "13a2825aa4368712"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "b21b4b83d7697dd6"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "7d35036ff034dd65"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "4a3598cc2721d129"
@@ -77448,6 +80716,10 @@
       "source": "970e2f4b247470ae",
       "output": "98af2f7a550b677d"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "87f1bb56b2769453"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "700d272cc4b47ad2"
@@ -77603,6 +80875,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "b47fbfeb5d03fb38"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "ac983466ee7c9e92"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "624511843d8cfd7b"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "1387e7c94c71e7d7"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "65bca34100733127"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "c544d0e23eb364be"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "50e0fc185801d794"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "6af1d3485a536652"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "18094f545c4ace68"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "484a3eaf67a7d166"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -80295,6 +83603,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "14fee4091ec585c2"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "488900c49a192fec"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -84216,6 +87528,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "f3047903f4542367"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "c247347a4a5f9f92"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "91e0f486bab118c4"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "c8bd4937475ec393"
@@ -87398,6 +90718,582 @@
       "source": "0b6722a8adfb9354",
       "output": "7c596f8cf2973c10"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "5a8a24458201095f"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "efd0001fd2e2ebcc"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "8f46b32c3729d201"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "c54a4d8b38b9b366"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "6b7b555739c94f2c"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "cb3ce0cc73ac9c81"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "21ac78404849f60a"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "516cabadf9b8f812"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "ae2d7e6c046a5b00"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "1cb6c8a76d95d601"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "aebaf033831ea6cb"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "77763cbb94d5d4c5"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "a79453e5df831ab7"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "cb8083393189f380"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "0b5a4ba333afc47f"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "5a20445a92d52762"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "8556c708edde085b"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "6ebdce7fbd01f5e9"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "3c338597f7143854"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "da9198ba0b90f0bb"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "a757d0894618e22b"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "20f67c09695376fa"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "18b04b933ef04f5b"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "1649b8749b2bb9cb"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "9038a8a5d19ffabf"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "94ec602378aecf59"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "d6a85eb81465a37e"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "6e60cc0a425ef4d4"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "cf62c25c3b6628ed"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "af876ec1382f80ad"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "1e66aba5fce4e08c"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "f2739ccd5f8f224c"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "f6b20e5f4d1527c1"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "7027ec459e1dcf97"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "e15d6e6ac620c510"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "57a0c85d9dca3e14"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "b44fb30f01fa7d34"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "8fbaa277016219d8"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "7a1324786a0b20ad"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "53003ff37d7cefb2"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "41a8f5752205a7db"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "e282dde40a6a4d99"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "28db0f9675d0c185"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "895fb3d082b1ef03"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "cf0dd954272e63d4"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "0eb1fada732ac1be"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "699286d2a2ac4c95"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "d5a88eb012d57905"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "fbd8bd66146d4063"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "6d73d03fc6db162c"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "215d6376e92fa4d0"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "e4c83842bcaa101f"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "4ff89d9ea3bf8c4c"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "5a8a24458201095f"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "e4c83842bcaa101f"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "9f9daf600da7d367"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "353e8211eaa7d347"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "b3d48ce1163a94bb"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "01e375aaaf064eac"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "b75a04965e730862"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "950340e04bb56a36"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "f75661a340c6e16f"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "9fbf3d84de1d0ddb"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "699286d2a2ac4c95"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "29d7c8b320727eca"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "20f67c09695376fa"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "fea7cbc84b8d37ee"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "af876ec1382f80ad"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "1e66aba5fce4e08c"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "34b875358adda283"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "d5fe7a237d4494d9"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "9f22f61c4a2c1060"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "f6b20e5f4d1527c1"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "2872e422bd6d4e50"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "7d0216ba8403ec06"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "116c4698dace5c6a"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "627073154dfcf35a"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "3bffaa7f8fb300ba"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "652ad69ce7caa7b3"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "41a8f5752205a7db"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "48c3dc17e234f33c"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "81a3c6d0ebbee9d2"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "c9be1e99790824ad"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "de69376fc635b360"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "b6a0c0c469c5b62d"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "7638630ee1925de4"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "c50012f2cc0b5aac"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "4ff89d9ea3bf8c4c"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "c4728f1068e83a74"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "b9e44be3cb90b8a8"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "6ac745ccb40997a7"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "9e26fe67d8a3fedc"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "2f5ef53859457090"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "122262d38e4b285f"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "b84e088c3c4781e4"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "e5fa9fd22d91b522"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "fdfb91cb51a57f9d"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "fe6f8513226bdb82"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "cb8deb160f9042f5"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "41003a88c539fa84"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "5955dc3db3b2dab5"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "292fd4b5ec74f78e"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "626afcfbd4480403"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "95595a64b27de8d1"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "b8f8770f3799d273"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "43f19da742d75613"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "712293edcbe7f4e2"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "8250876b4aa8a5ce"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "b8c1b999f2143627"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "1ca8913946b73e7d"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "968b452f8e3d0460"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "a2a464b352f30cce"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "6f2570b258780390"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "b0098c6accc81a6b"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "c3a97f470ef716fb"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "c54a4d8b38b9b366"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "5e2c614c23f02239"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "e267d343821f264e"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "d5a88eb012d57905"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "e1a3372cadd1e560"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "93cba7eb5092e9df"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "5161fc43f6c55bf8"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "683376d2293beb51"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "7c4369a4ef7a87aa"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "69155621a5e781ec"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "cb57da58f1dcfe4f"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "c6d6e9be3ffe8cf2"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "80dcc7b48652b827"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "fb74f3feada620b1"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "03b382aabe8527d1"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "13e767d9cac9ff38"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "c6a1d399672ee3d5"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "06ba916252679859"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "fb74f3feada620b1"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "031193c60d078a61"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "81734bd3a1a87593"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "6b4c9a7e258a3e40"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "06ba916252679859"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "ba041f469b66146f"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "b1c227b3a94ffd93"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "3fc928cbc3d9349f"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "b96fd65c6538f4e6"
@@ -88678,6 +92574,10 @@
       "source": "36cb0f4ead625284",
       "output": "5bb62a4bfa48cc9d"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "2791e306c99bc89a"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "8e5416de61ef2885"
@@ -88813,6 +92713,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "225787d20d939f0f"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "d94c3f9d180d07fa"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "85b9d0d397f7911b"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "cc8578547f99a123"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "06ba916252679859"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "18f0d22a623798e3"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "26d50544567405d7"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -94190,6 +98114,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "7ac17db5876a85c5"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "b302b422760f1d6e"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "985dffd9566b4a84"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "cccfab87ca100a6b"
@@ -94590,6 +98522,10 @@
       "source": "970e2f4b247470ae",
       "output": "81783d8a652d1ed6"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "cc70c29a50b74f7a"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "05c3537b2416974d"
@@ -94745,6 +98681,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "a57a38fced1c3db0"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "ac92b7fa4e5ab28c"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "595c2f7c586e5f44"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "a27c2aac00585b3b"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "0d2aba183c7f9502"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "49aa00d472aef551"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "fd0d2e42bd71c663"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "e4b27d3c3f1836c9"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "57a9342c2d68d9a9"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "0997b9c9f5068a22"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -97437,6 +101409,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "2c8d2aea8dd888f5"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "c74d4258679ae689"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -101358,6 +105334,14 @@
       "source": "f499ec5c7c5c0123",
       "output": "aeef4e6184c525f1"
     },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "7bbfdd784f7b195b"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "4aed470020ff81c7"
+    },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
       "output": "f27bc21b63be152f"
@@ -104540,6 +108524,582 @@
       "source": "0b6722a8adfb9354",
       "output": "b21e91730d180b17"
     },
+    "agentProfiles.detail.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "e27d029b45155320"
+    },
+    "agentProfiles.detail.back": {
+      "source": "a932d8d02937d495",
+      "output": "fc436b8f964dac71"
+    },
+    "agentProfiles.detail.budgetRunLabel": {
+      "source": "ee0b757a5b2e98f0",
+      "output": "2579a76c64c4a203"
+    },
+    "agentProfiles.detail.budgetTaskLabel": {
+      "source": "78a6aea61098265b",
+      "output": "af6384d8caf8feac"
+    },
+    "agentProfiles.detail.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "agentProfiles.detail.confineLabel": {
+      "source": "6a85b5763fef3b14",
+      "output": "eafcdf825d56b016"
+    },
+    "agentProfiles.detail.confineNo": {
+      "source": "1da6695e06a2ddff",
+      "output": "5c3f7dcc5fdc4338"
+    },
+    "agentProfiles.detail.confineYes": {
+      "source": "444831d163ffef06",
+      "output": "bf9fd46c9fa1b482"
+    },
+    "agentProfiles.detail.defaultHint": {
+      "source": "68e424fd98410839",
+      "output": "be5c55c22eb1df60"
+    },
+    "agentProfiles.detail.delete": {
+      "source": "6c2d352161df5809",
+      "output": "8b19518ff49b2e29"
+    },
+    "agentProfiles.detail.deleteConfirm": {
+      "source": "6c1fd39216fe7e80",
+      "output": "4164cbc3f18653a1"
+    },
+    "agentProfiles.detail.deleteDescription": {
+      "source": "ee8a6c9f90570792",
+      "output": "ddce962fe623f286"
+    },
+    "agentProfiles.detail.deleteTitle": {
+      "source": "27f496eecb0cdafe",
+      "output": "fa2aeff6e162c51c"
+    },
+    "agentProfiles.detail.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "agentProfiles.detail.duplicateConfirm": {
+      "source": "e063ca32c3842bed",
+      "output": "3165b82b810eed7d"
+    },
+    "agentProfiles.detail.duplicateNameDefault": {
+      "source": "d95adf72f68eb476",
+      "output": "51be2c5717970800"
+    },
+    "agentProfiles.detail.duplicateNameLabel": {
+      "source": "b44a766c687bc1c3",
+      "output": "0a0c1a24443917be"
+    },
+    "agentProfiles.detail.duplicateTitle": {
+      "source": "3ced7e5eb8cf0141",
+      "output": "e0e08270c43d81db"
+    },
+    "agentProfiles.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "agentProfiles.detail.historyEmpty": {
+      "source": "1b9031026550f9ff",
+      "output": "19b08e16e36c430a"
+    },
+    "agentProfiles.detail.historyEntry": {
+      "source": "475d5824c9250c82",
+      "output": "37a5dd8f1eb464b8"
+    },
+    "agentProfiles.detail.historyFields": {
+      "source": "b501fbe06f12c747",
+      "output": "f40139561b14066e"
+    },
+    "agentProfiles.detail.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "8239c546a0abc5d1"
+    },
+    "agentProfiles.detail.layers.model": {
+      "source": "75fadadfff986f66",
+      "output": "45d4e9bfb0c9eca6"
+    },
+    "agentProfiles.detail.layers.profile": {
+      "source": "d82474984cf710b9",
+      "output": "77f397d9c1c34160"
+    },
+    "agentProfiles.detail.layers.provider": {
+      "source": "b32bc501066f10fd",
+      "output": "943586b610c02205"
+    },
+    "agentProfiles.detail.layers.title": {
+      "source": "fbe2b05c0065cce4",
+      "output": "358bff84d366c2fd"
+    },
+    "agentProfiles.detail.loadFailed": {
+      "source": "6234a3c2b60523ca",
+      "output": "31940aad2659acb5"
+    },
+    "agentProfiles.detail.loading": {
+      "source": "5408fbb00ad9444d",
+      "output": "70390c56208cbee6"
+    },
+    "agentProfiles.detail.makeDefault": {
+      "source": "0026630e46e35fe3",
+      "output": "0cc7be2edd25d028"
+    },
+    "agentProfiles.detail.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "91c637c807f499f9"
+    },
+    "agentProfiles.detail.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "c419854c0ee6c93f"
+    },
+    "agentProfiles.detail.openWorkItems": {
+      "source": "58906df22d717797",
+      "output": "88e5d1c8bdd7ca63"
+    },
+    "agentProfiles.detail.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "77dc77f30319ad3d"
+    },
+    "agentProfiles.detail.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "7984b6ff9111c2b7"
+    },
+    "agentProfiles.detail.removeDefault": {
+      "source": "919a0ebf980e6c9f",
+      "output": "e0aeb2b601fb24ec"
+    },
+    "agentProfiles.detail.revision": {
+      "source": "85bc5a8783e60047",
+      "output": "10e4120bd60b71ac"
+    },
+    "agentProfiles.detail.roleEmpty": {
+      "source": "0d3d9fa83c29b799",
+      "output": "859e0311d4750dab"
+    },
+    "agentProfiles.detail.routingLabel": {
+      "source": "4f6204155a3780a3",
+      "output": "ee634a67bc50e915"
+    },
+    "agentProfiles.detail.routingNone": {
+      "source": "bb8349b1cd99674a",
+      "output": "34054e3459f33371"
+    },
+    "agentProfiles.detail.ruleGone": {
+      "source": "ce8ec97f012b80bf",
+      "output": "68452e21e902c9cd"
+    },
+    "agentProfiles.detail.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "1c85e9d8d21b9ae5"
+    },
+    "agentProfiles.detail.runSeconds": {
+      "source": "1c8341b6b9e56d46",
+      "output": "1c8341b6b9e56d46"
+    },
+    "agentProfiles.detail.runSecondsLabel": {
+      "source": "591bbb500b8c55d0",
+      "output": "4ff105200bdac431"
+    },
+    "agentProfiles.detail.sections.history": {
+      "source": "34538baeda2cc10d",
+      "output": "95c1a89d2b79ea85"
+    },
+    "agentProfiles.detail.sections.limits": {
+      "source": "85df22e180aa9b41",
+      "output": "3b58a01c39040d3f"
+    },
+    "agentProfiles.detail.sections.model": {
+      "source": "d90d2bd906a0db26",
+      "output": "e84e2ca17f0fac08"
+    },
+    "agentProfiles.detail.sections.policy": {
+      "source": "d680d71b3245e60d",
+      "output": "64d3173f8ba2ba30"
+    },
+    "agentProfiles.detail.sections.role": {
+      "source": "0038a9cf86613cec",
+      "output": "e93e2b1e7736d280"
+    },
+    "agentProfiles.detail.sections.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "b96a67bfde3ea52a"
+    },
+    "agentProfiles.detail.toolsAll": {
+      "source": "86f93c3f0ea896c5",
+      "output": "f65cf1b725b4e91e"
+    },
+    "agentProfiles.detail.toolsAlways": {
+      "source": "1281ff1b0cb5ae57",
+      "output": "1626f1caf8f4bdc4"
+    },
+    "agentProfiles.detail.unknownActor": {
+      "source": "5fd849e1c2a4ebc6",
+      "output": "ba005c2a5211b998"
+    },
+    "agentProfiles.detail.unlimited": {
+      "source": "b40e746432205551",
+      "output": "aad5968f6bb2d88f"
+    },
+    "agentProfiles.detail.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "d65288312e5f1334"
+    },
+    "agentProfiles.dialog.approvalLabel": {
+      "source": "e472800abcc26350",
+      "output": "e27d029b45155320"
+    },
+    "agentProfiles.dialog.budgetPlaceholder": {
+      "source": "b40e746432205551",
+      "output": "aad5968f6bb2d88f"
+    },
+    "agentProfiles.dialog.budgetRunLabel": {
+      "source": "ea1780e9a453efdb",
+      "output": "1e1462fa80dd5180"
+    },
+    "agentProfiles.dialog.budgetTaskLabel": {
+      "source": "f9ad7176935009dd",
+      "output": "16985a23a4b207da"
+    },
+    "agentProfiles.dialog.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "agentProfiles.dialog.confineLabel": {
+      "source": "07ff298e3a7b6ccb",
+      "output": "668549b866a97a60"
+    },
+    "agentProfiles.dialog.create": {
+      "source": "d34c0efb6e98448a",
+      "output": "49ba5d18d8c4c23f"
+    },
+    "agentProfiles.dialog.defaultLabel": {
+      "source": "4ab765c37ae2fcff",
+      "output": "8a2ef1faea29f483"
+    },
+    "agentProfiles.dialog.description": {
+      "source": "d9b04936114001c0",
+      "output": "a39d6aa2394d8cc6"
+    },
+    "agentProfiles.dialog.descriptionLabel": {
+      "source": "0371fe58f2dc5e8e",
+      "output": "2a86bc99b92fcb82"
+    },
+    "agentProfiles.dialog.editTitle": {
+      "source": "b0f609c1231e247a",
+      "output": "cd39d6d9c1d55dac"
+    },
+    "agentProfiles.dialog.instructionsLabel": {
+      "source": "0038a9cf86613cec",
+      "output": "e0165d8a6de1b4e2"
+    },
+    "agentProfiles.dialog.instructionsPlaceholder": {
+      "source": "930d0c5be7b01bda",
+      "output": "f8d5e7967941c977"
+    },
+    "agentProfiles.dialog.iterationsLabel": {
+      "source": "74b2472a1a56be38",
+      "output": "8239c546a0abc5d1"
+    },
+    "agentProfiles.dialog.limitPlaceholder": {
+      "source": "5ca1e78c9cf0b21f",
+      "output": "34054e3459f33371"
+    },
+    "agentProfiles.dialog.modelDefault": {
+      "source": "be0d52b29512aea8",
+      "output": "91c637c807f499f9"
+    },
+    "agentProfiles.dialog.modelLabel": {
+      "source": "fcf7ee23e16b28f0",
+      "output": "9f33aa77259589d1"
+    },
+    "agentProfiles.dialog.nameLabel": {
+      "source": "dcd1d5223f73b3a9",
+      "output": "5086900635fec3ef"
+    },
+    "agentProfiles.dialog.namePlaceholder": {
+      "source": "5f5b3aa3d37e7f5c",
+      "output": "d5a2ea588613b4e2"
+    },
+    "agentProfiles.dialog.newTitle": {
+      "source": "04cad6027f40f56c",
+      "output": "677d9099c4fc5448"
+    },
+    "agentProfiles.dialog.reasoningDefault": {
+      "source": "6fbb1e7682406e7c",
+      "output": "77dc77f30319ad3d"
+    },
+    "agentProfiles.dialog.reasoningLabel": {
+      "source": "3cd6347a7139df89",
+      "output": "7984b6ff9111c2b7"
+    },
+    "agentProfiles.dialog.routingHint": {
+      "source": "aa9ae0ae7d2e29c8",
+      "output": "df1ba318195099a7"
+    },
+    "agentProfiles.dialog.routingInvalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "fd727cd1a875992c"
+    },
+    "agentProfiles.dialog.routingLabel": {
+      "source": "a2f13d241015db4d",
+      "output": "cc3cb61d1b882549"
+    },
+    "agentProfiles.dialog.rulesAdd": {
+      "source": "1b921d28f7b0d7f0",
+      "output": "c4ddd47634f591f8"
+    },
+    "agentProfiles.dialog.rulesHint": {
+      "source": "4aa689e5c5ba6bb0",
+      "output": "f1569fd9052d6bde"
+    },
+    "agentProfiles.dialog.rulesLabel": {
+      "source": "14e2259edd31dcb4",
+      "output": "1c85e9d8d21b9ae5"
+    },
+    "agentProfiles.dialog.rulesNone": {
+      "source": "3a7b5925b5147fb9",
+      "output": "00b82ce9d0d08085"
+    },
+    "agentProfiles.dialog.rulesRemove": {
+      "source": "39e8d5fa1d709c75",
+      "output": "1143ac2097bbba44"
+    },
+    "agentProfiles.dialog.rulesSearch": {
+      "source": "2b55f9e84175ed7f",
+      "output": "b1dadda2691cc1a4"
+    },
+    "agentProfiles.dialog.runSecondsLabel": {
+      "source": "7cd78e51b3cc443c",
+      "output": "71f7f0d332193e32"
+    },
+    "agentProfiles.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "aef7cd5b2081351d"
+    },
+    "agentProfiles.dialog.toolsAll": {
+      "source": "47b5e44a2ed308da",
+      "output": "bd03cdc30919feee"
+    },
+    "agentProfiles.dialog.toolsLabel": {
+      "source": "f7967b81ee1fbbb2",
+      "output": "645f68ee2fa57c1b"
+    },
+    "agentProfiles.dialog.writeModeLabel": {
+      "source": "f38b37b88ce43c7c",
+      "output": "d65288312e5f1334"
+    },
+    "agentProfiles.labels.approval.none": {
+      "source": "d657baea21e5b84c",
+      "output": "321e0a7b21f15faa"
+    },
+    "agentProfiles.labels.approval.review_before_done": {
+      "source": "980ddd905ecc02b5",
+      "output": "8dd2fc38d13eec69"
+    },
+    "agentProfiles.labels.domains.admin": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "7d8098b4f7eeea90"
+    },
+    "agentProfiles.labels.domains.appearance": {
+      "source": "bea87f1ae79faa7f",
+      "output": "edb0575d5d2b526d"
+    },
+    "agentProfiles.labels.domains.attachments": {
+      "source": "8f43449876a41604",
+      "output": "c8a5098d6b466ece"
+    },
+    "agentProfiles.labels.domains.attention": {
+      "source": "c48d39a3427b6233",
+      "output": "c466181ca0fbdad8"
+    },
+    "agentProfiles.labels.domains.automations": {
+      "source": "1a221929d4c59222",
+      "output": "5fd67a087fa59a5c"
+    },
+    "agentProfiles.labels.domains.changesets": {
+      "source": "79261f970df53185",
+      "output": "0a2b80e18e6a6f11"
+    },
+    "agentProfiles.labels.domains.chats": {
+      "source": "6a1722b9c244bfaf",
+      "output": "071f649adb472b88"
+    },
+    "agentProfiles.labels.domains.comments": {
+      "source": "e0bf243de9a192a6",
+      "output": "485067ce7d940f97"
+    },
+    "agentProfiles.labels.domains.core": {
+      "source": "eed31c5042fe0465",
+      "output": "eb6e861f160615a1"
+    },
+    "agentProfiles.labels.domains.databases": {
+      "source": "88b35326544379cf",
+      "output": "f0eba5faad21248a"
+    },
+    "agentProfiles.labels.domains.entities": {
+      "source": "215ed630221b9c58",
+      "output": "a3346c788a2a24be"
+    },
+    "agentProfiles.labels.domains.history": {
+      "source": "9ded4c7377e55ec9",
+      "output": "b6f1880943c8d3ba"
+    },
+    "agentProfiles.labels.domains.inbox": {
+      "source": "d8af5ec4b4ff618a",
+      "output": "219386168973f565"
+    },
+    "agentProfiles.labels.domains.lifecycle": {
+      "source": "0e537906d41cfa23",
+      "output": "33a74442f337e30f"
+    },
+    "agentProfiles.labels.domains.memory": {
+      "source": "06ced26bdf4fb1b0",
+      "output": "fcd95b14bedaade7"
+    },
+    "agentProfiles.labels.domains.notifications": {
+      "source": "f7205df4f1e2d6bc",
+      "output": "6b8e9ecbc2ba3ad6"
+    },
+    "agentProfiles.labels.domains.pages": {
+      "source": "8f0ec13b85161f4e",
+      "output": "34739ce1206a948f"
+    },
+    "agentProfiles.labels.domains.projects": {
+      "source": "df87bfa7519bb406",
+      "output": "05009c102f2690da"
+    },
+    "agentProfiles.labels.domains.render": {
+      "source": "be2db0118dd6dfb7",
+      "output": "f43051f8d3d5a804"
+    },
+    "agentProfiles.labels.domains.savedQueries": {
+      "source": "96b5d893fcf1f77a",
+      "output": "02477078be704770"
+    },
+    "agentProfiles.labels.domains.shares": {
+      "source": "e3365406964cf54e",
+      "output": "6571ffc785dfd6e4"
+    },
+    "agentProfiles.labels.domains.templates": {
+      "source": "07ff1d886d230282",
+      "output": "8fccd1a93d6a750b"
+    },
+    "agentProfiles.labels.domains.web": {
+      "source": "b94bd0bc08c65173",
+      "output": "2216bf94eb96684b"
+    },
+    "agentProfiles.labels.domains.workItems": {
+      "source": "317e945179ce8499",
+      "output": "4b2b8ace4d3742f1"
+    },
+    "agentProfiles.list.adminOnly": {
+      "source": "063f3209b5579e8a",
+      "output": "0a010b77ad6d7e90"
+    },
+    "agentProfiles.list.columns.budget": {
+      "source": "78a6aea61098265b",
+      "output": "af6384d8caf8feac"
+    },
+    "agentProfiles.list.columns.model": {
+      "source": "ff461e69984d7e2f",
+      "output": "a5ab3212dad17406"
+    },
+    "agentProfiles.list.columns.name": {
+      "source": "e267d343821f264e",
+      "output": "00d551e63dd540fc"
+    },
+    "agentProfiles.list.columns.tools": {
+      "source": "3f0eefe1fd3c2630",
+      "output": "b96a67bfde3ea52a"
+    },
+    "agentProfiles.list.columns.workItems": {
+      "source": "4b52fd9a9b9c08d6",
+      "output": "c4b2ed7aec081b3e"
+    },
+    "agentProfiles.list.columns.writeMode": {
+      "source": "69baac0f2d2dac99",
+      "output": "0b625b2e35157ad2"
+    },
+    "agentProfiles.list.defaultBadge": {
+      "source": "ef6691545d2c5523",
+      "output": "0758c00e6ea0ca61"
+    },
+    "agentProfiles.list.emptyDescription": {
+      "source": "8064e0a3699bda2f",
+      "output": "839f31e4021f8dc9"
+    },
+    "agentProfiles.list.emptyTitle": {
+      "source": "08a689ff1c5164c9",
+      "output": "f93c323fbb4d0341"
+    },
+    "agentProfiles.list.intro": {
+      "source": "e3980eb1c3015984",
+      "output": "bc6b28809f382486"
+    },
+    "agentProfiles.list.loadFailed": {
+      "source": "6d616564c79bc556",
+      "output": "a7459ca34c788b77"
+    },
+    "agentProfiles.list.loading": {
+      "source": "1f4f0fe76d98fefe",
+      "output": "f3a2e9984276e62b"
+    },
+    "agentProfiles.list.newProfile": {
+      "source": "681d93b7b31a8f13",
+      "output": "fc3e6d2f4e1531c3"
+    },
+    "agentProfiles.list.title": {
+      "source": "0aeda5316238db58",
+      "output": "9080a1559f14c808"
+    },
+    "agentProfiles.list.toolsAll": {
+      "source": "2146a029ad5e62ec",
+      "output": "e266ea0f7ee3ddc5"
+    },
+    "agentProfiles.list.toolsCount": {
+      "source": "075072c0dd5bea99",
+      "output": "5d8343425e5b6f8a"
+    },
+    "agentProfiles.list.workItemsLink": {
+      "source": "9099f528bb3e2bab",
+      "output": "f4742dcd3da9bc0f"
+    },
+    "agentProfiles.route.detailTitle": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "agentProfiles.route.listTitle": {
+      "source": "0aeda5316238db58",
+      "output": "9080a1559f14c808"
+    },
+    "agentProfiles.workItem.help": {
+      "source": "f15cb0e6a9011cec",
+      "output": "a8c9a5fd23308129"
+    },
+    "agentProfiles.workItem.inherit": {
+      "source": "53357578c6d326df",
+      "output": "e1a2db01db1116ff"
+    },
+    "agentProfiles.workItem.inheritNone": {
+      "source": "a0753fa963963eb3",
+      "output": "bc81423f3a3a08b7"
+    },
+    "agentProfiles.workItem.label": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "agentProfiles.workItem.manage": {
+      "source": "f3b1656db59fdbb7",
+      "output": "9d44741b6001824c"
+    },
+    "agentProfiles.workItem.runProfile": {
+      "source": "1fa5541d38c32a89",
+      "output": "3c09203bbe1a8093"
+    },
+    "agentProfiles.workItem.runsUnder": {
+      "source": "ee1f79429716f5ec",
+      "output": "7641dda8f6d0c754"
+    },
     "ai.chatList.archive": {
       "source": "a54c8debab88a289",
       "output": "09820a7c849179d8"
@@ -105820,6 +110380,10 @@
       "source": "36cb0f4ead625284",
       "output": "54d6bfca58c1117b"
     },
+    "automations.actions.WORK_ITEM": {
+      "source": "e843eb0659d92028",
+      "output": "0a2e86911a408f63"
+    },
     "automations.dialog.action": {
       "source": "a4ad259e71cbbe0c",
       "output": "1dfbdde6410ab51a"
@@ -105955,6 +110519,30 @@
     "automations.dialog.webhookUrl": {
       "source": "1a51b6561021a21f",
       "output": "cb0108f07f84c5de"
+    },
+    "automations.dialog.workGoal": {
+      "source": "0e9bccedfc8e15d9",
+      "output": "f2136f693880d4f2"
+    },
+    "automations.dialog.workGoalHint": {
+      "source": "52afa4997a0c2be2",
+      "output": "97fb930e4c7e905e"
+    },
+    "automations.dialog.workGoalPlaceholder": {
+      "source": "7054e8e0504214a7",
+      "output": "0013c0e4b0732d22"
+    },
+    "automations.dialog.workProfile": {
+      "source": "f93f7fc5acdbfc93",
+      "output": "937e841b3f8935e5"
+    },
+    "automations.dialog.workProfileDefault": {
+      "source": "b272ab26424b096d",
+      "output": "c2f05ba52327802f"
+    },
+    "automations.dialog.workStartRun": {
+      "source": "67c3edd609e6e611",
+      "output": "d3f6c70377a6a4db"
     },
     "automations.outputs.CHILD_PAGE": {
       "source": "80d5fde5fe9e48a7",
@@ -111332,6 +115920,14 @@
       "source": "d9fe31e4dd72fa7a",
       "output": "165e037f0ae98636"
     },
+    "errors.codes.agent_profile_invalid": {
+      "source": "75d89f3682e57fb9",
+      "output": "0be28e90d9d8ec2e"
+    },
+    "errors.codes.agent_profile_name_taken": {
+      "source": "f818af3f010a1908",
+      "output": "95fb2f5b2f407832"
+    },
     "errors.codes.ai_conversation_cursor_invalid": {
       "source": "de2f7ee00537dd12",
       "output": "f9eb0ebaebd375d1"
@@ -111732,6 +116328,10 @@
       "source": "970e2f4b247470ae",
       "output": "ddfd08efa8a00261"
     },
+    "errors.codes.work_item_review_required": {
+      "source": "8feb5f60332457e3",
+      "output": "3547c894a24d4292"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "4e134d996b25056b"
@@ -111887,6 +116487,42 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "e144f0b48b62ee26"
+    },
+    "features.agentenprofile.details.p1": {
+      "source": "2787f11a6931eba7",
+      "output": "abe128a469252f3e"
+    },
+    "features.agentenprofile.details.p2": {
+      "source": "d9367d8a8c139f46",
+      "output": "036bc04d9731db92"
+    },
+    "features.agentenprofile.details.p3": {
+      "source": "25b9639f20cd7f7b",
+      "output": "82a52548af2e9ba4"
+    },
+    "features.agentenprofile.details.p4": {
+      "source": "ed0cf244901b5941",
+      "output": "507a1448ed443c7a"
+    },
+    "features.agentenprofile.details.p5": {
+      "source": "d9ac18703396e99b",
+      "output": "42b89c7ede07ca42"
+    },
+    "features.agentenprofile.details.p6": {
+      "source": "0f4e3be0d0ced5d5",
+      "output": "7e08d71d8abf27e0"
+    },
+    "features.agentenprofile.summary": {
+      "source": "fc7abcb28fa930bc",
+      "output": "e97fbfed85e8e7d8"
+    },
+    "features.agentenprofile.title": {
+      "source": "2cc17ba4119fe528",
+      "output": "c1961891fac6521d"
+    },
+    "features.agentenprofile.where": {
+      "source": "19a635ed17a54940",
+      "output": "46d6eebc4089d0a0"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -114579,6 +119215,10 @@
     "mail.automationFailure.reason.WEBHOOK_FAILED": {
       "source": "93320d7ae3799fc8",
       "output": "5819123d8dc630f6"
+    },
+    "mail.automationFailure.reason.WORK_ITEM_FAILED": {
+      "source": "96efa7d33b0de0f7",
+      "output": "c58ef9cc3ee00998"
     },
     "mail.automationFailure.runFailed.body": {
       "source": "5e52ef16eaa741df",
@@ -118499,6 +123139,14 @@
     "shell.paletteCommands.navigation.adminUsers.label": {
       "source": "f499ec5c7c5c0123",
       "output": "27541cc91679da21"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.keywords": {
+      "source": "ce1063366c7c46d1",
+      "output": "edde0fff53d49747"
+    },
+    "shell.paletteCommands.navigation.agentProfiles.label": {
+      "source": "28c981529d6b0163",
+      "output": "6295a7cc3d31d33c"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",

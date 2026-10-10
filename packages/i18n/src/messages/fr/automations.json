@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (POST signé)",
     "AI_RUN": "Exécution d’IA sur la page modifiée",
-    "EMAIL_SELF": "E-mail à toi-même"
+    "EMAIL_SELF": "E-mail à toi-même",
+    "WORK_ITEM": "Créer une tâche"
   },
   "outputs": {
     "COMMENT": "En commentaire sur la page",
@@ -101,7 +102,13 @@
     "promptHint": "La page modifiée sert de support au modèle. La réponse est enregistrée à côté, pas à l’intérieur.",
     "output": "Résultat",
     "model": "Modèle (facultatif)",
-    "modelPlaceholder": "Laisser vide pour le modèle par défaut"
+    "modelPlaceholder": "Laisser vide pour le modèle par défaut",
+    "workGoal": "Objectif de la tâche",
+    "workGoalPlaceholder": "Par exemple : vérifie si la page contient des informations obsolètes et propose des corrections.",
+    "workGoalHint": "La tâche reçoit cet objectif ainsi que la page comme contexte. Son titre combine le nom de la règle et le titre de la page.",
+    "workProfile": "Profil d’agent",
+    "workProfileDefault": "Profil par défaut de l’espace de travail",
+    "workStartRun": "Faire travailler l’IA dessus immédiatement"
   },
   "page": {
     "loading": "Chargement des automatisations…",

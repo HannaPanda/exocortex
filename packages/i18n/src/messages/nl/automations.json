@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (ondertekende POST)",
     "AI_RUN": "AI-run op de gewijzigde pagina",
-    "EMAIL_SELF": "E-mail naar jezelf"
+    "EMAIL_SELF": "E-mail naar jezelf",
+    "WORK_ITEM": "Taak aanmaken"
   },
   "outputs": {
     "COMMENT": "Als reactie op de pagina",
@@ -101,7 +102,13 @@
     "promptHint": "De gewijzigde pagina is het materiaal voor het model. Het antwoord komt ernaast te staan, niet erin.",
     "output": "Resultaat",
     "model": "Model (optioneel)",
-    "modelPlaceholder": "Leeg laten voor het standaardmodel"
+    "modelPlaceholder": "Leeg laten voor het standaardmodel",
+    "workGoal": "Doel van de taak",
+    "workGoalPlaceholder": "Bijvoorbeeld: Controleer de pagina op verouderde informatie en stel correcties voor.",
+    "workGoalHint": "De taak krijgt dit doel en de pagina als context. De titel is de naam van de regel en de titel van de pagina.",
+    "workProfile": "Agentprofiel",
+    "workProfileDefault": "Standaardprofiel van de werkruimte",
+    "workStartRun": "De AI hier direct aan laten werken"
   },
   "page": {
     "loading": "Automatiseringen worden geladen …",

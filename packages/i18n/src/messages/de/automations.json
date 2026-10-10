@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (signierter POST)",
     "AI_RUN": "KI-Lauf gegen die geänderte Seite",
-    "EMAIL_SELF": "E-Mail an dich selbst"
+    "EMAIL_SELF": "E-Mail an dich selbst",
+    "WORK_ITEM": "Auftrag anlegen"
   },
   "outputs": {
     "COMMENT": "Als Kommentar an der Seite",
@@ -101,7 +102,13 @@
     "promptHint": "Die geänderte Seite ist das Material des Modells. Die Antwort landet daneben, nicht darin.",
     "output": "Ergebnis",
     "model": "Modell (optional)",
-    "modelPlaceholder": "Leer lassen für das Standardmodell"
+    "modelPlaceholder": "Leer lassen für das Standardmodell",
+    "workGoal": "Ziel des Auftrags",
+    "workGoalPlaceholder": "Zum Beispiel: Prüfe die Seite auf veraltete Angaben und schlage Korrekturen vor.",
+    "workGoalHint": "Der Auftrag bekommt dieses Ziel und die Seite als Kontext. Sein Titel ist der Name der Regel und der Titel der Seite.",
+    "workProfile": "Agentenprofil",
+    "workProfileDefault": "Standardprofil des Arbeitsbereichs",
+    "workStartRun": "Die KI sofort daran arbeiten lassen"
   },
   "page": {
     "loading": "Automationen werden geladen …",

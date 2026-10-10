@@ -943,5 +943,18 @@
       "p6": "En una solicitud de uso compartido, se indica con exactitud qué va a ocurrir y qué páginas se ven afectadas. Si alguna de estas páginas cambia antes de que respondas, tu respuesta ya no aprueba nada y el agente vuelve a preguntar con el nuevo estado. Una consulta también puede ejecutarse en paralelo sin detener la tarea; en ese caso, la tarjeta indica que el trabajo continúa."
     },
     "where": "La mano arriba a la derecha en la cabecera, el menú de la cuenta en «Te espera», o Ctrl + K y «Te espera»."
+  },
+  "agentenprofile": {
+    "title": "Perfiles de agente: roles para la IA en los encargos",
+    "summary": "Un perfil de agente determina con qué rol trabaja la IA integrada en un encargo: qué instrucciones recibe, qué modelo prefiere, qué herramientas puede usar, si escribe, sugiere o solo lee, y cuánto pueden costar una ejecución y un encargo.",
+    "details": {
+      "p1": "Un perfil solo restringe. Cada límite se compara con la configuración del espacio de trabajo y la del encargo; se aplica el más estricto. La IA sigue actuando con tus permisos, nunca con más.",
+      "p2": "Un encargo indica su perfil, los subencargos heredan el de su encargo principal y un encargo sin perfil propio usa el perfil predeterminado del espacio de trabajo. Solo una persona o un token con permisos de escritura pueden elegir el perfil, nunca la propia IA.",
+      "p3": "Perfil, modelo y proveedor son tres cosas distintas: el perfil es el rol; el modelo, una preferencia que se omite si ya no está habilitado; y el proveedor procede del enrutamiento de proveedores, que un perfil solo puede precisar.",
+      "p4": "Con «Una persona completa», una ejecución no puede marcar su encargo como completado, sino solo enviarlo para su revisión. «Mantener las ejecuciones en este espacio de trabajo» garantiza que la ejecución no acceda a ningún otro espacio de trabajo.",
+      "p5": "Cada ejecución recuerda con qué versión del perfil ha trabajado, y cada cambio en el perfil queda registrado en su historial junto con la persona y los campos modificados. Solo las personas con rol de administración del espacio de trabajo pueden crearlos y modificarlos; los agentes leen perfiles con exo_agent_profile_list y exo_agent_profile_get.",
+      "p6": "Una automatización puede delegar trabajo: la acción «Crear encargo» convierte la página modificada en un encargo con el objetivo de la regla y el perfil elegido; si se desea, la IA empieza de inmediato."
+    },
+    "where": "En Encargos a través de «Gestionar perfiles», en el propio encargo junto al perfil de agente, o con Strg + K y «Abrir perfiles de agente»."
   }
 }

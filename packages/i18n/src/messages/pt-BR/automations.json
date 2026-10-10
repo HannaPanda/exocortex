@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (POST assinado)",
     "AI_RUN": "Execução de IA na página alterada",
-    "EMAIL_SELF": "E-mail para você"
+    "EMAIL_SELF": "E-mail para você",
+    "WORK_ITEM": "Criar tarefa"
   },
   "outputs": {
     "COMMENT": "Como comentário na página",
@@ -101,7 +102,13 @@
     "promptHint": "A página alterada serve como material para o modelo. A resposta fica ao lado dela, não dentro.",
     "output": "Resultado",
     "model": "Modelo (opcional)",
-    "modelPlaceholder": "Deixe em branco para o modelo padrão"
+    "modelPlaceholder": "Deixe em branco para o modelo padrão",
+    "workGoal": "Objetivo da tarefa",
+    "workGoalPlaceholder": "Por exemplo: Verifique a página quanto a informações desatualizadas e sugira correções.",
+    "workGoalHint": "A tarefa recebe este objetivo e a página como contexto. O título dela será o nome da regra e o título da página.",
+    "workProfile": "Perfil de agente",
+    "workProfileDefault": "Perfil padrão do espaço de trabalho",
+    "workStartRun": "Fazer a IA começar a trabalhar nisso imediatamente"
   },
   "page": {
     "loading": "Carregando automações…",

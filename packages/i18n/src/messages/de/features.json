@@ -943,5 +943,18 @@
       "p6": "Bei einer Freigabe steht genau da, was passieren soll und welche Seiten es betrifft. Ändert sich eine dieser Seiten, bevor du antwortest, gibt deine Antwort nichts mehr frei, und der Agent fragt mit dem neuen Stand noch einmal. Eine Rückfrage kann auch nebenher laufen, ohne den Auftrag anzuhalten; die Karte sagt dann, dass die Arbeit weitergeht."
     },
     "where": "Die Hand oben rechts in der Kopfzeile, das Kontomenü unter „Wartet auf dich“, oder Strg + K und „Wartet auf dich“."
+  },
+  "agentenprofile": {
+    "title": "Agentenprofile: Rollen für die KI an Aufträgen",
+    "summary": "Ein Agentenprofil legt fest, in welcher Rolle die eingebaute KI an einem Auftrag arbeitet: was sie gesagt bekommt, welches Modell sie bevorzugt, welche Werkzeuge sie nutzen darf, ob sie schreibt, vorschlägt oder nur liest, und was ein Lauf und ein Auftrag kosten dürfen.",
+    "details": {
+      "p1": "Ein Profil schränkt nur ein. Jede Grenze wird mit der Einstellung des Arbeitsbereichs und der des Auftrags verglichen, die strengere gilt. Die KI handelt weiter mit deinen Rechten, nie mit mehr.",
+      "p2": "Ein Auftrag nennt sein Profil, Teilaufträge übernehmen das ihres Elternauftrags, und ein Auftrag ohne eigenes nutzt das Standardprofil des Arbeitsbereichs. Wählen darf das Profil nur ein Mensch oder ein schreibender Token, nie die KI selbst.",
+      "p3": "Profil, Modell und Anbieter sind drei Dinge: das Profil ist die Rolle, das Modell eine Vorliebe, die übersprungen wird, wenn es nicht mehr freigeschaltet ist, und der Anbieter kommt aus dem Anbieter-Routing, das ein Profil nur verfeinern kann.",
+      "p4": "Mit „Ein Mensch schließt ab“ kann ein Lauf seinen Auftrag nicht auf erledigt setzen, sondern nur zur Abnahme geben. „Läufe in diesem Arbeitsbereich halten“ sorgt dafür, dass der Lauf keinen anderen Arbeitsbereich erreicht.",
+      "p5": "Jeder Lauf merkt sich, mit welchem Stand des Profils er gearbeitet hat, und jede Änderung am Profil steht mit Person und Feldern in seiner Historie. Anlegen und ändern dürfen Admins des Arbeitsbereichs; Agenten lesen Profile mit exo_agent_profile_list und exo_agent_profile_get.",
+      "p6": "Eine Automation kann Arbeit übergeben: die Aktion „Auftrag anlegen“ macht aus der geänderten Seite einen Auftrag mit dem Ziel der Regel und dem gewählten Profil, auf Wunsch fängt die KI sofort an."
+    },
+    "where": "Unter Aufträge über „Profile verwalten“, am Auftrag beim Agentenprofil, oder Strg + K und „Agentenprofile öffnen“."
   }
 }

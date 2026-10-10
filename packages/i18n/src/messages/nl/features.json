@@ -943,5 +943,18 @@
       "p6": "Bij een deling staat precies beschreven wat er moet gebeuren en om welke pagina’s het gaat. Verandert een van deze pagina’s voordat je antwoordt, dan geeft je antwoord niets meer vrij en vraagt de agent het met de nieuwe status opnieuw. Een vraag kan ook op de achtergrond lopen zonder de opdracht te pauzeren; de kaart geeft dan aan dat het werk doorgaat."
     },
     "where": "Het handje rechtsboven in de kopregel, het accountmenu onder „Wacht op jou”, of Strg + K en „Wacht op jou”."
+  },
+  "agentenprofile": {
+    "title": "Agentprofielen: rollen voor de AI bij opdrachten",
+    "summary": "Een agentprofiel bepaalt in welke rol de ingebouwde AI aan een opdracht werkt: wat ertegen wordt gezegd, welk model de voorkeur heeft, welke tools mogen worden gebruikt, of de AI schrijft, voorstelt of alleen leest, en wat een run en een opdracht mogen kosten.",
+    "details": {
+      "p1": "Een profiel beperkt alleen. Elke limiet wordt vergeleken met de instelling van de werkruimte en die van de opdracht; de strengste geldt. De AI handelt altijd met jouw rechten, nooit met meer.",
+      "p2": "Een opdracht vermeldt zijn profiel, deelopdrachten nemen dat van hun bovenliggende opdracht over, en een opdracht zonder eigen profiel gebruikt het standaardprofiel van de werkruimte. Alleen een mens of een schrijvend token mag het profiel kiezen, nooit de AI zelf.",
+      "p3": "Profiel, model en provider zijn drie verschillende dingen: het profiel is de rol, het model een voorkeur die wordt overgeslagen als het niet meer is vrijgeschakeld, en de provider komt uit de provider-routing, die een profiel alleen verder kan verfijnen.",
+      "p4": "Met „Een mens rondt af” kan een run zijn opdracht niet als voltooid markeren, maar alleen ter goedkeuring voorleggen. „Runs in deze werkruimte houden” zorgt ervoor dat de run geen andere werkruimte bereikt.",
+      "p5": "Elke run onthoudt met welke versie van het profiel hij heeft gewerkt, en elke wijziging aan het profiel staat met persoon en velden in de geschiedenis ervan. Beheerders van de werkruimte mogen profielen aanmaken en wijzigen; agents lezen profielen met exo_agent_profile_list en exo_agent_profile_get.",
+      "p6": "Een automatisering kan werk overdragen: de actie „Opdracht aanmaken” maakt van de gewijzigde pagina een opdracht met het doel van de regel en het gekozen profiel; desgewenst begint de AI direct."
+    },
+    "where": "Onder Opdrachten via „Profielen beheren”, bij de opdracht onder agentprofiel, of Strg + K en „Agentprofielen openen”."
   }
 }

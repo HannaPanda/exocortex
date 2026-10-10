@@ -98,7 +98,8 @@
       "AI_FAILED": "L’attività IA della regola non è riuscita, per esempio perché il modello non ha risposto o l’IA è disattivata.",
       "PAGE_UNAVAILABLE": "Non è stato possibile leggere o scrivere con il tuo account la pagina su cui lavora la regola.",
       "OWNER_UNAVAILABLE": "Il tuo account non può eseguire la regola al momento, per esempio senza un indirizzo email confermato.",
-      "MAIL_FAILED": "La regola non è riuscita a inviare la pagina via email."
+      "MAIL_FAILED": "La regola non è riuscita a inviare la pagina via email.",
+      "WORK_ITEM_FAILED": "La regola non è riuscita a creare un’attività o ad avviare un’esecuzione dell’IA, ad esempio perché il profilo dell’agente non è più compatibile o l’IA è disattivata."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

@@ -98,7 +98,8 @@
       "AI_FAILED": "Der KI-Auftrag der Regel ist gescheitert, zum Beispiel weil das Modell nicht geantwortet hat oder die KI ausgeschaltet ist.",
       "PAGE_UNAVAILABLE": "Die Seite, auf der die Regel arbeitet, ließ sich mit deinem Konto nicht lesen oder beschreiben.",
       "OWNER_UNAVAILABLE": "Dein Konto kann die Regel gerade nicht ausführen, zum Beispiel ohne bestätigte E-Mail-Adresse.",
-      "MAIL_FAILED": "Die Regel konnte die Seite nicht als Mail verschicken."
+      "MAIL_FAILED": "Die Regel konnte die Seite nicht als Mail verschicken.",
+      "WORK_ITEM_FAILED": "Die Regel konnte keinen Auftrag anlegen oder keinen KI-Lauf daran starten, zum Beispiel weil das Agentenprofil nicht mehr passt oder die KI ausgeschaltet ist."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

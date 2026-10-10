@@ -943,5 +943,18 @@
       "p6": "Nel caso di una condivisione, viene indicato con precisione cosa dovrebbe accadere e quali pagine riguarda. Se una di queste pagine cambia prima che tu risponda, la tua risposta non approva più nulla e l’agente chiede di nuovo con lo stato aggiornato. Una richiesta di chiarimenti può svolgersi anche in parallelo, senza arrestare l’incarico; la scheda segnala quindi che il lavoro sta proseguendo."
     },
     "where": "L’icona della mano in alto a destra nell’intestazione, il menu dell’account alla voce «In attesa di te», oppure Strg + K e «In attesa di te»."
+  },
+  "agentenprofile": {
+    "title": "Profili agente: ruoli per l’IA nelle attività",
+    "summary": "Un profilo agente definisce il ruolo con cui l’IA integrata lavora a un’attività: cosa le viene comunicato, quale modello preferisce, quali strumenti può usare, se scrive, propone o legge soltanto, e quanto possono costare un’esecuzione e un’attività.",
+    "details": {
+      "p1": "Un profilo impone solo restrizioni. Ogni limite viene confrontato con l’impostazione dell’area di lavoro e con quella dell’attività: prevale la più restrittiva. L’IA continua ad agire con i tuoi permessi, mai con permessi superiori.",
+      "p2": "Un’attività indica il proprio profilo, le sotto-attività ereditano quello dell’attività principale e un’attività senza profilo proprio usa quello predefinito dell’area di lavoro. Solo una persona o un token con permessi di scrittura possono scegliere il profilo, mai l’IA stessa.",
+      "p3": "Profilo, modello e provider sono tre concetti distinti: il profilo è il ruolo, il modello è una preferenza ignorata se non è più abilitato, e il provider deriva dall’instradamento dei provider, che un profilo può solo perfezionare.",
+      "p4": "Con «Una persona completa», un’esecuzione non può impostare la propria attività come completata, ma può solo sottoporla ad approvazione. «Mantieni le esecuzioni in questa area di lavoro» fa sì che l’esecuzione non acceda ad altre aree di lavoro.",
+      "p5": "Ogni esecuzione ricorda la versione del profilo con cui ha lavorato, e ogni modifica al profilo viene registrata nella sua cronologia con persona e campi modificati. La creazione e la modifica sono riservate a chi amministra l’area di lavoro; gli agenti leggono i profili con exo_agent_profile_list ed exo_agent_profile_get.",
+      "p6": "Un’automazione può delegare lavoro: l’azione «Crea attività» trasforma la pagina modificata in un’attività con l’obiettivo della regola e il profilo selezionato; se desideri, l’IA inizia subito."
+    },
+    "where": "Sotto Attività tramite «Gestisci profili», sull’attività accanto al profilo agente, oppure premendo Strg + K e «Apri profili agente»."
   }
 }

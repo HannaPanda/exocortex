@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (POST firmado)",
     "AI_RUN": "Ejecución de IA sobre la página modificada",
-    "EMAIL_SELF": "Correo electrónico para ti"
+    "EMAIL_SELF": "Correo electrónico para ti",
+    "WORK_ITEM": "Crear tarea"
   },
   "outputs": {
     "COMMENT": "Como comentario en la página",
@@ -101,7 +102,13 @@
     "promptHint": "La página modificada sirve de material para el modelo. La respuesta se coloca al lado, no dentro de ella.",
     "output": "Resultado",
     "model": "Modelo (opcional)",
-    "modelPlaceholder": "Dejar en blanco para usar el modelo predeterminado"
+    "modelPlaceholder": "Dejar en blanco para usar el modelo predeterminado",
+    "workGoal": "Objetivo de la tarea",
+    "workGoalPlaceholder": "Por ejemplo: Revisa la página en busca de datos obsoletos y propón correcciones.",
+    "workGoalHint": "La tarea recibe este objetivo y la página como contexto. Su título es el nombre de la regla y el título de la página.",
+    "workProfile": "Perfil de agente",
+    "workProfileDefault": "Perfil predeterminado del espacio de trabajo",
+    "workStartRun": "Poner a la IA a trabajar en ello de inmediato"
   },
   "page": {
     "loading": "Cargando automatizaciones…",

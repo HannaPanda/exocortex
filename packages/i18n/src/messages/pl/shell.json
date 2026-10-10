@@ -237,6 +237,10 @@
         "label": "Otwórz propozycje zmian",
         "keywords": "propozycja propozycje propozycja zmian sprawdź zaakceptuj odrzuć udostępnienie diff changeset review"
       },
+      "agentProfiles": {
+        "label": "Otwórz profile agentów",
+        "keywords": "profil agenta profile agentów profil rola agent ai sztuczna inteligencja uprawnienia narzędzia budżet tryb zapisu programista badacz archiwista agent profile"
+      },
       "automations": {
         "label": "Otwórz automatyzacje",
         "keywords": "automatyzacja reguła harmonogram wyzwalacz workflow"

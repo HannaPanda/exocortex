@@ -943,5 +943,18 @@
       "p6": "Em um compartilhamento, fica claro exatamente o que deve acontecer e quais páginas são afetadas. Se uma dessas páginas for alterada antes de você responder, a sua resposta não libera mais nada, e o agente pergunta novamente com o estado atualizado. Uma pergunta também pode acontecer em segundo plano, sem interromper a tarefa; o cartão informa, então, que o trabalho continua."
     },
     "where": "O ícone da mão no canto superior direito do cabeçalho, no menu da conta em „Aguardando você“, ou com Ctrl + K e „Aguardando você“."
+  },
+  "agentenprofile": {
+    "title": "Perfis de agente: funções para a IA em tarefas",
+    "summary": "Um perfil de agente define em qual função a IA integrada trabalha em uma tarefa: o que é dito a ela, qual modelo ela prefere, quais ferramentas pode usar, se ela escreve, sugere ou apenas lê, e quanto uma execução e uma tarefa podem custar.",
+    "details": {
+      "p1": "Um perfil apenas restringe. Cada limite é comparado com a configuração do espaço de trabalho e com a da tarefa; o mais rigoroso prevalece. A IA continua agindo com as suas permissões, nunca com mais.",
+      "p2": "Uma tarefa especifica seu perfil, subtarefas herdam o de sua tarefa principal e uma tarefa sem perfil próprio usa o perfil padrão do espaço de trabalho. Somente uma pessoa ou um token com permissão de escrita pode escolher o perfil, nunca a própria IA.",
+      "p3": "Perfil, modelo e provedor são três coisas distintas: o perfil é a função, o modelo é uma preferência que é ignorada se não estiver mais habilitada, e o provedor vem do roteamento de provedores, que um perfil só pode refinar.",
+      "p4": "Com “Uma pessoa conclui”, uma execução não pode marcar sua tarefa como concluída, mas apenas enviá-la para aprovação. “Manter execuções neste espaço de trabalho” garante que a execução não alcance nenhum outro espaço de trabalho.",
+      "p5": "Cada execução registra com qual versão do perfil trabalhou, e qualquer alteração no perfil é registrada com a pessoa e os campos no seu histórico. Criar e alterar é permitido para administradores do espaço de trabalho; agentes leem perfis com exo_agent_profile_list e exo_agent_profile_get.",
+      "p6": "Uma automação pode transferir trabalho: a ação “Criar tarefa” transforma a página modificada em uma tarefa com o objetivo da regra e o perfil selecionado; se desejado, a IA começa imediatamente."
+    },
+    "where": "Em Tarefas através de “Gerenciar perfis”, na tarefa no perfil de agente, ou Strg + K e “Abrir perfis de agente”."
   }
 }

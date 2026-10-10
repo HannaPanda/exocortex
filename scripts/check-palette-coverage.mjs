@@ -85,6 +85,10 @@ const SCREEN_EXEMPT = [
     reason: 'One proposal, reached from the Vorschläge list, which the palette opens.',
   },
   {
+    screen: '/arbeitsbereich/:x/agentenprofile/:x',
+    reason: 'One agent profile, reached from the profile list, which the palette opens.',
+  },
+  {
     screen: '/geteilt/:x',
     reason: 'One page somebody shared, reached from /geteilt, which the palette opens.',
   },

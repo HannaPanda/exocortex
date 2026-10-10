@@ -943,5 +943,18 @@
       "p6": "Lors d’un partage, ce qui doit se passer et les pages concernées sont clairement indiqués. Si l’une de ces pages est modifiée avant que tu ne répondes, ta réponse ne valide plus rien et l’agent repose la question avec le nouvel état. Une question peut aussi s’exécuter en parallèle sans interrompre la tâche ; la carte indique alors que le travail continue."
     },
     "where": "La main en haut à droite dans l’en-tête, le menu du compte sous « Attend ton action », ou Ctrl + K et « Attend ton action »."
+  },
+  "agentenprofile": {
+    "title": "Profils d’agent : rôles pour l’IA sur les tâches",
+    "summary": "Un profil d’agent définit le rôle dans lequel l’IA intégrée travaille sur une tâche : ce qui lui est indiqué, le modèle qu’elle préfère, les outils qu’elle peut utiliser, si elle écrit, suggère ou lit uniquement, et ce qu’une exécution et une tâche peuvent coûter.",
+    "details": {
+      "p1": "Un profil ne fait que restreindre. Chaque limite est comparée aux paramètres de l’espace de travail et à ceux de la tâche ; la plus stricte s’applique. L’IA continue d’agir avec tes droits, jamais au-delà.",
+      "p2": "Une tâche indique son profil, les sous-tâches reprennent celui de leur tâche parente, et une tâche sans profil propre utilise le profil par défaut de l’espace de travail. Seule une personne ou un jeton avec droit d’écriture peut choisir le profil, jamais l’IA elle-même.",
+      "p3": "Profil, modèle et fournisseur sont trois choses distinctes : le profil correspond au rôle, le modèle à une préférence qui est ignorée s’il n’est plus activé, et le fournisseur découle du routage des fournisseurs, qu’un profil peut seulement affiner.",
+      "p4": "Avec « Une personne valide la clôture », une exécution ne peut pas marquer sa tâche comme terminée, mais seulement la soumettre pour validation. « Conserver les exécutions dans cet espace de travail » garantit que l’exécution n’atteint aucun autre espace de travail.",
+      "p5": "Chaque exécution enregistre la version du profil avec laquelle elle a travaillé, et toute modification apportée au profil figure dans son historique avec la personne et les champs concernés. Seuls les administrateurs de l’espace de travail peuvent les créer et les modifier ; les agents lisent les profils avec exo_agent_profile_list et exo_agent_profile_get.",
+      "p6": "Une automatisation peut transmettre du travail : l’action « Créer une tâche » transforme la page modifiée en tâche avec l’objectif de la règle et le profil choisi ; si tu le souhaites, l’IA commence immédiatement."
+    },
+    "where": "Sous Tâches via « Gérer les profils », sur la tâche au niveau du profil d’agent, ou via Strg + K et « Ouvrir les profils d’agent »."
   }
 }

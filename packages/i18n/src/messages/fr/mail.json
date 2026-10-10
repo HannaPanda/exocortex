@@ -98,7 +98,8 @@
       "AI_FAILED": "La tâche IA de la règle a échoué, par exemple parce que le modèle n’a pas répondu ou que l’IA est désactivée.",
       "PAGE_UNAVAILABLE": "La page sur laquelle la règle opère n’a pas pu être lue ou modifiée avec ton compte.",
       "OWNER_UNAVAILABLE": "Ton compte ne peut pas exécuter la règle pour le moment, par exemple sans adresse e-mail confirmée.",
-      "MAIL_FAILED": "La règle n’a pas pu envoyer la page par e-mail."
+      "MAIL_FAILED": "La règle n’a pas pu envoyer la page par e-mail.",
+      "WORK_ITEM_FAILED": "La règle n’a pas pu créer de tâche ou y lancer d’exécution d’IA, par exemple parce que le profil d’agent ne correspond plus ou que l’IA est désactivée."
     },
     "momentUtc": "{moment} (UTC)",
     "facts": {

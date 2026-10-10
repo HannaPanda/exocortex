@@ -51,6 +51,7 @@ const FILTER_ORDER: readonly FilterKey[] = ['open', 'mine', 'requested', 'all'];
 
 export function WorkItemsPage({ workspaceId }: { workspaceId: string }) {
   const t = useTranslations('workItems.list');
+  const tProfiles = useTranslations('agentProfiles.workItem');
   const detail = useWorkspaceDetail(workspaceId);
   const [filter, setFilter] = React.useState<FilterKey>('open');
   const items = useWorkItems(workspaceId, FILTERS[filter]);
@@ -71,6 +72,14 @@ export function WorkItemsPage({ workspaceId }: { workspaceId: string }) {
         <div>
           <h1 className="exocortex-page-title">{t('title')}</h1>
           <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
+          {/* The roles the assistant works in (issue #143). */}
+          <Link
+            href={`/arbeitsbereich/${workspaceId}/agentenprofile`}
+            className="mt-2 inline-block text-sm hover:underline"
+            data-testid="open-agent-profiles"
+          >
+            {tProfiles('manage')}
+          </Link>
         </div>
         {canWrite ? (
           <Button onClick={() => setDialogOpen(true)} data-testid="work-item-new">

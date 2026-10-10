@@ -219,14 +219,16 @@ function runVariant(status: string): 'default' | 'secondary' | 'destructive' | '
 
 export function RunsSection({ item, action }: { item: WorkItemDetail; action: React.ReactNode }) {
   const t = useTranslations('workItems.detail');
+  const tProfile = useTranslations('agentProfiles.workItem');
   const wording = useWorkItemWording();
   return (
     <Section title={t('runsHeading')} action={action}>
-      {item.budgetMicroUsd === null ? null : (
+      {/* The budget that holds: the stricter of the item's and its profile's (issue #143). */}
+      {item.effectiveBudgetMicroUsd === null ? null : (
         <p className="text-xs text-muted-foreground">
           {t('budget', {
             spent: wording.money(item.spentMicroUsd),
-            budget: wording.money(item.budgetMicroUsd),
+            budget: wording.money(item.effectiveBudgetMicroUsd),
           })}
         </p>
       )}
@@ -239,6 +241,14 @@ export function RunsSection({ item, action }: { item: WorkItemDetail; action: Re
               <Badge variant={runVariant(run.status)}>{t(`runStatus.${run.status}`)}</Badge>
               <span className="text-muted-foreground">{wording.moment(run.createdAt)}</span>
               <span className="text-muted-foreground">{run.model}</span>
+              {run.agentProfile === null ? null : (
+                <Badge variant="outline">
+                  {tProfile('runProfile', {
+                    name: run.agentProfile.name,
+                    revision: run.agentProfile.revision,
+                  })}
+                </Badge>
+              )}
               {run.costMicroUsd === null ? null : (
                 <span className="text-muted-foreground">{wording.money(run.costMicroUsd)}</span>
               )}

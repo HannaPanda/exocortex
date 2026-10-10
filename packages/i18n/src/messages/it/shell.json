@@ -237,6 +237,10 @@
         "label": "Apri proposte di modifica",
         "keywords": "proposta proposte proposta di modifica verificare applicare rifiutare condivisione diff changeset review"
       },
+      "agentProfiles": {
+        "label": "Apri profili agente",
+        "keywords": "profilo agente profilo ruolo agente ia permessi strumenti budget modalità scrittura sviluppatore ricercatore archivista profili agente"
+      },
       "automations": {
         "label": "Apri automazioni",
         "keywords": "automazione regola pianificazione trigger workflow"

@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (signed POST)",
     "AI_RUN": "AI run on the changed page",
-    "EMAIL_SELF": "Email to yourself"
+    "EMAIL_SELF": "Email to yourself",
+    "WORK_ITEM": "Create task"
   },
   "outputs": {
     "COMMENT": "As a comment on the page",
@@ -101,7 +102,13 @@
     "promptHint": "The modified page is the model’s material. The response ends up alongside it, not inside it.",
     "output": "Result",
     "model": "Model (optional)",
-    "modelPlaceholder": "Leave empty for the default model"
+    "modelPlaceholder": "Leave empty for the default model",
+    "workGoal": "Task goal",
+    "workGoalPlaceholder": "For example: Check the page for outdated information and suggest corrections.",
+    "workGoalHint": "The task receives this goal and the page as context. Its title is the name of the rule and the title of the page.",
+    "workProfile": "Agent profile",
+    "workProfileDefault": "Default workspace profile",
+    "workStartRun": "Have the AI start working on it right away"
   },
   "page": {
     "loading": "Loading automations…",

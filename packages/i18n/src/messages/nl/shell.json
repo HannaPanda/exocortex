@@ -237,6 +237,10 @@
         "label": "Wijzigingsvoorstellen openen",
         "keywords": "voorstel voorstellen wijzigingsvoorstel controleren overnemen afwijzen deling diff changeset review"
       },
+      "agentProfiles": {
+        "label": "Agentprofielen openen",
+        "keywords": "agentprofiel profiel rol agent ai rechten tools budget schrijfmodus ontwikkelaar onderzoeker archivaris agent profile"
+      },
       "automations": {
         "label": "Automatiseringen openen",
         "keywords": "automatisering regel schema trigger workflow"

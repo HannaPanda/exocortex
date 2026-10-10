@@ -22,6 +22,7 @@ import {
   Share2Icon,
   ShieldIcon,
   SlidersHorizontalIcon,
+  UserCogIcon,
   UsersIcon,
   WorkflowIcon,
 } from 'lucide-react';
@@ -63,6 +64,7 @@ interface Place {
     | 'workspaceShares'
     | 'workItems'
     | 'changesets'
+    | 'agentProfiles'
     | 'automations'
     | 'templates'
     | 'workspaceSettings'
@@ -139,6 +141,12 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/vorschlaege',
     audience: 'workspace',
     icon: GitPullRequestIcon,
+  },
+  {
+    key: 'agentProfiles',
+    screen: '/arbeitsbereich/:x/agentenprofile',
+    audience: 'workspace',
+    icon: UserCogIcon,
   },
   {
     key: 'automations',

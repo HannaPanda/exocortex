@@ -20,7 +20,8 @@
   "actions": {
     "WEBHOOK": "Webhook (POST firmato)",
     "AI_RUN": "Esecuzione IA sulla pagina modificata",
-    "EMAIL_SELF": "Email al tuo indirizzo"
+    "EMAIL_SELF": "Email al tuo indirizzo",
+    "WORK_ITEM": "Crea incarico"
   },
   "outputs": {
     "COMMENT": "Come commento nella pagina",
@@ -101,7 +102,13 @@
     "promptHint": "La pagina modificata è il materiale fornito al modello. La risposta viene salvata a fianco, non al suo interno.",
     "output": "Risultato",
     "model": "Modello (opzionale)",
-    "modelPlaceholder": "Lascia vuoto per il modello predefinito"
+    "modelPlaceholder": "Lascia vuoto per il modello predefinito",
+    "workGoal": "Obiettivo dell’incarico",
+    "workGoalPlaceholder": "Ad esempio: controlla la pagina per informazioni non aggiornate e proponi correzioni.",
+    "workGoalHint": "L’incarico riceve questo obiettivo e la pagina come contesto. Il suo titolo è composto dal nome della regola e dal titolo della pagina.",
+    "workProfile": "Profilo agente",
+    "workProfileDefault": "Profilo predefinito dell’area di lavoro",
+    "workStartRun": "Fai lavorare l’IA subito su questo"
   },
   "page": {
     "loading": "Caricamento delle automazioni in corso…",

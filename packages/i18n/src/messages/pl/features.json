@@ -943,5 +943,18 @@
       "p6": "W przypadku udostępnienia wyraźnie widać, co ma się wydarzyć i których stron to dotyczy. Jeśli którakolwiek z tych stron zmieni się, zanim odpowiesz, twoja odpowiedź niczego już nie udostępnia, a agent zapyta ponownie, uwzględniając nowy stan. Pytanie może też pojawić się w tle, bez wstrzymywania zadania; na karcie pojawi się wtedy informacja, że praca toczy się dalej."
     },
     "where": "Dłoń w prawym górnym rogu nagłówka, menu konta w sekcji „Czeka na ciebie” lub Strg + K i „Czeka na ciebie”."
+  },
+  "agentenprofile": {
+    "title": "Profile agentów: role dla AI w zadaniach",
+    "summary": "Profil agenta określa, w jakiej roli wbudowana AI pracuje nad zadaniem: jakie instrukcje otrzymuje, który model preferuje, z jakich narzędzi może korzystać, czy pisze, sugeruje, czy tylko czyta, oraz ile może kosztować jedno uruchomienie i całe zadanie.",
+    "details": {
+      "p1": "Profil nakłada wyłącznie ograniczenia. Każdy limit jest porównywany z ustawieniem obszaru roboczego i zadania – obowiązuje ten bardziej rygorystyczny. AI nadal działa w ramach twoich uprawnień i nigdy poza nie nie wykracza.",
+      "p2": "Zadanie wskazuje swój profil, podzadania dziedziczą go po zadaniu nadrzędnym, a zadanie bez własnego profilu korzysta z domyślnego profilu obszaru roboczego. Profil może wybrać tylko człowiek lub token z uprawnieniem do zapisu, nigdy sama AI.",
+      "p3": "Profil, model i dostawca to trzy różne rzeczy: profil to rola, model to preferencja pomijana, gdy nie jest już dostępny, a dostawca pochodzi z routingu dostawców, który profil może jedynie doprecyzować.",
+      "p4": "Dzięki opcji „Człowiek kończy zadanie” uruchomienie nie może oznaczyć swojego zadania jako ukończone, a jedynie przekazać je do zatwierdzenia. Opcja „Utrzymuj uruchomienia w tym obszarze roboczym” gwarantuje, że uruchomienie nie wyjdzie poza bieżący obszar roboczy.",
+      "p5": "Każde uruchomienie zapamiętuje wersję profilu, z którą pracowało, a każda zmiana w profilu jest odnotowywana w jego historii wraz z autorem i polami. Tworzyć i modyfikować profile mogą administratorzy obszaru roboczego; agenci odczytują profile za pomocą exo_agent_profile_list i exo_agent_profile_get.",
+      "p6": "Automatyzacja może przekazywać pracę: akcja „Utwórz zadanie” zamienia zmienioną stronę w zadanie z celem reguły i wybranym profilem – na życzenie AI zaczyna działać natychmiast."
+    },
+    "where": "W sekcji Zadania pod „Zarządzaj profilami”, w zadaniu przy profilu agenta lub przez Ctrl + K i „Otwórz profile agentów”."
   }
 }
