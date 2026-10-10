@@ -11,8 +11,8 @@ import {
   type PrismaClient,
 } from '@exocortex/database';
 
-import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere } from '../common/correlation';
 
 import {
   type AiModelResolverService,

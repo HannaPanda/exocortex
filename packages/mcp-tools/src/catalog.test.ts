@@ -101,6 +101,7 @@ describe('EXOCORTEX_TOOLS', () => {
       .map((tool) => tool.name)
       .sort();
     expect(destructive).toEqual([
+      'exo_agent_profile_delete',
       'exo_attachment_correct_text',
       'exo_attachment_reextract_text',
       'exo_automation_delete',
@@ -170,11 +171,13 @@ describe('EXOCORTEX_TOOLS', () => {
     // deletes nothing (issue #83): a public address is out the moment it is
     // made, and revoking it afterwards does not unread the page. A work item
     // is (issue #138): its history goes with it, and cancelling it is the
-    // reversible way to end one.
+    // reversible way to end one. So is an agent profile (issue #143): no
+    // snapshot keeps it, only the audit log says it existed.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
     expect(irreversible).toEqual([
+      'exo_agent_profile_delete',
       'exo_automation_delete',
       'exo_comment_delete',
       'exo_database_option_delete',

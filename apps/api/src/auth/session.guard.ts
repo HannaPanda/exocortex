@@ -25,8 +25,8 @@ import { type Logger } from '@exocortex/logger';
 import { AppError } from '../common/app-error';
 import {
   clearAutomationOrigin,
-  setPageScopeRestriction,
   setConfinedWorkspace,
+  setPageScopeRestriction,
   setRequestAiRun,
   setRequestUser,
 } from '../common/correlation';

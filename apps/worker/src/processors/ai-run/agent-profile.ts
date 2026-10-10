@@ -1,3 +1,4 @@
+import { type AiRoutingRequirements, type RoutePlan } from '@exocortex/ai';
 import {
   type AgentProfileSnapshot,
   type AiMessage,
@@ -55,6 +56,15 @@ export async function resolveRunProfile(input: {
   };
 }
 
+/** The columns a run gets about its profile when it starts; none without one. */
+export function profileColumns(
+  profile: RunProfile | null,
+): { agentProfileId: string; agentProfileSnapshot: AgentProfileSnapshot } | Record<string, never> {
+  return profile === null
+    ? {}
+    : { agentProfileId: profile.snapshot.id, agentProfileSnapshot: profile.snapshot };
+}
+
 /**
  * The limits of a run with its profile laid over the deployment's: each the
  * stricter of the two, so a profile can only ever take something away.
@@ -72,6 +82,25 @@ export function profileLimits(
       base.runBudgetMs,
       snapshot.maxRunSeconds === null ? null : snapshot.maxRunSeconds * 1_000,
     )!,
+  };
+}
+
+/**
+ * What one request asks of whoever serves it: the plan's eligible providers
+ * (ADR-032) and the profile's routing keys (issue #143). Undefined when there
+ * is neither, which is how a request without a plan always went out.
+ */
+export function requestRouting(
+  plan: RoutePlan,
+  maxOutputTokens: number,
+  preferences: ProviderRoutingOverride | null,
+): AiRoutingRequirements | undefined {
+  const own = preferences === null ? {} : { preferences };
+  if (!plan.known) return preferences === null ? undefined : own;
+  return {
+    allowedProviderKeys: plan.allowedProviderKeys,
+    minimumContextTokens: maxOutputTokens,
+    ...own,
   };
 }
 

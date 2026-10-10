@@ -27,6 +27,7 @@ const baseRow: AiRunRow = {
   toolsOffered: null,
   toolSchemaChars: null,
   toolDomains: [],
+  agentProfileSnapshot: null,
   toolIterations: 0,
 };
 

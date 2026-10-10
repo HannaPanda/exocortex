@@ -318,6 +318,38 @@ function bookCall(
   return { text: repeatHint({ name, repeatOf: verdict.repeatOf }), isError: false, refused: false };
 }
 
+/**
+ * The tool a call names, or why it cannot be called at all: it does not
+ * exist, or it lies outside the run's agent profile (issue #143). Decided by
+ * the tool's domain, before anything about the call itself.
+ */
+function usableTool(
+  input: CreateToolRunnerInput,
+  name: string,
+  correlationId: string,
+): { tool: AnyToolDefinition } | { refusal: ToolCallOutcome } {
+  const tool = findTool(name);
+  if (tool === null) {
+    return { refusal: { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false } };
+  }
+  if (input.allowedDomains === null || input.allowedDomains.includes(tool.domain)) return { tool };
+  input.logger.warn('Refused a tool outside the run profile', {
+    tool: tool.name,
+    domain: tool.domain,
+    correlationId,
+  });
+  return {
+    refusal: {
+      text:
+        `Das Werkzeug ${tool.name} gehört zum Bereich „${tool.domain}“, den das Agentenprofil ` +
+        `dieses Laufs nicht erlaubt. Erlaubt sind: ${input.allowedDomains.join(', ')}. Arbeite ` +
+        'mit diesen, oder sage in deiner Antwort, was du sonst bräuchtest.',
+      isError: true,
+      refused: true,
+    },
+  };
+}
+
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   const offer = createToolOffer(input);
 
@@ -376,27 +408,9 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     argumentsJson: string,
     correlationId: string,
   ): Promise<ToolCallOutcome> {
-    const tool = findTool(name);
-    if (tool === null) {
-      return { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false };
-    }
-    // The run's agent profile names the domains it may use (issue #143).
-    // Decided by the tool's domain, before anything else about the call.
-    if (input.allowedDomains !== null && !input.allowedDomains.includes(tool.domain)) {
-      input.logger.warn('Refused a tool outside the run profile', {
-        tool: name,
-        domain: tool.domain,
-        correlationId,
-      });
-      return {
-        text:
-          `Das Werkzeug ${name} gehört zum Bereich „${tool.domain}“, den das Agentenprofil dieses ` +
-          `Laufs nicht erlaubt. Erlaubt sind: ${input.allowedDomains.join(', ')}. Arbeite mit ` +
-          'diesen, oder sage in deiner Antwort, was du sonst bräuchtest.',
-        isError: true,
-        refused: true,
-      };
-    }
+    const found = usableTool(input, name, correlationId);
+    if ('refusal' in found) return found.refusal;
+    const { tool } = found;
 
     // Before the arguments are even parsed: whether this call may run
     // depends on the tool and on what the run has read, never on what the

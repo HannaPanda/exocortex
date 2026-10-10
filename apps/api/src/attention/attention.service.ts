@@ -21,8 +21,8 @@ import {
   raiseAttentionItems,
 } from '@exocortex/database';
 
-import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere } from '../common/correlation';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';

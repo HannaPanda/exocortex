@@ -54,6 +54,7 @@ const runningRun: AiRun = {
   toolSchemaChars: 29_032,
   toolDomains: ['core', 'pages'],
   toolIterations: 2,
+  agentProfile: null,
 };
 
 describe('aiRunGetTool', () => {

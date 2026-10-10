@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { type ApiEnv } from '@exocortex/config';
 
 import { AdminModule } from './admin/admin.module';
+import { AgentProfilesModule } from './agent-profiles/agent-profiles.module';
 import { AgentSessionsModule } from './agent-sessions/agent-sessions.module';
 import { AiModule } from './ai/ai.module';
 import { AttachmentsModule } from './attachments/attachments.module';
@@ -14,7 +15,6 @@ import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { TokenScopeGuard } from './auth/token-scope.guard';
 import { AutomationsModule } from './automations/automations.module';
-import { AgentProfilesModule } from './agent-profiles/agent-profiles.module';
 import { ChangesetsModule } from './changesets/changesets.module';
 import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';

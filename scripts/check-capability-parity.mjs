@@ -75,6 +75,26 @@ const SURFACE_EXEMPT = [
       'Rejects a proposed changeset. Same reason: a decision on a proposal, and the built-in AI is never the one who decides.',
   },
   {
+    tool: 'exo_agent_profile_create',
+    reason:
+      'Creates an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.',
+  },
+  {
+    tool: 'exo_agent_profile_update',
+    reason:
+      'Changes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.',
+  },
+  {
+    tool: 'exo_agent_profile_duplicate',
+    reason:
+      'Copies an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.',
+  },
+  {
+    tool: 'exo_agent_profile_delete',
+    reason:
+      'Deletes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.',
+  },
+  {
     tool: 'exo_ai_run_get',
     reason:
       'Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.',

@@ -9,8 +9,8 @@ import {
 } from '@exocortex/contracts';
 import { type EntityRecord, loadEntityRegistry, type PrismaClient } from '@exocortex/database';
 
-import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere } from '../common/correlation';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 

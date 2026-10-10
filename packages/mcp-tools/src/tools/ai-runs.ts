@@ -61,6 +61,14 @@ function renderRun(run: AiRun): string {
         `${run.toolDomains.join(', ')}`,
     );
   }
+  // Which role the run worked in, and at which version (issue #143).
+  if (run.agentProfile !== null) {
+    const profile = run.agentProfile;
+    lines.push(
+      `Agentenprofil: ${profile.name} (Stand ${String(profile.revision)}` +
+        `${profile.source === 'default' ? ', Standardprofil' : ''}), Schreiben: ${profile.writeMode}`,
+    );
+  }
   if (run.errorCode !== null) lines.push(`Fehlercode: ${run.errorCode}`);
   // The diagnosis rather than only the code (issue #118): a run that ran out
   // of tool calls says here which tools it spent them on and how many of them

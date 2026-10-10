@@ -1,9 +1,11 @@
 import { type AiProvider, estimateTokens, type VisionPreprocessor } from '@exocortex/ai';
 import {
   type AiMessage,
+  type AiRunTimeouts,
+  type AiWriteMode,
   deriveAiRunTimeouts,
-  QUEUE_NAMES,
   type ProviderRoutingOverride,
+  QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
@@ -17,10 +19,12 @@ import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun } from './ai-run/admission';
 import {
+  profileColumns,
   profileLimits,
   profileMessage,
   profileToolDomains,
   resolveRunProfile,
+  type RunProfile,
 } from './ai-run/agent-profile';
 import { writeFailure, writeSuccess } from './ai-run/completion';
 import { type ResolvedModelRow } from './ai-run/contract';
@@ -182,6 +186,101 @@ function buildRunRouting(input: {
   };
 }
 
+/** What holds one run: its mode, its role, its limits (issues #141 and #143). */
+interface RunPolicy {
+  profile: RunProfile | null;
+  writeMode: AiWriteMode;
+  /** System messages before the conversation: the role, then the mode. */
+  notes: AiMessage[];
+  timeouts: AiRunTimeouts;
+  budgetMicroUsd: number;
+  maxToolIterations: number;
+}
+
+/**
+ * The run's write mode, role and limits, each the strictest of the settings,
+ * the work item and the agent profile. A profile can only ever take
+ * something away, so every number here is a minimum.
+ */
+async function resolveRunPolicy(input: {
+  prisma: PrismaClient;
+  run: AiRun;
+  settings: Settings;
+  profile: RunProfile | null;
+}): Promise<RunPolicy> {
+  const { prisma, run, settings, profile } = input;
+  const writeMode = await resolveRunWriteMode({
+    prisma,
+    run,
+    settings,
+    profileWriteMode: profile?.snapshot.writeMode ?? null,
+  });
+  const roleNote = await profileMessage({ prisma, profile, workspaceId: run.workspaceId });
+  const modeNote = writeModeMessage(writeMode);
+  const base = deriveAiRunTimeouts(settings);
+  const limits = profileLimits(profile, {
+    budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
+    maxToolIterations: settings['ai.maxToolIterations'],
+    runBudgetMs: base.runBudgetMs,
+  });
+  return {
+    profile,
+    writeMode,
+    notes: [roleNote, modeNote].filter((note): note is AiMessage => note !== null),
+    timeouts: {
+      ...base,
+      runBudgetMs: limits.runBudgetMs,
+      toolCallTimeoutMs: Math.min(base.toolCallTimeoutMs, limits.runBudgetMs),
+    },
+    budgetMicroUsd: limits.budgetMicroUsd,
+    maxToolIterations: limits.maxToolIterations,
+  };
+}
+
+/** The tool loop of one run, told what it may offer and what it may call. */
+function createRunToolRunner(input: {
+  factory: ToolRunnerFactory;
+  run: AiRun;
+  settings: Settings;
+  rest: AiMessage[];
+  policy: RunPolicy;
+}): ToolRunner {
+  const { run, settings, policy } = input;
+  const proposing = policy.writeMode === 'propose';
+  return input.factory({
+    userId: run.createdById,
+    includeMutating: settings['ai.mutatingToolsEnabled'],
+    mutationPolicy: settings['ai.untrustedContentPolicy'],
+    writeMode: policy.writeMode,
+    // Zero when web research is off, which is also how the fetch tool
+    // disappears from the catalogue instead of refusing every call.
+    webFetchesPerRun: settings['ai.webResearchEnabled']
+      ? settings['ai.webResearchMaxFetchesPerRun']
+      : 0,
+    // Which part of the catalogue this run hears about (issue #121). The
+    // task's own words decide, plus one fact the words cannot say: a database
+    // view is open, so the row and column tools are needed before anybody
+    // writes the word "Datenbank".
+    taskText: taskTextFor(input.rest),
+    requiredDomains: [
+      ...(run.databaseViewId === null ? [] : (['databases'] as const)),
+      // A proposing run needs the proposal tools whatever its words say.
+      ...(proposing ? (['changesets'] as const) : []),
+    ],
+    // The agent profile's domains are a limit, not an offer (issue #143).
+    allowedDomains: profileToolDomains(policy.profile, {
+      onWorkItem: run.workItemId !== null,
+      proposing,
+    }),
+    confinedWorkspaceId: policy.profile?.snapshot.confineToWorkspace ? run.workspaceId : null,
+    toolCallTimeoutMs: policy.timeouts.toolCallTimeoutMs,
+    // One run, one session (ADR-022): the unit somebody would want back is
+    // "what the assistant did while answering that question".
+    agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
+    runId: run.id,
+  });
+}
+
 /**
  * Executes an AI run outside the API process.
  *
@@ -307,69 +406,24 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             return null;
           })
         : null;
-    // The mode this run is held to (issue #141): told to the model up front,
-    // enforced by the loop and, through its signed token, by the API.
-    const writeMode = await resolveRunWriteMode({
-      prisma,
-      run,
-      settings,
-      profileWriteMode: profile?.snapshot.writeMode ?? null,
-    });
-    const modeNote = writeModeMessage(writeMode);
-    const roleNote = await profileMessage({ prisma, profile, workspaceId: run.workspaceId });
+    // The mode, the role and the limits this run is held to (issues #141 and
+    // #143): told to the model up front, enforced by the loop and, through
+    // its signed token, by the API.
+    const policy = await resolveRunPolicy({ prisma, run, settings, profile });
     const messages: AiMessage[] = [
       ...base,
-      ...(roleNote === null ? [] : [roleNote]),
-      ...(modeNote === null ? [] : [modeNote]),
+      ...policy.notes,
       ...(imageContext === null ? [] : [imageContext]),
       ...rest,
     ];
-
-    // Derived once, ahead of the tool runner: a tool call needs its own
-    // timeout before the run's clocks are otherwise started below. A profile
-    // can only shorten the run, never lengthen it.
-    const baseTimeouts = deriveAiRunTimeouts(settings);
-    const limits = profileLimits(profile, {
-      budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
-      maxToolIterations: settings['ai.maxToolIterations'],
-      runBudgetMs: baseTimeouts.runBudgetMs,
-    });
-    const timeouts = {
-      ...baseTimeouts,
-      runBudgetMs: limits.runBudgetMs,
-      toolCallTimeoutMs: Math.min(baseTimeouts.toolCallTimeoutMs, limits.runBudgetMs),
-    };
+    const { timeouts, writeMode } = policy;
     const runner: ToolRunner | null = tools.enabled
-      ? dependencies.toolRunnerFactory!({
-          userId: run.createdById,
-          includeMutating: settings['ai.mutatingToolsEnabled'],
-          mutationPolicy: settings['ai.untrustedContentPolicy'],
-          writeMode,
-          // Zero when web research is off, which is also how the fetch tool
-          // disappears from the catalogue instead of refusing every call.
-          webFetchesPerRun: settings['ai.webResearchEnabled']
-            ? settings['ai.webResearchMaxFetchesPerRun']
-            : 0,
-          // Which part of the catalogue this run hears about (issue #121).
-          // The task's own words decide, plus one fact the words cannot say:
-          // a database view is open, so the row and column tools are needed
-          // before anybody writes the word "Datenbank".
-          taskText: taskTextFor(rest),
-          requiredDomains: [
-            ...(run.databaseViewId === null ? [] : (['databases'] as const)),
-            // A proposing run needs the proposal tools whatever its words say.
-            ...(writeMode === 'propose' ? (['changesets'] as const) : []),
-          ],
-          allowedDomains: profileToolDomains(profile, {
-            onWorkItem: run.workItemId !== null,
-            proposing: writeMode === 'propose',
-          }),
-          confinedWorkspaceId: profile?.snapshot.confineToWorkspace ? run.workspaceId : null,
-          toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
-          // One run, one session (ADR-022): the unit somebody would want back
-          // is "what the assistant did while answering that question".
-          agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
-          runId: run.id,
+      ? createRunToolRunner({
+          factory: dependencies.toolRunnerFactory!,
+          run,
+          settings,
+          rest,
+          policy,
         })
       : null;
     // The image descriptions were produced before the runner existed, and they
@@ -389,9 +443,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         writeMode: writeModeColumn(writeMode),
         // What the profile said at this moment (issue #143), so a later edit
         // of the profile does not rewrite what this run was held to.
-        ...(profile === null
-          ? {}
-          : { agentProfileId: profile.snapshot.id, agentProfileSnapshot: profile.snapshot }),
+        ...profileColumns(profile),
       },
     });
     await reportProgress(5, 'generating');
@@ -414,8 +466,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           runner,
           toolsEnabled: tools.enabled,
           maxOutputTokens,
-          maxToolIterations: tools.enabled ? limits.maxToolIterations : 0,
-          budgetMicroUsd: limits.budgetMicroUsd,
+          maxToolIterations: tools.enabled ? policy.maxToolIterations : 0,
+          budgetMicroUsd: policy.budgetMicroUsd,
           messages,
           routing: buildRunRouting({
             dependencies,

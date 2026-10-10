@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { agentProfileSnapshotSchema } from './agent-profiles';
 import { aiRunDiagnosisArgsSchema } from './ai-diagnosis';
 import { aiReasoningLevelSchema } from './ai-models';
 import { idSchema, isoDateTimeSchema } from './primitives';
@@ -134,6 +135,11 @@ export const aiRunSchema = z.object({
   toolsOffered: z.number().int().nonnegative().nullable(),
   toolSchemaChars: z.number().int().nonnegative().nullable(),
   toolDomains: z.array(z.string()),
+  /**
+   * The agent profile the run worked under (issue #143, ADR-071), as it was
+   * when the run started; null for a run without one.
+   */
+  agentProfile: agentProfileSnapshotSchema.nullable(),
 });
 export type AiRun = z.infer<typeof aiRunSchema>;
 

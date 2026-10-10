@@ -91,12 +91,23 @@ function formatDetail(item: WorkItemDetail): string {
       'Läufe (neueste zuerst):',
       ...item.runs.map(
         (run) =>
-          `- ${run.id} · ${run.status} · ${run.model}${run.errorCode === null ? '' : ` · Fehler ${run.errorCode}`}`,
+          `- ${run.id} · ${run.status} · ${run.model}` +
+          (run.agentProfile === null
+            ? ''
+            : ` · Profil ${run.agentProfile.name} (Stand ${run.agentProfile.revision})`) +
+          (run.errorCode === null ? '' : ` · Fehler ${run.errorCode}`),
       ),
     );
   }
-  if (item.budgetMicroUsd !== null) {
-    lines.push('', `Budget: ${item.spentMicroUsd} von ${item.budgetMicroUsd} Mikro-USD verbraucht`);
+  if (item.agentProfile !== null) {
+    const how = item.agentProfile.inherited ? ', Standardprofil des Arbeitsbereichs' : '';
+    lines.push('', `Agentenprofil: ${item.agentProfile.name} (id: ${item.agentProfile.id}${how})`);
+  }
+  if (item.effectiveBudgetMicroUsd !== null) {
+    lines.push(
+      '',
+      `Budget: ${item.spentMicroUsd} von ${item.effectiveBudgetMicroUsd} Mikro-USD verbraucht`,
+    );
   }
   if (item.latestCheckpointAt !== null) {
     lines.push(
@@ -186,7 +197,9 @@ export const workItemCreateTool: AnyToolDefinition = defineTool({
   description:
     'Legt einen Auftrag an: delegierte Arbeit mit Titel, Ziel und optional Akzeptanzkriterien ' +
     '([{"text":…,"met":false}]), Kontextseiten (contextDocumentIds), Priorität (low, normal, high, ' +
-    'urgent), Fälligkeit (dueAt, ISO), Budget in Mikro-USD und übergeordnetem Auftrag (parentId). ' +
+    'urgent), Fälligkeit (dueAt, ISO), Budget in Mikro-USD, übergeordnetem Auftrag (parentId) und ' +
+    'Agentenprofil (agentProfileId, siehe exo_agent_profile_list; ein Teilauftrag übernimmt sonst ' +
+    'das seines Elternauftrags). ' +
     `Du selbst wirst als Auftraggeber eingetragen. ${ASSIGNEE_HELP}`,
   inputSchema: z.object({ workspaceId: idSchema }).extend(createWorkItemRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
@@ -215,7 +228,9 @@ export const workItemUpdateTool: AnyToolDefinition = defineTool({
     'Fortschritt ein: status (mit statusReason, wenn er blockiert ist oder wartet), result (das ' +
     'Ergebnis in Worten), resultDocumentIds (erzeugte Seiten, ersetzt die Liste), ' +
     'acceptanceCriteria (die ganze Liste, erfüllte mit met: true). Außerdem title, goal, priority, ' +
-    `assignee, contextDocumentIds, budgetMicroUsd, dueAt, parentId. ${STATUS_HELP} ${ASSIGNEE_HELP}`,
+    'assignee, contextDocumentIds, budgetMicroUsd, dueAt, parentId, agentProfileId (null nimmt ' +
+    'das Standardprofil). Ein Profil wählen darf nur ein Mensch oder ein schreibender Token. ' +
+    `${STATUS_HELP} ${ASSIGNEE_HELP}`,
   inputSchema: z.object({ workItemId: idSchema }).extend(updateWorkItemRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'workItems',

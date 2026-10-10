@@ -28,6 +28,7 @@ import { runTimeoutDiagnosis } from '../../run-timeout';
 import { toolLoopDiagnosis } from '../../tool-ledger';
 import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
+import { requestRouting } from './agent-profile';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
 import { REASONING_LEVEL_TO_LOWER, toolCallTarget, toWireToolCalls } from './wire';
 
@@ -322,17 +323,7 @@ class RunExecution {
 
   /** Carries a plan into the next request, and records what it decided. Never content. */
   private applyPlan(plan: RoutePlan): void {
-    const preferences = this.input.routing.preferences;
-    const own = preferences === null ? {} : { preferences };
-    this.routing = plan.known
-      ? {
-          allowedProviderKeys: plan.allowedProviderKeys,
-          minimumContextTokens: this.input.maxOutputTokens,
-          ...own,
-        }
-      : preferences === null
-        ? undefined
-        : own;
+    this.routing = requestRouting(plan, this.input.maxOutputTokens, this.input.routing.preferences);
     if (!plan.known) return;
     this.input.logger.debug('Route planned for turn', {
       runId: this.input.run.id,

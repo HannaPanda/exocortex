@@ -19,8 +19,8 @@ import { matchEntityAliases } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
-import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere } from '../common/correlation';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { DocumentContentService } from '../documents/document-content.service';
 import { DocumentsService } from '../documents/documents.service';

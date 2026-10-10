@@ -20,13 +20,14 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-251 routes are reachable from at least one client; 157 from all three.
+257 routes are reachable from at least one client; 159 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
 | `DELETE /api/admin/ai-models/:x` | ✓ | · | · | — |
 | `DELETE /api/admin/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `DELETE /api/admin/users/:x` | ✓ | ✓ | ✓ | `exo_user_delete` |
+| `DELETE /api/agent-profiles/:x` | ✓ | · | ✓ | `exo_agent_profile_delete` |
 | `DELETE /api/ai/conversations/:x` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/permanent` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
@@ -61,6 +62,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/admin/overview` | ✓ | · | · | — |
 | `GET /api/admin/settings` | ✓ | · | · | — |
 | `GET /api/admin/users` | ✓ | ✓ | ✓ | `exo_user_list` |
+| `GET /api/agent-profiles/:x` | ✓ | ✓ | ✓ | `exo_agent_profile_get` |
 | `GET /api/agent-sessions` | ✓ | ✓ | ✓ | `exo_agent_session_list` |
 | `GET /api/agent-sessions/:x` | ✓ | ✓ | ✓ | `exo_agent_session_get` |
 | `GET /api/ai/conversations` | ✓ | ✓ | ✓ | `exo_chat_list` |
@@ -126,6 +128,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/work-items/:x/checkpoints` | ✓ | ✓ | ✓ | `exo_work_item_checkpoints` |
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
+| `GET /api/workspaces/:x/agent-profiles` | ✓ | ✓ | ✓ | `exo_agent_profile_list` |
 | `GET /api/workspaces/:x/ai-rules` | ✓ | ✓ | ✓ | `exo_rules_list` |
 | `GET /api/workspaces/:x/attachments/upload-tickets/:x` | · | · | ✓ | `exo_attachment_upload_ticket_get` |
 | `GET /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_list` |
@@ -152,6 +155,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/admin/settings` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x/status` | ✓ | ✓ | ✓ | `exo_user_set_disabled` |
+| `PATCH /api/agent-profiles/:x` | ✓ | · | ✓ | `exo_agent_profile_update` |
 | `PATCH /api/ai/conversations/:x` | ✓ | · | · | — |
 | `PATCH /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
 | `PATCH /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_correct_text` |
@@ -181,6 +185,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/admin/ai-models/sync` | ✓ | · | · | — |
 | `POST /api/admin/invitations` | · | ✓ | ✓ | `exo_invitation_create` |
 | `POST /api/admin/invitations/:x/resend` | · | ✓ | ✓ | `exo_invitation_resend` |
+| `POST /api/agent-profiles/:x/duplicate` | ✓ | · | ✓ | `exo_agent_profile_duplicate` |
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
@@ -251,6 +256,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/work-items/:x/notes` | ✓ | ✓ | ✓ | `exo_work_item_note` |
 | `POST /api/work-items/:x/runs` | ✓ | ✓ | ✓ | `exo_work_item_start_run` |
 | `POST /api/workspaces` | ✓ | · | · | — |
+| `POST /api/workspaces/:x/agent-profiles` | ✓ | · | ✓ | `exo_agent_profile_create` |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
 | `POST /api/workspaces/:x/attachments/from-url` | · | ✓ | ✓ | `exo_attachment_upload_url` |
 | `POST /api/workspaces/:x/attachments/upload-tickets` | · | · | ✓ | `exo_attachment_upload_ticket` |
@@ -278,10 +284,11 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-52 of them. Each is covered by a documented exemption; the reasons
+56 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
+- `DELETE /api/agent-profiles/:x` (reachable from MCP)
 - `DELETE /api/ai/conversations/:x`
 - `DELETE /api/ai/conversations/:x/permanent`
 - `DELETE /api/ai/conversations/:x/sources/:x`
@@ -307,6 +314,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/admin/ai-models/:x`
 - `PATCH /api/admin/settings`
 - `PATCH /api/admin/users/:x`
+- `PATCH /api/agent-profiles/:x` (reachable from MCP)
 - `PATCH /api/ai/conversations/:x`
 - `PATCH /api/ai/conversations/:x/sources/:x`
 - `PATCH /api/workspaces/:x/members/:x`
@@ -314,6 +322,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/admin/ai-models`
 - `POST /api/admin/ai-models/catalog`
 - `POST /api/admin/ai-models/sync`
+- `POST /api/agent-profiles/:x/duplicate` (reachable from MCP)
 - `POST /api/agent-sessions/:x/revert`
 - `POST /api/ai/conversations`
 - `POST /api/ai/conversations/:x/messages`
@@ -330,12 +339,17 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/me/api-tokens`
 - `POST /api/me/push/devices`
 - `POST /api/workspaces`
+- `POST /api/workspaces/:x/agent-profiles` (reachable from MCP)
 - `POST /api/workspaces/:x/trash/delete`
 - `POST /api/workspaces/:x/trash/deletion-preview`
 - `PUT /api/workspaces/:x/credentials/:x`
 
 ## Tools offered to one kind of agent only
 
+- `exo_agent_profile_create` — mcp: Creates an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.
+- `exo_agent_profile_delete` — mcp: Deletes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.
+- `exo_agent_profile_duplicate` — mcp: Copies an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.
+- `exo_agent_profile_update` — mcp: Changes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.
 - `exo_ai_run_cancel` — mcp: Cancels an AI run. Same reason, with teeth: the run it would most easily reach is its own.
 - `exo_ai_run_get` — mcp: Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.
 - `exo_ai_usage` — mcp: The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.

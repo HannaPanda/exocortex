@@ -11,9 +11,9 @@ import {
 } from '@exocortex/database';
 
 import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
-import { type OutboxService } from '../common/outbox.service';
 import { type ConversationsService } from '../ai/conversations.service';
 import { AppError } from '../common/app-error';
+import { type OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';
 import { WorkItemCheckpointsService } from '../work-items/work-item-checkpoints.service';

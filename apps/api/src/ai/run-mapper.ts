@@ -1,4 +1,9 @@
-import { type AiRun, DEFAULT_LOCALE, type Locale } from '@exocortex/contracts';
+import {
+  agentProfileSnapshotSchema,
+  type AiRun,
+  DEFAULT_LOCALE,
+  type Locale,
+} from '@exocortex/contracts';
 import { type AiReasoningLevel as AiReasoningLevelPrisma } from '@exocortex/database';
 import { aiRunDiagnosisText } from '@exocortex/i18n';
 import { serverTranslator } from '@exocortex/i18n/catalog';
@@ -45,6 +50,8 @@ export interface AiRunRow {
   toolsOffered: number | null;
   toolSchemaChars: number | null;
   toolDomains: string[];
+  /** Shaped by `agentProfileSnapshotSchema` (issue #143). */
+  agentProfileSnapshot: unknown;
 }
 
 /**
@@ -89,6 +96,10 @@ export function mapAiRunRow(run: AiRunRow, locale: Locale = DEFAULT_LOCALE): AiR
     toolsOffered: run.toolsOffered,
     toolSchemaChars: run.toolSchemaChars,
     toolDomains: run.toolDomains,
+    agentProfile: agentProfileSnapshotSchema
+      .nullable()
+      .catch(null)
+      .parse(run.agentProfileSnapshot ?? null),
   };
 }
 

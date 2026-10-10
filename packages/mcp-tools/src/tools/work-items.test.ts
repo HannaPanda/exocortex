@@ -64,6 +64,8 @@ function detail() {
     result: null,
     budgetMicroUsd: 500_000,
     writeMode: null,
+    agentProfile: null,
+    effectiveBudgetMicroUsd: 500_000,
     spentMicroUsd: 12_000,
     parent: null,
     contextRefs: [{ documentId: 'page123456', title: 'Notizen' }],
@@ -80,6 +82,7 @@ function detail() {
         finishedAt: NOW,
         costMicroUsd: 12_000,
         errorCode: null,
+        agentProfile: null,
       },
     ],
     events: [

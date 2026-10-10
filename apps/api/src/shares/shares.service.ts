@@ -35,8 +35,8 @@ import {
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
-import { confinedMembershipWhere } from '../common/correlation';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere } from '../common/correlation';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 import { toSummary } from '../documents/document-shape';

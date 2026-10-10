@@ -158,7 +158,8 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
   },
   workItems: {
     label:
-      'Aufträge: delegierte Arbeit mit Ziel, Status, Bearbeiter, Ergebnis, Läufen und Arbeitsständen.',
+      'Aufträge: delegierte Arbeit mit Ziel, Status, Bearbeiter, Ergebnis, Läufen und Arbeitsständen; ' +
+      'Agentenprofile, unter denen die eingebaute KI daran arbeitet.',
     keywords: [
       'auftrag',
       'arbeitsstand',
@@ -170,6 +171,9 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'work item',
       'work_item',
       'workitem',
+      'agentenprofil',
+      'agent profile',
+      'agent-profil',
     ],
   },
   attention: {
