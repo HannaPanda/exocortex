@@ -350,6 +350,40 @@ function usableTool(
   };
 }
 
+/**
+ * Opens the domain an `exo_toolbox` call asked for (issue #121), or says why
+ * it stays shut: the run's agent profile does not allow it (issue #143). The
+ * toolbox itself cannot know the profile, so without this its answer would
+ * tell the model a domain is open that the next turn still lacks.
+ */
+function openFromToolbox(context: {
+  input: CreateToolRunnerInput;
+  offer: ToolOffer;
+  argumentsJson: string;
+  correlationId: string;
+}): ToolCallOutcome | null {
+  const { input, offer, correlationId } = context;
+  const opened = openedDomain(context.argumentsJson);
+  if (opened === null) return null;
+  if (input.allowedDomains !== null && !input.allowedDomains.includes(opened)) {
+    return {
+      text:
+        `Den Bereich „${opened}“ erlaubt das Agentenprofil dieses Laufs nicht, er bleibt ` +
+        `geschlossen. Erlaubt sind: ${input.allowedDomains.join(', ')}.`,
+      isError: true,
+      refused: true,
+    };
+  }
+  if (offer.open(opened)) {
+    input.logger.info('Run opened another tool domain', {
+      domain: opened,
+      correlationId,
+      offered: offer.tools().length,
+    });
+  }
+  return null;
+}
+
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   const offer = createToolOffer(input);
 
@@ -473,16 +507,11 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       const isError = result.isError ?? false;
       // The catalogue can say what a domain holds; only the loop can hand its
       // tools to the next turn (issue #121).
-      if (name === TOOLBOX_TOOL && !isError) {
-        const opened = openedDomain(argumentsJson);
-        if (opened !== null && offer.open(opened)) {
-          input.logger.info('Run opened another tool domain', {
-            domain: opened,
-            correlationId,
-            offered: offer.tools().length,
-          });
-        }
-      }
+      const toolboxRefusal =
+        name === TOOLBOX_TOOL && !isError
+          ? openFromToolbox({ input, offer, argumentsJson, correlationId })
+          : null;
+      if (toolboxRefusal !== null) return toolboxRefusal;
       // The document is cut first and fenced afterwards, so the closing
       // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
       // the truncation ate is a fence that is not there. A failed call

@@ -409,4 +409,15 @@ describe('the agent profile as a limit (issue #143)', () => {
     expect(outcome).toMatchObject({ isError: true, refused: true });
     expect(outcome.text).toContain('Agentenprofil');
   });
+
+  it('keeps a domain the profile forbids shut, and says so, when the toolbox asks', async () => {
+    const runner = runnerWith({ allowedDomains: ['core', 'pages'] });
+    const outcome = await runner.run({
+      name: 'exo_toolbox',
+      argumentsJson: JSON.stringify({ domain: 'web' }),
+      correlationId: 'corr-1',
+    });
+    expect(outcome).toMatchObject({ isError: true, refused: true });
+    expect(runner.toolContext().domains).not.toContain('web');
+  });
 });
