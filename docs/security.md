@@ -252,6 +252,13 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
   browser already is the account, and a service token is minted per AI run, or
   per MCP request from an OAuth client, from a credential that was itself
   authorized.
+- A run's service token can carry signed narrowing claims instead: the run
+  (ADR-068), its write mode (ADR-070) and, under a confining agent profile, its
+  workspace (ADR-071). With the last one `WorkspaceAccessService` answers every
+  other workspace as if the account were not a member of it, refuses the
+  deployment's admin routes, and the cross-workspace listings filter their
+  memberships with `confinedMembershipWhere`. Writing an agent profile is an
+  `admin`-class request, and refused for any request a run makes.
 
 ## Page shares and page-scoped tokens
 

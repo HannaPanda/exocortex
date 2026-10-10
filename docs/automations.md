@@ -37,7 +37,7 @@ signing secret is stored the same way a workspace's provider key is (ADR-023).
    `SCHEDULE`, which is the clock rather than a change and is described in its
    own section below. `DATABASE_ROW_CHANGED` only means something inside a
    `DATABASE` scope, and the other change triggers only outside one.
-3. **Action.** `WEBHOOK`, `AI_RUN` or `EMAIL_SELF`.
+3. **Action.** `WEBHOOK`, `AI_RUN`, `EMAIL_SELF` or `WORK_ITEM`.
 
 Plus a debounce window, in seconds, with a floor of 10 and a default of 60. It
 is how long the page has to stay quiet before the rule runs, and it is the
@@ -156,6 +156,23 @@ into the rule again, and checked again.
 That is also why this one request does not use `fetch`: it is made through
 `node:http` with a DNS lookup of the worker's own, in
 `apps/worker/src/processors/automation/webhook-request.ts`.
+
+## The work item action
+
+`WORK_ITEM` (issue #143, ADR-071) hands the page over as delegated work: a
+work item titled with the rule's name and the page's title, the rule's
+`prompt` as its goal, the page as its context and `agentProfileId` as its
+agent profile (null for the workspace's default). With `startWorkItemRun` the
+built-in AI starts on it at once, which needs `ai.enabled`. Everything goes
+through the REST API as the rule's owner
+(`apps/worker/src/processors/automation/work-item.ts`).
+
+Naming a work item's profile normally takes a person or a writing token. The
+work item route accepts it from this action because the automation origin
+names a `WORK_ITEM` rule of the same workspace and owner whose profile is
+exactly the one requested (`ruleNamesProfile`); the rule's owner chose it when
+writing the rule, which already took the OWNER role. A failure is reported as
+`WORK_ITEM_FAILED`.
 
 ## The mail action
 

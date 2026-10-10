@@ -678,6 +678,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   and enforced by route class (`requestClassFor`); an external agent gets it
   as the `propose` token scope. Deciding is a person's: apply and reject are
   never on the built-in AI's surface.
+- ADR-071: an agent profile only ever narrows. It is a row per workspace that
+  only an admin writes and a run of the built-in AI never; every limit on it
+  is combined with the workspace's and the work item's by taking the
+  stricter, its tool domains are a refusal in the tool runner rather than an
+  offer, and a confining profile signs the work item's workspace into the
+  run's service token so `WorkspaceAccessService` answers every other one as
+  foreign. A run keeps a snapshot of the profile it started under. Choosing a
+  work item's profile is loosening it, so it takes a person or a writing
+  token, or an automation rule naming exactly that profile.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -712,6 +721,7 @@ Each of these has a step-by-step recipe:
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
 | new work item field, status rule, run behaviour          | `docs/work-items.md`        |
 | new kind of proposed change, a route in the propose mode | `docs/changesets.md`        |
+| new agent profile field, a limit a profile can set       | `docs/agent-profiles.md`    |
 | new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 

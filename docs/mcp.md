@@ -587,7 +587,7 @@ describing tools it never called than on everything else together
 
 So the loop is handed the domains its task needs:
 
-1. Every tool declares a `domain` (`TOOL_DOMAINS` in `tool.ts`). The field is
+1. Every tool declares a `domain` (`TOOL_DOMAINS`, in `packages/contracts` since issue #143 and re-exported by `tool.ts`). The field is
    required, which makes the compiler the coverage gate.
 2. `selectToolDomains` picks them from the user's own messages -- lowercase
    substrings, deterministic, no model call -- plus any the caller knows from
@@ -612,6 +612,15 @@ was: the service token is minted for the run's own user, `decideMutation`
 applies the untrusted-content policy, and `ai.mutatingToolsEnabled` removes the
 writes. The MCP surface is untouched -- `toolsFor` narrows only when a caller
 passes domains, and only the worker does.
+
+**An agent profile is the one exception** (issue #143,
+[ADR-071](adr/ADR-071-a-profile-only-ever-narrows.md)). A run on a work item
+under a profile with a domain list gets `allowedDomains`: the selection above
+is filtered by it, `exo_toolbox` cannot open a domain outside it, and the tool
+runner refuses a call to one of its tools before anything else. That list is a
+limit on purpose, and it lives in the profile, never in the keyword selection.
+`TOOL_DOMAINS` itself moved to `packages/contracts` so the API can validate a
+profile; `tool.ts` re-exports it.
 
 ## Recipe: adding a tool
 
@@ -640,7 +649,7 @@ passes domains, and only the worker does.
    call, like `destructive`. Leave it absent for anything a member of the
    workspace wrote.
 6. **Set `domain`** to the part of the product the tool belongs to
-   (`TOOL_DOMAINS` in `tool.ts`, ADR-060). It is required, so the compiler is
+   (`TOOL_DOMAINS` in `packages/contracts`, ADR-060). It is required, so the compiler is
    the coverage gate rather than a script. It decides whether a run whose task
    sounds like this hears about the tool at all; it decides nothing about what
    a run may do, which is still the service token and `decideMutation`. If the

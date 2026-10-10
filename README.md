@@ -183,9 +183,17 @@ What is deliberately still missing is listed under
   change whose page moved since is marked stale instead of landing on a state
   nobody reviewed. The mode is a workspace setting, a work item's own, or an
   API token scope, and the server enforces it (ADR-070)
+- agent profiles: roles the built-in AI works in on delegated work, each with
+  its instructions and rule pages, a preferred model, the tool domains it may
+  use, a write mode, whether a person closes the work, budgets per run and per
+  task, turn and time limits, and whether its runs stay in their workspace. A
+  profile only ever narrows what the workspace, the work item and the person
+  allow; a run keeps a snapshot of the profile it started under, and an
+  automation can hand a page over as work under a profile (ADR-071)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
-  (ADR-038), which fire a signed webhook, an AI prompt, or the page by mail to
-  the person who wrote the rule and to nobody else (ADR-054)
+  (ADR-038), which fire a signed webhook, an AI prompt, the page by mail to
+  the person who wrote the rule and to nobody else (ADR-054), or a work item
+  about the page under an agent profile (ADR-071)
 - rendering Markdown to PDF through Pandoc and xelatex in a container
   (ADR-026), and LaTeX projects compiled with `latexmk` (ADR-027), imported and
   exported as a `.zip`, with the result drawn by pdf.js so that SyncTeX works
@@ -355,6 +363,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/work-items.md`](docs/work-items.md)                             | delegated work: the item, its history, runs, who may change what        |
 | [`docs/attention.md`](docs/attention.md)                               | what waits on a person: raising, settling, answering, who sees what     |
 | [`docs/changesets.md`](docs/changesets.md)                             | proposed changes: proposing, applying, stale changes, the write mode    |
+| [`docs/agent-profiles.md`](docs/agent-profiles.md)                     | agent profiles: roles, how a run is held to one, confinement            |
 | [`docs/features.md`](docs/features.md)                                 | the feature registry, the coverage gate, writing an entry               |
 | [`docs/command-palette.md`](docs/command-palette.md)                   | `Strg + K`: the command registry, contexts, the coverage gate           |
 | [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |

@@ -100,6 +100,18 @@ item; loosening takes a person or a token with `write`
 (`assertWriteModeChange`). A proposing run hands its changes in as a
 changeset, which moves the work into `review`; see `docs/changesets.md`.
 
+## Agent profile (issue #143, ADR-071)
+
+`agentProfileId` names the role the item's runs work in; null uses the
+workspace's default profile. The detail answers with `agentProfile` (its
+`inherited` flag says which) and `effectiveBudgetMicroUsd`, the stricter of the
+item's budget and the profile's per-task budget, which is the one `startRun`
+and the resume check hold to. Choosing a profile takes a person or a writing
+token (`assertMayChooseProfile`), or an automation rule that names exactly that
+profile; a child created without one inherits its parent's. A run under a
+`review_before_done` profile cannot set the item to `done`
+(`assertRunMayClose`). Everything else is in `docs/agent-profiles.md`.
+
 ## Adding a capability
 
 Same order as everywhere else (`docs/mcp.md`): contract, service method and
