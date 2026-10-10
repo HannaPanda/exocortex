@@ -687,6 +687,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   foreign. A run keeps a snapshot of the profile it started under. Choosing a
   work item's profile is loosening it, so it takes a person or a writing
   token, or an automation rule naming exactly that profile.
+- ADR-072: a subtask is a child work item, not a loop inside a run. A
+  budget holds for the subtree and is checked against every ancestor; a
+  child's write mode is the stricter of the request, the parent and the
+  caller, and anybody may give it a profile no looser than the parent's. A
+  parent waits for named children with `awaitingChildIds`; once each is in
+  review or closed, whoever clears `awaitingSince` first posts their distilled
+  results into the paused run's conversation, the way an answer carries a
+  checkpoint on. Directly writing siblings run one after another, proposing
+  ones together, and a parent is not done while a child is open.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

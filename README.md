@@ -190,6 +190,13 @@ What is deliberately still missing is listed under
   profile only ever narrows what the workspace, the work item and the person
   allow; a run keeps a snapshot of the profile it started under, and an
   automation can hand a page over as work under a profile (ADR-071)
+- delegation: a piece of work is split into child work items, each with its
+  own run, budget, profile, status and result, handed to the built-in AI, an
+  agent account or a person. A budget holds for everything below it and a
+  child never writes more freely than its parent; proposing children run side
+  by side, directly writing ones one after another. A run that waits for its
+  children ends and is carried on in its own conversation with their distilled
+  results once they are back, never their transcripts (ADR-072)
 - automations triggered from the transactional outbox (ADR-024) or by the clock
   (ADR-038), which fire a signed webhook, an AI prompt, the page by mail to
   the person who wrote the rule and to nobody else (ADR-054), or a work item

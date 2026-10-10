@@ -10,6 +10,7 @@ outlives the runs that attempt it.
 | ------------- | -------------------------------------------------------------------------------------------------------------- |
 | Tables        | `work_item`, `work_item_event`, `work_item_ref`, `work_item_checkpoint`, `ai_run.workItemId` (`schema.prisma`) |
 | Proposals     | `changeset.workItemId`, `work_item.writeMode` (`docs/changesets.md`)                                           |
+| Delegation    | `work_item.awaitingChildIds`, `awaitingRunId`, `awaitingSince`; `work-item-delegation.service.ts`, ADR-072     |
 | Wire contract | `packages/contracts/src/work-items.ts`                                                                         |
 | REST          | `apps/api/src/work-items/` (controller, service, pure update planner, mapper, run prompt)                      |
 | Tools         | `packages/mcp-tools/src/tools/work-items.ts`, domain `workItems`                                               |
@@ -18,17 +19,20 @@ outlives the runs that attempt it.
 
 ## Routes
 
-| Route                                  | What                                                                                                                                                            |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/workspaces/:id/work-items`   | list; `status`, `assignee` (`me`, `assistant`, `nobody`, id), `requester` (`me`, id), `parentId` (`root`, id), `open` (`true` default, `false`, `all`), `limit` |
-| `POST /api/workspaces/:id/work-items`  | create; the caller is the requester                                                                                                                             |
-| `GET /api/work-items/:id`              | detail with refs, children, runs, budget and history                                                                                                            |
-| `PATCH /api/work-items/:id`            | partial update; `null` clears, the ref lists replace                                                                                                            |
-| `POST /api/work-items/:id/notes`       | a note in the history                                                                                                                                           |
-| `POST /api/work-items/:id/runs`        | an attempt by the built-in AI in a conversation of its own                                                                                                      |
-| `DELETE /api/work-items/:id`           | for good; requester or workspace admin                                                                                                                          |
-| `GET /api/work-items/:id/checkpoints`  | the recorded working states, newest first (`limit`, default 20)                                                                                                 |
-| `POST /api/work-items/:id/checkpoints` | record where the work stands; fields left out carry the previous state forward                                                                                  |
+| Route                                      | What                                                                                                                                                            |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/workspaces/:id/work-items`       | list; `status`, `assignee` (`me`, `assistant`, `nobody`, id), `requester` (`me`, id), `parentId` (`root`, id), `open` (`true` default, `false`, `all`), `limit` |
+| `POST /api/workspaces/:id/work-items`      | create; the caller is the requester                                                                                                                             |
+| `GET /api/work-items/:id`                  | detail with refs, children, runs, budget and history                                                                                                            |
+| `PATCH /api/work-items/:id`                | partial update; `null` clears, the ref lists replace                                                                                                            |
+| `POST /api/work-items/:id/notes`           | a note in the history                                                                                                                                           |
+| `POST /api/work-items/:id/runs`            | an attempt by the built-in AI in a conversation of its own                                                                                                      |
+| `DELETE /api/work-items/:id`               | for good; requester or workspace admin                                                                                                                          |
+| `GET /api/work-items/:id/checkpoints`      | the recorded working states, newest first (`limit`, default 20)                                                                                                 |
+| `POST /api/work-items/:id/checkpoints`     | record where the work stands; fields left out carry the previous state forward                                                                                  |
+| `POST /api/work-items/:id/delegate`        | hand a part on as a child; starts it when the built-in AI holds it (issue #144)                                                                                 |
+| `GET /api/work-items/:id/children/results` | what the children brought back, cut per child (`childIds`, `maxChars`)                                                                                          |
+| `POST /api/work-items/:id/await-children`  | wait for named children (all open ones by default); answers at once when none is left                                                                           |
 
 ## Rules worth knowing before changing anything
 
@@ -111,6 +115,48 @@ token (`assertMayChooseProfile`), or an automation rule that names exactly that
 profile; a child created without one inherits its parent's. A run under a
 `review_before_done` profile cannot set the item to `done`
 (`assertRunMayClose`). Everything else is in `docs/agent-profiles.md`.
+
+## Delegation (issue #144, ADR-072)
+
+A subtask is an ordinary child work item. `WorkItemDelegationService` adds the
+three moves a parent makes with its children and the one thing that happens
+by itself.
+
+- **Delegating** creates the child through the ordinary `create` (so every
+  rule of a work item holds) with `delegated: true`, which writes `delegated`
+  on the parent in the same transaction. The child's budget is
+  `childBudget`: what was asked, never more than `budgetRemainingMicroUsd`.
+  Its write mode is `childWriteMode`: the stricter of the request, the
+  parent's own and the caller's ceiling (`callerWriteCeiling` in the
+  controller). A profile may be chosen by anybody when `profileNoLooser`
+  holds against the parent's effective profile, and only by a person or a
+  writing token otherwise. Both routes are `report` requests, so a proposing
+  run may delegate and its children stay proposing.
+- **The budget holds for the subtree.** `budgetStanding` in
+  `work-item-budget.ts` sums the runs below an item with a recursive query
+  and takes the smallest remainder over the item and every ancestor. The
+  detail answers with `subtreeSpentMicroUsd`, `budgetRemainingMicroUsd` and
+  `budgetLimitedBy`; `startRun` and both resume paths refuse at zero.
+- **Siblings.** `assertSiblingsAllowRun` refuses a run on a child that writes
+  directly (null counts as direct) while another directly writing child of
+  the same parent has a run pending or running. Read-only and proposing
+  children run together.
+- **Waiting.** `await-children` stores the child ids, the run from the
+  signed claim and the moment. Every path that can move a child into a
+  returned status (review, done, failed, cancelled) or delete it calls
+  `afterChildChange` after its transaction: `update`, `remove` and the
+  review request in `WorkItemQuestionsService`. A new path that moves a
+  status must call it too. The listener claims the wait by clearing
+  `awaitingSince` with a conditional update, so two children returning at
+  once resume the parent once; while the paused run is still finishing its
+  turn it retries in-process for a minute. Only work the assistant holds in
+  `queued` or `working` is carried on; otherwise `children_returned` is the
+  whole of it. A new run started on the parent clears the wait.
+- **What comes back** is `readResults`: status, the result cut to a budget,
+  result pages, criteria and cost, never a transcript.
+  `buildChildrenReturnedPrompt` words it for the parent's run.
+- **Done means the parts are done.** `assertChildrenClosed` refuses `done`
+  while a child is open; cancelling and failing stay possible.
 
 ## Adding a capability
 
