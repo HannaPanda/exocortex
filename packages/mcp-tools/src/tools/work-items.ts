@@ -56,6 +56,56 @@ function formatSummary(item: WorkItemSummary): string {
   return parts.join(' · ');
 }
 
+/** The children and what the item waits for (issue #144). */
+function childLines(item: WorkItemDetail): string[] {
+  const lines: string[] = [];
+  if (item.children.length > 0) {
+    const p = item.childProgress;
+    const counts = [
+      [p.open, 'offen'],
+      [p.waiting, 'wartend'],
+      [p.review, 'zur Abnahme'],
+      [p.done, 'erledigt'],
+      [p.failed, 'gescheitert'],
+      [p.cancelled, 'abgebrochen'],
+    ]
+      .filter(([count]) => (count as number) > 0)
+      .map(([count, word]) => `${count} ${word}`);
+    lines.push(
+      '',
+      `Teilaufträge (${counts.join(', ')}; Ergebnisse mit exo_work_item_child_results):`,
+      ...item.children.map(formatSummary),
+    );
+  }
+  if (item.awaiting !== null) {
+    lines.push(
+      '',
+      `Wartet seit ${item.awaiting.since.slice(0, 16)} auf ${item.awaiting.pendingChildIds.length} ` +
+        `von ${item.awaiting.childIds.length} Teilaufträgen.`,
+    );
+  }
+  return lines;
+}
+
+/** The budget over the subtree, and whose budget is the tight one (issue #144). */
+function budgetLines(item: WorkItemDetail): string[] {
+  const lines: string[] = [];
+  if (item.effectiveBudgetMicroUsd !== null) {
+    const below = item.subtreeSpentMicroUsd > item.spentMicroUsd ? ' (mit Teilaufträgen)' : '';
+    lines.push(
+      '',
+      `Budget: ${item.subtreeSpentMicroUsd} von ${item.effectiveBudgetMicroUsd} Mikro-USD verbraucht${below}`,
+    );
+  }
+  if (item.budgetLimitedBy !== null && item.budgetRemainingMicroUsd !== null) {
+    lines.push(
+      `Restbudget ${item.budgetRemainingMicroUsd} Mikro-USD, begrenzt durch „${item.budgetLimitedBy.title}“ ` +
+        `(id: ${item.budgetLimitedBy.id})`,
+    );
+  }
+  return lines;
+}
+
 function formatDetail(item: WorkItemDetail): string {
   const lines = [formatSummary(item).slice(2), '', `Ziel:\n${item.goal}`];
   if (item.acceptanceCriteria.length > 0) {
@@ -82,29 +132,7 @@ function formatDetail(item: WorkItemDetail): string {
   }
   if (item.parent !== null)
     lines.push('', `Teil von: ${item.parent.title} (id: ${item.parent.id})`);
-  if (item.children.length > 0) {
-    const p = item.childProgress;
-    const counts = [
-      p.open > 0 ? `${p.open} offen` : null,
-      p.waiting > 0 ? `${p.waiting} wartend` : null,
-      p.review > 0 ? `${p.review} zur Abnahme` : null,
-      p.done > 0 ? `${p.done} erledigt` : null,
-      p.failed > 0 ? `${p.failed} gescheitert` : null,
-      p.cancelled > 0 ? `${p.cancelled} abgebrochen` : null,
-    ].filter((part) => part !== null);
-    lines.push(
-      '',
-      `Teilaufträge (${counts.join(', ')}; Ergebnisse mit exo_work_item_child_results):`,
-      ...item.children.map(formatSummary),
-    );
-  }
-  if (item.awaiting !== null) {
-    lines.push(
-      '',
-      `Wartet seit ${item.awaiting.since.slice(0, 16)} auf ${item.awaiting.pendingChildIds.length} ` +
-        `von ${item.awaiting.childIds.length} Teilaufträgen.`,
-    );
-  }
+  lines.push(...childLines(item));
   if (item.runs.length > 0) {
     lines.push(
       '',
@@ -123,20 +151,7 @@ function formatDetail(item: WorkItemDetail): string {
     const how = item.agentProfile.inherited ? ', Standardprofil des Arbeitsbereichs' : '';
     lines.push('', `Agentenprofil: ${item.agentProfile.name} (id: ${item.agentProfile.id}${how})`);
   }
-  if (item.effectiveBudgetMicroUsd !== null) {
-    const below =
-      item.subtreeSpentMicroUsd > item.spentMicroUsd ? ' (mit Teilaufträgen)' : '';
-    lines.push(
-      '',
-      `Budget: ${item.subtreeSpentMicroUsd} von ${item.effectiveBudgetMicroUsd} Mikro-USD verbraucht${below}`,
-    );
-  }
-  if (item.budgetLimitedBy !== null && item.budgetRemainingMicroUsd !== null) {
-    lines.push(
-      `Restbudget ${item.budgetRemainingMicroUsd} Mikro-USD, begrenzt durch „${item.budgetLimitedBy.title}“ ` +
-        `(id: ${item.budgetLimitedBy.id})`,
-    );
-  }
+  lines.push(...budgetLines(item));
   if (item.latestCheckpointAt !== null) {
     lines.push(
       '',

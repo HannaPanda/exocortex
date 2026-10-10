@@ -1,9 +1,12 @@
 import {
-  AI_WRITE_MODES,
   type AgentApprovalPolicy,
+  AI_WRITE_MODES,
   type AiWriteMode,
+  type CreateWorkItemRequest,
+  type DelegateWorkRequest,
   strictestWriteMode,
   type ToolDomain,
+  type WorkItemAssigneeInput,
   type WorkItemChildProgress,
 } from '@exocortex/contracts';
 import { type WorkItemStatus as PrismaStatus } from '@exocortex/database';
@@ -122,7 +125,10 @@ export function profileNoLooser(child: ProfileLimits, parent: ProfileLimits | nu
  * in `work-item-budget.ts` holds either way, so this only makes the child's
  * own limit say what is true.
  */
-export function childBudget(requested: number | undefined, remaining: number | null): number | null {
+export function childBudget(
+  requested: number | undefined,
+  remaining: number | null,
+): number | null {
   if (remaining === null) return requested ?? null;
   return Math.min(requested ?? remaining, remaining);
 }
@@ -147,4 +153,45 @@ export function cutText(text: string, maxChars: number): { text: string; truncat
  */
 export function writesDirectly(mode: 'READ_ONLY' | 'PROPOSE' | 'DIRECT' | null): boolean {
   return mode === null || mode === 'DIRECT';
+}
+
+/**
+ * The ordinary create request a delegation makes: the budget carved, the
+ * write mode held, and what the result should look like put first among the
+ * criteria, because it is the first thing the result is measured by.
+ */
+export function childCreateRequest(input: {
+  request: DelegateWorkRequest;
+  assignee: WorkItemAssigneeInput;
+  parent: { id: string; writeMode: 'READ_ONLY' | 'PROPOSE' | 'DIRECT' | null };
+  remaining: number | null;
+  callerWriteCeiling: AiWriteMode;
+}): CreateWorkItemRequest {
+  const { request, parent } = input;
+  const parentMode =
+    parent.writeMode === null ? null : (parent.writeMode.toLowerCase() as AiWriteMode);
+  const expected =
+    request.expectedResult === undefined ? [] : [{ text: request.expectedResult, met: false }];
+  return {
+    title: request.title,
+    goal: request.goal,
+    assignee: input.assignee,
+    acceptanceCriteria: [...expected, ...(request.acceptanceCriteria ?? [])],
+    budgetMicroUsd: childBudget(request.budgetMicroUsd, input.remaining),
+    writeMode: childWriteMode(request.writeMode ?? null, parentMode, input.callerWriteCeiling),
+    parentId: parent.id,
+    ...pick(request, ['priority', 'contextDocumentIds', 'agentProfileId', 'dueAt']),
+  };
+}
+
+/** The named fields that are set, and only those. */
+function pick<T extends object, K extends keyof T>(
+  value: T,
+  keys: readonly K[],
+): Partial<Pick<T, K>> {
+  const picked: Partial<Pick<T, K>> = {};
+  for (const key of keys) {
+    if (value[key] !== undefined) picked[key] = value[key];
+  }
+  return picked;
 }

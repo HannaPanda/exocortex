@@ -3,6 +3,7 @@ import {
   agentProfileSnapshotSchema,
   type AiWriteMode,
   stricterLimit,
+  type WorkItemAwaiting,
   type WorkItemCriterion,
   workItemCriterionSchema,
   type WorkItemDetail,
@@ -17,7 +18,6 @@ import {
   type WorkItemRun,
   type WorkItemStatus,
   type WorkItemSummary,
-  type WorkItemAwaiting,
 } from '@exocortex/contracts';
 import {
   type AiRunStatus as PrismaAiRunStatus,

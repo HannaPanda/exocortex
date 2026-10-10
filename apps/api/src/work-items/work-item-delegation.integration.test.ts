@@ -255,7 +255,12 @@ describe('WorkItemDelegationService', () => {
     const ok = await delegation.delegate({
       parentId: parent.id,
       actor: assistant(),
-      request: { title: 'Recherche', goal: 'Nur lesen.', agentProfileId: narrower.id, start: false },
+      request: {
+        title: 'Recherche',
+        goal: 'Nur lesen.',
+        agentProfileId: narrower.id,
+        start: false,
+      },
       correlationId,
       mayLoosen: false,
       callerWriteCeiling: 'direct',
@@ -389,7 +394,9 @@ describe('WorkItemDelegationService', () => {
       request: { status: 'failed', statusReason: 'Quelle fehlt' },
       correlationId,
     });
-    const resumes = posted.slice(before).filter((entry) => entry.conversationId === conversation.id);
+    const resumes = posted
+      .slice(before)
+      .filter((entry) => entry.conversationId === conversation.id);
     expect(resumes).toHaveLength(1);
     expect(resumes[0]?.content).toContain('Ergebnis A');
     expect(resumes[0]?.content).toContain('Quelle fehlt');

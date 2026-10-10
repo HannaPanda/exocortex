@@ -73,9 +73,9 @@ describe('delegation rules (issue #144)', () => {
     expect(profileNoLooser({ ...narrower, writeMode: 'direct' }, parent)).toBe(false);
     expect(profileNoLooser({ ...narrower, budgetMicroUsdPerRun: null }, parent)).toBe(false);
     expect(profileNoLooser({ ...narrower, confineToWorkspace: false }, parent)).toBe(false);
-    expect(
-      profileNoLooser(narrower, { ...parent, approvalPolicy: 'review_before_done' }),
-    ).toBe(false);
+    expect(profileNoLooser(narrower, { ...parent, approvalPolicy: 'review_before_done' })).toBe(
+      false,
+    );
   });
 
   it('carves a child budget out of what is left', () => {

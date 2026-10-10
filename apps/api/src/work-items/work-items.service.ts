@@ -43,8 +43,8 @@ import {
   assertWriteModeChange,
 } from './work-item-access';
 import { type WorkItemActor } from './work-item-actor';
-import { budgetStanding } from './work-item-budget';
 import { attentionView, syncAfterTransition, writeAnswerEvent } from './work-item-attention';
+import { budgetStanding } from './work-item-budget';
 import {
   assigneeColumns,
   assigneeSnapshot,
@@ -53,7 +53,7 @@ import {
   writeModeToPrisma,
 } from './work-item-changes';
 import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
-import { eventActor, writeEvents } from './work-item-events';
+import { eventActor, writeDelegatedEvent, writeEvents } from './work-item-events';
 import {
   parseCriteria,
   PARTICIPANT_TO_PRISMA,
@@ -123,11 +123,7 @@ export class WorkItemsService {
     this.childListeners.push(listener);
   }
 
-  /**
-   * After a change to an item that has a parent: whatever waits on it hears
-   * about it. Called after the transaction, so a listener reads what is
-   * committed; a listener's failure is its own and never the change's.
-   */
+  /** After a committed change to a child: whatever waits on it hears about it. */
   async afterChildChange(
     parentId: string | null,
     actor: WorkItemActor,
@@ -222,22 +218,13 @@ export class WorkItemsService {
       }
       await writeEvents(tx, created.id, actor, events, input.correlationId);
       if (input.delegated === true && request.parentId != null) {
-        await tx.workItem.update({ where: { id: request.parentId }, data: { updatedAt: new Date() } });
-        await writeEvents(
-          tx,
-          request.parentId,
+        await writeDelegatedEvent(tx, {
+          parentId: request.parentId,
+          childId: created.id,
           actor,
-          [
-            {
-              kind: 'DELEGATED',
-              data: {
-                childId: created.id,
-                ...(assignee === null ? {} : { assignee: assigneeSnapshot(assignee, assigneeName) }),
-              },
-            },
-          ],
-          input.correlationId,
-        );
+          correlationId: input.correlationId,
+          assignee: assignee === null ? null : assigneeSnapshot(assignee, assigneeName),
+        });
       }
       return created.id;
     });

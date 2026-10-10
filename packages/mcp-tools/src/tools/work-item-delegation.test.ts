@@ -92,7 +92,10 @@ describe('delegation tools (issue #144)', () => {
   it('reads the children with the ids joined into one query parameter', async () => {
     const { client, calls } = fakeClient({
       workItemId: 'item1234567',
-      children: [child(), child({ id: 'child67890', status: 'working', returned: false, result: null })],
+      children: [
+        child(),
+        child({ id: 'child67890', status: 'working', returned: false, result: null }),
+      ],
       awaiting: {
         childIds: ['child12345', 'child67890'],
         pendingChildIds: ['child67890'],
@@ -118,10 +121,17 @@ describe('delegation tools (issue #144)', () => {
   it('pauses the run only when something is waited for', async () => {
     const waiting = fakeClient({
       waiting: true,
-      awaiting: { childIds: ['child12345'], pendingChildIds: ['child12345'], runId: null, since: NOW },
+      awaiting: {
+        childIds: ['child12345'],
+        pendingChildIds: ['child12345'],
+        runId: null,
+        since: NOW,
+      },
       results: [],
     });
-    const paused = await workItemAwaitChildrenTool.run(waiting.client, { workItemId: 'item1234567' });
+    const paused = await workItemAwaitChildrenTool.run(waiting.client, {
+      workItemId: 'item1234567',
+    });
     expect(waiting.calls[0]).toMatchObject({
       method: 'POST',
       path: '/api/work-items/item1234567/await-children',

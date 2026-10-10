@@ -13,6 +13,7 @@ import {
   toolDomainSchema,
   WORK_ITEM_MAX_CHILDREN,
   type WorkItemChildResult,
+  type WorkItemDetail,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
@@ -26,8 +27,7 @@ import { type WorkItemActor } from './work-item-actor';
 import { budgetStanding } from './work-item-budget';
 import { buildChildrenReturnedPrompt, perChildChars } from './work-item-children-prompt';
 import {
-  childBudget,
-  childWriteMode,
+  childCreateRequest,
   cutText,
   hasReturned,
   type ProfileLimits,
@@ -129,28 +129,7 @@ export class WorkItemDelegationService implements OnModuleInit {
     callerWriteCeiling: AiWriteMode;
   }): Promise<DelegateWorkResponse> {
     const { request, actor } = input;
-    const parent = await this.prisma.workItem.findUnique({
-      where: { id: input.parentId },
-      select: {
-        id: true,
-        workspaceId: true,
-        closedAt: true,
-        writeMode: true,
-        agentProfileId: true,
-        _count: { select: { children: true } },
-      },
-    });
-    if (parent === null) throw AppError.notFound('Work item');
-    const role = await this.access.findRole(parent.workspaceId, actor.userId);
-    if (role === null) throw AppError.notFound('Work item');
-    assertPolicy(canManageWorkItems(role));
-    if (parent.closedAt !== null) {
-      throw new AppError('work_item_closed', 'The work item is closed');
-    }
-    if (parent._count.children >= WORK_ITEM_MAX_CHILDREN) {
-      throw new AppError('work_item_children_limit', 'The work item has as many children as it may');
-    }
-
+    const parent = await this.loadDelegatingParent(input.parentId, actor.userId);
     const assignee = request.assignee ?? { kind: 'assistant' as const };
     const start = request.start ?? assignee.kind === 'assistant';
     if (start && assignee.kind !== 'assistant') {
@@ -170,45 +149,66 @@ export class WorkItemDelegationService implements OnModuleInit {
       request.agentProfileId === undefined ||
       input.mayLoosen ||
       (await this.profileNarrows(parent, request.agentProfileId));
-    const parentMode =
-      parent.writeMode === null ? null : (parent.writeMode.toLowerCase() as AiWriteMode);
-
     const created = await this.workItems.create({
       workspaceId: parent.workspaceId,
       actor,
       correlationId: input.correlationId,
       mayChooseProfile,
       delegated: true,
-      request: {
-        title: request.title,
-        goal: request.goal,
-        ...(request.priority === undefined ? {} : { priority: request.priority }),
+      request: childCreateRequest({
+        request,
         assignee,
-        // What the result should look like is the first thing it is measured by.
-        acceptanceCriteria: [
-          ...(request.expectedResult === undefined
-            ? []
-            : [{ text: request.expectedResult, met: false }]),
-          ...(request.acceptanceCriteria ?? []),
-        ],
-        ...(request.contextDocumentIds === undefined
-          ? {}
-          : { contextDocumentIds: request.contextDocumentIds }),
-        budgetMicroUsd: childBudget(request.budgetMicroUsd, remaining),
-        writeMode: childWriteMode(request.writeMode ?? null, parentMode, input.callerWriteCeiling),
-        ...(request.agentProfileId === undefined ? {} : { agentProfileId: request.agentProfileId }),
-        ...(request.dueAt === undefined ? {} : { dueAt: request.dueAt }),
-        parentId: parent.id,
-      },
+        parent,
+        remaining,
+        callerWriteCeiling: input.callerWriteCeiling,
+      }),
     });
     await this.workItems.announce(parent.workspaceId, parent.id, 'updated', input.correlationId);
     if (!start) return { workItem: created.workItem, run: null, startRefused: null };
+    return this.startChild(created.workItem, actor, request, input.correlationId);
+  }
 
+  /** The parent of a delegation, readable, manageable, open and not full. */
+  private async loadDelegatingParent(parentId: string, userId: string) {
+    const parent = await this.prisma.workItem.findUnique({
+      where: { id: parentId },
+      select: {
+        id: true,
+        workspaceId: true,
+        closedAt: true,
+        writeMode: true,
+        agentProfileId: true,
+        _count: { select: { children: true } },
+      },
+    });
+    if (parent === null) throw AppError.notFound('Work item');
+    const role = await this.access.findRole(parent.workspaceId, userId);
+    if (role === null) throw AppError.notFound('Work item');
+    assertPolicy(canManageWorkItems(role));
+    if (parent.closedAt !== null) {
+      throw new AppError('work_item_closed', 'The work item is closed');
+    }
+    if (parent._count.children >= WORK_ITEM_MAX_CHILDREN) {
+      throw new AppError(
+        'work_item_children_limit',
+        'The work item has as many children as it may',
+      );
+    }
+    return parent;
+  }
+
+  /** Starts the child's first run; a refusal is reported, the child stays. */
+  private async startChild(
+    child: WorkItemDetail,
+    actor: WorkItemActor,
+    request: DelegateWorkRequest,
+    correlationId: string,
+  ): Promise<DelegateWorkResponse> {
     try {
       const started = await this.workItems.startRun({
-        workItemId: created.workItem.id,
+        workItemId: child.id,
         actor,
-        correlationId: input.correlationId,
+        correlationId,
         request: {
           fromCheckpoint: 'none',
           ...(request.instructions === undefined ? {} : { instructions: request.instructions }),
@@ -222,7 +222,7 @@ export class WorkItemDelegationService implements OnModuleInit {
     } catch (error) {
       // The child exists either way; the parent may start it later.
       if (!(error instanceof AppError)) throw error;
-      return { workItem: created.workItem, run: null, startRefused: error.code };
+      return { workItem: child, run: null, startRefused: error.code };
     }
   }
 
@@ -353,7 +353,8 @@ export class WorkItemDelegationService implements OnModuleInit {
     return rows.map((row) => {
       const criteria = Array.isArray(row.acceptanceCriteria) ? row.acceptanceCriteria : [];
       const met = criteria.filter(
-        (entry) => typeof entry === 'object' && entry !== null && 'met' in entry && entry.met === true,
+        (entry) =>
+          typeof entry === 'object' && entry !== null && 'met' in entry && entry.met === true,
       ).length;
       const result = row.result === null ? null : cutText(row.result, maxChars);
       const latest = row.runs[0];
@@ -525,7 +526,13 @@ export class WorkItemDelegationService implements OnModuleInit {
             })
           ).run.id;
         } else {
-          resumedRunId = await this.post(parent, run.conversationId, run.createdById, childIds, correlationId);
+          resumedRunId = await this.post(
+            parent,
+            run.conversationId,
+            run.createdById,
+            childIds,
+            correlationId,
+          );
         }
       } catch (error) {
         if (!(error instanceof AppError)) throw error;

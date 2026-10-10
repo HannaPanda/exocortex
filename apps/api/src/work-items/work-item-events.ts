@@ -1,3 +1,4 @@
+import { type WorkItemParticipant } from '@exocortex/contracts';
 import { type PrismaTransactionClient } from '@exocortex/database';
 
 import { type WorkItemActor } from './work-item-actor';
@@ -37,4 +38,29 @@ export async function writeEvents(
       data: { ...base, kind: event.kind, data: event.data, createdAt: new Date(now + index) },
     });
   }
+}
+
+/**
+ * The parent's line for a part handed on (issue #144): it names the child,
+ * and moves the parent up its list like any other change would.
+ */
+export async function writeDelegatedEvent(
+  tx: PrismaTransactionClient,
+  input: {
+    parentId: string;
+    childId: string;
+    actor: WorkItemActor;
+    correlationId: string;
+    assignee: WorkItemParticipant | null;
+  },
+): Promise<void> {
+  const { parentId, childId, assignee } = input;
+  await tx.workItem.update({ where: { id: parentId }, data: { updatedAt: new Date() } });
+  await writeEvents(
+    tx,
+    parentId,
+    input.actor,
+    [{ kind: 'DELEGATED', data: { childId, ...(assignee === null ? {} : { assignee }) } }],
+    input.correlationId,
+  );
 }

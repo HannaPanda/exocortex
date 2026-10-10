@@ -45,7 +45,10 @@ export async function assertSiblingsAllowRun(
  * child is still open or waiting for review. Cancelling and failing stay
  * possible, because ending the whole is a decision about the parts too.
  */
-export async function assertChildrenClosed(prisma: PrismaClient, workItemId: string): Promise<void> {
+export async function assertChildrenClosed(
+  prisma: PrismaClient,
+  workItemId: string,
+): Promise<void> {
   const open = await prisma.workItem.count({ where: { parentId: workItemId, closedAt: null } });
   if (open > 0) {
     throw new AppError(
