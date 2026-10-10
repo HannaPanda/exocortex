@@ -39,7 +39,11 @@
       "runResumed": "ha fatto proseguire il lavoro con la risposta",
       "resumeFailed": "ha risposto, ma non è stato possibile riprendere il lavoro ({code}). L’incarico è in attesa nella coda.",
       "runStartedFromCheckpoint": "ha avviato un’esecuzione dell’IA dal punto di avanzamento salvato",
-      "checkpointRecorded": "ha salvato lo stato di avanzamento ({trigger})"
+      "checkpointRecorded": "ha salvato lo stato di avanzamento ({trigger})",
+      "delegated": "ha delegato una parte a {assignee}",
+      "childrenAwaited": "in attesa di {count, plural, one {un sotto-incarico} many {# sotto-incarichi} other {# sotto-incarichi}}",
+      "childrenReturned": "{count, plural, one {Il sotto-incarico è completato} many {# sotto-incarichi sono completati} other {# sotto-incarichi sono completati}}",
+      "childrenReturnedResumed": "{count, plural, one {Il sotto-incarico è completato} many {# sotto-incarichi sono completati} other {# sotto-incarichi sono completati}}, il lavoro prosegue con i risultati"
     },
     "trigger": {
       "step": "stato intermedio",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "senza limite",
     "cancel": "Annulla",
     "create": "Crea",
-    "save": "Salva"
+    "save": "Salva",
+    "childBudgetPlaceholder": "Restante del budget principale",
+    "startChild": "Avvia subito",
+    "startChildHint": "L’IA integrata inizia subito con questa parte. Le parti di sola lettura e di proposta vengono eseguite in contemporanea, quelle con scrittura diretta in sequenza."
   },
   "detail": {
     "loading": "Caricamento dell’incarico in corso…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Qual è il risultato ottenuto?",
     "saveResult": "Salva risultato",
     "noResult": "Ancora nessun risultato.",
-    "childrenHeading": "Sotto-attività",
-    "addChild": "Crea sotto-attività",
-    "noChildren": "Nessuna sotto-attività.",
     "runsHeading": "Esecuzioni dell’IA",
     "budget": "{spent} di {budget} consumati",
     "noRuns": "Ancora nessuna esecuzione.",
@@ -137,7 +141,9 @@
     "historyHeading": "Cronologia",
     "notePlaceholder": "Stato di avanzamento, domanda o indicazione per il prossimo tentativo",
     "noteLabel": "Nota",
-    "addNote": "Aggiungi nota"
+    "addNote": "Aggiungi nota",
+    "budgetWithChildren": "{spent} di {budget} utilizzati, sotto-incarichi inclusi",
+    "budgetLimitedBy": "Ancora {remaining} rimanenti, con il limite del budget di «{title}»"
   },
   "startRun": {
     "title": "Avvia esecuzione dell’IA",
@@ -188,5 +194,13 @@
       "obsolete": "superata"
     },
     "budget": "Budget a questo punto: {spent} su {budget}"
+  },
+  "children": {
+    "heading": "Sotto-incarichi",
+    "add": "Delega una parte",
+    "none": "Nessun sotto-incarico. Se il lavoro si divide in parti indipendenti, puoi delegarle qui.",
+    "progress": "{total, plural, one {Un sotto-incarico} many {# sotto-incarichi} other {# sotto-incarichi}}: {open} da svolgere, {review} in revisione, {closed} completati",
+    "awaiting": "In attesa di {pending} su {total, plural, one {un sotto-incarico} many {# sotto-incarichi} other {# sotto-incarichi}}. Quando tutti saranno completati, il lavoro proseguirà con i relativi risultati.",
+    "awaited": "atteso"
   }
 }

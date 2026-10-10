@@ -39,7 +39,11 @@
       "runResumed": "resumed the run with the response",
       "resumeFailed": "replied, but the work could not be resumed ({code}). The work item is waiting in the queue.",
       "runStartedFromCheckpoint": "started an AI run from the saved checkpoint",
-      "checkpointRecorded": "saved the checkpoint ({trigger})"
+      "checkpointRecorded": "saved the checkpoint ({trigger})",
+      "delegated": "delegated a subtask to {assignee}",
+      "childrenAwaited": "is waiting for {count, plural, one {one subtask} other {# subtasks}}",
+      "childrenReturned": "{count, plural, one {The subtask has} other {# subtasks have}} returned",
+      "childrenReturnedResumed": "{count, plural, one {The subtask has} other {# subtasks have}} returned, work continues with the results"
     },
     "trigger": {
       "step": "interim progress",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "no limit",
     "cancel": "Cancel",
     "create": "Create",
-    "save": "Save"
+    "save": "Save",
+    "childBudgetPlaceholder": "Remaining parent budget",
+    "startChild": "Start immediately",
+    "startChildHint": "The built-in AI starts this part immediately. Read-only and proposing parts run concurrently, while directly writing parts run sequentially."
   },
   "detail": {
     "loading": "Loading work item…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "What was the outcome?",
     "saveResult": "Save result",
     "noResult": "No result yet.",
-    "childrenHeading": "Subtasks",
-    "addChild": "Add subtask",
-    "noChildren": "No subtasks.",
     "runsHeading": "AI runs",
     "budget": "{spent} of {budget} used",
     "noRuns": "No runs yet.",
@@ -137,7 +141,9 @@
     "historyHeading": "History",
     "notePlaceholder": "Progress update, question, or note for the next attempt",
     "noteLabel": "Note",
-    "addNote": "Add note"
+    "addNote": "Add note",
+    "budgetWithChildren": "{spent} of {budget} spent, including subtasks",
+    "budgetLimitedBy": "{remaining} remaining, limited by the budget of “{title}”"
   },
   "startRun": {
     "title": "Start AI run",
@@ -188,5 +194,13 @@
       "obsolete": "obsolete"
     },
     "budget": "Budget at this point: {spent} of {budget}"
+  },
+  "children": {
+    "heading": "Subtasks",
+    "add": "Delegate subtask",
+    "none": "No subtasks. If the work can be split into independent parts, delegate them here.",
+    "progress": "{total, plural, one {One subtask} other {# subtasks}}: {open} open, {review} in review, {closed} completed",
+    "awaiting": "Waiting for {pending} of {total, plural, one {one subtask} other {# subtasks}}. Once all have returned, work continues with their results.",
+    "awaited": "awaited"
   }
 }

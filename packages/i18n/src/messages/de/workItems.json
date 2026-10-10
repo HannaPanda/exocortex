@@ -39,7 +39,11 @@
       "runResumed": "hat die Arbeit mit der Antwort weiterlaufen lassen",
       "resumeFailed": "hat geantwortet, aber die Arbeit ließ sich nicht fortsetzen ({code}). Der Auftrag wartet in der Warteschlange.",
       "runStartedFromCheckpoint": "hat einen KI-Lauf am festgehaltenen Arbeitsstand gestartet",
-      "checkpointRecorded": "hat den Arbeitsstand festgehalten ({trigger})"
+      "checkpointRecorded": "hat den Arbeitsstand festgehalten ({trigger})",
+      "delegated": "hat einen Teil an {assignee} abgegeben",
+      "childrenAwaited": "wartet auf {count, plural, one {einen Teilauftrag} other {# Teilaufträge}}",
+      "childrenReturned": "{count, plural, one {Der Teilauftrag ist} other {Die # Teilaufträge sind}} zurück",
+      "childrenReturnedResumed": "{count, plural, one {Der Teilauftrag ist} other {Die # Teilaufträge sind}} zurück, die Arbeit läuft mit den Ergebnissen weiter"
     },
     "trigger": {
       "step": "Zwischenstand",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "ohne Grenze",
     "cancel": "Abbrechen",
     "create": "Anlegen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "childBudgetPlaceholder": "Rest des übergeordneten Budgets",
+    "startChild": "Gleich starten",
+    "startChildHint": "Die eingebaute KI beginnt sofort mit diesem Teil. Lesende und vorschlagende Teile laufen gleichzeitig, direkt schreibende nacheinander."
   },
   "detail": {
     "loading": "Auftrag wird geladen …",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Was ist dabei herausgekommen?",
     "saveResult": "Ergebnis speichern",
     "noResult": "Noch kein Ergebnis.",
-    "childrenHeading": "Teilaufträge",
-    "addChild": "Teilauftrag anlegen",
-    "noChildren": "Keine Teilaufträge.",
     "runsHeading": "KI-Läufe",
     "budget": "{spent} von {budget} verbraucht",
     "noRuns": "Noch kein Lauf.",
@@ -137,7 +141,9 @@
     "historyHeading": "Historie",
     "notePlaceholder": "Zwischenstand, Rückfrage oder Hinweis für den nächsten Versuch",
     "noteLabel": "Notiz",
-    "addNote": "Notiz hinzufügen"
+    "addNote": "Notiz hinzufügen",
+    "budgetWithChildren": "{spent} von {budget} verbraucht, Teilaufträge eingerechnet",
+    "budgetLimitedBy": "Noch {remaining} übrig, begrenzt durch das Budget von „{title}“"
   },
   "startRun": {
     "title": "KI-Lauf starten",
@@ -188,5 +194,13 @@
       "obsolete": "hinfällig"
     },
     "budget": "Budget zu diesem Zeitpunkt: {spent} von {budget}"
+  },
+  "children": {
+    "heading": "Teilaufträge",
+    "add": "Teil abgeben",
+    "none": "Keine Teilaufträge. Zerfällt die Arbeit in unabhängige Teile, gib sie hier ab.",
+    "progress": "{total, plural, one {Ein Teilauftrag} other {# Teilaufträge}}: {open} offen, {review} zur Abnahme, {closed} abgeschlossen",
+    "awaiting": "Wartet auf {pending} von {total, plural, one {einem Teilauftrag} other {# Teilaufträgen}}. Sind alle zurück, läuft die Arbeit mit ihren Ergebnissen weiter.",
+    "awaited": "erwartet"
   }
 }

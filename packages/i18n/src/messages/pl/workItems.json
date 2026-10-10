@@ -39,7 +39,11 @@
       "runResumed": "wznowiono pracę wraz z odpowiedzią",
       "resumeFailed": "udzielono odpowiedzi, ale nie udało się wznowić pracy ({code}). Zadanie oczekuje w kolejce.",
       "runStartedFromCheckpoint": "uruchamia przebieg AI od zapisanego stanu pracy",
-      "checkpointRecorded": "zapisuje stan pracy ({trigger})"
+      "checkpointRecorded": "zapisuje stan pracy ({trigger})",
+      "delegated": "oddelegowano część do {assignee}",
+      "childrenAwaited": "czeka na {count, plural, one {jedno podzadanie} few {# podzadania} many {# podzadań} other {# podzadania}}",
+      "childrenReturned": "{count, plural, one {Podzadanie wróciło} few {# podzadania wróciły} many {# podzadań wróciło} other {# podzadania wróciło}}",
+      "childrenReturnedResumed": "{count, plural, one {Podzadanie wróciło} few {# podzadania wróciły} many {# podzadań wróciło} other {# podzadania wróciło}}, praca jest kontynuowana z wynikami"
     },
     "trigger": {
       "step": "stan pośredni",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "bez limitu",
     "cancel": "Anuluj",
     "create": "Utwórz",
-    "save": "Zapisz"
+    "save": "Zapisz",
+    "childBudgetPlaceholder": "Reszta budżetu nadrzędnego",
+    "startChild": "Uruchom od razu",
+    "startChildHint": "Wbudowane AI natychmiast rozpocznie pracę nad tą częścią. Części odczytujące i proponujące działają równolegle, a zapisujące bezpośrednio – po kolei."
   },
   "detail": {
     "loading": "Ładowanie zadania…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Jaki jest wynik?",
     "saveResult": "Zapisz wynik",
     "noResult": "Brak wyniku.",
-    "childrenHeading": "Podzadania",
-    "addChild": "Utwórz podzadanie",
-    "noChildren": "Brak podzadań.",
     "runsHeading": "Uruchomienia AI",
     "budget": "Wykorzystano {spent} z {budget}",
     "noRuns": "Brak uruchomień.",
@@ -137,7 +141,9 @@
     "historyHeading": "Historia",
     "notePlaceholder": "Aktualny stan, pytanie lub wskazówka do następnej próby",
     "noteLabel": "Notatka",
-    "addNote": "Dodaj notatkę"
+    "addNote": "Dodaj notatkę",
+    "budgetWithChildren": "Wykorzystano {spent} z {budget}, wliczając podzadania",
+    "budgetLimitedBy": "Pozostało jeszcze {remaining}, z ograniczeniem przez budżet „{title}”"
   },
   "startRun": {
     "title": "Uruchom AI",
@@ -188,5 +194,13 @@
       "obsolete": "nieaktualne"
     },
     "budget": "Budżet w tym momencie: {spent} z {budget}"
+  },
+  "children": {
+    "heading": "Podzadania",
+    "add": "Oddeleguj część",
+    "none": "Brak podzadań. Jeśli praca dzieli się na niezależne części, oddeleguj je tutaj.",
+    "progress": "{total, plural, one {Jedno podzadanie} few {# podzadania} many {# podzadań} other {# podzadania}}: {open} otwartych, {review} do odbioru, {closed} ukończonych",
+    "awaiting": "Oczekiwanie na {pending} z {total, plural, one {jednego podzadania} few {# podzadań} many {# podzadań} other {# podzadania}}. Gdy wszystkie wrócą, praca będzie kontynuowana z ich wynikami.",
+    "awaited": "oczekiwane"
   }
 }

@@ -39,7 +39,11 @@
       "runResumed": "a relancé le travail avec la réponse",
       "resumeFailed": "a répondu, mais le travail n’a pas pu reprendre ({code}). La tâche attend dans la file d’attente.",
       "runStartedFromCheckpoint": "a lancé une exécution d’IA à partir du point d’étape enregistré",
-      "checkpointRecorded": "a enregistré le point d’étape ({trigger})"
+      "checkpointRecorded": "a enregistré le point d’étape ({trigger})",
+      "delegated": "a délégué une partie à {assignee}",
+      "childrenAwaited": "attend {count, plural, one {un sous-ordre} many {# sous-ordres} other {# sous-ordres}}",
+      "childrenReturned": "{count, plural, one {Le sous-ordre est de retour} many {Les # sous-ordres sont de retour} other {Les # sous-ordres sont de retour}}",
+      "childrenReturnedResumed": "{count, plural, one {Le sous-ordre est de retour} many {Les # sous-ordres sont de retour} other {Les # sous-ordres sont de retour}}, le travail continue avec les résultats"
     },
     "trigger": {
       "step": "étape intermédiaire",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "sans limite",
     "cancel": "Annuler",
     "create": "Créer",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "childBudgetPlaceholder": "Reste du budget parent",
+    "startChild": "Démarrer immédiatement",
+    "startChildHint": "L’IA intégrée commence immédiatement cette partie. Les parties en lecture ou proposition s’exécutent en parallèle, celles en écriture directe les unes après les autres."
   },
   "detail": {
     "loading": "Chargement de la tâche…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Quel est le résultat obtenu ?",
     "saveResult": "Enregistrer le résultat",
     "noResult": "Aucun résultat pour le moment.",
-    "childrenHeading": "Sous-tâches",
-    "addChild": "Créer une sous-tâche",
-    "noChildren": "Aucune sous-tâche.",
     "runsHeading": "Exécutions de l’IA",
     "budget": "{spent} sur {budget} consommés",
     "noRuns": "Aucune exécution pour le moment.",
@@ -137,7 +141,9 @@
     "historyHeading": "Historique",
     "notePlaceholder": "Point d’étape, question ou remarque pour la prochaine tentative",
     "noteLabel": "Note",
-    "addNote": "Ajouter une note"
+    "addNote": "Ajouter une note",
+    "budgetWithChildren": "{spent} sur {budget} consommés, sous-ordres compris",
+    "budgetLimitedBy": "Encore {remaining} restant, limité par le budget de « {title} »"
   },
   "startRun": {
     "title": "Lancer une exécution de l’IA",
@@ -188,5 +194,13 @@
       "obsolete": "caduc"
     },
     "budget": "Budget à ce stade : {spent} sur {budget}"
+  },
+  "children": {
+    "heading": "Sous-ordres",
+    "add": "Déléguer une partie",
+    "none": "Aucun sous-ordre. Si le travail se divise en parties indépendantes, délègue-les ici.",
+    "progress": "{total, plural, one {Un sous-ordre} many {# sous-ordres} other {# sous-ordres}} : {open} en cours, {review} à valider, {closed} terminé",
+    "awaiting": "En attente de {pending} sur {total, plural, one {un sous-ordre} many {# sous-ordres} other {# sous-ordres}}. Une fois tous retournés, le travail continuera avec leurs résultats.",
+    "awaited": "attendu"
   }
 }

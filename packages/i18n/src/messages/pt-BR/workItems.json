@@ -39,7 +39,11 @@
       "runResumed": "continuou o trabalho com a resposta",
       "resumeFailed": "respondeu, mas não foi possível retomar o trabalho ({code}). O trabalho está aguardando na fila.",
       "runStartedFromCheckpoint": "iniciou uma execução de IA a partir do ponto de verificação",
-      "checkpointRecorded": "registrou o ponto de verificação ({trigger})"
+      "checkpointRecorded": "registrou o ponto de verificação ({trigger})",
+      "delegated": "delegou uma parte para {assignee}",
+      "childrenAwaited": "está aguardando {count, plural, one {uma subtarefa} many {# subtarefas} other {# subtarefas}}",
+      "childrenReturned": "{count, plural, one {A subtarefa retornou} many {As # subtarefas retornaram} other {As # subtarefas retornaram}}",
+      "childrenReturnedResumed": "{count, plural, one {A subtarefa retornou} many {As # subtarefas retornaram} other {As # subtarefas retornaram}}, o trabalho continua com os resultados"
     },
     "trigger": {
       "step": "progresso intermediário",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "sem limite",
     "cancel": "Cancelar",
     "create": "Criar",
-    "save": "Salvar"
+    "save": "Salvar",
+    "childBudgetPlaceholder": "Restante do orçamento principal",
+    "startChild": "Iniciar agora",
+    "startChildHint": "A IA integrada começa imediatamente com esta parte. Partes de leitura e sugestão são executadas em paralelo; partes que gravam diretamente rodam uma após a outra."
   },
   "detail": {
     "loading": "Carregando tarefa…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Qual foi o resultado?",
     "saveResult": "Salvar resultado",
     "noResult": "Nenhum resultado ainda.",
-    "childrenHeading": "Subtarefas",
-    "addChild": "Criar subtarefa",
-    "noChildren": "Nenhuma subtarefa.",
     "runsHeading": "Execuções de IA",
     "budget": "{spent} de {budget} consumidos",
     "noRuns": "Nenhuma execução ainda.",
@@ -137,7 +141,9 @@
     "historyHeading": "Histórico",
     "notePlaceholder": "Status intermediário, dúvida ou observação para a próxima tentativa",
     "noteLabel": "Nota",
-    "addNote": "Adicionar nota"
+    "addNote": "Adicionar nota",
+    "budgetWithChildren": "{spent} de {budget} consumidos, incluindo subtarefas",
+    "budgetLimitedBy": "Restam {remaining}, limitado pelo orçamento de “{title}”"
   },
   "startRun": {
     "title": "Iniciar execução de IA",
@@ -188,5 +194,13 @@
       "obsolete": "obsoleta"
     },
     "budget": "Orçamento neste momento: {spent} de {budget}"
+  },
+  "children": {
+    "heading": "Subtarefas",
+    "add": "Delegar parte",
+    "none": "Nenhuma subtarefa. Se o trabalho se dividir em partes independentes, delegue-as aqui.",
+    "progress": "{total, plural, one {Uma subtarefa} many {# subtarefas} other {# subtarefas}}: {open} em aberto, {review} para aprovação, {closed} concluídas",
+    "awaiting": "Aguardando {pending} de {total, plural, one {uma subtarefa} many {# subtarefas} other {# subtarefas}}. Quando todas retornarem, o trabalho continua com os resultados obtidos.",
+    "awaited": "aguardado"
   }
 }

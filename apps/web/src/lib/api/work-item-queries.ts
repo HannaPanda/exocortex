@@ -4,7 +4,10 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import {
   type AddWorkItemNoteRequest,
+  type ChildResultsResponse,
   type CreateWorkItemRequest,
+  type DelegateWorkRequest,
+  type DelegateWorkResponse,
   type DeleteWorkItemResponse,
   type StartWorkItemRunRequest,
   type StartWorkItemRunResponse,
@@ -40,6 +43,8 @@ export const workItemKeys = {
   detail: (workItemId: string) => ['work-item', workItemId] as const,
   /** Under the detail's key, so the same `work-item.changed` re-reads both. */
   checkpoints: (workItemId: string) => ['work-item', workItemId, 'checkpoints'] as const,
+  /** Also under the detail's key (issue #144). */
+  childResults: (workItemId: string) => ['work-item', workItemId, 'child-results'] as const,
 };
 
 function queryString(filter: WorkItemListFilter): string {
@@ -85,6 +90,25 @@ export function useWorkItemCheckpoints(
   });
 }
 
+/**
+ * What the children brought back (issue #144): each one's result in words,
+ * cut to a budget, never its transcript. Not read while there are none.
+ */
+export function useWorkItemChildResults(
+  workItemId: string,
+  enabled: boolean,
+): UseQueryResult<ChildResultsResponse> {
+  return useQuery({
+    queryKey: workItemKeys.childResults(workItemId),
+    queryFn: () =>
+      apiRequest<ChildResultsResponse>(
+        `/api/work-items/${workItemId}/children/results?maxChars=600`,
+      ),
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
 function useWriteBack(workspaceId: string) {
   const queryClient = useQueryClient();
   return (response: WorkItemResponse): void => {
@@ -107,6 +131,23 @@ export function useCreateWorkItem(workspaceId: string) {
         body: request,
       }),
     onSuccess: writeBack,
+  });
+}
+
+/**
+ * Handing a part of the work on (issue #144): a child that the built-in AI
+ * holds can start at once. The parent's detail is re-read, because its
+ * history and its children changed too.
+ */
+export function useDelegateWork(workspaceId: string) {
+  const writeBack = useWriteBack(workspaceId);
+  return useMutation({
+    mutationFn: (input: { parentId: string; request: DelegateWorkRequest }) =>
+      apiRequest<DelegateWorkResponse>(`/api/work-items/${input.parentId}/delegate`, {
+        method: 'POST',
+        body: input.request,
+      }),
+    onSuccess: (response) => writeBack({ workItem: response.workItem }),
   });
 }
 

@@ -39,7 +39,11 @@
       "runResumed": "heeft het werk hervat met het antwoord",
       "resumeFailed": "heeft geantwoord, maar het werk kon niet worden voortgezet ({code}). De taak staat in de wachtrij.",
       "runStartedFromCheckpoint": "heeft een AI-sessie gestart vanaf de vastgelegde werkstatus",
-      "checkpointRecorded": "heeft de werkstatus vastgelegd ({trigger})"
+      "checkpointRecorded": "heeft de werkstatus vastgelegd ({trigger})",
+      "delegated": "heeft een deel overgedragen aan {assignee}",
+      "childrenAwaited": "wacht op {count, plural, one {één deeltaak} other {# deeltaken}}",
+      "childrenReturned": "{count, plural, one {De deeltaak is} other {De # deeltaken zijn}} terug",
+      "childrenReturnedResumed": "{count, plural, one {De deeltaak is} other {De # deeltaken zijn}} terug, het werk gaat door met de resultaten"
     },
     "trigger": {
       "step": "tussenstand",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "onbeperkt",
     "cancel": "Annuleren",
     "create": "Aanmaken",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "childBudgetPlaceholder": "Resterend budget van bovenliggende taak",
+    "startChild": "Meteen starten",
+    "startChildHint": "De ingebouwde AI begint direct met dit deel. Lezende en voorstellende delen lopen tegelijk, direct schrijvende na elkaar."
   },
   "detail": {
     "loading": "Opdracht laden …",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "Wat is het resultaat?",
     "saveResult": "Resultaat opslaan",
     "noResult": "Nog geen resultaat.",
-    "childrenHeading": "Deeltaken",
-    "addChild": "Deeltaak aanmaken",
-    "noChildren": "Geen deeltaken.",
     "runsHeading": "AI-runs",
     "budget": "{spent} van {budget} verbruikt",
     "noRuns": "Nog geen run.",
@@ -137,7 +141,9 @@
     "historyHeading": "Geschiedenis",
     "notePlaceholder": "Tussenstand, vraag of aanwijzing voor de volgende poging",
     "noteLabel": "Notitie",
-    "addNote": "Notitie toevoegen"
+    "addNote": "Notitie toevoegen",
+    "budgetWithChildren": "{spent} van {budget} verbruikt, inclusief deeltaken",
+    "budgetLimitedBy": "Nog {remaining} over, beperkt door het budget van „{title}”"
   },
   "startRun": {
     "title": "AI-run starten",
@@ -188,5 +194,13 @@
       "obsolete": "vervallen"
     },
     "budget": "Budget op dat moment: {spent} van {budget}"
+  },
+  "children": {
+    "heading": "Deeltaken",
+    "add": "Deel overdragen",
+    "none": "Geen deeltaken. Als het werk uiteenvalt in onafhankelijke delen, draag ze dan hier over.",
+    "progress": "{total, plural, one {Eén deeltaak} other {# deeltaken}}: {open} open, {review} ter beoordeling, {closed} afgerond",
+    "awaiting": "Wacht op {pending} van {total, plural, one {één deeltaak} other {# deeltaken}}. Als alle delen terug zijn, gaat het werk met hun resultaten verder.",
+    "awaited": "verwacht"
   }
 }

@@ -9,7 +9,7 @@ import { Badge, Button, Checkbox, Label, Textarea } from '@exocortex/ui';
 
 import { useAddWorkItemNote, useUpdateWorkItem } from '@/lib/api/work-item-queries';
 
-import { statusVariant, useWorkItemWording } from './work-item-labels';
+import { useWorkItemWording } from './work-item-labels';
 
 /**
  * The parts of a work item's detail view below its header (issue #138).
@@ -168,48 +168,6 @@ export function ResultSection({
   );
 }
 
-export function ChildrenSection({
-  item,
-  onAddChild,
-}: {
-  item: WorkItemDetail;
-  onAddChild: (() => void) | null;
-}) {
-  const t = useTranslations('workItems.detail');
-  const wording = useWorkItemWording();
-  if (item.children.length === 0 && onAddChild === null) return null;
-  return (
-    <Section
-      title={t('childrenHeading')}
-      action={
-        onAddChild === null ? null : (
-          <Button size="sm" variant="ghost" onClick={onAddChild} data-testid="work-item-add-child">
-            {t('addChild')}
-          </Button>
-        )
-      }
-    >
-      {item.children.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t('noChildren')}</p>
-      ) : (
-        <ul className="flex flex-col gap-1.5 text-sm">
-          {item.children.map((child) => (
-            <li key={child.id} className="flex items-center gap-2">
-              <Badge variant={statusVariant(child.status)}>{wording.status(child.status)}</Badge>
-              <Link
-                href={`/arbeitsbereich/${item.workspaceId}/auftraege/${child.id}`}
-                className="hover:underline"
-              >
-                {child.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Section>
-  );
-}
-
 function runVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
   if (status === 'completed') return 'default';
   if (status === 'pending' || status === 'running') return 'secondary';
@@ -223,12 +181,21 @@ export function RunsSection({ item, action }: { item: WorkItemDetail; action: Re
   const wording = useWorkItemWording();
   return (
     <Section title={t('runsHeading')} action={action}>
-      {/* The budget that holds: the stricter of the item's and its profile's (issue #143). */}
+      {/* The budget that holds: the stricter of the item's and its profile's (issue #143),
+          counted over everything delegated below it (issue #144). */}
       {item.effectiveBudgetMicroUsd === null ? null : (
-        <p className="text-xs text-muted-foreground">
-          {t('budget', {
-            spent: wording.money(item.spentMicroUsd),
+        <p className="text-xs text-muted-foreground" data-testid="work-item-budget">
+          {t(item.subtreeSpentMicroUsd > item.spentMicroUsd ? 'budgetWithChildren' : 'budget', {
+            spent: wording.money(item.subtreeSpentMicroUsd),
             budget: wording.money(item.effectiveBudgetMicroUsd),
+          })}
+        </p>
+      )}
+      {item.budgetLimitedBy === null || item.budgetRemainingMicroUsd === null ? null : (
+        <p className="text-xs text-muted-foreground">
+          {t('budgetLimitedBy', {
+            remaining: wording.money(Math.max(0, item.budgetRemainingMicroUsd)),
+            title: item.budgetLimitedBy.title,
           })}
         </p>
       )}

@@ -39,7 +39,11 @@
       "runResumed": "ha reanudado el trabajo con la respuesta",
       "resumeFailed": "ha respondido, pero el trabajo no se ha podido reanudar ({code}). La tarea está esperando en la cola.",
       "runStartedFromCheckpoint": "ha iniciado una ejecución de la IA en el punto de control guardado",
-      "checkpointRecorded": "ha guardado el punto de control ({trigger})"
+      "checkpointRecorded": "ha guardado el punto de control ({trigger})",
+      "delegated": "ha delegado una parte a {assignee}",
+      "childrenAwaited": "espera {count, plural, one {un subencargo} many {# subencargos} other {# subencargos}}",
+      "childrenReturned": "{count, plural, one {El subencargo ha} many {Los # subencargos han} other {Los # subencargos han}} vuelto",
+      "childrenReturnedResumed": "{count, plural, one {El subencargo ha} many {Los # subencargos han} other {Los # subencargos han}} vuelto, el trabajo continúa con los resultados"
     },
     "trigger": {
       "step": "Paso intermedio",
@@ -97,7 +101,10 @@
     "budgetPlaceholder": "sin límite",
     "cancel": "Cancelar",
     "create": "Crear",
-    "save": "Guardar"
+    "save": "Guardar",
+    "childBudgetPlaceholder": "Resto del presupuesto superior",
+    "startChild": "Empezar de inmediato",
+    "startChildHint": "La IA integrada empieza de inmediato con esta parte. Las partes de lectura y de propuesta se ejecutan simultáneamente; las de escritura directa, una tras otra."
   },
   "detail": {
     "loading": "Cargando tarea…",
@@ -119,9 +126,6 @@
     "resultPlaceholder": "¿Cuál ha sido el resultado?",
     "saveResult": "Guardar resultado",
     "noResult": "Aún no hay resultado.",
-    "childrenHeading": "Subtareas",
-    "addChild": "Crear subtarea",
-    "noChildren": "No hay subtareas.",
     "runsHeading": "Ejecuciones de IA",
     "budget": "{spent} de {budget} consumidos",
     "noRuns": "Aún no hay ejecuciones.",
@@ -137,7 +141,9 @@
     "historyHeading": "Historial",
     "notePlaceholder": "Estado actual, consulta o indicación para el próximo intento",
     "noteLabel": "Nota",
-    "addNote": "Añadir nota"
+    "addNote": "Añadir nota",
+    "budgetWithChildren": "{spent} de {budget} consumidos, subencargos incluidos",
+    "budgetLimitedBy": "Quedan {remaining}, con el límite del presupuesto de «{title}»"
   },
   "startRun": {
     "title": "Iniciar ejecución de IA",
@@ -188,5 +194,13 @@
       "obsolete": "obsoleta"
     },
     "budget": "Presupuesto en ese momento: {spent} de {budget}"
+  },
+  "children": {
+    "heading": "Subencargos",
+    "add": "Delegar parte",
+    "none": "No hay subencargos. Si el trabajo se divide en partes independientes, delégalas aquí.",
+    "progress": "{total, plural, one {Un subencargo} many {# subencargos} other {# subencargos}}: {open} pendientes, {review} para revisión, {closed} completados",
+    "awaiting": "Esperando a {pending} de {total, plural, one {un subencargo} many {# subencargos} other {# subencargos}}. Cuando todos hayan vuelto, el trabajo continuará con sus resultados.",
+    "awaited": "en espera"
   }
 }

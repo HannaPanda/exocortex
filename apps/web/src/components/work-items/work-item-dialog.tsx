@@ -16,6 +16,7 @@ import {
   Alert,
   AlertDescription,
   Button,
+  Checkbox,
   DatePicker,
   Dialog,
   DialogBody,
@@ -34,7 +35,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
-import { useCreateWorkItem, useUpdateWorkItem } from '@/lib/api/work-item-queries';
+import { useCreateWorkItem, useDelegateWork, useUpdateWorkItem } from '@/lib/api/work-item-queries';
 
 import { WorkItemAssigneeSelect } from './work-item-assignee-select';
 import { useWorkItemWording } from './work-item-labels';
@@ -56,6 +57,8 @@ interface Draft {
   criteria: string;
   dueDate: string | null;
   budgetUsd: string;
+  /** For a new part of a larger item held by the built-in AI: start it right away. */
+  start: boolean;
 }
 
 function assigneeInputOf(item: WorkItemDetail): WorkItemAssigneeInput | null {
@@ -76,6 +79,7 @@ function draftOf(item: WorkItemDetail | null): Draft {
       criteria: '',
       dueDate: null,
       budgetUsd: '',
+      start: true,
     };
   }
   return {
@@ -86,6 +90,7 @@ function draftOf(item: WorkItemDetail | null): Draft {
     criteria: item.acceptanceCriteria.map((criterion) => criterion.text).join('\n'),
     dueDate: item.dueAt?.slice(0, 10) ?? null,
     budgetUsd: item.budgetMicroUsd === null ? '' : String(item.budgetMicroUsd / 1_000_000),
+    start: false,
   };
 }
 
@@ -129,6 +134,11 @@ export function WorkItemDialog({
   const router = useRouter();
   const create = useCreateWorkItem(workspaceId);
   const update = useUpdateWorkItem(workspaceId);
+  const delegate = useDelegateWork(workspaceId);
+  // A new part of a larger item is handed on (issue #144): its budget comes
+  // out of the parent's, its write mode is held to the parent's, and the
+  // built-in AI can start on it at once.
+  const delegating = item === null && parentId != null;
   const [draft, setDraft] = React.useState<Draft>(() => draftOf(item));
 
   // A dialog reopened for another item, or for a new one, starts from that
@@ -144,8 +154,8 @@ export function WorkItemDialog({
   const set = <TKey extends keyof Draft>(field: TKey, value: Draft[TKey]): void =>
     setDraft((current) => ({ ...current, [field]: value }));
 
-  const pending = create.isPending || update.isPending;
-  const error = create.error ?? update.error;
+  const pending = create.isPending || update.isPending || delegate.isPending;
+  const error = create.error ?? update.error ?? delegate.error;
   const valid = draft.title.trim().length > 0 && draft.goal.trim().length > 0;
 
   const submit = async (): Promise<void> => {
@@ -158,6 +168,25 @@ export function WorkItemDialog({
       dueAt: draft.dueDate === null ? null : `${draft.dueDate}T00:00:00.000Z`,
       budgetMicroUsd: budgetOf(draft.budgetUsd),
     };
+    if (delegating && draft.assignee !== null) {
+      const budget = common.budgetMicroUsd;
+      const handed = await delegate.mutateAsync({
+        parentId,
+        request: {
+          title: common.title,
+          goal: common.goal,
+          priority: common.priority,
+          assignee: draft.assignee,
+          acceptanceCriteria: common.acceptanceCriteria,
+          ...(common.dueAt === null ? {} : { dueAt: common.dueAt }),
+          ...(budget === null ? {} : { budgetMicroUsd: budget }),
+          start: draft.assignee.kind === 'assistant' && draft.start,
+        },
+      });
+      onOpenChange(false);
+      router.push(`/arbeitsbereich/${workspaceId}/auftraege/${handed.workItem.id}`);
+      return;
+    }
     if (item === null) {
       const created = await create.mutateAsync({ ...common, parentId: parentId ?? null });
       onOpenChange(false);
@@ -262,11 +291,26 @@ export function WorkItemDialog({
                   id="work-item-budget"
                   inputMode="decimal"
                   value={draft.budgetUsd}
-                  placeholder={t('budgetPlaceholder')}
+                  placeholder={delegating ? t('childBudgetPlaceholder') : t('budgetPlaceholder')}
                   onChange={(event) => set('budgetUsd', event.target.value)}
                 />
               </div>
             </div>
+
+            {delegating && draft.assignee?.kind === 'assistant' ? (
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="work-item-start-child"
+                  checked={draft.start}
+                  onCheckedChange={(checked) => set('start', checked === true)}
+                  data-testid="work-item-start-child"
+                />
+                <div className="flex flex-col gap-0.5">
+                  <Label htmlFor="work-item-start-child">{t('startChild')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('startChildHint')}</p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </DialogBody>
 

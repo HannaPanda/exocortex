@@ -51,10 +51,10 @@ import {
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
 import { CheckpointSection } from './work-item-checkpoint';
+import { ChildrenSection } from './work-item-children';
 import { WorkItemDialog } from './work-item-dialog';
 import { statusVariant, useWorkItemWording } from './work-item-labels';
 import {
-  ChildrenSection,
   ContextSection,
   CriteriaSection,
   HistorySection,

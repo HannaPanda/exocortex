@@ -74,8 +74,20 @@ export function useWorkItemWording() {
         maximumFractionDigits: 4,
       });
 
-    /** One history line, in words. The note itself is shown beside it. */
-    const event = (value: WorkItemEvent): string => {
+    /** The lines a delegation writes (issue #144), apart so the switch below stays readable. */
+    const delegationEvent = (value: WorkItemEvent): string | null => {
+      const count = value.data.childIds?.length ?? 0;
+      if (value.kind === 'delegated') {
+        return t('event.delegated', { assignee: participant(value.data.assignee ?? null) });
+      }
+      if (value.kind === 'children_awaited') return t('event.childrenAwaited', { count });
+      if (value.kind !== 'children_returned') return null;
+      return value.data.runId === undefined
+        ? t('event.childrenReturned', { count })
+        : t('event.childrenReturnedResumed', { count });
+    };
+
+    const plainEvent = (value: WorkItemEvent): string => {
       switch (value.kind) {
         case 'created':
           return t('event.created');
@@ -110,8 +122,13 @@ export function useWorkItemWording() {
               `trigger.${workCheckpointTriggerSchema.catch('step').parse(value.data.trigger)}`,
             ),
           });
+        default:
+          return '';
       }
     };
+
+    /** One history line, in words. The note itself is shown beside it. */
+    const event = (value: WorkItemEvent): string => delegationEvent(value) ?? plainEvent(value);
 
     return { status, priority, participant, moment, day, money, event };
   }, [format, t]);
