@@ -10,6 +10,7 @@ import {
   type AiMessage,
   aiMessageSchema,
   mergeProviderRouting,
+  type ProviderRoutingOverride,
   type QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
@@ -88,10 +89,12 @@ export async function resolveModelRow(input: {
 export function withConfiguredEndpoints(
   modelRow: ResolvedModelRow,
   settings: Settings,
+  /** An agent profile's keys (issue #143), laid over the model's. */
+  profileRouting: ProviderRoutingOverride | null = null,
 ): ResolvedModelRow {
   const preferences = mergeProviderRouting(
-    settings['ai.providerRouting'],
-    modelRow.providerRouting,
+    mergeProviderRouting(settings['ai.providerRouting'], modelRow.providerRouting),
+    profileRouting,
   );
   return { ...modelRow, endpoints: restrictEndpoints(modelRow.endpoints, preferences) };
 }

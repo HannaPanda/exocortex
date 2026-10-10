@@ -7,15 +7,17 @@ import {
 import { type PrismaClient } from '@exocortex/database';
 
 /**
- * The write mode a run is held to (issue #141, ADR-070): the stricter of the
- * workspace's `ai.writeMode` and the work item's own, when the run is an
- * attempt at one. Read from the database when the run starts, never from the
- * job payload, so nothing a request carried can loosen it.
+ * The write mode a run is held to (issue #141, ADR-070): the strictest of the
+ * workspace's `ai.writeMode`, the work item's own, when the run is an attempt
+ * at one, and its agent profile's (issue #143). Read from the database when
+ * the run starts, never from the job payload, so nothing a request carried
+ * can loosen it.
  */
 export async function resolveRunWriteMode(input: {
   prisma: PrismaClient;
   run: { workItemId: string | null };
   settings: Pick<Settings, 'ai.writeMode'>;
+  profileWriteMode?: AiWriteMode | null;
 }): Promise<AiWriteMode> {
   const work =
     input.run.workItemId === null
@@ -25,7 +27,7 @@ export async function resolveRunWriteMode(input: {
           select: { writeMode: true },
         });
   const own = work?.writeMode == null ? null : (work.writeMode.toLowerCase() as AiWriteMode);
-  return strictestWriteMode(input.settings['ai.writeMode'], own);
+  return strictestWriteMode(input.settings['ai.writeMode'], own, input.profileWriteMode);
 }
 
 /** The column's spelling of a mode. */

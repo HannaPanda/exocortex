@@ -329,6 +329,19 @@ describe('OpenRouterProvider provider routing', () => {
     expect(captured.body().provider).toEqual({ only: ['together'], allow_fallbacks: false });
   });
 
+  it("lays a profile's keys over the configured ones, key by key (issue #143)", async () => {
+    const captured = captureBody();
+
+    await collect(
+      provider(async () => ({ sort: 'throughput', ignore: ['relace'] })).stream({
+        ...request,
+        routing: { preferences: { sort: 'price', ignore: null, data_collection: 'deny' } },
+      }),
+    );
+
+    expect(captured.body().provider).toEqual({ sort: 'price', data_collection: 'deny' });
+  });
+
   it('sends the request without preferences when they cannot be read', async () => {
     const captured = captureBody();
 

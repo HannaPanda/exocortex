@@ -3,6 +3,7 @@ import {
   type AiMessage,
   deriveAiRunTimeouts,
   QUEUE_NAMES,
+  type ProviderRoutingOverride,
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
@@ -15,6 +16,12 @@ import { compactIfNeeded } from '../compaction';
 import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun } from './ai-run/admission';
+import {
+  profileLimits,
+  profileMessage,
+  profileToolDomains,
+  resolveRunProfile,
+} from './ai-run/agent-profile';
 import { writeFailure, writeSuccess } from './ai-run/completion';
 import { type ResolvedModelRow } from './ai-run/contract';
 import { executeRun, type RunRoutingInput } from './ai-run/execution';
@@ -111,6 +118,8 @@ function buildRunRouting(input: {
   toolsEnabled: boolean;
   requiresReasoningEffort: boolean;
   floorInputTokens: number;
+  /** The agent profile's routing keys (issue #143), laid over the configured ones. */
+  preferences: ProviderRoutingOverride | null;
 }): RunRoutingInput {
   const { dependencies, modelRow, run, settings, payload, logger, base, imageContext } = input;
   const { prisma, bus } = dependencies;
@@ -122,6 +131,7 @@ function buildRunRouting(input: {
     requiresTools: input.toolsEnabled,
     requiresReasoningEffort: input.requiresReasoningEffort,
     floorInputTokens: input.floorInputTokens,
+    preferences: input.preferences,
     // A run without a conversation carries its own message list and has
     // nothing to summarise, so it cannot make itself smaller.
     compact:
@@ -207,6 +217,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // companion below is paid for by the same key as the answer itself.
     const { provider, key } = await dependencies.providerFor(run.workspaceId);
 
+    // The agent profile this run works under, if it is an attempt at work
+    // that has one (issue #143): its role, its limits, its tools, and routing
+    // keys that narrow the endpoints before anything is planned.
+    const profile = await resolveRunProfile({ prisma, run });
+
     const modelRow = withConfiguredEndpoints(
       await resolveModelRow({
         modelRegistry: dependencies.modelRegistry,
@@ -215,6 +230,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         logger,
       }),
       settings,
+      profile?.providerRouting ?? null,
     );
     const conversation =
       run.conversationId === null
@@ -293,18 +309,36 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         : null;
     // The mode this run is held to (issue #141): told to the model up front,
     // enforced by the loop and, through its signed token, by the API.
-    const writeMode = await resolveRunWriteMode({ prisma, run, settings });
+    const writeMode = await resolveRunWriteMode({
+      prisma,
+      run,
+      settings,
+      profileWriteMode: profile?.snapshot.writeMode ?? null,
+    });
     const modeNote = writeModeMessage(writeMode);
+    const roleNote = await profileMessage({ prisma, profile, workspaceId: run.workspaceId });
     const messages: AiMessage[] = [
       ...base,
+      ...(roleNote === null ? [] : [roleNote]),
       ...(modeNote === null ? [] : [modeNote]),
       ...(imageContext === null ? [] : [imageContext]),
       ...rest,
     ];
 
     // Derived once, ahead of the tool runner: a tool call needs its own
-    // timeout before the run's clocks are otherwise started below.
-    const timeouts = deriveAiRunTimeouts(settings);
+    // timeout before the run's clocks are otherwise started below. A profile
+    // can only shorten the run, never lengthen it.
+    const baseTimeouts = deriveAiRunTimeouts(settings);
+    const limits = profileLimits(profile, {
+      budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
+      maxToolIterations: settings['ai.maxToolIterations'],
+      runBudgetMs: baseTimeouts.runBudgetMs,
+    });
+    const timeouts = {
+      ...baseTimeouts,
+      runBudgetMs: limits.runBudgetMs,
+      toolCallTimeoutMs: Math.min(baseTimeouts.toolCallTimeoutMs, limits.runBudgetMs),
+    };
     const runner: ToolRunner | null = tools.enabled
       ? dependencies.toolRunnerFactory!({
           userId: run.createdById,
@@ -326,6 +360,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             // A proposing run needs the proposal tools whatever its words say.
             ...(writeMode === 'propose' ? (['changesets'] as const) : []),
           ],
+          allowedDomains: profileToolDomains(profile, {
+            onWorkItem: run.workItemId !== null,
+            proposing: writeMode === 'propose',
+          }),
+          confinedWorkspaceId: profile?.snapshot.confineToWorkspace ? run.workspaceId : null,
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
           // One run, one session (ADR-022): the unit somebody would want back
           // is "what the assistant did while answering that question".
@@ -348,6 +387,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         // halfway still spent whoever's money it was spending.
         usedOwnKey: key.usedOwnKey,
         writeMode: writeModeColumn(writeMode),
+        // What the profile said at this moment (issue #143), so a later edit
+        // of the profile does not rewrite what this run was held to.
+        ...(profile === null
+          ? {}
+          : { agentProfileId: profile.snapshot.id, agentProfileSnapshot: profile.snapshot }),
       },
     });
     await reportProgress(5, 'generating');
@@ -370,8 +414,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           runner,
           toolsEnabled: tools.enabled,
           maxOutputTokens,
-          maxToolIterations: tools.enabled ? settings['ai.maxToolIterations'] : 0,
-          budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
+          maxToolIterations: tools.enabled ? limits.maxToolIterations : 0,
+          budgetMicroUsd: limits.budgetMicroUsd,
           messages,
           routing: buildRunRouting({
             dependencies,
@@ -386,6 +430,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             toolsEnabled: tools.enabled,
             requiresReasoningEffort,
             floorInputTokens,
+            preferences: profile?.providerRouting ?? null,
           }),
         });
         span.setAttributes({

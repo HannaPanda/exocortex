@@ -1,4 +1,4 @@
-import { type AiMessage, type AiUsage } from '@exocortex/contracts';
+import { type AiMessage, type AiUsage, type ProviderRoutingOverride } from '@exocortex/contracts';
 
 /**
  * Provider-neutral AI contract.
@@ -60,6 +60,12 @@ export interface AiRoutingRequirements {
    * the provider routes as it normally would.
    */
   allowedProviderKeys?: readonly string[];
+  /**
+   * Routing keys laid over the configured preferences for this one request
+   * (issue #143): an agent profile's, merged key by key like a model's
+   * override (ADR-063). Absent changes nothing.
+   */
+  preferences?: ProviderRoutingOverride;
 }
 
 export interface AiReasoningOptions {

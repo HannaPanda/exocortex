@@ -31,6 +31,8 @@ function runnerWith(overrides: Partial<CreateToolRunnerInput> = {}) {
     webFetchesPerRun: 8,
     taskText: 'Schreib etwas auf eine Seite.',
     requiredDomains: [],
+    allowedDomains: null,
+    confinedWorkspaceId: null,
     toolCallTimeoutMs: 1_000,
     agentSession: { externalId: 'ai-run-test', label: 'eXocortex KI' },
     runId: 'run-test',
@@ -389,5 +391,22 @@ describe('the tool runner as a tool-context budget', () => {
     expect(runner.callCount()).toBe(0);
     await runner.run({ name: 'exo_toolbox', argumentsJson: '{}', correlationId: 'corr-1' });
     expect(runner.callCount()).toBe(1);
+  });
+});
+
+describe('the agent profile as a limit (issue #143)', () => {
+  it('offers only the allowed domains, whatever the words ask for', () => {
+    const runner = runnerWith({ taskText: WEB_TASK, allowedDomains: ['core', 'pages'] });
+    const names = runner.definitions.map((definition) => definition.name);
+    expect(names).toContain('exo_page_read');
+    expect(names).not.toContain('exo_web_search');
+    expect(runner.toolContext().domains).not.toContain('web');
+  });
+
+  it('refuses a call outside the profile before anything is executed', async () => {
+    const runner = runnerWith({ allowedDomains: ['core'] });
+    const outcome = await runner.run(A_WRITE);
+    expect(outcome).toMatchObject({ isError: true, refused: true });
+    expect(outcome.text).toContain('Agentenprofil');
   });
 });

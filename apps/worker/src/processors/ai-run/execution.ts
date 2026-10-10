@@ -17,6 +17,7 @@ import {
   type AiRunPhase,
   type AiUsage,
   type deriveAiRunTimeouts,
+  type ProviderRoutingOverride,
   type QUEUE_NAMES,
 } from '@exocortex/contracts';
 import { type AiRun, type Prisma, type PrismaClient } from '@exocortex/database';
@@ -67,6 +68,8 @@ export interface RunRoutingInput {
   compact: ((budgetInputTokens: number) => Promise<AiMessage[]>) | null;
   /** Called when the provider answered as a different model than the alias last resolved to. */
   onAliasDrift: ((actualModel: string) => void) | null;
+  /** The agent profile's routing keys (issue #143), sent with every request. */
+  preferences: ProviderRoutingOverride | null;
 }
 
 export interface RunExecutionInput {
@@ -319,12 +322,17 @@ class RunExecution {
 
   /** Carries a plan into the next request, and records what it decided. Never content. */
   private applyPlan(plan: RoutePlan): void {
+    const preferences = this.input.routing.preferences;
+    const own = preferences === null ? {} : { preferences };
     this.routing = plan.known
       ? {
           allowedProviderKeys: plan.allowedProviderKeys,
           minimumContextTokens: this.input.maxOutputTokens,
+          ...own,
         }
-      : undefined;
+      : preferences === null
+        ? undefined
+        : own;
     if (!plan.known) return;
     this.input.logger.debug('Route planned for turn', {
       runId: this.input.run.id,

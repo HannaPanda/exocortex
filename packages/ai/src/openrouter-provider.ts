@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type AiUsage, type ProviderRouting } from '@exocortex/contracts';
+import { type AiUsage, mergeProviderRouting, type ProviderRouting } from '@exocortex/contracts';
 import { type Logger, withSpan } from '@exocortex/logger';
 
 import {
@@ -142,6 +142,14 @@ export class OpenRouterProvider implements AiProvider {
    * answering because a settings read timed out.
    */
   private async preferencesFor(request: AiGenerateRequest): Promise<ProviderRouting> {
+    const configured = await this.configuredPreferencesFor(request);
+    // An agent profile's keys go on top (issue #143), the same way a model's
+    // override goes on top of the global object.
+    const own = request.routing?.preferences;
+    return own === undefined ? configured : mergeProviderRouting(configured, own);
+  }
+
+  private async configuredPreferencesFor(request: AiGenerateRequest): Promise<ProviderRouting> {
     if (this.options.providerRoutingFor === undefined) return {};
     try {
       return await this.options.providerRoutingFor(this.modelOf(request));

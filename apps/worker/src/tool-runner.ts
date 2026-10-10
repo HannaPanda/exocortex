@@ -175,6 +175,18 @@ export interface CreateToolRunnerInput {
    * mentions a database.
    */
   requiredDomains: readonly ToolDomain[];
+  /**
+   * The domains this run may use at all (issue #143), from its agent
+   * profile; null when it has none. Unlike the offer above this *is* a
+   * limit: a domain outside it is never offered, `exo_toolbox` cannot open
+   * it, and a call to one of its tools is refused here.
+   */
+  allowedDomains: readonly ToolDomain[] | null;
+  /**
+   * The workspace the run's profile confines it to (issue #143), signed into
+   * its service token so the API answers every other workspace as foreign.
+   */
+  confinedWorkspaceId: string | null;
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
@@ -206,6 +218,8 @@ export type ToolRunnerFactoryInput = Pick<
   | 'webFetchesPerRun'
   | 'taskText'
   | 'requiredDomains'
+  | 'allowedDomains'
+  | 'confinedWorkspaceId'
   | 'toolCallTimeoutMs'
   | 'agentSession'
   | 'runId'
@@ -249,8 +263,10 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
       writeMode: input.writeMode,
       writeClass: tool.writeClass,
     }).allowed;
+  const allowed = (domain: ToolDomain): boolean =>
+    input.allowedDomains === null || input.allowedDomains.includes(domain);
   const domains = new Set<ToolDomain>(
-    selectToolDomains({ text: input.taskText, required: input.requiredDomains }),
+    selectToolDomains({ text: input.taskText, required: input.requiredDomains }).filter(allowed),
   );
 
   return {
@@ -260,7 +276,7 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
           (tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0) && offeredInMode(tool),
       ),
     open: (domain) => {
-      if (domains.has(domain)) return false;
+      if (domains.has(domain) || !allowed(domain)) return false;
       domains.add(domain);
       return true;
     },
@@ -322,6 +338,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         ttlSeconds: input.serviceTokenTtlSeconds,
         runId: input.runId,
         ...(input.writeMode === 'direct' ? {} : { writeMode: input.writeMode }),
+        ...(input.confinedWorkspaceId === null ? {} : { workspaceId: input.confinedWorkspaceId }),
       });
       tokenExpiresAt = issued.expiresAt;
       client = createFetchApiClient({
@@ -362,6 +379,23 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     const tool = findTool(name);
     if (tool === null) {
       return { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false };
+    }
+    // The run's agent profile names the domains it may use (issue #143).
+    // Decided by the tool's domain, before anything else about the call.
+    if (input.allowedDomains !== null && !input.allowedDomains.includes(tool.domain)) {
+      input.logger.warn('Refused a tool outside the run profile', {
+        tool: name,
+        domain: tool.domain,
+        correlationId,
+      });
+      return {
+        text:
+          `Das Werkzeug ${name} gehört zum Bereich „${tool.domain}“, den das Agentenprofil dieses ` +
+          `Laufs nicht erlaubt. Erlaubt sind: ${input.allowedDomains.join(', ')}. Arbeite mit ` +
+          'diesen, oder sage in deiner Antwort, was du sonst bräuchtest.',
+        isError: true,
+        refused: true,
+      };
     }
 
     // Before the arguments are even parsed: whether this call may run
