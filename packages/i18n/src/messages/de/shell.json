@@ -241,6 +241,10 @@
         "label": "Agentenprofile öffnen",
         "keywords": "agentenprofil profil rolle agent ki rechte werkzeuge budget schreibmodus entwickler rechercheur archivar agent profile"
       },
+      "evals": {
+        "label": "Evals öffnen",
+        "keywords": "eval evals test testfall benchmark modellvergleich modelle vergleichen regression replay messen qualität kosten anbieter"
+      },
       "automations": {
         "label": "Automationen öffnen",
         "keywords": "automation regel zeitplan auslöser workflow"

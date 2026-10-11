@@ -517,6 +517,17 @@
     },
     "where": "Unter einer Antwort im Chat „Ablauf ansehen“, oder bei einem Auftrag in der Liste der KI-Läufe „Ablauf“."
   },
+  "evals": {
+    "title": "Agentenaufgaben als Evals wiederholen und vergleichen",
+    "summary": "Eine echte Aufgabe für die eingebaute KI wird als Eval-Fall gespeichert, mit Prüfungen, was danach stimmen muss. Ein Eval-Lauf wiederholt sie mit mehreren Modellen, Denkstufen oder Anbietern und stellt Ergebnis, Dauer, Kosten und Werkzeugaufrufe nebeneinander.",
+    "details": {
+      "p1": "Ein Fall hält fest: die Aufgabe im Wortlaut, wo sie beginnt, unter welchem Agentenprofil, mit welchen Werkzeugbereichen und Grenzen, und was danach stimmen muss. Prüfungen gibt es als harte Invarianten (etwa „verändert nichts“), die einen Versuch in jedem Fall scheitern lassen, und als Kriterien: die Antwort enthält etwas oder nicht, ein Muster kommt höchstens so oft vor, ein Werkzeug wurde (nicht) aufgerufen, Kosten, Dauer und Fehlaufrufe bleiben unter einer Grenze, eine Seite enthält danach einen Text. Was sich nicht automatisch entscheiden lässt, wird eine manuelle Prüfung, die ein Mensch beim Bewerten beantwortet.",
+      "p2": "Ein Eval schreibt nie unbemerkt in echte Seiten. Wie, legt jeder Fall ausdrücklich fest: „Nur lesen“ arbeitet auf den echten Seiten und darf nichts ändern; „Vorschlagen“ darf Änderungen vorschlagen, die am Ende abgelehnt und nie übernommen werden; „Eigene Seiten“ kopiert die Seiten des Falls in eine Sandbox, in der der Lauf schreiben darf und aus der er nicht herauskommt. Die Sandbox wird gelöscht, sobald ihr Endstand gesichert ist, und Automationen reagieren nicht auf sie.",
+      "p3": "Jeder Versuch ist ein gewöhnlicher Lauf der eingebauten KI, deshalb lässt er sich im Lauf-Inspektor ansehen. Festgehalten werden Ausgang, verletzte Invarianten, Laufzeit, Eingabe-, Ausgabe- und Cache-Tokens, Kosten (mit eigenem Schlüssel oder nicht), Werkzeugaufrufe und Fehlaufrufe, die bedienenden Anbieter samt Wechseln, die Größe des Kontexts und Rückfragen an Menschen. Die Rohdaten bleiben erhalten, auch wenn der Fall später geändert wird: jeder Versuch kennt den Stand, gegen den er gemessen wurde.",
+      "p4": "Fälle mit demselben Set-Namen (etwa „regression“) lassen sich als Datei exportieren, in einem Repository versionieren und wieder importieren. Einen echten Lauf macht im Lauf-Inspektor „Als Eval-Fall speichern“ zu einem Fall. Agenten erreichen dasselbe über die exo_eval-Werkzeuge; die eingebaute KI darf Evals nur lesen, weil sie nicht ihre eigene Prüfung schreiben, starten oder bewerten soll."
+    },
+    "where": "Im Arbeitsbereich unter „Evals“ (auch über Strg + K), und im Lauf-Inspektor über „Als Eval-Fall speichern“."
+  },
   "ki-chat": {
     "title": "Mit einem Modell über deine Seiten reden",
     "summary": "Der Chat läuft neben der Seite und kennt Titel und Pfad der offenen Seite. Welches Modell antwortet, steht in der Modellverwaltung; ohne eingerichteten Anbieter antwortet ein lokales Attrappenmodell, damit nichts davon abhängt.",

@@ -517,6 +517,17 @@
     },
     "where": "Pod odpowiedzią na czacie: „Zobacz przebieg” lub przy zadaniu na liście uruchomień AI: „Przebieg”."
   },
+  "evals": {
+    "title": "Powtarzaj i porównuj zadania agentów jako ewaluacje (evals)",
+    "summary": "Prawdziwe zadanie dla wbudowanej AI jest zapisywane jako przypadek ewaluacyjny wraz z warunkami weryfikacji wyniku. Uruchomienie ewaluacji powtarza je z wieloma modelami, poziomami myślenia lub dostawcami i zestawia ze sobą wynik, czas trwania, koszty oraz wywołania narzędzi.",
+    "details": {
+      "p1": "Przypadek określa: dokładną treść zadania, miejsce jego rozpoczęcia, profil agenta, zakresy narzędzi i limity oraz to, co musi się zgadzać po zakończeniu. Weryfikacje dzielą się na twarde niezmienniki (np. „niczego nie zmienia”), które bezwzględnie przerywają próbę niepowodzeniem, oraz kryteria: odpowiedź zawiera coś lub nie, wzorzec pojawia się co najwyżej określoną liczbę razy, narzędzie zostało (lub nie zostało) wywołane, koszty, czas trwania i błędne wywołania mieszczą się w limitach, a strona zawiera potem dany tekst. Kwestie niemożliwe do rozstrzygnięcia automatycznie stają się weryfikacją ręczną, na którą człowiek odpowiada podczas oceniania.",
+      "p2": "Ewaluacja nigdy nie zapisuje niczego po cichu na prawdziwych stronach. Sposób działania każdy przypadek określa jednoznacznie: „Tylko do odczytu” działa na prawdziwych stronach i nie może niczego modyfikować; „Proponowanie” może proponować zmiany, które na końcu są odrzucane i nigdy nie zostają zastosowane; „Własne strony” kopiuje strony przypadku do piaskownicy, w której przebieg może zapisywać dane i z której nie może się wydostać. Piaskownica jest usuwana zaraz po zabezpieczeniu jej stanu końcowego, a automatyzacje na nią nie reagują.",
+      "p3": "Każda próba jest zwykłym przebiegiem wbudowanej AI, dlatego można ją przejrzeć w inspektorze przebiegów. Zapisywane są: wynik końcowy, naruszone niezmienniki, czas trwania, tokeny wejściowe, wyjściowe i pamięci podręcznej, koszty (z własnym kluczem lub bez), wywołania narzędzi i błędne wywołania, obsługujący dostawcy wraz ze zmianami, rozmiar kontekstu oraz pytania do człowieka. Surowe dane pozostają zachowane, nawet jeśli przypadek zostanie później zmieniony: każda próba zna stan, względem którego była mierzona.",
+      "p4": "Przypadki o tej samej nazwie zestawu (np. „regression”) można wyeksportować do pliku, wersjonować w repozytorium i ponownie zaimportować. W inspektorze przebiegów opcja „Zapisz jako przypadek ewaluacyjny” przekształca rzeczywisty przebieg w przypadek. Agenci osiągają to samo za pomocą narzędzi exo_eval; wbudowana AI ma do ewaluacji dostęp tylko do odczytu, aby nie mogła pisać, uruchamiać ani oceniać własnych sprawdzianów."
+    },
+    "where": "W obszarze roboczym w sekcji „Ewaluacje” (również przez Strg + K) oraz w inspektorze przebiegów przez „Zapisz jako przypadek ewaluacyjny”."
+  },
   "ki-chat": {
     "title": "Rozmowa z modelem o twoich stronach",
     "summary": "Czat działa obok strony i zna tytuł oraz ścieżkę otwartej strony. To, który model odpowiada, określa zarządzanie modelami; bez skonfigurowanego dostawcy odpowiada lokalny model zastępczy, aby nic od tego nie zależało.",

@@ -241,6 +241,10 @@
         "label": "Agentprofielen openen",
         "keywords": "agentprofiel profiel rol agent ai rechten tools budget schrijfmodus ontwikkelaar onderzoeker archivaris agent profile"
       },
+      "evals": {
+        "label": "Evals openen",
+        "keywords": "eval evals test testcase benchmark modelvergelijking modellen vergelijken regressie replay meten kwaliteit kosten provider aanbieder"
+      },
       "automations": {
         "label": "Automatiseringen openen",
         "keywords": "automatisering regel schema trigger workflow"

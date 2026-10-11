@@ -517,6 +517,17 @@
     },
     "where": "Sous une réponse dans le chat « Voir le déroulement », ou pour une tâche dans la liste des exécutions d’IA « Déroulement »."
   },
+  "evals": {
+    "title": "Répéter et comparer les tâches d’agent sous forme d’évals",
+    "summary": "Une tâche réelle pour l’IA intégrée est enregistrée en tant que cas d’évaluation, avec des vérifications sur ce qui doit être correct ensuite. Une exécution d’évaluation la répète avec plusieurs modèles, niveaux de réflexion ou fournisseurs, et compare les résultats, la durée, les coûts et les appels d’outils.",
+    "details": {
+      "p1": "Un cas consigne : le texte exact de la tâche, son point de départ, sous quel profil d’agent, avec quels domaines d’outils et quelles limites, et ce qui doit être correct ensuite. Les vérifications existent sous forme d’invariants stricts (comme « ne modifie rien »), qui font échouer une tentative quoi qu’il arrive, et sous forme de critères : la réponse contient ou non un élément, un motif apparaît au plus un certain nombre de fois, un outil a été appelé (ou non), les coûts, la durée et les échecs d’appels restent sous un seuil, une page contient ensuite un texte donné. Ce qui ne peut pas être tranché automatiquement devient une vérification manuelle à laquelle une personne répond lors de l’évaluation.",
+      "p2": "Une éval n’écrit jamais discrètement dans de vraies pages. La façon de procéder est définie explicitement par chaque cas : « Lecture seule » travaille sur les vraies pages et ne doit rien modifier ; « Suggérer » peut proposer des modifications qui sont finalement rejetées et jamais appliquées ; « Pages dédiées » copie les pages du cas dans un bac à sable au sein duquel l’exécution peut écrire sans pouvoir en sortir. Le bac à sable est supprimé dès que son état final est sauvegardé, et les automatisations n’y réagissent pas.",
+      "p3": "Chaque tentative est une exécution ordinaire de l’IA intégrée et peut donc être consultée dans l’inspecteur d’exécution. Sont consignés l’issue, les invariants enfreints, la durée d’exécution, les jetons d’entrée, de sortie et de cache, les coûts (avec une clé propre ou non), les appels d’outils et les appels en échec, les fournisseurs utilisés ainsi que leurs changements, la taille du contexte et les demandes de précision adressées aux humains. Les données brutes sont conservées même si le cas est modifié ultérieurement : chaque tentative connaît l’état par rapport auquel elle a été mesurée.",
+      "p4": "Les cas portant le même nom d’ensemble (comme « régression ») peuvent être exportés dans un fichier, versionnés dans un dépôt et réimportés. Dans l’inspecteur d’exécution, « Enregistrer comme cas d’éval » transforme une exécution réelle en cas. Les agents obtiennent le même résultat via les outils exo_eval ; l’IA intégrée ne peut lire les évals qu’en consultation, car elle ne doit ni rédiger, ni lancer, ni évaluer son propre test."
+    },
+    "where": "Dans l’espace de travail sous « Évals » (aussi via Strg + K), et dans l’inspecteur d’exécution via « Enregistrer comme cas d’éval »."
+  },
   "ki-chat": {
     "title": "Discuter avec un modèle au sujet de tes pages",
     "summary": "Le chat s’exécute à côté de la page et connaît le titre ainsi que le chemin de la page ouverte. Le modèle qui répond est défini dans la gestion des modèles ; si aucun fournisseur n’est configuré, un modèle fictif local répond afin de ne rien bloquer.",

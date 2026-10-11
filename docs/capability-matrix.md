@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-277 routes are reachable from at least one client; 161 from all three.
+277 routes are reachable from at least one client; 166 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -40,8 +40,8 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_delete` |
 | `DELETE /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_delete` |
 | `DELETE /api/entities/:x/pages/:x` | ✓ | ✓ | ✓ | `exo_entity_unlink_page` |
-| `DELETE /api/eval-cases/:x` | · | · | ✓ | `exo_eval_case_delete` |
-| `DELETE /api/eval-runs/:x` | · | · | ✓ | `exo_eval_run_delete` |
+| `DELETE /api/eval-cases/:x` | ✓ | · | ✓ | `exo_eval_case_delete` |
+| `DELETE /api/eval-runs/:x` | ✓ | · | ✓ | `exo_eval_run_delete` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
 | `DELETE /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_remove` |
@@ -100,9 +100,9 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_profile` |
 | `GET /api/entities/candidates` | ✓ | ✓ | ✓ | `exo_entity_candidates` |
 | `GET /api/eval-attempts/:x` | · | ✓ | ✓ | `exo_eval_attempt_get` |
-| `GET /api/eval-cases/:x` | · | ✓ | ✓ | `exo_eval_case_get` |
-| `GET /api/eval-comparison` | · | ✓ | ✓ | `exo_eval_compare` |
-| `GET /api/eval-runs/:x` | · | ✓ | ✓ | `exo_eval_run_get` |
+| `GET /api/eval-cases/:x` | ✓ | ✓ | ✓ | `exo_eval_case_get` |
+| `GET /api/eval-comparison` | ✓ | ✓ | ✓ | `exo_eval_compare` |
+| `GET /api/eval-runs/:x` | ✓ | ✓ | ✓ | `exo_eval_run_get` |
 | `GET /api/features` | ✓ | ✓ | ✓ | `exo_features` |
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
@@ -145,8 +145,8 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/credentials` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/documents/resolve` | ✓ | ✓ | ✓ | `exo_page_resolve_link` |
 | `GET /api/workspaces/:x/documents/tree` | ✓ | ✓ | ✓ | `exo_page_tree` |
-| `GET /api/workspaces/:x/eval-cases` | · | ✓ | ✓ | `exo_eval_case_list` |
-| `GET /api/workspaces/:x/eval-runs` | · | ✓ | ✓ | `exo_eval_run_list` |
+| `GET /api/workspaces/:x/eval-cases` | ✓ | ✓ | ✓ | `exo_eval_case_list` |
+| `GET /api/workspaces/:x/eval-runs` | ✓ | ✓ | ✓ | `exo_eval_run_list` |
 | `GET /api/workspaces/:x/eval-suites/:x` | · | ✓ | ✓ | `exo_eval_suite_export` |
 | `GET /api/workspaces/:x/inbox` | ✓ | ✓ | ✓ | `exo_inbox` |
 | `GET /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
@@ -178,8 +178,8 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
-| `PATCH /api/eval-attempts/:x/review` | · | · | ✓ | `exo_eval_attempt_review` |
-| `PATCH /api/eval-cases/:x` | · | · | ✓ | `exo_eval_case_update` |
+| `PATCH /api/eval-attempts/:x/review` | ✓ | · | ✓ | `exo_eval_attempt_review` |
+| `PATCH /api/eval-cases/:x` | ✓ | · | ✓ | `exo_eval_case_update` |
 | `PATCH /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preference_set` |
 | `PATCH /api/me/preferences` | ✓ | ✓ | ✓ | `exo_me_preferences_set` |
 | `PATCH /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_update` |
@@ -205,7 +205,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
-| `POST /api/ai/runs/:x/eval-case` | · | · | ✓ | `exo_eval_case_from_run` |
+| `POST /api/ai/runs/:x/eval-case` | ✓ | · | ✓ | `exo_eval_case_from_run` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
 | `POST /api/attention/:x/resolve` | ✓ | ✓ | ✓ | `exo_attention_resolve` |
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
@@ -245,7 +245,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/entities/candidates/:x/confirm` | ✓ | ✓ | ✓ | `exo_entity_candidate_confirm` |
 | `POST /api/entities/candidates/:x/dismiss` | ✓ | ✓ | ✓ | `exo_entity_candidate_dismiss` |
 | `POST /api/entities/database` | ✓ | · | · | — |
-| `POST /api/eval-runs/:x/cancel` | · | · | ✓ | `exo_eval_run_cancel` |
+| `POST /api/eval-runs/:x/cancel` | ✓ | · | ✓ | `exo_eval_run_cancel` |
 | `POST /api/features/seen` | ✓ | · | · | — |
 | `POST /api/invitations/accept` | ✓ | · | · | — |
 | `POST /api/invitations/preview` | ✓ | · | · | — |
@@ -284,8 +284,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/clip` | ✓ | ✓ | ✓ | `exo_clip` |
 | `POST /api/workspaces/:x/documents` | ✓ | ✓ | ✓ | `exo_database_create`, `exo_page_create` |
 | `POST /api/workspaces/:x/documents/suggest-parent` | ✓ | ✓ | ✓ | `exo_page_suggest_parent` |
-| `POST /api/workspaces/:x/eval-cases` | · | · | ✓ | `exo_eval_case_create` |
-| `POST /api/workspaces/:x/eval-runs` | · | · | ✓ | `exo_eval_run_start` |
+| `POST /api/workspaces/:x/eval-cases` | ✓ | · | ✓ | `exo_eval_case_create` |
+| `POST /api/workspaces/:x/eval-runs` | ✓ | · | ✓ | `exo_eval_run_start` |
 | `POST /api/workspaces/:x/eval-suites/import` | · | · | ✓ | `exo_eval_suite_import` |
 | `POST /api/workspaces/:x/import/markdown` | ✓ | ✓ | ✓ | `exo_page_create` |
 | `POST /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_create` |
@@ -304,7 +304,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-57 of them. Each is covered by a documented exemption; the reasons
+65 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -312,6 +312,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `DELETE /api/ai/conversations/:x`
 - `DELETE /api/ai/conversations/:x/permanent`
 - `DELETE /api/ai/conversations/:x/sources/:x`
+- `DELETE /api/eval-cases/:x` (reachable from MCP)
+- `DELETE /api/eval-runs/:x` (reachable from MCP)
 - `DELETE /api/me/api-tokens/:x`
 - `DELETE /api/me/connections/:x`
 - `DELETE /api/workspaces/:x/credentials/:x`
@@ -338,6 +340,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/agent-profiles/:x` (reachable from MCP)
 - `PATCH /api/ai/conversations/:x`
 - `PATCH /api/ai/conversations/:x/sources/:x`
+- `PATCH /api/eval-attempts/:x/review` (reachable from MCP)
+- `PATCH /api/eval-cases/:x` (reachable from MCP)
 - `PATCH /api/workspaces/:x/members/:x`
 - `PATCH /api/workspaces/:x/settings`
 - `POST /api/admin/ai-models`
@@ -350,10 +354,12 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/ai/conversations/:x/sources`
 - `POST /api/ai/conversations/:x/to-page`
 - `POST /api/ai/runs/:x/cancel` (reachable from MCP)
+- `POST /api/ai/runs/:x/eval-case` (reachable from MCP)
 - `POST /api/auth/oauth2/consent`
 - `POST /api/documents/:x/collaboration-ticket`
 - `POST /api/documents/:x/cover`
 - `POST /api/entities/database`
+- `POST /api/eval-runs/:x/cancel` (reachable from MCP)
 - `POST /api/features/seen`
 - `POST /api/invitations/accept`
 - `POST /api/invitations/preview`
@@ -361,6 +367,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/me/push/devices`
 - `POST /api/workspaces`
 - `POST /api/workspaces/:x/agent-profiles` (reachable from MCP)
+- `POST /api/workspaces/:x/eval-cases` (reachable from MCP)
+- `POST /api/workspaces/:x/eval-runs` (reachable from MCP)
 - `POST /api/workspaces/:x/trash/delete`
 - `POST /api/workspaces/:x/trash/deletion-preview`
 - `PUT /api/workspaces/:x/credentials/:x`

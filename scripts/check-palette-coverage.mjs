@@ -89,6 +89,14 @@ const SCREEN_EXEMPT = [
     reason: 'One agent profile, reached from the profile list, which the palette opens.',
   },
   {
+    screen: '/arbeitsbereich/:x/evals/:x',
+    reason: 'One eval run, reached from the Evals list, which the palette opens.',
+  },
+  {
+    screen: '/arbeitsbereich/:x/evals/faelle/:x',
+    reason: 'One eval case, reached from the Evals list, which the palette opens.',
+  },
+  {
     screen: '/arbeitsbereich/:x/laeufe/:x',
     reason:
       'One run of the built-in AI, reached from the run list of a work item or from under an answer in the chat; a run has no name to type.',

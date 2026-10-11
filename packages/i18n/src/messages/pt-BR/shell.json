@@ -241,6 +241,10 @@
         "label": "Abrir perfis de agentes",
         "keywords": "perfil de agente perfil função agente ia permissões ferramentas orçamento modo de escrita desenvolvedor pesquisador arquivista agent profile"
       },
+      "evals": {
+        "label": "Abrir Evals",
+        "keywords": "eval evals teste caso de teste benchmark comparação de modelos comparar modelos regressão replay medir qualidade custos provedor"
+      },
       "automations": {
         "label": "Abrir automações",
         "keywords": "automação regra agendamento gatilho workflow"

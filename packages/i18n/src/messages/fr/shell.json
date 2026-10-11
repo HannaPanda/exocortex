@@ -241,6 +241,10 @@
         "label": "Ouvrir les profils d’agents",
         "keywords": "profil d’agent profil rôle agent ia droits outils budget mode écriture développeur chercheur archiviste agent profile"
       },
+      "evals": {
+        "label": "Ouvrir les évals",
+        "keywords": "éval évals test cas de test benchmark comparatif de modèles comparer modèles régression replay mesurer qualité coûts fournisseur"
+      },
       "automations": {
         "label": "Ouvrir les automatisations",
         "keywords": "automatisation règle planification déclencheur workflow"

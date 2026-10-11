@@ -241,6 +241,10 @@
         "label": "Apri profili agente",
         "keywords": "profilo agente profilo ruolo agente ia permessi strumenti budget modalità scrittura sviluppatore ricercatore archivista profili agente"
       },
+      "evals": {
+        "label": "Apri Evals",
+        "keywords": "eval evals test caso di test benchmark confronto modelli confrontare modelli regressione replay misurare qualità costi fornitore"
+      },
       "automations": {
         "label": "Apri automazioni",
         "keywords": "automazione regola pianificazione trigger workflow"

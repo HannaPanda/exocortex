@@ -517,6 +517,17 @@
     },
     "where": "Sotto una risposta nella chat seleziona „Mostra esecuzione“, oppure per un’attività nell’elenco delle esecuzioni dell’IA seleziona „Esecuzione“."
   },
+  "evals": {
+    "title": "Ripetere e confrontare le attività degli agenti come eval",
+    "summary": "Un’attività reale per l’IA integrata viene salvata come caso di eval, con controlli su cosa deve risultare corretto alla fine. Un’esecuzione di eval la ripete con più modelli, livelli di pensiero o provider, mettendo a confronto risultato, durata, costi e chiamate agli strumenti.",
+    "details": {
+      "p1": "Un caso registra: il testo esatto dell’attività, il punto di partenza, il profilo dell’agente utilizzato, gli ambiti di strumenti e i limiti consentiti, e cosa deve risultare corretto al termine. I controlli esistono come invarianti rigide (ad esempio «non modifica nulla»), che fanno fallire il tentativo in ogni caso, e come criteri: la risposta contiene o meno un elemento, un pattern compare al massimo un certo numero di volte, uno strumento è stato (o non è stato) chiamato, costi, durata ed errori di chiamata restano sotto una soglia, una pagina contiene successivamente un testo. Ciò che non si può decidere automaticamente diventa un controllo manuale, a cui risponde una persona durante la valutazione.",
+      "p2": "Un eval non scrive mai inosservato nelle pagine reali. Ogni caso stabilisce esplicitamente la modalità: «Sola lettura» lavora sulle pagine reali e non può modificare nulla; «Suggerisci» può proporre modifiche che alla fine vengono rifiutate e mai applicate; «Pagine proprie» copia le pagine del caso in una sandbox in cui l’esecuzione può scrivere e da cui non può uscire. La sandbox viene eliminata non appena il suo stato finale è salvato, e le automazioni non reagiscono a essa.",
+      "p3": "Ogni tentativo è una normale esecuzione dell’IA integrata, quindi può essere esaminato nell’ispettore delle esecuzioni. Vengono registrati esito, invarianti violate, tempo di esecuzione, token di input, output e cache, costi (con chiave propria o meno), chiamate agli strumenti ed errori di chiamata, i provider utilizzati compresi i cambi di provider, le dimensioni del contesto e le domande di chiarimento rivolte alle persone. I dati grezzi vengono conservati anche se il caso viene modificato in seguito: ogni tentativo conosce lo stato rispetto a cui è stato misurato.",
+      "p4": "I casi con lo stesso nome di set (ad esempio «regression») possono essere esportati come file, versionati in un repository e reimportati. Nell’ispettore delle esecuzioni, «Salva come caso di eval» trasforma un’esecuzione reale in un caso. Gli agenti ottengono lo stesso risultato tramite gli strumenti exo_eval; l’IA integrata può solo leggere gli eval, perché non deve scrivere, avviare o valutare i propri test."
+    },
+    "where": "Nell’area di lavoro sotto «Eval» (anche tramite Ctrl + K) e nell’ispettore delle esecuzioni tramite «Salva come caso di eval»."
+  },
   "ki-chat": {
     "title": "Discutere delle tue pagine con un modello",
     "summary": "La chat affianca la pagina e ne conosce titolo e percorso. Quale modello risponda è stabilito nella gestione modelli; in assenza di un provider configurato risponde un modello fittizio locale, così da non bloccare alcuna operazione.",

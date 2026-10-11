@@ -18,6 +18,7 @@ import de_document from './messages/de/document.json';
 import de_editor from './messages/de/editor.json';
 import de_entities from './messages/de/entities.json';
 import de_errors from './messages/de/errors.json';
+import de_evals from './messages/de/evals.json';
 import de_features from './messages/de/features.json';
 import de_help from './messages/de/help.json';
 import de_invitations from './messages/de/invitations.json';
@@ -50,6 +51,7 @@ import en_document from './messages/en/document.json';
 import en_editor from './messages/en/editor.json';
 import en_entities from './messages/en/entities.json';
 import en_errors from './messages/en/errors.json';
+import en_evals from './messages/en/evals.json';
 import en_features from './messages/en/features.json';
 import en_help from './messages/en/help.json';
 import en_invitations from './messages/en/invitations.json';
@@ -82,6 +84,7 @@ import es_document from './messages/es/document.json';
 import es_editor from './messages/es/editor.json';
 import es_entities from './messages/es/entities.json';
 import es_errors from './messages/es/errors.json';
+import es_evals from './messages/es/evals.json';
 import es_features from './messages/es/features.json';
 import es_help from './messages/es/help.json';
 import es_invitations from './messages/es/invitations.json';
@@ -114,6 +117,7 @@ import fr_document from './messages/fr/document.json';
 import fr_editor from './messages/fr/editor.json';
 import fr_entities from './messages/fr/entities.json';
 import fr_errors from './messages/fr/errors.json';
+import fr_evals from './messages/fr/evals.json';
 import fr_features from './messages/fr/features.json';
 import fr_help from './messages/fr/help.json';
 import fr_invitations from './messages/fr/invitations.json';
@@ -146,6 +150,7 @@ import it_document from './messages/it/document.json';
 import it_editor from './messages/it/editor.json';
 import it_entities from './messages/it/entities.json';
 import it_errors from './messages/it/errors.json';
+import it_evals from './messages/it/evals.json';
 import it_features from './messages/it/features.json';
 import it_help from './messages/it/help.json';
 import it_invitations from './messages/it/invitations.json';
@@ -178,6 +183,7 @@ import nl_document from './messages/nl/document.json';
 import nl_editor from './messages/nl/editor.json';
 import nl_entities from './messages/nl/entities.json';
 import nl_errors from './messages/nl/errors.json';
+import nl_evals from './messages/nl/evals.json';
 import nl_features from './messages/nl/features.json';
 import nl_help from './messages/nl/help.json';
 import nl_invitations from './messages/nl/invitations.json';
@@ -210,6 +216,7 @@ import pl_document from './messages/pl/document.json';
 import pl_editor from './messages/pl/editor.json';
 import pl_entities from './messages/pl/entities.json';
 import pl_errors from './messages/pl/errors.json';
+import pl_evals from './messages/pl/evals.json';
 import pl_features from './messages/pl/features.json';
 import pl_help from './messages/pl/help.json';
 import pl_invitations from './messages/pl/invitations.json';
@@ -242,6 +249,7 @@ import pt_BR_document from './messages/pt-BR/document.json';
 import pt_BR_editor from './messages/pt-BR/editor.json';
 import pt_BR_entities from './messages/pt-BR/entities.json';
 import pt_BR_errors from './messages/pt-BR/errors.json';
+import pt_BR_evals from './messages/pt-BR/evals.json';
 import pt_BR_features from './messages/pt-BR/features.json';
 import pt_BR_help from './messages/pt-BR/help.json';
 import pt_BR_invitations from './messages/pt-BR/invitations.json';
@@ -258,7 +266,7 @@ import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
@@ -279,6 +287,7 @@ export const CATALOG = {
     "editor": de_editor,
     "entities": de_entities,
     "errors": de_errors,
+    "evals": de_evals,
     "features": de_features,
     "help": de_help,
     "invitations": de_invitations,
@@ -313,6 +322,7 @@ export const CATALOG = {
     "editor": en_editor,
     "entities": en_entities,
     "errors": en_errors,
+    "evals": en_evals,
     "features": en_features,
     "help": en_help,
     "invitations": en_invitations,
@@ -347,6 +357,7 @@ export const CATALOG = {
     "editor": es_editor,
     "entities": es_entities,
     "errors": es_errors,
+    "evals": es_evals,
     "features": es_features,
     "help": es_help,
     "invitations": es_invitations,
@@ -381,6 +392,7 @@ export const CATALOG = {
     "editor": fr_editor,
     "entities": fr_entities,
     "errors": fr_errors,
+    "evals": fr_evals,
     "features": fr_features,
     "help": fr_help,
     "invitations": fr_invitations,
@@ -415,6 +427,7 @@ export const CATALOG = {
     "editor": it_editor,
     "entities": it_entities,
     "errors": it_errors,
+    "evals": it_evals,
     "features": it_features,
     "help": it_help,
     "invitations": it_invitations,
@@ -449,6 +462,7 @@ export const CATALOG = {
     "editor": nl_editor,
     "entities": nl_entities,
     "errors": nl_errors,
+    "evals": nl_evals,
     "features": nl_features,
     "help": nl_help,
     "invitations": nl_invitations,
@@ -483,6 +497,7 @@ export const CATALOG = {
     "editor": pl_editor,
     "entities": pl_entities,
     "errors": pl_errors,
+    "evals": pl_evals,
     "features": pl_features,
     "help": pl_help,
     "invitations": pl_invitations,
@@ -517,6 +532,7 @@ export const CATALOG = {
     "editor": pt_BR_editor,
     "entities": pt_BR_entities,
     "errors": pt_BR_errors,
+    "evals": pt_BR_evals,
     "features": pt_BR_features,
     "help": pt_BR_help,
     "invitations": pt_BR_invitations,

@@ -517,6 +517,17 @@
     },
     "where": "Debajo de una respuesta en el chat en «Ver proceso», o en una tarea dentro de la lista de ejecuciones de IA en «Proceso»."
   },
+  "evals": {
+    "title": "Repetir y comparar tareas de agentes como evals",
+    "summary": "Una tarea real para la IA integrada se guarda como un caso de eval, con comprobaciones de lo que debe ser correcto después. Una ejecución de eval la repite con varios modelos, niveles de razonamiento o proveedores, y compara resultado, duración, coste y llamadas a herramientas.",
+    "details": {
+      "p1": "Un caso registra: la tarea literal, dónde comienza, con qué perfil de agente, con qué ámbitos de herramientas y límites, y qué debe ser correcto después. Las comprobaciones existen como invariantes estrictas (por ejemplo, «no modifica nada»), que hacen fallar un intento en cualquier caso, y como criterios: la respuesta contiene algo o no, un patrón aparece como máximo tantas veces, se llamó (o no) a una herramienta, el coste, la duración y las llamadas fallidas se mantienen por debajo de un límite, una página contiene cierto texto después. Lo que no se pueda decidir automáticamente pasa a ser una comprobación manual que responde una persona al evaluar.",
+      "p2": "Una eval nunca escribe en páginas reales sin previo aviso. La forma se define expresamente en cada caso: «Solo lectura» trabaja sobre las páginas reales y no puede cambiar nada; «Sugerir» puede sugerir cambios que al final se rechazan y nunca se aplican; «Páginas propias» copia las páginas del caso en un sandbox donde la ejecución puede escribir y del que no puede salir. El sandbox se elimina en cuanto se guarda su estado final, y las automatizaciones no reaccionan ante él.",
+      "p3": "Cada intento es una ejecución habitual de la IA integrada, por lo que se puede revisar en el inspector de ejecuciones. Se registran el desenlace, las invariantes vulneradas, el tiempo de ejecución, los tokens de entrada, salida y caché, el coste (con clave propia o no), las llamadas a herramientas y llamadas fallidas, los proveedores utilizados junto con los cambios entre ellos, el tamaño del contexto y las consultas a personas. Los datos sin procesar se conservan aunque el caso se modifique más adelante: cada intento conoce el estado con respecto al cual se midió.",
+      "p4": "Los casos con el mismo nombre de conjunto (como «regression») se pueden exportar como archivo, versionar en un repositorio y volver a importar. Desde el inspector de ejecuciones, «Guardar como caso de eval» convierte una ejecución real en un caso. Los agentes consiguen lo mismo mediante las herramientas exo_eval; la IA integrada solo puede leer evals, ya que no debe redactar, iniciar ni evaluar su propio examen."
+    },
+    "where": "En el espacio de trabajo en «Evals» (también mediante Strg + K), y en el inspector de ejecuciones mediante «Guardar como caso de eval»."
+  },
   "ki-chat": {
     "title": "Hablar con un modelo sobre tus páginas",
     "summary": "El chat se ejecuta junto a la página y conoce el título y la ruta de la página abierta. Qué modelo responde se define en la gestión de modelos; si no hay ningún proveedor configurado, responde un modelo simulado local para que nada quede bloqueado.",

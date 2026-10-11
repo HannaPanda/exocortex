@@ -241,6 +241,10 @@
         "label": "Otwórz profile agentów",
         "keywords": "profil agenta profile agentów profil rola agent ai sztuczna inteligencja uprawnienia narzędzia budżet tryb zapisu programista badacz archiwista agent profile"
       },
+      "evals": {
+        "label": "Otwórz ewaluacje",
+        "keywords": "eval evals ewaluacja ewaluacje test przypadek testowy benchmark porównanie modeli porównaj modele regresja powtórka powtórki replay mierzenie jakość koszty dostawca"
+      },
       "automations": {
         "label": "Otwórz automatyzacje",
         "keywords": "automatyzacja reguła harmonogram wyzwalacz workflow"

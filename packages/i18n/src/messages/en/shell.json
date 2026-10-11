@@ -241,6 +241,10 @@
         "label": "Open agent profiles",
         "keywords": "agent profile profile role agent ai permissions tools budget write mode developer researcher archivist agent profile"
       },
+      "evals": {
+        "label": "Open evals",
+        "keywords": "eval evals test testcase benchmark model comparison compare models regression replay measure quality cost provider"
+      },
       "automations": {
         "label": "Open automations",
         "keywords": "automation rule schedule trigger workflow"

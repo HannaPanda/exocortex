@@ -517,6 +517,17 @@
     },
     "where": "Onder een antwoord in de chat via „Proces bekijken”, of bij een taak in de lijst met AI-uitvoeringen via „Proces”."
   },
+  "evals": {
+    "title": "Agenttaken als evals herhalen en vergelijken",
+    "summary": "Een echte taak voor de ingebouwde AI wordt opgeslagen als eval-case, met controles voor wat er daarna moet kloppen. Een eval-uitvoering herhaalt deze met meerdere modellen, denkniveaus of providers en zet resultaat, duur, kosten en tool-aanroepen naast elkaar.",
+    "details": {
+      "p1": "Een case legt vast: de exacte bewoording van de taak, waar deze begint, onder welk agentprofiel, met welke tool-bereiken en limieten, en wat er daarna moet kloppen. Controles zijn er als harde invarianten (zoals „verandert niets”), waardoor een poging sowieso mislukt, en als criteria: het antwoord bevat iets wel of niet, een patroon komt hoogstens zo vaak voor, een tool werd (niet) aangeroepen, kosten, duur en foutieve aanroepen blijven onder een limiet, een pagina bevat daarna een tekst. Wat niet automatisch kan worden beslist, wordt een handmatige controle die een mens bij het beoordelen beantwoordt.",
+      "p2": "Een eval schrijft nooit ongemerkt naar echte pagina’s. Hoe dat gebeurt, legt elke case expliciet vast: „Alleen lezen” werkt op de echte pagina’s en mag niets wijzigen; „Voorstellen” mag wijzigingen voorstellen die aan het einde worden afgewezen en nooit worden doorgevoerd; „Eigen pagina’s” kopieert de pagina’s van de case naar een sandbox waarin de uitvoering mag schrijven en waar deze niet uit kan komen. De sandbox wordt verwijderd zodra de eindstatus is opgeslagen, en automatiseringen reageren er niet op.",
+      "p3": "Elke poging is een gewone uitvoering van de ingebouwde AI en kan daarom worden bekeken in de uitvoeringsinspector. Vastgelegd worden de uitkomst, geschonden invarianten, looptijd, invoer-, uitvoer- en cache-tokens, kosten (met eigen sleutel of niet), tool-aanroepen en foutieve aanroepen, de gebruikte providers inclusief wissels, de omvang van de context en vragen aan mensen. De ruwe gegevens blijven bewaard, ook als de case later wordt gewijzigd: elke poging kent de status waartegen deze is gemeten.",
+      "p4": "Cases met dezelfde setnaam (zoals „regression”) kunnen als bestand worden geëxporteerd, in een repository worden geversioneerd en weer worden geïmporteerd. Van een echte uitvoering maak je in de uitvoeringsinspector een case via „Als eval-case opslaan”. Agenten bereiken hetzelfde via de exo_eval-tools; de ingebouwde AI mag evals alleen lezen, omdat deze niet haar eigen toetsing hoort te schrijven, starten of beoordelen."
+    },
+    "where": "In de werkruimte onder „Evals” (ook via Strg + K), en in de uitvoeringsinspector via „Als eval-case opslaan”."
+  },
   "ki-chat": {
     "title": "Met een model over je pagina’s praten",
     "summary": "De chat draait naast de pagina en kent titel en pad van de geopende pagina. Welk model antwoordt, staat in het modelbeheer; zonder ingestelde provider antwoordt een lokaal dummy-model, zodat niets ervan afhangt.",

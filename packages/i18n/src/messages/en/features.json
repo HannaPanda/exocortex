@@ -517,6 +517,17 @@
     },
     "where": "Under an answer in chat via “View run”, or for a job in the list of AI runs via “Run”."
   },
+  "evals": {
+    "title": "Replay and compare agent tasks as evals",
+    "summary": "A real task for the built-in AI is saved as an eval case, complete with checks for what must hold true afterward. An eval run replays it across multiple models, reasoning levels, or providers, and compares results, duration, costs, and tool calls side by side.",
+    "details": {
+      "p1": "A case records: the exact wording of the task, where it starts, under which agent profile, with which tool scopes and limits, and what must be true afterward. Checks exist as hard invariants (such as “changes nothing”), which fail an attempt no matter what, and as criteria: whether the answer contains something or not, whether a pattern appears at most so many times, whether a tool was (not) called, whether costs, duration, and failed calls stay below a limit, or whether a page contains specific text afterward. Anything that cannot be decided automatically becomes a manual check that a human answers during review.",
+      "p2": "An eval never quietly writes to real pages. How it acts is explicitly set by each case: “Read only” operates on real pages and may not change anything; “Suggest” may propose changes that are rejected at the end and never applied; “Dedicated pages” copies the case’s pages into a sandbox where the run may write and which it cannot leave. The sandbox is deleted as soon as its final state is saved, and automations do not react to it.",
+      "p3": "Every attempt is a regular run of the built-in AI, so you can inspect it in the run inspector. Recorded are the outcome, violated invariants, runtime, input, output, and cache tokens, costs (with your own key or without), tool calls and failed calls, serving providers along with fallbacks, context size, and follow-up questions to humans. The raw data remains intact even if the case is modified later: each attempt knows the exact state it was measured against.",
+      "p4": "Cases sharing the same set name (such as “regression”) can be exported to a file, versioned in a repository, and imported again. In the run inspector, “Save as eval case” turns a real run into a case. Agents achieve the same via the exo_eval tools; the built-in AI may only read evals, as it should not write, run, or evaluate its own test."
+    },
+    "where": "In the workspace under “Evals” (also via Ctrl + K), and in the run inspector via “Save as eval case”."
+  },
   "ki-chat": {
     "title": "Talk with a model about your pages",
     "summary": "The chat runs alongside the page and knows the title and path of the open page. Which model responds is set in model administration; without a configured provider, a local dummy model responds so nothing depends on it.",

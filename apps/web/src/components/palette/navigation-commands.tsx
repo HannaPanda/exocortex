@@ -8,6 +8,7 @@ import {
   CircleQuestionMarkIcon,
   ClipboardListIcon,
   CpuIcon,
+  FlaskConicalIcon,
   GitPullRequestIcon,
   HandIcon,
   HouseIcon,
@@ -65,6 +66,7 @@ interface Place {
     | 'workItems'
     | 'changesets'
     | 'agentProfiles'
+    | 'evals'
     | 'automations'
     | 'templates'
     | 'workspaceSettings'
@@ -147,6 +149,12 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/agentenprofile',
     audience: 'workspace',
     icon: UserCogIcon,
+  },
+  {
+    key: 'evals',
+    screen: '/arbeitsbereich/:x/evals',
+    audience: 'workspace',
+    icon: FlaskConicalIcon,
   },
   {
     key: 'automations',

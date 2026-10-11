@@ -20,6 +20,8 @@ import {
 
 import { useAiRunInspection } from '@/lib/api/ai-queries';
 
+import { EvalFromRunButton } from '../evals/eval-from-run';
+
 import { ContextComposition, ToolResults } from './run-inspector-context';
 import { type RunFormat, useRunFormat } from './run-inspector-format';
 import { RunTimeline } from './run-inspector-timeline';
@@ -141,6 +143,8 @@ function InspectionView({ inspection }: { inspection: AiRunInspection }) {
               {t('openConversation')}
             </Link>
           )}
+          {/* A finished run can be kept as a task to measure the next ones with (issue #146). */}
+          {live ? null : <EvalFromRunButton workspaceId={run.workspaceId} runId={run.id} />}
         </div>
         <p className="text-meta text-muted-foreground">{t('privacy')}</p>
       </div>
