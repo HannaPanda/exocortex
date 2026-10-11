@@ -149,7 +149,8 @@
     "structuredHint": "Le résultat doit renseigner ces champs. Tu ne pourras soumettre la tâche que lorsque tous les champs obligatoires (*) seront remplis.",
     "structuredMissing": "manquant",
     "structuredRequired": "Champ obligatoire",
-    "fromWorkflow": "Créé par l’étape de workflow « {node} »"
+    "fromWorkflow": "Créé par l’étape de workflow « {node} »",
+    "openWorkflowRun": "Voir l’exécution"
   },
   "startRun": {
     "title": "Lancer une exécution de l’IA",

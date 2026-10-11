@@ -149,7 +149,8 @@
     "structuredHint": "Estes campos devem ser fornecidos pelo resultado. O trabalho só pode ser entregue quando todos os campos obrigatórios (*) estiverem preenchidos.",
     "structuredMissing": "ausente",
     "structuredRequired": "Obrigatório",
-    "fromWorkflow": "Criado pela etapa do fluxo de trabalho “{node}”"
+    "fromWorkflow": "Criado pela etapa do fluxo de trabalho “{node}”",
+    "openWorkflowRun": "Ver execução"
   },
   "startRun": {
     "title": "Iniciar execução de IA",

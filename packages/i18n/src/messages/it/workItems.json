@@ -149,7 +149,8 @@
     "structuredHint": "Questi campi devono essere forniti dal risultato. L’incarico può essere inviato solo dopo aver compilato tutti i campi obbligatori (*).",
     "structuredMissing": "mancante",
     "structuredRequired": "Campo obbligatorio",
-    "fromWorkflow": "Creato dal passaggio del workflow «{node}»"
+    "fromWorkflow": "Creato dal passaggio del workflow «{node}»",
+    "openWorkflowRun": "Vedi esecuzione"
   },
   "startRun": {
     "title": "Avvia esecuzione dell’IA",

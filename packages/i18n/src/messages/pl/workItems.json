@@ -149,7 +149,8 @@
     "structuredHint": "Te pola muszą znaleźć się w wyniku. Zadanie można oddać dopiero wtedy, gdy wszystkie wymagane pola (*) są wypełnione.",
     "structuredMissing": "brak",
     "structuredRequired": "Pole wymagane",
-    "fromWorkflow": "Utworzono przez krok przepływu pracy „{node}”"
+    "fromWorkflow": "Utworzono przez krok przepływu pracy „{node}”",
+    "openWorkflowRun": "Zobacz przebieg"
   },
   "startRun": {
     "title": "Uruchom AI",

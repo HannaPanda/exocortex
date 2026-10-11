@@ -149,7 +149,8 @@
     "structuredHint": "Diese Felder muss das Ergebnis liefern. Abgeben lässt sich der Auftrag erst, wenn alle Pflichtfelder (*) gefüllt sind.",
     "structuredMissing": "fehlt",
     "structuredRequired": "Pflichtfeld",
-    "fromWorkflow": "Angelegt vom Workflow-Schritt „{node}“"
+    "fromWorkflow": "Angelegt vom Workflow-Schritt „{node}“",
+    "openWorkflowRun": "Lauf ansehen"
   },
   "startRun": {
     "title": "KI-Lauf starten",

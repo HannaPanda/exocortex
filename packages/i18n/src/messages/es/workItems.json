@@ -149,7 +149,8 @@
     "structuredHint": "Estos campos deben incluirse en el resultado. Solo podrás entregar la tarea cuando todos los campos obligatorios (*) estén completos.",
     "structuredMissing": "falta",
     "structuredRequired": "Obligatorio",
-    "fromWorkflow": "Creado por el paso de flujo de trabajo «{node}»"
+    "fromWorkflow": "Creado por el paso de flujo de trabajo «{node}»",
+    "openWorkflowRun": "Ver ejecución"
   },
   "startRun": {
     "title": "Iniciar ejecución de IA",

@@ -149,7 +149,8 @@
     "structuredHint": "The result must provide these fields. The work item can only be submitted once all required fields (*) are filled in.",
     "structuredMissing": "missing",
     "structuredRequired": "Required field",
-    "fromWorkflow": "Created by workflow step “{node}”"
+    "fromWorkflow": "Created by workflow step “{node}”",
+    "openWorkflowRun": "View run"
   },
   "startRun": {
     "title": "Start AI run",

@@ -149,7 +149,8 @@
     "structuredHint": "Deze velden moet het resultaat bevatten. Je kunt de taak pas inleveren als alle verplichte velden (*) zijn ingevuld.",
     "structuredMissing": "ontbreekt",
     "structuredRequired": "Verplicht veld",
-    "fromWorkflow": "Aangemaakt door workflowstap „{node}“"
+    "fromWorkflow": "Aangemaakt door workflowstap „{node}“",
+    "openWorkflowRun": "Uitvoering bekijken"
   },
   "startRun": {
     "title": "AI-run starten",

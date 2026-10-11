@@ -182,7 +182,15 @@ export function StructuredResultSection({ item }: { item: WorkItemDetail }) {
     <Section title={t('structuredHeading')}>
       {item.workflow === null ? null : (
         <p className="text-xs text-muted-foreground">
-          {t('fromWorkflow', { node: item.workflow.nodeId })}
+          {t('fromWorkflow', { node: item.workflow.nodeId })}{' '}
+          {/* The run that asked for this work, drawn on its graph (issue #164). */}
+          <Link
+            href={`/arbeitsbereich/${item.workspaceId}/workflows/${item.workflow.workflowId}/laeufe/${item.workflow.runId}`}
+            className="text-primary-text hover:underline"
+            data-testid="work-item-workflow-run"
+          >
+            {t('openWorkflowRun')}
+          </Link>
         </p>
       )}
       {item.resultFields.length === 0 ? null : (
