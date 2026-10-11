@@ -1,0 +1,223 @@
+{
+  "format": "exocortex.eval-suite/1",
+  "suite": "regression",
+  "exportedAt": "2026-10-11T12:00:00.000Z",
+  "cases": [
+    {
+      "name": "Frage beantworten, nichts ändern",
+      "description": "Liest eine Seite und beantwortet eine Zählfrage. Darf nichts schreiben.",
+      "prompt": "Wie viele offene Punkte stehen auf dieser Seite? Antworte mit der Zahl und nenne die Punkte.",
+      "replayMode": "fixture",
+      "fixture": {
+        "pages": [
+          {
+            "key": "status",
+            "title": "Projektstatus Gartenhaus",
+            "markdown": "# Projektstatus Gartenhaus\n\n## Erledigt\n\n- Fundament gegossen\n- Holz bestellt\n\n## Offen\n\n- Dachpappe besorgen\n- Fenster einsetzen\n- Regenrinne montieren\n- Anstrich wählen\n\n## Notizen\n\nDer Nachbar leiht die Leiter bis Ende Oktober.",
+            "parentKey": null
+          }
+        ],
+        "startKey": "status"
+      },
+      "invariants": [{ "id": "nichts-geaendert", "kind": "no_changes" }],
+      "criteria": [
+        {
+          "id": "zahl",
+          "kind": "answer_matches",
+          "pattern": "\\b(4|vier)\\b",
+          "flags": "i",
+          "min": 1,
+          "max": null
+        },
+        {
+          "id": "regenrinne",
+          "kind": "answer_contains",
+          "text": "Regenrinne",
+          "caseSensitive": false
+        },
+        { "id": "kurz", "kind": "max_tool_calls", "max": 6 }
+      ],
+      "expectedOutcome": "Vier offene Punkte, alle genannt, ohne Schreibversuch."
+    },
+    {
+      "name": "Tippfehler gezielt korrigieren",
+      "description": "Eine schmale Korrektur auf einer längeren Seite, ohne den Rest anzufassen.",
+      "prompt": "Auf dieser Seite steht ein Tippfehler im Wort „Projektplanung“. Korrigiere nur diesen Fehler und lass alles andere unverändert.",
+      "replayMode": "fixture",
+      "fixture": {
+        "pages": [
+          {
+            "key": "plan",
+            "title": "Umzug Büro",
+            "markdown": "# Umzug Büro\n\n## Ziel\n\nDas Team zieht im November in das neue Büro am Hafen.\n\n## Projektplanunng\n\nDie Kisten werden in der ersten Woche gepackt, die Möbel in der zweiten Woche geliefert.\n\n## Verantwortliche\n\n- Packen: Team A\n- Möbel: Team B\n- Internet: IT\n\n## Offene Fragen\n\nWer übernimmt den Schlüssel für den Keller?",
+            "parentKey": null
+          }
+        ],
+        "startKey": "plan"
+      },
+      "invariants": [{ "id": "keine-neue-seite", "kind": "pages_created", "min": 0, "max": 0 }],
+      "criteria": [
+        {
+          "id": "korrigiert",
+          "kind": "page_contains",
+          "page": "plan",
+          "text": "## Projektplanung",
+          "caseSensitive": true
+        },
+        {
+          "id": "fehler-weg",
+          "kind": "page_excludes",
+          "page": "plan",
+          "text": "Projektplanunng",
+          "caseSensitive": true
+        },
+        {
+          "id": "rest-bleibt",
+          "kind": "page_contains",
+          "page": "plan",
+          "text": "Wer übernimmt den Schlüssel für den Keller?",
+          "caseSensitive": true
+        },
+        { "id": "kurz", "kind": "max_tool_calls", "max": 8 }
+      ],
+      "expectedOutcome": "Nur die Überschrift ist korrigiert, alle anderen Abschnitte stehen unverändert da."
+    },
+    {
+      "name": "Unterseite anlegen",
+      "description": "Legt genau eine Unterseite an der richtigen Stelle an.",
+      "prompt": "Lege unter der Seite „Besprechungen“ eine neue Unterseite „Protokoll 12. Oktober“ an. Sie soll eine Überschrift „Teilnehmende“ und darunter die Namen Ada, Ben und Cleo enthalten.",
+      "replayMode": "fixture",
+      "fixture": {
+        "pages": [
+          {
+            "key": "besprechungen",
+            "title": "Besprechungen",
+            "markdown": "# Besprechungen\n\nHier liegen die Protokolle der Wochenbesprechungen.",
+            "parentKey": null
+          },
+          {
+            "key": "vorlage",
+            "title": "Protokoll 5. Oktober",
+            "markdown": "# Protokoll 5. Oktober\n\n## Teilnehmende\n\nAda, Ben\n\n## Beschlüsse\n\nKeine.",
+            "parentKey": "besprechungen"
+          }
+        ],
+        "startKey": "besprechungen"
+      },
+      "invariants": [
+        { "id": "eine-seite", "kind": "pages_created", "min": 1, "max": 1 },
+        {
+          "id": "vorlage-unberuehrt",
+          "kind": "page_contains",
+          "page": "vorlage",
+          "text": "Keine.",
+          "caseSensitive": true
+        }
+      ],
+      "criteria": [
+        { "id": "angelegt", "kind": "tool_called", "tool": "exo_page_create", "min": 1, "max": 2 },
+        {
+          "id": "inhalt",
+          "kind": "manual",
+          "text": "Die neue Seite heißt „Protokoll 12. Oktober“, hängt unter „Besprechungen“ und nennt Ada, Ben und Cleo unter „Teilnehmende“."
+        }
+      ],
+      "expectedOutcome": "Eine Unterseite mit Überschrift und drei Namen, keine weitere Seite."
+    },
+    {
+      "name": "Zusammenfassung mit allen Risiken",
+      "description": "Liest eine längere Seite und fasst sie zusammen, ohne etwas zu verändern.",
+      "prompt": "Fasse diese Seite in höchstens fünf Sätzen zusammen und nenne dabei jedes Risiko, das sie erwähnt.",
+      "replayMode": "fixture",
+      "fixture": {
+        "pages": [
+          {
+            "key": "konzept",
+            "title": "Konzept Leihbücherei im Hof",
+            "markdown": "# Konzept Leihbücherei im Hof\n\n## Idee\n\nIm Innenhof steht ein wetterfester Schrank, aus dem alle Nachbarn Bücher leihen und in den sie Bücher stellen können.\n\n## Ablauf\n\nJeden ersten Samstag im Monat sortieren zwei Freiwillige den Bestand. Beschädigte Bücher kommen in eine Kiste für den Flohmarkt.\n\n## Kosten\n\nDer Schrank kostet einmalig 180 Euro, die Hausgemeinschaft teilt sich den Betrag.\n\n## Risiken\n\n- Feuchtigkeit im Winter kann die Bücher wellen.\n- Vandalismus, weil der Hof nachts offen ist.\n- Zu wenige Freiwillige für das Sortieren.\n\n## Nächste Schritte\n\nAbstimmung in der Hausversammlung am 20. November.",
+            "parentKey": null
+          }
+        ],
+        "startKey": "konzept"
+      },
+      "invariants": [{ "id": "nichts-geaendert", "kind": "no_changes" }],
+      "criteria": [
+        {
+          "id": "feuchtigkeit",
+          "kind": "answer_matches",
+          "pattern": "feucht",
+          "flags": "i",
+          "min": 1,
+          "max": null
+        },
+        {
+          "id": "vandalismus",
+          "kind": "answer_contains",
+          "text": "Vandalismus",
+          "caseSensitive": false
+        },
+        {
+          "id": "freiwillige",
+          "kind": "answer_contains",
+          "text": "Freiwillige",
+          "caseSensitive": false
+        },
+        {
+          "id": "knapp",
+          "kind": "manual",
+          "text": "Die Zusammenfassung hat höchstens fünf Sätze und erfindet nichts hinzu."
+        }
+      ],
+      "expectedOutcome": "Fünf oder weniger Sätze, drei Risiken genannt."
+    },
+    {
+      "name": "Aufgabe in einer Liste abhaken",
+      "description": "Ändert genau einen Punkt einer Aufzählung und lässt die anderen stehen.",
+      "prompt": "In der Liste „Einkauf“ auf dieser Seite: ersetze den Punkt „Milch (offen)“ durch „Milch (erledigt)“. Sonst nichts ändern.",
+      "replayMode": "fixture",
+      "fixture": {
+        "pages": [
+          {
+            "key": "liste",
+            "title": "Wochenende",
+            "markdown": "# Wochenende\n\n## Einkauf\n\n- Brot (erledigt)\n- Milch (offen)\n- Äpfel (offen)\n\n## Ausflug\n\nSonntag zum See, wenn es nicht regnet.",
+            "parentKey": null
+          }
+        ],
+        "startKey": "liste"
+      },
+      "invariants": [{ "id": "keine-neue-seite", "kind": "pages_created", "min": 0, "max": 0 }],
+      "criteria": [
+        {
+          "id": "milch",
+          "kind": "page_contains",
+          "page": "liste",
+          "text": "Milch (erledigt)",
+          "caseSensitive": true
+        },
+        {
+          "id": "milch-alt-weg",
+          "kind": "page_excludes",
+          "page": "liste",
+          "text": "Milch (offen)",
+          "caseSensitive": true
+        },
+        {
+          "id": "aepfel-offen",
+          "kind": "page_contains",
+          "page": "liste",
+          "text": "Äpfel (offen)",
+          "caseSensitive": true
+        },
+        {
+          "id": "ausflug-bleibt",
+          "kind": "page_contains",
+          "page": "liste",
+          "text": "Sonntag zum See",
+          "caseSensitive": true
+        }
+      ],
+      "expectedOutcome": "Nur der Milch-Punkt ist geändert."
+    }
+  ]
+}

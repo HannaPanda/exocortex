@@ -259,6 +259,13 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
   deployment's admin routes, and the cross-workspace listings filter their
   memberships with `confinedMembershipWhere`. Writing an agent profile is an
   `admin`-class request, and refused for any request a run makes.
+- An eval attempt's run (issue #146, ADR-074) is always confined to its
+  workspace, and in the fixture mode its token also carries `pageRootId`:
+  `SessionGuard` turns it into the page confinement of a scoped `exo_` token
+  (ADR-044, `SUBTREE` on the sandbox, `tokenId` `run:<id>`), so every reader
+  that fails closed for one fails closed for the run. A run tagged with an
+  attempt whose case cannot hold it is refused by the worker before it starts.
+  Every eval write is refused for a request a run makes.
 
 ## Page shares and page-scoped tokens
 

@@ -706,6 +706,18 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   takes, leaves the answer out, and names pages only from the run's
   workspace; the run keeps its correlation and trace id instead of the
   inspector growing its own tracing.
+- ADR-074: an eval replays a task as an ordinary run of the built-in AI,
+  tagged with its attempt from the statement that creates it, and never
+  writes what people use. A case freezes into every attempt (`caseSnapshot`);
+  how a replay stays harmless is the case's explicit `replayMode`: read-only,
+  proposals that raise nothing, cannot be applied and are rejected when the
+  attempt ends, or the case's own pages in a sandbox the run's token is
+  confined to by a signed `pageRootId` (ADR-044) and that automations ignore.
+  The worker holds the run to the frozen case by taking the stricter of
+  everything and refuses a tagged run whose attempt is gone. Settling is
+  idempotent and the one place an attempt ends; checks are decided by the
+  system or, when `manual`, by a review that never overwrites the outcome.
+  The built-in AI may read evals and nothing else.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -743,6 +755,7 @@ Each of these has a step-by-step recipe:
 | new agent profile field, a limit a profile can set       | `docs/agent-profiles.md`    |
 | new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
+| new kind of eval check, a replay mode, an eval metric    | `docs/evals.md`             |
 
 ## Deployment on this machine
 

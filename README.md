@@ -239,6 +239,17 @@ What is deliberately still missing is listed under
   the pages behind it. Recorded as sizes, names and outcomes only, never a
   prompt or an answer; agents read the same through `exo_ai_run_inspect`
   (ADR-073)
+- agent evals at `/arbeitsbereich/:id/evals`: real tasks kept as cases with
+  invariants and criteria (answer contains or matches, tools called, cost,
+  duration, nothing changed, a fixture page reads, manual), replayed against
+  variants of model, reasoning level and provider and compared side by side
+  with duration, tokens, cost, tool calls, failures, provider switches and
+  human checkpoints. A replay never writes what people use: read-only,
+  proposals that are rejected and never applied, or the case's own pages in a
+  sandbox the run's credential is confined to. A finished run becomes a case
+  from the run inspector, a suite is a file (`evals/regression.json` is the
+  versioned regression set), and a person reviews an attempt with a verdict
+  and a score (ADR-074, `docs/evals.md`)
 
 ## Stack
 

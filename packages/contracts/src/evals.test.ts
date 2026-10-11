@@ -6,6 +6,7 @@ import {
   evalAssertionSchema,
   evalFixtureSchema,
   evalReplayWriteMode,
+  evalSuiteFileSchema,
   evalVariantLabel,
   evalVariantSchema,
   fixtureProblem,
@@ -140,5 +141,21 @@ describe('evalVariantLabel', () => {
     expect(evalVariantLabel(evalVariantSchema.parse({ modelSlug: 'a/b', label: 'Cline' }))).toBe(
       'Cline',
     );
+  });
+});
+
+describe('the regression set in the repository', () => {
+  it('is a suite file whose every case could be written', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
+    // Vitest runs from the package directory; the set lives at the repository root.
+    const path = resolve(process.cwd(), '../../evals/regression.json');
+    const file = evalSuiteFileSchema.parse(JSON.parse(readFileSync(path, 'utf8')));
+    expect(file.cases.length).toBeGreaterThan(0);
+    for (const entry of file.cases) {
+      const parsed = createEvalCaseRequestSchema.safeParse(entry);
+      expect(parsed.success, `${entry.name}: ${parsed.error?.issues[0]?.message ?? ''}`).toBe(true);
+      expect(entry.replayMode).toBe('fixture');
+    }
   });
 });
