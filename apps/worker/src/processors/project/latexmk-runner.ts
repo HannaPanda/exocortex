@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 
 import { type ProjectBibliography, type ProjectEngine } from '@exocortex/contracts';
 
+import { sandboxArguments } from '../container-sandbox';
 import { createTar, readTar, type TarEntry } from '../tar';
 
 /**
@@ -161,12 +162,8 @@ export function buildRunArguments(request: ProjectRunRequest): string[] {
     'run',
     '--rm',
     '--interactive',
-    // A LaTeX project is a program somebody in the workspace wrote. It gets no
-    // network, no way to gain privileges, and bounded memory and processes.
-    '--network=none',
-    '--security-opt=no-new-privileges',
-    '--memory=3g',
-    '--pids-limit=512',
+    // A LaTeX project is a program somebody in the workspace wrote.
+    ...sandboxArguments({ memory: '3g', scratch: '1536m' }),
     '--entrypoint=sh',
     request.image,
     '-c',

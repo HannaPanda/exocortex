@@ -40,6 +40,12 @@ The worker starts the container per build with `--network none`, hands it a tar
 archive on stdin and reads an archive with the PDF, the log and the SyncTeX map
 back from stdout.
 
+The container runs as `nobody` (uid 65534) with every capability dropped, a
+read-only root filesystem and a size-limited tmpfs at `/tmp` as its only
+writable place (`apps/worker/src/processors/container-sandbox.ts`, issue #180).
+An image of your own has to build there: anything it wants to write, caches
+included, goes below `/tmp`, which is also `$HOME`.
+
 Seven settings, all deployment-wide except the first:
 
 | Setting                       | Scope      | Default               | Why                                                             |

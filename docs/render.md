@@ -32,6 +32,12 @@ It carries Pandoc, TeX Live, the fonts and the Eisvogel template. The worker
 starts it per build with `--network none`, hands it a tar archive on stdin and
 reads the PDF back from stdout.
 
+The container runs as `nobody` (uid 65534) with every capability dropped, a
+read-only root filesystem and a size-limited tmpfs at `/tmp` as its only
+writable place (`apps/worker/src/processors/container-sandbox.ts`, issue #180).
+An image of your own has to build there: anything it wants to write, caches
+included, goes below `/tmp`, which is also `$HOME`.
+
 A template that names a font the image does not have cannot fetch it -- the
 container has no network. `deploy/render-image` derives an image with the faces
 this deployment's templates use; build it, then point `render.image` at the tag.

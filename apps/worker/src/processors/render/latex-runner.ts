@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 
+import { sandboxArguments } from '../container-sandbox';
 import { createTar, type TarEntry } from '../tar';
 
 /**
@@ -88,12 +89,8 @@ export function buildRunArguments(request: LatexRunRequest): string[] {
     'run',
     '--rm',
     '--interactive',
-    // No network, no extra privileges, a bounded amount of memory and processes:
-    // a LaTeX document is a program, and this one runs somebody's template.
-    '--network=none',
-    '--security-opt=no-new-privileges',
-    '--memory=2g',
-    '--pids-limit=512',
+    // A LaTeX document is a program, and this one runs somebody's template.
+    ...sandboxArguments({ memory: '2g', scratch: '1g' }),
     '--entrypoint=sh',
     request.image,
     '-c',
