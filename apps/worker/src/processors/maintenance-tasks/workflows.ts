@@ -12,6 +12,7 @@ export const sweepWorkflows: MaintenanceTask = async (context) => {
     prisma: context.prisma,
     queues: context.queues,
     settings: (workspaceId: string) => context.settings(workspaceId),
+    bus: context.bus,
     logger: context.logger,
   };
   const counts = await sweepWorkflowRuns({

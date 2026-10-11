@@ -1,5 +1,6 @@
 import {
   type Settings,
+  type WorkflowEndOutcome,
   type WorkflowErrorClass,
   type WorkflowGraph,
   type WorkflowProgress,
@@ -10,12 +11,14 @@ import {
 import {
   appendWorkflowRunEvents,
   lockWorkflowRun,
+  obsoleteWorkflowApprovals,
   parseStoredWorkflowGraph,
   type PrismaTransactionClient,
   WORKFLOW_RUN_TERMINAL_ROWS,
   workflowIdempotencyKey,
   type WorkflowRunEventInput,
 } from '@exocortex/database';
+import { createCorrelationId } from '@exocortex/logger';
 
 import {
   ACTIVE_STATUSES,
@@ -52,11 +55,16 @@ interface Ending {
   message: string | null;
   openAs: 'CANCELLED' | 'TIMED_OUT';
   limit?: keyof WorkflowRunLimits;
+  /** The end node the run ended at, and what it said (issue #163). */
+  endNodeId?: string;
+  summary?: string | null;
 }
 
 interface Step {
   result: AdvanceResult;
   jobs: PendingJob[];
+  /** Approvals the ending made obsolete, to tell the inboxes after commit. */
+  settled: { id: string; workspaceId: string }[];
 }
 
 /**
@@ -75,33 +83,60 @@ export async function advanceWorkflowRun(
   const settings = await dependencies.settings(head.workspaceId);
   const now = clock(dependencies);
 
-  const { result, jobs } = await dependencies.prisma.$transaction(async (tx): Promise<Step> => {
-    if (!(await lockWorkflowRun(tx, runId, now))) {
-      return { result: { status: null, queued: 0 }, jobs: [] };
-    }
-    const run = await tx.workflowRun.findUniqueOrThrow({
-      where: { id: runId },
-      select: RUN_SELECT,
-    });
-    if (WORKFLOW_RUN_TERMINAL_ROWS.includes(run.status)) {
-      return { result: { status: lower(run.status), queued: 0 }, jobs: [] };
-    }
-    const rows = await tx.workflowNodeExecution.findMany({
-      where: { runId },
-      select: EXECUTION_SELECT,
-      orderBy: [{ queuedAt: 'asc' }, { attempt: 'asc' }],
-    });
-    const graph = parseStoredWorkflowGraph(run.workflowVersion.graph);
-    const stop = stopBeforeProgress({ run, graph, settings, now });
-    if (stop !== null || graph === null) {
-      const ending = stop ?? unreadable();
-      await finishRun(tx, run, rows, now, ending);
-      return { result: { status: lower(ending.status), queued: 0 }, jobs: [] };
-    }
-    return step(tx, { run, rows, graph, limits: runLimits(run, settings, graph), now });
-  });
+  const { result, jobs, settled } = await dependencies.prisma.$transaction(
+    async (tx): Promise<Step> => {
+      if (!(await lockWorkflowRun(tx, runId, now))) {
+        return { result: { status: null, queued: 0 }, jobs: [], settled: [] };
+      }
+      const run = await tx.workflowRun.findUniqueOrThrow({
+        where: { id: runId },
+        select: RUN_SELECT,
+      });
+      if (WORKFLOW_RUN_TERMINAL_ROWS.includes(run.status)) {
+        return { result: { status: lower(run.status), queued: 0 }, jobs: [], settled: [] };
+      }
+      const rows = await tx.workflowNodeExecution.findMany({
+        where: { runId },
+        select: EXECUTION_SELECT,
+        orderBy: [{ queuedAt: 'asc' }, { attempt: 'asc' }],
+      });
+      const graph = parseStoredWorkflowGraph(run.workflowVersion.graph);
+      const stop = stopBeforeProgress({ run, graph, settings, now });
+      if (stop !== null || graph === null) {
+        const ending = stop ?? unreadable();
+        const obsolete = await finishRun(tx, run, rows, now, ending);
+        return { result: { status: lower(ending.status), queued: 0 }, jobs: [], settled: obsolete };
+      }
+      return step(tx, { run, rows, graph, limits: runLimits(run, settings, graph), now });
+    },
+  );
   await enqueueAll(dependencies, jobs);
+  await announceSettled(dependencies, settled);
   return result;
+}
+
+/** Tells the inboxes that the approvals a finished run asked are obsolete. */
+async function announceSettled(
+  dependencies: WorkflowRuntimeDependencies,
+  settled: readonly { id: string; workspaceId: string }[],
+): Promise<void> {
+  const bus = dependencies.bus;
+  if (bus === undefined || bus === null || settled.length === 0) return;
+  const byWorkspace = new Map<string, string[]>();
+  for (const item of settled) {
+    byWorkspace.set(item.workspaceId, [...(byWorkspace.get(item.workspaceId) ?? []), item.id]);
+  }
+  for (const [workspaceId, ids] of byWorkspace) {
+    await bus
+      .publish({
+        type: 'attention.changed',
+        workspaceId,
+        correlationId: createCorrelationId(),
+        emittedAt: new Date().toISOString(),
+        payload: { attentionItemIds: ids, action: 'settled' },
+      })
+      .catch(() => undefined);
+  }
 }
 
 function unreadable(): Ending {
@@ -150,6 +185,8 @@ function stopAfterProgress(input: {
   limits: WorkflowRunLimits;
   queueing: number;
 }): Ending | null {
+  const ended = endReached(input.graph, input.rows);
+  if (ended !== null) return ended;
   if (input.progress.settled) {
     return { ...settledOutcome(input.graph, input.rows), openAs: 'CANCELLED' };
   }
@@ -213,8 +250,8 @@ async function step(
   });
   if (ending !== null) {
     await appendWorkflowRunEvents(tx, run.id, events);
-    await finishRun(tx, run, rows, now, ending);
-    return { result: { status: lower(ending.status), queued: 0 }, jobs: [] };
+    const obsolete = await finishRun(tx, run, rows, now, ending);
+    return { result: { status: lower(ending.status), queued: 0 }, jobs: [], settled: obsolete };
   }
 
   const queued = await recordAttempts(tx, {
@@ -256,6 +293,7 @@ async function step(
   return {
     result: { status: allWaiting ? 'waiting' : 'running', queued: toQueue.length },
     jobs: queued.map((event) => executeJob(run.id, event.executionId!, run.correlationId)),
+    settled: [],
   };
 }
 
@@ -297,30 +335,65 @@ async function recordAttempts(
   return events;
 }
 
-/**
- * How a run that has nothing more to do ends. An `end` node that says failed
- * outranks everything; then a node that failed and stopped its branch; then
- * an `end` node that says cancelled; otherwise the run succeeded.
- */
-function settledOutcome(
-  graph: WorkflowGraph,
-  rows: readonly ExecutionRow[],
-): Omit<Ending, 'openAs' | 'status'> & { status: 'SUCCEEDED' | 'FAILED' | 'CANCELLED' } {
+function latestRows(rows: readonly ExecutionRow[]): Map<string, ExecutionRow> {
   const latest = new Map<string, ExecutionRow>();
   for (const row of rows) {
     const known = latest.get(row.nodeId);
     if (known === undefined || row.attempt > known.attempt) latest.set(row.nodeId, row);
   }
-  const outcomes = new Set(
-    graph.nodes.flatMap((node) =>
-      node.type === 'end' && latest.get(node.id)?.status === 'SUCCEEDED' ? [node.outcome] : [],
-    ),
+  return latest;
+}
+
+const END_PRECEDENCE: readonly WorkflowEndOutcome[] = ['failed', 'cancelled', 'succeeded'];
+const END_STATUS = {
+  failed: 'FAILED',
+  cancelled: 'CANCELLED',
+  succeeded: 'SUCCEEDED',
+} as const satisfies Record<WorkflowEndOutcome, Ending['status']>;
+
+/**
+ * An end node that has run ends the run at once, with its outcome (issue
+ * #163): an explicit end is a decision, not a node that happens to be last,
+ * so whatever is still in flight on another branch is cancelled with it.
+ * Two ends reached together: failed outranks cancelled outranks succeeded.
+ */
+function endReached(graph: WorkflowGraph, rows: readonly ExecutionRow[]): Ending | null {
+  const latest = latestRows(rows);
+  const reached = graph.nodes.flatMap((node) =>
+    node.type === 'end' && latest.get(node.id)?.status === 'SUCCEEDED' ? [node] : [],
   );
-  if (outcomes.has('failed')) {
-    return { status: 'FAILED', code: 'workflow_end_outcome', message: 'An end node says failed' };
-  }
+  if (reached.length === 0) return null;
+  const end = [...reached].sort(
+    (a, b) => END_PRECEDENCE.indexOf(a.outcome) - END_PRECEDENCE.indexOf(b.outcome),
+  )[0]!;
+  return {
+    status: END_STATUS[end.outcome],
+    code: end.outcome === 'succeeded' ? null : 'workflow_end_outcome',
+    message:
+      end.outcome === 'succeeded'
+        ? null
+        : (end.summary ?? `End node ${end.id} says ${end.outcome}`),
+    openAs: 'CANCELLED',
+    endNodeId: end.id,
+    summary: end.summary,
+  };
+}
+
+/**
+ * How a run that has nothing more to do and reached no end node ends: a node
+ * that failed and stopped its branch fails it, unless a join that waits for
+ * any input continued past that branch anyway (issue #163); otherwise the
+ * run succeeded.
+ */
+function settledOutcome(
+  graph: WorkflowGraph,
+  rows: readonly ExecutionRow[],
+): Omit<Ending, 'openAs' | 'status'> & { status: 'SUCCEEDED' | 'FAILED' } {
+  const latest = latestRows(rows);
   const failed = [...latest.values()].find(
-    (row) => row.status === 'FAILED' || row.status === 'TIMED_OUT',
+    (row) =>
+      (row.status === 'FAILED' || row.status === 'TIMED_OUT') &&
+      !absorbedByAnyJoin(graph, row.nodeId, latest),
   );
   if (failed !== undefined) {
     return {
@@ -329,14 +402,39 @@ function settledOutcome(
       message: `Node ${failed.nodeId} failed: ${failed.errorCode ?? 'unknown'}`,
     };
   }
-  if (outcomes.has('cancelled')) {
-    return {
-      status: 'CANCELLED',
-      code: 'workflow_end_outcome',
-      message: 'An end node says cancelled',
-    };
-  }
   return { status: 'SUCCEEDED', code: null, message: null };
+}
+
+/**
+ * Whether a failed node's branch led into a join that waits for any input and
+ * continued: then the failure is one of the alternatives the graph meant to
+ * tolerate, and the run's outcome is what came after the join.
+ */
+function absorbedByAnyJoin(
+  graph: WorkflowGraph,
+  nodeId: string,
+  latest: ReadonlyMap<string, ExecutionRow>,
+): boolean {
+  const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+  const seen = new Set<string>();
+  const queue = [nodeId];
+  while (queue.length > 0) {
+    const id = queue.pop()!;
+    for (const edge of graph.edges) {
+      if (edge.source.nodeId !== id || seen.has(edge.target.nodeId)) continue;
+      seen.add(edge.target.nodeId);
+      const target = nodes.get(edge.target.nodeId);
+      if (
+        target?.type === 'join' &&
+        target.policy === 'any' &&
+        latest.get(target.id)?.status === 'SUCCEEDED'
+      ) {
+        return true;
+      }
+      queue.push(edge.target.nodeId);
+    }
+  }
+  return false;
 }
 
 /**
@@ -349,7 +447,7 @@ async function finishRun(
   rows: readonly ExecutionRow[],
   now: Date,
   ending: Ending,
-): Promise<void> {
+): Promise<{ id: string; workspaceId: string }[]> {
   const open = rows.filter((row) => ACTIVE_STATUSES.includes(row.status));
   const errorClass: WorkflowErrorClass = ending.openAs === 'TIMED_OUT' ? 'timeout' : 'cancelled';
   if (open.length > 0) {
@@ -372,6 +470,8 @@ async function finishRun(
       status: ending.status,
       errorCode: ending.code,
       errorMessage: ending.message,
+      summary: ending.summary ?? null,
+      endNodeId: ending.endNodeId ?? null,
       waitingSince: null,
       finishedAt: now,
     },
@@ -390,8 +490,18 @@ async function finishRun(
       : [{ type: 'run.limit_reached' as const, detail: { limit: ending.limit }, at: now }]),
     {
       type: 'run.finished',
-      detail: { status: lower(ending.status), errorCode: ending.code },
+      detail: {
+        status: lower(ending.status),
+        errorCode: ending.code,
+        endNodeId: ending.endNodeId ?? null,
+      },
       at: now,
     },
   ]);
+  // A question nobody needs answered any more (issue #163).
+  return obsoleteWorkflowApprovals(
+    tx,
+    open.map((row) => row.id),
+    now,
+  );
 }

@@ -36,7 +36,9 @@ import { startDueWorkflows, type WorkflowTriggerContext } from './triggers';
  * 6. an agent node waiting on a work item that would settle it now -- the
  *    item closed, handed in, deleted, or stalled with no run left -- is
  *    woken, for the wake the API sends after a change can be lost and a run
- *    ending sends none (issue #162).
+ *    ending sends none (issue #162);
+ * 7. an approval node whose attention item was answered or became obsolete
+ *    is woken, for the same reason (issue #163).
  *
  * A duplicate costs nothing: every job claims or locks before it acts, so a
  * second copy finds the work done.
@@ -46,6 +48,8 @@ import { startDueWorkflows, type WorkflowTriggerContext } from './triggers';
 const LOST_AFTER_MS = 2 * 60_000;
 /** Rows per kind per sweep. */
 const BATCH = 100;
+/** How far back the sweep looks for an approval answered without its wake. */
+const SETTLED_WINDOW_MS = 24 * 3_600_000;
 
 export async function sweepWorkflowRuns(
   dependencies: WorkflowRuntimeDependencies & {
@@ -142,12 +146,26 @@ export async function sweepWorkflowRuns(
     });
   }
 
+  const answered = await answeredApprovals(dependencies, scope, now);
+  for (const row of answered) {
+    jobs.push({
+      job: {
+        kind: 'resume',
+        runId: row.runId,
+        executionId: row.id,
+        wake: { kind: 'attention_item', attentionItemId: row.attentionItemId },
+        correlationId: createCorrelationId(),
+      },
+      jobId: `workflow-resume-${row.id}-${String(minute)}`,
+    });
+  }
+
   await enqueueAll(dependencies, jobs);
   return {
     started,
     recovered,
     requeued: stalled.length,
-    woken: timers.length + settled.length,
+    woken: timers.length + settled.length + answered.length,
     advanced: runs.length,
   };
 }
@@ -188,6 +206,42 @@ async function settledAgentNodes(
     }
   }
   return due;
+}
+
+/**
+ * Waiting approval nodes whose attention item was settled -- answered, or
+ * obsolete -- in the last day (issue #163). Read from the settled items
+ * rather than the waiting nodes, so questions that stay open for days never
+ * crowd an answered one out of the batch; a day is far more than a net run
+ * every minute needs.
+ */
+async function answeredApprovals(
+  dependencies: WorkflowRuntimeDependencies,
+  scope: string | null,
+  now: Date,
+): Promise<{ id: string; runId: string; attentionItemId: string }[]> {
+  const settled = await dependencies.prisma.attentionItem.findMany({
+    where: {
+      workflowExecutionId: { not: null },
+      status: { not: 'OPEN' },
+      settledAt: { gte: new Date(now.getTime() - SETTLED_WINDOW_MS) },
+      ...(scope === null ? {} : { workspaceId: scope }),
+    },
+    select: { id: true, workflowExecutionId: true },
+    orderBy: { settledAt: 'desc' },
+    take: BATCH,
+  });
+  if (settled.length === 0) return [];
+  const byExecution = new Map(settled.map((item) => [item.workflowExecutionId!, item.id]));
+  const waiting = await dependencies.prisma.workflowNodeExecution.findMany({
+    where: { id: { in: [...byExecution.keys()] }, status: 'WAITING' },
+    select: { id: true, runId: true },
+  });
+  return waiting.map((row) => ({
+    id: row.id,
+    runId: row.runId,
+    attentionItemId: byExecution.get(row.id)!,
+  }));
 }
 
 /**

@@ -1,4 +1,5 @@
 import {
+  type ApplicationEvent,
   effectiveWorkflowLimits,
   QUEUE_NAMES,
   type Settings,
@@ -15,6 +16,7 @@ import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type QueueRegistry } from '@exocortex/queue';
 
 import { createAgentNodeHandler } from './agent-node';
+import { createApprovalNodeHandler } from './approval-node';
 import { DEFAULT_NODE_HANDLERS, type NodeHandler, type NodeHandlerRegistry } from './handlers';
 
 /**
@@ -35,6 +37,11 @@ export interface WorkflowRuntimeDependencies {
    */
   apiClientFor?:
     ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
+  /**
+   * Tells open inboxes about an approval asked or settled (issue #163).
+   * Absent in tests; an inbox then finds the item on its next read.
+   */
+  bus?: { publish: (event: ApplicationEvent) => Promise<void> } | null;
   handlers?: NodeHandlerRegistry;
   now?: () => Date;
 }
@@ -104,6 +111,10 @@ export function handlerFor(
       prisma: dependencies.prisma,
       apiClientFor: dependencies.apiClientFor ?? null,
       ...(dependencies.now === undefined ? {} : { now: dependencies.now }),
+    }),
+    approval: createApprovalNodeHandler({
+      prisma: dependencies.prisma,
+      bus: dependencies.bus ?? null,
     }),
   };
   return (registry as Readonly<Record<string, NodeHandler>>)[nodeType];

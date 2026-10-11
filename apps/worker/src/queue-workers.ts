@@ -418,7 +418,13 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 4,
-    handler: createWorkflowProcessor({ prisma, queues, settings: readSettings, apiClientFor }),
+    handler: createWorkflowProcessor({
+      prisma,
+      queues,
+      settings: readSettings,
+      apiClientFor,
+      bus,
+    }),
   });
 
   // Concurrency 1: a LaTeX run is CPU-bound and this host shares its cores with

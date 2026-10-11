@@ -1,4 +1,6 @@
 import {
+  isInputSource,
+  type WorkflowConditionSource,
   type WorkflowErrorClass,
   type WorkflowGraph,
   type WorkflowNode,
@@ -110,25 +112,6 @@ const triggerHandler: NodeHandler = {
   }),
 };
 
-/**
- * A node type whose execution belongs to a later issue: approvals are #163.
- * Failing the attempt names that, and the run ends instead of hanging; a
- * graph with such a node can be published and is honestly refused when it
- * gets there.
- */
-function notExecutable(issue: string): NodeHandler {
-  return {
-    idempotent: true,
-    maxAttempts: 1,
-    execute: async ({ node }) => ({
-      status: 'failed',
-      errorClass: 'terminal',
-      code: 'workflow_node_not_executable',
-      message: `Nodes of type ${node.type} cannot be executed yet (issue ${issue})`,
-    }),
-  };
-}
-
 /** A fan-out takes its one handle, which every branch edge hangs off. */
 const parallelHandler: NodeHandler = {
   idempotent: true,
@@ -146,45 +129,75 @@ const joinHandler: NodeHandler = {
 
 /**
  * An end node succeeds; its configured outcome is what the run ends with,
- * which the runtime reads when the run settles.
+ * and reaching it ends the run at once (issue #163): the advance after it
+ * reads the outcome and cancels whatever is still in flight.
  */
 const endHandler: NodeHandler = {
   idempotent: true,
   execute: async ({ node }) => {
     const end = node as WorkflowNodeOf<'end'>;
-    return { status: 'succeeded', handles: [], output: { outcome: end.outcome } };
-  },
-};
-
-/** A condition branches on a field of an upstream node's structured output. */
-const conditionHandler: NodeHandler = {
-  idempotent: true,
-  execute: async ({ node, outputs }) => {
-    const condition = node as WorkflowNodeOf<'condition'>;
-    const holds = evaluateCondition(condition, outputs.get(condition.source.nodeId) ?? null);
     return {
       status: 'succeeded',
-      handles: [holds ? 'true' : 'false'],
-      output: { result: holds },
+      handles: [],
+      output: { outcome: end.outcome, summary: end.summary },
     };
   },
 };
 
 /**
- * Whether a condition holds. A missing output or field is "absent": it makes
- * `absent` true and every comparison false, so a branch on a value nobody
- * produced takes the `false` path rather than failing the run.
+ * A condition branches on a field of an upstream node's structured output, or
+ * on a key of the run's input (issue #163). Its output says what it read, so
+ * the history shows why a branch was taken without anybody re-evaluating it.
+ */
+const conditionHandler: NodeHandler = {
+  idempotent: true,
+  execute: async ({ node, outputs, run }) => {
+    const condition = node as WorkflowNodeOf<'condition'>;
+    const value = conditionValue(condition.source, { input: run.input, outputs });
+    const holds = evaluateCondition(condition, value);
+    return {
+      status: 'succeeded',
+      handles: [holds ? 'true' : 'false'],
+      output: { result: holds, value: scalarOrNull(value) },
+    };
+  },
+};
+
+/**
+ * The value a condition reads. An agent and an approval keep their checked
+ * values under `fields` (issues #162, #163); the run's input is read as it is.
+ */
+export function conditionValue(
+  source: WorkflowConditionSource,
+  values: { input: unknown; outputs: ReadonlyMap<string, Record<string, unknown> | null> },
+): unknown {
+  const container = isInputSource(source)
+    ? values.input
+    : values.outputs.get(source.nodeId)?.fields;
+  if (typeof container !== 'object' || container === null || Array.isArray(container)) {
+    return undefined;
+  }
+  return (container as Record<string, unknown>)[
+    isInputSource(source) ? source.input : source.field
+  ];
+}
+
+/** Only a scalar is worth recording; anything else is "something", not a value. */
+function scalarOrNull(value: unknown): string | number | boolean | null {
+  if (typeof value === 'string') return value.slice(0, 200);
+  return typeof value === 'number' || typeof value === 'boolean' ? value : null;
+}
+
+/**
+ * Whether a condition holds for the value it read. A missing output or field
+ * is "absent": it makes `absent` true and every comparison false, so a branch
+ * on a value nobody produced takes the `false` path rather than failing the
+ * run.
  */
 export function evaluateCondition(
-  condition: WorkflowNodeOf<'condition'>,
-  output: Record<string, unknown> | null,
+  condition: Pick<WorkflowNodeOf<'condition'>, 'operator' | 'value'>,
+  value: unknown,
 ): boolean {
-  // An agent node keeps its checked values under `fields` (issue #162).
-  const fields = output?.fields;
-  const value =
-    typeof fields === 'object' && fields !== null && !Array.isArray(fields)
-      ? (fields as Record<string, unknown>)[condition.source.field]
-      : undefined;
   const present = value !== undefined && value !== null;
   switch (condition.operator) {
     case 'present':
@@ -224,31 +237,34 @@ function compareNumbers(
 }
 
 /**
- * Stands in for the agent node where nothing to start work with was handed
- * over; the runtime replaces it with `createAgentNodeHandler` (issue #162).
+ * Stands in for a node that needs dependencies where none were handed over;
+ * the runtime replaces it (`handlerFor` in `shared.ts`).
  */
-const agentWithoutDependencies: NodeHandler = {
-  idempotent: true,
-  maxAttempts: 1,
-  execute: async () => ({
-    status: 'failed',
-    errorClass: 'terminal',
-    code: 'workflow_agent_refused',
-    message: 'This worker was started without a way to create work items',
-  }),
-};
+function withoutDependencies(code: WorkflowRunErrorCode, message: string): NodeHandler {
+  return {
+    idempotent: true,
+    maxAttempts: 1,
+    execute: async () => ({ status: 'failed', errorClass: 'terminal', code, message }),
+  };
+}
 
 /**
  * The handlers that need nothing but the node. The runtime adds the agent
- * node's, which needs the database and an API client (`shared.ts`); a test
- * passes its own registry.
+ * node's (issue #162) and the approval's (issue #163), which need the
+ * database (`shared.ts`); a test passes its own registry.
  */
 export const DEFAULT_NODE_HANDLERS: NodeHandlerRegistry = {
   'trigger.manual': triggerHandler,
   'trigger.schedule': triggerHandler,
   'trigger.event': triggerHandler,
-  agent: agentWithoutDependencies,
-  approval: notExecutable('#163'),
+  agent: withoutDependencies(
+    'workflow_agent_refused',
+    'This worker was started without a way to create work items',
+  ),
+  approval: withoutDependencies(
+    'workflow_node_not_executable',
+    'This worker was started without a way to ask a person',
+  ),
   condition: conditionHandler,
   parallel: parallelHandler,
   join: joinHandler,
