@@ -90,7 +90,8 @@ const SHARED_BASES = new Set(['tsconfig.base.json', 'tsconfig.node.json', 'tscon
  */
 function collect(dir = repoRoot, found = { sources: [], manifests: [], projects: [] }) {
   for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
+    // `.next-harness-<label>`: the Firefox harness's web builds (issue #166).
+    if (SKIP_DIRS.has(entry) || entry.startsWith('.next-harness-')) continue;
     const absolute = join(dir, entry);
     if (statSync(absolute).isDirectory()) {
       collect(absolute, found);

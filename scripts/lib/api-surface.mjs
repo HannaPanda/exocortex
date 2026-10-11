@@ -39,7 +39,8 @@ const SKIP_DIRS = new Set([
 export function walk(dir, acc = []) {
   if (!existsSync(dir)) return acc;
   for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
+    // `.next-harness-<label>`: the Firefox harness's web builds (issue #166).
+    if (SKIP_DIRS.has(entry) || entry.startsWith('.next-harness-')) continue;
     const abs = join(dir, entry);
     if (statSync(abs).isDirectory()) walk(abs, acc);
     else if (/\.tsx?$/.test(entry)) acc.push(abs);

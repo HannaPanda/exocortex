@@ -232,6 +232,7 @@ const config = {
     '**/.next/**',
     '**/.next-releases/**',
     '**/.next-live/**',
+    '**/.next-harness-*/**',
     '**/.turbo/**',
     '**/coverage/**',
     '**/generated/**',

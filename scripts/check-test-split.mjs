@@ -100,7 +100,8 @@ const GUARD_SETUP_FILE = 'vitest.setup.integration.ts';
 
 function walk(dir, acc = []) {
   for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
+    // `.next-harness-<label>`: the Firefox harness's web builds (issue #166).
+    if (SKIP_DIRS.has(entry) || entry.startsWith('.next-harness-')) continue;
     const absolute = join(dir, entry);
     if (statSync(absolute).isDirectory()) walk(absolute, acc);
     else if (/\.test\.(ts|tsx|mts)$/.test(entry)) acc.push(absolute);

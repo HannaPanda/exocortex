@@ -65,8 +65,13 @@ const NOT_CONFIGURATION = new Set([
  * (`tools/claude-code-plugin`). Writing them into `.env.example` would invite
  * somebody to set them there, where nothing would ever read them: the values
  * live in Claude Code's own settings and credential store.
+ *
+ * `HARNESS_*` belongs to the Firefox harness (`e2e/firefox-harness`, issue
+ * #166), which starts its services with a complete environment of its own and
+ * deliberately reads no `.env`: its ports live in `ports.sh`, and the test
+ * account's credentials are exported by `run.sh` for the length of one run.
  */
-const NOT_CONFIGURATION_PREFIXES = ['CLAUDE_PLUGIN_OPTION_'];
+const NOT_CONFIGURATION_PREFIXES = ['CLAUDE_PLUGIN_OPTION_', 'HARNESS_'];
 
 const SKIP_DIRS = new Set([
   'node_modules',
@@ -86,7 +91,9 @@ const CODE_EXTENSIONS = ['.ts', '.tsx', '.mts', '.cts', '.js', '.mjs', '.cjs'];
 function walk(dir, extensions, acc = []) {
   if (!existsSync(dir)) return acc;
   for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
+    // The Firefox harness's web builds (`apps/web/.next-harness-<label>`) are
+    // as generated as `.next` itself.
+    if (SKIP_DIRS.has(entry) || entry.startsWith('.next-harness-')) continue;
     const abs = join(dir, entry);
     if (statSync(abs).isDirectory()) walk(abs, extensions, acc);
     else if (extensions.some((extension) => entry.endsWith(extension))) acc.push(abs);
