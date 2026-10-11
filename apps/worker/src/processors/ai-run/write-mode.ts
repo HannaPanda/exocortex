@@ -36,6 +36,19 @@ export function writeModeColumn(mode: AiWriteMode): 'READ_ONLY' | 'PROPOSE' | 'D
 }
 
 /**
+ * What every restricted mode still allows, by name (issue #144). "Report on
+ * your work" alone was read as "say it in the chat": a read-only child then
+ * answered in its conversation and never wrote its result onto the work
+ * item, so the parent waiting for it never woke up.
+ */
+const REPORTING =
+  'Über deinen Auftrag berichtest du trotzdem mit den Werkzeugen, nicht nur im Chat: ' +
+  'exo_work_item_update (result, status, Kriterien), exo_work_item_checkpoint, ' +
+  'exo_work_item_note, exo_attention_request sowie exo_work_item_delegate und ' +
+  'exo_work_item_await_children sind erlaubt. Ein Ergebnis, das nur im Chat steht, kommt beim ' +
+  'Auftrag nicht an.';
+
+/**
  * What the model is told about its mode, before the conversation. The tool
  * loop and the API refuse regardless; this saves the turn a refused write
  * would cost, and says what to do instead.
@@ -50,8 +63,8 @@ export function writeModeMessage(mode: AiWriteMode): AiMessage | null {
           'Änderung an einer Seite schlägst du mit exo_changeset_propose vor (eine Änderung pro ' +
           'Aufruf, beim ersten ohne changesetId, danach mit der zurückgegebenen), und reichst ' +
           'den Vorschlag am Ende mit exo_changeset_submit ein. Ein Mensch prüft ihn und ' +
-          'übernimmt, was passt. Über deinen Auftrag berichten darfst du wie sonst auch.'
-        : 'Dieser Lauf darf nur lesen und über seinen Auftrag berichten, nichts verändern und ' +
-          'nichts vorschlagen. Sage in deiner Antwort, was du ändern würdest.',
+          `übernimmt, was passt. ${REPORTING}`
+        : 'Dieser Lauf darf nichts an Seiten verändern und nichts vorschlagen. Was du an einer ' +
+          `Seite ändern würdest, sagst du in deiner Antwort. ${REPORTING}`,
   };
 }
