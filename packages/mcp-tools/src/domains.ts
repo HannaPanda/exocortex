@@ -205,6 +205,21 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'zur freigabe',
     ],
   },
+  evals: {
+    label:
+      'Evals: gespeicherte Agentenaufgaben mit Prüfungen, gegen Modelle und Anbieter wiederholt und verglichen.',
+    keywords: [
+      'eval',
+      'testfall',
+      'testfäll',
+      'benchmark',
+      'modellvergleich',
+      'modelle vergleich',
+      'regressionstest',
+      'replay',
+      'exo_eval',
+    ],
+  },
   shares: {
     label: 'Freigaben und öffentliche Links.',
     keywords: ['freigab', 'freigeb', 'teilen', 'geteilt', 'share', 'öffentlicher link', 'zugriff'],

@@ -58,6 +58,13 @@ export interface ServiceTokenClaims {
    * request must not be able to name a different one.
    */
   workspaceId?: string;
+  /**
+   * The one page, with everything under it, the run may reach (issue #146):
+   * the sandbox an eval attempt in the fixture mode works in. Read by
+   * `SessionGuard` into the same page confinement a scoped `exo_` token gets
+   * (ADR-044), so every reader that fails closed for one fails closed here.
+   */
+  pageRootId?: string;
 }
 
 interface ServiceTokenPayload extends ServiceTokenClaims {
@@ -86,6 +93,8 @@ export interface IssueServiceTokenOptions {
   writeMode?: 'read_only' | 'propose';
   /** See `ServiceTokenClaims.workspaceId`. */
   workspaceId?: string;
+  /** See `ServiceTokenClaims.pageRootId`. */
+  pageRootId?: string;
   now?: number;
 }
 
@@ -105,7 +114,8 @@ function isWellFormed(payload: ServiceTokenPayload): boolean {
     (payload.writeMode === undefined ||
       payload.writeMode === 'read_only' ||
       payload.writeMode === 'propose') &&
-    (payload.workspaceId === undefined || typeof payload.workspaceId === 'string')
+    (payload.workspaceId === undefined || typeof payload.workspaceId === 'string') &&
+    (payload.pageRootId === undefined || typeof payload.pageRootId === 'string')
   );
 }
 
@@ -121,6 +131,7 @@ export function issueServiceToken(options: IssueServiceTokenOptions): IssuedServ
     ...(options.runId === undefined ? {} : { runId: options.runId }),
     ...(options.writeMode === undefined ? {} : { writeMode: options.writeMode }),
     ...(options.workspaceId === undefined ? {} : { workspaceId: options.workspaceId }),
+    ...(options.pageRootId === undefined ? {} : { pageRootId: options.pageRootId }),
     nonce: randomBytes(9).toString('base64url'),
   };
   const encoded = base64UrlEncode(Buffer.from(JSON.stringify(payload), 'utf8'));
@@ -204,6 +215,7 @@ export function verifyServiceToken(
       ...(payload.runId === undefined ? {} : { runId: payload.runId }),
       ...(payload.writeMode === undefined ? {} : { writeMode: payload.writeMode }),
       ...(payload.workspaceId === undefined ? {} : { workspaceId: payload.workspaceId }),
+      ...(payload.pageRootId === undefined ? {} : { pageRootId: payload.pageRootId }),
     },
   };
 }

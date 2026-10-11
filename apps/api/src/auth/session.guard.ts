@@ -88,7 +88,10 @@ interface VerifiedBearer {
   apiTokenId?: string;
   /** Only set for `api_token`; see `AuthenticatedRequest.exocortexTokenScopes`. */
   scopes?: readonly string[];
-  /** Only set for `api_token`; see `AuthenticatedRequest.exocortexPageScopes`. */
+  /**
+   * Set for `api_token`, and for a service token whose run is held to an eval
+   * sandbox (issue #146); see `AuthenticatedRequest.exocortexPageScopes`.
+   */
   pageScopes?: PageScopeRestriction;
   /** Only set for a service token minted for one AI run (issue #140). */
   aiRunId?: string;
@@ -242,6 +245,17 @@ export class SessionGuard implements CanActivate {
       ...(result.claims.workspaceId === undefined
         ? {}
         : { confinedWorkspaceId: result.claims.workspaceId }),
+      // An eval attempt's sandbox (issue #146): the same confinement a
+      // scoped `exo_` token carries, so no reader needs to know about evals.
+      ...(result.claims.pageRootId === undefined
+        ? {}
+        : {
+            pageScopes: {
+              tokenId: `run:${result.claims.runId ?? 'unknown'}`,
+              declared: true,
+              scopes: [{ documentId: result.claims.pageRootId, scope: 'SUBTREE' as const }],
+            },
+          }),
     };
   }
 

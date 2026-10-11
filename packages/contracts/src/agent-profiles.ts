@@ -42,6 +42,7 @@ export const TOOL_DOMAINS = [
   'workItems',
   'attention',
   'changesets',
+  'evals',
   'shares',
   'entities',
   'memory',
@@ -219,7 +220,8 @@ export const agentProfileSnapshotSchema = z.object({
   id: idSchema,
   name: z.string(),
   revision: z.number().int(),
-  source: z.enum(['work_item', 'default']),
+  /** `eval_case`: named by the eval case an attempt replays (issue #146). */
+  source: z.enum(['work_item', 'default', 'eval_case']),
   writeMode: aiWriteModeSchema,
   approvalPolicy: agentApprovalPolicySchema,
   toolDomains: z.array(toolDomainSchema).nullable(),

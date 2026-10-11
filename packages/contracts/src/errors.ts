@@ -159,6 +159,20 @@ export const API_ERROR_CODES = [
    * workspace, or a model that is not enabled.
    */
   'agent_profile_invalid',
+  /** Another eval case in this workspace already has that name (issue #146). */
+  'eval_case_name_taken',
+  /**
+   * An eval case names something that is not there, or its checks do not fit
+   * its mode: a start page outside the workspace, a profile of another one, a
+   * check on a fixture page the case does not bring.
+   */
+  'eval_case_invalid',
+  /** Cases times variants times repetitions is more attempts than one eval run may start. */
+  'eval_run_too_large',
+  /** A proposal made by an eval attempt is evidence and is never applied (issue #146). */
+  'eval_changeset_not_appliable',
+  /** The attempt has not finished yet; a review needs its result. */
+  'eval_attempt_not_finished',
   /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
   'work_checkpoint_summary_required',
   /** The named checkpoint does not belong to this work item. */
@@ -397,6 +411,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   work_item_children_open: 409,
   agent_profile_name_taken: 409,
   agent_profile_invalid: 400,
+  eval_case_name_taken: 409,
+  eval_case_invalid: 422,
+  eval_run_too_large: 422,
+  eval_changeset_not_appliable: 409,
+  eval_attempt_not_finished: 409,
   work_checkpoint_summary_required: 422,
   work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.

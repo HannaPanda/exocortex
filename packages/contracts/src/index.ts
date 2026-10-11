@@ -25,6 +25,7 @@ export * from './database-views';
 export * from './documents';
 export * from './entities';
 export * from './errors';
+export * from './evals';
 export * from './events';
 export * from './features';
 export * from './inbox';

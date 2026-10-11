@@ -134,3 +134,30 @@ describe('the workspace claim (issue #143)', () => {
     expect(result.valid && 'workspaceId' in result.claims).toBe(false);
   });
 });
+
+describe('the page root claim (issue #146)', () => {
+  it('carries the sandbox an eval attempt is held to', () => {
+    const secret = 'x'.repeat(40);
+    const issued = issueServiceToken({
+      secret,
+      userId: 'user-1',
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+      pageRootId: 'doc-sandbox',
+    });
+    const result = verifyServiceToken({ secret, token: issued.token, expectedPurpose: 'ai-tools' });
+    expect(result.valid && result.claims.pageRootId).toBe('doc-sandbox');
+  });
+
+  it('leaves every other token without one', () => {
+    const secret = 'x'.repeat(40);
+    const issued = issueServiceToken({
+      secret,
+      userId: 'user-1',
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+    });
+    const result = verifyServiceToken({ secret, token: issued.token, expectedPurpose: 'ai-tools' });
+    expect(result.valid && 'pageRootId' in result.claims).toBe(false);
+  });
+});
