@@ -183,3 +183,15 @@ each process.
 | document archived while connected | further writes are dropped by `store`; the UI shows the archived banner after the query refreshes               |
 | collaboration server down         | the editor keeps working on the IndexedDB copy, the badge shows "Verbindung unterbrochen", the provider retries |
 | database down                     | the store hook throws, Hocuspocus keeps the document in memory and retries                                      |
+| API down while the tab rebuilds   | the failed ticket arms the same revive backoff (20 s doubling to 120 s); showing the tab retries at once        |
+
+The client side of a reconnect lives in
+`apps/web/src/components/editor/collaboration-connection.ts`. Two rules there
+came out of the Firefox harness (issue #166, `e2e/firefox-harness`): a provider
+is always torn down through `retireProvider()`, never a bare `destroy()`,
+because @hocuspocus/provider 4.7 reconnects a provider destroyed within a
+second of its socket closing; and every path that leaves the hook without a
+provider (a failed ticket) arms the revive timer, or the tab waits for F5.
+Firefox shares 200 WebSocket slots across every site, and a socket waiting in
+its per-host connect queue holds one, so a client that leaks sockets during an
+outage harms other tabs, not only its own.
