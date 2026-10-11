@@ -29,6 +29,13 @@ import {
 import { writeOutcome } from './ai-run/completion';
 import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
+import {
+  type EvalHold,
+  evalLimits,
+  evalProviderRouting,
+  evalToolDomains,
+  resolveEvalHold,
+} from './ai-run/eval-hold';
 import { executeRun, type RunRoutingInput } from './ai-run/execution';
 import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
 import {
@@ -39,13 +46,6 @@ import {
   taskTextFor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
-import {
-  type EvalHold,
-  evalLimits,
-  evalProviderRouting,
-  evalToolDomains,
-  resolveEvalHold,
-} from './ai-run/eval-hold';
 import { RunTimeline } from './ai-run/timeline';
 import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
 
