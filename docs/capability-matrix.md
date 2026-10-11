@@ -71,7 +71,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/ai/conversations/search` | ✓ | ✓ | ✓ | `exo_chat_search` |
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
-| `GET /api/ai/runs/:x/inspection` | · | · | ✓ | `exo_ai_run_inspect` |
+| `GET /api/ai/runs/:x/inspection` | ✓ | · | ✓ | `exo_ai_run_inspect` |
 | `GET /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
@@ -288,7 +288,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-56 of them. Each is covered by a documented exemption; the reasons
+57 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -308,6 +308,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `GET /api/admin/settings`
 - `GET /api/ai/models`
 - `GET /api/ai/runs/:x` (reachable from MCP)
+- `GET /api/ai/runs/:x/inspection` (reachable from MCP)
 - `GET /api/mcp/clients/:x`
 - `GET /api/me/api-tokens`
 - `GET /api/me/connections`

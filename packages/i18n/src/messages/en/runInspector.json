@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "AI run trace"
+  },
+  "page": {
+    "loading": "Loading run trace …",
+    "loadFailed": "The trace for this run couldn’t be loaded.",
+    "back": "Back",
+    "heading": "AI run trace",
+    "subheading": "{model}, created {moment}",
+    "openConversation": "Open conversation",
+    "notRecorded": "This run is older than the recording feature. Only what other parts of the workspace know about it is shown: start, end, follow-up questions, and suggestions.",
+    "capped": "The recording reached its limit on this run. Later steps are missing from the timeline.",
+    "running": "The run is still in progress. The view updates automatically.",
+    "privacy": "Only sizes, names, and outcomes are listed here. Prompts, replies, and tool outputs themselves are not recorded."
+  },
+  "summary": {
+    "heading": "Overview",
+    "duration": "Duration",
+    "turns": "Model turns",
+    "toolCalls": "Tool calls",
+    "toolCallsValue": "{count} ({failed, plural, =0 {all successful} one {# failed} other {# failed}})",
+    "providers": "Providers",
+    "providersNone": "not reported",
+    "providerSwitches": "Provider switches",
+    "tokens": "Tokens",
+    "tokensValue": "{input} in, {output} out",
+    "tokensCached": "including {cached} from cache",
+    "cost": "Cost",
+    "costEstimated": "{cost} (estimated from price list)",
+    "unknown": "unknown"
+  },
+  "context": {
+    "heading": "Context before the first turn",
+    "total": "{chars} characters, approx. {tokens} tokens",
+    "none": "No breakdown was recorded for this run.",
+    "sectionValue": "{chars} characters · ~{tokens} tokens",
+    "items": "{count, plural, one {# entry} other {# entries}}",
+    "truncated": "truncated",
+    "unnamedSource": "no longer exists or not visible",
+    "sourceChars": "{chars} characters",
+    "sourceCharsOf": "{chars} of {full} characters",
+    "sections": {
+      "base_prompt": "Base prompt",
+      "formatting": "Response format",
+      "trust_rules": "Trust rules",
+      "always_rules": "Rule pages (always)",
+      "on_demand_rules": "Rules on demand",
+      "open_page": "Open page",
+      "pinned_sources": "Pinned sources",
+      "closing": "Workspace and date",
+      "agent_role": "Agent role",
+      "write_mode": "Writing mode",
+      "images": "Image descriptions",
+      "conversation_summary": "Summary of earlier messages",
+      "conversation_user": "Your messages",
+      "conversation_assistant": "Earlier answers",
+      "conversation_tool": "Earlier tool results",
+      "tool_schemas": "Tool descriptions"
+    },
+    "modes": {
+      "reference": "mentioned only",
+      "embedded": "embedded",
+      "pointer": "as reference",
+      "content": "with content"
+    }
+  },
+  "toolResults": {
+    "heading": "Read during run",
+    "row": "{calls, plural, one {# call} other {# calls}}, {chars} characters"
+  },
+  "origins": {
+    "internal": "From this workspace",
+    "attachment": "From uploaded files",
+    "web": "From the web",
+    "mail": "From emails",
+    "external-mcp": "From external MCP servers"
+  },
+  "timeline": {
+    "heading": "Timeline",
+    "created": "Run created",
+    "started": "Worker took over",
+    "context": "Context assembled: {chars} characters, ~{tokens} tokens",
+    "compaction": "History compacted: {count, plural, one {# message} other {# messages}} summarized",
+    "turn": "Model turn {index}: {model}",
+    "turnServedBy": "via {provider}",
+    "turnTokens": "{input} tokens in, {output} out",
+    "turnTools": "{count, plural, one {requests # tool} other {requests # tools}}",
+    "turnReasoned": "thought",
+    "turnFailed": "Error {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} character result",
+    "toolTruncated": "truncated",
+    "toolUntrusted": "external content",
+    "toolRepeated": "repeated",
+    "toolPaused": "pauses the run",
+    "toolStatus": {
+      "succeeded": "succeeded",
+      "failed": "failed",
+      "refused": "refused",
+      "skipped": "skipped",
+      "undelivered": "incomplete delivery"
+    },
+    "truncationRetry": "Truncated at output limit, attempt {attempt}",
+    "attentionRaised": "Question: {title}",
+    "attentionBlocking": "blocking",
+    "attentionSettled": "Question resolved",
+    "changeset": "Suggested change: {title}",
+    "workCheckpoint": "Work checkpoint saved",
+    "resumedFrom": "Resumes an earlier run",
+    "resumedAs": "Resumed in a new run with the response",
+    "finished": "Finished",
+    "finishedError": "Error {code}"
+  },
+  "status": {
+    "pending": "Pending",
+    "running": "Running",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Canceled",
+    "timed_out": "Timed out"
+  },
+  "trace": {
+    "heading": "Operations",
+    "correlationId": "Correlation ID",
+    "traceId": "Trace ID",
+    "none": "none",
+    "hint": "Use the correlation ID to find the log lines for this run in the service logs."
+  },
+  "links": {
+    "fromWorkItem": "Run details",
+    "fromChat": "View run details"
+  }
+}

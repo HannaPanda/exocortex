@@ -507,6 +507,16 @@
     },
     "where": "Wskaźnik postępu na czacie."
   },
+  "lauf-inspektor": {
+    "title": "Sprawdzanie, co zrobiło uruchomienie AI",
+    "summary": "Dla każdego uruchomienia wbudowanej AI dostępna jest oś czasu: jaki model odpowiedział i przez jakiego dostawcę, jakie narzędzia wywołał i jak długo to trwało, ile to kosztowało oraz z czego składał się kontekst – aż po poszczególne strony.",
+    "details": {
+      "p1": "Oś czasu pokazuje każdy krok z dokładnym czasem i czasem trwania: budowanie kontekstu, każdą rundę modelu wraz z modelem, dostawcą, tokenami i kosztami, każde wywołanie narzędzia z celem, rozmiarem wyniku i rezultatem, a także pytania doprecyzowujące, wznowienie po odpowiedzi, propozycje zmian i stany robocze.",
+      "p2": "W sekcji „Kontekst przed pierwszą rundą” widać, z czego składał się prompt: prompt bazowy, strony z regułami, otwarta strona, przypięte źródła, dotychczasowa historia oraz opisy narzędzi – każde z rozmiarem i informacją, które dokładnie strony za tym stoją. Dzięki temu łatwo zrozumieć, dlaczego odpowiedź była kosztowna lub dlaczego AI czegoś nie wiedziała.",
+      "p3": "Rejestrowane są wyłącznie rozmiary, nazwy i wyniki – nigdy sam prompt, odpowiedzi ani treść czytanych stron. Tytuły stron widzisz tylko z obszaru roboczego danego uruchomienia. Na potrzeby operacyjne podane są identyfikatory korelacji i śledzenia (trace ID), które pozwalają odnaleźć logi i ślady uruchomienia. Agenci odczytują to samo za pomocą exo_ai_run_inspect."
+    },
+    "where": "Pod odpowiedzią na czacie: „Zobacz przebieg” lub przy zadaniu na liście uruchomień AI: „Przebieg”."
+  },
   "ki-chat": {
     "title": "Rozmowa z modelem o twoich stronach",
     "summary": "Czat działa obok strony i zna tytuł oraz ścieżkę otwartej strony. To, który model odpowiada, określa zarządzanie modelami; bez skonfigurowanego dostawcy odpowiada lokalny model zastępczy, aby nic od tego nie zależało.",

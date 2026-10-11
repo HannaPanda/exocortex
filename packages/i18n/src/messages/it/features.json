@@ -507,6 +507,16 @@
     },
     "where": "L’indicatore di avanzamento nella chat."
   },
+  "lauf-inspektor": {
+    "title": "Scopri cosa ha fatto un’esecuzione dell’IA",
+    "summary": "Per ogni esecuzione dell’IA integrata c’è una cronologia: quale modello ha risposto e tramite quale provider, quali strumenti ha chiamato e per quanto tempo, quanto è costato e da cosa era composto il contesto, fino alle singole pagine.",
+    "details": {
+      "p1": "La cronologia mostra ogni passaggio con timestamp e durata: la composizione del contesto, ogni round con modello, provider, token e costi, ogni chiamata a uno strumento con destinazione, dimensioni del risultato ed esito, oltre a richieste di chiarimento, riprese dopo una risposta, proposte di modifica e stati di avanzamento.",
+      "p2": "Sotto „Contesto prima del primo round“ viene mostrato da cosa era composto il prompt: prompt di base, pagine di regole, la pagina aperta, le fonti appuntate, la cronologia precedente e le descrizioni degli strumenti, ciascuno con la relativa dimensione e con le pagine esatte collegate. In questo modo puoi capire perché una risposta è stata costosa o non sapeva qualcosa.",
+      "p3": "Vengono registrati solo dimensioni, nomi ed esiti, mai il prompt, le risposte o il testo delle pagine lette. I titoli delle pagine sono visibili solo per l’area di lavoro dell’esecuzione. Per le attività di sistema sono inclusi l’ID di correlazione e l’ID di traccia, utili per trovare log e tracce dell’esecuzione. Gli agenti leggono le stesse informazioni tramite exo_ai_run_inspect."
+    },
+    "where": "Sotto una risposta nella chat seleziona „Mostra esecuzione“, oppure per un’attività nell’elenco delle esecuzioni dell’IA seleziona „Esecuzione“."
+  },
   "ki-chat": {
     "title": "Discutere delle tue pagine con un modello",
     "summary": "La chat affianca la pagina e ne conosce titolo e percorso. Quale modello risponda è stabilito nella gestione modelli; in assenza di un provider configurato risponde un modello fittizio locale, così da non bloccare alcuna operazione.",

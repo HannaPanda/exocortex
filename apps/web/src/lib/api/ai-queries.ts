@@ -22,6 +22,7 @@ import {
   type AiRuleListResponse,
   type AiRuleSummary,
   type AiRun,
+  type AiRunInspection,
   type ConversationToPageRequest,
   type ConversationToPageResponse,
   type CreateAiConversationRequest,
@@ -56,6 +57,7 @@ export const aiQueryKeys = {
     ['ai', 'conversation-sources', conversationId] as const,
   aiRules: (workspaceId: string) => ['ai', 'rules', workspaceId] as const,
   run: (runId: string) => ['ai', 'run', runId] as const,
+  runInspection: (runId: string) => ['ai', 'run-inspection', runId] as const,
 };
 
 /** Run statuses that mean the worker is finished with it, either way. */
@@ -105,6 +107,24 @@ export function useAiRun(runId: string | null): UseQueryResult<AiRun> {
     // Overrides the app-wide default (off): a run the user is watching must
     // reconcile the moment the tab regains focus, not only every poll tick.
     refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
+}
+
+/**
+ * What a run did and what its prompt was made of (issue #145). Polls while the
+ * run is still going, so the timeline grows on screen; stops once it ended.
+ */
+export function useAiRunInspection(runId: string): UseQueryResult<AiRunInspection> {
+  return useQuery({
+    queryKey: aiQueryKeys.runInspection(runId),
+    queryFn: () => apiRequest<AiRunInspection>(`/api/ai/runs/${runId}/inspection`),
+    refetchInterval: (query) => {
+      const status = query.state.data?.run.status;
+      return status === undefined || TERMINAL_RUN_STATUSES.has(status)
+        ? false
+        : AI_RUN_POLL_INTERVAL_MS;
+    },
     staleTime: 0,
   });
 }

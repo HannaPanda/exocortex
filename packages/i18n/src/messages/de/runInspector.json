@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Ablauf eines KI-Laufs"
+  },
+  "page": {
+    "loading": "Ablauf wird geladen …",
+    "loadFailed": "Der Ablauf dieses Laufs ließ sich nicht laden.",
+    "back": "Zurück",
+    "heading": "Ablauf eines KI-Laufs",
+    "subheading": "{model}, angelegt {moment}",
+    "openConversation": "Unterhaltung öffnen",
+    "notRecorded": "Dieser Lauf ist älter als die Aufzeichnung. Zu sehen ist nur, was andere Stellen über ihn wissen: Start, Ende, Rückfragen und Vorschläge.",
+    "capped": "Die Aufzeichnung hat bei diesem Lauf ihr Limit erreicht. Spätere Schritte fehlen in der Zeitleiste.",
+    "running": "Der Lauf ist noch nicht fertig. Die Ansicht aktualisiert sich von selbst.",
+    "privacy": "Hier stehen nur Größen, Namen und Ergebnisse. Prompt, Antworten und Werkzeugergebnisse selbst werden nicht aufgezeichnet."
+  },
+  "summary": {
+    "heading": "Überblick",
+    "duration": "Dauer",
+    "turns": "Modellrunden",
+    "toolCalls": "Werkzeugaufrufe",
+    "toolCallsValue": "{count} ({failed, plural, =0 {alle erfolgreich} one {# nicht erfolgreich} other {# nicht erfolgreich}})",
+    "providers": "Anbieter",
+    "providersNone": "nicht gemeldet",
+    "providerSwitches": "Anbieterwechsel",
+    "tokens": "Tokens",
+    "tokensValue": "{input} hinein, {output} hinaus",
+    "tokensCached": "davon {cached} aus dem Zwischenspeicher",
+    "cost": "Kosten",
+    "costEstimated": "{cost} (aus der Preisliste geschätzt)",
+    "unknown": "unbekannt"
+  },
+  "context": {
+    "heading": "Kontext vor der ersten Runde",
+    "total": "{chars} Zeichen, etwa {tokens} Tokens",
+    "none": "Für diesen Lauf ist keine Zusammensetzung aufgezeichnet.",
+    "sectionValue": "{chars} Zeichen · ~{tokens} Tokens",
+    "items": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "truncated": "gekürzt",
+    "unnamedSource": "nicht mehr vorhanden oder nicht sichtbar",
+    "sourceChars": "{chars} Zeichen",
+    "sourceCharsOf": "{chars} von {full} Zeichen",
+    "sections": {
+      "base_prompt": "Grund-Prompt",
+      "formatting": "Antwortformat",
+      "trust_rules": "Vertrauensregeln",
+      "always_rules": "Regelseiten (immer)",
+      "on_demand_rules": "Regeln auf Anfrage",
+      "open_page": "Geöffnete Seite",
+      "pinned_sources": "Angeheftete Quellen",
+      "closing": "Arbeitsbereich und Datum",
+      "agent_role": "Agentenrolle",
+      "write_mode": "Schreibmodus",
+      "images": "Bildbeschreibungen",
+      "conversation_summary": "Zusammenfassung früherer Nachrichten",
+      "conversation_user": "Deine Nachrichten",
+      "conversation_assistant": "Frühere Antworten",
+      "conversation_tool": "Frühere Werkzeugergebnisse",
+      "tool_schemas": "Werkzeugbeschreibungen"
+    },
+    "modes": {
+      "reference": "nur genannt",
+      "embedded": "eingebettet",
+      "pointer": "als Verweis",
+      "content": "mit Inhalt"
+    }
+  },
+  "toolResults": {
+    "heading": "Im Lauf gelesen",
+    "row": "{calls, plural, one {# Aufruf} other {# Aufrufe}}, {chars} Zeichen"
+  },
+  "origins": {
+    "internal": "Aus diesem Arbeitsbereich",
+    "attachment": "Aus hochgeladenen Dateien",
+    "web": "Aus dem Web",
+    "mail": "Aus E-Mails",
+    "external-mcp": "Von fremden MCP-Servern"
+  },
+  "timeline": {
+    "heading": "Zeitleiste",
+    "created": "Lauf angelegt",
+    "started": "Worker hat übernommen",
+    "context": "Kontext zusammengestellt: {chars} Zeichen, ~{tokens} Tokens",
+    "compaction": "Verlauf verdichtet: {count, plural, one {# Nachricht} other {# Nachrichten}} zusammengefasst",
+    "turn": "Modellrunde {index}: {model}",
+    "turnServedBy": "über {provider}",
+    "turnTokens": "{input} Tokens hinein, {output} hinaus",
+    "turnTools": "{count, plural, one {fordert # Werkzeug an} other {fordert # Werkzeuge an}}",
+    "turnReasoned": "hat nachgedacht",
+    "turnFailed": "Fehler {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} Zeichen Ergebnis",
+    "toolTruncated": "gekürzt",
+    "toolUntrusted": "Fremdinhalt",
+    "toolRepeated": "Wiederholung",
+    "toolPaused": "pausiert den Lauf",
+    "toolStatus": {
+      "succeeded": "erfolgreich",
+      "failed": "fehlgeschlagen",
+      "refused": "abgelehnt",
+      "skipped": "nicht ausgeführt",
+      "undelivered": "unvollständig geliefert"
+    },
+    "truncationRetry": "Am Ausgabelimit abgeschnitten, Versuch {attempt}",
+    "attentionRaised": "Rückfrage: {title}",
+    "attentionBlocking": "blockierend",
+    "attentionSettled": "Rückfrage erledigt",
+    "changeset": "Änderungsvorschlag: {title}",
+    "workCheckpoint": "Arbeitsstand festgehalten",
+    "resumedFrom": "Setzt einen früheren Lauf fort",
+    "resumedAs": "Mit der Antwort in einem neuen Lauf fortgesetzt",
+    "finished": "Beendet",
+    "finishedError": "Fehler {code}"
+  },
+  "status": {
+    "pending": "Wartet",
+    "running": "Läuft",
+    "completed": "Abgeschlossen",
+    "failed": "Fehlgeschlagen",
+    "cancelled": "Abgebrochen",
+    "timed_out": "Zeitüberschreitung"
+  },
+  "trace": {
+    "heading": "Für den Betrieb",
+    "correlationId": "Korrelations-ID",
+    "traceId": "Trace-ID",
+    "none": "keine",
+    "hint": "Mit der Korrelations-ID findest du die Logzeilen dieses Laufs im Journal der Dienste."
+  },
+  "links": {
+    "fromWorkItem": "Ablauf",
+    "fromChat": "Ablauf ansehen"
+  }
+}

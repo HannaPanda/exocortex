@@ -507,6 +507,16 @@
     },
     "where": "The progress indicator in chat."
   },
+  "lauf-inspektor": {
+    "title": "See what an AI run did",
+    "summary": "For every run of the built-in AI, there is a timeline: which model responded via which provider, which tools it called and for how long, how much it cost, and what the context consisted of, right down to individual pages.",
+    "details": {
+      "p1": "The timeline shows each step with its timestamp and duration: assembling the context, each model turn with model, provider, tokens, and cost, each tool call with target, result size, and outcome, as well as follow-up questions, resumes after an answer, suggested edits, and work-in-progress states.",
+      "p2": "Under “Context before turn 1”, you see what the prompt consisted of: base prompt, rule pages, the open page, pinned sources, previous history, and tool descriptions, each with its size and the exact pages behind it. This makes it easy to tell why an answer was expensive or missed something.",
+      "p3": "Only sizes, names, and outcomes are recorded, never the prompt, the answers, or the text of the pages read. You only see page titles from the run’s workspace. For operations, the correlation ID and trace ID are included to help locate the run’s logs and traces. Agents read the same information via exo_ai_run_inspect."
+    },
+    "where": "Under an answer in chat via “View run”, or for a job in the list of AI runs via “Run”."
+  },
   "ki-chat": {
     "title": "Talk with a model about your pages",
     "summary": "The chat runs alongside the page and knows the title and path of the open page. Which model responds is set in model administration; without a configured provider, a local dummy model responds so nothing depends on it.",

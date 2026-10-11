@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Dettagli dell’esecuzione IA"
+  },
+  "page": {
+    "loading": "Caricamento dettagli …",
+    "loadFailed": "Impossibile caricare i dettagli di questa esecuzione.",
+    "back": "Indietro",
+    "heading": "Dettagli dell’esecuzione IA",
+    "subheading": "{model}, creata {moment}",
+    "openConversation": "Apri conversazione",
+    "notRecorded": "Questa esecuzione precede l’inizio della registrazione. È visibile solo ciò che altre parti conoscono: inizio, fine, richieste di chiarimento e proposte.",
+    "capped": "La registrazione per questa esecuzione ha raggiunto il limite massimo. I passaggi successivi non compaiono nella cronologia.",
+    "running": "L’esecuzione è ancora in corso. La visualizzazione si aggiorna automaticamente.",
+    "privacy": "Qui compaiono solo dimensioni, nomi ed esiti. Prompt, risposte ed esiti degli strumenti non vengono registrati."
+  },
+  "summary": {
+    "heading": "Riepilogo",
+    "duration": "Durata",
+    "turns": "Scambi con il modello",
+    "toolCalls": "Chiamate di strumenti",
+    "toolCallsValue": "{count} ({failed, plural, =0 {tutte riuscite} one {# non riuscita} many {# non riuscite} other {# non riuscite}})",
+    "providers": "Fornitori",
+    "providersNone": "non segnalato",
+    "providerSwitches": "Cambi di fornitore",
+    "tokens": "Token",
+    "tokensValue": "{input} in ingresso, {output} in uscita",
+    "tokensCached": "di cui {cached} dalla cache",
+    "cost": "Costo",
+    "costEstimated": "{cost} (stima dal listino prezzi)",
+    "unknown": "sconosciuto"
+  },
+  "context": {
+    "heading": "Contesto prima del primo scambio",
+    "total": "{chars} caratteri, circa {tokens} token",
+    "none": "Nessuna composizione registrata per questa esecuzione.",
+    "sectionValue": "{chars} caratteri · ~{tokens} token",
+    "items": "{count, plural, one {# elemento} many {# elementi} other {# elementi}}",
+    "truncated": "troncato",
+    "unnamedSource": "non più presente o non visibile",
+    "sourceChars": "{chars} caratteri",
+    "sourceCharsOf": "{chars} di {full} caratteri",
+    "sections": {
+      "base_prompt": "Prompt di base",
+      "formatting": "Formato di risposta",
+      "trust_rules": "Regole di fiducia",
+      "always_rules": "Pagine di regole (sempre)",
+      "on_demand_rules": "Regole su richiesta",
+      "open_page": "Pagina aperta",
+      "pinned_sources": "Fonti fissate",
+      "closing": "Area di lavoro e data",
+      "agent_role": "Ruolo dell’agente",
+      "write_mode": "Modalità di scrittura",
+      "images": "Descrizioni delle immagini",
+      "conversation_summary": "Riepilogo dei messaggi precedenti",
+      "conversation_user": "I tuoi messaggi",
+      "conversation_assistant": "Risposte precedenti",
+      "conversation_tool": "Risultati precedenti degli strumenti",
+      "tool_schemas": "Descrizioni degli strumenti"
+    },
+    "modes": {
+      "reference": "solo menzionato",
+      "embedded": "incorporato",
+      "pointer": "come riferimento",
+      "content": "con contenuto"
+    }
+  },
+  "toolResults": {
+    "heading": "Letti durante l’esecuzione",
+    "row": "{calls, plural, one {# chiamata} many {# chiamate} other {# chiamate}}, {chars} caratteri"
+  },
+  "origins": {
+    "internal": "Da questa area di lavoro",
+    "attachment": "Dai file caricati",
+    "web": "Dal web",
+    "mail": "Dalle e-mail",
+    "external-mcp": "Da server MCP esterni"
+  },
+  "timeline": {
+    "heading": "Cronologia",
+    "created": "Esecuzione creata",
+    "started": "Il worker ha preso in carico",
+    "context": "Contesto preparato: {chars} caratteri, ~{tokens} token",
+    "compaction": "Cronologia compressa: {count, plural, one {# messaggio riassunto} many {# messaggi riassunti} other {# messaggi riassunti}}",
+    "turn": "Turno del modello {index}: {model}",
+    "turnServedBy": "tramite {provider}",
+    "turnTokens": "{input} token in ingresso, {output} in uscita",
+    "turnTools": "{count, plural, one {richiede # strumento} many {richiede # strumenti} other {richiede # strumenti}}",
+    "turnReasoned": "ha riflettuto",
+    "turnFailed": "Errore {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} caratteri di risultato",
+    "toolTruncated": "troncato",
+    "toolUntrusted": "Contenuto esterno",
+    "toolRepeated": "Ripetizione",
+    "toolPaused": "mette in pausa l’esecuzione",
+    "toolStatus": {
+      "succeeded": "riuscito",
+      "failed": "non riuscito",
+      "refused": "rifiutato",
+      "skipped": "non eseguito",
+      "undelivered": "consegna incompleta"
+    },
+    "truncationRetry": "Troncato al limite di output, tentativo {attempt}",
+    "attentionRaised": "Richiesta di chiarimento: {title}",
+    "attentionBlocking": "bloccante",
+    "attentionSettled": "Richiesta di chiarimento risolta",
+    "changeset": "Proposta di modifica: {title}",
+    "workCheckpoint": "Stato dei lavori salvato",
+    "resumedFrom": "Riprende da un ciclo precedente",
+    "resumedAs": "Proseguito con la risposta in un nuovo ciclo",
+    "finished": "Terminato",
+    "finishedError": "Errore {code}"
+  },
+  "status": {
+    "pending": "In attesa",
+    "running": "In esecuzione",
+    "completed": "Completato",
+    "failed": "Non riuscito",
+    "cancelled": "Annullato",
+    "timed_out": "Tempo scaduto"
+  },
+  "trace": {
+    "heading": "Operazioni di sistema",
+    "correlationId": "ID di correlazione",
+    "traceId": "ID di traccia",
+    "none": "nessuno",
+    "hint": "Con l’ID di correlazione puoi trovare le righe di log di questo ciclo nel registro dei servizi."
+  },
+  "links": {
+    "fromWorkItem": "Cronologia",
+    "fromChat": "Vedi cronologia"
+  }
+}

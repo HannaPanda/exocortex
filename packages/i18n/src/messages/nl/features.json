@@ -507,6 +507,16 @@
     },
     "where": "De voortgangsindicator in de chat."
   },
+  "lauf-inspektor": {
+    "title": "Bekijken wat een AI-uitvoering heeft gedaan",
+    "summary": "Voor elke uitvoering van de ingebouwde AI is er een tijdlijn: welk model via welke provider heeft geantwoord, welke tools het hoe lang heeft aangeroepen, wat het heeft gekost en waaruit de context bestond, tot op de afzonderlijke pagina’s nauwkeurig.",
+    "details": {
+      "p1": "De tijdlijn toont elke stap met tijdstip en duur: het samenstellen van de context, elke modelronde met model, provider, tokens en kosten, elke tool-aanroep met doel, resultaatgrootte en uitkomst, plus verduidelijkingsvragen, het hervatten na een antwoord, wijzigingsvoorstellen en tussenstanden.",
+      "p2": "Onder „Context vóór de eerste ronde” staat waaruit de prompt bestond: basisprompt, regelpagina’s, de geopende pagina, vastgepinde bronnen, het eerdere verloop en de toolbeschrijvingen, telkens met grootte, en welke pagina’s daar precies achter zitten. Zo kun je achterhalen waarom een antwoord duur was of iets niet wist.",
+      "p3": "Er worden alleen groottes, namen en resultaten vastgelegd, nooit de prompt, de antwoorden of de tekst van de gelezen pagina’s. Paginatitels zie je alleen uit de werkruimte van de uitvoering. Voor beheerdoeleinden staan de correlatie- en trace-ID erbij, waarmee logs en traces van de uitvoering kunnen worden teruggevonden. Agents lezen hetzelfde via exo_ai_run_inspect."
+    },
+    "where": "Onder een antwoord in de chat via „Proces bekijken”, of bij een taak in de lijst met AI-uitvoeringen via „Proces”."
+  },
   "ki-chat": {
     "title": "Met een model over je pagina’s praten",
     "summary": "De chat draait naast de pagina en kent titel en pad van de geopende pagina. Welk model antwoordt, staat in het modelbeheer; zonder ingestelde provider antwoordt een lokaal dummy-model, zodat niets ervan afhangt.",

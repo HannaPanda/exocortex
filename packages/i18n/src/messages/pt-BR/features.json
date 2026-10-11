@@ -507,6 +507,16 @@
     },
     "where": "O indicador de progresso no chat."
   },
+  "lauf-inspektor": {
+    "title": "Ver o que uma execução de IA fez",
+    "summary": "Para cada execução da IA integrada, há uma linha do tempo: qual modelo respondeu por meio de qual provedor, quais ferramentas chamou e por quanto tempo, quanto isso custou e do que o contexto era composto, até as páginas individuais.",
+    "details": {
+      "p1": "A linha do tempo mostra cada etapa com seu horário e duração: a montagem do contexto, cada rodada do modelo com modelo, provedor, tokens e custos, cada chamada de ferramenta com destino, tamanho do resultado e desfecho, além de perguntas de confirmação, a continuação após uma resposta, sugestões de alteração e estados de trabalho.",
+      "p2": "Em „Contexto antes da primeira rodada“, é mostrado do que o prompt era composto: prompt base, páginas de regras, a página aberta, fontes fixadas, o histórico anterior e as descrições das ferramentas, cada um com tamanho, e quais páginas exatas estão por trás disso. Assim dá para entender por que uma resposta foi cara ou não sabia de algo.",
+      "p3": "Apenas tamanhos, nomes e resultados são registrados, nunca o prompt, as respostas ou o texto das páginas lidas. Você só vê títulos de páginas do espaço de trabalho da execução. Para operações, constam o ID de correlação e de rastreamento, com os quais é possível encontrar logs e rastreamentos da execução. Os agentes leem o mesmo via exo_ai_run_inspect."
+    },
+    "where": "Abaixo de uma resposta no chat em „Ver histórico“, ou em uma tarefa na lista de execuções de IA em „Histórico“."
+  },
   "ki-chat": {
     "title": "Conversar com um modelo sobre as suas páginas",
     "summary": "O chat fica ao lado da página e conhece o título e o caminho da página aberta. Qual modelo responde é definido no gerenciamento de modelos; sem um provedor configurado, um modelo simulado local responde para que nada dependa disso.",

@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Verloop van een AI-run"
+  },
+  "page": {
+    "loading": "Verloop laden…",
+    "loadFailed": "Het verloop van deze run kon niet worden geladen.",
+    "back": "Terug",
+    "heading": "Verloop van een AI-run",
+    "subheading": "{model}, gemaakt {moment}",
+    "openConversation": "Gesprek openen",
+    "notRecorded": "Deze run is ouder dan de registratie. Alleen zichtbaar is wat andere plekken erover weten: begin, einde, wedervragen en suggesties.",
+    "capped": "De registratie heeft bij deze run de limiet bereikt. Latere stappen ontbreken op de tijdlijn.",
+    "running": "De run is nog niet voltooid. De weergave wordt automatisch bijgewerkt.",
+    "privacy": "Hier staan alleen groottes, namen en resultaten. De prompt, antwoorden en gereedschapsresultaten zelf worden niet geregistreerd."
+  },
+  "summary": {
+    "heading": "Overzicht",
+    "duration": "Duur",
+    "turns": "Modelrondes",
+    "toolCalls": "Gereedschapsaanroepen",
+    "toolCallsValue": "{count} ({failed, plural, =0 {alle succesvol} one {# niet succesvol} other {# niet succesvol}})",
+    "providers": "Providers",
+    "providersNone": "niet gerapporteerd",
+    "providerSwitches": "Providerwisselingen",
+    "tokens": "Tokens",
+    "tokensValue": "{input} erin, {output} eruit",
+    "tokensCached": "waarvan {cached} uit de cache",
+    "cost": "Kosten",
+    "costEstimated": "{cost} (geschat op basis van prijslijst)",
+    "unknown": "onbekend"
+  },
+  "context": {
+    "heading": "Context vóór de eerste ronde",
+    "total": "{chars} tekens, ongeveer {tokens} tokens",
+    "none": "Voor deze run is geen samenstelling geregistreerd.",
+    "sectionValue": "{chars} tekens · ~{tokens} tokens",
+    "items": "{count, plural, one {# item} other {# items}}",
+    "truncated": "ingekort",
+    "unnamedSource": "niet meer aanwezig of niet zichtbaar",
+    "sourceChars": "{chars} tekens",
+    "sourceCharsOf": "{chars} van {full} tekens",
+    "sections": {
+      "base_prompt": "Basis-prompt",
+      "formatting": "Antwoordindeling",
+      "trust_rules": "Vertrouwensregels",
+      "always_rules": "Regelpagina’s (altijd)",
+      "on_demand_rules": "Regels op aanvraag",
+      "open_page": "Geopende pagina",
+      "pinned_sources": "Vastgezette bronnen",
+      "closing": "Werkruimte en datum",
+      "agent_role": "Agentrol",
+      "write_mode": "Schrijfmodus",
+      "images": "Afbeeldingsbeschrijvingen",
+      "conversation_summary": "Samenvatting van eerdere berichten",
+      "conversation_user": "Je berichten",
+      "conversation_assistant": "Eerdere antwoorden",
+      "conversation_tool": "Eerdere toolresultaten",
+      "tool_schemas": "Toolbeschrijvingen"
+    },
+    "modes": {
+      "reference": "alleen genoemd",
+      "embedded": "ingesloten",
+      "pointer": "als verwijzing",
+      "content": "met inhoud"
+    }
+  },
+  "toolResults": {
+    "heading": "Gelezen tijdens run",
+    "row": "{calls, plural, one {# aanroep} other {# aanroepen}}, {chars} tekens"
+  },
+  "origins": {
+    "internal": "Uit deze werkruimte",
+    "attachment": "Uit geüploade bestanden",
+    "web": "Van het web",
+    "mail": "Uit e-mails",
+    "external-mcp": "Van externe MCP-servers"
+  },
+  "timeline": {
+    "heading": "Tijdlijn",
+    "created": "Run aangemaakt",
+    "started": "Worker heeft overgenomen",
+    "context": "Context samengesteld: {chars} tekens, ~{tokens} tokens",
+    "compaction": "Geschiedenis ingekort: {count, plural, one {# bericht} other {# berichten}} samengevat",
+    "turn": "Modelronde {index}: {model}",
+    "turnServedBy": "via {provider}",
+    "turnTokens": "{input} tokens in, {output} uit",
+    "turnTools": "{count, plural, one {vraagt # tool aan} other {vraagt # tools aan}}",
+    "turnReasoned": "heeft nagedacht",
+    "turnFailed": "Fout {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} tekens resultaat",
+    "toolTruncated": "ingekort",
+    "toolUntrusted": "Externe inhoud",
+    "toolRepeated": "Herhaling",
+    "toolPaused": "onderbreekt de run",
+    "toolStatus": {
+      "succeeded": "geslaagd",
+      "failed": "mislukt",
+      "refused": "geweigerd",
+      "skipped": "niet uitgevoerd",
+      "undelivered": "onvolledig geleverd"
+    },
+    "truncationRetry": "Afgekapt bij uitvoerlimiet, poging {attempt}",
+    "attentionRaised": "Vraag: {title}",
+    "attentionBlocking": "blokkerend",
+    "attentionSettled": "Vraag afgehandeld",
+    "changeset": "Wijzigingsvoorstel: {title}",
+    "workCheckpoint": "Werkstatus vastgelegd",
+    "resumedFrom": "Zet een eerdere run voort",
+    "resumedAs": "Met het antwoord in een nieuwe run voortgezet",
+    "finished": "Voltooid",
+    "finishedError": "Fout {code}"
+  },
+  "status": {
+    "pending": "Wachtend",
+    "running": "Bezig",
+    "completed": "Voltooid",
+    "failed": "Mislukt",
+    "cancelled": "Geannuleerd",
+    "timed_out": "Time-out"
+  },
+  "trace": {
+    "heading": "Voor beheer",
+    "correlationId": "Correlatie-ID",
+    "traceId": "Trace-ID",
+    "none": "geen",
+    "hint": "Met de correlatie-ID vind je de logregels van deze run in het logboek van de services."
+  },
+  "links": {
+    "fromWorkItem": "Verloop",
+    "fromChat": "Verloop bekijken"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Detalles de una ejecución de IA"
+  },
+  "page": {
+    "loading": "Cargando detalles…",
+    "loadFailed": "No se han podido cargar los detalles de esta ejecución.",
+    "back": "Atrás",
+    "heading": "Detalles de una ejecución de IA",
+    "subheading": "{model}, creada {moment}",
+    "openConversation": "Abrir conversación",
+    "notRecorded": "Esta ejecución es anterior al registro. Solo se muestra lo que otras partes saben sobre ella: inicio, fin, preguntas y sugerencias.",
+    "capped": "El registro ha alcanzado su límite en esta ejecución. Los pasos posteriores no aparecen en la cronología.",
+    "running": "La ejecución aún no ha terminado. Esta vista se actualiza automáticamente.",
+    "privacy": "Aquí solo aparecen tamaños, nombres y resultados. Ni el prompt, ni las respuestas ni los resultados de las herramientas se registran."
+  },
+  "summary": {
+    "heading": "Resumen",
+    "duration": "Duración",
+    "turns": "Turnos del modelo",
+    "toolCalls": "Llamadas a herramientas",
+    "toolCallsValue": "{count} ({failed, plural, =0 {todas correctas} one {# con error} many {# con error} other {# con error}})",
+    "providers": "Proveedores",
+    "providersNone": "no especificado",
+    "providerSwitches": "Cambios de proveedor",
+    "tokens": "Tokens",
+    "tokensValue": "{input} de entrada, {output} de salida",
+    "tokensCached": "{cached} de ellos desde la memoria caché",
+    "cost": "Coste",
+    "costEstimated": "{cost} (estimado según las tarifas)",
+    "unknown": "desconocido"
+  },
+  "context": {
+    "heading": "Contexto antes del primer turno",
+    "total": "{chars} caracteres, aprox. {tokens} tokens",
+    "none": "No hay información sobre la composición registrada para esta ejecución.",
+    "sectionValue": "{chars} caracteres · ~{tokens} tokens",
+    "items": "{count, plural, one {# elemento} many {# elementos} other {# elementos}}",
+    "truncated": "acortado",
+    "unnamedSource": "ya no existe o no es visible",
+    "sourceChars": "{chars} caracteres",
+    "sourceCharsOf": "{chars} de {full} caracteres",
+    "sections": {
+      "base_prompt": "Prompt base",
+      "formatting": "Formato de respuesta",
+      "trust_rules": "Reglas de confianza",
+      "always_rules": "Páginas de reglas (siempre)",
+      "on_demand_rules": "Reglas a petición",
+      "open_page": "Página abierta",
+      "pinned_sources": "Fuentes fijadas",
+      "closing": "Espacio de trabajo y fecha",
+      "agent_role": "Rol del agente",
+      "write_mode": "Modo de escritura",
+      "images": "Descripciones de imagen",
+      "conversation_summary": "Resumen de mensajes anteriores",
+      "conversation_user": "Tus mensajes",
+      "conversation_assistant": "Respuestas anteriores",
+      "conversation_tool": "Resultados de herramientas anteriores",
+      "tool_schemas": "Descripciones de herramientas"
+    },
+    "modes": {
+      "reference": "solo mención",
+      "embedded": "integrado",
+      "pointer": "como referencia",
+      "content": "con contenido"
+    }
+  },
+  "toolResults": {
+    "heading": "Leído durante la ejecución",
+    "row": "{calls, plural, one {# llamada} many {# llamadas} other {# llamadas}}, {chars} caracteres"
+  },
+  "origins": {
+    "internal": "De este espacio de trabajo",
+    "attachment": "De archivos subidos",
+    "web": "De la web",
+    "mail": "De correos",
+    "external-mcp": "De servidores MCP externos"
+  },
+  "timeline": {
+    "heading": "Cronología",
+    "created": "Ejecución creada",
+    "started": "El worker ha tomado el control",
+    "context": "Contexto preparado: {chars} caracteres, ~{tokens} tokens",
+    "compaction": "Historial compactado: {count, plural, one {# mensaje resumido} many {# mensajes resumidos} other {# mensajes resumidos}}",
+    "turn": "Ronda de modelo {index}: {model}",
+    "turnServedBy": "vía {provider}",
+    "turnTokens": "{input} tokens de entrada, {output} de salida",
+    "turnTools": "{count, plural, one {solicita # herramienta} many {solicita # herramientas} other {solicita # herramientas}}",
+    "turnReasoned": "ha razonado",
+    "turnFailed": "Error {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} caracteres de resultado",
+    "toolTruncated": "recortado",
+    "toolUntrusted": "contenido externo",
+    "toolRepeated": "repetición",
+    "toolPaused": "pausa la ejecución",
+    "toolStatus": {
+      "succeeded": "completado con éxito",
+      "failed": "fallido",
+      "refused": "rechazado",
+      "skipped": "no ejecutado",
+      "undelivered": "entrega incompleta"
+    },
+    "truncationRetry": "Truncado por límite de salida, intento {attempt}",
+    "attentionRaised": "Consulta: {title}",
+    "attentionBlocking": "bloqueante",
+    "attentionSettled": "Consulta resuelta",
+    "changeset": "Propuesta de cambio: {title}",
+    "workCheckpoint": "Punto de control guardado",
+    "resumedFrom": "Reanuda una ejecución anterior",
+    "resumedAs": "Continuado con la respuesta en una nueva ejecución",
+    "finished": "Terminado",
+    "finishedError": "Error {code}"
+  },
+  "status": {
+    "pending": "En espera",
+    "running": "En curso",
+    "completed": "Completado",
+    "failed": "Fallido",
+    "cancelled": "Cancelado",
+    "timed_out": "Tiempo agotado"
+  },
+  "trace": {
+    "heading": "Para operaciones",
+    "correlationId": "ID de correlación",
+    "traceId": "ID de traza",
+    "none": "ninguno",
+    "hint": "Con el ID de correlación puedes encontrar las líneas de registro de esta ejecución en el log de los servicios."
+  },
+  "links": {
+    "fromWorkItem": "Secuencia",
+    "fromChat": "Ver secuencia"
+  }
+}

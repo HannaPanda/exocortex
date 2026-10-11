@@ -10972,6 +10972,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "53af93a6d1010a41"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "de04a8db425e063e"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "b5741d3ffd932324"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "e8af7ef528844300"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "a9a92ec5cd055e1d"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "83e3408248d63978"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "b6d00427a5e6479e"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "cb2eb7c58723dbcd"
@@ -13555,6 +13579,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "be5fce512fbcf401"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "0c33fac0d1061bae"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "2a41290e2528b549"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "3a09fff705445365"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "9289140b1ac28dbd"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "bc4e078bf74f9930"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "ad93d458c7943bfb"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "f6cf3e7056358dd8"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "d1aee987f4ffffd6"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "c24a166f03fc4876"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "4056e734b7ade8c4"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "05c30a6db8a846d7"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "2cf159378153ae8b"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "c4755b5e5fb36983"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "2eaa5c1b821f2519"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "b14a70a2e02524f6"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "befc6e918047c85b"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "052b83915260c6f9"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "3edb6d7340f332e0"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "67a174f31b1b0748"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "af0303342a01d272"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "67ee0e521c8369d9"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "eb258712115692d2"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "bb36a124f38c8dcd"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "58db3a8149acf5d6"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "e3f0207b5be9138f"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "009b95fd8484cb45"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "cb37531be2e83de4"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "227b1c2e53cfd4a3"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "37c10c5c2caf0504"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "febaccf66855d965"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "7bbc36905270774e"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "15adf798712d1d12"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "06428a569baa75cb"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "b16c3c2e531318ba"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "f7604eaeb08fcd87"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "946465a1ce2ad5f1"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "5ceeb4882914aee1"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "76900f1bfd16c8d4"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "197ad6e254456e3f"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "15adf798712d1d12"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "fdaf32062e8655c4"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "3227898f7f26f1aa"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "65ce9bc5a43e900d"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7047b9af7a4cd070"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "616b94006329704c"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "63a8aa33ccd52830"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "a9501c15f7bfb884"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "13ca2ee2499310d9"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "22a970d2e5b1cc23"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "031a8f0f659df890"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "331551b0de4157c9"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "f4ccae29e1bb0c20"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "9718cc761cfd5810"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "204a5eb2cd28bcfd"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "1380e3f3fe63c0c0"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "4fc52a3c4c558b51"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "d4b1ea5708dd5329"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "0bc410066d2545b4"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "996c32b35f2182a9"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "2087cb5f8b636549"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "cd181e96aba929fc"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "781c2236107c0a51"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "da5122dc0f97b158"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "7375999b6cda6d2f"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "a52debadfba02231"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "b23a6a8439c0dde5"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "5a9cf40c7b2a1649"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "aa6b018e9d041092"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "a873b82ce9d754e2"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "0538240bb9b8144e"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "eb041dd97c8154c2"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "4ad1d4a5f6cc5a60"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "4c211da859d7d65c"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "7804f7a79a9eee32"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "c9aa5d2192be4db8"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "9dcff98e275f0cb9"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "77b6b133d7e156b9"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "588356829b788b32"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "13741073e984376d"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "2cdc664ddbc841a4"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "dd13795d0e0b52c8"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "27eecfc00b9ea41f"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "5d28a90f4498a814"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "83c874d33e8bff73"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "389595a44dc9dce7"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "5dceaeceb6d8a49d"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "ec148f85449d3df3"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "227b1c2e53cfd4a3"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "b8516c1e0d34550d"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "6d74728e8c0835e6"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "5680ff62025724fc"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "c9aa5d2192be4db8"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "b8192353a3982b4f"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "9c84e2c2c840b8d1"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "e9647f074e9d3192"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "37a2ef85f8d739c2"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "74dcfedac716d72c"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "76bdbee40c11ea94"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "c267c186e80d31a7"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "358cc201f87d9dc9"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "12ef00bd8abe8e24"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "140bedbf9c3f6d56"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "c4cbbc62b68462a0"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -28874,6 +29322,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "93571eb131463474"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "f8fe9985c8fe96a6"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "a698dca301a5eee0"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "eb742a2c4808856b"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "0ae3dc1be9d844a3"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "537e5bd4465a1b1a"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "d14dff14927f2c7d"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "9c75a6912a589b7c"
@@ -31457,6 +31929,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "32fcdef6278809a9"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "105a362acf5e1b4d"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "fd0b861833a59c08"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "9bb7be955dd9a6d4"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "cb3df8a92e5c47f0"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "2a6219d9158c60f2"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "40e81d48581b2c9c"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "e50472682acab80c"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "f257e7a2419eae6e"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "8b7717f6b0abb352"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "33131bf40544f1d0"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "071c1966251a8e80"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "dadee99b599ce221"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "4dc2d4066c713d89"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "0364acd78cfc3fcf"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "70a9cbcb57e3d0bf"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "d1b4f0d83430a2a5"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "ef097f14de5b7942"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "6b0b36ef35522c7b"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "fad0556f2226ecc1"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "f1b1ba3301f0c671"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "495b583f28fef03e"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "ae896730e36ebaf1"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "9aa9276d23df1b10"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "00bd9c92a1fdd250"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "4087e2290e840772"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "34ccfb03f7eae920"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "aeeea1fd14f14a83"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "401d9f30d20e5df7"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "0167d7917ab5ff7c"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "3d2e865f832ca4bf"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "58d7dd0eaf3c26b3"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "3fc24d93bf2057e4"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "4aac02f2867ed243"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "d0ada342a401decf"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "f45503e9d8dfd93c"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "8ea7030edb38af75"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "835607871eff7f68"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "f9618693ab0e05f9"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "f83086775fb7f771"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "3fc24d93bf2057e4"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "54fb151d4a96102f"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "fe3ce63c7341513c"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "b44510b3e3e7f802"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "b8badd9c554ae790"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "6bf32d41bc19070f"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "1fcbbdc210d2a6a5"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "ace8d6f5a1be860a"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "f407384e2f304cf0"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "856641d2b3eef439"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "6883aef403fc794a"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "a285794a3cfff883"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "75f1f75e33377448"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "81f5a9545f35ed14"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "c940e0fbc42fc346"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "6c833a62193493c9"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "d5a804455b3392ca"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "ed7bdc67c84b3ed6"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "dea68dc2deb7dba6"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "bb1bb5cc7a83b6c0"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "a834d002b87347eb"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "725a39bd46064583"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "97b42b3ee6c41812"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "123e01f3a8dbfa0d"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "09cde700dce37eca"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "7e006887c07956ea"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "4b061e983b277ca2"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "4a224ec2ce73816c"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "951b5fd4edc438d6"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "af01f54dedd3973d"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "bfdc764d56a7de62"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "47e674c3ae3c19e3"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "891d2670814189db"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "9f5f23698c10789c"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "7b4a9395b9b004c3"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "c9aa5d2192be4db8"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "e90db9e0c83cbf91"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "0af778552a1d2c38"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "60427b60219c739a"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "d4aec308b8fc4245"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "aaba77afeed74d4e"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "a1eceeb17ff1f5cb"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "8ba3e6f413c42552"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "4033137b151e146a"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "f693fc0252e0949a"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "f4108bff938981d1"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "aecc8054bbeb16d9"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "2568f1913409c944"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "c9bced1558988451"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "9671c3b0e0ba87aa"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "2ec2bccdbdbab3b5"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "3809caeea623b19d"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "c9aa5d2192be4db8"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "b9fa18b34e15afee"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "e59845808f703477"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "5e6e47b65c536c2d"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "76398917e2aeb617"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "bac48e85bc854e15"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "75b5b138cab296b0"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "099ac65d0d35b2c7"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "08de640279d136d2"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "d942a13aed28c5b1"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "6e070d092622b5e4"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "3f695d04348e0bb6"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "e6ae01f11188ea36"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -46776,6 +47672,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "93c18e1d2582766e"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "b7ef52a87af31197"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "51be99db929d75a9"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "006721f01dea213c"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "1f22106ccac1f5c1"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "35bc636e95b9c629"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "256dd9390338e1b5"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "b0ff5f649c301f24"
@@ -49359,6 +50279,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "ed7328f520357fda"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "11ec67ae1426b774"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "128f01c32961eaa8"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "55e3600c8c8d9c6e"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "5a81aa77a1c5c90b"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "70c01875454ba5c4"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "c4bdd94d3c752a9a"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "18fae289b597a841"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "a23ade5370f80ed9"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "bfdef84583fadf5d"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "5ea7df6026a84514"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "e55beb0891f24bd0"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "e2bc247ab8d53efd"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "de35ac0ba3e03fa0"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "eed2ffb69c4d8a5a"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "1838dff9ac22bf9d"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "e46f0bd06bdaf238"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "012739928362d0cb"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "ed3339f54e6494a9"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "b6478300c0c41363"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "4e94592a4f47a4b8"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "f72a2ddd29d13fc7"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "8f825a52a8300e6d"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "c853ed0787cb225b"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "c8431b3480474710"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "5f64f2df17e24c7e"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "ef59e83a517d97c9"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "370b7a80652fc79c"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "f66eb73d1884c37c"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "0d9a033eee5eab9e"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "18ccddeb9a95f6c9"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "6dd1337bcc52b5ff"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "f0997dbb6ef4462b"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "218eafa145629f38"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "5040ac2befe0ca87"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "9e1dc0446781edc6"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "97c34663c394ef5e"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "fcaefcd774c4a20a"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "ef23a5940244e0f5"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "6355231c6dc3ac8d"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "f0997dbb6ef4462b"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "95a6e2d25076f721"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "f62598cec1d5666c"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "a9aaef10a04b2e52"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "71e59b56869b6774"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "c39b703ae609501a"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "bf0fa96aea965d57"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "16c013f4e520520b"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "58524ce81f34c879"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "f28acc85bfcb0e7d"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "f694b907279d8b71"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "2f6c8477e92bc6ea"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "797f5dcd0217e2b9"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "d5be3edd038bd2e1"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "385da126a8d159e9"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "27158337b402b427"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "71d0bad42af1144f"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "bb28a9f4a4e34fac"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "bd233c3ef0968a94"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "016ec5850618c0e9"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "968becc8949c73ac"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "46d5d1d2066a88f8"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "1da66b50deda1833"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "746a42d5de9469f9"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "c03c0af143d5dde2"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "e24f528fe59b6f9d"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "d5b7f78a77e704ed"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "850e43066e953ee5"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "1036b3d0c66a40b0"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "0ec788d00124335a"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "f1012b48dc53831f"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "c03916b5061f754b"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "2331be409d73304b"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "c1502ed4d8bba347"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "f28acc85bfcb0e7d"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "008cf97e2244d8ef"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "7e1357015f2fda88"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "46ef15d18779ccb4"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "6906cb920e632fef"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "81c180332c5f5aff"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "139f47cdb53aaa35"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "884e204072938f3f"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "f3dc3b9775077ed7"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "3d5004bb5b4c1f38"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "2c4f0b7aa13b4ffd"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "e9d925d5fc89ea28"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "a20b78e8b18e64d2"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "5b519b7a46a87da7"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "f66eb73d1884c37c"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "b6d50ea1cc436644"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "fa26e56bba14cdb3"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "0b5eddcdcbac9eaa"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "008cf97e2244d8ef"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "e29cee5e51849ec8"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "0eecff956c51688d"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "23a11e51ef51eb00"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "5dbd9b769a1677f5"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "0ba2dbb41213956c"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "4ce388966bbea883"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "286a6af0073051af"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "187826e2769bf15b"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "bcac6636d025c559"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "7b62d6fbba9c1367"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "55e38f86e87249b9"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -64678,6 +66022,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "93004ffa3455b700"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "2773064459d2b293"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "cd621e3abcfacbe6"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "8ff9fff7e46ffcc8"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "152b6d892b012728"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "f15c1ac467105f21"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "0cad2249eeb172b4"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "bb3ef9a9e4799c31"
@@ -67261,6 +68629,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "a2db8b83d8381499"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "7dccd5addc762e55"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "2818ed3592573d26"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "8ad9583fb898273d"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "2a386f5a952f6421"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "be736b785e9f7fc7"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "203d528780a4c157"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "95794ea1bbe6b7bd"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "c757d45488212798"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "a46f85d4fe30ced2"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "fd6e1d94aa3fa9be"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "d8349ab54acfa9fc"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "5526112202db7976"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "a6f1b8d448663e5d"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "6fcd0ec607d1cf82"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "5c1dd643cc9fadb8"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "eaffd97f1caa8b78"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "8df36e0cb7f2785e"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "f4db410c046b4fcd"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "87def27b6ae69971"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "9a9e549ea6f48aa9"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "d8c6012379a2e46d"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "a6bf07a520189e4d"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "61f2208091074af6"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "3bc2bea492b72de6"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "6e856d2426b87b68"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "f8414d6f5ef2ddf5"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "d206400d6055a3b4"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "0b65811b9ebe4a80"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "ff4cad6de989a93d"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "4ae4cd5147e82d8c"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "cc91da834ddfe494"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "97494435252f37ef"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "e01406dace7d124a"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "675582bac2ebcd60"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "436d5ac9d43cfc5c"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "f3e1951ce528bd25"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "4812b69e05267a4d"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "80426885bb7468ff"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "2bba5a89b18a8573"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "97494435252f37ef"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "e9f434f002eede8f"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "e01c27031742e59f"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "713ebd441a278c9b"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1b01fb896aca3936"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "319f13ba02c98496"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "dcc8a6e6ba333c85"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "f58abf67aaebff66"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "5c56e4286bc41b18"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "948d392455cc69c4"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "d30d221667577f6c"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "6f3524690512128a"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "bbcb79f210559536"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "0775b7658e81d356"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "1fecb6bc9f3e5764"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "d5479d3d67cec6da"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "902f1527bb48e19f"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "5807a70b7cc07365"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "5ad49e623ea285c0"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "6dd59c4b35bff8a7"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "78381f7db9f67e2c"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "d2089be672953d11"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "f20279018d3f7811"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "ea388dc86f913c55"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "ef3bbefa3128a4d9"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "32afb41b169aa679"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "c801f70913a15635"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "a1b0c35284dccf03"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "810eb61f65fa91dc"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "41a300bedbb6e83f"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "7766d53b60c37f43"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "caf0f7e253f78765"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "2376537c3aab6637"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "1f390b5c72580a42"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "9efd576b183cecaa"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "73d5511be0a6a2eb"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "aa9c21f053367ede"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "cc91da834ddfe494"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "4d7d20a1e726ab51"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "62fe496027db0717"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "cfccfe5e9ace94af"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "1acb32cad9e55409"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "9fa93a0ba72325ca"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "27493833f4a334f3"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "69e23f5e71fd3b53"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "0d4b988d62fe8111"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "06ad8bfb98e1249f"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "c65eb40087ed2917"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "2943d0e44afbd3d4"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "0b65811b9ebe4a80"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "c38479364c7637fd"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "fa890687d35b87d5"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "feda69e08114a8af"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "aa9c21f053367ede"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "e60fde18960e9b85"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "23d2729be4fd348e"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "da22123a040aea4b"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "ae65427fea62250c"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "a68d8f1c687542e0"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "4ba41e3a80cf4723"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "496850eb83793289"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "58b0349fc1b5c2b5"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "7d564280861e90b5"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "dd04b29811d88af3"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "b8ce01f96d7a3abb"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "67da46523a377da9"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -82580,6 +84372,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "f90f0108d6a78de9"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "4e1bf8a2f805d542"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "7ab27210fc2ef1cd"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "090662fb261470e6"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "c65563ddfab4ba5d"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "a66168f92a8019e6"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "2f23ba3f979b1593"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "ed011983015f6a8f"
@@ -85163,6 +86979,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "ee0894e2ce1f8d8a"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "9112676d309ec87f"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "1eb9964e951859b5"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "c029793866a58e54"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "8d6d92300c7e0a70"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "ffc9f5a818b0e195"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "61f0b588ca9cc601"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "6ced510fa796334b"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "2e1e972c7cb45789"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "b7a6f4ce4e39ee04"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "5b3657d591975978"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "395cec63e1021626"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "3d68291b938ad640"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "03e9d803301375bc"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "14db91dd3d8dca88"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "c59096d1daba4d6d"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "74ecf77345c7443b"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "c9e6e1be1072aa7c"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "3e62a712621485f6"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "fb098f2c7dd90f1e"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "6659a1ef36fe8608"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "096f458baea90e37"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "ba2ba0000d187ed1"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "c176e147a93d8613"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "481ecb7e076b7a8e"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "b630a8d34ddf650d"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "53d75b1d927492e2"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "fad970c7da76c1de"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "5335c7f0095dd5c4"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "6d4ff009533255ce"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "3081c1af2ee475aa"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "2b125cf14a0217d0"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "80d2479fe70f907a"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "ff0492f70ffa0428"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "98dfc6a42edd1a81"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "f7c20a0e6639f827"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "bca66cca58b5acf7"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "1375da9da7fb31d1"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "ebf6cf719cfa302b"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "b90075b12f29732a"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "80d2479fe70f907a"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "d59d0a6ab14adf1a"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "38971c3be49f2bb5"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "73e1462d4e621c49"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "1beecf213692d574"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "7dad55252ce9c800"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "0fe7703884e4e0ed"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "28b767ad457eb313"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "92c56429b34e441c"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "ca53207fe79a3392"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "dfa3aaaa5826f4b9"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "b7fec6adf02ac267"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "18d64b111bec7df6"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "6c4bbdd6721e6267"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "a8ddeee9f3d73108"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "1567eefa432fdcf0"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "c8d7586e95962a37"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "6c20ea442bdde6a2"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "f1c14014fe8b498a"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "996c32b35f2182a9"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "5d048f3f5398beee"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "4831a244e61cea54"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "d5c522124d5a5b70"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "c02478ec7add0891"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "b04e95361c9535f5"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "8ac9dc1ce54c4dd2"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "b12df4a5a07d2ef3"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "2d1bbc5e5f696309"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "d7dbb6da433fb23e"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "2d946de2a3e61930"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "6247820767dad72b"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "0f3fd9e04764ad4b"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "7b29ca8758b07a97"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "346d34da23fb8b18"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "ca53207fe79a3392"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "33139b72652e28d4"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "60cd18c5a186e675"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "bf3ec8e066acf4b7"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "c96d4d9cf3cce9ac"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "c1d603436412fd60"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "e2289b6139559460"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "705d91e1f052700e"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "95aaf3552fc7b855"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "9eaea03a0fb9a721"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "4080be9320239b41"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "744328f37c122288"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "d9f49c6cac0f52bf"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "8e22afb9a61e6888"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "5335c7f0095dd5c4"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "13dcb9d0681cad9d"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "3f490b2adbc40396"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "663a8da49455d536"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "33139b72652e28d4"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "df844489bea1aa70"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "45ddd6d004ac0fb8"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "b1a97afe715c0e2a"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "27a8743d046f86a3"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "7ee0f2302a0b18a8"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "3fc4d28f74492416"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "3ab13e3e622b1799"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "9141e83b835a0ff1"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "8d83ce08bbdc6721"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "8aa4ce9154c55905"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "6cdf4afa5ffa6d31"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -100482,6 +102722,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "137c86e923fa425a"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "0207a12e5e8ec617"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "a2b5f8a0f88e2a30"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "d18beffb6b108782"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "8a0b4682e8ab1112"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "f27aa7929eab9b0f"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "bb0d980d0f5d9c40"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "46c096229796785b"
@@ -103065,6 +105329,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "aec43e6910670165"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "dddaee12ac4a1d3c"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "db983ac9fa808448"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "bc835564c13d0b53"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "b5330c2059f45cee"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "e137c97233cd8ec6"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "0adaadd9e9701016"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "8ea0918dd6cb2c0f"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "ab38bcde82986062"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "a47ee92a4f56f7cd"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "3cace8680bc02f78"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "47bebef94fdeaa19"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "25d170e98006c545"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "dc8827e5adc0f10f"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "2c1727a85935ca6a"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "a6e48082fdba8ff3"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "a9e63c7161fec908"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "5a2891a40c66e8ba"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "fd4155a9da8e3932"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "9c971e8822cc298c"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "c80bc810d6abd5c7"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "9a995fe24bcc098e"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "f83cd006c460f8ea"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "493b82bb04a2b68c"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "64415a890fbf5a21"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "5ae75d290b2a914a"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "45e58be2681b12ef"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "174fc6c86a707896"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "09853710e9a63fb7"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "134e7a6264a00956"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "aae7a48c28d35dca"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "6d68e3c9d0cbad9d"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "560dea0abfc95f8e"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "15e8fbccf612d4dd"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "5fd39286cdb005c6"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "f37de4f1a532d170"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "d1335e55d4ca5266"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "d89a9d65f65f403a"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "dee484d448fc2201"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "38a9db4534cd3a41"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "560dea0abfc95f8e"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "39f7b9e9ad041bda"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "a85e16076474c4cf"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "7189abdfba0ab9f8"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "7dd8120be3ebe142"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "1a88fa018ba8173f"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "e2fcecc34166ec56"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "7d318ee7f1044cc4"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "22a4a3d788e3a2e3"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "0dbc8f9b24763f94"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "7435bef4ed25a291"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "d99975db71c20134"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "4c870f05321b855c"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "58df8ab0c82c837c"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "ab8f5c765050cc36"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "c0627e9c0d63d89d"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "119496feb778d983"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "0cbdb06a0d19b253"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "e93baa67a89c4bed"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "439dddf3c0920599"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "dda4fb379af67429"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "9bb0dd2d0910b292"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "99493655d08c8717"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "6ffbebb9c03b0181"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "63a1bcd6e1a1e771"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "a189a41a49732130"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "2195c42a4a11176a"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "393832a22c575e7f"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "005e3343a1806894"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "aa97c83f1803bc6c"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "df6834f1ae4ca140"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "2d88a85f44cde926"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "b7f9f6e026dbc302"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "671e1226d9282bd2"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "57ac9a3fb82c249d"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "41a23a8b3d41b8d6"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "271d25fac3f7cb42"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "5118cf42230b22ad"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "c59b321d9d86ec87"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "8239413f55f23082"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "e20140ac8b03c73d"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "c7ea92070000a106"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "5fc6e7d2f5b9e588"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "aaa8149ccfaf3e79"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "b4b10f572b8c33c0"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "5663029fc131f09c"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "f109096899098695"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "129ef4e217051ae9"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "29eb95e3d523afd1"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "09853710e9a63fb7"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "4a3cff57ff1421f5"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "ec26868dfe3f4585"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "5c6069914932d45a"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "271d25fac3f7cb42"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "bc2f2e276334308c"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "318b5b1a184c52f6"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "a87e81ea70417d6b"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "03b5e28e1c8a1dce"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "5e1196d4bc0a8330"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "9f77a259e6b50502"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "794c7a6c4228be5d"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "d859a9c39c2aa12a"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "194240725fcd1759"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "9eebd31253dc708d"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "946d517eef62a74d"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "bfe7d4b8d76c8271"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",
@@ -118384,6 +121072,30 @@
       "source": "0987c0ccbf8d9774",
       "output": "edeb14681ab7b529"
     },
+    "features.lauf-inspektor.details.p1": {
+      "source": "d89cc1c865b31ee2",
+      "output": "d644d0d14f961c8b"
+    },
+    "features.lauf-inspektor.details.p2": {
+      "source": "19f3fa415c170f7b",
+      "output": "901c5d1834848a58"
+    },
+    "features.lauf-inspektor.details.p3": {
+      "source": "f3baf787f2552cc3",
+      "output": "c5d559f5a63464bd"
+    },
+    "features.lauf-inspektor.summary": {
+      "source": "923f8628a0e9f614",
+      "output": "c7ec7636fa917e29"
+    },
+    "features.lauf-inspektor.title": {
+      "source": "359ac44f684c90d5",
+      "output": "a0fa2e52bc7462d3"
+    },
+    "features.lauf-inspektor.where": {
+      "source": "768ea6d753d698ec",
+      "output": "319e0a1d0f642355"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "803d8716e9c33365"
@@ -120967,6 +123679,430 @@
     "render.variableOrigins.TODAY": {
       "source": "0e7cc86372ab63a4",
       "output": "9dfc78089189728b"
+    },
+    "runInspector.context.heading": {
+      "source": "a742a9b73719bcd5",
+      "output": "4acf309b016d7085"
+    },
+    "runInspector.context.items": {
+      "source": "0025448f1947a11d",
+      "output": "3eb3938645af1779"
+    },
+    "runInspector.context.modes.content": {
+      "source": "4468dd92703b8f2b",
+      "output": "a31ee6d7abcf6516"
+    },
+    "runInspector.context.modes.embedded": {
+      "source": "7e03f35eddb28577",
+      "output": "095eb8f59940550f"
+    },
+    "runInspector.context.modes.pointer": {
+      "source": "49645da8db4ed6ee",
+      "output": "0a98347d2201cb55"
+    },
+    "runInspector.context.modes.reference": {
+      "source": "1d6ae3c1503b3352",
+      "output": "591d6a522e7522d7"
+    },
+    "runInspector.context.none": {
+      "source": "0cc86974a825a230",
+      "output": "23504ba1b784417e"
+    },
+    "runInspector.context.sectionValue": {
+      "source": "fd43354e10f1bf4a",
+      "output": "f257e7a2419eae6e"
+    },
+    "runInspector.context.sections.agent_role": {
+      "source": "734209aefafeb564",
+      "output": "c5c56a6f6dd07bab"
+    },
+    "runInspector.context.sections.always_rules": {
+      "source": "060458bfd9fb2890",
+      "output": "4ab638a687101307"
+    },
+    "runInspector.context.sections.base_prompt": {
+      "source": "199124ef04ad5492",
+      "output": "5f9b45ee3e3064ea"
+    },
+    "runInspector.context.sections.closing": {
+      "source": "fb9904803b200c61",
+      "output": "ad3d48e991c5329f"
+    },
+    "runInspector.context.sections.conversation_assistant": {
+      "source": "f23608d805426cab",
+      "output": "15d0522c4ac06281"
+    },
+    "runInspector.context.sections.conversation_summary": {
+      "source": "a9eae076a1d2b144",
+      "output": "23cc1ee22ec71a82"
+    },
+    "runInspector.context.sections.conversation_tool": {
+      "source": "5ec4d5c8e37a4072",
+      "output": "c7bbb6d929859628"
+    },
+    "runInspector.context.sections.conversation_user": {
+      "source": "6a6b61f8b227a00d",
+      "output": "bc498f61665db211"
+    },
+    "runInspector.context.sections.formatting": {
+      "source": "209b22f92da1358d",
+      "output": "5ff9c12f7f0c1438"
+    },
+    "runInspector.context.sections.images": {
+      "source": "98b285ab7eeaa9a6",
+      "output": "0221ee707a7870e6"
+    },
+    "runInspector.context.sections.on_demand_rules": {
+      "source": "d5dc668fe0ba0ce4",
+      "output": "37c162cef616cbde"
+    },
+    "runInspector.context.sections.open_page": {
+      "source": "ecc7df97f22f34bb",
+      "output": "7633dd868db7a3f2"
+    },
+    "runInspector.context.sections.pinned_sources": {
+      "source": "29943f39fdc4bb6e",
+      "output": "e3be78fcd7a142c2"
+    },
+    "runInspector.context.sections.tool_schemas": {
+      "source": "b9d6d686e53ba9af",
+      "output": "4c86f4dbc38c0770"
+    },
+    "runInspector.context.sections.trust_rules": {
+      "source": "3119926d04d26eeb",
+      "output": "fe8dcaae0821c203"
+    },
+    "runInspector.context.sections.write_mode": {
+      "source": "f38b37b88ce43c7c",
+      "output": "d65288312e5f1334"
+    },
+    "runInspector.context.sourceChars": {
+      "source": "b82e6ff4c1cd2b9b",
+      "output": "4087e2290e840772"
+    },
+    "runInspector.context.sourceCharsOf": {
+      "source": "c3948948552a910f",
+      "output": "34ccfb03f7eae920"
+    },
+    "runInspector.context.total": {
+      "source": "4e6d8ba86dfd77d7",
+      "output": "6124ec81ac84c94e"
+    },
+    "runInspector.context.truncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "cb4291838766f212"
+    },
+    "runInspector.context.unnamedSource": {
+      "source": "7720c2ebdae1891e",
+      "output": "30bae55eb32ef560"
+    },
+    "runInspector.links.fromChat": {
+      "source": "d292793874a8adef",
+      "output": "a3aa5ceac630bca5"
+    },
+    "runInspector.links.fromWorkItem": {
+      "source": "9fe440fa4dbe876c",
+      "output": "9e655bf842686433"
+    },
+    "runInspector.meta.title": {
+      "source": "6ef55b769005ffe3",
+      "output": "21a4343def3b9561"
+    },
+    "runInspector.origins.attachment": {
+      "source": "1238a68b7dd48fb3",
+      "output": "3530b9c776b9c44e"
+    },
+    "runInspector.origins.external-mcp": {
+      "source": "9ba27ff6c239fd1b",
+      "output": "d0ada342a401decf"
+    },
+    "runInspector.origins.internal": {
+      "source": "3358fa2f5ea5202f",
+      "output": "82349667a593d569"
+    },
+    "runInspector.origins.mail": {
+      "source": "d026aec5adea1723",
+      "output": "4b53c8722ddaf657"
+    },
+    "runInspector.origins.web": {
+      "source": "fe75383a9582223e",
+      "output": "55b9c3f0ba23d9d1"
+    },
+    "runInspector.page.back": {
+      "source": "548611ce58f71a17",
+      "output": "59dc926760d04aea"
+    },
+    "runInspector.page.capped": {
+      "source": "0bdf3b98e3fce836",
+      "output": "44236b380dc427f0"
+    },
+    "runInspector.page.heading": {
+      "source": "6ef55b769005ffe3",
+      "output": "21a4343def3b9561"
+    },
+    "runInspector.page.loadFailed": {
+      "source": "d9e6cd8faef07609",
+      "output": "c76476a0636a5df5"
+    },
+    "runInspector.page.loading": {
+      "source": "820ade79dec2124b",
+      "output": "efab45fc9bb1a748"
+    },
+    "runInspector.page.notRecorded": {
+      "source": "088ad6b8f149fe17",
+      "output": "1a2ec5a20b0c3936"
+    },
+    "runInspector.page.openConversation": {
+      "source": "a238d652d00d4a38",
+      "output": "a8bba40ab0e0d188"
+    },
+    "runInspector.page.privacy": {
+      "source": "255ad9d7b54251cb",
+      "output": "d080d004aa525874"
+    },
+    "runInspector.page.running": {
+      "source": "08b53609f28977b1",
+      "output": "3e5b6b1b364f7ef3"
+    },
+    "runInspector.page.subheading": {
+      "source": "c5f6cbbbec2d062e",
+      "output": "08844b8f7a02a9ae"
+    },
+    "runInspector.status.cancelled": {
+      "source": "b9731e79a80505b9",
+      "output": "3d15e61f2ccd5186"
+    },
+    "runInspector.status.completed": {
+      "source": "38ee859a969e3aa4",
+      "output": "734601b1cdc91cf1"
+    },
+    "runInspector.status.failed": {
+      "source": "1c47a9734b27dcd7",
+      "output": "253acf999f5d9871"
+    },
+    "runInspector.status.pending": {
+      "source": "cff72948cf4c0b88",
+      "output": "eac833e6ce529425"
+    },
+    "runInspector.status.running": {
+      "source": "f85fd2bc5619c724",
+      "output": "3127edd67f20081a"
+    },
+    "runInspector.status.timed_out": {
+      "source": "ef8fa255731ed23c",
+      "output": "1b62ea6dafb52e11"
+    },
+    "runInspector.summary.cost": {
+      "source": "a8ddeee9f3d73108",
+      "output": "d997afc918e1f0d7"
+    },
+    "runInspector.summary.costEstimated": {
+      "source": "b81276c6f391c3de",
+      "output": "15aef681d45db0df"
+    },
+    "runInspector.summary.duration": {
+      "source": "668cbe316167110b",
+      "output": "6cecb49a79df408d"
+    },
+    "runInspector.summary.heading": {
+      "source": "2d2baea43a0e9429",
+      "output": "36664e8242af267c"
+    },
+    "runInspector.summary.providerSwitches": {
+      "source": "0022cb27008903c1",
+      "output": "a4a04af5a8428b21"
+    },
+    "runInspector.summary.providers": {
+      "source": "9080a78b3e99c70f",
+      "output": "dd6378cf3381f70f"
+    },
+    "runInspector.summary.providersNone": {
+      "source": "643ff6fe2676c156",
+      "output": "1fb15fcb7b86a551"
+    },
+    "runInspector.summary.tokens": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
+    },
+    "runInspector.summary.tokensCached": {
+      "source": "480311ac4e4d271c",
+      "output": "0f1490ba0c4b0784"
+    },
+    "runInspector.summary.tokensValue": {
+      "source": "2937de9ef9ced2ef",
+      "output": "f874fbbb0fee303c"
+    },
+    "runInspector.summary.toolCalls": {
+      "source": "4ce54a52cb7fc6be",
+      "output": "caa8758ecc1b115e"
+    },
+    "runInspector.summary.toolCallsValue": {
+      "source": "66443ae82eeb12a7",
+      "output": "ad44f6efea4a6382"
+    },
+    "runInspector.summary.turns": {
+      "source": "e6220a4d8133aecf",
+      "output": "5ad907c0ecb91e69"
+    },
+    "runInspector.summary.unknown": {
+      "source": "a418e69e9fbe3f5e",
+      "output": "f00aff1c8f41c037"
+    },
+    "runInspector.timeline.attentionBlocking": {
+      "source": "1673c304af7d868f",
+      "output": "4a224ec2ce73816c"
+    },
+    "runInspector.timeline.attentionRaised": {
+      "source": "7f76169c09cb2584",
+      "output": "01251edc5dd75765"
+    },
+    "runInspector.timeline.attentionSettled": {
+      "source": "f6170798ace94a98",
+      "output": "dc43d2e69f0214ce"
+    },
+    "runInspector.timeline.changeset": {
+      "source": "5efab8e2fd2a365b",
+      "output": "b5d3d5b362c1f58e"
+    },
+    "runInspector.timeline.compaction": {
+      "source": "122b14e7a03566dd",
+      "output": "edf87b1894ad54ae"
+    },
+    "runInspector.timeline.context": {
+      "source": "ebad33e855c8f771",
+      "output": "46ac1964403d08fe"
+    },
+    "runInspector.timeline.created": {
+      "source": "def991d260c1a8a0",
+      "output": "9b1dce593e670ba9"
+    },
+    "runInspector.timeline.finished": {
+      "source": "7ebb8b213fdf744d",
+      "output": "734601b1cdc91cf1"
+    },
+    "runInspector.timeline.finishedError": {
+      "source": "7e3fac046b10d873",
+      "output": "5794009f792e2c8e"
+    },
+    "runInspector.timeline.heading": {
+      "source": "d93bc1ecbf87743b",
+      "output": "2bbefc50bb2f9fca"
+    },
+    "runInspector.timeline.resumedAs": {
+      "source": "b67ddc4e13336927",
+      "output": "3c7d3e2263babdc6"
+    },
+    "runInspector.timeline.resumedFrom": {
+      "source": "64373cedf18203df",
+      "output": "4c37f7c1a0758b0a"
+    },
+    "runInspector.timeline.started": {
+      "source": "c1243685dc06b7ec",
+      "output": "90ad3a29129a7f5d"
+    },
+    "runInspector.timeline.toolCall": {
+      "source": "15cf336b72802417",
+      "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolPaused": {
+      "source": "82c62853cdeb0ca1",
+      "output": "df67f88d8a50b701"
+    },
+    "runInspector.timeline.toolRepeated": {
+      "source": "899f808d595fe57a",
+      "output": "c94e378e8168c2d2"
+    },
+    "runInspector.timeline.toolResult": {
+      "source": "aeaaaace91b6b6a9",
+      "output": "8ba3e6f413c42552"
+    },
+    "runInspector.timeline.toolStatus.failed": {
+      "source": "e650a8f75edf7b44",
+      "output": "365a43015bcee051"
+    },
+    "runInspector.timeline.toolStatus.refused": {
+      "source": "e310994718d5adbf",
+      "output": "9278f1243694c816"
+    },
+    "runInspector.timeline.toolStatus.skipped": {
+      "source": "c6d67b08101c6f75",
+      "output": "73f8a7efff1a0224"
+    },
+    "runInspector.timeline.toolStatus.succeeded": {
+      "source": "294bf770ff63edd2",
+      "output": "cc585bf4fbf577ce"
+    },
+    "runInspector.timeline.toolStatus.undelivered": {
+      "source": "f1a750b3caa7c22c",
+      "output": "7e5e9cec61b62228"
+    },
+    "runInspector.timeline.toolTruncated": {
+      "source": "28f563cbdbc5446a",
+      "output": "cb4291838766f212"
+    },
+    "runInspector.timeline.toolUntrusted": {
+      "source": "ca15885e8c11ed6a",
+      "output": "e030eff9e2a06bf5"
+    },
+    "runInspector.timeline.truncationRetry": {
+      "source": "8b948131d9e986e8",
+      "output": "a3a1650288604808"
+    },
+    "runInspector.timeline.turn": {
+      "source": "2b8f9f65fe82f49e",
+      "output": "e6997e14dfc06ae9"
+    },
+    "runInspector.timeline.turnFailed": {
+      "source": "7e3fac046b10d873",
+      "output": "5794009f792e2c8e"
+    },
+    "runInspector.timeline.turnReasoned": {
+      "source": "ade62b2fff4105bb",
+      "output": "d4e797f132232a3b"
+    },
+    "runInspector.timeline.turnServedBy": {
+      "source": "125f9e4c7aeadc25",
+      "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnTokens": {
+      "source": "8b267162e4764a4f",
+      "output": "fc72d8c88fc2cae0"
+    },
+    "runInspector.timeline.turnTools": {
+      "source": "f215d752ef6e8685",
+      "output": "c7d1a76cdf88506b"
+    },
+    "runInspector.timeline.workCheckpoint": {
+      "source": "2534b8cdc11c826c",
+      "output": "ddadc597d797f0c3"
+    },
+    "runInspector.toolResults.heading": {
+      "source": "235394abca10de29",
+      "output": "9830d11c2f9bdd6b"
+    },
+    "runInspector.toolResults.row": {
+      "source": "f2cab362f66c56d5",
+      "output": "762426d8cc24b203"
+    },
+    "runInspector.trace.correlationId": {
+      "source": "789b16ce4c10b324",
+      "output": "b6643ad86435f38c"
+    },
+    "runInspector.trace.heading": {
+      "source": "ac3129d95a58cb25",
+      "output": "fb48f597319ae67d"
+    },
+    "runInspector.trace.hint": {
+      "source": "dea8746da05bc390",
+      "output": "fb21468773c24a4d"
+    },
+    "runInspector.trace.none": {
+      "source": "db028eeb570f2485",
+      "output": "76e1824b75a3c908"
+    },
+    "runInspector.trace.traceId": {
+      "source": "6cdf4afa5ffa6d31",
+      "output": "7c972069fb575610"
     },
     "search.builder.add": {
       "source": "cbb95cf02b7d0216",

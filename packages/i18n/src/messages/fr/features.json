@@ -507,6 +507,16 @@
     },
     "where": "L’indicateur de progression dans le chat."
   },
+  "lauf-inspektor": {
+    "title": "Voir ce qu’une exécution d’IA a fait",
+    "summary": "Chaque exécution de l’IA intégrée dispose d’une frise chronologique : quel modèle a répondu via quel fournisseur, quels outils ont été appelés et pendant combien de temps, ce que cela a coûté et de quoi le contexte était composé, jusqu’aux pages individuelles.",
+    "details": {
+      "p1": "La frise chronologique montre chaque étape avec son horodatage et sa durée : la constitution du contexte, chaque cycle du modèle avec le modèle, le fournisseur, les jetons et le coût, chaque appel d’outil avec sa cible, la taille du résultat et son issue, ainsi que les demandes de précision, la reprise après une réponse, les suggestions de modifications et l’état d’avancement.",
+      "p2": "Sous « Contexte avant le premier tour », tu trouves la composition du prompt : prompt de base, pages de règles, la page ouverte, sources épinglées, l’historique antérieur et les descriptions d’outils, chacun avec sa taille, et précisément quelles pages se cachent derrière. Tu peux ainsi comprendre pourquoi une réponse a coûté cher ou manquait d’informations.",
+      "p3": "Seuls les tailles, les noms et les résultats sont enregistrés, jamais le prompt, les réponses ou le texte des pages consultées. Tu ne vois les titres de page que pour l’espace de travail de l’exécution. Pour l’exploitation, l’ID de corrélation et l’ID de trace sont indiqués pour retrouver les journaux et traces de l’exécution. Les agents lisent la même chose via exo_ai_run_inspect."
+    },
+    "where": "Sous une réponse dans le chat « Voir le déroulement », ou pour une tâche dans la liste des exécutions d’IA « Déroulement »."
+  },
   "ki-chat": {
     "title": "Discuter avec un modèle au sujet de tes pages",
     "summary": "Le chat s’exécute à côté de la page et connaît le titre ainsi que le chemin de la page ouverte. Le modèle qui répond est défini dans la gestion des modèles ; si aucun fournisseur n’est configuré, un modèle fictif local répond afin de ne rien bloquer.",

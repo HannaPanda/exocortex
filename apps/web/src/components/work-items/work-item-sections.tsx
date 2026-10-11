@@ -178,6 +178,7 @@ function runVariant(status: string): 'default' | 'secondary' | 'destructive' | '
 export function RunsSection({ item, action }: { item: WorkItemDetail; action: React.ReactNode }) {
   const t = useTranslations('workItems.detail');
   const tProfile = useTranslations('agentProfiles.workItem');
+  const tRun = useTranslations('runInspector.links');
   const wording = useWorkItemWording();
   return (
     <Section title={t('runsHeading')} action={action}>
@@ -224,6 +225,10 @@ export function RunsSection({ item, action }: { item: WorkItemDetail; action: Re
                   {t('openConversation')}
                 </Link>
               )}
+              {/* What the run did and what its prompt was made of (issue #145). */}
+              <Link href={`/laeufe/${run.id}`} className="hover:underline">
+                {tRun('fromWorkItem')}
+              </Link>
             </li>
           ))}
         </ul>

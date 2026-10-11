@@ -507,6 +507,16 @@
     },
     "where": "Die Fortschrittsanzeige im Chat."
   },
+  "lauf-inspektor": {
+    "title": "Nachsehen, was ein KI-Lauf getan hat",
+    "summary": "Zu jedem Lauf der eingebauten KI gibt es eine Zeitleiste: welches Modell über welchen Anbieter geantwortet hat, welche Werkzeuge es wie lange aufgerufen hat, was das gekostet hat und woraus der Kontext bestand, bis hinunter zu den einzelnen Seiten.",
+    "details": {
+      "p1": "Die Zeitleiste zeigt jeden Schritt mit seinem Zeitpunkt und seiner Dauer: das Zusammenstellen des Kontexts, jede Modellrunde mit Modell, Anbieter, Tokens und Kosten, jeden Werkzeugaufruf mit Ziel, Ergebnisgröße und Ausgang, dazu Rückfragen, das Fortsetzen nach einer Antwort, Änderungsvorschläge und Arbeitsstände.",
+      "p2": "Unter „Kontext vor der ersten Runde“ steht, woraus der Prompt bestand: Grund-Prompt, Regelseiten, die geöffnete Seite, angeheftete Quellen, der bisherige Verlauf und die Werkzeugbeschreibungen, jeweils mit Größe, und welche Seiten genau dahinterstehen. So lässt sich sagen, warum eine Antwort teuer war oder etwas nicht wusste.",
+      "p3": "Aufgezeichnet werden nur Größen, Namen und Ergebnisse, nie der Prompt, die Antworten oder der Text der gelesenen Seiten. Seitentitel siehst du nur aus dem Arbeitsbereich des Laufs. Für den Betrieb stehen die Korrelations- und die Trace-ID dabei, mit denen sich Logs und Traces des Laufs finden lassen. Agenten lesen dasselbe über exo_ai_run_inspect."
+    },
+    "where": "Unter einer Antwort im Chat „Ablauf ansehen“, oder bei einem Auftrag in der Liste der KI-Läufe „Ablauf“."
+  },
   "ki-chat": {
     "title": "Mit einem Modell über deine Seiten reden",
     "summary": "Der Chat läuft neben der Seite und kennt Titel und Pfad der offenen Seite. Welches Modell antwortet, steht in der Modellverwaltung; ohne eingerichteten Anbieter antwortet ein lokales Attrappenmodell, damit nichts davon abhängt.",

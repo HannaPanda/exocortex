@@ -26,6 +26,7 @@ import de_memory from './messages/de/memory.json';
 import de_projects from './messages/de/projects.json';
 import de_push from './messages/de/push.json';
 import de_render from './messages/de/render.json';
+import de_runInspector from './messages/de/runInspector.json';
 import de_search from './messages/de/search.json';
 import de_settings from './messages/de/settings.json';
 import de_shares from './messages/de/shares.json';
@@ -57,6 +58,7 @@ import en_memory from './messages/en/memory.json';
 import en_projects from './messages/en/projects.json';
 import en_push from './messages/en/push.json';
 import en_render from './messages/en/render.json';
+import en_runInspector from './messages/en/runInspector.json';
 import en_search from './messages/en/search.json';
 import en_settings from './messages/en/settings.json';
 import en_shares from './messages/en/shares.json';
@@ -88,6 +90,7 @@ import es_memory from './messages/es/memory.json';
 import es_projects from './messages/es/projects.json';
 import es_push from './messages/es/push.json';
 import es_render from './messages/es/render.json';
+import es_runInspector from './messages/es/runInspector.json';
 import es_search from './messages/es/search.json';
 import es_settings from './messages/es/settings.json';
 import es_shares from './messages/es/shares.json';
@@ -119,6 +122,7 @@ import fr_memory from './messages/fr/memory.json';
 import fr_projects from './messages/fr/projects.json';
 import fr_push from './messages/fr/push.json';
 import fr_render from './messages/fr/render.json';
+import fr_runInspector from './messages/fr/runInspector.json';
 import fr_search from './messages/fr/search.json';
 import fr_settings from './messages/fr/settings.json';
 import fr_shares from './messages/fr/shares.json';
@@ -150,6 +154,7 @@ import it_memory from './messages/it/memory.json';
 import it_projects from './messages/it/projects.json';
 import it_push from './messages/it/push.json';
 import it_render from './messages/it/render.json';
+import it_runInspector from './messages/it/runInspector.json';
 import it_search from './messages/it/search.json';
 import it_settings from './messages/it/settings.json';
 import it_shares from './messages/it/shares.json';
@@ -181,6 +186,7 @@ import nl_memory from './messages/nl/memory.json';
 import nl_projects from './messages/nl/projects.json';
 import nl_push from './messages/nl/push.json';
 import nl_render from './messages/nl/render.json';
+import nl_runInspector from './messages/nl/runInspector.json';
 import nl_search from './messages/nl/search.json';
 import nl_settings from './messages/nl/settings.json';
 import nl_shares from './messages/nl/shares.json';
@@ -212,6 +218,7 @@ import pl_memory from './messages/pl/memory.json';
 import pl_projects from './messages/pl/projects.json';
 import pl_push from './messages/pl/push.json';
 import pl_render from './messages/pl/render.json';
+import pl_runInspector from './messages/pl/runInspector.json';
 import pl_search from './messages/pl/search.json';
 import pl_settings from './messages/pl/settings.json';
 import pl_shares from './messages/pl/shares.json';
@@ -243,6 +250,7 @@ import pt_BR_memory from './messages/pt-BR/memory.json';
 import pt_BR_projects from './messages/pt-BR/projects.json';
 import pt_BR_push from './messages/pt-BR/push.json';
 import pt_BR_render from './messages/pt-BR/render.json';
+import pt_BR_runInspector from './messages/pt-BR/runInspector.json';
 import pt_BR_search from './messages/pt-BR/search.json';
 import pt_BR_settings from './messages/pt-BR/settings.json';
 import pt_BR_shares from './messages/pt-BR/shares.json';
@@ -250,7 +258,7 @@ import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 
-export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems"] as const;
 
 export const CATALOG = {
   'de': {
@@ -279,6 +287,7 @@ export const CATALOG = {
     "projects": de_projects,
     "push": de_push,
     "render": de_render,
+    "runInspector": de_runInspector,
     "search": de_search,
     "settings": de_settings,
     "shares": de_shares,
@@ -312,6 +321,7 @@ export const CATALOG = {
     "projects": en_projects,
     "push": en_push,
     "render": en_render,
+    "runInspector": en_runInspector,
     "search": en_search,
     "settings": en_settings,
     "shares": en_shares,
@@ -345,6 +355,7 @@ export const CATALOG = {
     "projects": es_projects,
     "push": es_push,
     "render": es_render,
+    "runInspector": es_runInspector,
     "search": es_search,
     "settings": es_settings,
     "shares": es_shares,
@@ -378,6 +389,7 @@ export const CATALOG = {
     "projects": fr_projects,
     "push": fr_push,
     "render": fr_render,
+    "runInspector": fr_runInspector,
     "search": fr_search,
     "settings": fr_settings,
     "shares": fr_shares,
@@ -411,6 +423,7 @@ export const CATALOG = {
     "projects": it_projects,
     "push": it_push,
     "render": it_render,
+    "runInspector": it_runInspector,
     "search": it_search,
     "settings": it_settings,
     "shares": it_shares,
@@ -444,6 +457,7 @@ export const CATALOG = {
     "projects": nl_projects,
     "push": nl_push,
     "render": nl_render,
+    "runInspector": nl_runInspector,
     "search": nl_search,
     "settings": nl_settings,
     "shares": nl_shares,
@@ -477,6 +491,7 @@ export const CATALOG = {
     "projects": pl_projects,
     "push": pl_push,
     "render": pl_render,
+    "runInspector": pl_runInspector,
     "search": pl_search,
     "settings": pl_settings,
     "shares": pl_shares,
@@ -510,6 +525,7 @@ export const CATALOG = {
     "projects": pt_BR_projects,
     "push": pt_BR_push,
     "render": pt_BR_render,
+    "runInspector": pt_BR_runInspector,
     "search": pt_BR_search,
     "settings": pt_BR_settings,
     "shares": pt_BR_shares,

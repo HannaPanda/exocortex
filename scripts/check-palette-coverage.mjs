@@ -89,6 +89,11 @@ const SCREEN_EXEMPT = [
     reason: 'One agent profile, reached from the profile list, which the palette opens.',
   },
   {
+    screen: '/laeufe/:x',
+    reason:
+      'One run of the built-in AI, reached from the run list of a work item or from under an answer in the chat; a run has no name to type.',
+  },
+  {
     screen: '/geteilt/:x',
     reason: 'One page somebody shared, reached from /geteilt, which the palette opens.',
   },

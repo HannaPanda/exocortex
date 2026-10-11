@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "title": "Przebieg uruchomienia SI"
+  },
+  "page": {
+    "loading": "Ładowanie przebiegu…",
+    "loadFailed": "Nie udało się załadować przebiegu tego uruchomienia.",
+    "back": "Wstecz",
+    "heading": "Przebieg uruchomienia SI",
+    "subheading": "{model}, utworzono {moment}",
+    "openConversation": "Otwórz rozmowę",
+    "notRecorded": "To uruchomienie jest starsze niż funkcja rejestrowania. Widoczne jest tylko to, co wiedzą o nim inne miejsca: początek, koniec, pytania doprecyzowujące i sugestie.",
+    "capped": "Rejestrowanie osiągnęło limit dla tego uruchomienia. Późniejsze kroki nie są widoczne na osi czasu.",
+    "running": "Uruchomienie jeszcze trwa. Widok aktualizuje się automatycznie.",
+    "privacy": "Widoczne są tu tylko rozmiary, nazwy i wyniki. Sam prompt, odpowiedzi oraz wyniki narzędzi nie są rejestrowane."
+  },
+  "summary": {
+    "heading": "Przegląd",
+    "duration": "Czas trwania",
+    "turns": "Rundy modelu",
+    "toolCalls": "Wywołania narzędzi",
+    "toolCallsValue": "{count} ({failed, plural, =0 {wszystkie udane} one {# nieudane} few {# nieudane} many {# nieudanych} other {# nieudanych}})",
+    "providers": "Dostawcy",
+    "providersNone": "brak zgłoszenia",
+    "providerSwitches": "Zmiany dostawcy",
+    "tokens": "Tokeny",
+    "tokensValue": "{input} wejściowych, {output} wyjściowych",
+    "tokensCached": "w tym {cached} z pamięci podręcznej",
+    "cost": "Koszt",
+    "costEstimated": "{cost} (szacunkowo z cennika)",
+    "unknown": "nieznany"
+  },
+  "context": {
+    "heading": "Kontekst przed pierwszą rundą",
+    "total": "{chars} znaków, około {tokens} tokenów",
+    "none": "Dla tego uruchomienia nie zarejestrowano składu kontekstu.",
+    "sectionValue": "{chars} znaków · ~{tokens} tokenów",
+    "items": "{count, plural, one {# wpis} few {# wpisy} many {# wpisów} other {# wpisów}}",
+    "truncated": "skrócono",
+    "unnamedSource": "już nie istnieje lub brak widoczności",
+    "sourceChars": "{chars} znaków",
+    "sourceCharsOf": "{chars} z {full} znaków",
+    "sections": {
+      "base_prompt": "Prompt bazowy",
+      "formatting": "Format odpowiedzi",
+      "trust_rules": "Zasady zaufania",
+      "always_rules": "Strony z zasadami (zawsze)",
+      "on_demand_rules": "Zasady na żądanie",
+      "open_page": "Otwarta strona",
+      "pinned_sources": "Przypięte źródła",
+      "closing": "Obszar roboczy i data",
+      "agent_role": "Rola agenta",
+      "write_mode": "Tryb pisania",
+      "images": "Opisy obrazów",
+      "conversation_summary": "Podsumowanie wcześniejszych wiadomości",
+      "conversation_user": "Twoje wiadomości",
+      "conversation_assistant": "Wcześniejsze odpowiedzi",
+      "conversation_tool": "Wcześniejsze wyniki narzędzi",
+      "tool_schemas": "Opisy narzędzi"
+    },
+    "modes": {
+      "reference": "tylko wymienione",
+      "embedded": "osadzone",
+      "pointer": "jako odnośnik",
+      "content": "z treścią"
+    }
+  },
+  "toolResults": {
+    "heading": "Odczytane w trakcie przebiegu",
+    "row": "{calls, plural, one {# wywołanie} few {# wywołania} many {# wywołań} other {# wywołania}}, {chars} znaków"
+  },
+  "origins": {
+    "internal": "Z tego obszaru roboczego",
+    "attachment": "Z przesłanych plików",
+    "web": "Z sieci",
+    "mail": "Z wiadomości e-mail",
+    "external-mcp": "Z zewnętrznych serwerów MCP"
+  },
+  "timeline": {
+    "heading": "Oś czasu",
+    "created": "Utworzono przebieg",
+    "started": "Worker przejął zadanie",
+    "context": "Zestawiono kontekst: {chars} znaków, ~{tokens} tokenów",
+    "compaction": "Zagęszczono historię: podsumowano {count, plural, one {# wiadomość} few {# wiadomości} many {# wiadomości} other {# wiadomości}}",
+    "turn": "Runda modelu {index}: {model}",
+    "turnServedBy": "przez {provider}",
+    "turnTokens": "{input} tokenów na wejściu, {output} na wyjściu",
+    "turnTools": "{count, plural, one {żąda # narzędzia} few {żąda # narzędzi} many {żąda # narzędzi} other {żąda # narzędzia}}",
+    "turnReasoned": "myślenie",
+    "turnFailed": "Błąd {code}",
+    "toolCall": "{tool}",
+    "toolResult": "{chars} znaków wyniku",
+    "toolTruncated": "skrócono",
+    "toolUntrusted": "treść zewnętrzna",
+    "toolRepeated": "powtórzenie",
+    "toolPaused": "wstrzymuje przebieg",
+    "toolStatus": {
+      "succeeded": "zakończone sukcesem",
+      "failed": "nie powiodło się",
+      "refused": "odrzucono",
+      "skipped": "pominięto",
+      "undelivered": "niedostarczone w całości"
+    },
+    "truncationRetry": "Ucięto z powodu limitu wyjścia, próba {attempt}",
+    "attentionRaised": "Pytanie: {title}",
+    "attentionBlocking": "blokujące",
+    "attentionSettled": "Pytanie rozwiązane",
+    "changeset": "Propozycja zmian: {title}",
+    "workCheckpoint": "Zapisano stan prac",
+    "resumedFrom": "Wznawia wcześniejsze uruchomienie",
+    "resumedAs": "Wznowiono z tą odpowiedzią w nowym uruchomieniu",
+    "finished": "Zakończono",
+    "finishedError": "Błąd {code}"
+  },
+  "status": {
+    "pending": "Oczekuje",
+    "running": "W toku",
+    "completed": "Ukończono",
+    "failed": "Niepowodzenie",
+    "cancelled": "Anulowano",
+    "timed_out": "Przekroczono limit czasu"
+  },
+  "trace": {
+    "heading": "Dla operacji",
+    "correlationId": "Identyfikator korelacji",
+    "traceId": "Identyfikator śladu",
+    "none": "brak",
+    "hint": "Za pomocą identyfikatora korelacji znajdziesz wpisy dziennika tego uruchomienia w logach usług."
+  },
+  "links": {
+    "fromWorkItem": "Przebieg",
+    "fromChat": "Zobacz przebieg"
+  }
+}

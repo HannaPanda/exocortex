@@ -507,6 +507,16 @@
     },
     "where": "El indicador de progreso en el chat."
   },
+  "lauf-inspektor": {
+    "title": "Comprobar qué ha hecho una ejecución de IA",
+    "summary": "Para cada ejecución de la IA integrada hay una cronología: qué modelo ha respondido a través de qué proveedor, qué herramientas ha invocado y durante cuánto tiempo, cuánto ha costado y de qué se componía el contexto, hasta llegar a las páginas individuales.",
+    "details": {
+      "p1": "La cronología muestra cada paso con su marca de tiempo y su duración: la preparación del contexto, cada ronda del modelo con su modelo, proveedor, tokens y costes, cada llamada a herramientas con su objetivo, tamaño del resultado y desenlace, además de preguntas aclaratorias, la continuación tras una respuesta, propuestas de cambios y estados de trabajo.",
+      "p2": "En «Contexto antes de la primera ronda» verás de qué se componía el prompt: prompt base, páginas de reglas, la página abierta, fuentes fijadas, el historial previo y las descripciones de las herramientas, cada uno con su tamaño, así como las páginas exactas que hay detrás. Así podrás saber por qué una respuesta ha sido cara o por qué no sabía algo.",
+      "p3": "Solo se registran tamaños, nombres y resultados, nunca el prompt, las respuestas ni el texto de las páginas leídas. Los títulos de las páginas solo los verás si pertenecen al espacio de trabajo de la ejecución. Para operaciones técnicas se incluyen el ID de correlación y el de traza, con los que se pueden localizar registros y trazas de la ejecución. Los agentes leen lo mismo a través de exo_ai_run_inspect."
+    },
+    "where": "Debajo de una respuesta en el chat en «Ver proceso», o en una tarea dentro de la lista de ejecuciones de IA en «Proceso»."
+  },
   "ki-chat": {
     "title": "Hablar con un modelo sobre tus páginas",
     "summary": "El chat se ejecuta junto a la página y conoce el título y la ruta de la página abierta. Qué modelo responde se define en la gestión de modelos; si no hay ningún proveedor configurado, responde un modelo simulado local para que nada quede bloqueado.",

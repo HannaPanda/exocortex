@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -74,8 +75,10 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
               ) : null}
             </div>
             {message.content.length > 0 ? (
-              <div className="opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100 pointer-coarse:opacity-100">
+              <div className="flex items-center gap-2 opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100 pointer-coarse:opacity-100">
                 <CopyMarkdownButton markdown={message.content} />
+                {/* The run behind the answer (issue #145), once it is one. */}
+                {message.runId === null || streaming ? null : <RunLink runId={message.runId} />}
               </div>
             ) : null}
           </div>
@@ -91,6 +94,18 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
     default:
       return null;
   }
+}
+
+function RunLink({ runId }: { runId: string }) {
+  const t = useTranslations('runInspector.links');
+  return (
+    <Link
+      href={`/laeufe/${runId}`}
+      className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+    >
+      {t('fromChat')}
+    </Link>
+  );
 }
 
 function SystemMessage({ message }: { message: AiConversationMessage }) {
