@@ -83,7 +83,6 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('POST', '/api/agent-profiles/p1/duplicate')).toBe('admin');
     expect(requiredScopeForRequest('DELETE', '/api/agent-profiles/p1')).toBe('admin');
     expect(requiredScopeForRequest('GET', '/api/workspaces/ws1/agent-profiles')).toBe('read');
-    expect(requiredScopeForRequest('POST', '/api/workspaces/ws1/workflows')).toBe('admin');
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/publish')).toBe('admin');
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/activation')).toBe('admin');
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/validate')).toBe('read');
@@ -91,6 +90,15 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('POST', '/api/workflow-runs/r1/cancel')).toBe('admin');
     expect(requiredScopeForRequest('GET', '/api/workflow-runs/r1')).toBe('read');
     expect(requiredScopeForRequest('GET', '/api/workflows/w1')).toBe('read');
+    expect(requiredScopeForRequest('DELETE', '/api/workflows/w1')).toBe('admin');
+  });
+
+  it('lets a writing token author a workflow draft, never publish it (issue #165)', () => {
+    expect(requiredScopeForRequest('POST', '/api/workspaces/ws1/workflows')).toBe('write');
+    expect(requiredScopeForRequest('PATCH', '/api/workflows/w1')).toBe('write');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/duplicate')).toBe('write');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/publish')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/activation')).toBe('admin');
   });
 
   it('does not confuse a lookalike path with the admin API', () => {

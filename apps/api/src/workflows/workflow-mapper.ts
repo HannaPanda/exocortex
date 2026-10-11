@@ -4,6 +4,7 @@ import {
   type AiWriteMode,
   graphProblems,
   isTriggerNode,
+  type WorkflowAuthor,
   type WorkflowErrorClass,
   type WorkflowGraph,
   workflowGraphSchema,
@@ -20,14 +21,22 @@ import {
   type WorkflowVersion,
   workflowWaitSchema,
 } from '@exocortex/contracts';
-import { type Prisma } from '@exocortex/database';
+import { type Prisma, type WorkItemParticipantKind } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
+import { PARTICIPANT_FROM_PRISMA } from '../work-items/work-item-mapper';
 
 /** The run statuses still in flight, as the database spells them. */
 export const ACTIVE_RUN_STATUSES = ['QUEUED', 'RUNNING', 'WAITING'] as const;
 
 const ACCOUNT = { select: { id: true, name: true } } as const;
+
+const AUTHOR_SELECT = {
+  draftAuthorKind: true,
+  draftAuthor: ACCOUNT,
+  draftAgentLabel: true,
+  draftAiRunId: true,
+} as const;
 
 export const WORKFLOW_SELECT = {
   id: true,
@@ -41,6 +50,8 @@ export const WORKFLOW_SELECT = {
   updatedAt: true,
   createdBy: ACCOUNT,
   updatedBy: ACCOUNT,
+  ...AUTHOR_SELECT,
+  draftAuthoredAt: true,
   publishedVersion: {
     select: { id: true, version: true, publishedAt: true, draftRevision: true, graph: true },
   },
@@ -58,6 +69,7 @@ export const VERSION_SELECT = {
   draftRevision: true,
   publishedAt: true,
   publishedBy: ACCOUNT,
+  ...AUTHOR_SELECT,
 } satisfies Prisma.WorkflowVersionSelect;
 
 export type VersionRow = Prisma.WorkflowVersionGetPayload<{ select: typeof VERSION_SELECT }>;
@@ -172,10 +184,25 @@ export function toWorkflowSummary(row: WorkflowRow, draftValid?: boolean): Workf
           },
     triggerTypes: triggerTypes(published === null ? draft : storedGraph(published.graph)),
     activeRunCount: row._count.runs,
+    draftAuthor: { ...toWorkflowAuthor(row), at: row.draftAuthoredAt.toISOString() },
     createdBy: row.createdBy,
     updatedBy: row.updatedBy,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+  };
+}
+
+function toWorkflowAuthor(row: {
+  draftAuthorKind: WorkItemParticipantKind;
+  draftAuthor: { id: string; name: string | null } | null;
+  draftAgentLabel: string | null;
+  draftAiRunId: string | null;
+}): WorkflowAuthor {
+  return {
+    kind: PARTICIPANT_FROM_PRISMA[row.draftAuthorKind],
+    account: row.draftAuthor,
+    agentLabel: row.draftAgentLabel,
+    aiRunId: row.draftAiRunId,
   };
 }
 
@@ -187,6 +214,7 @@ export function toWorkflowVersion(row: VersionRow): WorkflowVersion {
     graph: storedGraph(row.graph),
     graphHash: row.graphHash,
     draftRevision: row.draftRevision,
+    draftAuthor: toWorkflowAuthor(row),
     publishedBy: row.publishedBy,
     publishedAt: row.publishedAt.toISOString(),
   };

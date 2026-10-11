@@ -190,6 +190,10 @@ export const API_ERROR_CODES = [
   'workflow_revision_conflict',
   /** Only a published workflow can be enabled. */
   'workflow_not_published',
+  /** Publishing and switching on are a person's, at the browser: never an agent's or a run's (issue #165). */
+  'workflow_human_only',
+  /** A run of the built-in AI drafted an agent under a looser profile than its own; `details.problems` names the nodes. */
+  'workflow_exceeds_author',
   /** A run of this workflow has not finished; it cannot be deleted under it. */
   'workflow_has_active_runs',
   /** Workflows are switched off for this workspace (`workflows.enabled`, issue #161). */
@@ -449,6 +453,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   workflow_invalid: 422,
   workflow_revision_conflict: 409,
   workflow_not_published: 409,
+  workflow_human_only: 403,
+  workflow_exceeds_author: 422,
   workflow_has_active_runs: 409,
   workflows_disabled: 409,
   workflow_run_finished: 409,

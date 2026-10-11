@@ -220,8 +220,10 @@ function headerValue(value: string | string[] | undefined): string | undefined {
  * Reads the provenance headers off a request.
  *
  * Both are attacker-controlled strings, so both are bounded here and neither
- * is ever used for a decision: the session id groups rows inside the caller's
- * own account, and the label is only ever shown to a person.
+ * is ever used to grant anything: the session id groups rows inside the
+ * caller's own account, and the label is only ever shown to a person. Where a
+ * decision reads them (an approval or a workflow publish that only a person
+ * may make), naming a session can only cost the caller, never gain it.
  */
 export function readAgentSessionHeaders(
   headers: Record<string, string | string[] | undefined>,

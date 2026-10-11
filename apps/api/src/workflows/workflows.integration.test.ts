@@ -17,6 +17,7 @@ import { runWithRequestContext } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
 import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
+import { type WorkItemActor } from '../work-items/work-item-actor';
 
 import { WorkflowRunsService } from './workflow-runs.service';
 import { WorkflowsService } from './workflows.service';
@@ -163,10 +164,19 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
+function human(userId: string): WorkItemActor {
+  return { kind: 'human', userId, agentLabel: null };
+}
+
+/** The draft revision a person has in front of them when they press publish. */
+async function revisionOf(workflowId: string): Promise<number> {
+  return (await prisma.workflow.findUniqueOrThrow({ where: { id: workflowId } })).draftRevision;
+}
+
 async function createWorkflow(name: string, graph: WorkflowGraphInput = reviewGraph()) {
   return service.create({
     workspaceId,
-    userId: adminId,
+    actor: human(adminId),
     request: { name, graph: workflowGraphSchema.parse(graph) },
     correlationId,
   });
@@ -176,7 +186,7 @@ describe('WorkflowsService', () => {
   it('creates a draft with one manual trigger when no graph is given', async () => {
     const created = await service.create({
       workspaceId,
-      userId: adminId,
+      actor: human(adminId),
       request: { name: 'Leer' },
       correlationId,
     });
@@ -199,8 +209,9 @@ describe('WorkflowsService', () => {
     await expect(
       service.publish({
         workflowId: created.workflow.id,
-        userId: adminId,
-        request: {},
+        actor: human(adminId),
+        viaBrowser: true,
+        request: { expectedRevision: await revisionOf(created.workflow.id) },
         correlationId,
       }),
     ).rejects.toMatchObject({ code: 'workflow_invalid' });
@@ -215,19 +226,19 @@ describe('WorkflowsService', () => {
     ]);
   });
 
-  it('refuses a duplicate name, a member, and a run of the built-in AI', async () => {
+  it('refuses a duplicate name and a member', async () => {
     await createWorkflow('Doppelt');
     await expect(createWorkflow('Doppelt')).rejects.toMatchObject({
       code: 'workflow_name_taken',
     });
     await expect(
-      service.create({ workspaceId, userId: memberId, request: { name: 'X' }, correlationId }),
+      service.create({
+        workspaceId,
+        actor: human(memberId),
+        request: { name: 'X' },
+        correlationId,
+      }),
     ).rejects.toBeInstanceOf(AuthorizationError);
-    await expect(
-      runWithRequestContext({ correlationId, aiRunId: 'run-1' }, () =>
-        service.create({ workspaceId, userId: adminId, request: { name: 'KI' }, correlationId }),
-      ),
-    ).rejects.toBeInstanceOf(AppError);
   });
 
   it('moves the revision only when the graph changes, and refuses a stale editor', async () => {
@@ -235,14 +246,14 @@ describe('WorkflowsService', () => {
     const workflowId = created.workflow.id;
     const renamed = await service.update({
       workflowId,
-      userId: adminId,
+      actor: human(adminId),
       request: { name: 'Revision umbenannt', graph: created.draft },
       correlationId,
     });
     expect(renamed.workflow.draftRevision).toBe(1);
     const changed = await service.update({
       workflowId,
-      userId: adminId,
+      actor: human(adminId),
       request: { graph: workflowGraphSchema.parse(reviewGraph('Anders')), expectedRevision: 1 },
       correlationId,
     });
@@ -250,7 +261,7 @@ describe('WorkflowsService', () => {
     await expect(
       service.update({
         workflowId,
-        userId: adminId,
+        actor: human(adminId),
         request: { graph: workflowGraphSchema.parse(reviewGraph('Veraltet')), expectedRevision: 1 },
         correlationId,
       }),
@@ -279,7 +290,8 @@ describe('publishing, versions and runs', () => {
     const workflowId = created.workflow.id;
     const first = await service.publish({
       workflowId,
-      userId: adminId,
+      actor: human(adminId),
+      viaBrowser: true,
       request: { expectedRevision: 1 },
       correlationId,
     });
@@ -289,8 +301,9 @@ describe('publishing, versions and runs', () => {
     // Publishing the same draft again publishes nothing new.
     const again = await service.publish({
       workflowId,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
       correlationId,
     });
     expect(again.version.id).toBe(first.version.id);
@@ -306,14 +319,15 @@ describe('publishing, versions and runs', () => {
 
     await service.update({
       workflowId,
-      userId: adminId,
+      actor: human(adminId),
       request: { graph: workflowGraphSchema.parse(reviewGraph('Version zwei')) },
       correlationId,
     });
     const second = await service.publish({
       workflowId,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
       correlationId,
     });
     expect(second.version.version).toBe(2);
@@ -331,8 +345,9 @@ describe('publishing, versions and runs', () => {
     const created = await createWorkflow('Trigger');
     const published = await service.publish({
       workflowId: created.workflow.id,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(created.workflow.id) },
       correlationId,
     });
     await expect(
@@ -346,7 +361,13 @@ describe('publishing, versions and runs', () => {
   it('keeps a run and its node executions as state a fresh process reads back', async () => {
     const created = await createWorkflow('Neustart');
     const workflowId = created.workflow.id;
-    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    await service.publish({
+      workflowId,
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
+      correlationId,
+    });
     enqueued.length = 0;
     const runId = (
       await runs.start({
@@ -426,10 +447,10 @@ describe('publishing, versions and runs', () => {
     }
 
     await expect(
-      service.delete({ workflowId, userId: adminId, correlationId }),
+      service.delete({ workflowId, actor: human(adminId), correlationId }),
     ).rejects.toMatchObject({ code: 'workflow_has_active_runs' });
     await prisma.workflowRun.update({ where: { id: runId }, data: { status: 'CANCELLED' } });
-    const deleted = await service.delete({ workflowId, userId: adminId, correlationId });
+    const deleted = await service.delete({ workflowId, actor: human(adminId), correlationId });
     expect(deleted).toEqual({ deleted: true, deletedRuns: 1 });
   });
 
@@ -445,8 +466,9 @@ describe('publishing, versions and runs', () => {
     ).rejects.toMatchObject({ code: 'workflow_not_published' });
     await service.publish({
       workflowId: created.workflow.id,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(created.workflow.id) },
       correlationId,
     });
     await expect(
@@ -479,8 +501,9 @@ describe('publishing, versions and runs', () => {
     const created = await createWorkflow('Schalter aus');
     await service.publish({
       workflowId: created.workflow.id,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(created.workflow.id) },
       correlationId,
     });
     settingsOverride = { 'workflows.enabled': false };
@@ -517,8 +540,9 @@ describe('publishing, versions and runs', () => {
     });
     await service.publish({
       workflowId: created.workflow.id,
-      userId: adminId,
-      request: {},
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(created.workflow.id) },
       correlationId,
     });
     const proposing = await runs.start({
@@ -551,7 +575,13 @@ describe('publishing, versions and runs', () => {
     });
     const created = await createWorkflow('Abbrechen', graph);
     const workflowId = created.workflow.id;
-    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    await service.publish({
+      workflowId,
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
+      correlationId,
+    });
     settingsOverride = { 'workflows.maxParallelBranches': 3 };
     const started = await runs.start({ workflowId, userId: adminId, request: {}, correlationId });
     settingsOverride = {};
@@ -622,12 +652,19 @@ describe('publishing, versions and runs', () => {
     });
     const created = await createWorkflow('Zeitplan', scheduled);
     const workflowId = created.workflow.id;
-    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    await service.publish({
+      workflowId,
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
+      correlationId,
+    });
     expect(await prisma.workflowTrigger.count({ where: { workflowId } })).toBe(0);
 
     await service.setActivation({
       workflowId,
-      userId: ownerId,
+      actor: human(ownerId),
+      viaBrowser: true,
       request: { enabled: true },
       correlationId,
     });
@@ -649,7 +686,8 @@ describe('publishing, versions and runs', () => {
 
     await service.setActivation({
       workflowId,
-      userId: ownerId,
+      actor: human(ownerId),
+      viaBrowser: true,
       request: { enabled: false },
       correlationId,
     });
@@ -688,23 +726,32 @@ describe('publishing, versions and runs', () => {
     await expect(
       service.setActivation({
         workflowId,
-        userId: ownerId,
+        actor: human(ownerId),
+        viaBrowser: true,
         request: { enabled: true },
         correlationId,
       }),
     ).rejects.toMatchObject({ code: 'workflow_not_published' });
-    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    await service.publish({
+      workflowId,
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: await revisionOf(workflowId) },
+      correlationId,
+    });
     await expect(
       service.setActivation({
         workflowId,
-        userId: adminId,
+        actor: human(adminId),
+        viaBrowser: true,
         request: { enabled: true },
         correlationId,
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
     const enabled = await service.setActivation({
       workflowId,
-      userId: ownerId,
+      actor: human(ownerId),
+      viaBrowser: true,
       request: { enabled: true },
       correlationId,
     });
@@ -718,5 +765,202 @@ describe('publishing, versions and runs', () => {
       'workflow.enabled',
       'workflow.published',
     ]);
+  });
+});
+
+describe('agent-authored drafts (issue #165)', () => {
+  const hermes: () => WorkItemActor = () => ({
+    kind: 'agent',
+    userId: adminId,
+    agentLabel: 'Hermes',
+  });
+
+  it('lets an agent write and duplicate a draft, and records that it did', async () => {
+    const created = await service.create({
+      workspaceId,
+      actor: hermes(),
+      request: { name: 'Von Hermes', graph: workflowGraphSchema.parse(reviewGraph()) },
+      correlationId,
+    });
+    expect(created.workflow.draftAuthor).toMatchObject({
+      kind: 'agent',
+      agentLabel: 'Hermes',
+      account: { id: adminId },
+    });
+
+    // A person renaming it leaves the graph's author alone.
+    const renamed = await service.update({
+      workflowId: created.workflow.id,
+      actor: human(ownerId),
+      request: { name: 'Von Hermes, umbenannt' },
+      correlationId,
+    });
+    expect(renamed.workflow.draftAuthor.kind).toBe('agent');
+
+    const copy = await service.duplicate({
+      workflowId: created.workflow.id,
+      actor: hermes(),
+      request: {},
+      correlationId,
+    });
+    expect(copy.workflow.name).toBe('Von Hermes, umbenannt (Kopie)');
+    expect(copy.draft).toEqual(created.draft);
+    expect(copy.workflow).toMatchObject({ enabled: false, publishedVersion: null });
+    const second = await service.duplicate({
+      workflowId: created.workflow.id,
+      actor: human(adminId),
+      request: {},
+      correlationId,
+    });
+    expect(second.workflow.name).toBe('Von Hermes, umbenannt (Kopie 2)');
+    expect(second.workflow.draftAuthor.kind).toBe('human');
+  });
+
+  it('lets only a person publish or switch on, and only the revision they reviewed', async () => {
+    const created = await service.create({
+      workspaceId,
+      actor: hermes(),
+      request: { name: 'Nur Menschen', graph: workflowGraphSchema.parse(reviewGraph()) },
+      correlationId,
+    });
+    const workflowId = created.workflow.id;
+    for (const actor of [
+      hermes(),
+      { kind: 'assistant', userId: adminId, agentLabel: null } satisfies WorkItemActor,
+    ]) {
+      await expect(
+        service.publish({
+          workflowId,
+          actor,
+          viaBrowser: true,
+          request: { expectedRevision: 1 },
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'workflow_human_only' });
+    }
+    // An agent that leaves the session header out still holds a token, not the cookie.
+    await expect(
+      service.publish({
+        workflowId,
+        actor: human(adminId),
+        viaBrowser: false,
+        request: { expectedRevision: 1 },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'workflow_human_only' });
+
+    // The agent goes on revising while the person reads revision 1.
+    await service.update({
+      workflowId,
+      actor: hermes(),
+      request: { graph: workflowGraphSchema.parse(reviewGraph('Nachgebessert')) },
+      correlationId,
+    });
+    await expect(
+      service.publish({
+        workflowId,
+        actor: human(adminId),
+        viaBrowser: true,
+        request: { expectedRevision: 1 },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'workflow_revision_conflict' });
+
+    const published = await service.publish({
+      workflowId,
+      actor: human(adminId),
+      viaBrowser: true,
+      request: { expectedRevision: 2 },
+      correlationId,
+    });
+    expect(published.version).toMatchObject({
+      draftRevision: 2,
+      publishedBy: { id: adminId },
+      draftAuthor: { kind: 'agent', agentLabel: 'Hermes' },
+    });
+    await expect(
+      service.setActivation({
+        workflowId,
+        actor: { kind: 'agent', userId: ownerId, agentLabel: 'Hermes' },
+        viaBrowser: true,
+        request: { enabled: true },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'workflow_human_only' });
+    await expect(
+      prisma.$executeRaw`UPDATE "workflow_version" SET "draftAuthorKind" = 'HUMAN' WHERE "id" = ${published.version.id}`,
+    ).rejects.toThrow(/immutable/);
+  });
+
+  it('holds a run of the built-in AI to its own profile', async () => {
+    const suffix = Date.now().toString(36);
+    const ownWorkspace = await prisma.workspace.create({
+      data: {
+        name: `Workflows KI ${suffix}`,
+        slug: `workflows-ki-${suffix}`,
+        members: { create: { userId: adminId, role: 'ADMIN' } },
+      },
+    });
+    try {
+      // The run below has no row, so it works under the workspace default.
+      await prisma.agentProfile.create({
+        data: {
+          workspaceId: ownWorkspace.id,
+          name: 'Streng',
+          isDefault: true,
+          writeMode: 'PROPOSE',
+        },
+      });
+      const loose = await prisma.agentProfile.create({
+        data: { workspaceId: ownWorkspace.id, name: 'Locker', writeMode: 'DIRECT' },
+      });
+      const assistant: WorkItemActor = {
+        kind: 'assistant',
+        userId: adminId,
+        agentLabel: null,
+        runId: 'run-without-row',
+      };
+      const graph = reviewGraph();
+      Object.assign(graph.nodes[1]!, { agentProfileId: loose.id });
+      await expect(
+        service.create({
+          workspaceId: ownWorkspace.id,
+          actor: assistant,
+          request: { name: 'Zu locker', graph: workflowGraphSchema.parse(graph) },
+          correlationId,
+        }),
+      ).rejects.toMatchObject({
+        code: 'workflow_exceeds_author',
+        details: {
+          problems: [
+            expect.objectContaining({ code: 'profile_looser_than_author', nodeId: 'review' }),
+          ],
+        },
+      });
+
+      const created = await service.create({
+        workspaceId: ownWorkspace.id,
+        actor: assistant,
+        request: { name: 'Passt', graph: workflowGraphSchema.parse(reviewGraph()) },
+        correlationId,
+      });
+      expect(created.workflow.draftAuthor).toMatchObject({
+        kind: 'assistant',
+        aiRunId: 'run-without-row',
+      });
+      await expect(
+        service.update({
+          workflowId: created.workflow.id,
+          actor: assistant,
+          request: { graph: workflowGraphSchema.parse(graph) },
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'workflow_exceeds_author' });
+      await expect(
+        service.delete({ workflowId: created.workflow.id, actor: assistant, correlationId }),
+      ).rejects.toBeInstanceOf(AppError);
+    } finally {
+      await prisma.workspace.delete({ where: { id: ownWorkspace.id } });
+    }
   });
 });

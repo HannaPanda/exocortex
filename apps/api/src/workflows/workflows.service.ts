@@ -10,6 +10,7 @@ import {
 import {
   type CreateWorkflowRequest,
   type DeleteWorkflowResponse,
+  type DuplicateWorkflowRequest,
   effectiveWorkflowLimits,
   emptyWorkflowGraph,
   type PublishWorkflowRequest,
@@ -17,6 +18,7 @@ import {
   type SetWorkflowActivationRequest,
   type UpdateWorkflowRequest,
   validateWorkflowGraph,
+  WORKFLOW_LIMITS,
   type WorkflowGraph,
   workflowGraphSchema,
   type WorkflowListResponse,
@@ -34,7 +36,10 @@ import { currentAiRunId } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
+import { type WorkItemActor } from '../work-items/work-item-actor';
+import { PARTICIPANT_TO_PRISMA } from '../work-items/work-item-mapper';
 
+import { authorEnvelopeProblems } from './workflow-author-envelope';
 import {
   ACTIVE_RUN_STATUSES,
   graphHash,
@@ -55,9 +60,11 @@ import { referenceProblems } from './workflow-references';
  * validates the draft against the contract and the database and freezes it
  * as the next version; enabling is a separate decision of the owner.
  *
- * Reading is anybody's in the workspace. Writing is an admin's and never a
- * run of the built-in AI's: agent-authored drafts are issue #165, with their
- * own boundary.
+ * Reading is anybody's in the workspace. Writing a draft is an admin's,
+ * whether at the keyboard, through an agent or through a run of the
+ * built-in AI (issue #165, ADR-080); a run may not put an agent under a
+ * looser profile into it than its own. Publishing and switching on are a
+ * person's only: how the request arrived decides that, not the account.
  */
 @Injectable()
 export class WorkflowsService {
@@ -86,53 +93,129 @@ export class WorkflowsService {
 
   async create(input: {
     workspaceId: string;
-    userId: string;
+    actor: WorkItemActor;
     request: CreateWorkflowRequest;
     correlationId: string;
   }): Promise<WorkflowResponse> {
-    await this.assertMay(input.workspaceId, input.userId, canManageWorkflows);
+    await this.assertMay(input.workspaceId, input.actor, canManageWorkflows, 'draft');
     const graph = workflowGraphSchema.parse(input.request.graph ?? emptyWorkflowGraph());
+    await this.assertWithinAuthor(input.workspaceId, input.actor, graph);
+    return this.insert({
+      workspaceId: input.workspaceId,
+      actor: input.actor,
+      name: input.request.name,
+      description: emptyToNull(input.request.description ?? null),
+      graph,
+      correlationId: input.correlationId,
+      audit: {},
+    });
+  }
+
+  /**
+   * Copies a workflow's draft into a new one (issue #165): a starting point
+   * for a variant, which an agent may then revise. Nothing else travels --
+   * no version, no run, not the switch.
+   */
+  async duplicate(input: {
+    workflowId: string;
+    actor: WorkItemActor;
+    request: DuplicateWorkflowRequest;
+    correlationId: string;
+  }): Promise<WorkflowResponse> {
+    const source = await this.loadRow(input.workflowId);
+    await this.assertMay(source.workspaceId, input.actor, canManageWorkflows, 'draft');
+    const graph = storedGraph(source.draftGraph);
+    await this.assertWithinAuthor(source.workspaceId, input.actor, graph);
+    const name = input.request.name ?? (await this.copyName(source.workspaceId, source.name));
+    return this.insert({
+      workspaceId: source.workspaceId,
+      actor: input.actor,
+      name,
+      description: source.description,
+      graph,
+      correlationId: input.correlationId,
+      audit: { duplicatedFrom: source.id },
+    });
+  }
+
+  private async insert(input: {
+    workspaceId: string;
+    actor: WorkItemActor;
+    name: string;
+    description: string | null;
+    graph: WorkflowGraph;
+    correlationId: string;
+    audit: Record<string, string>;
+  }): Promise<WorkflowResponse> {
+    const userId = input.actor.userId;
     const id = await this.writeUnique(() =>
       this.prisma.$transaction(async (tx) => {
         const created = await tx.workflow.create({
           data: {
             workspaceId: input.workspaceId,
-            name: input.request.name,
-            description: emptyToNull(input.request.description ?? null),
-            draftGraph: graph as Prisma.InputJsonObject,
-            createdById: input.userId,
-            updatedById: input.userId,
+            name: input.name,
+            description: input.description,
+            draftGraph: input.graph as Prisma.InputJsonObject,
+            createdById: userId,
+            updatedById: userId,
+            ...authorColumns(input.actor),
           },
           select: { id: true },
         });
         await this.outbox.writeAudit(tx, {
           workspaceId: input.workspaceId,
-          actorId: input.userId,
+          actorId: userId,
           action: 'workflow.created',
           targetType: 'workflow',
           targetId: created.id,
           correlationId: input.correlationId,
-          metadata: { name: input.request.name, draftRevision: 1 },
+          metadata: {
+            name: input.name,
+            draftRevision: 1,
+            ...authorMetadata(input.actor),
+            ...input.audit,
+          },
         });
         return created.id;
       }),
     );
-    return this.get({ workflowId: id, userId: input.userId });
+    return this.get({ workflowId: id, userId });
+  }
+
+  /** "<name> (Kopie)", then "(Kopie 2)" and on, whichever is free. */
+  private async copyName(workspaceId: string, name: string): Promise<string> {
+    const taken = new Set(
+      (
+        await this.prisma.workflow.findMany({
+          where: { workspaceId, name: { startsWith: name } },
+          select: { name: true },
+        })
+      ).map((row) => row.name),
+    );
+    for (let n = 1; ; n += 1) {
+      const candidate = `${name} (Kopie${n === 1 ? '' : ` ${n}`})`.slice(
+        0,
+        WORKFLOW_LIMITS.nameMaxChars,
+      );
+      if (!taken.has(candidate)) return candidate;
+    }
   }
 
   async update(input: {
     workflowId: string;
-    userId: string;
+    actor: WorkItemActor;
     request: UpdateWorkflowRequest;
     correlationId: string;
   }): Promise<WorkflowResponse> {
     const existing = await this.loadRow(input.workflowId);
-    await this.assertMay(existing.workspaceId, input.userId, canManageWorkflows);
+    const userId = input.actor.userId;
+    await this.assertMay(existing.workspaceId, input.actor, canManageWorkflows, 'draft');
     const { request } = input;
     const graph =
       request.graph === undefined ? undefined : workflowGraphSchema.parse(request.graph);
     const graphChanged =
       graph !== undefined && graphHash(graph) !== graphHash(storedGraph(existing.draftGraph));
+    if (graphChanged) await this.assertWithinAuthor(existing.workspaceId, input.actor, graph);
 
     await this.writeUnique(() =>
       this.prisma.$transaction(async (tx) => {
@@ -149,15 +232,19 @@ export class WorkflowsService {
               ? {}
               : { description: emptyToNull(request.description) }),
             ...(graphChanged
-              ? { draftGraph: graph as Prisma.InputJsonObject, draftRevision: { increment: 1 } }
+              ? {
+                  draftGraph: graph as Prisma.InputJsonObject,
+                  draftRevision: { increment: 1 },
+                  ...authorColumns(input.actor),
+                }
               : {}),
-            updatedById: input.userId,
+            updatedById: userId,
           },
         });
         if (updated.count === 0) throw revisionConflict();
         await this.outbox.writeAudit(tx, {
           workspaceId: existing.workspaceId,
-          actorId: input.userId,
+          actorId: userId,
           action: 'workflow.updated',
           targetType: 'workflow',
           targetId: existing.id,
@@ -167,11 +254,12 @@ export class WorkflowsService {
               .filter((key) => key !== 'expectedRevision')
               .join(','),
             draftRevision: existing.draftRevision + (graphChanged ? 1 : 0),
+            ...authorMetadata(input.actor),
           },
         });
       }),
     );
-    return this.get({ workflowId: existing.id, userId: input.userId });
+    return this.get({ workflowId: existing.id, userId });
   }
 
   /**
@@ -196,21 +284,24 @@ export class WorkflowsService {
    * Freezes the draft as the next version. Publishing a draft identical to
    * the newest version publishes nothing and answers with that version, so
    * a repeated request cannot fill the history with copies.
+   *
+   * A person's only, and only the revision they name (issue #165): an agent
+   * may be revising the draft while somebody reviews it, and what becomes a
+   * version is exactly what was reviewed, with a record of who wrote it.
    */
   async publish(input: {
     workflowId: string;
-    userId: string;
+    actor: WorkItemActor;
+    /** The request carried a browser session cookie, not a token of any kind. */
+    viaBrowser: boolean;
     request: PublishWorkflowRequest;
     correlationId: string;
   }): Promise<PublishWorkflowResponse> {
     const existing = await this.loadRow(input.workflowId);
-    await this.assertMay(existing.workspaceId, input.userId, canManageWorkflows);
-    if (
-      input.request.expectedRevision !== undefined &&
-      input.request.expectedRevision !== existing.draftRevision
-    ) {
-      throw revisionConflict();
-    }
+    const userId = input.actor.userId;
+    await this.assertPerson(input.actor, input.viaBrowser);
+    await this.assertMay(existing.workspaceId, input.actor, canManageWorkflows, 'admin');
+    if (input.request.expectedRevision !== existing.draftRevision) throw revisionConflict();
     const problems = await this.problemsOf(existing.workspaceId, existing.draftGraph);
     if (problems.length > 0) {
       throw new AppError('workflow_invalid', 'The draft cannot be published as it is', {
@@ -231,7 +322,7 @@ export class WorkflowsService {
         // Only the revision that was checked above may become the version.
         const claimed = await tx.workflow.updateMany({
           where: { id: existing.id, draftRevision: existing.draftRevision },
-          data: { updatedById: input.userId },
+          data: { updatedById: userId },
         });
         if (claimed.count === 0) throw revisionConflict();
         const version = await tx.workflowVersion.create({
@@ -241,7 +332,11 @@ export class WorkflowsService {
             graph: graph as Prisma.InputJsonObject,
             graphHash: hash,
             draftRevision: existing.draftRevision,
-            publishedById: input.userId,
+            publishedById: userId,
+            draftAuthorKind: existing.draftAuthorKind,
+            draftAuthorId: existing.draftAuthor?.id ?? null,
+            draftAgentLabel: existing.draftAgentLabel,
+            draftAiRunId: existing.draftAiRunId,
           },
           select: { id: true, version: true },
         });
@@ -253,7 +348,7 @@ export class WorkflowsService {
         await syncWorkflowTriggers(tx, existing.id);
         await this.outbox.writeAudit(tx, {
           workspaceId: existing.workspaceId,
-          actorId: input.userId,
+          actorId: userId,
           action: 'workflow.published',
           targetType: 'workflow',
           targetId: existing.id,
@@ -262,6 +357,7 @@ export class WorkflowsService {
             version: version.version,
             draftRevision: existing.draftRevision,
             graphHash: hash,
+            draftAuthorKind: existing.draftAuthorKind.toLowerCase(),
           },
         });
         return version.id;
@@ -279,12 +375,15 @@ export class WorkflowsService {
 
   async setActivation(input: {
     workflowId: string;
-    userId: string;
+    actor: WorkItemActor;
+    viaBrowser: boolean;
     request: SetWorkflowActivationRequest;
     correlationId: string;
   }): Promise<WorkflowResponse> {
     const existing = await this.loadRow(input.workflowId);
-    await this.assertMay(existing.workspaceId, input.userId, canActivateWorkflows);
+    const userId = input.actor.userId;
+    await this.assertPerson(input.actor, input.viaBrowser);
+    await this.assertMay(existing.workspaceId, input.actor, canActivateWorkflows, 'admin');
     if (input.request.enabled && existing.publishedVersion === null) {
       throw new AppError('workflow_not_published', 'Only a published workflow can be enabled');
     }
@@ -295,14 +394,14 @@ export class WorkflowsService {
           data: {
             enabled: input.request.enabled,
             // Who switched it on is who its self-started runs act as (issue #161).
-            enabledById: input.request.enabled ? input.userId : null,
-            updatedById: input.userId,
+            enabledById: input.request.enabled ? userId : null,
+            updatedById: userId,
           },
         });
         await syncWorkflowTriggers(tx, existing.id);
         await this.outbox.writeAudit(tx, {
           workspaceId: existing.workspaceId,
-          actorId: input.userId,
+          actorId: userId,
           action: input.request.enabled ? 'workflow.enabled' : 'workflow.disabled',
           targetType: 'workflow',
           targetId: existing.id,
@@ -311,16 +410,16 @@ export class WorkflowsService {
         });
       });
     }
-    return this.get({ workflowId: existing.id, userId: input.userId });
+    return this.get({ workflowId: existing.id, userId });
   }
 
   async delete(input: {
     workflowId: string;
-    userId: string;
+    actor: WorkItemActor;
     correlationId: string;
   }): Promise<DeleteWorkflowResponse> {
     const existing = await this.loadRow(input.workflowId);
-    await this.assertMay(existing.workspaceId, input.userId, canManageWorkflows);
+    await this.assertMay(existing.workspaceId, input.actor, canManageWorkflows, 'admin');
     if (existing._count.runs > 0) {
       throw new AppError('workflow_has_active_runs', 'A run of this workflow has not finished');
     }
@@ -336,7 +435,7 @@ export class WorkflowsService {
       await tx.workflow.delete({ where: { id: existing.id } });
       await this.outbox.writeAudit(tx, {
         workspaceId: existing.workspaceId,
-        actorId: input.userId,
+        actorId: input.actor.userId,
         action: 'workflow.deleted',
         targetType: 'workflow',
         targetId: existing.id,
@@ -403,17 +502,59 @@ export class WorkflowsService {
     };
   }
 
+  /**
+   * Who may make a change, by kind of change: `draft` is any admin however
+   * the request arrived; `admin` is any admin but no run of the built-in AI.
+   */
   private async assertMay(
     workspaceId: string,
-    userId: string,
+    actor: WorkItemActor,
     policy: (role: WorkspaceRole | null) => PolicyDecision,
+    who: 'draft' | 'admin',
   ): Promise<void> {
-    if (currentAiRunId() !== undefined) {
-      throw AppError.forbidden('A run of the built-in AI cannot change workflows');
+    if (who === 'admin' && actor.kind === 'assistant') {
+      throw AppError.forbidden('A run of the built-in AI cannot change this');
     }
-    const role = await this.access.findRole(workspaceId, userId);
+    const role = await this.access.findRole(workspaceId, actor.userId);
     if (role === null) throw AppError.notFound('Workflow');
     assertPolicy(policy(role));
+  }
+
+  /**
+   * Publishing and switching on are a person's at the browser (issue #165,
+   * ADR-080). The browser's session cookie is what says so, not the
+   * absence of an agent-session header: an agent could leave the header out,
+   * but it cannot hold the cookie. So every token is refused, a person's own
+   * admin token included, and so is a cookie request that names an agent.
+   */
+  private async assertPerson(actor: WorkItemActor, viaBrowser: boolean): Promise<void> {
+    if (viaBrowser && actor.kind === 'human') return;
+    throw new AppError(
+      'workflow_human_only',
+      'Publishing a workflow or switching it on is decided by a person in the browser',
+    );
+  }
+
+  /**
+   * A run of the built-in AI writes no agent into a draft that would work
+   * under a looser profile than its own (issue #165, ADR-080). Refused with
+   * the problems, so the run can repair the graph and try again.
+   */
+  private async assertWithinAuthor(
+    workspaceId: string,
+    actor: WorkItemActor,
+    graph: WorkflowGraph,
+  ): Promise<void> {
+    const aiRunId = actor.kind === 'assistant' ? (actor.runId ?? currentAiRunId()) : undefined;
+    if (aiRunId === undefined) return;
+    const problems = await authorEnvelopeProblems(this.prisma, { aiRunId, workspaceId, graph });
+    if (problems.length > 0) {
+      throw new AppError(
+        'workflow_exceeds_author',
+        'The draft gives an agent more room than the run writing it has',
+        { problems },
+      );
+    }
   }
 
   private async loadRow(workflowId: string): Promise<WorkflowRow> {
@@ -448,6 +589,25 @@ function revisionConflict(): AppError {
     'workflow_revision_conflict',
     'The draft moved on since the revision this request names',
   );
+}
+
+/** The draft's provenance columns for a graph this actor just wrote. */
+function authorColumns(actor: WorkItemActor) {
+  return {
+    draftAuthorKind: PARTICIPANT_TO_PRISMA[actor.kind],
+    draftAuthorId: actor.userId,
+    draftAgentLabel: actor.agentLabel,
+    draftAiRunId: actor.kind === 'assistant' ? (actor.runId ?? null) : null,
+    draftAuthoredAt: new Date(),
+  };
+}
+
+function authorMetadata(actor: WorkItemActor): Record<string, string> {
+  return {
+    authorKind: actor.kind,
+    ...(actor.agentLabel === null ? {} : { agentLabel: actor.agentLabel }),
+    ...(actor.runId === undefined ? {} : { aiRunId: actor.runId }),
+  };
 }
 
 function emptyToNull(value: string | null): string | null {

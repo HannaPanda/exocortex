@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { aiWriteModeSchema } from './ai-trust';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { workItemParticipantKindSchema } from './work-items';
 import { WORKFLOW_LIMITS, WORKFLOW_TRIGGER_TYPES, workflowGraphSchema } from './workflow-graph';
 import { workflowNodeExecutionStatusSchema } from './workflow-progress';
 import { workflowRunEventTypeSchema, workflowRunLimitsSchema } from './workflow-runtime';
@@ -17,11 +18,28 @@ import { workflowProblemSchema } from './workflow-validation';
  * publishing never changes what a run in flight is executing.
  *
  * Enabling is its own call: whether a workflow may start by itself is a
- * different decision from what its graph says, and a separate one an agent
- * will not be offered (issue #165).
+ * different decision from what its graph says. An agent may write and
+ * revise a draft (issue #165, ADR-080); publishing and switching on are a
+ * person's, at the browser, and the draft says who wrote it.
  */
 
 const accountSchema = z.object({ id: idSchema, name: z.string().nullable() });
+
+/**
+ * Who wrote a graph (issue #165): the account and how the request arrived.
+ * `agent` is an external client that named an agent session (Hermes, Claude
+ * Code), `assistant` a run of the built-in AI, `human` everything else.
+ * Provenance shown to the person who reviews it, never a permission.
+ */
+export const workflowAuthorSchema = z.object({
+  kind: workItemParticipantKindSchema,
+  account: accountSchema.nullable(),
+  /** The agent client's own name for itself, unverified. */
+  agentLabel: z.string().nullable(),
+  /** The run of the built-in AI that wrote it. */
+  aiRunId: idSchema.nullable(),
+});
+export type WorkflowAuthor = z.infer<typeof workflowAuthorSchema>;
 
 const nameSchema = z.string().trim().min(1).max(WORKFLOW_LIMITS.nameMaxChars);
 const descriptionSchema = z.string().trim().max(WORKFLOW_LIMITS.descriptionMaxChars);
@@ -53,6 +71,8 @@ export const workflowSummarySchema = z.object({
   triggerTypes: z.array(workflowTriggerTypeSchema),
   /** Runs that have not reached a terminal status. */
   activeRunCount: z.number().int(),
+  /** Who wrote the draft's current graph, and when. */
+  draftAuthor: workflowAuthorSchema.extend({ at: isoDateTimeSchema }),
   createdBy: accountSchema.nullable(),
   updatedBy: accountSchema.nullable(),
   createdAt: isoDateTimeSchema,
@@ -125,8 +145,12 @@ export const workflowValidationResponseSchema = z.object({
 export type WorkflowValidationResponse = z.infer<typeof workflowValidationResponseSchema>;
 
 export const publishWorkflowRequestSchema = z.object({
-  /** The draft revision the person reviewed; refused when it has moved on since. */
-  expectedRevision: z.number().int().min(1).optional(),
+  /**
+   * The draft revision the person reviewed; refused when it has moved on
+   * since. Required (issue #165): an agent may be revising the draft while
+   * somebody reads it, and what becomes a version is exactly what was read.
+   */
+  expectedRevision: z.number().int().min(1),
 });
 export type PublishWorkflowRequest = z.infer<typeof publishWorkflowRequestSchema>;
 
@@ -140,6 +164,16 @@ export const deleteWorkflowResponseSchema = z.object({
 });
 export type DeleteWorkflowResponse = z.infer<typeof deleteWorkflowResponseSchema>;
 
+/**
+ * Copies a workflow's draft into a new workflow (issue #165). The copy is a
+ * draft and nothing more: no versions, no runs, switched off.
+ */
+export const duplicateWorkflowRequestSchema = z.object({
+  /** The new workflow's name; "<name> (Kopie)" and a number when left out. */
+  name: nameSchema.optional(),
+});
+export type DuplicateWorkflowRequest = z.infer<typeof duplicateWorkflowRequestSchema>;
+
 export const workflowVersionSchema = z.object({
   id: idSchema,
   workflowId: idSchema,
@@ -149,6 +183,9 @@ export const workflowVersionSchema = z.object({
   graphHash: z.string(),
   /** The draft revision that was published. */
   draftRevision: z.number().int(),
+  /** Who wrote the graph that was published. */
+  draftAuthor: workflowAuthorSchema,
+  /** Always a person: publishing is never an agent's (issue #165). */
   publishedBy: accountSchema.nullable(),
   publishedAt: isoDateTimeSchema,
 });

@@ -111,6 +111,8 @@ model User {
   workflowsCreated            Workflow[]               @relation("WorkflowCreatedBy")
   workflowsUpdated            Workflow[]               @relation("WorkflowUpdatedBy")
   workflowVersionsPublished   WorkflowVersion[]        @relation("WorkflowVersionPublishedBy")
+  workflowDraftsAuthored      Workflow[]               @relation("WorkflowDraftAuthor")
+  workflowVersionsAuthored    WorkflowVersion[]        @relation("WorkflowVersionDraftAuthor")
   workflowRunsStarted         WorkflowRun[]            @relation("WorkflowRunStartedBy")
   workflowsEnabled            Workflow[]               @relation("WorkflowEnabledBy")
   changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
@@ -4596,11 +4598,25 @@ model Workflow {
   enabledBy          User?            @relation("WorkflowEnabledBy", fields: [enabledById], references: [id], onDelete: SetNull)
 
   createdById String?
-  createdBy   User?    @relation("WorkflowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   User?   @relation("WorkflowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   updatedById String?
-  updatedBy   User?    @relation("WorkflowUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedBy   User?   @relation("WorkflowUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  /// Who wrote the draft's current graph (issue #165): the account, and how
+  /// the request arrived -- a person, an external agent session or a run of
+  /// the built-in AI. Provenance for the person who reviews and publishes it,
+  /// never a permission.
+  draftAuthorKind WorkItemParticipantKind @default(HUMAN)
+  draftAuthorId   String?
+  draftAuthor     User?                   @relation("WorkflowDraftAuthor", fields: [draftAuthorId], references: [id], onDelete: SetNull)
+  /// The agent client's own name for itself, unverified.
+  draftAgentLabel String?
+  /// The run of the built-in AI that wrote it, from its signed service token.
+  draftAiRunId    String?
+  draftAuthoredAt DateTime                @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   versions WorkflowVersion[] @relation("WorkflowVersions")
   runs     WorkflowRun[]
@@ -4630,6 +4646,14 @@ model WorkflowVersion {
   publishedById String?
   publishedBy   User?    @relation("WorkflowVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
   publishedAt   DateTime @default(now())
+
+  /// Who wrote the graph that was published (issue #165), copied from the
+  /// draft at the moment of publishing. The publisher is always a person.
+  draftAuthorKind WorkItemParticipantKind @default(HUMAN)
+  draftAuthorId   String?
+  draftAuthor     User?                   @relation("WorkflowVersionDraftAuthor", fields: [draftAuthorId], references: [id], onDelete: SetNull)
+  draftAgentLabel String?
+  draftAiRunId    String?
 
   publishedOf Workflow?     @relation("WorkflowPublishedVersion")
   runs        WorkflowRun[]

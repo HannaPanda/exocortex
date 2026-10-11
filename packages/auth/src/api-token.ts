@@ -75,6 +75,13 @@ const PROPOSE_ROUTES: readonly [string, RegExp][] = [
   ['DELETE', /^\/api\/changesets\/[^/]+\/changes\/[^/]+$/],
 ];
 
+/** The draft writes of issue #165: create, revise, duplicate. */
+const WORKFLOW_DRAFT_ROUTES: readonly [string, RegExp][] = [
+  ['POST', /^\/api\/workspaces\/[^/]+\/workflows$/],
+  ['PATCH', /^\/api\/workflows\/[^/]+$/],
+  ['POST', /^\/api\/workflows\/[^/]+\/duplicate$/],
+];
+
 function matches(routes: readonly [string, RegExp][], method: string, path: string): boolean {
   return routes.some(([verb, pattern]) => verb === method && pattern.test(path));
 }
@@ -121,13 +128,20 @@ export function requestClassFor(method: string, path: string): RequestClass {
   // enabled it starts agents by itself. Checking a graph is a POST only
   // because the graph travels in the body; it stores nothing, so it is a read
   // and a read-only client can still find out why a draft would not publish.
-  // Starting and cancelling a run (issue #161) is the same class: a run
-  // spends what the workflow's agents spend.
+  // Writing a draft is an ordinary write (issue #165, ADR-080): a draft
+  // starts nothing until a person publishes it and switches it on, so an
+  // agent with a writing token may author one. Publishing, switching on,
+  // deleting and starting or cancelling a run (issue #161) stay admin: a
+  // run spends what the workflow's agents spend.
   if (
     (path.includes('/workflows') || path.startsWith('/api/workflow-runs/')) &&
     !SAFE_METHODS.has(verb)
   ) {
-    return /^\/api\/workflows\/[^/]+\/validate$/u.test(path) ? 'read' : 'admin';
+    if (/^\/api\/workflows\/[^/]+\/validate$/u.test(path)) return 'read';
+    if (WORKFLOW_DRAFT_ROUTES.some(([method, pattern]) => method === verb && pattern.test(path))) {
+      return 'write';
+    }
+    return 'admin';
   }
   if (SAFE_METHODS.has(verb)) return 'read';
   if (matches(REPORT_ROUTES, verb, path)) return 'report';

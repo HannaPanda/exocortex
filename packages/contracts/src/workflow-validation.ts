@@ -30,7 +30,9 @@ import { workflowGoalPlaceholders } from './workflow-result';
  * What it cannot know is what lives in the database: whether an agent
  * profile, a page or a person a node names belongs to the workflow's
  * workspace. The API adds those as `reference_not_found` problems, in the
- * same list and the same shape.
+ * same list and the same shape, and, when a run of the built-in AI writes
+ * the draft, `profile_looser_than_author` for an agent node that would work
+ * under a looser profile than the run itself (issue #165).
  */
 
 export const WORKFLOW_PROBLEM_CODES = [
@@ -61,6 +63,7 @@ export const WORKFLOW_PROBLEM_CODES = [
   'goal_placeholder_invalid',
   'schedule_invalid',
   'reference_not_found',
+  'profile_looser_than_author',
 ] as const;
 export const workflowProblemCodeSchema = z.enum(WORKFLOW_PROBLEM_CODES);
 export type WorkflowProblemCode = z.infer<typeof workflowProblemCodeSchema>;

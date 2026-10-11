@@ -10,7 +10,6 @@ import {
   type ChildResultsResponse,
   type DelegateWorkRequest,
   type DelegateWorkResponse,
-  toolDomainSchema,
   WORK_ITEM_MAX_CHILDREN,
   type WorkItemChildResult,
   type WorkItemDetail,
@@ -30,7 +29,8 @@ import {
   childCreateRequest,
   cutText,
   hasReturned,
-  type ProfileLimits,
+  limitsOf,
+  PROFILE_LIMITS_SELECT,
   profileNoLooser,
 } from './work-item-delegation-rules';
 import { writeEvents } from './work-item-events';
@@ -54,17 +54,6 @@ import { WorkItemsService } from './work-items.service';
 /** How often a resume is retried while the paused run is still finishing its turn. */
 const RESUME_RETRIES = 12;
 const RESUME_RETRY_MS = 5_000;
-
-const PROFILE_LIMITS_SELECT = {
-  toolDomains: true,
-  writeMode: true,
-  approvalPolicy: true,
-  budgetMicroUsdPerRun: true,
-  budgetMicroUsdPerTask: true,
-  maxToolIterations: true,
-  maxRunSeconds: true,
-  confineToWorkspace: true,
-} as const;
 
 const CHILD_RESULT_SELECT = {
   id: true,
@@ -594,28 +583,4 @@ export class WorkItemDelegationService implements OnModuleInit {
     if (posted.run === null) throw AppError.internal('Carrying the work on produced no run');
     return posted.run.id;
   }
-}
-
-function limitsOf(row: {
-  toolDomains: unknown;
-  writeMode: 'READ_ONLY' | 'PROPOSE' | 'DIRECT';
-  approvalPolicy: 'NONE' | 'REVIEW_BEFORE_DONE';
-  budgetMicroUsdPerRun: number | null;
-  budgetMicroUsdPerTask: number | null;
-  maxToolIterations: number | null;
-  maxRunSeconds: number | null;
-  confineToWorkspace: boolean;
-}): ProfileLimits {
-  const domains = toolDomainSchema.array().safeParse(row.toolDomains);
-  return {
-    // A list that does not parse narrows to nothing rather than opening everything.
-    toolDomains: row.toolDomains === null ? null : domains.success ? domains.data : [],
-    writeMode: row.writeMode.toLowerCase() as AiWriteMode,
-    approvalPolicy: row.approvalPolicy === 'REVIEW_BEFORE_DONE' ? 'review_before_done' : 'none',
-    budgetMicroUsdPerRun: row.budgetMicroUsdPerRun,
-    budgetMicroUsdPerTask: row.budgetMicroUsdPerTask,
-    maxToolIterations: row.maxToolIterations,
-    maxRunSeconds: row.maxRunSeconds,
-    confineToWorkspace: row.confineToWorkspace,
-  };
 }

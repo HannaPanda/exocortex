@@ -6,6 +6,7 @@ import {
   type DelegateWorkRequest,
   strictestWriteMode,
   type ToolDomain,
+  toolDomainSchema,
   type WorkItemAssigneeInput,
   type WorkItemChildProgress,
 } from '@exocortex/contracts';
@@ -68,6 +69,17 @@ export function childWriteMode(
   if (modes.every((mode) => mode === null)) return null;
   return strictestWriteMode(...modes);
 }
+
+export const PROFILE_LIMITS_SELECT = {
+  toolDomains: true,
+  writeMode: true,
+  approvalPolicy: true,
+  budgetMicroUsdPerRun: true,
+  budgetMicroUsdPerTask: true,
+  maxToolIterations: true,
+  maxRunSeconds: true,
+  confineToWorkspace: true,
+} as const;
 
 /** The limits of a profile, as far as "no looser than" is concerned. */
 export interface ProfileLimits {
@@ -194,4 +206,29 @@ function pick<T extends object, K extends keyof T>(
     if (value[key] !== undefined) picked[key] = value[key];
   }
   return picked;
+}
+
+/** A profile row as the limits "no looser than" compares. */
+export function limitsOf(row: {
+  toolDomains: unknown;
+  writeMode: 'READ_ONLY' | 'PROPOSE' | 'DIRECT';
+  approvalPolicy: 'NONE' | 'REVIEW_BEFORE_DONE';
+  budgetMicroUsdPerRun: number | null;
+  budgetMicroUsdPerTask: number | null;
+  maxToolIterations: number | null;
+  maxRunSeconds: number | null;
+  confineToWorkspace: boolean;
+}): ProfileLimits {
+  const domains = toolDomainSchema.array().safeParse(row.toolDomains);
+  return {
+    // A list that does not parse narrows to nothing rather than opening everything.
+    toolDomains: row.toolDomains === null ? null : domains.success ? domains.data : [],
+    writeMode: row.writeMode.toLowerCase() as AiWriteMode,
+    approvalPolicy: row.approvalPolicy === 'REVIEW_BEFORE_DONE' ? 'review_before_done' : 'none',
+    budgetMicroUsdPerRun: row.budgetMicroUsdPerRun,
+    budgetMicroUsdPerTask: row.budgetMicroUsdPerTask,
+    maxToolIterations: row.maxToolIterations,
+    maxRunSeconds: row.maxRunSeconds,
+    confineToWorkspace: row.confineToWorkspace,
+  };
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -9,6 +9,8 @@ import {
   createWorkflowRequestSchema,
   type DeleteWorkflowResponse,
   deleteWorkflowResponseSchema,
+  type DuplicateWorkflowRequest,
+  duplicateWorkflowRequestSchema,
   type PublishWorkflowRequest,
   publishWorkflowRequestSchema,
   type PublishWorkflowResponse,
@@ -39,9 +41,10 @@ import {
   workflowVersionResponseSchema,
 } from '@exocortex/contracts';
 
-import { CurrentSession } from '../auth/session.guard';
+import { type AuthenticatedRequest, CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
+import { workItemActorOf } from '../work-items/work-item-actor';
 
 import { WorkflowRunsService } from './workflow-runs.service';
 import { WorkflowsService } from './workflows.service';
@@ -49,10 +52,11 @@ import { WorkflowsService } from './workflows.service';
 /**
  * Agent workflows (issue #160, ADR-075).
  *
- * Every write except `validate` is of the `admin` request class
- * (`requestClassFor`): an enabled workflow is a standing instruction that
- * starts agents by itself, like an automation rule, and starting or
- * cancelling a run is spending decided by an admin (issue #161).
+ * Writing a draft (create, update, duplicate) is of the `write` request
+ * class: a draft starts nothing, so an agent with a writing token may
+ * author one (issue #165). Publishing, switching on, deleting, and starting
+ * or cancelling a run are of the `admin` class (`requestClassFor`), and the
+ * first two are a person's at the browser on top of that.
  */
 @ApiTags('workflows')
 @Controller('api')
@@ -81,7 +85,7 @@ export class WorkflowsController {
   ): Promise<WorkflowResponse> {
     return this.workflows.create({
       workspaceId,
-      userId: session.userId,
+      actor: workItemActorOf(session),
       request: body,
       correlationId: currentCorrelationId(),
     });
@@ -106,7 +110,23 @@ export class WorkflowsController {
   ): Promise<WorkflowResponse> {
     return this.workflows.update({
       workflowId,
-      userId: session.userId,
+      actor: workItemActorOf(session),
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Post('workflows/:workflowId/duplicate')
+  @ApiBody({ schema: openApiSchema(duplicateWorkflowRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(workflowResponseSchema) })
+  async duplicate(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workflowId') workflowId: string,
+    @Body(zodPipe(duplicateWorkflowRequestSchema)) body: DuplicateWorkflowRequest,
+  ): Promise<WorkflowResponse> {
+    return this.workflows.duplicate({
+      workflowId,
+      actor: workItemActorOf(session),
       request: body,
       correlationId: currentCorrelationId(),
     });
@@ -128,12 +148,14 @@ export class WorkflowsController {
   @ApiCreatedResponse({ schema: openApiResponseSchema(publishWorkflowResponseSchema) })
   async publish(
     @CurrentSession() session: VerifiedSession,
+    @Req() request: AuthenticatedRequest,
     @Param('workflowId') workflowId: string,
     @Body(zodPipe(publishWorkflowRequestSchema)) body: PublishWorkflowRequest,
   ): Promise<PublishWorkflowResponse> {
     return this.workflows.publish({
       workflowId,
-      userId: session.userId,
+      actor: workItemActorOf(session),
+      viaBrowser: request.exocortexCredential === 'session',
       request: body,
       correlationId: currentCorrelationId(),
     });
@@ -144,12 +166,14 @@ export class WorkflowsController {
   @ApiOkResponse({ schema: openApiResponseSchema(workflowResponseSchema) })
   async setActivation(
     @CurrentSession() session: VerifiedSession,
+    @Req() request: AuthenticatedRequest,
     @Param('workflowId') workflowId: string,
     @Body(zodPipe(setWorkflowActivationRequestSchema)) body: SetWorkflowActivationRequest,
   ): Promise<WorkflowResponse> {
     return this.workflows.setActivation({
       workflowId,
-      userId: session.userId,
+      actor: workItemActorOf(session),
+      viaBrowser: request.exocortexCredential === 'session',
       request: body,
       correlationId: currentCorrelationId(),
     });
@@ -163,7 +187,7 @@ export class WorkflowsController {
   ): Promise<DeleteWorkflowResponse> {
     return this.workflows.delete({
       workflowId,
-      userId: session.userId,
+      actor: workItemActorOf(session),
       correlationId: currentCorrelationId(),
     });
   }
