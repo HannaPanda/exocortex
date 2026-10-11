@@ -157,6 +157,7 @@ export function evaluateAssertions(
         role,
         ...decision,
         decidedBy: assertion.kind === 'manual' ? 'review' : 'system',
+        text: assertion.kind === 'manual' ? assertion.text : null,
       });
     }
   }

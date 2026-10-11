@@ -77,6 +77,7 @@ function attempt(overrides: Partial<EvalAttempt> & { cost?: number | null }): Ev
         passed: true,
         actual: null,
         decidedBy: 'system',
+        text: null,
       },
     ],
     answer: null,

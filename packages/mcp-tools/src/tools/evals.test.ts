@@ -75,6 +75,7 @@ const attempt = {
       passed: true,
       actual: null,
       decidedBy: 'system',
+      text: null,
     },
   ],
   answer: 'Plan mit ADR-063',

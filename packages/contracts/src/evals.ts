@@ -423,6 +423,7 @@ export const updateEvalCaseRequestSchema = z
   })
   .refine((value) => Object.keys(value).length > 0, { message: 'Nothing to update' });
 export type UpdateEvalCaseRequest = z.infer<typeof updateEvalCaseRequestSchema>;
+export type UpdateEvalCaseRequestInput = z.input<typeof updateEvalCaseRequestSchema>;
 
 /**
  * A case taken from a real run: its prompt, its page, its profile. The mode
@@ -579,6 +580,8 @@ export const evalAssertionResultSchema = z.object({
   actual: z.union([z.number(), z.string()]).nullable(),
   /** Set by a review for a `manual` check. */
   decidedBy: z.enum(['system', 'review']),
+  /** The sentence a `manual` check asks a person; null for every other kind. */
+  text: z.string().nullable().default(null),
 });
 export type EvalAssertionResult = z.infer<typeof evalAssertionResultSchema>;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { type EvalAttemptMetrics, evalAssertionSchema } from '@exocortex/contracts';
+import { evalAssertionSchema, type EvalAttemptMetrics } from '@exocortex/contracts';
 
 import {
   buildMetrics,
@@ -133,6 +133,7 @@ describe('outcomeOf', () => {
     role: 'invariant',
     actual: null,
     decidedBy: 'system',
+    text: null,
   } as const;
   const criterion = {
     id: 'c',
@@ -140,6 +141,7 @@ describe('outcomeOf', () => {
     role: 'criterion',
     actual: null,
     decidedBy: 'system',
+    text: null,
   } as const;
 
   it('puts a broken invariant above everything', () => {

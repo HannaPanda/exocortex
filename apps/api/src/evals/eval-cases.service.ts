@@ -13,10 +13,10 @@ import {
   type EvalCaseListResponse,
   type EvalCaseResponse,
   type EvalFixture,
+  type EvalSuiteFile,
   fixtureProblem,
   type ImportEvalSuiteRequest,
   type ImportEvalSuiteResponse,
-  type EvalSuiteFile,
   TOOL_DOMAINS,
   type UpdateEvalCaseRequest,
 } from '@exocortex/contracts';
