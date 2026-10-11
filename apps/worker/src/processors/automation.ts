@@ -24,6 +24,7 @@ import { type AutomationRuleRecord, createRunRecorder, loadRule } from './automa
 import { signWebhookBody } from './automation/webhook';
 import { createWebhookSender, type WebhookSender } from './automation/webhook-request';
 import { handOverWork } from './automation/work-item';
+import { pageInEvalSandbox } from './maintenance-tasks/automations';
 
 /**
  * Running one automation (issue #50, ADR-024).
@@ -96,6 +97,13 @@ export function createAutomationProcessor(dependencies: AutomationDependencies) 
     const refusal = refuseReason({ rule, settings });
     if (rule === null || refusal !== null) {
       await recorder.skip(refusal ?? 'The rule no longer exists');
+      return;
+    }
+    if (
+      payload.documentId !== null &&
+      (await pageInEvalSandbox(dependencies.prisma, payload.documentId, payload.workspaceId))
+    ) {
+      await recorder.skip('The page belongs to an eval sandbox');
       return;
     }
 

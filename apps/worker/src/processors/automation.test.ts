@@ -96,6 +96,8 @@ function harness(input: {
   owner?: StoredOwner | null;
   /** What the page's Markdown export answers with. */
   markdown?: string;
+  /** The page sits in an eval attempt's sandbox (issue #146). */
+  inSandbox?: boolean;
 }) {
   const runs: Record<string, unknown>[] = [];
   const mails: { payload: Record<string, unknown>; options?: { jobId?: string } }[] = [];
@@ -178,7 +180,11 @@ function harness(input: {
         type: 'PAGE',
         parentId: null,
       }),
+      findFirst: async () => ({ parentId: null }),
     },
+    // No page here is in an eval sandbox (issue #146).
+    evalAttempt: { findFirst: async () => (input.inSandbox === true ? { id: 'attempt-1' } : null) },
+    evalRun: { findFirst: async () => null },
     user: {
       findUnique: async () => (input.owner === undefined ? OWNER : input.owner),
     },
@@ -552,6 +558,13 @@ describe('a mail rule', () => {
 describe('refusing to act', () => {
   it('skips a rule somebody switched off inside the debounce window', async () => {
     const { processor, runs, sent } = harness({ rule: webhookRule({ enabled: false }) });
+    await processor(job());
+    expect(sent).toHaveLength(0);
+    expect(outcome(runs)).toMatchObject({ status: 'SKIPPED' });
+  });
+
+  it('skips a page in an eval sandbox, even one the dispatcher let through (issue #146)', async () => {
+    const { processor, runs, sent } = harness({ rule: webhookRule(), inSandbox: true });
     await processor(job());
     expect(sent).toHaveLength(0);
     expect(outcome(runs)).toMatchObject({ status: 'SKIPPED' });

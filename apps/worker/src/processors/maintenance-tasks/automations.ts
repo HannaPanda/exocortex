@@ -53,6 +53,20 @@ export function triggerForEvent(eventType: string): AutomationTrigger | null {
 }
 
 /**
+ * Whether a page lies in an eval sandbox (issue #146), walked from the page
+ * up. Asked again by the automation processor when a debounced job runs:
+ * the dispatcher can read a sandbox page's first event in the instant
+ * before its id is recorded, and by the end of the window it is.
+ */
+export async function pageInEvalSandbox(
+  prisma: PrismaClient,
+  documentId: string,
+  workspaceId: string,
+): Promise<boolean> {
+  return insideEvalSandbox(prisma, documentId, await ancestorIds(prisma, documentId, workspaceId));
+}
+
+/**
  * Whether the page or a page above it is (or was) an eval sandbox: an
  * attempt's, or the page an eval run's sandboxes hang under.
  */
