@@ -181,10 +181,18 @@ export class EvalSandboxService {
   }): Promise<void> {
     const exists = await this.prisma.document.findUnique({
       where: { id: input.documentId },
-      select: { id: true },
+      select: { id: true, archivedAt: true },
     });
     if (exists === null) return;
     try {
+      // Only a page in the trash can be deleted for good, as anywhere else.
+      if (exists.archivedAt === null) {
+        await this.documents.archive({
+          documentId: input.documentId,
+          userId: input.userId,
+          correlationId: input.correlationId,
+        });
+      }
       await this.documents.deletePermanently({
         documentIds: [input.documentId],
         userId: input.userId,
