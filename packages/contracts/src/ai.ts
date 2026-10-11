@@ -68,6 +68,12 @@ export const aiUsageSchema = z.object({
   outputTokens: z.number().int().nonnegative(),
   cachedInputTokens: z.number().int().nonnegative(),
   provider: z.string(),
+  /**
+   * The upstream provider behind a gateway that served the request, e.g.
+   * `DeepInfra` behind OpenRouter (issue #145). Absent or null when the
+   * gateway did not say, and on every usage recorded before it was read.
+   */
+  servedBy: z.string().nullable().optional(),
   model: z.string(),
   /** Provider cost in the smallest currency unit, when reported. */
   providerCostMicroUsd: z.number().int().nonnegative().nullable(),

@@ -2064,6 +2064,15 @@ model AiRun {
   /// and the API can say the texts are gone instead of implying there were none.
   payloadsPrunedAt DateTime?
 
+  /// Where the operator's tools pick the run up (issue #145, ADR-073): the
+  /// correlation id every log line of the run carries, and the trace id when
+  /// tracing was switched on. Written when the run starts; null on older runs
+  /// and, for `traceId`, whenever no collector was configured.
+  correlationId String?
+  traceId       String?
+  /// What the run did, in order, as facts rather than content (issue #145).
+  events        AiRunEvent[]
+
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
   /// The deployment-wide usage view filters on time alone, across every
@@ -2076,6 +2085,33 @@ model AiRun {
   @@index([status, heartbeatAt])
   @@index([workItemId, createdAt])
   @@map("ai_run")
+}
+
+/// One step of a run's timeline (issue #145, ADR-073).
+///
+/// Written by the worker while the run happens: the context it was built
+/// from, each exchange with the provider, each tool call, each compaction.
+/// Append-only and never edited. `data` holds ids, counts, sizes, names and
+/// outcomes, shaped per `kind` by `aiRunEventDataSchema` -- never a prompt, a
+/// message, a tool result or a page's text, which is what lets it outlive the
+/// retention sweep that empties the run's texts.
+///
+/// What is already recorded elsewhere (a human checkpoint, a proposed change,
+/// a working state, the run's own start and end) is not copied here; the
+/// inspector joins it in when it is read.
+model AiRunEvent {
+  id         String   @id @default(cuid(2))
+  runId      String
+  run        AiRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  /// Order within the run; the clock alone cannot order two events of one millisecond.
+  sequence   Int
+  kind       String
+  at         DateTime @default(now())
+  durationMs Int?
+  data       Json     @default("{}")
+
+  @@unique([runId, sequence])
+  @@map("ai_run_event")
 }
 
 // ---------------------------------------------------------------------------

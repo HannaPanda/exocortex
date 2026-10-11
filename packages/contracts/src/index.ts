@@ -7,6 +7,7 @@ export * from './ai-diagnosis';
 export * from './ai-models';
 export * from './ai-runtime';
 export * from './ai-trust';
+export * from './ai-run-inspection';
 export * from './attachments';
 export * from './attention';
 export * from './auth';
