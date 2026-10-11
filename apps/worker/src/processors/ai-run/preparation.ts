@@ -23,9 +23,10 @@ import {
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { compactIfNeeded, estimateFloorInputTokens } from '../../compaction';
-import { buildSystemPrompt } from '../../system-prompt';
+import { buildSystemPrompt, type PromptSection } from '../../system-prompt';
 
 import { type ResolvedModelRow } from './contract';
+import { type RunTimeline } from './timeline';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 
@@ -112,6 +113,8 @@ export interface BuiltRunMessages {
   budgetInputTokens: number;
   /** The smallest the prompt could be made; `0` when there is nothing to compact. */
   floorInputTokens: number;
+  /** The system prompt part by part, for the run inspector (issue #145). */
+  promptSections: PromptSection[];
 }
 
 /**
@@ -157,6 +160,7 @@ export async function buildRunMessages(input: {
   bus: RedisEventBus;
   run: AiRun;
   settings: Settings;
+  timeline: RunTimeline;
   context: {
     toolsEnabled: boolean;
     contextWindowTokens: number;
@@ -174,14 +178,16 @@ export async function buildRunMessages(input: {
   const { toolsEnabled, contextWindowTokens, payload, logger } = input.context;
 
   if (run.conversationId === null) {
+    const basePrompt = settings['ai.systemPrompt'];
     return {
-      base:
-        settings['ai.systemPrompt'].length > 0
-          ? [{ role: 'system', content: settings['ai.systemPrompt'] }]
-          : [],
+      base: basePrompt.length > 0 ? [{ role: 'system', content: basePrompt }] : [],
       rest: aiMessageSchema.array().parse(run.messages),
       budgetInputTokens: Number.POSITIVE_INFINITY,
       floorInputTokens: 0,
+      promptSections:
+        basePrompt.length > 0
+          ? [{ key: 'base_prompt', text: basePrompt, items: null, truncated: false, sources: [] }]
+          : [],
     };
   }
 
@@ -224,22 +230,34 @@ export async function buildRunMessages(input: {
     requiresReasoningEffort: input.context.requiresReasoningEffort,
   });
 
-  await compactIfNeeded({
-    prisma,
-    provider,
-    bus,
-    runId: run.id,
-    conversationId: run.conversationId,
-    workspaceId: run.workspaceId,
-    budgetInputTokens,
-    systemPromptTokens,
-    keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
-    summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
-    correlationId: payload.correlationId,
-    logger,
-  });
+  const conversationId = run.conversationId;
+  await input.timeline.timed(
+    () =>
+      compactIfNeeded({
+        prisma,
+        provider,
+        bus,
+        runId: run.id,
+        conversationId,
+        workspaceId: run.workspaceId,
+        budgetInputTokens,
+        systemPromptTokens,
+        keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
+        summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
+        correlationId: payload.correlationId,
+        logger,
+      }),
+    (result) =>
+      result.compacted
+        ? {
+            kind: 'compaction',
+            data: { summarizedMessages: result.summarizedMessages, trigger: 'prepare' },
+          }
+        : null,
+  );
 
   return {
+    promptSections: systemPromptResult.sections,
     base: [{ role: 'system', content: systemPromptResult.prompt }],
     rest: await loadConversationMessages(prisma, run.conversationId),
     budgetInputTokens,

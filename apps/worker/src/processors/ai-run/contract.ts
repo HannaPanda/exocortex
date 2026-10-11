@@ -83,6 +83,7 @@ export function addUsage(total: AiUsage | null, turn: AiUsage): AiUsage {
     outputTokens: total.outputTokens + turn.outputTokens,
     cachedInputTokens: total.cachedInputTokens + turn.cachedInputTokens,
     provider: turn.provider,
+    servedBy: turn.servedBy ?? total.servedBy ?? null,
     model: turn.model,
     providerCostMicroUsd:
       total.providerCostMicroUsd === null && turn.providerCostMicroUsd === null

@@ -246,3 +246,17 @@ export async function writeSuccess(input: {
     toolDomains: outcome.toolContext?.domains ?? [],
   });
 }
+
+/** The terminal write: the failure the run ended on, or its answer. */
+export async function writeOutcome(
+  input: Omit<Parameters<typeof writeSuccess>[0], 'outcome'> & {
+    outcome: RunOutcome & { failure: RunFailure | null };
+  },
+): Promise<void> {
+  const { outcome } = input;
+  if (outcome.failure !== null) {
+    await writeFailure({ ...input, failure: outcome.failure });
+    return;
+  }
+  await writeSuccess(input);
+}

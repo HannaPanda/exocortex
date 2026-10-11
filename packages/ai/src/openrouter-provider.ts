@@ -438,7 +438,7 @@ export class OpenRouterProvider implements AiProvider {
     }
     if (chunk.usage !== undefined) {
       state.usage = this.mapUsage(
-        { usage: chunk.usage, model: chunk.model },
+        { usage: chunk.usage, model: chunk.model, provider: chunk.provider },
         request,
         Date.now() - startedAt,
       );
@@ -447,7 +447,7 @@ export class OpenRouterProvider implements AiProvider {
   }
 
   private mapUsage(
-    payload: { usage?: OpenRouterUsage; model?: string },
+    payload: { usage?: OpenRouterUsage; model?: string; provider?: string },
     request: AiGenerateRequest,
     durationMs: number,
   ): AiUsage {
@@ -456,6 +456,10 @@ export class OpenRouterProvider implements AiProvider {
       outputTokens: payload.usage?.completion_tokens ?? 0,
       cachedInputTokens: payload.usage?.prompt_tokens_details?.cached_tokens ?? 0,
       provider: this.id,
+      servedBy:
+        typeof payload.provider === 'string' && payload.provider.length > 0
+          ? payload.provider
+          : null,
       model: payload.model ?? request.model ?? 'unknown',
       providerCostMicroUsd:
         payload.usage?.cost === undefined ? null : Math.round(payload.usage.cost * 1_000_000),
@@ -479,6 +483,8 @@ interface OpenRouterToolCallResponse {
 
 interface OpenRouterCompletion {
   model?: string;
+  /** The upstream provider that served the request, e.g. `DeepInfra`. */
+  provider?: string;
   usage?: OpenRouterUsage;
   choices?: {
     message?: { content?: string; tool_calls?: OpenRouterToolCallResponse[] };
@@ -488,6 +494,7 @@ interface OpenRouterCompletion {
 
 interface OpenRouterStreamChunk {
   model?: string;
+  provider?: string;
   usage?: OpenRouterUsage;
   choices?: {
     delta?: {

@@ -136,6 +136,14 @@ export interface ToolCallOutcome {
   refused: boolean;
   /** `true` when the call raised a blocking human checkpoint (issue #140). */
   pausesRun?: boolean;
+  /**
+   * What the run inspector records about the answer (issue #145): the foreign
+   * text it brought in, whether the cap cut it, whether it repeated an
+   * earlier answer. Facts about the text, never the text.
+   */
+  untrustedOrigin?: UntrustedOrigin;
+  resultTruncated?: boolean;
+  repeated?: boolean;
 }
 
 export interface CreateToolRunnerInput {
@@ -315,7 +323,12 @@ function bookCall(
     repeatOf: verdict.repeatOf,
     savedChars: result.text.length,
   });
-  return { text: repeatHint({ name, repeatOf: verdict.repeatOf }), isError: false, refused: false };
+  return {
+    text: repeatHint({ name, repeatOf: verdict.repeatOf }),
+    isError: false,
+    refused: false,
+    repeated: true,
+  };
 }
 
 /**
@@ -517,6 +530,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       // the truncation ate is a fence that is not there. A failed call
       // carries an error message of ours, not the document, so it is neither
       // fenced nor counted.
+      const resultTruncated = result.text.length > MAX_RESULT_CHARS;
       if (tool.untrustedOutput !== null && !isError) {
         noteUntrustedContent(tool.untrustedOutput);
         return {
@@ -527,12 +541,15 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
           }),
           isError,
           refused: false,
+          untrustedOrigin: tool.untrustedOutput,
+          resultTruncated,
         };
       }
       return {
         text: truncate(result.text),
         isError,
         refused: false,
+        resultTruncated,
         ...(result.pausesRun === true && !isError ? { pausesRun: true } : {}),
       };
     } catch (error) {

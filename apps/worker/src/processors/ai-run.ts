@@ -9,7 +9,7 @@ import {
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
-import { withSpan } from '@exocortex/logger';
+import { currentTraceIds, withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -26,7 +26,8 @@ import {
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
-import { writeFailure, writeSuccess } from './ai-run/completion';
+import { writeOutcome } from './ai-run/completion';
+import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
 import { executeRun, type RunRoutingInput } from './ai-run/execution';
 import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
@@ -38,6 +39,7 @@ import {
   taskTextFor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
+import { RunTimeline } from './ai-run/timeline';
 import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
 
 export { type ResolvedModelRow } from './ai-run/contract';
@@ -119,6 +121,7 @@ function buildRunRouting(input: {
   base: AiMessage[];
   imageContext: AiMessage | null;
   provider: AiProvider;
+  timeline: RunTimeline;
   toolsEnabled: boolean;
   requiresReasoningEffort: boolean;
   floorInputTokens: number;
@@ -142,20 +145,30 @@ function buildRunRouting(input: {
       run.conversationId === null
         ? null
         : async (budgetInputTokens: number): Promise<AiMessage[]> => {
-            await compactIfNeeded({
-              prisma,
-              provider: input.provider,
-              bus,
-              runId: run.id,
-              conversationId: run.conversationId!,
-              workspaceId: run.workspaceId,
-              budgetInputTokens,
-              systemPromptTokens: estimateTokens(base[0]?.content ?? ''),
-              keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
-              summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
-              correlationId: payload.correlationId,
-              logger,
-            });
+            await input.timeline.timed(
+              () =>
+                compactIfNeeded({
+                  prisma,
+                  provider: input.provider,
+                  bus,
+                  runId: run.id,
+                  conversationId: run.conversationId!,
+                  workspaceId: run.workspaceId,
+                  budgetInputTokens,
+                  systemPromptTokens: estimateTokens(base[0]?.content ?? ''),
+                  keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
+                  summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
+                  correlationId: payload.correlationId,
+                  logger,
+                }),
+              (result) =>
+                result.compacted
+                  ? {
+                      kind: 'compaction',
+                      data: { summarizedMessages: result.summarizedMessages, trigger: 'route' },
+                    }
+                  : null,
+            );
             const reloaded = await loadConversationMessages(prisma, run.conversationId!);
             return imageContext === null
               ? [...base, ...reloaded]
@@ -191,7 +204,7 @@ interface RunPolicy {
   profile: RunProfile | null;
   writeMode: AiWriteMode;
   /** System messages before the conversation: the role, then the mode. */
-  notes: AiMessage[];
+  notes: { key: 'agent_role' | 'write_mode'; message: AiMessage }[];
   timeouts: AiRunTimeouts;
   budgetMicroUsd: number;
   maxToolIterations: number;
@@ -226,7 +239,10 @@ async function resolveRunPolicy(input: {
   return {
     profile,
     writeMode,
-    notes: [roleNote, modeNote].filter((note): note is AiMessage => note !== null),
+    notes: [
+      ...(roleNote === null ? [] : [{ key: 'agent_role' as const, message: roleNote }]),
+      ...(modeNote === null ? [] : [{ key: 'write_mode' as const, message: modeNote }]),
+    ],
     timeouts: {
       ...base,
       runBudgetMs: limits.runBudgetMs,
@@ -281,6 +297,45 @@ function createRunToolRunner(input: {
   });
 }
 
+/** The row as it starts running, with what it is held to and where its logs are. */
+async function markRunning(input: {
+  prisma: PrismaClient;
+  run: AiRun;
+  usedOwnKey: boolean;
+  writeMode: AiWriteMode;
+  profile: RunProfile | null;
+  correlationId: string;
+}): Promise<void> {
+  await input.prisma.aiRun.update({
+    where: { id: input.run.id },
+    data: {
+      status: 'RUNNING',
+      startedAt: new Date(),
+      heartbeatAt: new Date(),
+      // Written when the run starts, not when it finishes: a run that fails
+      // halfway still spent whoever's money it was spending.
+      usedOwnKey: input.usedOwnKey,
+      writeMode: writeModeColumn(input.writeMode),
+      // Where the logs of this run are (issue #145): every line it writes
+      // carries this id.
+      correlationId: input.correlationId,
+      // What the profile said at this moment (issue #143), so a later edit
+      // of the profile does not rewrite what this run was held to.
+      ...profileColumns(input.profile),
+    },
+  });
+}
+
+/**
+ * Keeps the run's trace id on its row (issue #145), so the inspector can
+ * name the trace. Called from inside the run's span, the only place the id
+ * exists; nothing is written when tracing is off.
+ */
+async function recordTraceId(prisma: PrismaClient, runId: string): Promise<void> {
+  const traceId = currentTraceIds()?.traceId ?? null;
+  if (traceId !== null) await prisma.aiRun.update({ where: { id: runId }, data: { traceId } });
+}
+
 /**
  * Executes an AI run outside the API process.
  *
@@ -310,6 +365,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     });
     if (admitted === null) return;
     const { run, settings } = admitted;
+    // What the run does, step by step, for the run inspector (issue #145).
+    const timeline = new RunTimeline(prisma, run.id, logger);
 
     // Whose key pays for this run, and therefore which provider makes the
     // call. Resolved before anything is asked of the provider, so the vision
@@ -360,12 +417,13 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     );
     const requiresReasoningEffort = run.reasoningLevel !== 'NONE';
 
-    const { base, rest, floorInputTokens } = await buildRunMessages({
+    const { base, rest, floorInputTokens, promptSections } = await buildRunMessages({
       prisma,
       provider,
       bus,
       run,
       settings,
+      timeline,
       context: {
         toolsEnabled: tools.enabled,
         contextWindowTokens: modelRow.contextWindowTokens,
@@ -412,7 +470,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     const policy = await resolveRunPolicy({ prisma, run, settings, profile });
     const messages: AiMessage[] = [
       ...base,
-      ...policy.notes,
+      ...policy.notes.map((note) => note.message),
       ...(imageContext === null ? [] : [imageContext]),
       ...rest,
     ];
@@ -431,20 +489,24 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // already read foreign content by the time the first turn starts.
     if (imageContext !== null) runner?.noteUntrustedContent('attachment');
 
-    await prisma.aiRun.update({
-      where: { id: run.id },
-      data: {
-        status: 'RUNNING',
-        startedAt: new Date(),
-        heartbeatAt: new Date(),
-        // Written when the run starts, not when it finishes: a run that fails
-        // halfway still spent whoever's money it was spending.
-        usedOwnKey: key.usedOwnKey,
-        writeMode: writeModeColumn(writeMode),
-        // What the profile said at this moment (issue #143), so a later edit
-        // of the profile does not rewrite what this run was held to.
-        ...profileColumns(profile),
-      },
+    timeline.record(
+      contextEvent({
+        promptSections,
+        notes: policy.notes,
+        imageContext,
+        documentId: run.documentId,
+        conversation: rest,
+        tools: runner?.toolContext() ?? null,
+      }),
+    );
+
+    await markRunning({
+      prisma,
+      run,
+      usedOwnKey: key.usedOwnKey,
+      writeMode,
+      profile,
+      correlationId: payload.correlationId,
     });
     await reportProgress(5, 'generating');
 
@@ -455,6 +517,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     const outcome = await withSpan(
       'ai.run',
       async (span) => {
+        await recordTraceId(prisma, run.id);
         const result = await executeRun({
           prisma,
           provider,
@@ -464,6 +527,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           logger,
           timeouts,
           runner,
+          timeline,
           toolsEnabled: tools.enabled,
           maxOutputTokens,
           maxToolIterations: tools.enabled ? policy.maxToolIterations : 0,
@@ -479,6 +543,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             base,
             imageContext,
             provider,
+            timeline,
             toolsEnabled: tools.enabled,
             requiresReasoningEffort,
             floorInputTokens,
@@ -509,19 +574,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       },
     );
 
-    if (outcome.failure !== null) {
-      await writeFailure({
-        prisma,
-        bus,
-        run,
-        payload,
-        logger,
-        failure: outcome.failure,
-        outcome,
-        modelRow,
-      });
-      return;
-    }
-    await writeSuccess({ prisma, bus, run, payload, logger, reportProgress, outcome, modelRow });
+    // Every step is written before the terminal status, so a client that
+    // reloads on the status change never sees a timeline that is still growing.
+    await timeline.flush();
+    await writeOutcome({ prisma, bus, run, payload, logger, reportProgress, outcome, modelRow });
   };
 }

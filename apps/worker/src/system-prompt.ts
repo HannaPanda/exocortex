@@ -1,4 +1,8 @@
-import { UNTRUSTED_CONTENT_SECTION } from '@exocortex/contracts';
+import {
+  type AiRunContextSectionKey,
+  type AiRunContextSource,
+  UNTRUSTED_CONTENT_SECTION,
+} from '@exocortex/contracts';
 import {
   conversationSourceKindLabel,
   type ConversationSourceRef,
@@ -49,7 +53,43 @@ export interface SystemPromptResult {
   /** Pinned sources that reached the prompt, and what their text cost. */
   pinnedSourceCount: number;
   pinnedSourceChars: number;
+  /**
+   * The same prompt, part by part, for the run inspector (issue #145). The
+   * text is here only so the caller can measure it; it is never stored.
+   */
+  sections: PromptSection[];
 }
+
+/** One part of the system prompt and what it was built from. */
+export interface PromptSection {
+  key: AiRunContextSectionKey;
+  text: string;
+  items: number | null;
+  truncated: boolean;
+  sources: AiRunContextSource[];
+}
+
+/** A recorded source with the fields a given kind does not use left empty. */
+function contextSource(
+  fields: Partial<AiRunContextSource> & Pick<AiRunContextSource, 'kind' | 'chars'>,
+): AiRunContextSource {
+  return {
+    documentId: null,
+    databaseViewId: null,
+    savedQueryId: null,
+    mode: null,
+    fullChars: null,
+    truncated: false,
+    origin: 'internal',
+    ...fields,
+  };
+}
+
+const PINNED_KIND: Record<ConversationSourceRef['kind'], AiRunContextSource['kind']> = {
+  PAGE: 'page',
+  DATABASE_VIEW: 'database_view',
+  SAVED_QUERY: 'saved_query',
+};
 
 /** How far up the tree the breadcrumb of the open page is resolved. Deeper ancestors are elided. */
 const MAX_PATH_DEPTH = 8;
@@ -107,6 +147,8 @@ export interface OpenPageContent {
   text: string;
   /** `true` when `ai.pageContextMaxChars` cut it. Always stated in the output. */
   truncated: boolean;
+  /** The page's whole length before the cut, for the run inspector. */
+  fullChars?: number;
 }
 
 export interface OpenPageSectionOptions {
@@ -289,8 +331,8 @@ async function loadPageContent(input: {
   if (body === null || body.trim().length === 0) return null;
 
   return body.length > input.maxChars
-    ? { text: body.slice(0, input.maxChars), truncated: true }
-    : { text: body, truncated: false };
+    ? { text: body.slice(0, input.maxChars), truncated: true, fullChars: body.length }
+    : { text: body, truncated: false, fullChars: body.length };
 }
 
 /**
@@ -307,7 +349,12 @@ async function loadPinnedSourcesSection(input: {
   search: { hybrid: SearchAdapter; keyword: SearchAdapter };
   toolsAvailable: boolean;
   logger: Logger;
-}): Promise<{ section: string; count: number; chars: number } | null> {
+}): Promise<{
+  section: string;
+  count: number;
+  chars: number;
+  sources: AiRunContextSource[];
+} | null> {
   const rows = await input.prisma.aiConversationSource.findMany({
     where: { conversationId: input.conversationId },
     orderBy: { createdAt: 'asc' },
@@ -343,7 +390,21 @@ async function loadPinnedSourcesSection(input: {
     toolsAvailable: input.toolsAvailable,
   });
   if (section === null) return null;
-  return { section, count: rendered.sources.length, chars: rendered.budget.usedChars };
+  const refById = new Map(refs.map((ref) => [ref.id, ref]));
+  const sources = rendered.sources.map((source) => {
+    const ref = refById.get(source.id);
+    return contextSource({
+      kind: PINNED_KIND[source.kind],
+      documentId: ref?.documentId ?? null,
+      databaseViewId: ref?.databaseViewId ?? null,
+      savedQueryId: ref?.savedQueryId ?? null,
+      mode: source.mode === 'EMBED' ? 'embedded' : 'reference',
+      chars: source.text.length,
+      fullChars: source.mode === 'EMBED' ? source.fullChars : null,
+      truncated: source.truncated,
+    });
+  });
+  return { section, count: rendered.sources.length, chars: rendered.budget.usedChars, sources };
 }
 
 /**
@@ -394,6 +455,11 @@ async function loadOpenPage(input: {
   };
 }
 
+/** A part of the prompt built from nothing but its own text. */
+function plainSection(key: AiRunContextSectionKey, text: string): PromptSection {
+  return { key, text, items: null, truncated: false, sources: [] };
+}
+
 /** One ALWAYS rule page, as the query above selects it. */
 interface AlwaysRuleRow {
   id: string;
@@ -413,9 +479,15 @@ function buildAlwaysRulesSection(input: {
   maxRuleChars: number;
   workspaceId: string;
   logger: Logger;
-}): { section: string | null; count: number; truncated: boolean } {
+}): {
+  section: string | null;
+  count: number;
+  truncated: boolean;
+  sources: AiRunContextSource[];
+} {
   const { rules, maxRuleChars, workspaceId, logger } = input;
-  if (rules.length === 0) return { section: null, count: 0, truncated: false };
+  if (rules.length === 0) return { section: null, count: 0, truncated: false, sources: [] };
+  const sources: AiRunContextSource[] = [];
 
   const parts: string[] = ['## Regeln aus dem Arbeitsbereich'];
   let remainingBudget = maxRuleChars;
@@ -437,6 +509,7 @@ function buildAlwaysRulesSection(input: {
     }
     remainingBudget -= body.length;
     parts.push(`### ${rule.title}\n${body}`);
+    sources.push(contextSource({ kind: 'rule', documentId: rule.id, chars: body.length }));
     count += 1;
   }
 
@@ -445,6 +518,87 @@ function buildAlwaysRulesSection(input: {
     section: count > 0 || truncated ? parts.join('\n\n') : null,
     count,
     truncated,
+    sources,
+  };
+}
+
+/**
+ * The "you are standing here" part of the prompt, or `null` when the run's
+ * page is not in its workspace.
+ */
+async function buildOpenPageSection(input: {
+  prisma: PrismaClient;
+  workspaceId: string;
+  documentId: string;
+  databaseViewId: string | null;
+  toolsAvailable: boolean;
+  includePageContent: boolean;
+  pageContentMaxChars: number;
+  logger: Logger;
+}): Promise<PromptSection | null> {
+  const { prisma, workspaceId, documentId, databaseViewId, logger } = input;
+  const openPage = await loadOpenPage({ prisma, workspaceId, documentId });
+  if (openPage === null) {
+    logger.info(
+      'Run carries a documentId that is not in its workspace; omitting the page context',
+      {
+        documentId,
+        workspaceId,
+      },
+    );
+    return null;
+  }
+  // A collection's own body is empty by construction (its rows are separate
+  // documents), so the content switch does not apply to one: the view
+  // description above is already the richer answer.
+  const content =
+    input.includePageContent && openPage.type === 'PAGE'
+      ? await loadPageContent({
+          prisma,
+          documentId: openPage.id,
+          maxChars: input.pageContentMaxChars,
+        })
+      : null;
+
+  const collectionDescription =
+    openPage.type === 'COLLECTION'
+      ? await describeCollection({
+          prisma,
+          workspaceId,
+          documentId: openPage.id,
+          viewId: databaseViewId,
+          logger,
+        }).catch((error: unknown) => {
+          logger.info('Skipping the collection description for this run', {
+            documentId: openPage.id,
+            workspaceId,
+            reason: error instanceof Error ? error.message : String(error),
+          });
+          return null;
+        })
+      : null;
+  const text = formatOpenPageSection(openPage, {
+    toolsAvailable: input.toolsAvailable,
+    collectionDescription,
+    content,
+  });
+  const collection = openPage.type === 'COLLECTION';
+  return {
+    key: 'open_page',
+    text,
+    items: 1,
+    truncated: content?.truncated ?? false,
+    sources: [
+      contextSource({
+        kind: collection ? 'database_view' : 'page',
+        documentId: openPage.id,
+        databaseViewId: collection ? databaseViewId : null,
+        mode: content === null ? 'pointer' : 'content',
+        chars: text.length,
+        fullChars: content?.fullChars ?? null,
+        truncated: content?.truncated ?? false,
+      }),
+    ],
   };
 }
 
@@ -495,77 +649,68 @@ export async function buildSystemPrompt(
   // The trust boundary is described before anything a page or a document can
   // say, so the rule is in the context ahead of the text it is a rule about
   // (issue #56, ADR-030).
-  const sections: string[] = [basePrompt, CHAT_FORMATTING_SECTION, UNTRUSTED_CONTENT_SECTION];
+  const sections: PromptSection[] = [
+    plainSection('base_prompt', basePrompt),
+    plainSection('formatting', CHAT_FORMATTING_SECTION),
+    plainSection('trust_rules', UNTRUSTED_CONTENT_SECTION),
+  ];
   const always = buildAlwaysRulesSection({ rules: alwaysRules, maxRuleChars, workspaceId, logger });
-  if (always.section !== null) sections.push(always.section);
+  if (always.section !== null) {
+    sections.push({
+      key: 'always_rules',
+      text: always.section,
+      items: always.count,
+      truncated: always.truncated,
+      sources: always.sources,
+    });
+  }
   const { truncated, count: alwaysRuleCount } = always;
 
   let onDemandRuleCount = 0;
-  const onDemandLines = onDemandRules
+  const onDemand = onDemandRules
     .filter((rule) => rule.aiRuleTrigger !== null && rule.aiRuleTrigger.trim().length > 0)
     // The identifier in a code span: it is 24 random characters the model
     // copies by hand into `exo_rules_load`, and a run on 2026-09-21 spent a
     // call on one that had lost its last character.
-    .map((rule) => `- ${rule.aiRuleTrigger} (documentId: \`${rule.id}\`)`);
-  if (onDemandLines.length > 0) {
-    onDemandRuleCount = onDemandLines.length;
-    sections.push(
-      [
+    .map((rule) => ({ id: rule.id, line: `- ${rule.aiRuleTrigger} (documentId: \`${rule.id}\`)` }));
+  if (onDemand.length > 0) {
+    onDemandRuleCount = onDemand.length;
+    sections.push({
+      key: 'on_demand_rules',
+      text: [
         '## Regeln auf Anfrage',
         'Wenn eine der folgenden Situationen zutrifft, lade die ausführlichen Anweisungen',
         'mit dem Werkzeug `exo_rules_load` und der genannten documentId, bevor du handelst:',
-        ...onDemandLines,
+        ...onDemand.map((rule) => rule.line),
       ].join('\n'),
-    );
+      items: onDemand.length,
+      truncated: false,
+      sources: onDemand.map((rule) =>
+        contextSource({
+          kind: 'rule',
+          documentId: rule.id,
+          mode: 'reference',
+          chars: rule.line.length,
+        }),
+      ),
+    });
   }
 
-  let openPageIncluded = false;
-  if (documentId !== null) {
-    const openPage = await loadOpenPage({ prisma, workspaceId, documentId });
-    if (openPage === null) {
-      logger.info(
-        'Run carries a documentId that is not in its workspace; omitting the page context',
-        {
-          documentId,
+  const openPageSection =
+    documentId === null
+      ? null
+      : await buildOpenPageSection({
+          prisma,
           workspaceId,
-        },
-      );
-    } else {
-      // A collection's own body is empty by construction (its rows are separate
-      // documents), so the content switch does not apply to one: the view
-      // description above is already the richer answer.
-      const content =
-        includePageContent && openPage.type === 'PAGE'
-          ? await loadPageContent({
-              prisma,
-              documentId: openPage.id,
-              maxChars: pageContentMaxChars,
-            })
-          : null;
-
-      const collectionDescription =
-        openPage.type === 'COLLECTION'
-          ? await describeCollection({
-              prisma,
-              workspaceId,
-              documentId: openPage.id,
-              viewId: databaseViewId,
-              logger,
-            }).catch((error: unknown) => {
-              logger.info('Skipping the collection description for this run', {
-                documentId: openPage.id,
-                workspaceId,
-                reason: error instanceof Error ? error.message : String(error),
-              });
-              return null;
-            })
-          : null;
-      sections.push(
-        formatOpenPageSection(openPage, { toolsAvailable, collectionDescription, content }),
-      );
-      openPageIncluded = true;
-    }
-  }
+          documentId,
+          databaseViewId,
+          toolsAvailable,
+          includePageContent,
+          pageContentMaxChars,
+          logger,
+        });
+  if (openPageSection !== null) sections.push(openPageSection);
+  const openPageIncluded = openPageSection !== null;
 
   // After the open page, before the closing line: the page says where the user
   // is standing, the pinned sources say what they carry with them wherever they
@@ -582,15 +727,26 @@ export async function buildSystemPrompt(
           toolsAvailable,
           logger,
         });
-  if (pinned !== null) sections.push(pinned.section);
+  if (pinned !== null) {
+    sections.push({
+      key: 'pinned_sources',
+      text: pinned.section,
+      items: pinned.count,
+      truncated: pinned.sources.some((source) => source.truncated),
+      sources: pinned.sources,
+    });
+  }
   const pinnedSourceCount = pinned?.count ?? 0;
   const pinnedSourceChars = pinned?.chars ?? 0;
 
   const today = new Date().toISOString().slice(0, 10);
-  sections.push(`Aktueller Arbeitsbereich: ${workspaceId}. Heutiges Datum: ${today}.`);
+  sections.push(
+    plainSection('closing', `Aktueller Arbeitsbereich: ${workspaceId}. Heutiges Datum: ${today}.`),
+  );
 
   return {
-    prompt: sections.join('\n\n'),
+    prompt: sections.map((section) => section.text).join('\n\n'),
+    sections,
     alwaysRuleCount,
     onDemandRuleCount,
     truncated,

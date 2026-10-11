@@ -186,6 +186,28 @@ describe('OpenRouterProvider.stream', () => {
     expect(events.at(-1)).toEqual({ type: 'done', text: 'vornach', finishReason: 'stop' });
   });
 
+  it('names the upstream provider that served the turn (issue #145)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        streamResponse([
+          { provider: 'DeepInfra', choices: [{ delta: { content: 'Hallo' } }] },
+          {
+            provider: 'DeepInfra',
+            model: 'test/model',
+            choices: [{ delta: {}, finish_reason: 'stop' }],
+            usage: { prompt_tokens: 10, completion_tokens: 2, cost: 0.0001 },
+          },
+        ]),
+      ),
+    );
+
+    const events = await collect(provider().stream(request));
+    const usage = events.find((event) => event.type === 'usage');
+
+    expect(usage).toMatchObject({ usage: { servedBy: 'DeepInfra', inputTokens: 10 } });
+  });
+
   it('reports an unavailable provider as an error event rather than throwing', async () => {
     vi.stubGlobal(
       'fetch',

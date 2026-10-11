@@ -30,30 +30,19 @@ import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
 import { requestRouting } from './agent-profile';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
+import { toolCallEvent, turnEvent } from './run-events';
+import {
+  MAX_TRUNCATION_RETRIES,
+  PAUSED_CALL_TEXT,
+  TRUNCATION_CONTINUE_PROMPT,
+  TRUNCATION_TOOL_RETRY_PROMPT,
+} from './loop-messages';
+import { type AbortReason, abortFailure, budgetFailure, runTimeoutFailure } from './run-failures';
+import { type RunTimeline } from './timeline';
 import { REASONING_LEVEL_TO_LOWER, toolCallTarget, toWireToolCalls } from './wire';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 type RunTimeouts = ReturnType<typeof deriveAiRunTimeouts>;
-
-/**
- * How often one run may pick up an answer that hit the output cap.
- *
- * Bounded on purpose: a model that keeps running into the limit is producing
- * something the limit is not the right fix for, and every retry costs a full
- * prompt again.
- */
-const MAX_TRUNCATION_RETRIES = 3;
-
-/** Sent after a text answer was cut off, to pick it up without repeating anything. */
-const TRUNCATION_CONTINUE_PROMPT =
-  'Deine vorige Antwort wurde am Ausgabelimit abgeschnitten. Setze genau an der Abbruchstelle fort: ' +
-  'keine Einleitung, keine Wiederholung, kein Neuanfang.';
-
-/** Sent after a tool call was cut off mid-arguments, so the retry stays inside the limit. */
-const TRUNCATION_TOOL_RETRY_PROMPT =
-  'Dein letzter Werkzeugaufruf wurde am Ausgabelimit abgeschnitten und deshalb nicht ausgeführt. ' +
-  'Wiederhole ihn mit deutlich weniger Inhalt pro Aufruf: schreibe lange Inhalte in mehreren Schritten, ' +
-  'den ersten mit mode "replace", die weiteren mit mode "append".';
 
 /** Everything the turn loop needs to decide who may serve a request (ADR-032). */
 export interface RunRoutingInput {
@@ -82,6 +71,8 @@ export interface RunExecutionInput {
   logger: AiJob['logger'];
   timeouts: RunTimeouts;
   runner: ToolRunner | null;
+  /** Where each turn and tool call is recorded for the run inspector (issue #145). */
+  timeline: RunTimeline;
   toolsEnabled: boolean;
   maxOutputTokens: number;
   maxToolIterations: number;
@@ -112,11 +103,6 @@ export interface RunOutcome {
  * the tool loop all read and write. They used to be locals of one 626-line
  * closure, which is how one function ended up with 81 independent paths.
  */
-/** What a call the model made after a blocking checkpoint in the same turn answers. */
-const PAUSED_CALL_TEXT =
-  'Nicht ausgeführt: der Auftrag wartet auf die Antwort auf deine Rückfrage. Die Antwort setzt ' +
-  'die Arbeit in einem neuen Lauf fort.';
-
 class RunExecution {
   private readonly input: RunExecutionInput;
   private readonly runDeadline: number;
@@ -150,13 +136,15 @@ class RunExecution {
   private truncationRetries = 0;
   private sequence = 0;
   /** Why `runController` aborted; disambiguates the `catch` below (`null` until it fires). */
-  private abortReason: 'run_budget' | 'turn_timeout' | 'cancelled' | null = null;
+  private abortReason: AbortReason = null;
   /**
    * Who may serve the turn that is about to go out (ADR-032). Re-planned before
    * every turn, because a tool result can add fifty thousand tokens to the
    * prompt and put the request beyond the provider that took the last one.
    */
   private routing: AiRoutingRequirements | undefined;
+  /** Providers the last plan allowed, for the inspector; null when the model has no snapshot. */
+  private eligibleProviders: number | null = null;
   /** Whether an alias drift was already reported; once per run is enough. */
   private aliasDriftReported = false;
   /**
@@ -192,7 +180,12 @@ class RunExecution {
     try {
       await this.loop();
     } catch (error) {
-      this.failure = this.describeAbort(error);
+      this.failure = abortFailure({
+        reason: this.abortReason,
+        error,
+        timeouts: this.input.timeouts,
+        describe: this.describeTimeout,
+      });
     } finally {
       clearTimeout(runTimer);
       clearInterval(heartbeat);
@@ -215,7 +208,7 @@ class RunExecution {
   private async loop(): Promise<void> {
     while (true) {
       if (Date.now() > this.runDeadline) {
-        this.failure = this.timeoutFailure();
+        this.failure = runTimeoutFailure(this.input.timeouts, this.describeTimeout);
         return;
       }
 
@@ -324,6 +317,7 @@ class RunExecution {
   /** Carries a plan into the next request, and records what it decided. Never content. */
   private applyPlan(plan: RoutePlan): void {
     this.routing = requestRouting(plan, this.input.maxOutputTokens, this.input.routing.preferences);
+    this.eligibleProviders = plan.known ? plan.allowedProviderKeys.length : null;
     if (!plan.known) return;
     this.input.logger.debug('Route planned for turn', {
       runId: this.input.run.id,
@@ -370,10 +364,22 @@ class RunExecution {
     const { payload, run } = this.input;
     this.turns += 1;
     const index = this.turns;
+    const at = new Date();
+    const started = performance.now();
     return withSpan(
       'ai.turn',
       async (span) => {
         const turn = await this.streamOneTurn(this.providerMessages);
+        this.input.timeline.record(
+          turnEvent({
+            index,
+            turn,
+            runModel: run.model,
+            eligibleProviders: this.eligibleProviders,
+            reasoned: this.turnSawReasoning,
+          }),
+          { at, durationMs: performance.now() - started },
+        );
         span.setAttributes({
           'ai.turn.finish_reason': turn.finishReason,
           'ai.turn.tool_calls': turn.toolCalls.length,
@@ -507,6 +513,10 @@ class RunExecution {
     }
 
     this.truncationRetries += 1;
+    this.input.timeline.record({
+      kind: 'truncation_retry',
+      data: { attempt: this.truncationRetries, toolCall: truncatedToolCall },
+    });
     if (this.truncationRetries > MAX_TRUNCATION_RETRIES) {
       this.failure = {
         code: 'ai_response_truncated',
@@ -516,7 +526,7 @@ class RunExecution {
       return false;
     }
     if (this.spentMicroUsd >= budgetMicroUsd) {
-      this.failure = this.budgetFailure();
+      this.failure = budgetFailure(this.input.budgetMicroUsd);
       this.text = this.carriedText + turn.text;
       return false;
     }
@@ -578,7 +588,7 @@ class RunExecution {
       return false;
     }
     if (this.spentMicroUsd >= budgetMicroUsd) {
-      this.failure = this.budgetFailure();
+      this.failure = budgetFailure(this.input.budgetMicroUsd);
       return false;
     }
 
@@ -626,7 +636,7 @@ class RunExecution {
 
     for (const call of runnable) {
       if (Date.now() > this.runDeadline) {
-        this.failure = this.timeoutFailure();
+        this.failure = runTimeoutFailure(this.input.timeouts, this.describeTimeout);
         return messages;
       }
       // Computed once per call and reused for the `succeeded`/`failed`
@@ -634,6 +644,9 @@ class RunExecution {
       // change between the two.
       const target = toolCallTarget(call.name, call.argumentsJson);
       await this.publishToolCall(call.name, 'started', target);
+      const at = new Date();
+      const started = performance.now();
+      const skipped = this.paused;
 
       // Whatever the model meant to do after asking waits for the answer too:
       // a write queued behind a request for approval is exactly the write the
@@ -647,6 +660,16 @@ class RunExecution {
             correlationId: payload.correlationId,
           });
       if (result.pausesRun === true) this.paused = true;
+      this.input.timeline.record(
+        toolCallEvent({
+          iteration: this.toolIterations,
+          toolName: call.name,
+          target,
+          result,
+          skipped,
+        }),
+        { at, durationMs: skipped ? 0 : performance.now() - started },
+      );
 
       await prisma.aiConversationMessage.create({
         data: {
@@ -681,6 +704,15 @@ class RunExecution {
   ): Promise<void> {
     for (const call of all) {
       if (runnable.includes(call)) continue;
+      this.input.timeline.record(
+        toolCallEvent({
+          iteration: this.toolIterations,
+          toolName: call.name.length > 0 ? call.name : 'unbekannt',
+          target: null,
+          result: null,
+          skipped: false,
+        }),
+      );
       await this.publishToolCall(
         call.name,
         'failed',
@@ -760,48 +792,14 @@ class RunExecution {
     });
   }
 
-  /** Turns a thrown abort into the failure it actually was. */
-  private describeAbort(error: unknown): RunFailure {
-    const { timeouts } = this.input;
-    if (this.abortReason === 'cancelled') {
-      return { code: 'ai_cancelled', message: 'The run was cancelled' };
-    }
-    if (this.abortReason === 'turn_timeout') {
-      return {
-        code: 'ai_timeout',
-        message: `A single model answer exceeded ${timeouts.turnTimeoutMs}ms`,
-        diagnosis: this.describeTimeout('turn', timeouts.turnTimeoutMs),
-      };
-    }
-    if (this.abortReason === 'run_budget') {
-      return {
-        code: 'ai_timeout',
-        message: `The run exceeded its budget of ${timeouts.runBudgetMs}ms`,
-        diagnosis: this.describeTimeout('run', timeouts.runBudgetMs),
-      };
-    }
-    return {
-      code: 'ai_provider_unavailable',
-      message: error instanceof Error ? error.message : String(error),
-    };
-  }
-
-  private timeoutFailure(): RunFailure {
-    return {
-      code: 'ai_timeout',
-      message: `AI run exceeded its budget of ${this.input.timeouts.runBudgetMs}ms`,
-      diagnosis: this.describeTimeout('run', this.input.timeouts.runBudgetMs),
-    };
-  }
-
   /**
    * The same thing said to the person: which limit ran out, at which thinking
    * level, and whether any of the answer had arrived by then. Stored on the
    * run and shown in the panel instead of the canned sentence, the way
    * `ai_tool_limit_exceeded` already reads out its tally (ADR-059).
    */
-  private describeTimeout(limit: 'turn' | 'run', limitMs: number): AiRunDiagnosis {
-    return runTimeoutDiagnosis({
+  private readonly describeTimeout = (limit: 'turn' | 'run', limitMs: number): AiRunDiagnosis =>
+    runTimeoutDiagnosis({
       limit,
       limitMs,
       model: this.input.run.model,
@@ -810,14 +808,6 @@ class RunExecution {
       sawReasoning: this.turnSawReasoning,
       toolIterations: this.toolIterations,
     });
-  }
-
-  private budgetFailure(): RunFailure {
-    return {
-      code: 'ai_budget_exceeded',
-      message: `AI run would exceed its budget of ${this.input.budgetMicroUsd} micro-USD`,
-    };
-  }
 }
 
 /** Runs the conversation with the provider and reports what it produced. */
