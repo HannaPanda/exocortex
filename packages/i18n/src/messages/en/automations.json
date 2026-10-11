@@ -74,7 +74,7 @@
     "description": "When something changes within the selected scope or the schedule is due, the action runs. An automation never overwrites the content of a page.",
     "name": "Name",
     "namePlaceholder": "Notify Hermes about new meeting notes",
-    "debounce": "Debounce (seconds)",
+    "debounce": "Debounce",
     "debounceHint": "How long a page must remain quiet before the rule runs. Without this, every keystroke triggers a run, and with an AI run, each of them costs money.",
     "cancel": "Cancel",
     "create": "Create",

@@ -53,6 +53,10 @@ export const EVAL_LIMITS = {
   maxVariants: 6,
   maxRepetitions: 5,
   maxCasesPerRun: 20,
+  minRunSeconds: 30,
+  maxRunSeconds: 3_600,
+  /** The longest a `max_duration` check may allow: one day. */
+  maxDurationCheckSeconds: 86_400,
   /** Cases times variants times repetitions; every one is a paid run. */
   maxAttemptsPerRun: 60,
   reviewNoteMaxChars: 4_000,
@@ -128,7 +132,7 @@ export const evalAssertionSchema = z.discriminatedUnion('kind', [
   z.object({
     id: assertionIdSchema,
     kind: z.literal('max_duration'),
-    maxSeconds: z.number().int().min(1).max(86_400),
+    maxSeconds: z.number().int().min(1).max(EVAL_LIMITS.maxDurationCheckSeconds),
   }),
   /**
    * Nothing was changed: no change proposed, no fixture page different, no
@@ -274,7 +278,11 @@ const expectedOutcomeSchema = z.string().trim().max(EVAL_LIMITS.expectedOutcomeM
 const assertionsSchema = z.array(evalAssertionSchema).max(EVAL_LIMITS.maxAssertions);
 const toolDomainsSchema = z.array(toolDomainSchema).max(40);
 const iterationsSchema = z.number().int().min(1).max(100);
-const runSecondsSchema = z.number().int().min(30).max(3_600);
+const runSecondsSchema = z
+  .number()
+  .int()
+  .min(EVAL_LIMITS.minRunSeconds)
+  .max(EVAL_LIMITS.maxRunSeconds);
 
 const accountSchema = z.object({ id: idSchema, name: z.string().nullable() });
 

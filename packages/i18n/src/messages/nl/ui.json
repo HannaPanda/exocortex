@@ -39,5 +39,25 @@
     "fit": "Aanpassen aan scherm",
     "open": "Afbeelding vergroten: {alt}",
     "openUntitled": "Afbeelding vergroten"
+  },
+  "durationInput": {
+    "unit": "Eenheid",
+    "units": {
+      "milliseconds": "Milliseconden",
+      "seconds": "Seconden",
+      "minutes": "Minuten",
+      "hours": "Uur",
+      "days": "Dagen"
+    },
+    "amounts": {
+      "milliseconds": "{count, plural, one {# milliseconde} other {# milliseconden}}",
+      "seconds": "{count, plural, one {# seconde} other {# seconden}}",
+      "minutes": "{count, plural, one {# minuut} other {# minuten}}",
+      "hours": "{count, plural, one {# uur} other {# uur}}",
+      "days": "{count, plural, one {# dag} other {# dagen}}"
+    },
+    "invalid": "Dit is geen tijdsduur die nauwkeurig kan worden opgeslagen.",
+    "outOfRange": "Toegestaan: {min} tot {max}.",
+    "keepsLastValid": "De laatst geldige waarde wordt bewaard."
   }
 }

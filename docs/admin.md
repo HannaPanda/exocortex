@@ -586,7 +586,14 @@ A page nobody has marked never reaches a model.
    with a unit (B, KB, MB, GB, KiB, MiB, GiB, issue #174). The value stays
    bytes on the wire; the field picks the largest unit that shows it exactly
    and refuses an amount that is no whole number of bytes, so a byte setting
-   needs nothing beyond its name.
+   needs nothing beyond its name. Durations follow the same rule (issue
+   #169): a key ending in `Ms`, `Seconds` or `Minutes` is edited as an
+   amount with a unit up to days (`components/duration-input.tsx`,
+   `lib/duration.ts`), stays in the key's unit on the wire, and names its
+   bounds in units (`1 Minute bis 30 Tage`); a key ending in `Hour` is an
+   hour of the day, picked from 24 whole hours. Keys ending in `Days` stay
+   plain numbers, because a day is already the unit a retention period is
+   thought in.
 4. Add the row to the table above.
 
 No migration is needed: the `setting` table is key/value.

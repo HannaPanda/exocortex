@@ -74,7 +74,7 @@
     "description": "Wanneer er iets verandert onder het gekozen bereik of de planning afloopt, wordt de actie uitgevoerd. Een automatisering overschrijft nooit de inhoud van een pagina.",
     "name": "Naam",
     "namePlaceholder": "Hermes informeren over nieuwe vergadernotities",
-    "debounce": "Debounce (seconden)",
+    "debounce": "Debounce",
     "debounceHint": "Zolang moet een pagina inactief zijn voordat de regel wordt uitgevoerd. Zonder dit activeert elke toetsaanslag een run, en bij een AI-run kost elke run geld.",
     "cancel": "Annuleren",
     "create": "Maken",

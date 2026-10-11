@@ -44,11 +44,11 @@
         "help": "Bovengrens voor de lengte van een enkel AI-antwoord."
       },
       "timeoutMs": {
-        "label": "Tijdslimiet per modelantwoord (ms)",
+        "label": "Tijdslimiet per modelreactie",
         "help": "Breekt een enkel antwoord van het model af. Toolaanroepen en vervolgeantwoorden hebben hun eigen tijd, zie „Totale tijd per run”."
       },
       "maxRunMs": {
-        "label": "Totale tijd per run (ms)",
+        "label": "Totale tijd per run",
         "help": "Na deze tijd stopt een run in zijn geheel, zelfs als deze nog tools aanroept. Kan nooit korter zijn dan de tijdslimiet per modelantwoord."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Stuurt een bericht voorafgaand aan een gespiegelde afspraak. Vereist ook een geconfigureerde verzendmethode op de server."
       },
       "reminderLeadMinutes": {
-        "label": "Voorlooptijd in minuten",
+        "label": "Herinnering vooraf",
         "help": "Hoe lang voor een afspraak met een specifiek tijdstip de herinnering uitgaat. 0 betekent precies bij het begin."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "In welke zone het bovenstaande tijdstip wordt gelezen, bijvoorbeeld Europe/Berlin. Bewust een eigen instelling in plaats van de servertijd, die in UTC draait."
       },
       "commentMailDebounceMinutes": {
-        "label": "Verzameltijd voor directe reactiemails (minuten)",
+        "label": "Verzameltijd voor directe e-mails over reacties",
         "help": "Hoe lang er op verdere reacties wordt gewacht voordat er een directe e-mail uitgaat. Zo worden vier antwoorden in een thread één e-mail in plaats van vier. 0 betekent: direct verzenden."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Bewaart regelmatig een kopie van een actief bewerkte pagina, zodat het tabblad Activiteit echte tijdsperioden kan tonen („bewerkt van 14:20 tot 14:45”) in plaats van alleen de laatste status. Uit: er worden geen extra back-ups gemaakt."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Interval tussen sessieback-ups (minuten)",
+        "label": "Interval tussen sessie-back-ups",
         "help": "Hoe vaak een actief bewerkte pagina maximaal opnieuw mag worden opgeslagen. Werkt alleen als de optie hierboven is ingeschakeld."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "Zo vaak mag een regel achter elkaar mislukken voordat hij zichzelf uitschakelt. Een regel die nergens naar verwijst, wordt niet beter door herhalen; hij vult alleen het logboek."
       },
       "webhookTimeoutSeconds": {
-        "label": "Tijdslimiet voor een webhook (seconden)",
+        "label": "Tijdslimiet voor een webhook",
         "help": "Zo lang mag de ontvangende server erover doen. Daarna geldt de uitvoering als mislukt."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "Zoveel knooppunten van een uitvoering mogen gelijktijdig actief zijn, inclusief wachtende. Alles wat daarboven komt, wacht tot er een plek vrijkomt."
       },
       "maxLifetimeSeconds": {
-        "label": "Maximale looptijd (seconden)",
+        "label": "Maximale looptijd",
         "help": "Zolang mag een uitvoering in totaal duren, inclusief wachttijden. Daarna wordt deze als verlopen beëindigd. Standaard is zeven dagen."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Leeg gebruikt het standaardmodel. Hier loont een klein model: het gaat telkens om twee tot vijf zinnen, maar wel vaak."
       },
       "debounceSeconds": {
-        "label": "Wachttijd voor herschrijven (seconden)",
+        "label": "Wachttijd voor herschrijven",
         "help": "Zo lang moet het stil zijn rond een pagina voordat het overzicht erover opnieuw wordt geschreven. Aanzienlijk langer dan bij automatiseringen: op een inleiding wacht niemand, en een middag werken aan een pagina moet één uitvoering kosten, geen twintig."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Hierin zitten Pandoc, TeX Live en de lettertypen; op de computer zelf wordt niets geïnstalleerd. Een andere image verandert waar elk sjabloon op kan vertrouwen en wordt niet opgemerkt bij het hergebruik van kant-en-klare pdf’s: bouw daarna eenmalig met „opnieuw genereren”."
       },
       "timeoutSeconds": {
-        "label": "Tijdslimiet voor een build (seconden)",
+        "label": "Tijdslimiet voor een build",
         "help": "Daarna wordt de container afgebroken. Een LaTeX-uitvoering die na drie minuten niet klaar is, wacht meestal op invoer die niemand kan geven."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Hierin zitten TeX Live, latexmk, biber en de lettertypen. Zonder deze image mislukt elke build met een duidelijke melding."
       },
       "timeoutSeconds": {
-        "label": "Tijdslimiet per build (seconden)",
+        "label": "Tijdslimiet per build",
         "help": "Daarna wordt de container afgebroken. Een afstudeerscriptie met literatuurlijst heeft meerdere doorgangen nodig."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Toegestaan: {min, number} tot {max, number}.",
     "invalid": "Deze waarde is niet geldig.",
     "invalidWithRange": "Niet opgeslagen. Toegestaan: {min, number} tot {max, number}.",
-    "rangeHintBytes": "Toegestaan: {min} tot {max}.",
-    "invalidWithRangeBytes": "Niet opgeslagen. Toegestaan: {min} tot {max}.",
+    "rangeHintAmounts": "Toegestaan: {min} tot {max}.",
+    "invalidWithRangeAmounts": "Niet opgeslagen. Toegestaan: {min} tot {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Eenheid",
     "byteUnits": {

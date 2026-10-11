@@ -275,6 +275,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-dauer"
+        title="Dauer und Uhrzeit"
+        source="apps/web/src/components/settings/setting-row.tsx"
+        note="Eine Einstellung, deren Schlüssel auf Ms, Seconds oder Minutes endet, zeigt Zahl und Einheit; gespeichert bleibt die Einheit des Schlüssels. 604800 Sekunden erscheinen als 7 Tage, die Grenzen als 1 Minute bis 30 Tage. Ein Schlüssel auf Hour ist eine Uhrzeit und wird aus vollen Stunden gewählt, weil der Wert keine Minuten kennt."
+        stageClassName="p-6 sm:p-6"
+      >
+        <DurationRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-schmal"
         title="Auf dem Telefon"
         source="apps/web/src/components/settings/setting-row.tsx"
@@ -297,6 +307,35 @@ function ByteRowExample() {
           value={bytes}
           onChange={(value) => {
             if (typeof value === 'number') setBytes(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DurationRowExample() {
+  const [lifetime, setLifetime] = React.useState(7 * 24 * 3_600);
+  const [hour, setHour] = React.useState(7);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="workflows.maxLifetimeSeconds"
+          value={lifetime}
+          onChange={(value) => {
+            if (typeof value === 'number') setLifetime(value);
+          }}
+          models={[]}
+        />
+      </div>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="notifications.digestHour"
+          value={hour}
+          onChange={(value) => {
+            if (typeof value === 'number') setHour(value);
           }}
           models={[]}
         />

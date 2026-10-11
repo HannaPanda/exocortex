@@ -182,4 +182,29 @@ test.describe('design system decisions', () => {
     // On the label's line, not under it.
     expect(Math.abs((toggle?.y ?? 0) - (label?.y ?? 0))).toBeLessThan(16);
   });
+
+  test('edits a duration in units and an hour as a time', async ({ page }) => {
+    await page.goto('/design-system#einstellungszeile-dauer');
+    const row = page.getByTestId('setting-row-workflows.maxLifetimeSeconds');
+    const amount = row.getByRole('textbox');
+    // 604800 seconds, stored and shown as seven days.
+    await expect(amount).toHaveValue('7');
+    await expect(row.getByTestId('setting-workflows-maxLifetimeSeconds-unit')).toHaveText('Tage');
+    await expect(row.getByText('Zulässig: 1 Minute bis 30 Tage.')).toBeVisible();
+
+    // A decimal comma is a decimal, and 1,5 hours are a whole number of seconds.
+    await row.getByTestId('setting-workflows-maxLifetimeSeconds-unit').click();
+    await page.getByRole('option', { name: 'Stunden' }).click();
+    await amount.fill('1,5');
+    await expect(amount).toHaveAttribute('aria-invalid', 'false');
+
+    // Between two seconds, and past the bound: both refused, never rounded.
+    await amount.fill('0,0001');
+    await expect(row.getByText(/keine Dauer, die sich genau speichern lässt/)).toBeVisible();
+    await amount.fill('1000');
+    await expect(row.getByText(/Zulässig: 1 Minute bis 30 Tage\. Gespeichert/)).toBeVisible();
+
+    const hour = page.getByTestId('setting-row-notifications.digestHour');
+    await expect(hour.getByRole('combobox')).toHaveText('07:00');
+  });
 });

@@ -74,7 +74,7 @@
     "description": "Si algo cambia en el ámbito seleccionado o vence la programación, se ejecuta la acción. Una automatización nunca sobrescribe el contenido de una página.",
     "name": "Nombre",
     "namePlaceholder": "Avisar a Hermes sobre las nuevas notas de reunión",
-    "debounce": "Antirrebote (segundos)",
+    "debounce": "Antirrebote",
     "debounceHint": "Es el tiempo que una página debe permanecer inactiva antes de que se ejecute la regla. Sin esto, cada pulsación de tecla activaría una ejecución, y en una ejecución de IA cada una cuesta dinero.",
     "cancel": "Cancelar",
     "create": "Crear",

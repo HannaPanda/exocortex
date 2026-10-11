@@ -3,7 +3,7 @@
 import { PlusIcon, Trash2Icon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { EVAL_ASSERTION_MODES, type EvalReplayMode } from '@exocortex/contracts';
+import { EVAL_ASSERTION_MODES, EVAL_LIMITS, type EvalReplayMode } from '@exocortex/contracts';
 import {
   Button,
   Checkbox,
@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@exocortex/ui';
+
+import { DurationTextInput } from '@/components/duration-input';
 
 import {
   assertionOf,
@@ -238,7 +240,21 @@ function CheckFields({
     case 'max_cost':
       return field('maxUsd', t('maxUsd'));
     case 'max_duration':
-      return field('maxSeconds', t('maxSeconds'), { numeric: true });
+      return (
+        <div className="flex min-w-24 flex-1 flex-col gap-1">
+          <Label htmlFor={`${prefix}-maxSeconds`} className="text-xs">
+            {t('maxSeconds')}
+          </Label>
+          <DurationTextInput
+            id={`${prefix}-maxSeconds`}
+            base="seconds"
+            value={check.maxSeconds}
+            min={1}
+            max={EVAL_LIMITS.maxDurationCheckSeconds}
+            onChange={(maxSeconds) => onChange({ maxSeconds })}
+          />
+        </div>
+      );
     case 'no_changes':
       return <p className="text-xs text-muted-foreground">{t('noChangesHint')}</p>;
     case 'page_contains':

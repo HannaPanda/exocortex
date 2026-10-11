@@ -44,11 +44,11 @@
         "help": "Upper limit for the length of a single AI response."
       },
       "timeoutMs": {
-        "label": "Timeout per model response (ms)",
+        "label": "Timeout per model response",
         "help": "Cancels a single response from the model. Tool calls and follow-up responses have their own time; see “Total time per run”."
       },
       "maxRunMs": {
-        "label": "Total time per run (ms)",
+        "label": "Total time per run",
         "help": "A run ends completely after this time, even if it is still calling tools. Can never be shorter than the timeout per model response."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Sends a message before a mirrored event. Also requires a configured delivery channel on the server."
       },
       "reminderLeadMinutes": {
-        "label": "Lead time in minutes",
+        "label": "Lead time",
         "help": "How long before a timed event the reminder is sent. 0 means right at the start."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "In which zone the time above is interpreted, for example Europe/Berlin. Deliberately a separate setting rather than the server’s time, which runs in UTC."
       },
       "commentMailDebounceMinutes": {
-        "label": "Batching window for instant comment emails (minutes)",
+        "label": "Batching window for immediate comment emails",
         "help": "How long to wait for further comments before sending an instant email. This turns four replies in a thread into one email instead of four. 0 means: no waiting."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Backs up an actively edited page at regular intervals so the activity tab can show actual time spans (“edited 14:20 to 14:45”) instead of just the latest state. Off: no additional backups are created."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Interval between session backups (minutes)",
+        "label": "Interval between session backups",
         "help": "How often at most an actively edited page may be backed up again. Only takes effect if the setting above is enabled."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "How many times a rule may fail in a row before disabling itself. A rule pointing into the void does not get better by repeating; it only fills the log."
       },
       "webhookTimeoutSeconds": {
-        "label": "Timeout for a webhook (seconds)",
+        "label": "Timeout for a webhook",
         "help": "How long the receiving server may take. Afterwards, the run is considered failed."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "The maximum number of nodes in a run that may be active at the same time, waiting ones included. Anything beyond waits until a slot opens up."
       },
       "maxLifetimeSeconds": {
-        "label": "Maximum run time (seconds)",
+        "label": "Maximum runtime",
         "help": "How long a run may last in total, waiting times included. After that, it is ended as expired. The default is seven days."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Empty uses the default model. A small model is worthwhile here: it involves two to five sentences each time, but frequently."
       },
       "debounceSeconds": {
-        "label": "Quiet period before rewriting (seconds)",
+        "label": "Quiet period before rewriting",
         "help": "How long a page must remain quiet before its overview is rewritten. Significantly longer than for automations: nobody waits for an intro, and an afternoon of work on a page should cost one run, not twenty."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Contains Pandoc, TeX Live, and the fonts; nothing is installed on the machine itself. A different image changes what every template can rely on and is not noticed by the reuse of existing PDFs: build once with “regenerate” afterwards."
       },
       "timeoutSeconds": {
-        "label": "Timeout for a build (seconds)",
+        "label": "Timeout for a build",
         "help": "Afterwards, the container is aborted. A LaTeX run that is not finished after three minutes is usually waiting for input that no one can provide."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Contains TeX Live, latexmk, biber, and fonts. Without this image, every build fails with a clear message."
       },
       "timeoutSeconds": {
-        "label": "Time limit per build (seconds)",
+        "label": "Time limit per build",
         "help": "The container is terminated after this. A thesis with a bibliography requires multiple runs."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Allowed: {min, number} to {max, number}.",
     "invalid": "This value is invalid.",
     "invalidWithRange": "Not saved. Allowed: {min, number} to {max, number}.",
-    "rangeHintBytes": "Allowed: {min} to {max}.",
-    "invalidWithRangeBytes": "Not saved. Allowed: {min} to {max}.",
+    "rangeHintAmounts": "Allowed: {min} to {max}.",
+    "invalidWithRangeAmounts": "Not saved. Allowed: {min} to {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Unit",
     "byteUnits": {

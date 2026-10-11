@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  AUTOMATION_MAX_DEBOUNCE_SECONDS,
   AUTOMATION_MIN_DEBOUNCE_SECONDS,
   type AutomationAction,
   type AutomationOutput,
@@ -33,6 +34,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DurationInput } from '@/components/duration-input';
 import { CopyBlock } from '@/components/settings/copy-block';
 import { useAgentProfiles } from '@/lib/api/agent-profile-queries';
 import { useCreateAutomationRule, useUpdateAutomationRule } from '@/lib/api/automation-queries';
@@ -225,6 +227,9 @@ export function AutomationRuleDialog({
   const update = useUpdateAutomationRule(workspaceId);
 
   const [draft, setDraft] = React.useState<Draft>(() => draftFrom(rule));
+  // False while the debounce field holds an amount it cannot save; the draft
+  // keeps the last valid one, which must not go out unnoticed.
+  const [debounceValid, setDebounceValid] = React.useState(true);
   const [secret, setSecret] = React.useState<string | null>(null);
   const [key, setKey] = React.useState(rule?.id ?? 'new');
 
@@ -321,14 +326,19 @@ export function AutomationRuleDialog({
 
               <div className={scheduled ? 'hidden' : 'flex flex-col gap-2'}>
                 <Label htmlFor="automation-debounce">{t('debounce')}</Label>
-                <Input
-                  id="automation-debounce"
-                  type="number"
-                  min={AUTOMATION_MIN_DEBOUNCE_SECONDS}
-                  value={draft.debounceSeconds}
-                  onChange={(event) => set('debounceSeconds', Number(event.target.value))}
-                  className="max-w-32"
-                />
+                <div className="flex max-w-xs flex-col gap-1">
+                  <DurationInput
+                    id="automation-debounce"
+                    base="seconds"
+                    value={draft.debounceSeconds}
+                    min={AUTOMATION_MIN_DEBOUNCE_SECONDS}
+                    max={AUTOMATION_MAX_DEBOUNCE_SECONDS}
+                    onChange={(value) => {
+                      if (value !== null) set('debounceSeconds', value);
+                    }}
+                    onValidityChange={setDebounceValid}
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">{t('debounceHint')}</p>
               </div>
 
@@ -348,7 +358,11 @@ export function AutomationRuleDialog({
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
               {t('cancel')}
             </Button>
-            <Button onClick={submit} disabled={pending} data-testid="automation-save">
+            <Button
+              onClick={submit}
+              disabled={pending || (!scheduled && !debounceValid)}
+              data-testid="automation-save"
+            >
               {isNew ? t('create') : t('save')}
             </Button>
           </DialogFooter>

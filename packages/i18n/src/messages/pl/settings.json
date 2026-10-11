@@ -44,11 +44,11 @@
         "help": "Górny limit długości pojedynczej odpowiedzi AI."
       },
       "timeoutMs": {
-        "label": "Limit czasu na odpowiedź modelu (ms)",
+        "label": "Limit czasu na odpowiedź modelu",
         "help": "Przerywa pojedynczą odpowiedź modelu. Wywołania narzędzi i kolejne odpowiedzi mają własny limit czasu, zobacz „Łączny czas na uruchomienie”."
       },
       "maxRunMs": {
-        "label": "Łączny czas na uruchomienie (ms)",
+        "label": "Łączny czas na uruchomienie",
         "help": "Po tym czasie uruchomienie kończy się całkowicie, nawet jeśli wciąż wywołuje narzędzia. Nie może być krótszy niż limit czasu na odpowiedź modelu."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Wysyła powiadomienie przed zsynchronizowanym wydarzeniem. Wymaga dodatkowo skonfigurowanego kanału wysyłki na serwerze."
       },
       "reminderLeadMinutes": {
-        "label": "Wyprzedzenie w minutach",
+        "label": "Wyprzedzenie",
         "help": "Z jakim wyprzedzeniem przed wydarzeniem z określoną godziną jest wysyłane przypomnienie. 0 oznacza dokładnie w chwili rozpoczęcia."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "Strefa, w której interpretowana jest powyższa godzina, na przykład Europe/Berlin. Celowo osobne ustawienie zamiast czasu serwera działającego w UTC."
       },
       "commentMailDebounceMinutes": {
-        "label": "Czas grupowania natychmiastowych powiadomień e-mail o komentarzach (minuty)",
+        "label": "Czas zbierania dla natychmiastowych powiadomień e-mail o komentarzach",
         "help": "Jak długo czekać na kolejne komentarze przed wysłaniem natychmiastowej wiadomości e-mail. Dzięki temu cztery odpowiedzi w wątku stają się jedną wiadomością zamiast czterech. 0 oznacza brak oczekiwania."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Zapisuje kopię aktywnie edytowanej strony w regularnych odstępach czasu, aby karta aktywności mogła pokazywać rzeczywiste przedziały czasowe („edytowano od 14:20 do 14:45”) zamiast tylko ostatniego stanu. Wyłączone: nie są tworzone żadne dodatkowe kopie."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Odstęp między kopiami sesji (minuty)",
+        "label": "Odstęp między kopiami zapasowymi sesji",
         "help": "Maksymalna częstotliwość tworzenia nowych kopii aktywnie edytowanej strony. Działa tylko wtedy, gdy powyższa opcja jest włączona."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "Tyle razy z rzędu reguła może zakończyć się niepowodzeniem, zanim zostanie samoczynnie wyłączona. Reguła wskazująca donikąd nie naprawi się od powtórzeń, a jedynie zapełni dziennik."
       },
       "webhookTimeoutSeconds": {
-        "label": "Limit czasu dla webhooka (sekundy)",
+        "label": "Limit czasu webhooka",
         "help": "Tyle czasu może zająć odpowiedź serwera odbierającego. Po tym czasie uruchomienie jest uznawane za nieudane."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "Tyle węzłów jednego przebiegu może działać jednocześnie, wliczając oczekujące. Węzły ponad ten limit czekają, aż zwolni się miejsce."
       },
       "maxLifetimeSeconds": {
-        "label": "Maksymalny czas działania (sekundy)",
+        "label": "Maksymalny czas działania",
         "help": "Tyle może trwać przebieg łącznie z czasem oczekiwania. Po upływie tego czasu zostaje zakończony jako przedawniony. Wartość domyślna to siedem dni."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Puste pole oznacza użycie modelu domyślnego. Warto wybrać mały model: za każdym razem chodzi o dwa do pięciu zdań, ale wykonywanych często."
       },
       "debounceSeconds": {
-        "label": "Czas bezczynności przed ponownym zapisem (sekundy)",
+        "label": "Czas oczekiwania przed ponownym zapisem",
         "help": "Tyle czasu strona musi pozostać bez zmian, zanim jej przegląd zostanie napisany na nowo. Znacznie dłuższy niż przy automatyzacjach: na wstęp nikt nie czeka, a popołudnie pracy nad stroną powinno kosztować jedno uruchomienie, a nie dwadzieścia."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Zawiera Pandoc, TeX Live i czcionki; na samej maszynie nic nie jest instalowane. Inny obraz zmienia to, na czym może polegać każdy szablon, i nie jest wykrywany przez mechanizm ponownego użycia gotowych plików PDF: po zmianie należy zbudować raz za pomocą „wygeneruj ponownie”."
       },
       "timeoutSeconds": {
-        "label": "Limit czasu budowania (sekundy)",
+        "label": "Limit czasu kompilacji",
         "help": "Po tym czasie kontener jest zatrzymywany. Przebieg LaTeX, który nie zakończył się po trzech minutach, najczęściej czeka na dane wejściowe, których nikt nie może podać."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Zawiera TeX Live, latexmk, biber oraz czcionki. Bez tego obrazu każde budowanie zakończy się wyraźnym komunikatem o błędzie."
       },
       "timeoutSeconds": {
-        "label": "Limit czasu na budowanie (sekundy)",
+        "label": "Limit czasu na kompilację",
         "help": "Po tym czasie kontener jest zatrzymywany. Praca dyplomowa z bibliografią wymaga kilku przebiegów."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Dopuszczalne: od {min, number} do {max, number}.",
     "invalid": "Ta wartość jest nieprawidłowa.",
     "invalidWithRange": "Nie zapisano. Dopuszczalne: od {min, number} do {max, number}.",
-    "rangeHintBytes": "Dozwolone: od {min} do {max}.",
-    "invalidWithRangeBytes": "Nie zapisano. Dozwolone: od {min} do {max}.",
+    "rangeHintAmounts": "Dozwolone: od {min} do {max}.",
+    "invalidWithRangeAmounts": "Nie zapisano. Dozwolone: od {min} do {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Jednostka",
     "byteUnits": {

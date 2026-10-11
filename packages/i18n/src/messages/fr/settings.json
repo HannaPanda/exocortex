@@ -44,11 +44,11 @@
         "help": "Limite supérieure pour la longueur d’une seule réponse de l’IA."
       },
       "timeoutMs": {
-        "label": "Délai d’attente par réponse du modèle (ms)",
+        "label": "Délai d’attente par réponse du modèle",
         "help": "Interrompt une réponse individuelle du modèle. Les appels d’outils et les réponses suivantes ont leur propre durée, voir « Durée totale par exécution »."
       },
       "maxRunMs": {
-        "label": "Durée totale par exécution (ms)",
+        "label": "Durée totale par exécution",
         "help": "Une exécution s’arrête complètement après cette durée, même si elle appelle encore des outils. Ne peut jamais être inférieure au délai d’attente par réponse du modèle."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Envoie un message avant un événement synchronisé. Nécessite en plus un canal d’envoi configuré sur le serveur."
       },
       "reminderLeadMinutes": {
-        "label": "Délai de prévenance en minutes",
+        "label": "Délai de prévenance",
         "help": "Combien de temps avant un événement avec horaire le rappel est envoyé. 0 signifie au début exact."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "Dans quel fuseau l’heure ci-dessus est interprétée, par exemple Europe/Berlin. Volontairement distinct de l’heure du serveur, qui fonctionne en UTC."
       },
       "commentMailDebounceMinutes": {
-        "label": "Délai de regroupement des e-mails de commentaire (minutes)",
+        "label": "Délai de regroupement des e-mails de commentaires",
         "help": "Combien de temps attendre d’autres commentaires avant d’envoyer un e-mail instantané. Ainsi, quatre réponses dans un fil donnent lieu à un seul e-mail au lieu de quatre. 0 signifie : sans attente."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Sauvegarde une page en cours d’édition à intervalles réguliers, pour que l’onglet d’activité puisse afficher de véritables plages temporelles (« modifié de 14:20 à 14:45 ») plutôt que le dernier état seul. Désactivé : aucune sauvegarde supplémentaire n’est créée."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Intervalle entre les sauvegardes de session (minutes)",
+        "label": "Intervalle entre les sauvegardes de session",
         "help": "Fréquence maximale à laquelle une page en cours d’édition peut être sauvegardée. Ne s’applique que si la ligne du dessus est activée."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "Nombre maximal d’échecs consécutifs autorisés pour une règle avant qu’elle ne se désactive d’elle-même. Une règle qui pointe dans le vide ne s’améliore pas en se répétant, elle ne fait que remplir le journal."
       },
       "webhookTimeoutSeconds": {
-        "label": "Délai limite pour un webhook (secondes)",
+        "label": "Délai d’attente d’un webhook",
         "help": "Temps maximal accordé au serveur récepteur. Ensuite, l’exécution est considérée comme ayant échoué."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "Nombre maximal de nœuds d’une exécution pouvant être actifs en même temps, nœuds en attente compris. Tout ce qui dépasse cette limite attend qu’une place se libère."
       },
       "maxLifetimeSeconds": {
-        "label": "Durée maximale d’exécution (secondes)",
+        "label": "Durée d’exécution maximale",
         "help": "Durée totale maximale d’une exécution, temps d’attente inclus. Au-delà, elle est interrompue pour délai dépassé. La valeur par défaut est de sept jours."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Laisser vide utilise le modèle par défaut. Il vaut la peine d’utiliser un petit modèle ici : il s’agit à chaque fois de deux à cinq phrases, mais souvent."
       },
       "debounceSeconds": {
-        "label": "Temps de repos avant réécriture (secondes)",
+        "label": "Délai d’attente avant réécriture",
         "help": "Durée pendant laquelle une page ne doit plus être modifiée avant que son aperçu ne soit réécrit. Nettement plus long que pour les automatisations : personne n’attend une introduction, et un après-midi de travail sur une page doit coûter une seule exécution, pas vingt."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Contient Pandoc, TeX Live et les polices ; rien n’est installé sur la machine elle-même. Changer d’image modifie ce sur quoi chaque modèle peut s’appuyer, et cela n’est pas détecté par la réutilisation des PDF déjà prêts : relancer ensuite la compilation avec « regénérer »."
       },
       "timeoutSeconds": {
-        "label": "Délai limite pour une compilation (secondes)",
+        "label": "Délai d’attente par compilation",
         "help": "Au-delà, le conteneur est interrompu. Une exécution LaTeX qui n’est pas terminée après trois minutes attend généralement une saisie que personne ne peut fournir."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Contient TeX Live, latexmk, biber et les polices. Sans cette image, chaque compilation échoue avec un message explicite."
       },
       "timeoutSeconds": {
-        "label": "Délai limite par compilation (secondes)",
+        "label": "Délai d’attente par compilation",
         "help": "Le conteneur s’arrête une fois ce délai dépassé. Un mémoire de fin d’études avec bibliographie nécessite plusieurs passes."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Valeurs acceptées : de {min, number} à {max, number}.",
     "invalid": "Cette valeur n’est pas valide.",
     "invalidWithRange": "Non enregistré. Valeurs acceptées : de {min, number} à {max, number}.",
-    "rangeHintBytes": "Autorisé : de {min} à {max}.",
-    "invalidWithRangeBytes": "Non enregistré. Autorisé : de {min} à {max}.",
+    "rangeHintAmounts": "Autorisé : de {min} à {max}.",
+    "invalidWithRangeAmounts": "Non enregistré. Autorisé : de {min} à {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Unité",
     "byteUnits": {

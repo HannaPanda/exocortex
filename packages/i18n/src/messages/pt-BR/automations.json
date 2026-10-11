@@ -74,7 +74,7 @@
     "description": "Quando algo mudar no escopo selecionado ou o agendamento for acionado, a ação é executada. Uma automação nunca substitui o conteúdo de uma página.",
     "name": "Nome",
     "namePlaceholder": "Informar o Hermes sobre novas notas de reunião",
-    "debounce": "Debounce (segundos)",
+    "debounce": "Debounce",
     "debounceHint": "Esse é o tempo que uma página deve ficar inativa antes de a regra ser executada. Sem isso, cada tecla pressionada dispara uma execução, e, em uma execução de IA, cada uma custa dinheiro.",
     "cancel": "Cancelar",
     "create": "Criar",

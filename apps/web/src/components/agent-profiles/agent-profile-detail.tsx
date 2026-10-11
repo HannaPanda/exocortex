@@ -24,6 +24,7 @@ import {
   LoadingState,
 } from '@exocortex/ui';
 
+import { useDurationWords } from '@/components/duration-input';
 import {
   useAgentProfile,
   useDeleteAgentProfile,
@@ -81,6 +82,7 @@ function ProfileView({
   canManage: boolean;
 }) {
   const t = useTranslations('agentProfiles.detail');
+  const duration = useDurationWords();
   const wording = useAgentProfileWording();
   const money = useWorkItemWording().money;
   const update = useUpdateAgentProfile(profile.workspaceId);
@@ -235,7 +237,7 @@ function ProfileView({
           <dd>
             {profile.maxRunSeconds === null
               ? t('unlimited')
-              : t('runSeconds', { seconds: profile.maxRunSeconds })}
+              : duration(profile.maxRunSeconds, 'seconds')}
           </dd>
         </dl>
       </Section>

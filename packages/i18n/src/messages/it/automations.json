@@ -74,7 +74,7 @@
     "description": "Quando qualcosa cambia nell’ambito selezionato o scade la pianificazione, l’azione viene eseguita. Un’automazione non sovrascrive mai il contenuto di una pagina.",
     "name": "Nome",
     "namePlaceholder": "Informa Hermes sulle nuove note di riunione",
-    "debounce": "Debounce (secondi)",
+    "debounce": "Debounce",
     "debounceHint": "Tempo di inattività richiesto per una pagina prima che la regola venga eseguita. Senza questo, ogni pressione di un tasto attiva un’esecuzione, e per un’esecuzione IA ognuna di esse ha un costo.",
     "cancel": "Annulla",
     "create": "Crea",

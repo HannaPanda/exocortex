@@ -74,7 +74,7 @@
     "description": "Quand un élément change dans le périmètre sélectionné ou que l’échéance du calendrier arrive, l’action s’exécute. Une automatisation n’écrase jamais le contenu d’une page.",
     "name": "Nom",
     "namePlaceholder": "Informer Hermes des nouvelles notes de réunion",
-    "debounce": "Anti-rebond (secondes)",
+    "debounce": "Délai d’attente (debounce)",
     "debounceHint": "Délai pendant lequel une page doit rester inactive avant que la règle ne s’exécute. Sans cela, chaque frappe au clavier déclenche une exécution, et chaque exécution d’IA a un coût.",
     "cancel": "Annuler",
     "create": "Créer",

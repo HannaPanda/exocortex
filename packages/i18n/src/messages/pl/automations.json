@@ -74,7 +74,7 @@
     "description": "Gdy w wybranym zakresie coś się zmieni lub nadejdzie czas z harmonogramu, akcja zostanie uruchomiona. Automatyzacja nigdy nie nadpisuje zawartości strony.",
     "name": "Nazwa",
     "namePlaceholder": "Poinformuj Hermes o nowych notatkach ze spotkania",
-    "debounce": "Debounce (sekundy)",
+    "debounce": "Debounce",
     "debounceHint": "Przez ten czas na stronie nie mogą zachodzić żadne zmiany, zanim reguła zostanie uruchomiona. Bez tego każde naciśnięcie klawisza wywołuje uruchomienie, a w przypadku uruchomienia SI każde z nich kosztuje.",
     "cancel": "Anuluj",
     "create": "Utwórz",

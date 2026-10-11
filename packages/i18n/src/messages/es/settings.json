@@ -44,11 +44,11 @@
         "help": "Límite superior para la longitud de una respuesta individual de la IA."
       },
       "timeoutMs": {
-        "label": "Tiempo límite por respuesta del modelo (ms)",
+        "label": "Tiempo límite por respuesta del modelo",
         "help": "Cancela una respuesta individual del modelo. Las llamadas a herramientas y las respuestas posteriores tienen su propio tiempo; consulta «Tiempo total por ejecución»."
       },
       "maxRunMs": {
-        "label": "Tiempo total por ejecución (ms)",
+        "label": "Tiempo total por ejecución",
         "help": "Una ejecución finaliza por completo transcurrido este tiempo, incluso si todavía está llamando a herramientas. Nunca puede ser inferior al tiempo límite por respuesta del modelo."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Envía un mensaje antes de un evento sincronizado. Requiere además configurar un canal de envío en el servidor."
       },
       "reminderLeadMinutes": {
-        "label": "Antelación en minutos",
+        "label": "Antelación",
         "help": "Con cuánta antelación a un evento con hora se envía el recordatorio. 0 significa justo al inicio."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "En qué zona se interpreta la hora anterior, por ejemplo Europe/Berlin. Es un ajuste independiente a propósito, en lugar de usar la hora del servidor, que funciona en UTC."
       },
       "commentMailDebounceMinutes": {
-        "label": "Tiempo de agrupación para correos inmediatos (minutos)",
+        "label": "Tiempo de agrupación para correos de comentarios inmediatos",
         "help": "Cuánto tiempo se espera a que haya más comentarios antes de enviar un correo inmediato. Así, cuatro respuestas en un hilo se convierten en un solo correo en vez de cuatro. 0 significa sin espera."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Guarda una página en edición activa a intervalos regulares para que la pestaña de actividad pueda mostrar periodos reales («editado de 14:20 a 14:45») en vez de solo el último estado. Desactivado: no se crean instantáneas adicionales."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Intervalo entre instantáneas de sesión (minutos)",
+        "label": "Intervalo entre copias de seguridad de la sesión",
         "help": "Frecuencia máxima con la que se puede guardar una instantánea nueva de una página en edición activa. Solo tiene efecto si la opción anterior está activada."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "Número de fallos consecutivos permitidos para una regla antes de desactivarse sola. Una regla que apunta a la nada no mejora por reintentarla; solo llena el registro."
       },
       "webhookTimeoutSeconds": {
-        "label": "Tiempo límite para un webhook (segundos)",
+        "label": "Tiempo límite para un webhook",
         "help": "El tiempo máximo que puede tardar el servidor receptor. Después, la ejecución se considera fallida."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "El número de nodos de una ejecución que pueden estar en marcha al mismo tiempo, incluidos los que están en espera. Todo lo que supere este límite esperará hasta que quede un hueco libre."
       },
       "maxLifetimeSeconds": {
-        "label": "Tiempo máximo de ejecución (segundos)",
+        "label": "Tiempo máximo de ejecución",
         "help": "El tiempo total que puede durar una ejecución, incluidos los tiempos de espera. Después, finalizará como expirada. El valor predeterminado son siete días."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Si se deja vacío, usa el modelo predeterminado. Aquí conviene un modelo pequeño: se trata de dos a cinco frases cada vez, pero con frecuencia."
       },
       "debounceSeconds": {
-        "label": "Tiempo de espera antes de reescribir (segundos)",
+        "label": "Tiempo de espera antes de reescribir",
         "help": "Tiempo que debe permanecer inactiva una página antes de que se reescriba su vista general. Bastante más largo que con las automatizaciones: nadie espera una introducción en tiempo real, y una tarde de trabajo en una página debe costar una sola ejecución, no veinte."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Contiene Pandoc, TeX Live y las fuentes; en el propio equipo no se instala nada. Una imagen diferente cambia aquello con lo que puede contar cada plantilla y la reutilización de PDF ya creados no lo detecta: después conviene compilar una vez con «volver a generar»."
       },
       "timeoutSeconds": {
-        "label": "Tiempo límite de compilación (segundos)",
+        "label": "Tiempo límite para una compilación",
         "help": "Tiempo tras el cual se cancela el contenedor. Una ejecución de LaTeX que no termine tras tres minutos suele estar esperando una entrada que nadie puede introducir."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Contiene TeX Live, latexmk, biber y las fuentes. Sin esta imagen, cualquier compilación fallará con un mensaje claro."
       },
       "timeoutSeconds": {
-        "label": "Límite de tiempo por compilación (segundos)",
+        "label": "Límite de tiempo por compilación",
         "help": "Pasado este tiempo se cancelará el contenedor. Una tesis con bibliografía requiere varias pasadas."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Permitido: de {min, number} a {max, number}.",
     "invalid": "Este valor no es válido.",
     "invalidWithRange": "No se ha guardado. Permitido: de {min, number} a {max, number}.",
-    "rangeHintBytes": "Permitido: de {min} a {max}.",
-    "invalidWithRangeBytes": "No se ha guardado. Permitido: de {min} a {max}.",
+    "rangeHintAmounts": "Permitido: de {min} a {max}.",
+    "invalidWithRangeAmounts": "No se ha guardado. Permitido: de {min} a {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Unidad",
     "byteUnits": {

@@ -74,7 +74,7 @@
     "description": "Wenn sich unter dem gewählten Bereich etwas ändert oder der Zeitplan fällig wird, läuft die Aktion. Eine Automation überschreibt nie den Inhalt einer Seite.",
     "name": "Name",
     "namePlaceholder": "Hermes über neue Sitzungsnotizen informieren",
-    "debounce": "Entprellung (Sekunden)",
+    "debounce": "Entprellung",
     "debounceHint": "So lange muss eine Seite ruhig sein, bevor die Regel läuft. Ohne das löst jeder Tastendruck einen Lauf aus, und bei einem KI-Lauf kostet jeder davon Geld.",
     "cancel": "Abbrechen",
     "create": "Anlegen",

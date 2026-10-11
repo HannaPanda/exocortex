@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  EVAL_LIMITS,
   EVAL_REPLAY_MODES,
   type EvalCase,
   type EvalReplayMode,
@@ -34,6 +35,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DurationTextInput } from '@/components/duration-input';
 import { useAgentProfiles } from '@/lib/api/agent-profile-queries';
 import { useCreateEvalCase, useUpdateEvalCase } from '@/lib/api/eval-queries';
 import { useSearch } from '@/lib/api/search-queries';
@@ -390,13 +392,19 @@ function HoldFields({
           placeholder={t('limitPlaceholder')}
           onChange={(value) => set('maxToolIterations', value)}
         />
-        <LimitField
-          id="eval-case-seconds"
-          label={t('secondsLabel')}
-          value={draft.maxRunSeconds}
-          placeholder={t('limitPlaceholder')}
-          onChange={(value) => set('maxRunSeconds', value)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="eval-case-seconds">{t('secondsLabel')}</Label>
+          <DurationTextInput
+            id="eval-case-seconds"
+            base="seconds"
+            value={draft.maxRunSeconds}
+            min={EVAL_LIMITS.minRunSeconds}
+            max={EVAL_LIMITS.maxRunSeconds}
+            allowEmpty
+            placeholder={t('limitPlaceholder')}
+            onChange={(value) => set('maxRunSeconds', value)}
+          />
+        </div>
       </div>
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-sm font-medium">{t('toolsLabel')}</legend>

@@ -1856,10 +1856,6 @@
       "source": "14e2259edd31dcb4",
       "output": "70d0a9cc10169da3"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "64239c7701b93293"
@@ -2033,8 +2029,8 @@
       "output": "d104b986191f620e"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "829f194746ed61c4"
+      "source": "591bbb500b8c55d0",
+      "output": "81fe5578888b239a"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -3593,8 +3589,8 @@
       "output": "8d0589636869c8a1"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "e74d2cee5b6c4861"
+      "source": "0456923f9ade29ac",
+      "output": "539c9cb8300d84c5"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -10093,8 +10089,8 @@
       "output": "6797626fe47326c4"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "95005a51a50ef65d"
+      "source": "c2ca7be053c66803",
+      "output": "66c9ab177708cbc6"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -10205,8 +10201,8 @@
       "output": "1509f561f2416598"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "c2dc078e7a434c6e"
+      "source": "28a3ea119e8c015c",
+      "output": "111c0e948a1b6c98"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -16041,8 +16037,8 @@
       "output": "3a801e31b3bd6d59"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "d9ad9ec1ed558983"
+      "source": "6c22f4ae55001a6e",
+      "output": "f7cf9b1865f2fb77"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -16185,8 +16181,8 @@
       "output": "88a65b797af51f98"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "b1f3e82f56b63f76"
+      "source": "925acf4e2c7be550",
+      "output": "ee81f5151e8a6083"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -16313,8 +16309,8 @@
       "output": "222bf57cbef97dae"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "bd148ad81945e8e3"
+      "source": "b1bab7d1db2b1b91",
+      "output": "4488c087cc78facb"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -16425,8 +16421,8 @@
       "output": "f04b3bcf136eeb2a"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "0fc9c5336ca36403"
+      "source": "453bacb64a0aa16f",
+      "output": "b88e2561c1851f0c"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -16441,8 +16437,8 @@
       "output": "009fdfadf4cfeac0"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "aef58ccf126d8918"
+      "source": "eedcafb9fc686068",
+      "output": "4cfaa9df90c53d55"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -16673,8 +16669,8 @@
       "output": "b5cc3e89e17ab975"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "2b633353e399d41b"
+      "source": "d29f8010a9dd1345",
+      "output": "1b4ebe41a157d84f"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -16697,8 +16693,8 @@
       "output": "8cbd14a5c82994be"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "1f69fe6b64cb6aad"
+      "source": "b8a141cb3c01c9ba",
+      "output": "7ef4a34d5ec80a64"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -16793,8 +16789,8 @@
       "output": "c0d1b3e5da446a88"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "d4b3fff5ccd719e8"
+      "source": "74e0912585a217c3",
+      "output": "53d9f89f37dac155"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -16833,8 +16829,8 @@
       "output": "f96eb850a67ac48c"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "c8c2f6f9a1bbe4a3"
+      "source": "e001f19304e6ca03",
+      "output": "a8c94bff84755493"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -16881,8 +16877,8 @@
       "output": "ea838799f57f5f0e"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "40a39e89aa23e835"
+      "source": "807c8717751bffdb",
+      "output": "6ab9d9304cf740ed"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -17020,7 +17016,7 @@
       "source": "5f5acf828ad49fff",
       "output": "7dced41a6a9aa252"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "85d5d67cef43ac82"
     },
@@ -17032,7 +17028,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "48b1731a5b0a6911"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "25483a75ae25169d"
     },
@@ -19203,6 +19199,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "c8df66c5fe3f97d0"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "52e7b5cd5c20db88"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "cc01d0d02a53a1e8"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "aebba924d837f747"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "48f209430d923107"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "5b5dd96d193eeb89"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "5ec00fbfb94a9611"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "4866fd1a71faada8"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "25483a75ae25169d"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "4e545960f1bffc13"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "e08c0aa8f558f39f"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "21e8492938abc179"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "522ff63cdfa8c9a7"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "4f846a84e7fc9ef6"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "381a8e9699052f3a"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -23518,10 +23570,6 @@
       "source": "14e2259edd31dcb4",
       "output": "d418a6fa5b791b6f"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "014c433501746c37"
@@ -23695,8 +23743,8 @@
       "output": "b1dadda2691cc1a4"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "a0e3cc7b21d67690"
+      "source": "591bbb500b8c55d0",
+      "output": "014c433501746c37"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -25255,8 +25303,8 @@
       "output": "8c7eddf2bdde54b8"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "c0fdeeefd9d86105"
+      "source": "0456923f9ade29ac",
+      "output": "8ee6b369bef99204"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -31755,8 +31803,8 @@
       "output": "16ff31fca7617931"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "8824c1b08e6c7fc3"
+      "source": "c2ca7be053c66803",
+      "output": "16ff31fca7617931"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -31867,8 +31915,8 @@
       "output": "13e51a210f45ed1b"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "e8cfae8597f4eb4a"
+      "source": "28a3ea119e8c015c",
+      "output": "1775e3497d1eb46a"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -37703,8 +37751,8 @@
       "output": "2fd341cfe6b6920d"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "e4d665e9781b10a4"
+      "source": "6c22f4ae55001a6e",
+      "output": "342dfbd0f37ec995"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -37847,8 +37895,8 @@
       "output": "b1c27df1ebcb8c30"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "deee693057087b04"
+      "source": "925acf4e2c7be550",
+      "output": "7f7625949f96472d"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -37975,8 +38023,8 @@
       "output": "9a2f8aa4b061fca3"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "1c1bfcc3e6a6e7a5"
+      "source": "b1bab7d1db2b1b91",
+      "output": "77ee411cfe94e8a8"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -38087,8 +38135,8 @@
       "output": "99751d3ca87f6478"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "2ed3299d12e7f4c1"
+      "source": "453bacb64a0aa16f",
+      "output": "b31a07136e0f668c"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -38103,8 +38151,8 @@
       "output": "6bd84990308815df"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "d021cfcdb424f735"
+      "source": "eedcafb9fc686068",
+      "output": "f30406e20bdbeb52"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -38335,8 +38383,8 @@
       "output": "1055a8f0cb11dad5"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "2f9be3700bc2d760"
+      "source": "d29f8010a9dd1345",
+      "output": "ee0b8acf897504e9"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -38359,8 +38407,8 @@
       "output": "ef2477e49bdf5153"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "41604e1cfbd48d69"
+      "source": "b8a141cb3c01c9ba",
+      "output": "44baa1e677995285"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -38455,8 +38503,8 @@
       "output": "f2aaaa8deabca9f4"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "95de6ea1cb70bfe5"
+      "source": "74e0912585a217c3",
+      "output": "089893f42de2032a"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -38495,8 +38543,8 @@
       "output": "7433e8055bad3106"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "5b0459a3aef0b7e1"
+      "source": "e001f19304e6ca03",
+      "output": "65b284c60c613ab4"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -38543,8 +38591,8 @@
       "output": "b91a7f23cc3b2557"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "b543ba06ffa64558"
+      "source": "807c8717751bffdb",
+      "output": "c808c2043032dff1"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -38682,7 +38730,7 @@
       "source": "5f5acf828ad49fff",
       "output": "472b9d15b02afeea"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "1470ee2e03cab5bd"
     },
@@ -38694,7 +38742,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "5c4193ef0914ea77"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "6f6abd867225b1ba"
     },
@@ -40865,6 +40913,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "6ceb9375943ccda9"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "4795ffd7ca24c076"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "cdafc7f76bdc8a65"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "d5d7685973b3dd05"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "730f1835c1a5acac"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "5f7b4fc02bf345be"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "bac66d0e2f56cb47"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "16ebfdade80a8191"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "6f6abd867225b1ba"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "69bc57686922277b"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "7fdaf8816e0dcd41"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "8fc4927b9751a406"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "5b67ec13dd101946"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "634fd3c59ad054c5"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "298a3386084c1b72"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -45180,10 +45284,6 @@
       "source": "14e2259edd31dcb4",
       "output": "1f319ef087779d16"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "62c9c6b7efbc620e"
@@ -45357,8 +45457,8 @@
       "output": "578f7cbb3bd0cba4"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "84b76ceebce99796"
+      "source": "591bbb500b8c55d0",
+      "output": "04d4f87b6feaebf9"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -46917,8 +47017,8 @@
       "output": "8fc744554d06cd9a"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "92f710a5b3ab10be"
+      "source": "0456923f9ade29ac",
+      "output": "bb1ddba2dcf0ff0a"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -53417,8 +53517,8 @@
       "output": "6501eba0b384ef3d"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "b135b4d1a5f9eb6d"
+      "source": "c2ca7be053c66803",
+      "output": "544e622ee9929ce6"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -53529,8 +53629,8 @@
       "output": "71dc74873e23107d"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "46ce2499aeb46ab6"
+      "source": "28a3ea119e8c015c",
+      "output": "9c20d49bff9ae0ce"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -59365,8 +59465,8 @@
       "output": "9c5dd8fe3d2518c7"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "bc1c5a3945587025"
+      "source": "6c22f4ae55001a6e",
+      "output": "edf5f4da08c817a5"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -59509,8 +59609,8 @@
       "output": "1f4e2ca04f47b877"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "b24a2edcdd8baf72"
+      "source": "925acf4e2c7be550",
+      "output": "3a5ecbfdf54bfd67"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -59637,8 +59737,8 @@
       "output": "8087190c9e9651e5"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "a9c5a662e21c1841"
+      "source": "b1bab7d1db2b1b91",
+      "output": "65667a1944475b0a"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -59749,8 +59849,8 @@
       "output": "7c48e8cb02e5076e"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "abc3c22377f2721d"
+      "source": "453bacb64a0aa16f",
+      "output": "610a4964ca385326"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -59765,8 +59865,8 @@
       "output": "9fdb94e3a8db8e0c"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "dcf54b5c4b4d8556"
+      "source": "eedcafb9fc686068",
+      "output": "123264b216d560ed"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -59997,8 +60097,8 @@
       "output": "243ff7394440e6df"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "f19534cd449f7b4e"
+      "source": "d29f8010a9dd1345",
+      "output": "23a69d8c56260319"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -60021,8 +60121,8 @@
       "output": "33c4a4e39379a967"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "ac491b95a63ee83e"
+      "source": "b8a141cb3c01c9ba",
+      "output": "27d459c67e2241c3"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -60117,8 +60217,8 @@
       "output": "7aacfc6624eabb54"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "801fa3189900aeca"
+      "source": "74e0912585a217c3",
+      "output": "5021a143af236486"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -60157,8 +60257,8 @@
       "output": "981ed2317cd91aca"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "13dc7aa739297895"
+      "source": "e001f19304e6ca03",
+      "output": "5021a143af236486"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -60205,8 +60305,8 @@
       "output": "0ff19a4df2d46202"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "5f70fb6b6ae39cd9"
+      "source": "807c8717751bffdb",
+      "output": "a16f632c5d763d98"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -60344,7 +60444,7 @@
       "source": "5f5acf828ad49fff",
       "output": "a5d6133e6f53b2ba"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "505a1c18075d5484"
     },
@@ -60356,7 +60456,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "357b2f2e4a21228c"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "577facfc552fb7cd"
     },
@@ -62527,6 +62627,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "a9f253794a6bd9cc"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "90824a794fb4c934"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "526a4e8081647d5a"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "a776ef1b92936a0e"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "42fc1bb2bbdf752f"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "16404249bac05908"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "0ad3ffb281582663"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "f9cee73b527d6725"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "965244a18fcd5718"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "1ee30a8526db6f84"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "d5a8252500f852c9"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "2aa022f9728c6ce7"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "8df17c46c6c1933f"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "4f846a84e7fc9ef6"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "cea5b70dc510768e"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -66842,10 +66998,6 @@
       "source": "14e2259edd31dcb4",
       "output": "59eeb57204da6fef"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "420171799b6224a9"
@@ -67019,8 +67171,8 @@
       "output": "6edfccd36436c180"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "5d10c6d3d238cdca"
+      "source": "591bbb500b8c55d0",
+      "output": "8a81e308c9ea5072"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -68579,8 +68731,8 @@
       "output": "28a5a2e257b1af40"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "a871fc9d68553248"
+      "source": "0456923f9ade29ac",
+      "output": "539c9cb8300d84c5"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -75079,8 +75231,8 @@
       "output": "49ccd68c9dfcab9e"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "aa2d3dd7db881a67"
+      "source": "c2ca7be053c66803",
+      "output": "49ccd68c9dfcab9e"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -75191,8 +75343,8 @@
       "output": "c5997e85ae513c07"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "27ab93230c5aaa81"
+      "source": "28a3ea119e8c015c",
+      "output": "b21b224b823398ee"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -81027,8 +81179,8 @@
       "output": "cf1840a2be3a9037"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "e410867cd544bdbd"
+      "source": "6c22f4ae55001a6e",
+      "output": "4e51c5698c0cc2ae"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -81171,8 +81323,8 @@
       "output": "d07a617ec6048827"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "08be477df790ce79"
+      "source": "925acf4e2c7be550",
+      "output": "a7d45dc7285f2637"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -81299,8 +81451,8 @@
       "output": "f05bf95647cae719"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "31993d9a4649f8fa"
+      "source": "b1bab7d1db2b1b91",
+      "output": "16095b19bae35e41"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -81411,8 +81563,8 @@
       "output": "6a63f0158b88daff"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "436f0b7dc14e7bc4"
+      "source": "453bacb64a0aa16f",
+      "output": "cd1d0137b62553f8"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -81427,8 +81579,8 @@
       "output": "9a889458226cf4af"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "e05209a65b7917f4"
+      "source": "eedcafb9fc686068",
+      "output": "239b1533a1bb48a6"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -81659,8 +81811,8 @@
       "output": "dd207866bd177727"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "d4d1f53cd5c3bde2"
+      "source": "d29f8010a9dd1345",
+      "output": "466a6c6f402c31c0"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -81683,8 +81835,8 @@
       "output": "0d40bc68e24cdea0"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "47fb9d868aecd191"
+      "source": "b8a141cb3c01c9ba",
+      "output": "3c4222ad5ab0f809"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -81779,8 +81931,8 @@
       "output": "ecdb9ef4a936a7ab"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "a2bc30490014ea16"
+      "source": "74e0912585a217c3",
+      "output": "c865c5c986b0d17a"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -81819,8 +81971,8 @@
       "output": "6ecfdb0b9df99cc1"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "9dc2d92258fd448a"
+      "source": "e001f19304e6ca03",
+      "output": "05dc50c13e8ec5b8"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -81867,8 +82019,8 @@
       "output": "5f0d5e3e9e583505"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "5bc3c5d7048b13cf"
+      "source": "807c8717751bffdb",
+      "output": "8ff26cc810ccfb13"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -82006,7 +82158,7 @@
       "source": "5f5acf828ad49fff",
       "output": "0cc6d8a037133d5e"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "144ce95d033010e9"
     },
@@ -82018,7 +82170,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "526bf5ee40c0b374"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "721b6de2653cbb89"
     },
@@ -84189,6 +84341,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "91b5441f56cdcde4"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "3ca5e0c00cbfaf49"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "4f93a36637e0c298"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "26689893e30a4f45"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "20693fe50ef2b703"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "2477aebbc0eb95cb"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "5e31552efdc93052"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "9e6419c854465a72"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "dee27383e8608ed5"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "c0bc4ebb683e255b"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "767e4cfd0283cff4"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "b2b092084f4d5b41"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "a9d9f34c3f40a85c"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "51066076635b92ae"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "0912d584211364c8"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -88504,10 +88712,6 @@
       "source": "14e2259edd31dcb4",
       "output": "8bbd2a911a40439e"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "e354b9a42dc133fa"
@@ -88681,8 +88885,8 @@
       "output": "e1f08b3fe1cbbea2"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "c9c99781d3ad0039"
+      "source": "591bbb500b8c55d0",
+      "output": "c9880ba32ef43a18"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -90241,8 +90445,8 @@
       "output": "51e1ecb01ce4cd11"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "a9c80352844a05f5"
+      "source": "0456923f9ade29ac",
+      "output": "539c9cb8300d84c5"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -96741,8 +96945,8 @@
       "output": "60df53249247ce5a"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "cf306edf50a0901c"
+      "source": "c2ca7be053c66803",
+      "output": "60df53249247ce5a"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -96853,8 +97057,8 @@
       "output": "3caa6d88a258af55"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "9da04d3757e48e5a"
+      "source": "28a3ea119e8c015c",
+      "output": "0c08ae07c43e2906"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -102689,8 +102893,8 @@
       "output": "d3dacdea0ef2b100"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "d393a0b19cc1e17c"
+      "source": "6c22f4ae55001a6e",
+      "output": "6bfb73efea321164"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -102833,8 +103037,8 @@
       "output": "690c069edf5ee8aa"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "07d853569d8d41e8"
+      "source": "925acf4e2c7be550",
+      "output": "0aa31528dce0edfc"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -102961,8 +103165,8 @@
       "output": "dc0fbe1ff096c453"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "ec5a991e563509cc"
+      "source": "b1bab7d1db2b1b91",
+      "output": "cb679bb863552484"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -103073,8 +103277,8 @@
       "output": "2ada894ead0c9dee"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "08a1f025fdf70cf5"
+      "source": "453bacb64a0aa16f",
+      "output": "1da96fdb8eb83d5a"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -103089,8 +103293,8 @@
       "output": "43b65a2757d8643a"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "04394cc4da287107"
+      "source": "eedcafb9fc686068",
+      "output": "bedc729cac175b21"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -103321,8 +103525,8 @@
       "output": "7191706519746805"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "d97bbc2bc5c5dbe0"
+      "source": "d29f8010a9dd1345",
+      "output": "11ef9cb30903c676"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -103345,8 +103549,8 @@
       "output": "ad9fbe11a17b3176"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "7930ddcf9ac6faeb"
+      "source": "b8a141cb3c01c9ba",
+      "output": "93000029d0b9fbaf"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -103441,8 +103645,8 @@
       "output": "fa6e9962c4fe56ee"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "7b73660393f02456"
+      "source": "74e0912585a217c3",
+      "output": "2b2e16e936bd3329"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -103481,8 +103685,8 @@
       "output": "296d69b6177bcf75"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "fefcfe6a74be8421"
+      "source": "e001f19304e6ca03",
+      "output": "f0617ab09c322012"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -103529,8 +103733,8 @@
       "output": "0fbe2adeea258bc2"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "8505e012a0226df9"
+      "source": "807c8717751bffdb",
+      "output": "3ce1ae8dd8bd9f71"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -103668,7 +103872,7 @@
       "source": "5f5acf828ad49fff",
       "output": "991ac8ab60e86032"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "ae94eccb8325d35a"
     },
@@ -103680,7 +103884,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "c29fcb42ba814c18"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "8f3ca56b5eb4e4e5"
     },
@@ -105851,6 +106055,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "2b5bd106d339dc3d"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "dfe76fb848669c1b"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "81e3981f0ec2cc5c"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "6512a428ff09eae4"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "1d322a959df87682"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "84e68b694b771961"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "2390409123740612"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "ee8df2f7e4617d99"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "8f3ca56b5eb4e4e5"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "a6e442bbdcb7f40d"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "a06c579a4388d598"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "d005eb79f0ac1464"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "315001163861c784"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "135cc4d303fb5a34"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "34335e2e6c657270"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -110166,10 +110426,6 @@
       "source": "14e2259edd31dcb4",
       "output": "41a8f5752205a7db"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "e282dde40a6a4d99"
@@ -110343,8 +110599,8 @@
       "output": "c9be1e99790824ad"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "de69376fc635b360"
+      "source": "591bbb500b8c55d0",
+      "output": "95336f681c441bb5"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -111903,8 +112159,8 @@
       "output": "1cc6601478b3e63c"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "39617f843e11d819"
+      "source": "0456923f9ade29ac",
+      "output": "539c9cb8300d84c5"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -118403,8 +118659,8 @@
       "output": "e2989c0fc9425169"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "aca5e3c196ae1fbd"
+      "source": "c2ca7be053c66803",
+      "output": "ec3590746cfb336d"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -118515,8 +118771,8 @@
       "output": "b6a0c0c469c5b62d"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "ed58ecf57e4d87c0"
+      "source": "28a3ea119e8c015c",
+      "output": "4287d1d2d3b8f136"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -124351,8 +124607,8 @@
       "output": "1ee2df3935383a65"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "6279efae2998416d"
+      "source": "6c22f4ae55001a6e",
+      "output": "4c00d552389e6a2e"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -124495,8 +124751,8 @@
       "output": "4d10f259b7951725"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "a2ae25eebc29f9b5"
+      "source": "925acf4e2c7be550",
+      "output": "5178525ee4c6d95f"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -124623,8 +124879,8 @@
       "output": "173af1a4904ba2f5"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "d0d3adbc61e0815a"
+      "source": "b1bab7d1db2b1b91",
+      "output": "c916ac12854077ab"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -124735,8 +124991,8 @@
       "output": "2011471088159438"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "e280f5ad8addbfe3"
+      "source": "453bacb64a0aa16f",
+      "output": "5e53708e65159fa2"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -124751,8 +125007,8 @@
       "output": "7cfbf92e8c201748"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "6f2cb9009642c84f"
+      "source": "eedcafb9fc686068",
+      "output": "b1ee149b5ec59ec0"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -124983,8 +125239,8 @@
       "output": "5e1f8e36d0f72be1"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "d7d6a9ed89b88e3c"
+      "source": "d29f8010a9dd1345",
+      "output": "9de6e1f2b34e4245"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -125007,8 +125263,8 @@
       "output": "ce61d9a300b8dfc5"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "7b03956180393ec2"
+      "source": "b8a141cb3c01c9ba",
+      "output": "fc023968baeae6f4"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -125103,8 +125359,8 @@
       "output": "cb7ee4b790f32d67"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "b8bfd654417a236b"
+      "source": "74e0912585a217c3",
+      "output": "4f1bded23e244009"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -125143,8 +125399,8 @@
       "output": "450993c0aaa2e6c2"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "ef660c39dd282a29"
+      "source": "e001f19304e6ca03",
+      "output": "4c90eb749302f99d"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -125191,8 +125447,8 @@
       "output": "5f26f4a5c9870497"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "ed58ecf57e4d87c0"
+      "source": "807c8717751bffdb",
+      "output": "718fcd6facc5b8d7"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -125330,7 +125586,7 @@
       "source": "5f5acf828ad49fff",
       "output": "74a773f3e9544510"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "486a0166b2db8b8a"
     },
@@ -125342,7 +125598,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "86fc820873adb375"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "aef7630bf8585e27"
     },
@@ -127513,6 +127769,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "fd66e0f56dd877d3"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "e23486a9b31fea1c"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "288dc1cb53fe33ed"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "ec1b4998c1e27a21"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "1b53e18c7954214c"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "408ab7158a639724"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "9cbd4070e52d1e4e"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "5f1a5af22cc624da"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "266e4df17d3f7779"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "b846f55087f306b3"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "ac4d983d9f10b2f5"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "c8864170258a081d"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "57e3dbe4b3d2cd8b"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "2b4e31d7fad437f9"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "e2b2b7c802ed02c9"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",
@@ -131828,10 +132140,6 @@
       "source": "14e2259edd31dcb4",
       "output": "1c85e9d8d21b9ae5"
     },
-    "agentProfiles.detail.runSeconds": {
-      "source": "1c8341b6b9e56d46",
-      "output": "1c8341b6b9e56d46"
-    },
     "agentProfiles.detail.runSecondsLabel": {
       "source": "591bbb500b8c55d0",
       "output": "4ff105200bdac431"
@@ -132005,8 +132313,8 @@
       "output": "b1dadda2691cc1a4"
     },
     "agentProfiles.dialog.runSecondsLabel": {
-      "source": "7cd78e51b3cc443c",
-      "output": "71f7f0d332193e32"
+      "source": "591bbb500b8c55d0",
+      "output": "d14aeada37143a9c"
     },
     "agentProfiles.dialog.save": {
       "source": "f6b2ff39f540eb81",
@@ -133565,8 +133873,8 @@
       "output": "5da36e274d3f9d74"
     },
     "automations.dialog.debounce": {
-      "source": "51b4760c6294c142",
-      "output": "4534b9269b5c9ac6"
+      "source": "0456923f9ade29ac",
+      "output": "539c9cb8300d84c5"
     },
     "automations.dialog.debounceHint": {
       "source": "3518cb63df921367",
@@ -140065,8 +140373,8 @@
       "output": "5565068683850c46"
     },
     "evals.dialog.maxSeconds": {
-      "source": "9a19a03001645961",
-      "output": "8824c1b08e6c7fc3"
+      "source": "c2ca7be053c66803",
+      "output": "5565068683850c46"
     },
     "evals.dialog.maxUsd": {
       "source": "0f039440726f7e1e",
@@ -140177,8 +140485,8 @@
       "output": "aef7cd5b2081351d"
     },
     "evals.dialog.secondsLabel": {
-      "source": "8ec0c7192887d7f0",
-      "output": "4b7bf4dc30cebf3e"
+      "source": "28a3ea119e8c015c",
+      "output": "c9e9c07e926a209e"
     },
     "evals.dialog.startPage": {
       "source": "82ebcbbb496302a2",
@@ -146013,8 +146321,8 @@
       "output": "7bf2142ee8803e8a"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
-      "source": "5119d79904e1eabd",
-      "output": "59b2c2df996792fa"
+      "source": "6c22f4ae55001a6e",
+      "output": "f7d636ffa4c9ddf2"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
       "source": "2c71fb80893c9fea",
@@ -146157,8 +146465,8 @@
       "output": "ed279ec97e0e08d7"
     },
     "settings.keys.ai.maxRunMs.label": {
-      "source": "a4407e4fe311d2e1",
-      "output": "fbdcfe678448cc61"
+      "source": "925acf4e2c7be550",
+      "output": "0a32829c3282686e"
     },
     "settings.keys.ai.maxToolIterations.help": {
       "source": "8351c2f57cab75b0",
@@ -146285,8 +146593,8 @@
       "output": "a14b6c7d499dbb99"
     },
     "settings.keys.ai.timeoutMs.label": {
-      "source": "e1053a2b1568a5aa",
-      "output": "a2a6d01de35d4f0e"
+      "source": "b1bab7d1db2b1b91",
+      "output": "4a5035d7a8e7de1f"
     },
     "settings.keys.ai.toolsEnabled.help": {
       "source": "7d25cb7e8bf90e69",
@@ -146397,8 +146705,8 @@
       "output": "0934362c63e283d3"
     },
     "settings.keys.automations.webhookTimeoutSeconds.label": {
-      "source": "eda070d430cbee6e",
-      "output": "b59a0f90b531f3bd"
+      "source": "453bacb64a0aa16f",
+      "output": "93ec01eb89eaf801"
     },
     "settings.keys.calendar.reminderAllDayHour.help": {
       "source": "403e1c4014b81327",
@@ -146413,8 +146721,8 @@
       "output": "7d8e18fe9b476b09"
     },
     "settings.keys.calendar.reminderLeadMinutes.label": {
-      "source": "c2acaa368ab5c1ee",
-      "output": "994e16ac8a3760f5"
+      "source": "eedcafb9fc686068",
+      "output": "fbd999a820fbe6c2"
     },
     "settings.keys.calendar.remindersEnabled.help": {
       "source": "bf22fd0fdb5b146a",
@@ -146645,8 +146953,8 @@
       "output": "4238f600e33776cb"
     },
     "settings.keys.notifications.commentMailDebounceMinutes.label": {
-      "source": "2a2fe034fa6c4051",
-      "output": "1c5c961704908f39"
+      "source": "d29f8010a9dd1345",
+      "output": "d938740b52018394"
     },
     "settings.keys.notifications.digestHour.help": {
       "source": "74f8f9a1e904a611",
@@ -146669,8 +146977,8 @@
       "output": "e3411dfc296909b9"
     },
     "settings.keys.overview.debounceSeconds.label": {
-      "source": "a1bd60a1cd1869a6",
-      "output": "071df7ace0bbe33b"
+      "source": "b8a141cb3c01c9ba",
+      "output": "398ac41f19971271"
     },
     "settings.keys.overview.enabled.help": {
       "source": "9355abec8025b7ae",
@@ -146765,8 +147073,8 @@
       "output": "f0345de0bf12a0e5"
     },
     "settings.keys.projects.timeoutSeconds.label": {
-      "source": "ade44f54cb9561a8",
-      "output": "a249f9e558e229c2"
+      "source": "74e0912585a217c3",
+      "output": "c82abc0c8c6336a3"
     },
     "settings.keys.render.enabled.help": {
       "source": "d3405ff16dfb65b9",
@@ -146805,8 +147113,8 @@
       "output": "a8350f26a80cfcc3"
     },
     "settings.keys.render.timeoutSeconds.label": {
-      "source": "8a8ba65ea3a86b05",
-      "output": "936198fe035417a9"
+      "source": "e001f19304e6ca03",
+      "output": "a0d196836a1a13be"
     },
     "settings.keys.search.embeddingModelSlug.help": {
       "source": "ca835a99b14e515b",
@@ -146853,8 +147161,8 @@
       "output": "851039bf7112f1c8"
     },
     "settings.keys.workflows.maxLifetimeSeconds.label": {
-      "source": "8c377e5e22ffba16",
-      "output": "4b7bf4dc30cebf3e"
+      "source": "807c8717751bffdb",
+      "output": "3d2f7387a0fa4043"
     },
     "settings.keys.workflows.maxNodeExecutions.help": {
       "source": "d9d3bd818dea5cd5",
@@ -146992,7 +147300,7 @@
       "source": "5f5acf828ad49fff",
       "output": "1b22b8ac76638e27"
     },
-    "settings.row.invalidWithRangeBytes": {
+    "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "69bc9981faae894f"
     },
@@ -147004,7 +147312,7 @@
       "source": "01aac8f091b0ac2f",
       "output": "e6dbf9301f26e164"
     },
-    "settings.row.rangeHintBytes": {
+    "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "53af1031732edb2f"
     },
@@ -149175,6 +149483,62 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "5f011295bc883e83"
+    },
+    "ui.durationInput.amounts.days": {
+      "source": "f8c64b7bad05baac",
+      "output": "efa50a49006caa14"
+    },
+    "ui.durationInput.amounts.hours": {
+      "source": "e61e42f5e9def8e3",
+      "output": "908a23d7d50d7c53"
+    },
+    "ui.durationInput.amounts.milliseconds": {
+      "source": "3f844de6d4d0e961",
+      "output": "8c630e8fd8bfb18a"
+    },
+    "ui.durationInput.amounts.minutes": {
+      "source": "97055a97c520a908",
+      "output": "f5903418f5005f5f"
+    },
+    "ui.durationInput.amounts.seconds": {
+      "source": "6575312c437ab5ac",
+      "output": "537aabf98ddb1894"
+    },
+    "ui.durationInput.invalid": {
+      "source": "23ee835dfe08fc1b",
+      "output": "e58e2cd0f0dd6871"
+    },
+    "ui.durationInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "16355c08c6c6cac9"
+    },
+    "ui.durationInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "6f6abd867225b1ba"
+    },
+    "ui.durationInput.unit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "208f2cee4cd75283"
+    },
+    "ui.durationInput.units.days": {
+      "source": "6770c319ff7b6302",
+      "output": "92ce018e7706cc3e"
+    },
+    "ui.durationInput.units.hours": {
+      "source": "b26b52378d4f2047",
+      "output": "8fc4927b9751a406"
+    },
+    "ui.durationInput.units.milliseconds": {
+      "source": "d2673563dfbbb518",
+      "output": "7ab0668b63dd8c11"
+    },
+    "ui.durationInput.units.minutes": {
+      "source": "135cc4d303fb5a34",
+      "output": "634fd3c59ad054c5"
+    },
+    "ui.durationInput.units.seconds": {
+      "source": "137b664ad5fba8b9",
+      "output": "298a3386084c1b72"
     },
     "ui.imageLightbox.close": {
       "source": "cc5a4be5073099e1",

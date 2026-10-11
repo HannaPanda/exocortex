@@ -39,5 +39,25 @@
     "fit": "Ajustar à tela",
     "open": "Ampliar imagem: {alt}",
     "openUntitled": "Ampliar imagem"
+  },
+  "durationInput": {
+    "unit": "Unidade",
+    "units": {
+      "milliseconds": "Milissegundos",
+      "seconds": "Segundos",
+      "minutes": "Minutos",
+      "hours": "Horas",
+      "days": "Dias"
+    },
+    "amounts": {
+      "milliseconds": "{count, plural, one {# milissegundo} many {# milissegundos} other {# milissegundos}}",
+      "seconds": "{count, plural, one {# segundo} many {# segundos} other {# segundos}}",
+      "minutes": "{count, plural, one {# minuto} many {# minutos} other {# minutos}}",
+      "hours": "{count, plural, one {# hora} many {# horas} other {# horas}}",
+      "days": "{count, plural, one {# dia} many {# dias} other {# dias}}"
+    },
+    "invalid": "Essa não é uma duração que possa ser salva com precisão.",
+    "outOfRange": "Permitido: de {min} a {max}.",
+    "keepsLastValid": "O último valor válido será mantido."
   }
 }

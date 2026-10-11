@@ -44,11 +44,11 @@
         "help": "Obergrenze für die Länge einer einzelnen KI-Antwort."
       },
       "timeoutMs": {
-        "label": "Zeitlimit pro Modellantwort (ms)",
+        "label": "Zeitlimit pro Modellantwort",
         "help": "Bricht eine einzelne Antwort des Modells ab. Werkzeugaufrufe und Folgeantworten haben ihre eigene Zeit, siehe „Gesamtzeit pro Lauf“."
       },
       "maxRunMs": {
-        "label": "Gesamtzeit pro Lauf (ms)",
+        "label": "Gesamtzeit pro Lauf",
         "help": "Nach dieser Zeit endet ein Lauf insgesamt, auch wenn er noch Werkzeuge aufruft. Kann nie kürzer sein als das Zeitlimit pro Modellantwort."
       },
       "budgetMicroUsdPerRun": {
@@ -302,7 +302,7 @@
         "help": "Schickt vor einem gespiegelten Termin eine Nachricht. Braucht zusätzlich einen eingerichteten Versandweg auf dem Server."
       },
       "reminderLeadMinutes": {
-        "label": "Vorlauf in Minuten",
+        "label": "Vorlauf",
         "help": "Wie lange vor einem Termin mit Uhrzeit die Erinnerung rausgeht. 0 bedeutet genau zum Beginn."
       },
       "reminderAllDayHour": {
@@ -324,7 +324,7 @@
         "help": "In welcher Zone die Uhrzeit darüber gelesen wird, zum Beispiel Europe/Berlin. Bewusst eine eigene Angabe statt der Zeit des Servers, der in UTC läuft."
       },
       "commentMailDebounceMinutes": {
-        "label": "Sammelzeit für sofortige Kommentar-Mails (Minuten)",
+        "label": "Sammelzeit für sofortige Kommentar-Mails",
         "help": "Wie lange auf weitere Kommentare gewartet wird, bevor eine sofortige Mail rausgeht. So wird aus vier Antworten in einem Faden eine Mail statt vier. 0 bedeutet: ohne Warten."
       }
     },
@@ -334,7 +334,7 @@
         "help": "Sichert eine aktiv bearbeitete Seite in regelmäßigen Abständen, damit der Aktivitäts-Reiter echte Zeitspannen zeigen kann („14:20 bis 14:45 bearbeitet“) statt nur des letzten Standes. Aus: es entstehen keine zusätzlichen Sicherungen."
       },
       "editSessionSnapshotIntervalMinutes": {
-        "label": "Abstand zwischen Sitzungs-Sicherungen (Minuten)",
+        "label": "Abstand zwischen Sitzungs-Sicherungen",
         "help": "So oft darf eine aktiv bearbeitete Seite höchstens neu gesichert werden. Wirkt nur, wenn die Zeile darüber an ist."
       },
       "snapshotRetentionFullDays": {
@@ -378,7 +378,7 @@
         "help": "So oft darf eine Regel hintereinander scheitern, bevor sie sich selbst abschaltet. Eine Regel, die ins Leere zeigt, wird durch Wiederholen nicht besser, sie füllt nur das Protokoll."
       },
       "webhookTimeoutSeconds": {
-        "label": "Zeitlimit für einen Webhook (Sekunden)",
+        "label": "Zeitlimit für einen Webhook",
         "help": "So lange darf der empfangende Server brauchen. Danach gilt der Lauf als fehlgeschlagen."
       },
       "runRetentionDays": {
@@ -400,7 +400,7 @@
         "help": "So viele Knoten eines Laufs dürfen gleichzeitig unterwegs sein, wartende mitgezählt. Was darüber hinausgeht, wartet, bis ein Platz frei wird."
       },
       "maxLifetimeSeconds": {
-        "label": "Höchste Laufzeit (Sekunden)",
+        "label": "Höchste Laufzeit",
         "help": "So lange darf ein Lauf insgesamt dauern, Wartezeiten eingeschlossen. Danach wird er als abgelaufen beendet. Standard sind sieben Tage."
       },
       "budgetMicroUsdPerRun": {
@@ -418,7 +418,7 @@
         "help": "Leer verwendet das Standardmodell. Hier lohnt ein kleines Modell: es geht jedes Mal um zwei bis fünf Sätze, dafür oft."
       },
       "debounceSeconds": {
-        "label": "Ruhezeit vor dem Neuschreiben (Sekunden)",
+        "label": "Ruhezeit vor dem Neuschreiben",
         "help": "So lange muss es um eine Seite still sein, bevor die Übersicht darüber neu geschrieben wird. Deutlich länger als bei Automationen: auf einen Vorspann wartet niemand, und ein Nachmittag Arbeit an einer Seite soll einen Lauf kosten, nicht zwanzig."
       },
       "maxChildren": {
@@ -444,7 +444,7 @@
         "help": "Darin stecken Pandoc, TeX Live und die Schriften; auf dem Rechner selbst wird nichts installiert. Ein anderes Abbild ändert, worauf sich jede Vorlage verlassen kann, und wird von der Wiederverwendung fertiger PDFs nicht bemerkt: danach einmal mit „neu erzeugen“ bauen."
       },
       "timeoutSeconds": {
-        "label": "Zeitlimit für einen Bau (Sekunden)",
+        "label": "Zeitlimit für einen Bau",
         "help": "Danach wird der Container abgebrochen. Ein LaTeX-Lauf, der nach drei Minuten nicht fertig ist, wartet meist auf eine Eingabe, die niemand machen kann."
       },
       "maxArtifactBytes": {
@@ -466,7 +466,7 @@
         "help": "Darin stecken TeX Live, latexmk, biber und die Schriften. Ohne dieses Abbild schlägt jeder Bau mit einer klaren Meldung fehl."
       },
       "timeoutSeconds": {
-        "label": "Zeitgrenze je Bau (Sekunden)",
+        "label": "Zeitgrenze je Bau",
         "help": "Danach wird der Container abgebrochen. Eine Abschlussarbeit mit Literaturverzeichnis braucht mehrere Durchläufe."
       },
       "maxArtifactBytes": {
@@ -492,8 +492,8 @@
     "rangeHint": "Zulässig: {min, number} bis {max, number}.",
     "invalid": "Dieser Wert ist nicht gültig.",
     "invalidWithRange": "Nicht gespeichert. Zulässig: {min, number} bis {max, number}.",
-    "rangeHintBytes": "Zulässig: {min} bis {max}.",
-    "invalidWithRangeBytes": "Nicht gespeichert. Zulässig: {min} bis {max}.",
+    "rangeHintAmounts": "Zulässig: {min} bis {max}.",
+    "invalidWithRangeAmounts": "Nicht gespeichert. Zulässig: {min} bis {max}.",
     "byteAmount": "{amount, number} {unit}",
     "byteUnit": "Einheit",
     "byteUnits": {

@@ -7,6 +7,7 @@ import * as React from 'react';
 
 import {
   AGENT_APPROVAL_POLICIES,
+  AGENT_PROFILE_LIMITS,
   type AgentApprovalPolicy,
   type AgentProfile,
   AI_WRITE_MODES,
@@ -41,6 +42,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DurationInput } from '@/components/duration-input';
 import { useCreateAgentProfile, useUpdateAgentProfile } from '@/lib/api/agent-profile-queries';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { useSearch } from '@/lib/api/search-queries';
@@ -75,7 +77,10 @@ interface Draft {
   budgetRunUsd: string;
   budgetTaskUsd: string;
   maxToolIterations: string;
-  maxRunSeconds: string;
+  /** In seconds, `null` for none; the field converts from the unit it shows. */
+  maxRunSeconds: number | null;
+  /** False while the duration field holds an amount it cannot save. */
+  maxRunSecondsValid: boolean;
   confineToWorkspace: boolean;
   isDefault: boolean;
 }
@@ -100,7 +105,8 @@ const NEW_DRAFT: Draft = {
   budgetRunUsd: '',
   budgetTaskUsd: '',
   maxToolIterations: '',
-  maxRunSeconds: '',
+  maxRunSeconds: null,
+  maxRunSecondsValid: true,
   confineToWorkspace: true,
   isDefault: false,
 };
@@ -121,7 +127,7 @@ function draftOf(profile: AgentProfile | null): Draft {
     budgetRunUsd: usd(profile.budgetMicroUsdPerRun),
     budgetTaskUsd: usd(profile.budgetMicroUsdPerTask),
     maxToolIterations: profile.maxToolIterations?.toString() ?? '',
-    maxRunSeconds: profile.maxRunSeconds?.toString() ?? '',
+    maxRunSecondsValid: true,
   };
 }
 
@@ -169,7 +175,7 @@ export function AgentProfileDialog({
   const routing = routingOf(draft.routing);
   const pending = create.isPending || update.isPending;
   const error = create.error ?? update.error;
-  const valid = draft.name.trim().length > 0 && routing !== undefined;
+  const valid = draft.name.trim().length > 0 && routing !== undefined && draft.maxRunSecondsValid;
 
   const submit = async (): Promise<void> => {
     if (routing === undefined) return;
@@ -187,7 +193,7 @@ export function AgentProfileDialog({
       budgetMicroUsdPerRun: microUsdOf(draft.budgetRunUsd),
       budgetMicroUsdPerTask: microUsdOf(draft.budgetTaskUsd),
       maxToolIterations: wholeNumberOf(draft.maxToolIterations),
-      maxRunSeconds: wholeNumberOf(draft.maxRunSeconds),
+      maxRunSeconds: draft.maxRunSeconds,
       confineToWorkspace: draft.confineToWorkspace,
       isDefault: draft.isDefault,
     };
@@ -472,14 +478,20 @@ function PolicyFields({ draft, set }: FieldProps) {
           numeric
           onChange={(value) => set('maxToolIterations', value)}
         />
-        <NumberField
-          id="agent-profile-run-seconds"
-          label={t('runSecondsLabel')}
-          value={draft.maxRunSeconds}
-          placeholder={t('limitPlaceholder')}
-          numeric
-          onChange={(value) => set('maxRunSeconds', value)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="agent-profile-run-seconds">{t('runSecondsLabel')}</Label>
+          <DurationInput
+            id="agent-profile-run-seconds"
+            base="seconds"
+            value={draft.maxRunSeconds}
+            min={AGENT_PROFILE_LIMITS.minRunSeconds}
+            max={AGENT_PROFILE_LIMITS.maxRunSeconds}
+            allowEmpty
+            placeholder={t('limitPlaceholder')}
+            onChange={(value) => set('maxRunSeconds', value)}
+            onValidityChange={(valid) => set('maxRunSecondsValid', valid)}
+          />
+        </div>
       </div>
 
       <label className="flex items-center justify-between gap-3 text-sm">
