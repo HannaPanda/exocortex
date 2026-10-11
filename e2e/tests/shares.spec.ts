@@ -133,11 +133,10 @@ test.describe('shares', () => {
       const page = await context.newPage();
       const response = await page.goto(url);
       expect(response?.status()).toBe(200);
-      const ran = await page.evaluate(() => document.documentElement.getAttribute('data-ran'));
-      expect(ran).toBeNull();
+      expect(await page.locator(':root').getAttribute('data-ran')).toBeNull();
       // The sandbox gives the document an opaque origin, so even a script
       // that did run would hold no cookie and reach no API.
-      expect(await page.evaluate(() => self.origin)).toBe('null');
+      expect(await page.evaluate('self.origin')).toBe('null');
     } finally {
       await context.close();
     }
