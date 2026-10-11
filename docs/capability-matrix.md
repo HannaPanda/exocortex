@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-261 routes are reachable from at least one client; 161 from all three.
+277 routes are reachable from at least one client; 161 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -40,6 +40,8 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_delete` |
 | `DELETE /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_delete` |
 | `DELETE /api/entities/:x/pages/:x` | ✓ | ✓ | ✓ | `exo_entity_unlink_page` |
+| `DELETE /api/eval-cases/:x` | · | · | ✓ | `exo_eval_case_delete` |
+| `DELETE /api/eval-runs/:x` | · | · | ✓ | `exo_eval_run_delete` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
 | `DELETE /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_remove` |
@@ -97,6 +99,10 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/entities` | ✓ | ✓ | ✓ | `exo_entity_list` |
 | `GET /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_profile` |
 | `GET /api/entities/candidates` | ✓ | ✓ | ✓ | `exo_entity_candidates` |
+| `GET /api/eval-attempts/:x` | · | ✓ | ✓ | `exo_eval_attempt_get` |
+| `GET /api/eval-cases/:x` | · | ✓ | ✓ | `exo_eval_case_get` |
+| `GET /api/eval-comparison` | · | ✓ | ✓ | `exo_eval_compare` |
+| `GET /api/eval-runs/:x` | · | ✓ | ✓ | `exo_eval_run_get` |
 | `GET /api/features` | ✓ | ✓ | ✓ | `exo_features` |
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
@@ -139,6 +145,9 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/credentials` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/documents/resolve` | ✓ | ✓ | ✓ | `exo_page_resolve_link` |
 | `GET /api/workspaces/:x/documents/tree` | ✓ | ✓ | ✓ | `exo_page_tree` |
+| `GET /api/workspaces/:x/eval-cases` | · | ✓ | ✓ | `exo_eval_case_list` |
+| `GET /api/workspaces/:x/eval-runs` | · | ✓ | ✓ | `exo_eval_run_list` |
+| `GET /api/workspaces/:x/eval-suites/:x` | · | ✓ | ✓ | `exo_eval_suite_export` |
 | `GET /api/workspaces/:x/inbox` | ✓ | ✓ | ✓ | `exo_inbox` |
 | `GET /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
 | `GET /api/workspaces/:x/overview` | ✓ | ✓ | ✓ | `exo_workspace_overview` |
@@ -169,6 +178,8 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
+| `PATCH /api/eval-attempts/:x/review` | · | · | ✓ | `exo_eval_attempt_review` |
+| `PATCH /api/eval-cases/:x` | · | · | ✓ | `exo_eval_case_update` |
 | `PATCH /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preference_set` |
 | `PATCH /api/me/preferences` | ✓ | ✓ | ✓ | `exo_me_preferences_set` |
 | `PATCH /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_update` |
@@ -194,6 +205,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
+| `POST /api/ai/runs/:x/eval-case` | · | · | ✓ | `exo_eval_case_from_run` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
 | `POST /api/attention/:x/resolve` | ✓ | ✓ | ✓ | `exo_attention_resolve` |
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
@@ -233,6 +245,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/entities/candidates/:x/confirm` | ✓ | ✓ | ✓ | `exo_entity_candidate_confirm` |
 | `POST /api/entities/candidates/:x/dismiss` | ✓ | ✓ | ✓ | `exo_entity_candidate_dismiss` |
 | `POST /api/entities/database` | ✓ | · | · | — |
+| `POST /api/eval-runs/:x/cancel` | · | · | ✓ | `exo_eval_run_cancel` |
 | `POST /api/features/seen` | ✓ | · | · | — |
 | `POST /api/invitations/accept` | ✓ | · | · | — |
 | `POST /api/invitations/preview` | ✓ | · | · | — |
@@ -271,6 +284,9 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/clip` | ✓ | ✓ | ✓ | `exo_clip` |
 | `POST /api/workspaces/:x/documents` | ✓ | ✓ | ✓ | `exo_database_create`, `exo_page_create` |
 | `POST /api/workspaces/:x/documents/suggest-parent` | ✓ | ✓ | ✓ | `exo_page_suggest_parent` |
+| `POST /api/workspaces/:x/eval-cases` | · | · | ✓ | `exo_eval_case_create` |
+| `POST /api/workspaces/:x/eval-runs` | · | · | ✓ | `exo_eval_run_start` |
+| `POST /api/workspaces/:x/eval-suites/import` | · | · | ✓ | `exo_eval_suite_import` |
 | `POST /api/workspaces/:x/import/markdown` | ✓ | ✓ | ✓ | `exo_page_create` |
 | `POST /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_create` |
 | `POST /api/workspaces/:x/invitations/:x/resend` | · | ✓ | ✓ | `exo_invitation_resend` |
@@ -363,6 +379,15 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.
 - `exo_changeset_apply` — mcp: Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.
 - `exo_changeset_reject` — mcp: Rejects a proposed changeset. Same reason: a decision on a proposal, and the built-in AI is never the one who decides.
+- `exo_eval_attempt_review` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_case_create` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could write the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_case_delete` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could delete the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_case_from_run` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could turn its own runs into the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_case_update` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could rewrite the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_run_cancel` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could stop the measurement of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_run_delete` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could delete the measurement of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_run_start` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could start paid runs of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
+- `exo_eval_suite_import` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could replace the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
 - `exo_page_delete` — mcp: The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).
 - `exo_toolbox` — ai: Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.
 

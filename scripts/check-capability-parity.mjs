@@ -65,6 +65,51 @@ const MATRIX_PATH = join(repoRoot, 'docs/capability-matrix.md');
  */
 const SURFACE_EXEMPT = [
   {
+    tool: 'exo_eval_case_create',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could write the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_case_update',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could rewrite the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_case_delete',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could delete the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_case_from_run',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could turn its own runs into the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_suite_import',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could replace the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_run_start',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could start paid runs of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_run_cancel',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could stop the measurement of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_run_delete',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could delete the measurement of itself would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
+    tool: 'exo_eval_attempt_review',
+    reason:
+      "An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
+  },
+  {
     tool: 'exo_changeset_apply',
     reason:
       "Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.",

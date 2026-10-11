@@ -12,6 +12,7 @@ import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { ENTITY_TOOLS } from './tools/entities.js';
+import { EVAL_TOOLS } from './tools/evals.js';
 import { FEATURE_TOOLS } from './tools/features.js';
 import { INBOX_TOOLS } from './tools/inbox.js';
 import { INVITATION_TOOLS } from './tools/invitations.js';
@@ -69,6 +70,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...WORK_CHECKPOINT_TOOLS,
   ...ATTENTION_TOOLS,
   ...CHANGESET_TOOLS,
+  ...EVAL_TOOLS,
   ...WEB_TOOLS,
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,
