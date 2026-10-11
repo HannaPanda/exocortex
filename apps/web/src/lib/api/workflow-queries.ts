@@ -155,6 +155,22 @@ export function useSetWorkflowActivation(workspaceId: string, workflowId: string
   });
 }
 
+/** Copies a draft into a new workflow (issue #165); the copy is a draft and nothing more. */
+export function useDuplicateWorkflow(workspaceId: string, workflowId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      apiRequest<WorkflowResponse>(`/api/workflows/${workflowId}/duplicate`, {
+        method: 'POST',
+        body: {},
+      }),
+    onSuccess: (response) => {
+      client.setQueryData(workflowKeys.detail(response.workflow.id), response);
+      void client.invalidateQueries({ queryKey: workflowKeys.list(workspaceId) });
+    },
+  });
+}
+
 export function useDeleteWorkflow(workspaceId: string) {
   const client = useQueryClient();
   return useMutation({

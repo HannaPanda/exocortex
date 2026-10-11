@@ -28,7 +28,11 @@ import {
   Switch,
 } from '@exocortex/ui';
 
-import { useDeleteWorkflow, usePublishWorkflow } from '@/lib/api/workflow-queries';
+import {
+  useDeleteWorkflow,
+  useDuplicateWorkflow,
+  usePublishWorkflow,
+} from '@/lib/api/workflow-queries';
 
 import { WorkflowActivationDialog } from './workflow-activation-dialog';
 import { WorkflowTestRunDialog } from './workflow-test-run-dialog';
@@ -41,7 +45,8 @@ import { WorkflowTestRunDialog } from './workflow-test-run-dialog';
  * Each of those is a separate step on purpose, and each says why it cannot
  * be taken yet: a draft with problems cannot be published, an unsaved one
  * cannot either, only a published workflow can be tried or switched on, and
- * only the owner may switch one on.
+ * only the owner may switch one on. A draft an agent wrote says so
+ * (`AgentDraftNotice`, issue #165).
  */
 export function WorkflowEditorHeader({
   workspaceId,
@@ -78,6 +83,8 @@ export function WorkflowEditorHeader({
   const [deleting, setDeleting] = React.useState(false);
   const blocker = publishBlocker(t, { dirty, problems: problems.length, workflow });
   const published = workflow.publishedVersion;
+  const router = useRouter();
+  const duplicate = useDuplicateWorkflow(workspaceId, workflow.id);
 
   return (
     <div className="flex flex-col gap-3">
@@ -126,12 +133,20 @@ export function WorkflowEditorHeader({
               <MoreMenu
                 deletable={workflow.activeRunCount === 0}
                 onDelete={() => setDeleting(true)}
+                onDuplicate={() =>
+                  duplicate.mutate(undefined, {
+                    onSuccess: (copy) =>
+                      router.push(`/arbeitsbereich/${workspaceId}/workflows/${copy.workflow.id}`),
+                  })
+                }
               />
             </>
           ) : null}
         </div>
       </div>
 
+      <AgentDraftNotice workflow={workflow} />
+      <ErrorAlert error={duplicate.error} />
       {blocker !== null && canManage && (dirty || problems.length > 0) ? (
         <p className="text-xs text-muted-foreground" data-testid="workflow-publish-blocker">
           {blocker}
@@ -142,11 +157,7 @@ export function WorkflowEditorHeader({
           {t('publishedNow', { version: published.version })}
         </p>
       ) : null}
-      {publish.error === null ? null : (
-        <Alert variant="destructive">
-          <AlertDescription>{publish.error.message}</AlertDescription>
-        </Alert>
-      )}
+      <ErrorAlert error={publish.error} />
       {response.envelope.workflowsEnabled ? null : (
         <Alert data-testid="workflow-switched-off">
           <AlertDescription>{t('workflowsOff')}</AlertDescription>
@@ -191,6 +202,37 @@ function publishBlocker(
   return null;
 }
 
+/**
+ * Says above everything else that an agent or the assistant wrote the draft
+ * (issue #165), until it is published: the person pressing publish is the
+ * review, and publishing takes exactly the revision named here.
+ */
+function AgentDraftNotice({ workflow }: { workflow: WorkflowResponse['workflow'] }) {
+  const t = useTranslations('workflows.header');
+  const author = workflow.draftAuthor;
+  if (author.kind === 'human' || !workflow.hasUnpublishedChanges) return null;
+  return (
+    <Alert data-testid="workflow-agent-draft">
+      <AlertDescription>
+        {t('agentDraft', {
+          kind: author.kind,
+          label: author.agentLabel ?? t('unnamedAgent'),
+          revision: workflow.draftRevision,
+        })}
+      </AlertDescription>
+    </Alert>
+  );
+}
+
+function ErrorAlert({ error }: { error: Error | null }) {
+  if (error === null) return null;
+  return (
+    <Alert variant="destructive">
+      <AlertDescription>{error.message}</AlertDescription>
+    </Alert>
+  );
+}
+
 function StateLine({
   response,
   dirty,
@@ -229,7 +271,15 @@ function StateLine({
   );
 }
 
-function MoreMenu({ deletable, onDelete }: { deletable: boolean; onDelete: () => void }) {
+function MoreMenu({
+  deletable,
+  onDelete,
+  onDuplicate,
+}: {
+  deletable: boolean;
+  onDelete: () => void;
+  onDuplicate: () => void;
+}) {
   const t = useTranslations('workflows.header');
   return (
     <DropdownMenu>
@@ -241,6 +291,9 @@ function MoreMenu({ deletable, onDelete }: { deletable: boolean; onDelete: () =>
         }
       />
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={onDuplicate} data-testid="workflow-duplicate">
+          {t('duplicate')}
+        </DropdownMenuItem>
         <DropdownMenuItem variant="destructive" onClick={onDelete} disabled={!deletable}>
           {t('delete')}
         </DropdownMenuItem>

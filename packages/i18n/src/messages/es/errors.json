@@ -102,6 +102,8 @@
     "workflow_invalid": "El borrador no se puede publicar tal como está. La comprobación indica qué nodos y conexiones aún no son correctos.",
     "workflow_revision_conflict": "El borrador se ha modificado mientras tanto. Vuelve a cargarlo y revisa los cambios.",
     "workflow_not_published": "Solo se puede activar un workflow publicado.",
+    "workflow_human_only": "La publicación y la activación las decide una persona en el navegador. Un agente puede redactar un borrador, pero no aprobarlo.",
+    "workflow_exceeds_author": "El borrador otorgaría a un agente más margen del que tiene la ejecución de IA que lo redacta. La comprobación indica los nodos con un perfil demasiado permisivo.",
     "workflow_has_active_runs": "Una ejecución de este workflow todavía no ha terminado. Espera a que finalice o cancélala antes de eliminar el workflow.",
     "workflows_disabled": "Los workflows están desactivados en este espacio de trabajo. Quien administre el espacio de trabajo puede activarlos en Ajustes, dentro de «Workflows».",
     "workflow_run_finished": "Esta ejecución ya ha terminado. Solo se puede cancelar una ejecución que siga en curso o en espera.",

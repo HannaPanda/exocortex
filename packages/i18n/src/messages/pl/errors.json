@@ -102,6 +102,8 @@
     "workflow_invalid": "Tego szkicu nie można w tej postaci opublikować. Sprawdzenie wskazuje węzły i połączenia, które jeszcze się nie zgadzają.",
     "workflow_revision_conflict": "Szkic został w międzyczasie zmieniony. Załaduj go ponownie i przejrzyj zmiany.",
     "workflow_not_published": "Włączyć można tylko opublikowany workflow.",
+    "workflow_human_only": "O publikacji i włączeniu decyduje człowiek w przeglądarce. Agent może utworzyć wersję roboczą, ale nie może jej zatwierdzić.",
+    "workflow_exceeds_author": "Wersja robocza dawałaby agentowi większą swobodę działania, niż ma uruchomienie AI, które ją tworzy. Weryfikacja wskazuje węzły ze zbyt luźnym profilem.",
     "workflow_has_active_runs": "Uruchomienie tego workflow jeszcze się nie zakończyło. Poczekaj na nie lub je anuluj, zanim usuniesz workflow.",
     "workflows_disabled": "Przepływy pracy są wyłączone w tym obszarze roboczym. Osoba zarządzająca obszarem roboczym może je włączyć w ustawieniach w sekcji „Przepływy pracy”.",
     "workflow_run_finished": "To uruchomienie już się zakończyło. Anulować można tylko uruchomienie, które nadal trwa lub oczekuje.",

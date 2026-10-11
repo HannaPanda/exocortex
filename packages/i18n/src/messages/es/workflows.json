@@ -101,7 +101,8 @@
       "condition_value_invalid": "Falta el valor de comparación o no coincide con el campo.",
       "goal_placeholder_invalid": "Un marcador de posición del objetivo no apunta a nada que devuelva un resultado antes de este nodo.",
       "schedule_invalid": "La programación no es válida. Comprueba la hora, la zona horaria y la expresión cron.",
-      "reference_not_found": "Una referencia no apunta a nada: el perfil, la página o la persona no existen en este espacio de trabajo."
+      "reference_not_found": "Una referencia no apunta a nada: el perfil, la página o la persona no existen en este espacio de trabajo.",
+      "profile_looser_than_author": "Este agente recibiría un perfil más permisivo que la ejecución de IA que escribe el borrador. Elige un perfil que sea al menos igual de estricto."
     },
     "writeMode": {
       "read_only": "Solo lectura",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Solo se puede activar un workflow publicado.",
     "more": "Más acciones",
     "delete": "Eliminar workflow",
+    "duplicate": "Crear como copia",
+    "agentDraft": "{kind, select, assistant {El asistente} other {El agente «{label}»}} ha escrito este borrador. Revisa los activadores, los agentes y sus perfiles antes de publicarlo: se publicará exactamente la versión {revision} que ves aquí.",
+    "unnamedAgent": "sin nombre",
     "deleteTitle": "¿Eliminar «{name}»?",
     "deleteDescription": "El workflow, todas las versiones y sus ejecuciones finalizadas desaparecerán. Los encargos creados por sus ejecuciones se mantendrán.",
     "deleteConfirm": "Eliminar",
@@ -422,10 +426,13 @@
     "current": "actual",
     "currentEnabled": "actual, activada",
     "unknown": "desconocida",
+    "unnamedAgent": "sin nombre",
+    "authorBy": "{kind, select, assistant {Asistente} other {Agente «{label}»}} para {name}",
     "columns": {
       "version": "Versión",
       "published": "Publicada",
       "by": "Por",
+      "author": "Escrito por",
       "revision": "Revisión del borrador"
     }
   },

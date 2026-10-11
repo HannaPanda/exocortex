@@ -101,7 +101,8 @@
       "condition_value_invalid": "Wartość porównania jest pusta lub nie pasuje do pola.",
       "goal_placeholder_invalid": "Symbol zastępczy w celu odwołuje się do czegoś, co nie zwraca wyniku przed tym węzłem.",
       "schedule_invalid": "Harmonogram jest nieprawidłowy. Sprawdź godzinę, strefę czasową i wyrażenie cron.",
-      "reference_not_found": "Odwołanie jest nieprawidłowe: profil, strona lub osoba nie istnieje w tym obszarze roboczym."
+      "reference_not_found": "Odwołanie jest nieprawidłowe: profil, strona lub osoba nie istnieje w tym obszarze roboczym.",
+      "profile_looser_than_author": "Ten agent otrzymałby mniej restrykcyjny profil niż przebieg SI tworzący szkic. Wybierz profil, który jest co najmniej tak samo rygorystyczny."
     },
     "writeMode": {
       "read_only": "Tylko do odczytu",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Włączyć można tylko opublikowany workflow.",
     "more": "Więcej działań",
     "delete": "Usuń workflow",
+    "duplicate": "Utwórz jako kopię",
+    "agentDraft": "{kind, select, assistant {Asystent} other {Agent „{label}”}} utworzył ten szkic. Sprawdź wyzwalacze, agentów i ich profile przed publikacją: opublikowana zostanie dokładnie wersja {revision}, którą tutaj widzisz.",
+    "unnamedAgent": "bez nazwy",
     "deleteTitle": "Usunąć „{name}”?",
     "deleteDescription": "Workflow, wszystkie wersje i jego zakończone uruchomienia znikną. Zlecenia utworzone przez te uruchomienia pozostaną.",
     "deleteConfirm": "Usuń",
@@ -422,10 +426,13 @@
     "current": "bieżąca",
     "currentEnabled": "bieżąca, włączona",
     "unknown": "nieznana",
+    "unnamedAgent": "bez nazwy",
+    "authorBy": "{kind, select, assistant {Asystent} other {Agent „{label}”}} dla {name}",
     "columns": {
       "version": "Wersja",
       "published": "Opublikowano",
       "by": "Przez",
+      "author": "Autor",
       "revision": "Wersja robocza"
     }
   },

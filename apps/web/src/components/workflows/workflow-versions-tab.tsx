@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { type WorkflowSummary } from '@exocortex/contracts';
+import { type WorkflowAuthor, type WorkflowSummary } from '@exocortex/contracts';
 import {
   Badge,
   EmptyState,
@@ -22,7 +22,8 @@ import { useRunFormat } from '../runs/run-inspector-format';
 
 /**
  * The published versions (issue #164). A version is never edited, so this
- * is the record of exactly what was reviewed and switched on, and by whom.
+ * is the record of exactly what was reviewed and switched on, and by whom,
+ * and who wrote the graph that was reviewed (issue #165).
  */
 export function WorkflowVersionsTab({
   workflow,
@@ -51,6 +52,7 @@ export function WorkflowVersionsTab({
           <TableHead>{t('columns.version')}</TableHead>
           <TableHead>{t('columns.published')}</TableHead>
           <TableHead>{t('columns.by')}</TableHead>
+          <TableHead>{t('columns.author')}</TableHead>
           <TableHead>{t('columns.revision')}</TableHead>
         </TableRow>
       </TableHeader>
@@ -71,6 +73,9 @@ export function WorkflowVersionsTab({
             <TableCell label={t('columns.by')} className="text-sm">
               {version.publishedBy?.name ?? t('unknown')}
             </TableCell>
+            <TableCell label={t('columns.author')} className="text-sm">
+              <AuthorName author={version.draftAuthor} />
+            </TableCell>
             <TableCell label={t('columns.revision')} className="exocortex-numeric text-sm">
               {version.draftRevision}
             </TableCell>
@@ -78,5 +83,20 @@ export function WorkflowVersionsTab({
         ))}
       </TableBody>
     </Table>
+  );
+}
+
+function AuthorName({ author }: { author: WorkflowAuthor }) {
+  const t = useTranslations('workflows.versions');
+  const name = author.account?.name ?? t('unknown');
+  if (author.kind === 'human') return <>{name}</>;
+  return (
+    <>
+      {t('authorBy', {
+        kind: author.kind,
+        label: author.agentLabel ?? t('unnamedAgent'),
+        name,
+      })}
+    </>
   );
 }

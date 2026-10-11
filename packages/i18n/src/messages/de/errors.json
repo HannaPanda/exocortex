@@ -102,6 +102,8 @@
     "workflow_invalid": "Der Entwurf lässt sich so nicht veröffentlichen. Die Prüfung nennt die Knoten und Verbindungen, die noch nicht stimmen.",
     "workflow_revision_conflict": "Der Entwurf wurde inzwischen geändert. Lade ihn neu und sieh dir die Änderung an.",
     "workflow_not_published": "Einschalten lässt sich nur ein veröffentlichter Workflow.",
+    "workflow_human_only": "Veröffentlichen und Einschalten entscheidet ein Mensch im Browser. Ein Agent kann einen Entwurf schreiben, aber nicht freigeben.",
+    "workflow_exceeds_author": "Der Entwurf gäbe einem Agenten mehr Spielraum, als der KI-Lauf hat, der ihn schreibt. Die Prüfung nennt die Knoten mit dem zu lockeren Profil.",
     "workflow_has_active_runs": "Ein Lauf dieses Workflows ist noch nicht fertig. Warte ihn ab oder brich ihn ab, bevor du den Workflow löschst.",
     "workflows_disabled": "Workflows sind in diesem Arbeitsbereich ausgeschaltet. Wer den Arbeitsbereich verwaltet, kann sie in den Einstellungen unter „Workflows“ einschalten.",
     "workflow_run_finished": "Dieser Lauf ist schon beendet. Abbrechen lässt sich nur ein Lauf, der noch läuft oder wartet.",

@@ -101,7 +101,8 @@
       "condition_value_invalid": "Der Vergleichswert fehlt oder passt nicht zum Feld.",
       "goal_placeholder_invalid": "Ein Platzhalter im Ziel verweist auf nichts, das vor diesem Knoten ein Ergebnis liefert.",
       "schedule_invalid": "Der Zeitplan stimmt nicht. Prüfe Uhrzeit, Zeitzone und Cron-Ausdruck.",
-      "reference_not_found": "Ein Verweis zeigt ins Leere: Das Profil, die Seite oder die Person gibt es in diesem Arbeitsbereich nicht."
+      "reference_not_found": "Ein Verweis zeigt ins Leere: Das Profil, die Seite oder die Person gibt es in diesem Arbeitsbereich nicht.",
+      "profile_looser_than_author": "Dieser Agent bekäme ein lockereres Profil als der KI-Lauf, der den Entwurf schreibt. Wähle ein Profil, das mindestens so streng ist."
     },
     "writeMode": {
       "read_only": "Nur lesen",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Einschalten lässt sich nur ein veröffentlichter Workflow.",
     "more": "Weitere Aktionen",
     "delete": "Workflow löschen",
+    "duplicate": "Als Kopie anlegen",
+    "agentDraft": "{kind, select, assistant {Der Assistent} other {Der Agent „{label}“}} hat diesen Entwurf geschrieben. Sieh dir Auslöser, Agenten und ihre Profile an, bevor du ihn veröffentlichst: Veröffentlicht wird genau Stand {revision}, den du hier siehst.",
+    "unnamedAgent": "ohne Namen",
     "deleteTitle": "„{name}“ löschen?",
     "deleteDescription": "Der Workflow, alle Versionen und seine beendeten Läufe verschwinden. Aufträge, die seine Läufe angelegt haben, bleiben.",
     "deleteConfirm": "Löschen",
@@ -422,10 +426,13 @@
     "current": "aktuell",
     "currentEnabled": "aktuell, eingeschaltet",
     "unknown": "unbekannt",
+    "unnamedAgent": "ohne Namen",
+    "authorBy": "{kind, select, assistant {Assistent} other {Agent „{label}“}} für {name}",
     "columns": {
       "version": "Version",
       "published": "Veröffentlicht",
       "by": "Von",
+      "author": "Geschrieben von",
       "revision": "Entwurfsstand"
     }
   },

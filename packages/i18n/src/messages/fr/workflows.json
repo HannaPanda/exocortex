@@ -101,7 +101,8 @@
       "condition_value_invalid": "La valeur de comparaison est manquante ou ne correspond pas au champ.",
       "goal_placeholder_invalid": "Un espace réservé dans l’objectif ne renvoie à rien qui fournisse un résultat avant ce nœud.",
       "schedule_invalid": "Le calendrier n’est pas valide. Vérifie l’heure, le fuseau horaire et l’expression cron.",
-      "reference_not_found": "Une référence pointe dans le vide : le profil, la page ou la personne n’existe pas dans cet espace de travail."
+      "reference_not_found": "Une référence pointe dans le vide : le profil, la page ou la personne n’existe pas dans cet espace de travail.",
+      "profile_looser_than_author": "Cet agent recevrait un profil plus permissif que l’exécution d’IA qui rédige le projet. Choisis un profil au moins aussi strict."
     },
     "writeMode": {
       "read_only": "Lecture seule",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Seul un workflow publié peut être activé.",
     "more": "Autres actions",
     "delete": "Supprimer le workflow",
+    "duplicate": "Créer une copie",
+    "agentDraft": "{kind, select, assistant {L’assistant} other {L’agent « {label} »}} a rédigé ce projet. Vérifie les déclencheurs, les agents et leurs profils avant de le publier : seule la version {revision} affichée ici sera publiée.",
+    "unnamedAgent": "sans nom",
     "deleteTitle": "Supprimer « {name} » ?",
     "deleteDescription": "Le workflow, toutes ses versions et ses exécutions terminées disparaîtront. Les ordres créés par ses exécutions seront conservés.",
     "deleteConfirm": "Supprimer",
@@ -422,10 +426,13 @@
     "current": "actuelle",
     "currentEnabled": "actuelle, activée",
     "unknown": "inconnu",
+    "unnamedAgent": "sans nom",
+    "authorBy": "{kind, select, assistant {Assistant} other {Agent « {label} »}} pour {name}",
     "columns": {
       "version": "Version",
       "published": "Publiée",
       "by": "Par",
+      "author": "Rédigé par",
       "revision": "Révision du brouillon"
     }
   },

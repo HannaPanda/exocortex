@@ -101,7 +101,8 @@
       "condition_value_invalid": "Il valore di confronto manca o non è compatibile con il campo.",
       "goal_placeholder_invalid": "Un segnaposto nell’obiettivo non fa riferimento a nulla che produca un risultato prima di questo nodo.",
       "schedule_invalid": "La pianificazione non è corretta. Controlla orario, fuso orario ed espressione cron.",
-      "reference_not_found": "Un riferimento rimanda a vuoto: il profilo, la pagina o la persona non esiste in questa area di lavoro."
+      "reference_not_found": "Un riferimento rimanda a vuoto: il profilo, la pagina o la persona non esiste in questa area di lavoro.",
+      "profile_looser_than_author": "Questo agente riceverebbe un profilo meno restrittivo rispetto all’esecuzione IA che scrive la bozza. Scegli un profilo che sia almeno altrettanto restrittivo."
     },
     "writeMode": {
       "read_only": "Sola lettura",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "È possibile attivare solo un workflow pubblicato.",
     "more": "Altre azioni",
     "delete": "Elimina workflow",
+    "duplicate": "Crea come copia",
+    "agentDraft": "{kind, select, assistant {L’assistente} other {L’agente «{label}»}} ha scritto questa bozza. Controlla trigger, agenti e i rispettivi profili prima di pubblicarla: verrà pubblicata esattamente la versione {revision} visibile qui.",
+    "unnamedAgent": "senza nome",
     "deleteTitle": "Eliminare „{name}“?",
     "deleteDescription": "Il workflow, tutte le versioni e i suoi cicli terminati spariranno. Gli incarichi creati dai suoi cicli rimarranno.",
     "deleteConfirm": "Elimina",
@@ -422,10 +426,13 @@
     "current": "attuale",
     "currentEnabled": "attuale, attivata",
     "unknown": "sconosciuto",
+    "unnamedAgent": "senza nome",
+    "authorBy": "{kind, select, assistant {Assistente} other {Agente «{label}»}} per {name}",
     "columns": {
       "version": "Versione",
       "published": "Pubblicata",
       "by": "Da",
+      "author": "Scritto da",
       "revision": "Stato della bozza"
     }
   },

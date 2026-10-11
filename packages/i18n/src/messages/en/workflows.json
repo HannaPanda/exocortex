@@ -101,7 +101,8 @@
       "condition_value_invalid": "The comparison value is missing or does not match the field.",
       "goal_placeholder_invalid": "A placeholder in the goal refers to nothing that provides an output before this node.",
       "schedule_invalid": "The schedule is invalid. Check the time, time zone, and cron expression.",
-      "reference_not_found": "A reference points to nothing: the profile, page, or person does not exist in this workspace."
+      "reference_not_found": "A reference points to nothing: the profile, page, or person does not exist in this workspace.",
+      "profile_looser_than_author": "This agent would get a looser profile than the AI run writing the draft. Choose a profile that is at least as strict."
     },
     "writeMode": {
       "read_only": "Read-only",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Only a published workflow can be enabled.",
     "more": "More actions",
     "delete": "Delete workflow",
+    "duplicate": "Save as copy",
+    "agentDraft": "{kind, select, assistant {The assistant} other {The agent “{label}”}} wrote this draft. Review triggers, agents, and their profiles before publishing: Exactly revision {revision}, which you see here, will be published.",
+    "unnamedAgent": "unnamed",
     "deleteTitle": "Delete “{name}”?",
     "deleteDescription": "The workflow, all versions, and its completed runs will disappear. Work items created by its runs will remain.",
     "deleteConfirm": "Delete",
@@ -422,10 +426,13 @@
     "current": "current",
     "currentEnabled": "current, enabled",
     "unknown": "unknown",
+    "unnamedAgent": "unnamed",
+    "authorBy": "{kind, select, assistant {Assistant} other {Agent “{label}”}} for {name}",
     "columns": {
       "version": "Version",
       "published": "Published",
       "by": "By",
+      "author": "Written by",
       "revision": "Draft revision"
     }
   },

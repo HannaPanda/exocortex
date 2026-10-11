@@ -101,7 +101,8 @@
       "condition_value_invalid": "O valor de comparação está ausente ou não corresponde ao campo.",
       "goal_placeholder_invalid": "Um marcador no objetivo aponta para algo que não produz nenhum resultado antes deste nó.",
       "schedule_invalid": "O agendamento não está correto. Verifique o horário, o fuso horário e a expressão cron.",
-      "reference_not_found": "Uma referência aponta para o vazio: o perfil, a página ou a pessoa não existe neste espaço de trabalho."
+      "reference_not_found": "Uma referência aponta para o vazio: o perfil, a página ou a pessoa não existe neste espaço de trabalho.",
+      "profile_looser_than_author": "Este agente receberia um perfil mais permissivo do que a execução de IA que escreve o rascunho. Escolha um perfil que seja pelo menos tão rigoroso quanto esse."
     },
     "writeMode": {
       "read_only": "Somente leitura",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Apenas um workflow publicado pode ser ativado.",
     "more": "Mais ações",
     "delete": "Excluir workflow",
+    "duplicate": "Criar como cópia",
+    "agentDraft": "{kind, select, assistant {O assistente} other {O agente “{label}”}} escreveu este rascunho. Revise gatilhos, agentes e seus perfis antes de publicar: exatamente a revisão {revision} visualizada aqui será publicada.",
+    "unnamedAgent": "sem nome",
     "deleteTitle": "Excluir “{name}”?",
     "deleteDescription": "O workflow, todas as versões e suas execuções concluídas desaparecerão. Os itens de trabalho criados por suas execuções permanecerão.",
     "deleteConfirm": "Excluir",
@@ -422,10 +426,13 @@
     "current": "atual",
     "currentEnabled": "atual, ativado",
     "unknown": "desconhecido",
+    "unnamedAgent": "sem nome",
+    "authorBy": "{kind, select, assistant {Assistente} other {Agente “{label}”}} para {name}",
     "columns": {
       "version": "Versão",
       "published": "Publicado",
       "by": "Por",
+      "author": "Escrito por",
       "revision": "Revisão do rascunho"
     }
   },

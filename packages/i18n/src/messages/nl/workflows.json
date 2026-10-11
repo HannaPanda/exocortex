@@ -101,7 +101,8 @@
       "condition_value_invalid": "De vergelijkingswaarde ontbreekt of past niet bij het veld.",
       "goal_placeholder_invalid": "Een tijdelijke aanduiding in het doel verwijst naar iets dat vóór deze node geen resultaat oplevert.",
       "schedule_invalid": "De planning klopt niet. Controleer tijd, tijdzone en cron-expressie.",
-      "reference_not_found": "Een verwijzing leidt nergens toe: het profiel, de pagina of de persoon bestaat niet in deze werkruimte."
+      "reference_not_found": "Een verwijzing leidt nergens toe: het profiel, de pagina of de persoon bestaat niet in deze werkruimte.",
+      "profile_looser_than_author": "Deze agent zou een minder streng profiel krijgen dan de AI-run die het concept schrijft. Kies een profiel dat minstens zo streng is."
     },
     "writeMode": {
       "read_only": "Alleen lezen",
@@ -355,6 +356,9 @@
     "activateNeedsVersion": "Alleen een gepubliceerde workflow kan worden ingeschakeld.",
     "more": "Meer acties",
     "delete": "Workflow verwijderen",
+    "duplicate": "Als kopie aanmaken",
+    "agentDraft": "{kind, select, assistant {De assistent} other {De agent „{label}“}} heeft dit concept geschreven. Bekijk triggers, agents en hun profielen voordat je het publiceert: gepubliceerd wordt precies revisie {revision}, die je hier ziet.",
+    "unnamedAgent": "zonder naam",
     "deleteTitle": "„{name}” verwijderen?",
     "deleteDescription": "De workflow, alle versies en voltooide runs verdwijnen. Opdrachten die door de runs zijn aangemaakt, blijven bewaard.",
     "deleteConfirm": "Verwijderen",
@@ -422,10 +426,13 @@
     "current": "actueel",
     "currentEnabled": "actueel, ingeschakeld",
     "unknown": "onbekend",
+    "unnamedAgent": "zonder naam",
+    "authorBy": "{kind, select, assistant {Assistent} other {Agent „{label}“}} voor {name}",
     "columns": {
       "version": "Versie",
       "published": "Gepubliceerd",
       "by": "Door",
+      "author": "Geschreven door",
       "revision": "Ontwerpstatus"
     }
   },

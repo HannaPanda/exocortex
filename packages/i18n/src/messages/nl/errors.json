@@ -102,6 +102,8 @@
     "workflow_invalid": "Het concept kan zo niet worden gepubliceerd. De controle geeft aan welke knooppunten en verbindingen nog niet kloppen.",
     "workflow_revision_conflict": "Het concept is intussen gewijzigd. Laad het opnieuw en bekijk de wijziging.",
     "workflow_not_published": "Alleen een gepubliceerde workflow kan worden ingeschakeld.",
+    "workflow_human_only": "Publiceren en inschakelen beslist een mens in de browser. Een agent kan een concept schrijven, maar niet vrijgeven.",
+    "workflow_exceeds_author": "Het concept zou een agent meer speelruimte geven dan de AI-run heeft die het schrijft. De controle noemt de knooppunten met het te losse profiel.",
     "workflow_has_active_runs": "Een uitvoering van deze workflow is nog niet voltooid. Wacht tot deze klaar is of breek deze af voordat je de workflow verwijdert.",
     "workflows_disabled": "Workflows zijn uitgeschakeld in deze werkruimte. Degene die de werkruimte beheert, kan ze inschakelen in de instellingen onder „Workflows”.",
     "workflow_run_finished": "Deze run is al beëindigd. Je kunt alleen een run annuleren die nog actief is of wacht.",

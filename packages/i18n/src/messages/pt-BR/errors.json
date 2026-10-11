@@ -102,6 +102,8 @@
     "workflow_invalid": "Não é possível publicar o rascunho desta forma. A verificação indica os nós e conexões que ainda precisam de ajustes.",
     "workflow_revision_conflict": "O rascunho foi alterado enquanto isso. Recarregue-o e confira a alteração.",
     "workflow_not_published": "Só é possível ativar um workflow publicado.",
+    "workflow_human_only": "A publicação e a ativação são decididas por uma pessoa no navegador. Um agente pode redigir um rascunho, mas não liberá-lo.",
+    "workflow_exceeds_author": "O rascunho daria a um agente mais permissão do que a execução de IA que o cria possui. A verificação lista os nós com o perfil excessivamente permissivo.",
     "workflow_has_active_runs": "Uma execução deste workflow ainda não foi concluída. Aguarde o término ou cancele-a antes de excluir o workflow.",
     "workflows_disabled": "Os workflows estão desativados neste espaço de trabalho. Quem gerencia o espaço de trabalho pode ativá-los nas configurações em „Workflows“.",
     "workflow_run_finished": "Esta execução já foi concluída. Só é possível cancelar uma execução que ainda esteja em andamento ou aguardando.",

@@ -9576,9 +9576,17 @@
       "source": "aa200cf818e953cd",
       "output": "0cde62be10d496b7"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "b241cc9ca146a837"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "4e40aee4cfabb90e"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "2dbd39220ed6f341"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -10933,8 +10941,8 @@
       "output": "fd048d141a73202b"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "1ac41a01f086e062"
+      "source": "e15310fa71e93885",
+      "output": "4575aafc1aae7b02"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -13315,6 +13323,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "ddaee76661f4564e"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "30d1bc48e4174ee6"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "cf9fdb8309289dc3"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "7c85d79c87214e48"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "4d47a95292f80c19"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "b52a37caafe75329"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "67974901c311f2eb"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -20480,6 +20512,10 @@
       "source": "67817b768c1da8f7",
       "output": "7a723409780535d8"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "0204106668f2bd43"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
@@ -20507,6 +20543,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "7ebb254aeaf25687"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "fea96b8adf2952d7"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -20563,6 +20603,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "fe9e2fc32433289d"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "e882bcaadb1e02e2"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -20855,6 +20899,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "6a3a226f1929d142"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "df953f868e0b3fba"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -21500,6 +21548,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "6bcae42627008014"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "9a3b5a932b059826"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "d5aea8bb71d1e8a1"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "125466b821c6448a"
@@ -21543,6 +21599,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "b23a6a8439c0dde5"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "e882bcaadb1e02e2"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -31126,9 +31186,17 @@
       "source": "aa200cf818e953cd",
       "output": "5946a59de20eb8b3"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "219ab850ab61ca0c"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "ede018cebef54db4"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "1fd7b62894671dae"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -32483,8 +32551,8 @@
       "output": "1ab000100a2cc4bb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "42379854d1114acf"
+      "source": "e15310fa71e93885",
+      "output": "3a9bd7c2d28cc66f"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -34865,6 +34933,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "99fe277e82aa71d6"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "7f6b6533b646cf71"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "56576b688301a125"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "5ebc3fe372aaf462"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "b67bf681929dfb7f"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "177989a7c89bf185"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "971577e80dc59fcd"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -42030,6 +42122,10 @@
       "source": "67817b768c1da8f7",
       "output": "ffcdf0b3918c94f8"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "ea411d5760cbf932"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -42057,6 +42153,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "878fe900bc76bb89"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "9359381547190050"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -42113,6 +42213,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "ac3f091ca34109c5"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "7b2943156313d556"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -42405,6 +42509,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "cbe84a1f3b47f90b"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "863ced42100d2e36"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -43050,6 +43158,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "3280fc52b797a032"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "064f45327b5d0dce"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "9e8e6c1ba9f93651"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "1d9ac73cf4cede28"
@@ -43093,6 +43209,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "b02bf7ebfd593b0e"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "7b2943156313d556"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -52676,9 +52796,17 @@
       "source": "aa200cf818e953cd",
       "output": "dabd2ffc49209044"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "4baf3bd1591c7255"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "d32453f98fe4361e"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "9d34d63c3b54e27c"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -54033,8 +54161,8 @@
       "output": "d5c71fcd6ac7109c"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "d2b10b35f1b8579a"
+      "source": "e15310fa71e93885",
+      "output": "23a819076a7caafc"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -56415,6 +56543,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "65dd8499fd88be7d"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "fa0d83849d0c8c75"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "27282179f383b244"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "6167e1ce3f84ac0c"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "8ba3bec6388e3c21"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "88420fdd5ef97e89"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "e757f1aa7ca81d7e"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -63580,6 +63732,10 @@
       "source": "67817b768c1da8f7",
       "output": "9e073065cc7f19a8"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "b11e7f1adc7ea8ff"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
@@ -63607,6 +63763,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "a0b1c53c45d2f6ac"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "150470286c88508b"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -63663,6 +63823,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "532eaabd9574880d"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "9f7c21e34d40cf73"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -63955,6 +64119,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "d8a1b665845321fc"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "6a2031c2fd82a694"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -64600,6 +64768,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "1d9682759d324f40"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "2de9902841763aa5"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "348b3baa45702319"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "de993602f6e152e9"
@@ -64643,6 +64819,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "d5b7f78a77e704ed"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "9f7c21e34d40cf73"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -74226,9 +74406,17 @@
       "source": "aa200cf818e953cd",
       "output": "9f85c596ac51d779"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "3f76eec9ee151d97"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "6cb957693cc82b10"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "7270b42d3d564cff"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -75583,8 +75771,8 @@
       "output": "019379af2ddbfbe8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "6aa6d69bfd2219cd"
+      "source": "e15310fa71e93885",
+      "output": "fdd6b7bb7512b9e6"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -77965,6 +78153,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "83b3727182539315"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "11565406bee43195"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "f351258500cb7660"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "ab41ca631b7882c0"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "14fca5eb42b22158"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "8f094def131735bf"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "eccd55418d2188ca"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -85130,6 +85342,10 @@
       "source": "67817b768c1da8f7",
       "output": "539f237084a5f194"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "618687f8f1ed71b1"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
@@ -85157,6 +85373,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "b4289e0d107284e1"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "4cd9fffbecfad664"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -85213,6 +85433,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "8ace32c90507c8f4"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "018b7f02dab7213d"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -85505,6 +85729,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "43fe987f0fd26817"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "64b83c3985286430"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -86150,6 +86378,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "9c90c86267d3f9b4"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "90387cabc817c5f8"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "ef28896bf968d742"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "2de802b0e7463263"
@@ -86193,6 +86429,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "a1b0c35284dccf03"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "018b7f02dab7213d"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -95776,9 +96016,17 @@
       "source": "aa200cf818e953cd",
       "output": "2b71981a19b2175e"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "9ef1d6f3a5e44048"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "e72fc795c60722d5"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "e440fdf07688de7b"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -97133,8 +97381,8 @@
       "output": "5a091a1a49d896d8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "c103b5cfdd5bfa28"
+      "source": "e15310fa71e93885",
+      "output": "62c3b50d2cf1c61c"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -99515,6 +99763,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "2a227859b1a50fec"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "96d219d6ad2bdd86"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "836b36d1984c994a"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "81141bc2752f7a71"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "7514a2c2ecbeb337"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "75a995189f9cedd4"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "b51e735a7d14fbee"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -106680,6 +106952,10 @@
       "source": "67817b768c1da8f7",
       "output": "110e5ab3dbd531e7"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "234f9a87cbddd76f"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
@@ -106707,6 +106983,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "0367fe8828792f60"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "853df837cf144934"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -106763,6 +107043,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "1cdad702c6e514b3"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "349e524ffa09b529"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -107055,6 +107339,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "0b0518907784a093"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "3f9c3cf42038e07d"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -107700,6 +107988,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "22204221915d1748"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "906df3f6355fcab5"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "4c4aaada02477dd6"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "fbf247e43d3745e5"
@@ -107743,6 +108039,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "b12df4a5a07d2ef3"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "349e524ffa09b529"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -117326,9 +117626,17 @@
       "source": "aa200cf818e953cd",
       "output": "9d157ec25b31df94"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "e0b6bf8bade9770b"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "f14b2ebad240a9ce"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "c2c2da0ddf9e880f"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -118683,8 +118991,8 @@
       "output": "2c58afd1029e10cb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "8a57ddd12f36413d"
+      "source": "e15310fa71e93885",
+      "output": "50c796e186f9359c"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -121065,6 +121373,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "17c334d817e3084e"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "7714aba4f0e043b2"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "04bb61709e0610ab"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "e0ceabf3e6807678"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "4f074b96055358f6"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "6d7bdda47ba43690"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "fb90db2385ffa35a"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -128230,6 +128562,10 @@
       "source": "67817b768c1da8f7",
       "output": "45761c3d7ea8b404"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "394ca9f28d9b7b78"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
@@ -128257,6 +128593,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "c613316e7f7c152b"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "482d89a5a1161e73"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -128313,6 +128653,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "0b6a0b49ec093c78"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "1078d375c216773c"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -128605,6 +128949,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "cdab85e2a5adce1c"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "0029cd523ed7124f"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -129250,6 +129598,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "7f8afe46adc25e5a"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "323ae21c87fc9e7c"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "07280b6aeabd2af7"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "4e494416b88b1edc"
@@ -129293,6 +129649,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "63236cdac6fe93f1"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "1078d375c216773c"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",
@@ -138876,9 +139236,17 @@
       "source": "aa200cf818e953cd",
       "output": "16de9b759d128c20"
     },
+    "errors.codes.workflow_exceeds_author": {
+      "source": "224e2ded6a537932",
+      "output": "951bede711325107"
+    },
     "errors.codes.workflow_has_active_runs": {
       "source": "712f975869f414f9",
       "output": "d76a511d17b8bd2f"
+    },
+    "errors.codes.workflow_human_only": {
+      "source": "413ba8af697e3130",
+      "output": "79a8bdb6688921d2"
     },
     "errors.codes.workflow_invalid": {
       "source": "8114ea8b6cd3d81b",
@@ -140233,8 +140601,8 @@
       "output": "759e3a8546e8ab7e"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "053ad4da39dfd40d",
-      "output": "85d6b5d600d3834b"
+      "source": "e15310fa71e93885",
+      "output": "40a3ab8403c7d59f"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -142615,6 +142983,30 @@
     "features.workflow-laeufe.where": {
       "source": "82090bdafe3a6037",
       "output": "dbaa0ed1e1fbee5b"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p1": {
+      "source": "ad0a4a253ea37de2",
+      "output": "9bd5dbcf9c7770df"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p2": {
+      "source": "2512612f92b7c01e",
+      "output": "d4dafdac395d46af"
+    },
+    "features.workflows-von-agenten-entwerfen.details.p3": {
+      "source": "a00c8cd7eebed8a4",
+      "output": "72ee13458c0cedff"
+    },
+    "features.workflows-von-agenten-entwerfen.summary": {
+      "source": "1875700249fcdb89",
+      "output": "99f7ff3e050fea5c"
+    },
+    "features.workflows-von-agenten-entwerfen.title": {
+      "source": "ecdfff8fdcc10888",
+      "output": "95d14afbb3a4d8c5"
+    },
+    "features.workflows-von-agenten-entwerfen.where": {
+      "source": "b5351013e23a9a58",
+      "output": "af6bb98f0a530f4b"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -149780,6 +150172,10 @@
       "source": "67817b768c1da8f7",
       "output": "847f04a7f28ea31d"
     },
+    "workflows.header.agentDraft": {
+      "source": "f7515d23c23062a0",
+      "output": "974a8bffd64ed504"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -149807,6 +150203,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "524f85a1db67dee7"
+    },
+    "workflows.header.duplicate": {
+      "source": "905ed43f56681151",
+      "output": "8766cb5097aa5654"
     },
     "workflows.header.enabled": {
       "source": "58279f7276918021",
@@ -149863,6 +150263,10 @@
     "workflows.header.testRun": {
       "source": "1cdad702c6e514b3",
       "output": "0fc0c3431e05dc98"
+    },
+    "workflows.header.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "c577b11ba723406c"
     },
     "workflows.header.unsaved": {
       "source": "997dc4ac2140a2d4",
@@ -150155,6 +150559,10 @@
     "workflows.labels.problems.parallel_too_many_branches": {
       "source": "0d83c181e7621514",
       "output": "b8d0d488eb12667b"
+    },
+    "workflows.labels.problems.profile_looser_than_author": {
+      "source": "2ce4d8740f9beb93",
+      "output": "ab8f0fb3b6b58440"
     },
     "workflows.labels.problems.reference_not_found": {
       "source": "458056a473c38d75",
@@ -150800,6 +151208,14 @@
       "source": "f87b2a424edfa0ce",
       "output": "5074ebca857ad89b"
     },
+    "workflows.versions.authorBy": {
+      "source": "04ea8c278667b7f5",
+      "output": "2f2ebf5080dd9211"
+    },
+    "workflows.versions.columns.author": {
+      "source": "0fa202d01c6cfbd1",
+      "output": "9e8e6c1ba9f93651"
+    },
     "workflows.versions.columns.by": {
       "source": "640e86cbc2447fed",
       "output": "1d9ac73cf4cede28"
@@ -150843,6 +151259,10 @@
     "workflows.versions.unknown": {
       "source": "a418e69e9fbe3f5e",
       "output": "f00aff1c8f41c037"
+    },
+    "workflows.versions.unnamedAgent": {
+      "source": "6e00d69b1e8bfe8f",
+      "output": "c577b11ba723406c"
     },
     "workflows.versions.version": {
       "source": "a18745121bb8af6d",

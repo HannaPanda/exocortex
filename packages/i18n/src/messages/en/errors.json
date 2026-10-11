@@ -102,6 +102,8 @@
     "workflow_invalid": "The draft cannot be published like this. The check highlights the nodes and connections that still need work.",
     "workflow_revision_conflict": "The draft has been modified in the meantime. Reload it and review the changes.",
     "workflow_not_published": "Only a published workflow can be turned on.",
+    "workflow_human_only": "Publishing and enabling is decided by a human in the browser. An agent can write a draft, but cannot approve it.",
+    "workflow_exceeds_author": "The draft would give an agent more leeway than the AI run writing it has. The check lists the nodes with the profile that is too permissive.",
     "workflow_has_active_runs": "A run of this workflow is not finished yet. Wait for it to finish or cancel it before deleting the workflow.",
     "workflows_disabled": "Workflows are disabled in this workspace. Workspace managers can turn them on in settings under “Workflows”.",
     "workflow_run_finished": "This run has already finished. You can only cancel a run that is still running or queued.",

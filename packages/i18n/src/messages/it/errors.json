@@ -102,6 +102,8 @@
     "workflow_invalid": "La bozza non può essere pubblicata così com’è. La convalida indica i nodi e le connessioni non ancora corretti.",
     "workflow_revision_conflict": "Nel frattempo la bozza è stata modificata. Ricaricala e controlla le modifiche.",
     "workflow_not_published": "È possibile attivare solo un workflow pubblicato.",
+    "workflow_human_only": "La pubblicazione e l’attivazione vengono decise da un essere umano nel browser. Un agente può scrivere una bozza, ma non approvarla.",
+    "workflow_exceeds_author": "La bozza concederebbe a un agente un margine di manovra maggiore rispetto a quello dell’esecuzione IA che la scrive. Il controllo indica i nodi con il profilo troppo permissivo.",
     "workflow_has_active_runs": "Un’esecuzione di questo workflow non è ancora terminata. Attendi che finisca o annullala prima di eliminare il workflow.",
     "workflows_disabled": "I workflow sono disattivati in questa area di lavoro. Chi gestisce l’area di lavoro può attivarli nelle impostazioni alla voce «Workflow».",
     "workflow_run_finished": "Questa esecuzione è già terminata. È possibile annullare solo un’esecuzione ancora in corso o in attesa.",

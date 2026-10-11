@@ -102,6 +102,8 @@
     "workflow_invalid": "Le brouillon ne peut pas être publié en l’état. La vérification indique les nœuds et les connexions qui ne conviennent pas encore.",
     "workflow_revision_conflict": "Le brouillon a été modifié entre-temps. Recharge-le et examine les modifications.",
     "workflow_not_published": "Seul un workflow publié peut être activé.",
+    "workflow_human_only": "La publication et l’activation sont décidées par une personne dans le navigateur. Un agent peut rédiger un brouillon, mais pas le valider.",
+    "workflow_exceeds_author": "Le brouillon donnerait à un agent plus de marge de manœuvre que n’en dispose l’exécution d’IA qui le rédige. La vérification indique les nœuds dont le profil est trop permissif.",
     "workflow_has_active_runs": "Une exécution de ce workflow n’est pas encore terminée. Attends qu’elle se termine ou annule-la avant de supprimer le workflow.",
     "workflows_disabled": "Les workflows sont désactivés dans cet espace de travail. La personne qui gère l’espace de travail peut les activer dans les paramètres sous « Workflows ».",
     "workflow_run_finished": "Cette exécution est déjà terminée. Seule une exécution en cours ou en attente peut être annulée.",
