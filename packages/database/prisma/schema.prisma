@@ -108,6 +108,10 @@ model User {
   evalCasesUpdated            EvalCase[]               @relation("EvalCaseUpdatedBy")
   evalRunsStarted             EvalRun[]                @relation("EvalRunCreatedBy")
   evalAttemptsReviewed        EvalAttempt[]            @relation("EvalAttemptReviewedBy")
+  workflowsCreated            Workflow[]               @relation("WorkflowCreatedBy")
+  workflowsUpdated            Workflow[]               @relation("WorkflowUpdatedBy")
+  workflowVersionsPublished   WorkflowVersion[]        @relation("WorkflowVersionPublishedBy")
+  workflowRunsStarted         WorkflowRun[]            @relation("WorkflowRunStartedBy")
   changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
 
   @@map("user")
@@ -606,6 +610,8 @@ model Workspace {
   agentProfiles           AgentProfile[]
   evalCases               EvalCase[]
   evalRuns                EvalRun[]
+  workflows               Workflow[]
+  workflowRuns            WorkflowRun[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -2074,16 +2080,17 @@ model AiRun {
   /// correlation id every log line of the run carries, and the trace id when
   /// tracing was switched on. Written when the run starts; null on older runs
   /// and, for `traceId`, whenever no collector was configured.
-  correlationId String?
-  traceId       String?
+  correlationId          String?
+  traceId                String?
   /// What the run did, in order, as facts rather than content (issue #145).
-  events        AiRunEvent[]
+  events                 AiRunEvent[]
   /// The eval attempt this run is (issue #146, ADR-074), set when the run is
   /// created. A plain id and no relation on purpose: the worker holds the run
   /// to the attempt's case and fails it when the attempt is gone, which a
   /// `SET NULL` would quietly turn into an unconstrained run.
-  evalAttemptId String?
-  evalAttempt   EvalAttempt? @relation("EvalAttemptRun")
+  evalAttemptId          String?
+  evalAttempt            EvalAttempt?            @relation("EvalAttemptRun")
+  workflowNodeExecutions WorkflowNodeExecution[]
 
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
@@ -3827,6 +3834,8 @@ model WorkItem {
   checkpoints WorkItemCheckpoint[]
   changesets  Changeset[]
 
+  workflowNodeExecutions WorkflowNodeExecution[]
+
   /// The list: open work first, newest change first, within one workspace.
   @@index([workspaceId, closedAt, updatedAt])
   @@index([assigneeId, closedAt])
@@ -4483,4 +4492,199 @@ model EvalAttempt {
   @@index([status])
   @@index([sandboxDocumentId])
   @@map("eval_attempt")
+}
+
+/// A run's overall status (issue #160, ADR-075). The last four are terminal.
+enum WorkflowRunStatus {
+  QUEUED
+  RUNNING
+  /// A node waits for something durable; no worker is held.
+  WAITING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  TIMED_OUT
+}
+
+/// What started a workflow run.
+enum WorkflowRunOrigin {
+  MANUAL
+  SCHEDULE
+  EVENT
+  /// A deliberate trial from the editor (issue #164).
+  TEST
+}
+
+/// One attempt of one node.
+enum WorkflowNodeExecutionStatus {
+  QUEUED
+  RUNNING
+  WAITING
+  SUCCEEDED
+  FAILED
+  /// On a branch that was not taken, or behind a join that can no longer complete.
+  SKIPPED
+  CANCELLED
+  TIMED_OUT
+}
+
+/// Why a node failed, in classes a runtime acts on. Only RETRYABLE is retried.
+enum WorkflowErrorClass {
+  RETRYABLE
+  TERMINAL
+  TIMEOUT
+  CANCELLED
+  LIMIT_EXCEEDED
+}
+
+/// An agent workflow (issue #160, ADR-075): one mutable draft and the
+/// immutable versions published from it.
+///
+/// The draft is a JSON graph shaped by `workflowGraphSchema`, checked at the
+/// contract boundary on every save but allowed to be incomplete; publishing
+/// validates it fully and freezes a copy as the next `WorkflowVersion`.
+model Workflow {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+
+  draftGraph    Json
+  /// Moves on every save of the draft, so a stale editor can be refused.
+  draftRevision Int  @default(1)
+
+  /// The newest published version; null until the first publish.
+  publishedVersionId String?          @unique
+  publishedVersion   WorkflowVersion? @relation("WorkflowPublishedVersion", fields: [publishedVersionId], references: [id], onDelete: NoAction)
+  /// May start by itself. Only ever true while a version is published.
+  enabled            Boolean          @default(false)
+
+  createdById String?
+  createdBy   User?    @relation("WorkflowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedById String?
+  updatedBy   User?    @relation("WorkflowUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  versions WorkflowVersion[] @relation("WorkflowVersions")
+  runs     WorkflowRun[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, enabled])
+  @@map("workflow")
+}
+
+/// A published, immutable graph. A trigger in the migration refuses any
+/// UPDATE of its content, so a run that names a version reads exactly the
+/// graph it started on, whatever happens to the draft afterwards.
+model WorkflowVersion {
+  id         String   @id @default(cuid(2))
+  workflowId String
+  workflow   Workflow @relation("WorkflowVersions", fields: [workflowId], references: [id], onDelete: Cascade)
+
+  /// 1, 2, 3 ... per workflow.
+  version       Int
+  graph         Json
+  /// sha256 of the canonical graph JSON.
+  graphHash     String
+  /// The draft revision that was published.
+  draftRevision Int
+
+  publishedById String?
+  publishedBy   User?    @relation("WorkflowVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  publishedAt   DateTime @default(now())
+
+  publishedOf Workflow?     @relation("WorkflowPublishedVersion")
+  runs        WorkflowRun[]
+
+  @@unique([workflowId, version])
+  @@map("workflow_version")
+}
+
+/// One execution of a workflow version. Everything a worker needs to pick it
+/// up again is on this row and its node executions; nothing lives in a process.
+model WorkflowRun {
+  id                String          @id @default(cuid(2))
+  workflowId        String
+  workflow          Workflow        @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workspaceId       String
+  workspace         Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// NO ACTION: a version a run started on cannot disappear under it, but a
+  /// cascade that removes both in one statement (a workspace going) still can.
+  workflowVersionId String
+  workflowVersion   WorkflowVersion @relation(fields: [workflowVersionId], references: [id], onDelete: NoAction)
+
+  status        WorkflowRunStatus @default(QUEUED)
+  origin        WorkflowRunOrigin
+  /// The trigger node the run started from; every other trigger is dead for it.
+  triggerNodeId String
+  /// What the trigger supplied: the changed page of an event, the moment of a schedule.
+  input         Json?
+  correlationId String?
+  startedById   String?
+  startedBy     User?             @relation("WorkflowRunStartedBy", fields: [startedById], references: [id], onDelete: SetNull)
+
+  /// Millionths of a dollar, every AI run of the workflow included.
+  spentMicroUsd      Int @default(0)
+  nodeExecutionCount Int @default(0)
+
+  errorCode    String?
+  errorMessage String?
+  waitingSince DateTime?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  nodeExecutions WorkflowNodeExecution[]
+
+  @@index([workflowId, createdAt])
+  @@index([workspaceId, status])
+  @@index([status, updatedAt])
+  @@map("workflow_run")
+}
+
+/// One attempt of one node in one run.
+///
+/// `idempotencyKey` is `<runId>:<nodeId>:<attempt>` and unique: a queue that
+/// delivers the same step twice finds the row and does not repeat the side
+/// effect it guards (issue #161).
+model WorkflowNodeExecution {
+  id       String      @id @default(cuid(2))
+  runId    String
+  run      WorkflowRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  nodeId   String
+  nodeType String
+  attempt  Int         @default(1)
+
+  status         WorkflowNodeExecutionStatus @default(QUEUED)
+  idempotencyKey String                      @unique
+  /// The handles a succeeded node took; what `workflowProgress` follows.
+  firedHandles   String[]                    @default([])
+  input          Json?
+  output         Json?
+  /// `workflowWaitSchema`: the durable object a waiting node resumes from.
+  waitingOn      Json?
+
+  errorClass   WorkflowErrorClass?
+  errorCode    String?
+  errorMessage String?
+
+  workItemId String?
+  workItem   WorkItem? @relation(fields: [workItemId], references: [id], onDelete: SetNull)
+  aiRunId    String?
+  aiRun      AiRun?    @relation(fields: [aiRunId], references: [id], onDelete: SetNull)
+
+  queuedAt   DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@unique([runId, nodeId, attempt])
+  @@index([runId, queuedAt])
+  @@index([workItemId])
+  @@index([aiRunId])
+  @@map("workflow_node_execution")
 }

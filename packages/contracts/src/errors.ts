@@ -175,6 +175,16 @@ export const API_ERROR_CODES = [
   'eval_attempt_not_finished',
   /** An eval attempt could not be started: no run came of it. Says nothing about the model. */
   'eval_launch_failed',
+  /** Another workflow in this workspace already has that name (issue #160). */
+  'workflow_name_taken',
+  /** The draft cannot be published as it is; `details.problems` says why, element by element. */
+  'workflow_invalid',
+  /** The draft moved on since the revision the caller named: re-read, then decide again. */
+  'workflow_revision_conflict',
+  /** Only a published workflow can be enabled. */
+  'workflow_not_published',
+  /** A run of this workflow has not finished; it cannot be deleted under it. */
+  'workflow_has_active_runs',
   /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
   'work_checkpoint_summary_required',
   /** The named checkpoint does not belong to this work item. */
@@ -419,6 +429,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   eval_changeset_not_appliable: 409,
   eval_attempt_not_finished: 409,
   eval_launch_failed: 500,
+  workflow_name_taken: 409,
+  workflow_invalid: 422,
+  workflow_revision_conflict: 409,
+  workflow_not_published: 409,
+  workflow_has_active_runs: 409,
   work_checkpoint_summary_required: 422,
   work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.
