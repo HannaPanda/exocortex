@@ -267,8 +267,14 @@ What is deliberately still missing is listed under
   every rule a work item has (profile, write mode, proposals, review,
   questions, delegation, subtree budget), a structured result checked against
   declared fields before a condition branches on it, and a node that waits
-  on the item rather than the run (ADR-077). Approval steps and an editor in
-  the browser are the next stages
+  on the item rather than the run (ADR-077)
+- approvals and control flow in workflows: an approval step asks a person
+  through "Wartet auf dich" and waits for days without a worker, only a
+  person can answer it, and the answer continues the run once on the branch
+  chosen; conditions read an agent's or an approval's fields or the run's
+  input, a join for any input tolerates the branch that failed, and an end
+  node ends the run at once with its outcome and summary (ADR-078). An
+  editor in the browser is the next stage
 
 ## Stack
 

@@ -1,15 +1,16 @@
 # Agent workflows
 
-Issues #160, #161 and #162 under the epic #159,
+Issues #160, #161, #162 and #163 under the epic #159,
 [ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md),
-[ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md) and
-[ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md).
+[ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md),
+[ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md) and
+[ADR-078](adr/ADR-078-an-approval-node-is-an-attention-item-only-a-person-answers.md).
 A workflow is a versioned graph of typed nodes and edges: triggers start it,
 agent nodes hand work to the built-in AI, control nodes branch, fan out, join,
 ask a person and end it. This document covers what exists today: the graph
 contract, its validation, drafts and versions, the runtime that executes
-runs, and agent nodes. Approval nodes at runtime (#163), the editor (#164)
-and agent authoring (#165) are not built yet.
+runs, agent nodes, and approvals and control flow. The editor (#164) and
+agent authoring (#165) are not built yet.
 
 ## Where things are
 
@@ -32,6 +33,7 @@ and agent authoring (#165) are not built yet.
 | Agent node     | `apps/worker/src/workflows/agent-node.ts`, `agent-completion.ts`, `goal-template.ts`                 |
 | Result         | `packages/contracts/src/workflow-result.ts`: `checkStructuredResult`, `workflowAgentResultSchema`    |
 | Wake           | `apps/api/src/workflows/workflow-wake.service.ts`, `apps/api/src/work-items/work-item-workflow.ts`   |
+| Approval node  | `apps/worker/src/workflows/approval-node.ts`; `attention_item.workflowExecutionId`                   |
 
 ## Routes
 
@@ -118,10 +120,10 @@ and agent authoring (#165) are not built yet.
 | `trigger.schedule` | `schedule`: `ONCE`/`DAILY`/`WEEKLY`/`MONTHLY`/`CRON` with `timeZone`                                 | `next`                 |
 | `trigger.event`    | `events` (automation triggers except `SCHEDULE`), `scopeDocumentId`                                  | `next`                 |
 | `agent`            | `goal`, `documentIds`, `agentProfileId`, `writeMode`, `budgetMicroUsd`, `outputFields`, `completion` | `next`                 |
-| `condition`        | `source {nodeId, field}`, `operator`, `value`                                                        | `true`, `false`        |
+| `condition`        | `source {nodeId, field}` or `source {input}`, `operator`, `value`                                    | `true`, `false`        |
 | `parallel`         | nothing                                                                                              | `branch` (2 or more)   |
 | `join`             | `policy`: `all` or `any`                                                                             | `next`                 |
-| `approval`         | `title`, `question`, `assigneeUserId`                                                                | `approved`, `rejected` |
+| `approval`         | `title`, `question`, `assigneeUserId`, `note` (`none`/`optional`/`required`)                         | `approved`, `rejected` |
 | `end`              | `outcome`: `succeeded`/`failed`/`cancelled`, `summary`                                               | none                   |
 
 `label` and `position` are on every node for the editor and mean nothing to
@@ -167,8 +169,8 @@ transition is committed before the next is scheduled:
 What runs where:
 
 - **Handlers** (`handlers.ts`) execute `condition`, `parallel`, `join` and
-  `end`; `agent` is `agent-node.ts` (below). `approval` fails its attempt
-  with `workflow_node_not_executable` until #163. A handler answers
+  `end`; `agent` is `agent-node.ts` and `approval` is `approval-node.ts`
+  (both below). A handler answers
   `succeeded` with handles and output, `waiting` with a `workflowWaitSchema`
   object, or `failed` with an error class; it never writes its own row, and
   it keys any side effect by `execution.idempotencyKey`.
@@ -193,7 +195,8 @@ What runs where:
   depth is shared with automations (`AUTOMATION_MAX_DEPTH`).
 - **The sweep** (`sweep-workflow-runs`, every minute) recovers expired leases,
   re-queues steps due for two minutes, wakes due timers, advances stale runs
-  and runs past their deadline, and starts due schedules.
+  and runs past their deadline, starts due schedules, and wakes agent and
+  approval nodes whose object has moved without its wake arriving.
 - **The history** (`workflow_run_event`) is facts: node queued, started,
   succeeded, failed, retry scheduled, waiting, resumed, skipped, cancelled,
   recovered, edge taken, limit reached, run started, finished, cancelled.
@@ -238,9 +241,47 @@ the built-in AI, and waits for the item.
 
 Cancelling the run leaves the work items alone; they are ordinary work.
 
-Adding a node type's execution means a handler in `DEFAULT_NODE_HANDLERS`,
-a decision whether it is idempotent, and, when it waits, a `resume` and the
-hook that sends the `resume` job when its object has an answer.
+Adding a node type's execution means a handler in `DEFAULT_NODE_HANDLERS`
+(or in `handlerFor` in `shared.ts` when it needs the database), a decision
+whether it is idempotent, and, when it waits, a `resume`, the hook that
+sends the `resume` job when its object has an answer, and a net in the sweep.
+
+## Approvals and control flow (issue #163, ADR-078)
+
+**Approval.** The node raises an ordinary attention item (kind `approval`,
+options `approve`/`reject`, `system: true`, the node's note mode) with
+`workflowExecutionId` set to the attempt; the column is unique, so a
+redelivery finds the item instead of raising a second. It lands in "Wartet
+auf dich" for `assigneeUserId` while that person is an active member, for
+everybody who may manage work otherwise. The attempt waits on
+`{kind: 'attention_item'}` and holds no worker.
+
+- **Answering** is `POST /api/attention/:id/resolve` (`exo_attention_resolve`),
+  and only a person may: a request that arrived as an agent or the built-in
+  AI is refused with `attention_human_only`. An item cannot be withdrawn.
+- **Waking**: `AttentionService.onWorkflowAnswer` tells `WorkflowWakeService`
+  after the answer is committed, which queues the `resume`. The sweep looks
+  at items settled in the last day whose attempt still waits.
+- **Resuming** reads the item, never the wake: open waits on, `approve` takes
+  `approved`, `reject` takes `rejected`, anything else fails as
+  `workflow_approval_gone`. The output is `{fields: {approved, note},
+attentionItemId, answeredById, answeredAt}`.
+- **Ending** a run in any way (cancel, timeout, an end node, a failure)
+  makes its open approvals obsolete with the reason `workflow_ended`.
+
+**Condition.** Reads `output.fields[field]` of an upstream agent or approval
+node (`workflowNodeOutputFields`), or `input[key]` of the run with
+`source: {input: key}`. A missing value is absent; a comparison of the wrong
+type is false. The output is `{result, value}`.
+
+**Join.** `all` continues when every input fired and is dead when one cannot;
+`any` continues on the first and never again. A failed node whose branch
+leads into an `any` join that ran does not fail the run.
+
+**End.** Reaching an end node ends the run at once with its outcome
+(`succeeded`, `failed` as `workflow_end_outcome`, `cancelled`), its
+`summary` on the run and `endNodeId` beside it, and cancels what is still in
+flight. Two at once: failed before cancelled before succeeded.
 
 ## Statuses
 
@@ -249,4 +290,5 @@ no worker held), then one of the terminal `succeeded`, `failed`, `cancelled`,
 `timed_out`. A node attempt additionally knows `skipped`. A failed attempt
 carries an error class: `retryable` (the only one a runtime retries, bounded),
 `terminal`, `timeout`, `cancelled`, `limit_exceeded`. What a waiting node
-waits for is `waitingOn`: a work item, an attention item or a timer.
+waits for is `waitingOn`: a work item, an attention item or a timer. A run
+that ended at an end node carries its `summary` and `endNodeId`.

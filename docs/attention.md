@@ -47,6 +47,9 @@ dich"), one list across every workspace.
 | approval answered after a subject page moved              | the item is `obsolete` (`subject_changed`), and the run is told so              |
 | changeset handed in (issue #141)                          | on a work item a review (the work moves to `review`), otherwise an approval     |
 | last change of that changeset decided                     | the item is `resolved` with the decision; a review sends the work to `working`  |
+| workflow approval node runs (issue #163)                  | one system item, `approve`/`reject`, no work item, `workflowExecutionId` set    |
+| ... answered by a person                                  | `resolved`; the workflow wake queues the node's `resume`                        |
+| ... its workflow run ends first                           | the item is `obsolete` (`workflow_ended`)                                       |
 
 ## Rules worth knowing before changing anything
 
@@ -82,6 +85,13 @@ dich"), one list across every workspace.
   item in the inbox first; the changeset then finds it settled and leaves it.
 - **Who sees it** is `scopeFilter`: addressed to the reader, or unaddressed in
   a workspace where they may manage work. A GUEST never sees unaddressed items.
+- **A workflow's approval** (issue #163, ADR-078) is raised by the worker, not
+  here, and carries `workflowExecutionId`. Only a person answers it: an
+  agent or the built-in AI gets `attention_human_only`. Its options
+  `approve`/`reject` have catalogue words (`CATALOGUED_ATTENTION_OPTIONS`) but
+  no entry in `SYSTEM_EFFECTS`: they change no work item, the answer hook
+  `onWorkflowAnswer` continues the run. The card names the workflow
+  (`item.workflow`) instead of who raised it.
 
 ## Adding a capability
 

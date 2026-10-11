@@ -751,6 +751,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   checked against the declared fields when written and again when the node
   completes. A node reserves its share of the run's budget under the run's
   lock; the item's subtree spend replaces it when the node settles.
+- ADR-078: an approval node is an ordinary attention item, raised by the
+  worker with `workflowExecutionId` (unique, so a redelivery asks nothing
+  twice) and answered through the ordinary route by a person only: an agent
+  or the built-in AI is refused (`attention_human_only`). The node resumes
+  from the item's row, never from the wake, so a replayed answer moves
+  nothing; the API's answer hook and the sweep both wake it. An end node
+  ends the run at once and cancels what is still in flight; an ending run
+  makes its open approvals obsolete (`workflow_ended`); a failure absorbed by
+  a join for any input does not fail the run; a condition may read an
+  approval's fields or the run's input.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
