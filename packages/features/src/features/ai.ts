@@ -101,6 +101,15 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_ai_run_get', 'exo_ai_run_cancel'],
   }),
   defineFeature({
+    id: 'lauf-inspektor',
+    area: 'ki',
+    since: '2026-10-11',
+    references: ['ADR-073'],
+    ui: {},
+    tools: ['exo_ai_run_inspect'],
+    claims: { screens: ['/laeufe/:x'] },
+  }),
+  defineFeature({
     id: 'automationen',
     area: 'automationen',
     since: '2026-09-12',
