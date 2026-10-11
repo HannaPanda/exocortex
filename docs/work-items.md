@@ -144,9 +144,11 @@ by itself.
 - **Waiting.** `await-children` stores the child ids, the run from the
   signed claim and the moment. Every path that can move a child into a
   returned status (review, done, failed, cancelled) or delete it calls
-  `afterChildChange` after its transaction: `update`, `remove` and the
+  `afterTransition` after its transaction: `update`, `remove` and the
   review request in `WorkItemQuestionsService`. A new path that moves a
-  status must call it too. The listener claims the wait by clearing
+  status must call it too; it tells the parent (`afterChildChange`) and
+  every status listener, which is how a workflow node waiting on the item
+  wakes (issue #162). The listener claims the wait by clearing
   `awaitingSince` with a conditional update, so two children returning at
   once resume the parent once; while the paused run is still finishing its
   turn it retries in-process for a minute. Only work the assistant holds in
@@ -157,6 +159,24 @@ by itself.
   `buildChildrenReturnedPrompt` words it for the parent's run.
 - **Done means the parts are done.** `assertChildrenClosed` refuses `done`
   while a child is open; cancelling and failing stay possible.
+
+## Structured result (issue #162, ADR-077)
+
+`resultFields` (the `workflowOutputFieldSchema` list, fixed at creation) is
+what the result promises beside its text; `structuredResult` holds the
+values. `assertStructuredResult` in `work-item-result.ts` checks every write
+against the fields (no undeclared name, the right type, an allowed enum
+value) and asks for every required field when the status moves to `review`
+or `done`. The assignee may write it, like `result`. The run prompt lists the
+fields (`resultFieldsSection`), and the history writes
+`structured_result_recorded` with the names, never the values.
+
+A workflow's agent node creates its work item with the origin header:
+`workflowExecutionId` records the attempt (unique, so a retried create
+answers with the existing item), the node's fields and the stricter write
+mode hold, and the profile the version names is accepted. The detail
+answers with `workflow` (`workflowId`, `runId`, `nodeId`) while the attempt
+exists. See `docs/workflows.md`.
 
 ## Adding a capability
 

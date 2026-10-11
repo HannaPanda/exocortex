@@ -740,6 +740,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the engine. A node's write carries `x-exocortex-workflow` (service tokens
   only), a workflow never starts from its own outbox row, and the chain depth
   is shared with automations.
+- ADR-077: an agent node is an ordinary work item and an ordinary run of the
+  built-in AI, created through the REST API as the person the run acts for;
+  the verified workflow origin only binds the item to its attempt
+  (`workflowExecutionId`, unique, so a retry gets the same item) and lets it
+  name the profile the published version names. The node waits on the item,
+  never the run: `done` completes, `review` completes only when the node says
+  so and nobody still has to decide, `failed`/`cancelled`/gone fail, and open
+  work with nothing left to move it is `stalled`. A structured result is
+  checked against the declared fields when written and again when the node
+  completes. A node reserves its share of the run's budget under the run's
+  lock; the item's subtree spend replaces it when the node settles.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

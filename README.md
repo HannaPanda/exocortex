@@ -262,8 +262,13 @@ What is deliberately still missing is listed under
   retries are bounded and only for idempotent steps, limits on steps,
   parallelism, lifetime and budget stop a runaway graph, and a workflow never
   wakes itself through its own writes. Conditions, fan-out, joins and ends
-  execute; agent and approval steps, and an editor in the browser, are the
-  next stages (ADR-076)
+  execute (ADR-076)
+- agent steps in workflows: an ordinary work item for the built-in AI under
+  every rule a work item has (profile, write mode, proposals, review,
+  questions, delegation, subtree budget), a structured result checked against
+  declared fields before a condition branches on it, and a node that waits
+  on the item rather than the run (ADR-077). Approval steps and an editor in
+  the browser are the next stages
 
 ## Stack
 

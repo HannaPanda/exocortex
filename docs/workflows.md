@@ -1,13 +1,14 @@
 # Agent workflows
 
-Issues #160 and #161 under the epic #159,
-[ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md) and
-[ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md).
+Issues #160, #161 and #162 under the epic #159,
+[ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md),
+[ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md) and
+[ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md).
 A workflow is a versioned graph of typed nodes and edges: triggers start it,
 agent nodes hand work to the built-in AI, control nodes branch, fan out, join,
 ask a person and end it. This document covers what exists today: the graph
-contract, its validation, drafts and versions, and the runtime that executes
-runs. Agent and approval nodes at runtime (#162, #163), the editor (#164)
+contract, its validation, drafts and versions, the runtime that executes
+runs, and agent nodes. Approval nodes at runtime (#163), the editor (#164)
 and agent authoring (#165) are not built yet.
 
 ## Where things are
@@ -28,6 +29,9 @@ and agent authoring (#165) are not built yet.
 | Shared writes  | `packages/database/src/workflow-runs.ts`: start, cancel, lock, history events, trigger projection    |
 | Runtime words  | `packages/contracts/src/workflow-runtime.ts`: limits, run error codes, event types, origin header    |
 | Tables         | `workflow_trigger` (self-starting triggers), `workflow_run_event` (history), leases on attempts      |
+| Agent node     | `apps/worker/src/workflows/agent-node.ts`, `agent-completion.ts`, `goal-template.ts`                 |
+| Result         | `packages/contracts/src/workflow-result.ts`: `checkStructuredResult`, `workflowAgentResultSchema`    |
+| Wake           | `apps/api/src/workflows/workflow-wake.service.ts`, `apps/api/src/work-items/work-item-workflow.ts`   |
 
 ## Routes
 
@@ -108,17 +112,17 @@ and agent authoring (#165) are not built yet.
 }
 ```
 
-| Type               | Configured with                                                                        | Handles                |
-| ------------------ | -------------------------------------------------------------------------------------- | ---------------------- |
-| `trigger.manual`   | nothing                                                                                | `next`                 |
-| `trigger.schedule` | `schedule`: `ONCE`/`DAILY`/`WEEKLY`/`MONTHLY`/`CRON` with `timeZone`                   | `next`                 |
-| `trigger.event`    | `events` (automation triggers except `SCHEDULE`), `scopeDocumentId`                    | `next`                 |
-| `agent`            | `goal`, `documentIds`, `agentProfileId`, `writeMode`, `budgetMicroUsd`, `outputFields` | `next`                 |
-| `condition`        | `source {nodeId, field}`, `operator`, `value`                                          | `true`, `false`        |
-| `parallel`         | nothing                                                                                | `branch` (2 or more)   |
-| `join`             | `policy`: `all` or `any`                                                               | `next`                 |
-| `approval`         | `title`, `question`, `assigneeUserId`                                                  | `approved`, `rejected` |
-| `end`              | `outcome`: `succeeded`/`failed`/`cancelled`, `summary`                                 | none                   |
+| Type               | Configured with                                                                                      | Handles                |
+| ------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------- |
+| `trigger.manual`   | nothing                                                                                              | `next`                 |
+| `trigger.schedule` | `schedule`: `ONCE`/`DAILY`/`WEEKLY`/`MONTHLY`/`CRON` with `timeZone`                                 | `next`                 |
+| `trigger.event`    | `events` (automation triggers except `SCHEDULE`), `scopeDocumentId`                                  | `next`                 |
+| `agent`            | `goal`, `documentIds`, `agentProfileId`, `writeMode`, `budgetMicroUsd`, `outputFields`, `completion` | `next`                 |
+| `condition`        | `source {nodeId, field}`, `operator`, `value`                                                        | `true`, `false`        |
+| `parallel`         | nothing                                                                                              | `branch` (2 or more)   |
+| `join`             | `policy`: `all` or `any`                                                                             | `next`                 |
+| `approval`         | `title`, `question`, `assigneeUserId`                                                                | `approved`, `rejected` |
+| `end`              | `outcome`: `succeeded`/`failed`/`cancelled`, `summary`                                               | none                   |
 
 `label` and `position` are on every node for the editor and mean nothing to
 execution. A graph's `limits` can only narrow: the runtime will combine each
@@ -163,8 +167,8 @@ transition is committed before the next is scheduled:
 What runs where:
 
 - **Handlers** (`handlers.ts`) execute `condition`, `parallel`, `join` and
-  `end`. `agent` and `approval` fail their attempt with
-  `workflow_node_not_executable` until #162 and #163. A handler answers
+  `end`; `agent` is `agent-node.ts` (below). `approval` fails its attempt
+  with `workflow_node_not_executable` until #163. A handler answers
   `succeeded` with handles and output, `waiting` with a `workflowWaitSchema`
   object, or `failed` with an error class; it never writes its own row, and
   it keys any side effect by `execution.idempotencyKey`.
@@ -193,6 +197,46 @@ What runs where:
 - **The history** (`workflow_run_event`) is facts: node queued, started,
   succeeded, failed, retry scheduled, waiting, resumed, skipped, cancelled,
   recovered, edge taken, limit reached, run started, finished, cancelled.
+
+## Agent nodes (issue #162, ADR-077)
+
+An agent node hands its goal to an ordinary work item and an ordinary run of
+the built-in AI, and waits for the item.
+
+1. **Reserve.** Under the run's lock the attempt reserves its budget: the
+   stricter of `budgetMicroUsd` and what the run has left after its spend and
+   the reservations of the other agent attempts in flight. Stored on the
+   attempt's `input`, so a redelivery keeps it. Nothing left fails the node
+   as `workflow_budget_exhausted`.
+2. **Create and start.** `POST /api/workspaces/:id/work-items`, then
+   `POST /api/work-items/:id/runs`, as `run.startedById`, with
+   `x-exocortex-workflow`. The API verifies the origin against the rows
+   (`verifiedWorkflowNode`), stores the attempt in
+   `work_item.workflowExecutionId` (a second create answers with the same
+   item), takes the node's `outputFields` as `resultFields` and the stricter
+   write mode, and accepts `agentProfileId` only when the published version
+   names exactly that profile. The goal's placeholders are filled first
+   (`{{node.field}}` from an upstream agent's `fields`, `{{input.key}}` from
+   the run's input; validation refuses one that names nothing). A run started
+   by a page change puts that page first in the context. A 4xx is
+   `workflow_agent_refused`; anything else is thrown and retried.
+3. **Wait.** The attempt waits on `{kind: 'work_item'}`. The API's
+   `afterTransition` hook queues a `resume` after every committed status
+   change or deletion; the sweep queues one for any waiting agent node that
+   `agentCompletion` says would move.
+4. **Settle.** `agentCompletion` reads the item: `done` completes, `review`
+   completes when `completion` is `review`, the required fields are there, no
+   changeset of the item is open and the last run's profile does not want
+   review before done; `failed`, `cancelled` and a deleted item fail; open
+   work with no run pending or running, no children awaited, and its last run
+   ended three minutes ago is `workflow_work_item_stalled`. The fields are
+   checked against the node once more (`workflow_output_invalid`). The
+   output is `workflowAgentResultSchema` (`outcome`, `fields`, `workItemId`,
+   `aiRunId`, `resultDocumentIds`, `contextDocumentIds`, `summary`,
+   `spentMicroUsd`); a condition reads `output.fields`. The item's subtree
+   spend is added to `workflow_run.spentMicroUsd` in the same transaction.
+
+Cancelling the run leaves the work items alone; they are ordinary work.
 
 Adding a node type's execution means a handler in `DEFAULT_NODE_HANDLERS`,
 a decision whether it is idempotent, and, when it waits, a `resume` and the
