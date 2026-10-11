@@ -28,8 +28,8 @@ import { useSettingCopy } from '@/components/settings/setting-copy';
 import {
   amountInUnit,
   BYTE_UNITS,
-  type ByteUnit,
   bytesFromAmount,
+  type ByteUnit,
   describeBytes,
   isByteSettingKey,
   preferredByteUnit,
