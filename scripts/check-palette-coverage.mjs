@@ -97,6 +97,14 @@ const SCREEN_EXEMPT = [
     reason: 'One eval case, reached from the Evals list, which the palette opens.',
   },
   {
+    screen: '/arbeitsbereich/:x/workflows/:x',
+    reason: 'One workflow, reached from the Workflows list, which the palette opens.',
+  },
+  {
+    screen: '/arbeitsbereich/:x/workflows/:x/laeufe/:x',
+    reason: 'One workflow run, reached from the runs of its workflow; a run has no name to type.',
+  },
+  {
     screen: '/arbeitsbereich/:x/laeufe/:x',
     reason:
       'One run of the built-in AI, reached from the run list of a work item or from under an answer in the chat; a run has no name to type.',

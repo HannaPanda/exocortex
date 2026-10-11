@@ -52,6 +52,7 @@ const FILTER_ORDER: readonly FilterKey[] = ['open', 'mine', 'requested', 'all'];
 export function WorkItemsPage({ workspaceId }: { workspaceId: string }) {
   const t = useTranslations('workItems.list');
   const tProfiles = useTranslations('agentProfiles.workItem');
+  const tWorkflows = useTranslations('workflows.list');
   const detail = useWorkspaceDetail(workspaceId);
   const [filter, setFilter] = React.useState<FilterKey>('open');
   const items = useWorkItems(workspaceId, FILTERS[filter]);
@@ -79,6 +80,14 @@ export function WorkItemsPage({ workspaceId }: { workspaceId: string }) {
             data-testid="open-agent-profiles"
           >
             {tProfiles('manage')}
+          </Link>
+          {/* Work that starts itself and runs in steps (issue #164). */}
+          <Link
+            href={`/arbeitsbereich/${workspaceId}/workflows`}
+            className="mt-2 ml-4 inline-block text-sm hover:underline"
+            data-testid="open-workflows"
+          >
+            {tWorkflows('openFromWorkItems')}
           </Link>
         </div>
         {canWrite ? (

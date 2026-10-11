@@ -25,6 +25,7 @@ import {
   SlidersHorizontalIcon,
   UserCogIcon,
   UsersIcon,
+  WaypointsIcon,
   WorkflowIcon,
 } from 'lucide-react';
 import { type useTranslations } from 'next-intl';
@@ -67,6 +68,7 @@ interface Place {
     | 'changesets'
     | 'agentProfiles'
     | 'evals'
+    | 'workflows'
     | 'automations'
     | 'templates'
     | 'workspaceSettings'
@@ -155,6 +157,12 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/evals',
     audience: 'workspace',
     icon: FlaskConicalIcon,
+  },
+  {
+    key: 'workflows',
+    screen: '/arbeitsbereich/:x/workflows',
+    audience: 'workspace',
+    icon: WaypointsIcon,
   },
   {
     key: 'automations',

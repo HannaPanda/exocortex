@@ -161,6 +161,20 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'workflow-editor',
+    area: 'ki',
+    since: '2026-10-11',
+    references: ['#159', '#164'],
+    ui: {},
+    claims: {
+      screens: [
+        '/arbeitsbereich/:x/workflows',
+        '/arbeitsbereich/:x/workflows/:x',
+        '/arbeitsbereich/:x/workflows/:x/laeufe/:x',
+      ],
+    },
+  }),
+  defineFeature({
     id: 'workflow-agentenschritte',
     area: 'ki',
     since: '2026-10-11',

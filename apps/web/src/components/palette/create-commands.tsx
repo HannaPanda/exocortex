@@ -7,6 +7,7 @@ import {
   LayoutTemplateIcon,
   ListFilterIcon,
   TableIcon,
+  WaypointsIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -139,6 +140,16 @@ export function useCreateCommands(workspaceId: string | null, open: boolean): Pa
         // The list opens with its dialog, so the new item lands where it will
         // be looked for afterwards (issue #138).
         href: `/arbeitsbereich/${workspaceId}/auftraege?new=1`,
+      },
+      {
+        id: 'create-workflow',
+        group: 'create',
+        label: t('workflow'),
+        hint: t('workflowHint'),
+        icon: <WaypointsIcon className={ICON} />,
+        keywords: keywordsOf(t('workflowKeywords')),
+        // The list opens with its dialog, as a new work item does (issue #164).
+        href: `/arbeitsbereich/${workspaceId}/workflows?new=1`,
       },
       {
         id: 'create-from-template',
