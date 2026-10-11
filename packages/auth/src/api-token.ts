@@ -117,6 +117,12 @@ export function requestClassFor(method: string, path: string): RequestClass {
   if (path.includes('/agent-profiles') && !SAFE_METHODS.has(verb)) {
     return 'admin';
   }
+  // A workflow is a standing instruction too (issue #160, ADR-075): once
+  // enabled it starts agents by itself. Checking a graph changes nothing and
+  // stays an ordinary write, so a client can repair a draft it may not save.
+  if (path.includes('/workflows') && !SAFE_METHODS.has(verb) && !path.endsWith('/validate')) {
+    return 'admin';
+  }
   if (SAFE_METHODS.has(verb)) return 'read';
   if (matches(REPORT_ROUTES, verb, path)) return 'report';
   if (matches(PROPOSE_ROUTES, verb, path)) return 'propose';

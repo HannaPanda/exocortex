@@ -42,6 +42,7 @@ import { SearchModule } from './search/search.module';
 import { SharesModule } from './shares/shares.module';
 import { TemplatesModule } from './templates/templates.module';
 import { WorkItemsModule } from './work-items/work-items.module';
+import { WorkflowsModule } from './workflows/workflows.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
@@ -84,6 +85,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AttentionModule,
     ChangesetsModule,
     EvalsModule,
+    WorkflowsModule,
     AttachmentsModule,
     AiModule,
     AdminModule,

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { idSchema, isoDateTimeSchema } from './primitives';
-import { WORKFLOW_LIMITS, workflowGraphSchema, WORKFLOW_TRIGGER_TYPES } from './workflow-graph';
+import { WORKFLOW_LIMITS, WORKFLOW_TRIGGER_TYPES,workflowGraphSchema } from './workflow-graph';
 import { workflowNodeExecutionStatusSchema } from './workflow-progress';
 import { workflowProblemSchema } from './workflow-validation';
 

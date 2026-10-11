@@ -58,6 +58,18 @@ export const AUDIT_ACTIONS = [
   'agent_profile.created',
   'agent_profile.updated',
   'agent_profile.deleted',
+  /**
+   * An agent workflow was created, changed, published, switched on or off, or
+   * deleted (issue #160, ADR-075). An enabled workflow starts agents by
+   * itself, so each of these is permission-relevant. The entry names fields,
+   * versions and the graph's hash, never the graph.
+   */
+  'workflow.created',
+  'workflow.updated',
+  'workflow.published',
+  'workflow.enabled',
+  'workflow.disabled',
+  'workflow.deleted',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -76,7 +88,8 @@ export interface WriteAuditInput {
     | 'setting'
     | 'workspace_credential'
     | 'invitation'
-    | 'agent_profile';
+    | 'agent_profile'
+    | 'workflow';
   targetId: string;
   correlationId: string;
   /**

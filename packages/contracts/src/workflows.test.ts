@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   emptyWorkflowGraph,
+  validateWorkflowGraph,
   type WorkflowGraphInput,
   workflowGraphSchema,
   type WorkflowNodeExecutionState,
   workflowProgress,
-  validateWorkflowGraph,
 } from './index';
 
 const LIMITS = {

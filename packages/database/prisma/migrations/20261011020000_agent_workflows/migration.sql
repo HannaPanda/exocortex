@@ -182,8 +182,7 @@ BEGIN
     OR NEW."version" IS DISTINCT FROM OLD."version"
     OR NEW."workflowId" IS DISTINCT FROM OLD."workflowId"
     OR NEW."draftRevision" IS DISTINCT FROM OLD."draftRevision" THEN
-    RAISE EXCEPTION 'workflow_version % is immutable', OLD."id"
-      USING ERRCODE = 'restrict_violation';
+    RAISE EXCEPTION 'workflow_version % is immutable', OLD."id";
   END IF;
   RETURN NEW;
 END;

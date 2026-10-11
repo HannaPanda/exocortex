@@ -83,6 +83,11 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('POST', '/api/agent-profiles/p1/duplicate')).toBe('admin');
     expect(requiredScopeForRequest('DELETE', '/api/agent-profiles/p1')).toBe('admin');
     expect(requiredScopeForRequest('GET', '/api/workspaces/ws1/agent-profiles')).toBe('read');
+    expect(requiredScopeForRequest('POST', '/api/workspaces/ws1/workflows')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/publish')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/activation')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/validate')).toBe('write');
+    expect(requiredScopeForRequest('GET', '/api/workflows/w1')).toBe('read');
   });
 
   it('does not confuse a lookalike path with the admin API', () => {

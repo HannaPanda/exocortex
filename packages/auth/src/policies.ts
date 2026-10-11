@@ -293,6 +293,44 @@ export function canManageAgentProfiles(role: WorkspaceRole | null): PolicyDecisi
 }
 
 /**
+ * Writing an agent workflow's draft and publishing it (issue #160, ADR-075).
+ *
+ * ADMIN, like an agent profile: a published workflow is workspace furniture
+ * that starts agents under profiles and budgets when it runs, and changing
+ * its graph changes every later run.
+ *
+ * Reading is `canReadWorkspace`: what a workflow does and has done is not a
+ * secret from the people whose pages it works on.
+ */
+export function canManageWorkflows(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Managing workflows requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
+ * Switching a workflow on or off (issue #160, ADR-075).
+ *
+ * OWNER, like an automation (`canManageAutomations`): an enabled workflow is
+ * a standing instruction that starts agents and spends money on a schedule or
+ * on every matching change, long after the person who enabled it has left
+ * the page. Switching one off is the same decision from the other side and
+ * deliberately not easier, so the list of who can stop it is the list of who
+ * could start it.
+ */
+export function canActivateWorkflows(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (role !== 'OWNER') {
+    return deny('forbidden', 'Enabling or disabling a workflow requires the OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
  * Starting a build, or cancelling one (issue #44, ADR-026).
  *
  * MEMBER: it costs CPU on this host and nothing else, and the result is a file
