@@ -427,6 +427,16 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  // Both LaTeX queues start their container through the broker (issue #183).
+  const latex = {
+    prisma,
+    storage,
+    apiClientFor,
+    settings: readSettings,
+    bus,
+    sandboxSocket: env.EXOCORTEX_SANDBOX_SOCKET,
+  };
+
   // Concurrency 1: a LaTeX run is CPU-bound and this host shares its cores with
   // everything else on it. Two builds at once would not finish a single PDF any
   // sooner and would take the machine down with them on a big document.
@@ -440,13 +450,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     // second worker while the first one is still holding a container open.
     lockDuration: RENDER_QUEUE_LOCK_DURATION_MS,
     stalledInterval: RENDER_QUEUE_STALLED_INTERVAL_MS,
-    handler: createRenderProcessor({
-      prisma,
-      storage,
-      apiClientFor,
-      settings: readSettings,
-      bus,
-    }),
+    handler: createRenderProcessor(latex),
   });
 
   // Concurrency 1 for the same reason as the render queue: latexmk is
@@ -458,13 +462,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     concurrency: 1,
     lockDuration: PROJECT_BUILD_QUEUE_LOCK_DURATION_MS,
     stalledInterval: PROJECT_BUILD_QUEUE_STALLED_INTERVAL_MS,
-    handler: createProjectBuildProcessor({
-      prisma,
-      storage,
-      apiClientFor,
-      settings: readSettings,
-      bus,
-    }),
+    handler: createProjectBuildProcessor(latex),
   });
 
   return [

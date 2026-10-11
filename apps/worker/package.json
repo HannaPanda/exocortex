@@ -26,6 +26,7 @@
     "@exocortex/mail": "workspace:*",
     "@exocortex/mcp-tools": "workspace:*",
     "@exocortex/queue": "workspace:*",
+    "@exocortex/sandbox": "workspace:*",
     "@exocortex/storage": "workspace:*"
   },
   "devDependencies": {

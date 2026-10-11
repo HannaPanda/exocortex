@@ -1,0 +1,59 @@
+[Unit]
+Description=eXocortex container broker (the only holder of the Docker socket)
+Documentation=file:///var/www/exocortex/deploy/README.md
+Requires=exocortex-sandbox.socket
+After=docker.service exocortex-sandbox.socket
+
+# Issue #183. Reaching the Docker socket is root on this host, so none of the
+# four application units may: they hide it. LaTeX builds are a request to this
+# process instead, which starts exactly one container shape
+# (`packages/sandbox/src/policy.ts`): no network, nobody, no capabilities, a
+# read-only root, no mounts, no pull.
+#
+# It runs from a root-owned copy under /usr/local/lib, never from the
+# repository: /var/www/exocortex is writable by the very processes this
+# protects against, and code they could edit would be code with the Docker
+# socket the next time this unit starts. `deploy.sh` installs the copy.
+[Service]
+Type=simple
+User=exocortex-sandbox
+Group=exocortex-sandbox
+SupplementaryGroups=docker
+ExecStart=/usr/bin/node /usr/local/lib/exocortex-sandbox/main.js
+Restart=always
+RestartSec=3
+# SIGTERM reaches the broker first, which tells the daemon to kill every
+# container it started; only then does systemd take the rest of the cgroup.
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=15
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-sandbox
+
+# Hardening. Everything the broker needs is two Unix sockets: its own, handed
+# over by systemd, and Docker's.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+InaccessiblePaths=/var/www
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX
+IPAddressDeny=any
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

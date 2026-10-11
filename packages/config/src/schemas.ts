@@ -195,6 +195,14 @@ export const pushSchema = z.object({
   VAPID_SUBJECT: z.string().trim().optional(),
 });
 
+export const sandboxSchema = z.object({
+  /**
+   * The container broker's socket (issue #183). The worker asks it for every
+   * LaTeX build instead of reaching Docker, whose socket its unit hides.
+   */
+  EXOCORTEX_SANDBOX_SOCKET: z.string().trim().min(1).default('/run/exocortex-sandbox/broker.sock'),
+});
+
 export const internalApiSchema = z.object({
   /** Internal base URL of the REST API, used by the worker's tool loop. */
   API_URL: z.url().default('http://127.0.0.1:3211'),
@@ -277,6 +285,7 @@ export const workerEnvSchema = baseSchema
   .extend(serviceTokenSchema.shape)
   .extend(credentialEncryptionSchema.shape)
   .extend(pushSchema.shape)
+  .extend(sandboxSchema.shape)
   .extend(internalApiSchema.shape)
   .extend(tracingSchema.shape);
 

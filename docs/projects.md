@@ -42,7 +42,10 @@ back from stdout.
 
 The container runs as `nobody` (uid 65534) with every capability dropped, a
 read-only root filesystem and a size-limited tmpfs at `/tmp` as its only
-writable place (`apps/worker/src/processors/container-sandbox.ts`, issue #180).
+writable place (`packages/sandbox/src/policy.ts`, issue #180). The worker does
+not start it: it asks the container broker `exocortex-sandbox`, which chooses
+every flag and pulls nothing, so the image has to be on the machine already
+(issue #183, ADR-081).
 An image of your own has to build there: anything it wants to write, caches
 included, goes below `/tmp`, which is also `$HOME`.
 

@@ -189,6 +189,7 @@ not repeated here; what this file enforces is the order:
 | `packages/i18n`                       | The interface languages: the message catalogue per locale (German is the source), locale negotiation, the translation state and glossary the translation tool keeps.                                     |
 | `packages/editor`                     | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                                                                                                        |
 | `packages/queue`                      | Typed BullMQ queues, workers, Redis event bus.                                                                                                                                                           |
+| `packages/sandbox`                    | The container broker (`exocortex-sandbox`): the only process holding the Docker socket, one hardened container shape, and the client the worker asks it with. No dependencies.                           |
 | `packages/storage`                    | S3-compatible object storage, MIME sniffing, image downscaling.                                                                                                                                          |
 | `packages/ai`                         | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                                                                                                  |
 | `packages/calendar`                   | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                                                                                                          |
@@ -781,6 +782,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
 
+- ADR-081: the application never holds the Docker socket. The four units
+  hide it; a LaTeX build is a request to `exocortex-sandbox`, a broker under
+  its own system user that takes a profile, an image and a script and
+  chooses every flag itself (`packages/sandbox/src/policy.ts`): no network,
+  nobody, no capabilities, a read-only root, no mount, no pull. It runs from
+  a root-owned copy outside the repository, because the repository is
+  writable by what it protects against, and a dropped connection kills the
+  container.
+
 Full list: `docs/adr/`.
 
 ## How to extend the system
@@ -821,4 +831,5 @@ Each of these has a step-by-step recipe:
 
 `exocortex.app` is served by nginx with TLS and HTTP basic auth in front of four
 systemd units (`exocortex-web`, `exocortex-api`, `exocortex-collaboration`,
-`exocortex-worker`). See `deploy/README.md`.
+`exocortex-worker`), with the container broker `exocortex-sandbox` beside them
+as the only holder of the Docker socket (ADR-081). See `deploy/README.md`.

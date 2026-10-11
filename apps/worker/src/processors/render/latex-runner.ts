@@ -1,6 +1,5 @@
-import { spawn } from 'node:child_process';
+import { type SandboxRequest, spawnSandboxed } from '@exocortex/sandbox';
 
-import { sandboxArguments } from '../container-sandbox';
 import { createTar, type TarEntry } from '../tar';
 
 /**
@@ -28,6 +27,11 @@ import { createTar, type TarEntry } from '../tar';
 export interface LatexRunRequest {
   /** Container image, e.g. `pandoc/extra:latest`. */
   image: string;
+  /**
+   * The sandbox broker's socket (issue #183). The worker never talks to Docker
+   * itself; the broker starts the container and chooses every flag.
+   */
+  socketPath: string;
   /** The document, as Markdown. */
   markdown: string;
   /** YAML handed to Pandoc as `--metadata-file`. */
@@ -59,9 +63,6 @@ export interface LatexRunResult {
   unavailable: boolean;
 }
 
-/** See the `env` note in `runLatexPdf`. Deliberately a path with nothing in it. */
-const DOCKER_CONFIG_DIR = '/nonexistent/exocortex-docker';
-
 /** Log kept from one build. A TeX log is long and the interesting part is the end. */
 const MAX_LOG_BYTES = 200_000;
 
@@ -84,21 +85,20 @@ function containerScript(options: { template: string | null; tableOfContents: bo
   ].join('\n');
 }
 
-export function buildRunArguments(request: LatexRunRequest): string[] {
-  return [
-    'run',
-    '--rm',
-    '--interactive',
-    // A LaTeX document is a program, and this one runs somebody's template.
-    ...sandboxArguments({ memory: '2g', scratch: '1g' }),
-    '--entrypoint=sh',
-    request.image,
-    '-c',
-    containerScript({
+/**
+ * What the broker is asked for. A LaTeX document is a program, and this one
+ * runs somebody's template, so the `render` profile's limits and every
+ * isolation flag are chosen by the broker, not here.
+ */
+export function buildSandboxRequest(request: LatexRunRequest): SandboxRequest {
+  return {
+    profile: 'render',
+    image: request.image,
+    script: containerScript({
       template: request.template,
       tableOfContents: request.tableOfContents,
     }),
-  ];
+  };
 }
 
 export function buildInputArchive(request: LatexRunRequest): Buffer {
@@ -126,14 +126,7 @@ export function buildInputArchive(request: LatexRunRequest): Buffer {
  * reports what happened.
  */
 export async function runLatexPdf(request: LatexRunRequest): Promise<LatexRunResult> {
-  const child = spawn('docker', buildRunArguments(request), {
-    stdio: ['pipe', 'pipe', 'pipe'],
-    // The unit runs with `ProtectHome`, so the CLI's default config path is
-    // unreadable and it says so on stderr -- in the build log, above whatever
-    // LaTeX actually complained about. Pointing it at a path that simply does
-    // not exist is silent, and there is no registry to log in to anyway.
-    env: { ...process.env, DOCKER_CONFIG: DOCKER_CONFIG_DIR },
-  });
+  const child = spawnSandboxed(request.socketPath, buildSandboxRequest(request));
 
   const stdout: Buffer[] = [];
   let stdoutBytes = 0;
@@ -145,7 +138,7 @@ export async function runLatexPdf(request: LatexRunRequest): Promise<LatexRunRes
   let unavailable = false;
 
   const kill = (): void => {
-    child.kill('SIGKILL');
+    child.kill();
   };
 
   const timer = setTimeout(() => {
@@ -177,9 +170,9 @@ export async function runLatexPdf(request: LatexRunRequest): Promise<LatexRunRes
 
   const exitCode = await new Promise<number | null>((resolve) => {
     child.on('error', (error: NodeJS.ErrnoException) => {
-      // `docker` itself is missing from the host. Everything else -- a missing
-      // image, a daemon that refuses -- comes back as a non-zero exit code with
-      // an explanation on stderr.
+      // The sandbox broker is not running, or it has no `docker`. Everything
+      // else -- a missing image, a daemon that refuses -- comes back as a
+      // non-zero exit code with an explanation on stderr.
       if (error.code === 'ENOENT') unavailable = true;
       stderr.push(Buffer.from(`\n${error.message}\n`, 'utf8'));
       resolve(null);

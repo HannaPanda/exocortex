@@ -5014,6 +5014,8 @@ describe('rendering', () => {
       apiClientFor: null,
       settings,
       bus,
+      // No broker: none of these cases gets as far as starting a container.
+      sandboxSocket: '/nonexistent/exocortex-sandbox.sock',
     });
   }
 

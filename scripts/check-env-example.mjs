@@ -55,6 +55,10 @@ const NOT_CONFIGURATION = new Set([
   // #130). In a `.env` it would reach `next build` too and send the build into
   // the directory the live server reads.
   'EXOCORTEX_WEB_DIST_DIR',
+  // systemd's socket activation hands these to the container broker
+  // (deploy/systemd/exocortex-sandbox.socket, issue #183); nobody writes them.
+  'LISTEN_FDS',
+  'LISTEN_PID',
 ]);
 
 /**

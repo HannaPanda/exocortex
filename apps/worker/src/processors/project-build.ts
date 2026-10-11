@@ -37,6 +37,8 @@ export interface ProjectBuildDependencies {
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
   settings: (workspaceId?: string) => Promise<Settings>;
   bus: RedisEventBus;
+  /** The sandbox broker's socket; the container is started there (issue #183). */
+  sandboxSocket: string;
 }
 
 /** How often the worker renews its heartbeat and re-reads the cancel flag. */
@@ -190,6 +192,7 @@ async function run(context: {
   try {
     const result = await runProjectBuild({
       image: settings['projects.image'],
+      socketPath: dependencies.sandboxSocket,
       files: collected.files,
       rootFile: build.rootFile,
       engine: build.engine,

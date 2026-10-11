@@ -30,6 +30,8 @@ export interface RenderDependencies {
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
   settings: (workspaceId?: string) => Promise<Settings>;
   bus: RedisEventBus;
+  /** The sandbox broker's socket; the container is started there (issue #183). */
+  sandboxSocket: string;
 }
 
 /** How often the worker renews its heartbeat and re-reads the cancel flag. */
@@ -167,6 +169,7 @@ async function build(context: {
   try {
     const result = await runLatexPdf({
       image: settings['render.image'],
+      socketPath: dependencies.sandboxSocket,
       markdown: `${prepared.markdown}\n`,
       metadataYaml: buildMetadataYaml({
         title: job.documentTitle ?? assembled.title,

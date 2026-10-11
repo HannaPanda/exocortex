@@ -9,7 +9,8 @@
 #
 # `build.sh` answers "is this commit healthy" and starts nothing. This script
 # calls it and then does the parts that touch the running system: migrations,
-# the model registry, nginx, the four units, and the readiness check afterwards.
+# the model registry, nginx, the four units, the container broker, and the
+# readiness check afterwards.
 # Everything below the build is here and nothing above it is, so the question
 # and the act stay separable.
 #
@@ -321,6 +322,55 @@ else
   info "All four identical to the installed ones — skipped."
 fi
 
+# --- 5e. The container broker ------------------------------------------------
+# Issue #183. The four units above hide the Docker socket; LaTeX builds go to
+# `exocortex-sandbox` instead, which runs as its own system user from a
+# root-owned copy of `packages/sandbox/dist`. Not from the repository: the
+# repository is writable by the processes the broker protects against, and a
+# file they could edit would run with the Docker socket at the next restart.
+#
+# Runs before step 6 on purpose: the worker that restarts there can no longer
+# reach Docker, so its broker has to be listening already.
+step "Step 5e — container broker"
+SANDBOX_USER=exocortex-sandbox
+SANDBOX_DIR=/usr/local/lib/exocortex-sandbox
+if ! getent passwd "$SANDBOX_USER" >/dev/null; then
+  sudo useradd --system --user-group --no-create-home --home-dir /nonexistent \
+    --shell /usr/sbin/nologin "$SANDBOX_USER" || fail "Could not create the $SANDBOX_USER user"
+  info "System user $SANDBOX_USER created."
+fi
+SANDBOX_CHANGED=0
+sudo install -d -o root -g root -m 0755 "$SANDBOX_DIR"
+for file in packages/sandbox/dist/*.js; do
+  target="$SANDBOX_DIR/$(basename "$file")"
+  if ! sudo cmp -s "$file" "$target"; then
+    sudo install -o root -g root -m 0644 "$file" "$target"
+    SANDBOX_CHANGED=1
+  fi
+done
+for unit in exocortex-sandbox.socket exocortex-sandbox.service; do
+  if ! sudo diff -q "deploy/systemd/$unit" "/etc/systemd/system/$unit" >/dev/null 2>&1; then
+    sudo cp "deploy/systemd/$unit" "/etc/systemd/system/$unit"
+    info "$unit installed"
+    SANDBOX_CHANGED=1
+  fi
+done
+[ "$SANDBOX_CHANGED" -eq 1 ] && sudo systemctl daemon-reload
+sudo systemctl enable --quiet exocortex-sandbox.socket exocortex-sandbox.service
+sudo systemctl start exocortex-sandbox.socket || fail "exocortex-sandbox.socket did not start" \
+  "Check: journalctl -u exocortex-sandbox.socket -n 50 --no-pager"
+if [ "$SANDBOX_CHANGED" -eq 1 ]; then
+  # A build still running in the old broker is killed here, the way a worker
+  # restart below would kill it anyway; the build row records the cancel.
+  sudo systemctl restart exocortex-sandbox.service || fail "exocortex-sandbox did not restart" \
+    "Check: journalctl -u exocortex-sandbox -n 50 --no-pager"
+  ok "Broker installed and restarted."
+else
+  sudo systemctl start exocortex-sandbox.service || fail "exocortex-sandbox did not start" \
+    "Check: journalctl -u exocortex-sandbox -n 50 --no-pager"
+  info "Broker unchanged — skipped."
+fi
+
 # --- 6. Restart --------------------------------------------------------------
 # API first, because everything talks to it; web last, because it is what people
 # have open. SIGTERM is a graceful shutdown everywhere (in-flight jobs finish,
@@ -399,7 +449,10 @@ for unit in "${UNITS[@]}"; do
   state=$(systemctl is-active "$unit" || true)
   [ "$state" = "active" ] || fail "$unit is $state" "Check: journalctl -u $unit -n 50 --no-pager"
 done
-ok "Ready, and all four units active."
+state=$(systemctl is-active exocortex-sandbox.service || true)
+[ "$state" = "active" ] || fail "exocortex-sandbox is $state" \
+  "LaTeX builds cannot start without it. Check: journalctl -u exocortex-sandbox -n 50 --no-pager"
+ok "Ready, and all four units active, with the container broker beside them."
 
 # --- 8. Marker ---------------------------------------------------------------
 # Last, and only here. A deploy that fell over halfway leaves no green marker

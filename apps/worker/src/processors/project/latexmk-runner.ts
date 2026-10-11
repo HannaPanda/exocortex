@@ -1,8 +1,6 @@
-import { spawn } from 'node:child_process';
-
 import { type ProjectBibliography, type ProjectEngine } from '@exocortex/contracts';
+import { type SandboxRequest, spawnSandboxed } from '@exocortex/sandbox';
 
-import { sandboxArguments } from '../container-sandbox';
 import { createTar, readTar, type TarEntry } from '../tar';
 
 /**
@@ -38,6 +36,11 @@ export interface ProjectRunFile {
 export interface ProjectRunRequest {
   /** Container image, e.g. `pandoc/extra:latest`. */
   image: string;
+  /**
+   * The sandbox broker's socket (issue #183). The worker never talks to Docker
+   * itself; the broker starts the container and chooses every flag.
+   */
+  socketPath: string;
   files: readonly ProjectRunFile[];
   rootFile: string;
   engine: ProjectEngine;
@@ -63,9 +66,6 @@ export interface ProjectRunResult {
   /** Docker itself could not be reached, or the image is not on this machine. */
   unavailable: boolean;
 }
-
-/** See the `env` note in `runProjectBuild`. A path with nothing in it. */
-const DOCKER_CONFIG_DIR = '/nonexistent/exocortex-docker';
 
 /** Log kept from one build. A TeX log is long and the end is the interesting part. */
 const MAX_LOG_BYTES = 400_000;
@@ -157,22 +157,21 @@ export function containerScript(request: {
   ].join('\n');
 }
 
-export function buildRunArguments(request: ProjectRunRequest): string[] {
-  return [
-    'run',
-    '--rm',
-    '--interactive',
-    // A LaTeX project is a program somebody in the workspace wrote.
-    ...sandboxArguments({ memory: '3g', scratch: '1536m' }),
-    '--entrypoint=sh',
-    request.image,
-    '-c',
-    containerScript({
+/**
+ * What the broker is asked for. A LaTeX project is a program somebody in the
+ * workspace wrote, so the `project` profile's limits and every isolation flag
+ * are chosen by the broker, not here.
+ */
+export function buildSandboxRequest(request: ProjectRunRequest): SandboxRequest {
+  return {
+    profile: 'project',
+    image: request.image,
+    script: containerScript({
       rootFile: request.rootFile,
       engine: request.engine,
       bibliography: request.bibliography,
     }),
-  ];
+  };
 }
 
 export function buildInputArchive(request: ProjectRunRequest): Buffer {
@@ -193,14 +192,7 @@ export function buildInputArchive(request: ProjectRunRequest): Buffer {
  * log attached. The processor decides what each one means; this only reports.
  */
 export async function runProjectBuild(request: ProjectRunRequest): Promise<ProjectRunResult> {
-  const child = spawn('docker', buildRunArguments(request), {
-    stdio: ['pipe', 'pipe', 'pipe'],
-    // The unit runs with `ProtectHome`, so the Docker CLI's default config path
-    // is unreadable and it says so on stderr -- above whatever LaTeX actually
-    // complained about. Pointing it at a path that does not exist is silent,
-    // and there is no registry to log in to anyway.
-    env: { ...process.env, DOCKER_CONFIG: DOCKER_CONFIG_DIR },
-  });
+  const child = spawnSandboxed(request.socketPath, buildSandboxRequest(request));
 
   const stdout: Buffer[] = [];
   let stdoutBytes = 0;
@@ -212,7 +204,7 @@ export async function runProjectBuild(request: ProjectRunRequest): Promise<Proje
   let unavailable = false;
 
   const kill = (): void => {
-    child.kill('SIGKILL');
+    child.kill();
   };
 
   const timer = setTimeout(() => {
@@ -244,8 +236,9 @@ export async function runProjectBuild(request: ProjectRunRequest): Promise<Proje
 
   const exitCode = await new Promise<number | null>((resolve) => {
     child.on('error', (error: NodeJS.ErrnoException) => {
-      // `docker` is missing from the host. Everything else -- a missing image, a
-      // daemon that refuses -- arrives as a non-zero exit code with stderr.
+      // The sandbox broker is not running, or it has no `docker`. Everything
+      // else -- a missing image, a daemon that refuses -- comes back as a
+      // non-zero exit code with an explanation on stderr.
       if (error.code === 'ENOENT') unavailable = true;
       stderr.push(Buffer.from(`\n${error.message}\n`, 'utf8'));
       resolve(null);

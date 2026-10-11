@@ -386,6 +386,7 @@ packages/logger       structured logging, correlation ids, OpenTelemetry tracing
 packages/mail         SMTP transport and the typed mail templates, shared by API and worker
 packages/mcp-tools    the one tool catalogue, shared by apps/mcp and the built-in AI
 packages/queue        typed BullMQ queues, workers, Redis event bus
+packages/sandbox      the container broker, the only holder of the Docker socket, and its client
 packages/storage      S3-compatible object storage, MIME sniffing, image downscaling
 packages/ui           design tokens, shadcn components on Base UI, layout primitives
 

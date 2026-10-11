@@ -20,16 +20,34 @@ Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
 Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
 Docker (127.0.0.1 only, web research): SearXNG 8090 · Steel 3000 (shared automation stack)
 Docker (per job, no network, fed by a pipe): render and project builds
+               ▲ started only by exocortex-sandbox, asked over /run/exocortex-sandbox/broker.sock
 ```
 
 Nothing except nginx listens on a public interface.
 
-The last line is not a long-running container. `exocortex-worker` starts one per
-render job and per project build, hands it the input through a pipe and takes the
-artifact back the same way: no bind mounts, no network, gone when the job ends
-(ADR-026, ADR-027). Which image it uses is the `render.image` and
-`projects.image` settings; `deploy/render-image` builds the one this deployment
-points them at.
+The last line is not a long-running container. One is started per render job
+and per project build, gets the input through a pipe and hands the artifact back
+the same way: no bind mounts, no network, gone when the job ends (ADR-026,
+ADR-027). Which image it uses is the `render.image` and `projects.image`
+settings; `deploy/render-image` builds the one this deployment points them at.
+The image has to be on the machine already: nothing pulls one (`--pull=never`),
+so `docker pull` or `docker build` is the operator's step.
+
+The worker does not start that container itself (issue #183, ADR-081). The
+account the four units run as is in the `docker` group, and reaching the Docker
+socket is root on this host, so all four units hide it
+(`InaccessiblePaths=`). A build is a request to **`exocortex-sandbox`** instead:
+a small broker running as its own system user `exocortex-sandbox` (member of
+`docker`, no login, no home) that accepts a profile, an image and a script and
+chooses every `docker run` flag itself (`packages/sandbox/src/policy.ts`). It
+listens on `/run/exocortex-sandbox/broker.sock`, which
+`exocortex-sandbox.socket` owns: `exocortex-sandbox:johanna`, mode 0660, so the
+units running as `johanna` may connect and nobody else may. The broker runs
+from a root-owned copy of `packages/sandbox/dist` in
+`/usr/local/lib/exocortex-sandbox`, never from the repository, because the
+repository is writable by the processes it protects against. Whether it ran:
+`journalctl -u exocortex-sandbox` has one JSON line per build (`sandbox.run`
+with profile, image, exit code and duration) and one per refusal.
 
 The two web-research back ends are outbound only and are never reached from the
 internet: `apps/api` calls them over loopback, and nginx has no location for
@@ -71,6 +89,7 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 | `systemd/exocortex-api.service`                    | `/etc/systemd/system/exocortex-api.service`                             |
 | `systemd/exocortex-collaboration.service`          | `/etc/systemd/system/exocortex-collaboration.service`                   |
 | `systemd/exocortex-worker.service`                 | `/etc/systemd/system/exocortex-worker.service`                          |
+| `systemd/exocortex-sandbox.{socket,service}`       | `/etc/systemd/system/` — the container broker, see Topology             |
 | `systemd/exocortex-backup.{service,timer}`         | `/etc/systemd/system/` — encrypted full snapshots to MEGA every 6 h     |
 | `systemd/exocortex-backup-verify.{service,timer}`  | `/etc/systemd/system/` — the weekly restore test                        |
 | `systemd/exocortex-backup-alert@.service`          | `/etc/systemd/system/` — `OnFailure` for the three above                |
@@ -438,6 +457,15 @@ every deploy passes through anyway.
     `deploy/systemd/` when they differ, followed by `daemon-reload`, which
     restarts nothing. Without it a web unit that lagged behind would quietly
     keep serving the directory the next build writes into.
+
+    Then the container broker: the system user `exocortex-sandbox` is created
+    if it does not exist, `packages/sandbox/dist/*.js` is installed as root
+    into `/usr/local/lib/exocortex-sandbox`, the socket and service units are
+    installed, both are enabled, and the broker restarts only when its code or
+    a unit changed. It comes before the restart on purpose: the worker that
+    restarts next can no longer reach Docker, so the broker has to be
+    listening already.
+
 14. **Restart**, API first (everything talks to it), web last (it is what people
     have open):
 
@@ -465,7 +493,7 @@ every deploy passes through anyway.
     under `.next-releases/`, followed by `sudo systemctl restart exocortex-web`.
 
 15. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
-    then `systemctl is-active` for all four.
+    then `systemctl is-active` for all four and for `exocortex-sandbox`.
 16. **The marker.** `.last-deployed-sha` is written last and only on full
     success, so a rollout that fell over halfway leaves nothing behind claiming
     it worked, and the next run does everything again rather than believing this

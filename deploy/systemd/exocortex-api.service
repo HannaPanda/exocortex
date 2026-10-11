@@ -36,6 +36,10 @@ ReadWritePaths=/var/www/exocortex
 ProtectKernelTunables=true
 ProtectControlGroups=true
 RestrictSUIDSGID=true
+# The account is in the `docker` group, and reaching that socket is root on
+# the host (issue #183). No unit of the application needs it: LaTeX builds go
+# through `exocortex-sandbox`, which the worker reaches on its own socket.
+InaccessiblePaths=-/run/docker.sock -/var/run/docker.sock -/run/containerd
 
 [Install]
 WantedBy=multi-user.target

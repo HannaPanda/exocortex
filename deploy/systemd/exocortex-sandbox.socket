@@ -1,0 +1,18 @@
+[Unit]
+Description=eXocortex container broker socket
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+# The socket belongs to systemd, not to the broker, so that it can be owned by
+# the broker's user while the worker's group may connect (issue #183). The
+# broker runs as `exocortex-sandbox`, which cannot hand a file to the group
+# `johanna` itself; it takes this one over as file descriptor 3.
+[Socket]
+ListenStream=/run/exocortex-sandbox/broker.sock
+SocketUser=exocortex-sandbox
+SocketGroup=johanna
+SocketMode=0660
+DirectoryMode=0755
+RemoveOnStop=true
+
+[Install]
+WantedBy=sockets.target

@@ -55,6 +55,12 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
   // API, the worker and the mail templates can all depend on it without any
   // of them pulling in the others.
   '@exocortex/i18n': ['@exocortex/contracts'],
+  // The container broker and its client (issue #183). No dependencies at all,
+  // internal or external, and that is the point: the broker runs from a
+  // root-owned copy of its `dist/` outside the repository, so it has to be
+  // complete on its own, and a package that pulls nothing in cannot be made to
+  // load somebody else's code from a `node_modules` the worker can write.
+  '@exocortex/sandbox': [],
   '@exocortex/auth': [
     '@exocortex/config',
     '@exocortex/logger',
@@ -121,6 +127,8 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/mail',
     // Push texts and run diagnostics in the language of whoever reads them.
     '@exocortex/i18n',
+    // LaTeX builds go through the broker; the worker no longer reaches Docker.
+    '@exocortex/sandbox',
   ],
   // The web frontend must never reach infrastructure packages directly.
   // The web bundle must never reach server-side packages. Authentication is

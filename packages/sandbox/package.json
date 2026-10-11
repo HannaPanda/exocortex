@@ -1,0 +1,25 @@
+{
+  "name": "@exocortex/sandbox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The container broker: the only process that holds the Docker socket, and the client the worker asks it with",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run --exclude '**/*.integration.test.*' --passWithNoTests",
+    "test:integration": "vitest run --passWithNoTests integration.test"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  }
+}
