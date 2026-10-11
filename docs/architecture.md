@@ -305,6 +305,7 @@ index so nothing has to be found by grep.
 | saved queries       | one stored question, three surfaces, no stored answer (ADR-042)     | `docs/saved-queries.md`     |
 | work items          | delegated work with a history; a run is one attempt (ADR-066)       | `docs/work-items.md`        |
 | agent profiles      | roles a run works in; only ever narrow what holds it (ADR-071)      | `docs/agent-profiles.md`    |
+| workflows           | versioned graphs; a run reads the version it started on (ADR-075)   | `docs/workflows.md`         |
 | attention           | what needs a person, raised and settled with the state (ADR-067)    | `docs/attention.md`         |
 
 Entities (issue #47) have no document of their own: an entity is a row in an

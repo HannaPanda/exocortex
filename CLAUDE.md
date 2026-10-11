@@ -718,6 +718,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   idempotent and the one place an attempt ends; checks are decided by the
   system or, when `manual`, by a review that never overwrites the outcome.
   The built-in AI may read evals and nothing else.
+- ADR-075: a workflow is a versioned graph of typed nodes and edges, one
+  closed union in `packages/contracts/src/workflow-graph.ts`. The schema is
+  the boundary (a draft may be incomplete), `validateWorkflowGraph` the
+  meaning (handles, one input except a join, no cycle, reachable, no
+  impossible join, typed conditions), and the API adds what only the
+  database knows. One mutable draft, immutable versions a trigger refuses to
+  update; a run names the version it started on and is persisted state only:
+  node attempts keyed `<runId>:<nodeId>:<attempt>`, and `workflowProgress`
+  derives what may run next from those rows alone. Drafts are an admin's,
+  switching on is the owner's, publishing and switching on are no tools, and
+  a run of the built-in AI writes none of it.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -756,6 +767,7 @@ Each of these has a step-by-step recipe:
 | new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 | new kind of eval check, a replay mode, an eval metric    | `docs/evals.md`             |
+| new workflow node type, a graph check, a run status      | `docs/workflows.md`         |
 
 ## Deployment on this machine
 

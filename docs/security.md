@@ -266,6 +266,12 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
   that fails closed for one fails closed for the run. A run tagged with an
   attempt whose case cannot hold it is refused by the worker before it starts.
   Every eval write is refused for a request a run makes.
+- Workflow writes (issue #160, ADR-075) are `admin`-class requests except
+  validation, which stores nothing and is a read. Writing a draft or
+  publishing needs ADMIN, switching a workflow on or off needs OWNER, like an
+  automation, and every one of them is refused for a request a run makes.
+  Publishing and switching on have no tool: a person decides what becomes a
+  version and what may start agents by itself.
 
 ## Page shares and page-scoped tokens
 

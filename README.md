@@ -250,6 +250,13 @@ What is deliberately still missing is listed under
   from the run inspector, a suite is a file (`evals/regression.json` is the
   versioned regression set), and a person reviews an attempt with a verdict
   and a score (ADR-074, `docs/evals.md`)
+- agent workflows as versioned graphs (triggers, agent steps, conditions,
+  parallel branches, joins, approvals, ends) through the API and the
+  `exo_workflow_*` tools: drafts are validated element by element, published
+  as immutable versions, and switched on by the owner; runs and every node
+  attempt are persisted state a restarted process reads back. Nothing
+  executes a run yet, and there is no editor in the browser (ADR-075,
+  `docs/workflows.md`)
 
 ## Stack
 
