@@ -13,6 +13,7 @@ import { type QueueRegistry } from '@exocortex/queue';
 
 import { AgentProfilesService } from '../agent-profiles/agent-profiles.service';
 import { type ConversationsService } from '../ai/conversations.service';
+import { type AttentionService } from '../attention/attention.service';
 import { AppError } from '../common/app-error';
 import { runWithRequestContext } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
@@ -401,7 +402,9 @@ describe('waking the node', () => {
       where: { id: executionId },
       data: { status: 'WAITING', waitingOn: { kind: 'work_item', workItemId }, workItemId },
     });
-    const wake = new WorkflowWakeService(prisma, queueStub, service);
+    const wake = new WorkflowWakeService(prisma, queueStub, service, {
+      onWorkflowAnswer: () => undefined,
+    } as unknown as AttentionService);
     wake.onModuleInit();
 
     enqueued.length = 0;

@@ -39,6 +39,7 @@ import {
   NOTE_MODE_TO_PRISMA,
   parseOptions,
   toAttentionItem,
+  workflowOriginsFor,
 } from './attention-mapper';
 import {
   parseSubject,
@@ -158,6 +159,8 @@ export class AttentionService {
     private readonly resume: WorkItemResumeService,
   ) {}
 
+  private readonly answerListeners: ((attentionItemId: string) => Promise<void>)[] = [];
+
   async list(input: { userId: string; query: ListAttentionQuery }): Promise<AttentionListResponse> {
     const { query, userId } = input;
     const scope = await this.scopeFilter(userId, query);
@@ -196,13 +199,19 @@ export class AttentionService {
     >;
     for (const entry of counts) openCounts[KIND_FROM_PRISMA[entry.kind]] = entry._count._all;
     const shown = rows.slice(0, query.limit);
-    const [subjects, changesets] = await Promise.all([
+    const [subjects, changesets, workflows] = await Promise.all([
       subjectPagesFor(this.prisma, shown),
       subjectChangesetsFor(this.prisma, shown),
+      workflowOriginsFor(this.prisma, shown),
     ]);
     return {
       attentionItems: shown.map((row) =>
-        toAttentionItem(row, subjects.get(row.id) ?? null, changesets.get(row.id) ?? null),
+        toAttentionItem(
+          row,
+          subjects.get(row.id) ?? null,
+          changesets.get(row.id) ?? null,
+          workflows.get(row.id) ?? null,
+        ),
       ),
       openCounts,
       truncated: rows.length > query.limit,
@@ -211,15 +220,17 @@ export class AttentionService {
 
   async get(input: { attentionItemId: string; userId: string }): Promise<AttentionItemResponse> {
     const row = await this.loadReadable(input.attentionItemId, input.userId);
-    const [subjects, changesets] = await Promise.all([
+    const [subjects, changesets, workflows] = await Promise.all([
       subjectPagesFor(this.prisma, [row]),
       subjectChangesetsFor(this.prisma, [row]),
+      workflowOriginsFor(this.prisma, [row]),
     ]);
     return {
       attentionItem: toAttentionItem(
         row,
         subjects.get(row.id) ?? null,
         changesets.get(row.id) ?? null,
+        workflows.get(row.id) ?? null,
       ),
     };
   }
@@ -261,7 +272,7 @@ export class AttentionService {
   }): Promise<AttentionItemResponse> {
     const { actor, request } = input;
     const row = await this.loadReadable(input.attentionItemId, actor.userId);
-    await this.assertMayAnswer(row, actor.userId);
+    await this.assertMayAnswer(row, actor);
     if (row.status !== 'OPEN') {
       throw new AppError('attention_item_settled', 'The item is already settled');
     }
@@ -332,7 +343,25 @@ export class AttentionService {
       await this.announce(row.workspaceId, [row.id], 'settled', input.correlationId);
     }
     await this.carryOn(row, actor, input.correlationId);
+    if (row.workflowExecutionId !== null) await this.tellListeners(row.id);
     return this.get({ attentionItemId: row.id, userId: actor.userId });
+  }
+
+  /**
+   * Who hears about an answer to an item a workflow raised (issue #163): the
+   * workflow wake, which queues the waiting node's resume. Called after the
+   * answer is committed; a listener that fails is logged by nobody here and
+   * caught by the workflow sweep, because the answer itself must not fail
+   * for it.
+   */
+  onWorkflowAnswer(listener: (attentionItemId: string) => Promise<void>): void {
+    this.answerListeners.push(listener);
+  }
+
+  private async tellListeners(attentionItemId: string): Promise<void> {
+    for (const listener of this.answerListeners) {
+      await listener(attentionItemId).catch(() => undefined);
+    }
   }
 
   /**
@@ -359,7 +388,9 @@ export class AttentionService {
     const { actor } = input;
     const row = await this.loadReadable(input.attentionItemId, actor.userId);
     if (row.system) {
-      throw AppError.forbidden('A system item ends when its work item leaves the state');
+      throw AppError.forbidden(
+        'A system item ends when what raised it moves on: its work item, or its workflow run',
+      );
     }
     const role = await this.access.requireRole(row.workspaceId, actor.userId);
     const isAdmin = role === 'OWNER' || role === 'ADMIN';
@@ -548,9 +579,18 @@ export class AttentionService {
     return row;
   }
 
-  private async assertMayAnswer(row: AttentionRow, userId: string): Promise<void> {
-    if (row.recipientId === userId) return;
-    const role = await this.access.requireRole(row.workspaceId, userId);
+  private async assertMayAnswer(row: AttentionRow, actor: WorkItemActor): Promise<void> {
+    // A workflow's approval is a person's decision (issue #163): the agents
+    // the workflow runs, or any other, deciding it would make the gate a
+    // formality. The account is the same; how the request arrived is not.
+    if (row.workflowExecutionId !== null && actor.kind !== 'human') {
+      throw new AppError(
+        'attention_human_only',
+        'Only a person can answer an approval a workflow asks for',
+      );
+    }
+    if (row.recipientId === actor.userId) return;
+    const role = await this.access.requireRole(row.workspaceId, actor.userId);
     assertPolicy(canManageWorkItems(role));
   }
 

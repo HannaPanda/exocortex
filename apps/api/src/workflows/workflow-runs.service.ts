@@ -24,6 +24,7 @@ import { currentAiRunId, currentAutomation, currentWorkflowOrigin } from '../com
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 import {
   RUN_SELECT,
@@ -76,6 +77,7 @@ export class WorkflowRunsService {
     private readonly settings: SettingsService,
     @Inject(QUEUES) private readonly queues: QueueRegistry,
     private readonly outbox: OutboxService,
+    private readonly realtime: RealtimeService,
   ) {}
 
   async list(input: { workflowId: string; userId: string }): Promise<WorkflowRunListResponse> {
@@ -213,6 +215,13 @@ export class WorkflowRunsService {
     if (!result.ok) {
       if (result.reason === 'not_found') throw AppError.notFound('Workflow run');
       throw new AppError('workflow_run_finished', 'The run has already finished');
+    }
+    // An approval the run was waiting on is obsolete now (issue #163).
+    if (result.obsoleteAttentionItemIds.length > 0) {
+      await this.realtime.emit('attention.changed', run.workspaceId, input.correlationId, {
+        attentionItemIds: result.obsoleteAttentionItemIds,
+        action: 'settled',
+      });
     }
     await this.prisma.$transaction((tx) =>
       this.outbox.writeAudit(tx, {

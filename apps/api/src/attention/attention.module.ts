@@ -16,5 +16,7 @@ import { AttentionService } from './attention.service';
   imports: [RealtimeModule, WorkItemsModule],
   controllers: [AttentionController],
   providers: [AttentionService],
+  // The workflow wake listens for answers to the approvals workflows ask (issue #163).
+  exports: [AttentionService],
 })
 export class AttentionModule {}

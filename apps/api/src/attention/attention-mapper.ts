@@ -12,6 +12,7 @@ import {
   type AttentionNoteMode as PrismaNoteMode,
   type AttentionStatus as PrismaStatus,
   type Prisma,
+  type PrismaClient,
 } from '@exocortex/database';
 
 import {
@@ -89,6 +90,7 @@ export const ATTENTION_SELECT = {
   action: true,
   workState: true,
   subject: true,
+  workflowExecutionId: true,
   settledAt: true,
   settledByKind: true,
   settledById: true,
@@ -120,6 +122,7 @@ export function toAttentionItem(
   row: AttentionRow,
   subject: AttentionSubjectPage[] | null = null,
   changeset: AttentionItem['changeset'] = null,
+  workflow: AttentionItem['workflow'] = null,
 ): AttentionItem {
   return {
     id: row.id,
@@ -155,6 +158,10 @@ export function toAttentionItem(
     workState: row.workState,
     subject,
     changeset,
+    workflow:
+      row.workflowExecutionId === null
+        ? null
+        : (workflow ?? { workflowId: null, workflowName: null, runId: null, nodeId: null }),
     settledAt: row.settledAt?.toISOString() ?? null,
     settledBy:
       row.settledByKind === null
@@ -167,4 +174,40 @@ export function toAttentionItem(
     resolution: parseResolution(row.resolution),
     createdAt: row.createdAt.toISOString(),
   };
+}
+
+/**
+ * The workflow run behind each item an approval node raised (issue #163), by
+ * item id. One query for the whole list; an attempt that is gone with its
+ * workflow leaves the item without one.
+ */
+export async function workflowOriginsFor(
+  prisma: PrismaClient,
+  rows: readonly AttentionRow[],
+): Promise<Map<string, NonNullable<AttentionItem['workflow']>>> {
+  const byExecution = new Map(
+    rows.flatMap((row) =>
+      row.workflowExecutionId === null ? [] : [[row.workflowExecutionId, row.id] as const],
+    ),
+  );
+  if (byExecution.size === 0) return new Map();
+  const executions = await prisma.workflowNodeExecution.findMany({
+    where: { id: { in: [...byExecution.keys()] } },
+    select: {
+      id: true,
+      nodeId: true,
+      run: { select: { id: true, workflowId: true, workflow: { select: { name: true } } } },
+    },
+  });
+  return new Map(
+    executions.map((execution) => [
+      byExecution.get(execution.id)!,
+      {
+        workflowId: execution.run.workflowId,
+        workflowName: execution.run.workflow.name,
+        runId: execution.run.id,
+        nodeId: execution.nodeId,
+      },
+    ]),
+  );
 }

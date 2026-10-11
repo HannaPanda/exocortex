@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { WorkspaceAccessService } from '@exocortex/auth';
+import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { type PostConversationMessageResponse } from '@exocortex/contracts';
 import {
@@ -519,6 +519,111 @@ describe('AttentionService', () => {
         correlationId,
       }),
     ).rejects.toBeInstanceOf(AppError);
+  });
+});
+
+/**
+ * Approvals a workflow asks (issue #163): raised by the worker with the
+ * attempt that asked, answered here only by a person, and the answer handed
+ * to whoever continues the run.
+ */
+describe('AttentionService workflow approvals', () => {
+  async function workflowApproval(title: string, recipientId: string | null = null) {
+    return prisma.attentionItem.create({
+      data: {
+        workspaceId,
+        kind: 'APPROVAL',
+        title,
+        reason: 'Soll der Workflow weitermachen?',
+        recipientId,
+        raisedByKind: 'HUMAN',
+        raisedById: ownerId,
+        system: true,
+        options: [
+          { id: 'approve', label: null },
+          { id: 'reject', label: null },
+        ],
+        noteMode: 'OPTIONAL',
+        // No attempt behind it here: the item outlives its workflow.
+        workflowExecutionId: `exec-${title}-${Date.now().toString(36)}`,
+      },
+    });
+  }
+
+  it('lets only a person answer, and tells the workflow wake after the answer', async () => {
+    const answered: string[] = [];
+    attention.onWorkflowAnswer(async (id) => {
+      answered.push(id);
+    });
+    const item = await workflowApproval('Freigabe A');
+
+    const listed = await attention.get({ attentionItemId: item.id, userId: ownerId });
+    expect(listed.attentionItem).toMatchObject({
+      system: true,
+      workflow: { workflowId: null, workflowName: null, runId: null, nodeId: null },
+    });
+
+    for (const actor of [agent(ownerId), { ...human(ownerId), kind: 'assistant' as const }]) {
+      await expect(
+        attention.resolve({
+          attentionItemId: item.id,
+          actor,
+          request: { optionId: 'approve' },
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'attention_human_only' });
+    }
+    await expect(
+      attention.resolve({
+        attentionItemId: item.id,
+        actor: human(guestId),
+        request: { optionId: 'approve' },
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+    await expect(
+      attention.withdraw({
+        attentionItemId: item.id,
+        actor: human(ownerId),
+        request: {},
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+    expect(answered).toEqual([]);
+
+    const resolved = await attention.resolve({
+      attentionItemId: item.id,
+      actor: human(ownerId),
+      request: { optionId: 'reject', note: 'Noch nicht' },
+      correlationId,
+    });
+    expect(resolved.attentionItem).toMatchObject({
+      status: 'resolved',
+      resolution: { optionId: 'reject', note: 'Noch nicht' },
+    });
+    expect(answered).toEqual([item.id]);
+
+    // The answer moves once: a second one is refused, and nobody is told twice.
+    await expect(
+      attention.resolve({
+        attentionItemId: item.id,
+        actor: human(ownerId),
+        request: { optionId: 'approve' },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'attention_item_settled' });
+    expect(answered).toEqual([item.id]);
+  });
+
+  it('lets the named person answer even without managing work', async () => {
+    const item = await workflowApproval('Freigabe B', guestId);
+    const resolved = await attention.resolve({
+      attentionItemId: item.id,
+      actor: human(guestId),
+      request: { optionId: 'approve' },
+      correlationId,
+    });
+    expect(resolved.attentionItem.status).toBe('resolved');
   });
 });
 

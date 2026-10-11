@@ -16,6 +16,7 @@ import { AppError } from '../common/app-error';
 import { runWithRequestContext } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
 import { type SettingsService } from '../platform/settings.service';
+import { type RealtimeService } from '../realtime/realtime.service';
 
 import { WorkflowRunsService } from './workflow-runs.service';
 import { WorkflowsService } from './workflows.service';
@@ -72,6 +73,7 @@ function runsService(client: PrismaClient): WorkflowRunsService {
     settingsStub,
     queueStub,
     new OutboxService(client, logger),
+    { emit: async () => undefined } as unknown as RealtimeService,
   );
 }
 
