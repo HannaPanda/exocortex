@@ -2,13 +2,20 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
-import { type WorkflowGraphInput, workflowGraphSchema } from '@exocortex/contracts';
-import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import {
+  type Settings,
+  settingsSchema,
+  type WorkflowGraphInput,
+  workflowGraphSchema,
+} from '@exocortex/contracts';
+import { createPrismaClient, type PrismaClient, startWorkflowRun } from '@exocortex/database';
 import { createLogger } from '@exocortex/logger';
+import { type QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { runWithRequestContext } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
+import { type SettingsService } from '../platform/settings.service';
 
 import { WorkflowRunsService } from './workflow-runs.service';
 import { WorkflowsService } from './workflows.service';
@@ -22,6 +29,10 @@ import { WorkflowsService } from './workflows.service';
  * what an existing run reads; the version row refuses an update even from
  * SQL; and a run plus its node executions is plain persisted state that a
  * fresh service instance (a restarted process) reads back the same.
+ *
+ * Since issue #161: starting by hand freezes the limits and queues the first
+ * step, the workspace switch refuses it, cancelling ends everything in
+ * flight, and switching on or publishing rebuilds the trigger projection.
  */
 loadDotEnv();
 
@@ -37,6 +48,32 @@ let ownerId: string;
 let adminId: string;
 let memberId: string;
 let foreignProfileId: string;
+
+let settingsOverride: Partial<Settings> = {};
+const settingsStub = {
+  getForWorkspace: async () => ({
+    ...settingsSchema.parse({}),
+    'workflows.enabled': true,
+    ...settingsOverride,
+  }),
+} as unknown as SettingsService;
+const enqueued: { queue: string; payload: unknown }[] = [];
+const queueStub = {
+  async enqueue(queue: string, payload: unknown): Promise<string> {
+    enqueued.push({ queue, payload });
+    return 'queued';
+  },
+} as unknown as QueueRegistry;
+
+function runsService(client: PrismaClient): WorkflowRunsService {
+  return new WorkflowRunsService(
+    client,
+    new WorkspaceAccessService(client),
+    settingsStub,
+    queueStub,
+    new OutboxService(client, logger),
+  );
+}
 
 function edge(id: string, from: string, handle: string, to: string) {
   return { id, kind: 'flow' as const, source: { nodeId: from, handle }, target: { nodeId: to } };
@@ -74,7 +111,7 @@ beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const access = new WorkspaceAccessService(prisma);
   service = new WorkflowsService(prisma, access, new OutboxService(prisma, logger));
-  runs = new WorkflowRunsService(prisma, access);
+  runs = runsService(prisma);
 
   const suffix = Date.now().toString(36);
   const user = (label: string) =>
@@ -256,13 +293,14 @@ describe('publishing, versions and runs', () => {
     });
     expect(again.version.id).toBe(first.version.id);
 
-    const runId = await runs.start({
-      workflowId,
-      origin: 'manual',
-      triggerNodeId: 'start',
-      startedById: adminId,
-      correlationId,
-    });
+    const runId = (
+      await runs.start({
+        workflowId,
+        userId: adminId,
+        request: { triggerNodeId: 'start' },
+        correlationId,
+      })
+    ).run.id;
 
     await service.update({
       workflowId,
@@ -307,21 +345,37 @@ describe('publishing, versions and runs', () => {
     const created = await createWorkflow('Neustart');
     const workflowId = created.workflow.id;
     await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
-    const runId = await runs.start({
-      workflowId,
-      origin: 'manual',
-      triggerNodeId: 'start',
-      input: { reason: 'test' },
-      startedById: adminId,
-      correlationId,
-    });
+    enqueued.length = 0;
+    const runId = (
+      await runs.start({
+        workflowId,
+        userId: adminId,
+        request: { input: { reason: 'test' } },
+        correlationId,
+      })
+    ).run.id;
+    expect(enqueued).toEqual([
+      { queue: 'workflow', payload: { kind: 'advance', runId, correlationId } },
+    ]);
 
     const started = await runs.get({ runId, userId: adminId });
     expect(started.run).toMatchObject({
       status: 'queued',
       origin: 'manual',
       nodeExecutionCount: 1,
+      chainDepth: 0,
+      limits: {
+        maxNodeExecutions: 200,
+        maxParallelBranches: 5,
+        maxLifetimeSeconds: 7 * 24 * 3_600,
+        budgetMicroUsd: 2_000_000,
+      },
     });
+    expect(started.events.map((event) => event.type)).toEqual([
+      'run.started',
+      'node.succeeded',
+      'edge.taken',
+    ]);
     expect(started.nodeExecutions).toEqual([
       expect.objectContaining({
         nodeId: 'start',
@@ -356,7 +410,7 @@ describe('publishing, versions and runs', () => {
 
     const fresh = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
     try {
-      const reread = await new WorkflowRunsService(fresh, new WorkspaceAccessService(fresh)).get({
+      const reread = await runsService(fresh).get({
         runId,
         userId: adminId,
       });
@@ -382,9 +436,8 @@ describe('publishing, versions and runs', () => {
     await expect(
       runs.start({
         workflowId: created.workflow.id,
-        origin: 'manual',
-        triggerNodeId: 'start',
-        startedById: adminId,
+        userId: adminId,
+        request: { triggerNodeId: 'start' },
         correlationId,
       }),
     ).rejects.toMatchObject({ code: 'workflow_not_published' });
@@ -395,14 +448,200 @@ describe('publishing, versions and runs', () => {
       correlationId,
     });
     await expect(
-      runs.start({
+      startWorkflowRun(prisma, {
         workflowId: created.workflow.id,
         origin: 'schedule',
         triggerNodeId: 'start',
         startedById: adminId,
         correlationId,
+        chainDepth: 0,
+        settings: settingsSchema.parse({}),
+        requireEnabled: false,
+      }),
+    ).resolves.toEqual({ ok: false, reason: 'trigger_invalid' });
+    await expect(
+      runs.start({
+        workflowId: created.workflow.id,
+        userId: adminId,
+        request: { triggerNodeId: 'review' },
+        correlationId,
       }),
     ).rejects.toMatchObject({ code: 'validation_failed' });
+    // A member may read runs but not start them.
+    await expect(
+      runs.start({ workflowId: created.workflow.id, userId: memberId, request: {}, correlationId }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('refuses a start while workflows are switched off, and from a run of the built-in AI', async () => {
+    const created = await createWorkflow('Schalter aus');
+    await service.publish({
+      workflowId: created.workflow.id,
+      userId: adminId,
+      request: {},
+      correlationId,
+    });
+    settingsOverride = { 'workflows.enabled': false };
+    try {
+      await expect(
+        runs.start({
+          workflowId: created.workflow.id,
+          userId: adminId,
+          request: {},
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'workflows_disabled' });
+    } finally {
+      settingsOverride = {};
+    }
+    await expect(
+      runWithRequestContext({ correlationId, aiRunId: 'run-1' }, () =>
+        runs.start({
+          workflowId: created.workflow.id,
+          userId: adminId,
+          request: {},
+          correlationId,
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'forbidden' });
+  });
+
+  it('freezes the stricter limits and cancels everything in flight', async () => {
+    const graph = workflowGraphSchema.parse({
+      ...reviewGraph(),
+      limits: { maxNodeExecutions: 7, maxParallelBranches: 9 },
+    });
+    const created = await createWorkflow('Abbrechen', graph);
+    const workflowId = created.workflow.id;
+    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    settingsOverride = { 'workflows.maxParallelBranches': 3 };
+    const started = await runs.start({ workflowId, userId: adminId, request: {}, correlationId });
+    settingsOverride = {};
+    expect(started.run.limits).toMatchObject({ maxNodeExecutions: 7, maxParallelBranches: 3 });
+
+    const runId = started.run.id;
+    await prisma.workflowNodeExecution.create({
+      data: {
+        runId,
+        nodeId: 'review',
+        nodeType: 'agent',
+        status: 'RUNNING',
+        idempotencyKey: `${runId}:review:1`,
+        leaseToken: 'held-by-a-worker',
+        leaseExpiresAt: new Date(Date.now() + 60_000),
+      },
+    });
+    const cancelled = await runs.cancel({
+      runId,
+      userId: adminId,
+      request: { reason: 'Falscher Tag' },
+      correlationId,
+    });
+    expect(cancelled.run).toMatchObject({
+      status: 'cancelled',
+      errorCode: 'workflow_cancelled',
+      errorMessage: 'Falscher Tag',
+    });
+    const review = cancelled.nodeExecutions.find((row) => row.nodeId === 'review');
+    expect(review).toMatchObject({ status: 'cancelled', errorClass: 'cancelled' });
+    const lease = await prisma.workflowNodeExecution.findFirstOrThrow({
+      where: { runId, nodeId: 'review' },
+      select: { leaseToken: true },
+    });
+    expect(lease.leaseToken).toBeNull();
+    expect(cancelled.events.map((event) => event.type).slice(-2)).toEqual([
+      'node.cancelled',
+      'run.cancelled',
+    ]);
+    await expect(
+      runs.cancel({ runId, userId: adminId, request: {}, correlationId }),
+    ).rejects.toMatchObject({ code: 'workflow_run_finished' });
+  });
+
+  it('keeps the trigger projection in step with the switch and the published version', async () => {
+    const scheduled = workflowGraphSchema.parse({
+      schemaVersion: 1,
+      nodes: [
+        {
+          id: 'daily',
+          type: 'trigger.schedule',
+          schedule: { kind: 'DAILY', time: '07:30', timeZone: 'Europe/Berlin' },
+        },
+        {
+          id: 'changed',
+          type: 'trigger.event',
+          events: ['DOCUMENT_CREATED'],
+          scopeDocumentId: null,
+        },
+        { id: 'fan', type: 'join', policy: 'any' },
+        { id: 'done', type: 'end', outcome: 'succeeded' },
+      ],
+      edges: [
+        edge('e1', 'daily', 'next', 'fan'),
+        edge('e2', 'changed', 'next', 'fan'),
+        edge('e3', 'fan', 'next', 'done'),
+      ],
+    });
+    const created = await createWorkflow('Zeitplan', scheduled);
+    const workflowId = created.workflow.id;
+    await service.publish({ workflowId, userId: adminId, request: {}, correlationId });
+    expect(await prisma.workflowTrigger.count({ where: { workflowId } })).toBe(0);
+
+    await service.setActivation({
+      workflowId,
+      userId: ownerId,
+      request: { enabled: true },
+      correlationId,
+    });
+    const rows = await prisma.workflowTrigger.findMany({
+      where: { workflowId },
+      orderBy: { nodeId: 'asc' },
+    });
+    expect(rows.map((row) => [row.nodeId, row.nodeType])).toEqual([
+      ['changed', 'trigger.event'],
+      ['daily', 'trigger.schedule'],
+    ]);
+    expect(rows[0]?.events).toEqual(['DOCUMENT_CREATED']);
+    expect(rows[1]?.nextRunAt?.getTime()).toBeGreaterThan(Date.now());
+    const workflow = await prisma.workflow.findUniqueOrThrow({
+      where: { id: workflowId },
+      select: { enabledById: true },
+    });
+    expect(workflow.enabledById).toBe(ownerId);
+
+    await service.setActivation({
+      workflowId,
+      userId: ownerId,
+      request: { enabled: false },
+      correlationId,
+    });
+    expect(await prisma.workflowTrigger.count({ where: { workflowId } })).toBe(0);
+  });
+
+  it('stamps a workflow node write on the outbox row, depth included', async () => {
+    const outbox = new OutboxService(prisma, logger);
+    const workflow = { workflowId: 'wf1', runId: 'run1', executionId: 'exec1', depth: 2 };
+    await runWithRequestContext({ correlationId: 'wf-origin', workflow }, () =>
+      prisma.$transaction((tx) =>
+        outbox.writeEvent(tx, {
+          workspaceId,
+          type: 'document.updated',
+          payload: { documentId: 'doc1' },
+          correlationId: 'wf-origin',
+        }),
+      ),
+    );
+    const row = await prisma.outboxEvent.findFirstOrThrow({
+      where: { workspaceId, correlationId: 'wf-origin' },
+    });
+    expect(row).toMatchObject({
+      workflowId: 'wf1',
+      workflowRunId: 'run1',
+      workflowNodeExecutionId: 'exec1',
+      automationRuleId: null,
+      automationDepth: 2,
+    });
+    await prisma.outboxEvent.delete({ where: { id: row.id } });
   });
 
   it('lets only the owner switch a published workflow on', async () => {

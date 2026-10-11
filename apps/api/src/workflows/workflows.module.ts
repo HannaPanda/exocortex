@@ -7,9 +7,9 @@ import { WorkflowsController } from './workflows.controller';
 import { WorkflowsService } from './workflows.service';
 
 /**
- * Agent workflows (issue #160, ADR-075): definitions, immutable versions and
- * the persisted state of their runs. The runs service is exported for the
- * runtime that will start and advance them (issue #161).
+ * Agent workflows (issues #160 and #161, ADR-075, ADR-076): definitions,
+ * immutable versions, starting and cancelling runs, and reading their state.
+ * Executing runs is the worker's.
  */
 @Module({
   controllers: [WorkflowsController],

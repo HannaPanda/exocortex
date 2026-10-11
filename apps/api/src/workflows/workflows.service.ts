@@ -26,7 +26,7 @@ import {
   type WorkflowVersionResponse,
   type WorkspaceRole,
 } from '@exocortex/contracts';
-import { Prisma, type PrismaClient } from '@exocortex/database';
+import { Prisma, type PrismaClient, syncWorkflowTriggers } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
 import { currentAiRunId } from '../common/correlation';
@@ -246,6 +246,8 @@ export class WorkflowsService {
           where: { id: existing.id },
           data: { publishedVersionId: version.id },
         });
+        // A switched-on workflow starts from the new version's triggers now.
+        await syncWorkflowTriggers(tx, existing.id);
         await this.outbox.writeAudit(tx, {
           workspaceId: existing.workspaceId,
           actorId: input.userId,
@@ -287,8 +289,14 @@ export class WorkflowsService {
       await this.prisma.$transaction(async (tx) => {
         await tx.workflow.update({
           where: { id: existing.id },
-          data: { enabled: input.request.enabled, updatedById: input.userId },
+          data: {
+            enabled: input.request.enabled,
+            // Who switched it on is who its self-started runs act as (issue #161).
+            enabledById: input.request.enabled ? input.userId : null,
+            updatedById: input.userId,
+          },
         });
+        await syncWorkflowTriggers(tx, existing.id);
         await this.outbox.writeAudit(tx, {
           workspaceId: existing.workspaceId,
           actorId: input.userId,

@@ -1,55 +1,81 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { WorkspaceAccessService } from '@exocortex/auth';
+import { assertPolicy, canManageWorkflows, WorkspaceAccessService } from '@exocortex/auth';
 import {
-  isTriggerNode,
-  type WorkflowNodeExecutionStatus,
+  type CancelWorkflowRunRequest,
+  QUEUE_NAMES,
+  type StartWorkflowRunRequest,
   workflowProgress,
   type WorkflowRunListResponse,
-  type WorkflowRunOrigin,
   type WorkflowRunResponse,
-  type WorkflowTriggerType,
+  type WorkflowRunStartResponse,
 } from '@exocortex/contracts';
-import { type Prisma, type PrismaClient } from '@exocortex/database';
+import {
+  cancelWorkflowRun,
+  type Prisma,
+  type PrismaClient,
+  startWorkflowRun,
+  type StartWorkflowRunRefusal,
+} from '@exocortex/database';
+import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
-import { PRISMA } from '../platform/platform.module';
+import { currentAiRunId, currentAutomation, currentWorkflowOrigin } from '../common/correlation';
+import { OutboxService } from '../common/outbox.service';
+import { PRISMA, QUEUES } from '../platform/platform-tokens';
+import { SettingsService } from '../platform/settings.service';
 
 import {
-  nodeIdempotencyKey,
   RUN_SELECT,
   storedGraph,
   toNodeExecution,
+  toRunEvent,
   toWorkflowRun,
 } from './workflow-mapper';
 
 const RUN_LIST_LIMIT = 50;
 
-/** Which trigger type a run of each origin starts from; a test may start from any. */
-const ORIGIN_TRIGGER: Readonly<Record<WorkflowRunOrigin, WorkflowTriggerType | null>> = {
-  manual: 'trigger.manual',
-  schedule: 'trigger.schedule',
-  event: 'trigger.event',
-  test: null,
-};
+/** How a refused start is told to the caller. */
+function refusal(reason: StartWorkflowRunRefusal): AppError {
+  switch (reason) {
+    case 'not_found':
+      return AppError.notFound('Workflow');
+    case 'not_published':
+    case 'version_moved':
+      return new AppError('workflow_not_published', 'Only a published workflow can run');
+    case 'not_enabled':
+      return AppError.conflict('The workflow is switched off');
+    case 'trigger_ambiguous':
+      return new AppError(
+        'workflow_trigger_ambiguous',
+        'Name the trigger: the published version has none or several manual ones',
+      );
+    case 'trigger_invalid':
+      return AppError.validation('That node is no manual trigger of the published version');
+  }
+}
 
 /**
- * Workflow runs (issue #160, ADR-075).
+ * Workflow runs (issues #160 and #161, ADR-075, ADR-076).
  *
  * A run names the version it started on and reads that graph, never the
- * draft. Its state is the run row and one row per node attempt; how far it
- * has come is derived from those rows by `workflowProgress`, which is what
- * lets any worker continue it after any restart (issue #161).
+ * draft. Its state is the run row, one row per node attempt and its history;
+ * how far it has come is derived from those rows by `workflowProgress`, which
+ * is what lets any worker continue it after any restart.
  *
- * This service owns the persistence: reading runs, and `start`, which writes
- * a run and its trigger's execution in one transaction. Executing nodes is
- * the runtime's, in the worker.
+ * This service starts a run by hand and cancels one; executing it is the
+ * worker's (`apps/worker/src/workflows`). Both are an admin's, like writing
+ * the workflow, and never a run of the built-in AI's: a run starts agents and
+ * spends money, and an agent starting more of them is issue #165's boundary.
  */
 @Injectable()
 export class WorkflowRunsService {
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     private readonly access: WorkspaceAccessService,
+    private readonly settings: SettingsService,
+    @Inject(QUEUES) private readonly queues: QueueRegistry,
+    private readonly outbox: OutboxService,
   ) {}
 
   async list(input: { workflowId: string; userId: string }): Promise<WorkflowRunListResponse> {
@@ -75,6 +101,7 @@ export class WorkflowRunsService {
         ...RUN_SELECT,
         workflowVersion: { select: { version: true, graph: true } },
         nodeExecutions: { orderBy: [{ queuedAt: 'asc' }, { attempt: 'asc' }] },
+        events: { orderBy: { sequence: 'asc' } },
       },
     });
     if (row === null) throw AppError.notFound('Workflow run');
@@ -87,82 +114,126 @@ export class WorkflowRunsService {
       run: toWorkflowRun(row),
       graph,
       nodeExecutions: executions,
+      events: row.events.flatMap((event) => {
+        const mapped = toRunEvent(event);
+        return mapped === null ? [] : [mapped];
+      }),
       progress: workflowProgress(graph, row.triggerNodeId, executions),
     };
   }
 
   /**
-   * Starts a run of the published version: the run row and its trigger's
-   * execution, succeeded, in one transaction, so the run is never visible
-   * without the step that began it. Returns the run's id.
-   *
-   * Not a route yet: there is nothing to execute a run until the runtime
-   * exists (issue #161), and a run nobody executes would sit queued for ever.
+   * Starts a run of the published version by hand. Needs `workflows.enabled`
+   * but not the workflow's own switch, which is about starting by itself.
+   * The run is written first and its first step queued after; a lost enqueue
+   * is picked up by the worker's sweep.
    */
   async start(input: {
     workflowId: string;
-    origin: WorkflowRunOrigin;
-    triggerNodeId: string;
-    input?: Prisma.InputJsonValue;
-    startedById: string | null;
-    correlationId: string | null;
-  }): Promise<string> {
+    userId: string;
+    request: StartWorkflowRunRequest;
+    correlationId: string;
+  }): Promise<WorkflowRunStartResponse> {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id: input.workflowId },
-      select: {
-        workspaceId: true,
-        publishedVersion: { select: { id: true, graph: true } },
-      },
+      select: { workspaceId: true },
     });
     if (workflow === null) throw AppError.notFound('Workflow');
-    const version = workflow.publishedVersion;
-    if (version === null) {
-      throw new AppError('workflow_not_published', 'Only a published workflow can run');
-    }
-    const trigger = storedGraph(version.graph).nodes.find(
-      (node) => node.id === input.triggerNodeId,
-    );
-    const expected = ORIGIN_TRIGGER[input.origin];
-    if (
-      trigger === undefined ||
-      !isTriggerNode(trigger) ||
-      (expected !== null && trigger.type !== expected)
-    ) {
-      throw AppError.validation(`Node ${input.triggerNodeId} is no ${input.origin} trigger`);
+    await this.assertMay(workflow.workspaceId, input.userId);
+    const settings = await this.settings.getForWorkspace(workflow.workspaceId);
+    if (!settings['workflows.enabled']) {
+      throw new AppError('workflows_disabled', 'Workflows are switched off for this workspace');
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      const now = new Date();
-      const run = await tx.workflowRun.create({
-        data: {
-          workflowId: input.workflowId,
-          workspaceId: workflow.workspaceId,
-          workflowVersionId: version.id,
-          origin: input.origin.toUpperCase() as 'MANUAL' | 'SCHEDULE' | 'EVENT' | 'TEST',
-          triggerNodeId: trigger.id,
-          ...(input.input === undefined ? {} : { input: input.input }),
-          startedById: input.startedById,
-          correlationId: input.correlationId,
-          nodeExecutionCount: 1,
-        },
-        select: { id: true },
-      });
-      await tx.workflowNodeExecution.create({
-        data: {
-          runId: run.id,
-          nodeId: trigger.id,
-          nodeType: trigger.type,
-          attempt: 1,
-          status: 'SUCCEEDED' satisfies Uppercase<WorkflowNodeExecutionStatus>,
-          idempotencyKey: nodeIdempotencyKey(run.id, trigger.id, 1),
-          firedHandles: ['next'],
-          ...(input.input === undefined ? {} : { input: input.input }),
-          queuedAt: now,
-          startedAt: now,
-          finishedAt: now,
-        },
-      });
-      return run.id;
+    // A start from a service token that carries an origin continues that
+    // chain rather than beginning a fresh one.
+    const chainDepth = Math.max(
+      currentAutomation()?.depth ?? 0,
+      currentWorkflowOrigin()?.depth ?? 0,
+    );
+    const started = await startWorkflowRun(this.prisma, {
+      workflowId: input.workflowId,
+      origin: 'manual',
+      triggerNodeId: input.request.triggerNodeId ?? null,
+      ...(input.request.input === undefined
+        ? {}
+        : { input: input.request.input as Prisma.InputJsonObject }),
+      startedById: input.userId,
+      correlationId: input.correlationId,
+      chainDepth,
+      settings,
+      requireEnabled: false,
     });
+    if (!started.ok) throw refusal(started.reason);
+
+    await this.prisma.$transaction((tx) =>
+      this.outbox.writeAudit(tx, {
+        workspaceId: workflow.workspaceId,
+        actorId: input.userId,
+        action: 'workflow.run.started',
+        targetType: 'workflow',
+        targetId: input.workflowId,
+        correlationId: input.correlationId,
+        metadata: { runId: started.runId },
+      }),
+    );
+    await this.queues.enqueue(QUEUE_NAMES.workflow, {
+      kind: 'advance',
+      runId: started.runId,
+      correlationId: input.correlationId,
+    });
+    const row = await this.prisma.workflowRun.findUniqueOrThrow({
+      where: { id: started.runId },
+      select: RUN_SELECT,
+    });
+    return { run: toWorkflowRun(row) };
+  }
+
+  /** Cancels a run that has not finished; answers with the run as it now is. */
+  async cancel(input: {
+    runId: string;
+    userId: string;
+    request: CancelWorkflowRunRequest;
+    correlationId: string;
+  }): Promise<WorkflowRunResponse> {
+    const run = await this.prisma.workflowRun.findUnique({
+      where: { id: input.runId },
+      select: { workspaceId: true, workflowId: true },
+    });
+    if (run === null) throw AppError.notFound('Workflow run');
+    const role = await this.access.findRole(run.workspaceId, input.userId);
+    if (role === null) throw AppError.notFound('Workflow run');
+    await this.assertMay(run.workspaceId, input.userId);
+
+    const result = await cancelWorkflowRun(this.prisma, {
+      runId: input.runId,
+      reason: input.request.reason ?? null,
+      byUserId: input.userId,
+    });
+    if (!result.ok) {
+      if (result.reason === 'not_found') throw AppError.notFound('Workflow run');
+      throw new AppError('workflow_run_finished', 'The run has already finished');
+    }
+    await this.prisma.$transaction((tx) =>
+      this.outbox.writeAudit(tx, {
+        workspaceId: run.workspaceId,
+        actorId: input.userId,
+        action: 'workflow.run.cancelled',
+        targetType: 'workflow',
+        targetId: run.workflowId,
+        correlationId: input.correlationId,
+        metadata: { runId: input.runId },
+      }),
+    );
+    return this.get({ runId: input.runId, userId: input.userId });
+  }
+
+  private async assertMay(workspaceId: string, userId: string): Promise<void> {
+    if (currentAiRunId() !== undefined) {
+      throw AppError.forbidden('A run of the built-in AI cannot start or cancel workflow runs');
+    }
+    const role = await this.access.findRole(workspaceId, userId);
+    if (role === null) throw AppError.notFound('Workflow');
+    assertPolicy(canManageWorkflows(role));
   }
 }

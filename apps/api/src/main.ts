@@ -16,6 +16,7 @@ import {
   enterRequestContext,
   readAgentSessionHeaders,
   readAutomationOriginHeader,
+  readWorkflowOriginHeader,
 } from './common/correlation';
 import { API_ENV, LOGGER } from './common/logger.provider';
 import { installHttpTracing } from './common/tracing';
@@ -90,6 +91,10 @@ async function bootstrap(): Promise<void> {
       // this one is acted on, so it counts only when a service token carried
       // it (issue #50, ADR-024).
       automation: readAutomationOriginHeader(
+        request.headers as Record<string, string | string[] | undefined>,
+      ),
+      // The same, for a workflow node's write (issue #161).
+      workflow: readWorkflowOriginHeader(
         request.headers as Record<string, string | string[] | undefined>,
       ),
     });

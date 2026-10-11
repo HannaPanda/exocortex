@@ -87,6 +87,9 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/publish')).toBe('admin');
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/activation')).toBe('admin');
     expect(requiredScopeForRequest('POST', '/api/workflows/w1/validate')).toBe('read');
+    expect(requiredScopeForRequest('POST', '/api/workflows/w1/runs')).toBe('admin');
+    expect(requiredScopeForRequest('POST', '/api/workflow-runs/r1/cancel')).toBe('admin');
+    expect(requiredScopeForRequest('GET', '/api/workflow-runs/r1')).toBe('read');
     expect(requiredScopeForRequest('GET', '/api/workflows/w1')).toBe('read');
   });
 

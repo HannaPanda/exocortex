@@ -1,6 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 import { type PageScopeRestriction } from '@exocortex/auth';
+import {
+  parseWorkflowOrigin,
+  WORKFLOW_ORIGIN_HEADER,
+  type WorkflowOrigin,
+} from '@exocortex/contracts';
 import { createCorrelationId } from '@exocortex/logger';
 
 export interface RequestContext {
@@ -22,6 +27,14 @@ export interface RequestContext {
    * on a request they were making anyway.
    */
   automation?: AutomationOriginContext;
+  /**
+   * The workflow node attempt whose action is making this write, when one is
+   * (issue #161). Read for a decision exactly like `automation` -- a
+   * workflow never starts from its own change, and the chain depth counts
+   * both -- so it is accepted from a service token only, and `SessionGuard`
+   * clears it for every other credential.
+   */
+  workflow?: WorkflowOrigin;
   /**
    * The pages the credential making this request is confined to (issue #83,
    * ADR-044), when it is confined at all.
@@ -106,7 +119,7 @@ export function currentAutomation(): AutomationOriginContext | undefined {
 }
 
 /**
- * Forgets the automation origin of the current request.
+ * Forgets the automation and workflow origin of the current request.
  *
  * Called by `SessionGuard` whenever the credential is not a service token. The
  * header is read before authentication runs -- that is where the request
@@ -115,7 +128,14 @@ export function currentAutomation(): AutomationOriginContext | undefined {
  */
 export function clearAutomationOrigin(): void {
   const context = storage.getStore();
-  if (context !== undefined) context.automation = undefined;
+  if (context === undefined) return;
+  context.automation = undefined;
+  context.workflow = undefined;
+}
+
+/** The workflow node attempt whose action is writing, or `undefined` when none is. */
+export function currentWorkflowOrigin(): WorkflowOrigin | undefined {
+  return storage.getStore()?.workflow;
 }
 
 /**
@@ -222,6 +242,13 @@ export function readAgentSessionHeaders(
  * answer, so an unparseable depth means the header is ignored entirely and the
  * write counts as a fresh one.
  */
+/** Reads the workflow origin header (issue #161); see `parseWorkflowOrigin`. */
+export function readWorkflowOriginHeader(
+  headers: Record<string, string | string[] | undefined>,
+): WorkflowOrigin | undefined {
+  return parseWorkflowOrigin(headerValue(headers[WORKFLOW_ORIGIN_HEADER]));
+}
+
 export function readAutomationOriginHeader(
   headers: Record<string, string | string[] | undefined>,
 ): AutomationOriginContext | undefined {

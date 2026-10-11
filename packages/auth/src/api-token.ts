@@ -121,7 +121,12 @@ export function requestClassFor(method: string, path: string): RequestClass {
   // enabled it starts agents by itself. Checking a graph is a POST only
   // because the graph travels in the body; it stores nothing, so it is a read
   // and a read-only client can still find out why a draft would not publish.
-  if (path.includes('/workflows') && !SAFE_METHODS.has(verb)) {
+  // Starting and cancelling a run (issue #161) is the same class: a run
+  // spends what the workflow's agents spend.
+  if (
+    (path.includes('/workflows') || path.startsWith('/api/workflow-runs/')) &&
+    !SAFE_METHODS.has(verb)
+  ) {
     return /^\/api\/workflows\/[^/]+\/validate$/u.test(path) ? 'read' : 'admin';
   }
   if (SAFE_METHODS.has(verb)) return 'read';

@@ -6,7 +6,12 @@ import { type Logger } from '@exocortex/logger';
 
 import { PRISMA } from '../platform/platform-tokens';
 
-import { currentAgentSession, currentAutomation, getRequestContext } from './correlation';
+import {
+  currentAgentSession,
+  currentAutomation,
+  currentWorkflowOrigin,
+  getRequestContext,
+} from './correlation';
 import { LOGGER } from './logger.provider';
 
 /** Actions recorded in the audit log. English identifiers, snake_case. */
@@ -67,6 +72,8 @@ export const AUDIT_ACTIONS = [
   'workflow.created',
   'workflow.updated',
   'workflow.published',
+  'workflow.run.started',
+  'workflow.run.cancelled',
   'workflow.enabled',
   'workflow.disabled',
   'workflow.deleted',
@@ -153,6 +160,10 @@ export class OutboxService {
     // person wrote from a page an automation wrote, and a rule whose action
     // writes would trigger itself for ever (issue #50, ADR-024).
     const automation = currentAutomation();
+    // A workflow node's write is stamped the same way (issue #161). The depth
+    // column counts automations and workflows together, so a chain through
+    // both stops where a chain through either would.
+    const workflow = currentWorkflowOrigin();
     await tx.outboxEvent.create({
       data: {
         workspaceId: input.workspaceId,
@@ -160,7 +171,10 @@ export class OutboxService {
         payload: input.payload as Prisma.InputJsonObject,
         correlationId: input.correlationId,
         automationRuleId: automation?.ruleId ?? null,
-        automationDepth: automation?.depth ?? 0,
+        automationDepth: Math.max(automation?.depth ?? 0, workflow?.depth ?? 0),
+        workflowId: workflow?.workflowId ?? null,
+        workflowRunId: workflow?.runId ?? null,
+        workflowNodeExecutionId: workflow?.executionId ?? null,
       },
     });
     await this.writeAgentJournal(tx, input);

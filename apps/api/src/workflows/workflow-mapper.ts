@@ -9,6 +9,9 @@ import {
   type WorkflowNodeExecution,
   type WorkflowNodeExecutionStatus,
   type WorkflowRun,
+  type WorkflowRunEvent,
+  workflowRunEventTypeSchema,
+  workflowRunLimitsSchema,
   type WorkflowRunOrigin,
   type WorkflowRunStatus,
   type WorkflowSummary,
@@ -70,6 +73,9 @@ export const RUN_SELECT = {
   correlationId: true,
   spentMicroUsd: true,
   nodeExecutionCount: true,
+  limits: true,
+  deadlineAt: true,
+  chainDepth: true,
   errorCode: true,
   errorMessage: true,
   waitingSince: true,
@@ -81,6 +87,8 @@ export const RUN_SELECT = {
 } satisfies Prisma.WorkflowRunSelect;
 
 export type RunRow = Prisma.WorkflowRunGetPayload<{ select: typeof RUN_SELECT }>;
+
+export type WorkflowRunEventRow = Prisma.WorkflowRunEventGetPayload<Record<string, never>>;
 
 export type NodeExecutionRow = Prisma.WorkflowNodeExecutionGetPayload<{
   select: {
@@ -181,6 +189,7 @@ export function toWorkflowVersion(row: VersionRow): WorkflowVersion {
 }
 
 export function toWorkflowRun(row: RunRow): WorkflowRun {
+  const limits = workflowRunLimitsSchema.safeParse(row.limits);
   return {
     id: row.id,
     workflowId: row.workflowId,
@@ -195,6 +204,9 @@ export function toWorkflowRun(row: RunRow): WorkflowRun {
     startedBy: row.startedBy,
     spentMicroUsd: row.spentMicroUsd,
     nodeExecutionCount: row.nodeExecutionCount,
+    limits: limits.success ? limits.data : null,
+    deadlineAt: row.deadlineAt?.toISOString() ?? null,
+    chainDepth: row.chainDepth,
     errorCode: row.errorCode,
     errorMessage: row.errorMessage,
     waitingSince: row.waitingSince?.toISOString() ?? null,
@@ -229,7 +241,25 @@ export function toNodeExecution(row: NodeExecutionRow): WorkflowNodeExecution {
   };
 }
 
-/** The idempotency key of one node attempt; what a side effect is keyed by. */
-export function nodeIdempotencyKey(runId: string, nodeId: string, attempt: number): string {
-  return `${runId}:${nodeId}:${attempt}`;
+/**
+ * One history row as the wire spells it, or null for a type this build does
+ * not know (written by a newer worker during a deploy): left out rather than
+ * renamed into something it was not.
+ */
+export function toRunEvent(row: WorkflowRunEventRow): WorkflowRunEvent | null {
+  const type = workflowRunEventTypeSchema.safeParse(row.type);
+  if (!type.success) return null;
+  const detail = row.detail;
+  return {
+    sequence: row.sequence,
+    type: type.data,
+    nodeId: row.nodeId,
+    executionId: row.executionId,
+    attempt: row.attempt,
+    detail:
+      typeof detail === 'object' && detail !== null && !Array.isArray(detail)
+        ? (detail as Record<string, unknown>)
+        : null,
+    at: row.at.toISOString(),
+  };
 }

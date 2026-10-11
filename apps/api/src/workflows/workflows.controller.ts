@@ -3,6 +3,8 @@ import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swa
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
+  type CancelWorkflowRunRequest,
+  cancelWorkflowRunRequestSchema,
   type CreateWorkflowRequest,
   createWorkflowRequestSchema,
   type DeleteWorkflowResponse,
@@ -13,6 +15,8 @@ import {
   publishWorkflowResponseSchema,
   type SetWorkflowActivationRequest,
   setWorkflowActivationRequestSchema,
+  type StartWorkflowRunRequest,
+  startWorkflowRunRequestSchema,
   type UpdateWorkflowRequest,
   updateWorkflowRequestSchema,
   type ValidateWorkflowRequest,
@@ -25,6 +29,8 @@ import {
   workflowRunListResponseSchema,
   type WorkflowRunResponse,
   workflowRunResponseSchema,
+  type WorkflowRunStartResponse,
+  workflowRunStartResponseSchema,
   type WorkflowValidationResponse,
   workflowValidationResponseSchema,
   type WorkflowVersionListResponse,
@@ -45,7 +51,8 @@ import { WorkflowsService } from './workflows.service';
  *
  * Every write except `validate` is of the `admin` request class
  * (`requestClassFor`): an enabled workflow is a standing instruction that
- * starts agents by itself, like an automation rule.
+ * starts agents by itself, like an automation rule, and starting or
+ * cancelling a run is spending decided by an admin (issue #161).
  */
 @ApiTags('workflows')
 @Controller('api')
@@ -186,6 +193,38 @@ export class WorkflowsController {
     @Param('workflowId') workflowId: string,
   ): Promise<WorkflowRunListResponse> {
     return this.runs.list({ workflowId, userId: session.userId });
+  }
+
+  @Post('workflows/:workflowId/runs')
+  @ApiBody({ schema: openApiSchema(startWorkflowRunRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(workflowRunStartResponseSchema) })
+  async startRun(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workflowId') workflowId: string,
+    @Body(zodPipe(startWorkflowRunRequestSchema)) body: StartWorkflowRunRequest,
+  ): Promise<WorkflowRunStartResponse> {
+    return this.runs.start({
+      workflowId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Post('workflow-runs/:runId/cancel')
+  @ApiBody({ schema: openApiSchema(cancelWorkflowRunRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(workflowRunResponseSchema) })
+  async cancelRun(
+    @CurrentSession() session: VerifiedSession,
+    @Param('runId') runId: string,
+    @Body(zodPipe(cancelWorkflowRunRequestSchema)) body: CancelWorkflowRunRequest,
+  ): Promise<WorkflowRunResponse> {
+    return this.runs.cancel({
+      runId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
   }
 
   @Get('workflow-runs/:runId')
