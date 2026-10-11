@@ -1,18 +1,18 @@
 # Agent workflows
 
-Issues #160, #161, #162, #163 and #164 under the epic #159,
+Issues #160, #161, #162, #163, #164 and #165 under the epic #159,
 [ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md),
 [ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md),
 [ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md),
-[ADR-078](adr/ADR-078-an-approval-node-is-an-attention-item-only-a-person-answers.md) and
-[ADR-079](adr/ADR-079-a-test-run-is-a-real-run-under-a-write-mode-ceiling.md).
+[ADR-078](adr/ADR-078-an-approval-node-is-an-attention-item-only-a-person-answers.md),
+[ADR-079](adr/ADR-079-a-test-run-is-a-real-run-under-a-write-mode-ceiling.md) and
+[ADR-080](adr/ADR-080-an-agent-writes-a-workflow-draft-and-a-person-publishes-it.md).
 A workflow is a versioned graph of typed nodes and edges: triggers start it,
 agent nodes hand work to the built-in AI, control nodes branch, fan out, join,
 ask a person and end it. This document covers what exists today: the graph
 contract, its validation, drafts and versions, the runtime that executes
-runs, agent nodes, approvals and control flow, and the editor and run
-debugger in the browser. Agent-authored drafts with their own boundary
-(#165) are not built yet.
+runs, agent nodes, approvals and control flow, the editor and run
+debugger in the browser, and drafts written by agents.
 
 ## Where things are
 
@@ -39,18 +39,20 @@ debugger in the browser. Agent-authored drafts with their own boundary
 | Envelope       | `packages/contracts/src/workflow-envelope.ts`: `workflowAgentNodeEffect`; `envelope` on the GET      |
 | Editor         | `apps/web/src/components/workflows/`; routes under `/arbeitsbereich/:id/workflows`                   |
 | Editing        | `workflow-draft.ts` (pure graph edits), `workflow-run-view.ts` (a run on its graph), both tested     |
+| Agent drafts   | `apps/api/src/workflows/workflow-author-envelope.ts`; `draftAuthor*` columns on both tables          |
 
 ## Routes
 
 | Route                                | What                                                                            |
 | ------------------------------------ | ------------------------------------------------------------------------------- |
 | `GET /api/workspaces/:id/workflows`  | every workflow with its published version, switch and active runs               |
-| `POST /api/workspaces/:id/workflows` | a draft; one manual trigger when no graph is sent; ADMIN                        |
+| `POST /api/workspaces/:id/workflows` | a draft; one manual trigger when no graph is sent; ADMIN; write class           |
 | `GET /api/workflows/:id`             | the summary, the draft graph, its problems and the workspace's `envelope`       |
 | `PATCH /api/workflows/:id`           | name, description, graph; `expectedRevision` refuses a lost edit; ADMIN         |
+| `POST /api/workflows/:id/duplicate`  | copies the draft into a new, unpublished workflow; ADMIN; write class           |
 | `POST /api/workflows/:id/validate`   | checks the sent graph, or the draft; stores nothing; a read-class request       |
-| `POST /api/workflows/:id/publish`    | freezes the draft as the next version, or answers with the identical newest one |
-| `POST /api/workflows/:id/activation` | `{enabled}`; OWNER; only a published workflow can be switched on                |
+| `POST /api/workflows/:id/publish`    | freezes revision `expectedRevision` as the next version; a person only          |
+| `POST /api/workflows/:id/activation` | `{enabled}`; OWNER; a person only; only a published workflow can be switched on |
 | `DELETE /api/workflows/:id`          | refused while a run is not terminal; finished runs go with it                   |
 | `GET /api/workflows/:id/versions`    | the versions, newest first, without their graphs                                |
 | `GET /api/workflow-versions/:id`     | one version with its graph and hash                                             |
@@ -345,3 +347,40 @@ Adding a node type to the editor means a default in `newNode`, its form in
 `workflow-node-forms.tsx` (or its own file), its summary line in
 `workflow-summaries.ts`, an icon in `NODE_ICONS` and its words in the
 `workflows` catalogue.
+
+## Drafts written by agents (issue #165, ADR-080)
+
+An agent may write a draft; only a person publishes it and switches it on.
+
+- **Who may draft.** Create, update and duplicate are `write`-class routes
+  (`requestClassFor`), so an agent with a writing token may draft; the role
+  is still ADMIN. The tools are on both surfaces in the `workflows` domain.
+- **Who may decide.** `publish` and `activation` answer `workflow_human_only`
+  to an agent session and to a service token (`assertMay(..., 'person')`,
+  using `workItemActorOf`). Publish needs `expectedRevision`, so a person
+  publishes the revision they reviewed and nothing an agent wrote since.
+- **Provenance.** `workflow.draftAuthorKind`, `draftAuthorId`,
+  `draftAgentLabel`, `draftAiRunId` and `draftAuthoredAt` move with the
+  graph (`authorColumns`), never with a rename. Publishing copies them onto
+  `workflow_version`, where the immutability trigger covers them. The wire
+  carries `draftAuthor` on the summary and on each version; the editor shows
+  an agent's draft above everything (`workflow-agent-draft`) and the
+  versions tab names who wrote each graph.
+- **The built-in AI's envelope.** `authorEnvelopeProblems` compares each
+  agent node's profile (the workspace default when it names none) with the
+  run's own by `profileNoLooser`, the rule children are held to (ADR-072).
+  A looser one refuses the write with `workflow_exceeds_author` and the
+  problems as `profile_looser_than_author`. A proposing or read-only run
+  never gets this far, because a draft is a write. Deleting is refused to a
+  run.
+- **Repairing.** `exo_workflow_validate` takes a graph and answers with codes
+  and element ids. `EXAMPLE_WORKFLOW_GRAPH` in the tool file is the example
+  every drafting tool's description carries, and `workflows.test.ts` proves it
+  publishes as it is: keep it valid when the contract changes.
+
+A minimal session for an agent, in order: `exo_workflow_create` with the
+graph, `exo_workflow_validate` until `valid` is true, `exo_workflow_update`
+with `expectedRevision`, then tell the person where to find it. A
+`[edge_invalid_handle]` names the edge and the handles the source offers; a
+`[field_required]` names the node; a `[reference_not_found]` a profile, page
+or person outside the workspace.

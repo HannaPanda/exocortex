@@ -6,7 +6,8 @@ import { apiSignIn, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 /**
- * The workflow editor and run debugger (issue #164).
+ * The workflow editor and run debugger (issue #164), and a draft an agent
+ * wrote waiting for a person to publish it (issue #165).
  *
  * The authoring test builds trigger → agent → condition → approval / end
  * with the palette and the configuration panel only, which is the keyboard
@@ -129,6 +130,53 @@ test('authors trigger, agent, condition, approval and end without drawing a line
   ]);
 });
 
+test('shows a draft an agent wrote and leaves publishing it to the person', async ({ page }) => {
+  // The browser's own session, but announcing an agent session: how Hermes
+  // or Claude Code would arrive (ADR-022), as far as provenance goes.
+  const agent = {
+    'x-exocortex-agent-session': `e2e-${Date.now().toString(36)}`,
+    'x-exocortex-agent-client': 'Hermes',
+  };
+  const created = await api.post(`${origin}/api/workspaces/${workspaceId}/workflows`, {
+    headers: agent,
+    data: {
+      name: `Von Hermes ${Date.now().toString(36)}`,
+      graph: {
+        schemaVersion: 1,
+        nodes: [
+          { id: 'start', type: 'trigger.manual', position: { x: 0, y: 0 } },
+          { id: 'ende', type: 'end', outcome: 'succeeded', position: { x: 280, y: 0 } },
+        ],
+        edges: [
+          {
+            id: 'e1',
+            kind: 'flow',
+            source: { nodeId: 'start', handle: 'next' },
+            target: { nodeId: 'ende' },
+          },
+        ],
+      },
+    },
+  });
+  expect(created.ok(), await created.text()).toBe(true);
+  const workflow = ((await created.json()) as { workflow: { id: string; draftAuthor: unknown } })
+    .workflow;
+  expect(workflow.draftAuthor).toMatchObject({ kind: 'agent', agentLabel: 'Hermes' });
+
+  const refused = await api.post(`${origin}/api/workflows/${workflow.id}/publish`, {
+    headers: agent,
+    data: { expectedRevision: 1 },
+  });
+  expect(refused.status()).toBe(403);
+  expect(((await refused.json()) as { code: string }).code).toBe('workflow_human_only');
+
+  await page.goto(`/arbeitsbereich/${workspaceId}/workflows/${workflow.id}`);
+  await expect(page.getByTestId('workflow-agent-draft')).toContainText('Hermes');
+  await page.getByTestId('workflow-publish').click();
+  await expect(page.getByTestId('workflow-published-version')).toBeVisible();
+  await expect(page.getByTestId('workflow-agent-draft')).toHaveCount(0);
+});
+
 /** A small published workflow: start → condition on the run's input → end / stop. */
 async function publishedConditionWorkflow(name: string): Promise<string> {
   const created = await api.post(`${origin}/api/workspaces/${workspaceId}/workflows`, {
@@ -179,7 +227,9 @@ async function publishedConditionWorkflow(name: string): Promise<string> {
   });
   expect(created.ok(), await created.text()).toBe(true);
   const id = ((await created.json()) as { workflow: { id: string } }).workflow.id;
-  const published = await api.post(`${origin}/api/workflows/${id}/publish`, { data: {} });
+  const published = await api.post(`${origin}/api/workflows/${id}/publish`, {
+    data: { expectedRevision: 1 },
+  });
   expect(published.ok(), await published.text()).toBe(true);
   return id;
 }

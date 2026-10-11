@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-291 routes are reachable from at least one client; 172 from all three.
+292 routes are reachable from at least one client; 175 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -196,7 +196,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_update` |
 | `PATCH /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_update` |
 | `PATCH /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_update` |
-| `PATCH /api/workflows/:x` | ✓ | · | ✓ | `exo_workflow_update` |
+| `PATCH /api/workflows/:x` | ✓ | ✓ | ✓ | `exo_workflow_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
@@ -282,6 +282,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/work-items/:x/runs` | ✓ | ✓ | ✓ | `exo_work_item_start_run` |
 | `POST /api/workflow-runs/:x/cancel` | ✓ | · | ✓ | `exo_workflow_run_cancel` |
 | `POST /api/workflows/:x/activation` | ✓ | · | · | — |
+| `POST /api/workflows/:x/duplicate` | ✓ | ✓ | ✓ | `exo_workflow_duplicate` |
 | `POST /api/workflows/:x/publish` | ✓ | · | · | — |
 | `POST /api/workflows/:x/runs` | ✓ | · | ✓ | `exo_workflow_run_start` |
 | `POST /api/workflows/:x/validate` | · | ✓ | ✓ | `exo_workflow_validate` |
@@ -313,12 +314,12 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/work-items` | ✓ | ✓ | ✓ | `exo_work_item_create` |
-| `POST /api/workspaces/:x/workflows` | ✓ | · | ✓ | `exo_workflow_create` |
+| `POST /api/workspaces/:x/workflows` | ✓ | ✓ | ✓ | `exo_workflow_create` |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 
 ## Routes the browser reaches and agents do not
 
-72 of them. Each is covered by a documented exemption; the reasons
+70 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -357,7 +358,6 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/ai/conversations/:x/sources/:x`
 - `PATCH /api/eval-attempts/:x/review` (reachable from MCP)
 - `PATCH /api/eval-cases/:x` (reachable from MCP)
-- `PATCH /api/workflows/:x` (reachable from MCP)
 - `PATCH /api/workspaces/:x/members/:x`
 - `PATCH /api/workspaces/:x/settings`
 - `POST /api/admin/ai-models`
@@ -391,7 +391,6 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/workspaces/:x/eval-runs` (reachable from MCP)
 - `POST /api/workspaces/:x/trash/delete`
 - `POST /api/workspaces/:x/trash/deletion-preview`
-- `POST /api/workspaces/:x/workflows` (reachable from MCP)
 - `PUT /api/workspaces/:x/credentials/:x`
 
 ## Tools offered to one kind of agent only
@@ -419,11 +418,9 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_eval_suite_import` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could replace the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
 - `exo_page_delete` — mcp: The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).
 - `exo_toolbox` — ai: Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.
-- `exo_workflow_create` — mcp: A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.
-- `exo_workflow_delete` — mcp: A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.
-- `exo_workflow_run_cancel` — mcp: Cancelling ends a run and everything in flight in it (issue #161, ADR-076). It belongs with starting: an admin's decision made with an admin token, refused from a run's service token, so the built-in AI can neither start nor stop workflow runs until issue #165 gives it a boundary of its own.
-- `exo_workflow_run_start` — mcp: A workflow run starts agents and spends a budget by itself once it is under way (issue #161, ADR-076). Starting one by hand is an admin's decision, made with an admin token until the editor of issue #164 gives it a button; the API refuses it from a run's service token, so the built-in AI cannot start more agent work than its own run, and agent-started workflows are issue #165 with their own boundary.
-- `exo_workflow_update` — mcp: A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.
+- `exo_workflow_delete` — mcp: Deleting takes a workflow's versions and finished runs with it (issue #160, ADR-075), which is the record of what was reviewed and what ran. The built-in AI may draft, revise and copy workflows (issue #165, ADR-080), but removing the record of them is a person's or an admin token's, and the API refuses it from a run's service token.
+- `exo_workflow_run_cancel` — mcp: Cancelling ends a run and everything in flight in it (issue #161, ADR-076). It belongs with starting: a person's or an admin token's, refused from a run's service token, so the built-in AI can neither start nor stop workflow runs.
+- `exo_workflow_run_start` — mcp: A workflow run starts agents and spends a budget by itself once it is under way (issue #161, ADR-076). Starting one by hand is a person's at the editor or an admin token's; the API refuses it from a run's service token, so the built-in AI cannot start more agent work than its own run. What it may do is draft a workflow (issue #165), which starts nothing until a person publishes and switches it on.
 
 ---
 

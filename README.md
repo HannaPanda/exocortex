@@ -281,6 +281,12 @@ What is deliberately still missing is listed under
   run on the real runtime whose agents propose unless told otherwise, and a
   run drawn on its version with the path taken, attempts, waits, spend and
   history (ADR-079, `docs/workflows.md`)
+- workflows drafted by agents: Hermes, Claude Code or the built-in assistant
+  can write, check, repair and copy a workflow draft through the
+  `exo_workflow_*` tools; publishing and switching on stay a person's at the
+  browser, the draft and every version say who wrote the graph, a person
+  publishes exactly the revision they reviewed, and the assistant cannot give
+  an agent step a looser profile than its own (ADR-080)
 
 ## Stack
 

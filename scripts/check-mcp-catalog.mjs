@@ -299,12 +299,12 @@ const EXEMPT = [
   {
     route: 'POST /api/workflows/:x/publish',
     reason:
-      'Freezes a workflow draft as the version runs will execute (issue #160, ADR-075). Publishing is the review boundary of issue #165: an agent may write and validate a draft through `exo_workflow_create`, `exo_workflow_update` and `exo_workflow_validate`, and a person decides what becomes a version. Reading versions is a tool (`exo_workflow_versions`).',
+      'Freezes a workflow draft as the version runs will execute (issue #160, ADR-075). Publishing is the review boundary of issue #165 (ADR-080): an agent may write, copy and validate a draft through `exo_workflow_create`, `exo_workflow_update`, `exo_workflow_duplicate` and `exo_workflow_validate`, and a person at the browser decides which reviewed revision becomes a version -- the API refuses the route to an agent session and a service token. Reading versions is a tool (`exo_workflow_versions`).',
   },
   {
     route: 'POST /api/workflows/:x/activation',
     reason:
-      "Switches a published workflow on or off (issue #160, ADR-075). An enabled workflow starts agents by itself on a schedule or on changes, so whether it may is the owner's decision and never a tool call; the state is readable through `exo_workflow_get`.",
+      "Switches a published workflow on or off (issue #160, ADR-075). An enabled workflow starts agents by itself on a schedule or on changes, so whether it may is the owner's decision at the browser and never a tool call; the API refuses it to an agent session and a service token (issue #165, ADR-080), and the state is readable through `exo_workflow_get`.",
   },
 ];
 

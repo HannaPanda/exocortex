@@ -110,29 +110,19 @@ const SURFACE_EXEMPT = [
       "An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
   },
   {
-    tool: 'exo_workflow_create',
-    reason:
-      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
-  },
-  {
-    tool: 'exo_workflow_update',
-    reason:
-      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
-  },
-  {
     tool: 'exo_workflow_delete',
     reason:
-      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
+      "Deleting takes a workflow's versions and finished runs with it (issue #160, ADR-075), which is the record of what was reviewed and what ran. The built-in AI may draft, revise and copy workflows (issue #165, ADR-080), but removing the record of them is a person's or an admin token's, and the API refuses it from a run's service token.",
   },
   {
     tool: 'exo_workflow_run_start',
     reason:
-      "A workflow run starts agents and spends a budget by itself once it is under way (issue #161, ADR-076). Starting one by hand is an admin's decision, made with an admin token until the editor of issue #164 gives it a button; the API refuses it from a run's service token, so the built-in AI cannot start more agent work than its own run, and agent-started workflows are issue #165 with their own boundary.",
+      "A workflow run starts agents and spends a budget by itself once it is under way (issue #161, ADR-076). Starting one by hand is a person's at the editor or an admin token's; the API refuses it from a run's service token, so the built-in AI cannot start more agent work than its own run. What it may do is draft a workflow (issue #165), which starts nothing until a person publishes and switches it on.",
   },
   {
     tool: 'exo_workflow_run_cancel',
     reason:
-      "Cancelling ends a run and everything in flight in it (issue #161, ADR-076). It belongs with starting: an admin's decision made with an admin token, refused from a run's service token, so the built-in AI can neither start nor stop workflow runs until issue #165 gives it a boundary of its own.",
+      "Cancelling ends a run and everything in flight in it (issue #161, ADR-076). It belongs with starting: a person's or an admin token's, refused from a run's service token, so the built-in AI can neither start nor stop workflow runs.",
   },
   {
     tool: 'exo_changeset_apply',

@@ -768,6 +768,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   agent node combines with its own by taking the stricter. What a node will
   really run under is `workflowAgentNodeEffect` over the GET's `envelope`,
   and the editor shows it beside the configured value.
+- ADR-080: an agent writes a workflow draft, and a person publishes it.
+  Creating, revising and duplicating a draft are `write`-class routes on
+  both agent surfaces; publishing and switching on answer
+  `workflow_human_only` to an agent session or a service token, and
+  publishing names the reviewed `expectedRevision`. The draft and each
+  version record who wrote the graph (`draftAuthor*`, under the version's
+  immutability trigger). A run of the built-in AI may not draft an agent
+  node under a looser profile than its own (`profileNoLooser`), and may not
+  delete.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
