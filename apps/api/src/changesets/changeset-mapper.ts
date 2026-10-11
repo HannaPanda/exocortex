@@ -29,7 +29,7 @@ export const STATUS_TO_PRISMA: Record<ChangesetStatus, PrismaStatus> = {
   stale: 'STALE',
 };
 
-const STATUS_FROM_PRISMA: Record<PrismaStatus, ChangesetStatus> = {
+export const STATUS_FROM_PRISMA: Record<PrismaStatus, ChangesetStatus> = {
   DRAFT: 'draft',
   READY: 'ready',
   PARTIALLY_APPLIED: 'partially_applied',

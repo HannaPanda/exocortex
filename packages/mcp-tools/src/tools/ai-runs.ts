@@ -29,7 +29,7 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  */
 
 /** German label per wire status, so a model does not have to guess at the enum. */
-const STATUS_LABEL: Record<AiRun['status'], string> = {
+export const STATUS_LABEL: Record<AiRun['status'], string> = {
   pending: 'wartet auf einen Worker',
   running: 'läuft',
   completed: 'abgeschlossen',
@@ -130,7 +130,7 @@ export const aiRunCancelTool: AnyToolDefinition = defineTool({
 });
 
 /** `$1,2345`, from the micro-USD integers the API deals in. */
-function formatMicroUsd(microUsd: number): string {
+export function formatMicroUsd(microUsd: number): string {
   return `$${(microUsd / 1_000_000).toFixed(4)}`;
 }
 

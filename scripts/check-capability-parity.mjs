@@ -95,6 +95,11 @@ const SURFACE_EXEMPT = [
       'Deletes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.',
   },
   {
+    tool: 'exo_ai_run_inspect',
+    reason:
+      'Reads the timeline and context composition of an AI run. Same reason as `exo_ai_run_get`: the built-in AI is the thing being inspected.',
+  },
+  {
     tool: 'exo_ai_run_get',
     reason:
       'Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.',

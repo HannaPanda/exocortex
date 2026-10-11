@@ -12,6 +12,7 @@ import { ConversationSearchService } from './conversation-search';
 import { ConversationSourcesService } from './conversation-sources.service';
 import { ConversationsController } from './conversations.controller';
 import { ConversationsService } from './conversations.service';
+import { RunInspectionService } from './run-inspection.service';
 
 @Module({
   // `DocumentsModule` so a conversation can be saved as an ordinary page
@@ -27,6 +28,7 @@ import { ConversationsService } from './conversations.service';
     ConversationSearchService,
     ConversationArchiveService,
     ConversationSourcesService,
+    RunInspectionService,
   ],
   exports: [
     AiService,

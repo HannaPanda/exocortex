@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-260 routes are reachable from at least one client; 161 from all three.
+261 routes are reachable from at least one client; 161 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -71,6 +71,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/ai/conversations/search` | ✓ | ✓ | ✓ | `exo_chat_search` |
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
+| `GET /api/ai/runs/:x/inspection` | · | · | ✓ | `exo_ai_run_inspect` |
 | `GET /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
@@ -355,6 +356,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_agent_profile_update` — mcp: Changes an agent profile (issue #143, ADR-071). A profile is what holds a run of the built-in AI; a run that could write the rules it runs under would not be held by them, so the API refuses it too.
 - `exo_ai_run_cancel` — mcp: Cancels an AI run. Same reason, with teeth: the run it would most easily reach is its own.
 - `exo_ai_run_get` — mcp: Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.
+- `exo_ai_run_inspect` — mcp: Reads the timeline and context composition of an AI run. Same reason as `exo_ai_run_get`: the built-in AI is the thing being inspected.
 - `exo_ai_usage` — mcp: The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.
 - `exo_attachment_upload_ticket` — mcp: Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.
 - `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.

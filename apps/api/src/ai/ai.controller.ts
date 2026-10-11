@@ -4,6 +4,8 @@ import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swa
 import { type VerifiedSession } from '@exocortex/auth';
 import {
   type AiRun,
+  type AiRunInspection,
+  aiRunInspectionSchema,
   aiRunSchema,
   type CreateAiRunRequest,
   createAiRunRequestSchema,
@@ -17,11 +19,15 @@ import { type ReaderLocaleHeaders } from '../common/reader-locale';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { AiService } from './ai.service';
+import { RunInspectionService } from './run-inspection.service';
 
 @ApiTags('ai')
 @Controller('api/ai/runs')
 export class AiController {
-  constructor(private readonly ai: AiService) {}
+  constructor(
+    private readonly ai: AiService,
+    private readonly inspection: RunInspectionService,
+  ) {}
 
   @Post()
   @ApiBody({ schema: openApiSchema(createAiRunRequestSchema) })
@@ -47,6 +53,20 @@ export class AiController {
     @Headers() headers: ReaderLocaleHeaders,
   ): Promise<AiRun> {
     return this.ai.getRun(runId, session.userId, headers);
+  }
+
+  /**
+   * What the run did and what its prompt was made of (issue #145, ADR-073):
+   * a timeline of sizes, names and outcomes, never a prompt or an answer.
+   */
+  @Get(':runId/inspection')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiRunInspectionSchema) })
+  async inspect(
+    @CurrentSession() session: VerifiedSession,
+    @Param('runId') runId: string,
+    @Headers() headers: ReaderLocaleHeaders,
+  ): Promise<AiRunInspection> {
+    return this.inspection.inspect(runId, session.userId, headers);
   }
 
   @Post(':runId/cancel')
