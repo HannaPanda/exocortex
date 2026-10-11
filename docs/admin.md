@@ -537,6 +537,17 @@ ADR-024):
 Neither is reachable from a workspace's own settings. Everything else about
 automations is, including the run log: `docs/automations.md`.
 
+## Workflows: the switch and the four ceilings
+
+Workflow runs (issue #161, ADR-076) have their own group. `workflows.enabled`
+is the main switch and defaults to **off**; switching it off stops runs in
+flight at their next step. `workflows.maxNodeExecutions`,
+`workflows.maxParallelBranches`, `workflows.maxLifetimeSeconds` and
+`workflows.budgetMicroUsdPerRun` bound every run. All five are
+workspace-overridable with the deployment value as a ceiling, and a graph's
+own limits can only be stricter still; a run freezes the stricter of each
+when it starts. What a workflow is and does: `docs/workflows.md`.
+
 ## Übersichtsseiten: what a composition costs
 
 A page marked as an overview describes its sub-pages, and keeps describing them

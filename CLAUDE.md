@@ -729,6 +729,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   derives what may run next from those rows alone. Drafts are an admin's,
   switching on is the owner's, publishing and switching on are no tools, and
   a run of the built-in AI writes none of it.
+- ADR-076: a workflow run moves one persisted transition per job on the
+  `workflow` queue. Every writer holds the run's row lock (an UPDATE of
+  `advancedAt`) and writes the history in the same transaction; an attempt
+  is claimed with a lease and only the lease holder records a result; a side
+  effect is keyed by `<runId>:<nodeId>:<attempt>` and only an idempotent
+  handler is ever repeated, after an expired lease or a `retryable` failure.
+  Waiting is a row, never a worker. Limits are frozen on the run, each the
+  stricter of the graph's and `workflows.*`; the minute sweep is the net, not
+  the engine. A node's write carries `x-exocortex-workflow` (service tokens
+  only), a workflow never starts from its own outbox row, and the chain depth
+  is shared with automations.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -1,13 +1,14 @@
 # Agent workflows
 
-Issue #160 under the epic #159,
-[ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md).
+Issues #160 and #161 under the epic #159,
+[ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md) and
+[ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md).
 A workflow is a versioned graph of typed nodes and edges: triggers start it,
 agent nodes hand work to the built-in AI, control nodes branch, fan out, join,
 ask a person and end it. This document covers what exists today: the graph
-contract, its validation, drafts and versions, and the persisted state of a
-run. Executing runs (#161), agent and control nodes at runtime (#162, #163),
-the editor (#164) and agent authoring (#165) are not built yet.
+contract, its validation, drafts and versions, and the runtime that executes
+runs. Agent and approval nodes at runtime (#162, #163), the editor (#164)
+and agent authoring (#165) are not built yet.
 
 ## Where things are
 
@@ -22,7 +23,11 @@ the editor (#164) and agent authoring (#165) are not built yet.
 | REST           | `apps/api/src/workflows/` (controller, definition service, run service, reference checks, mapper)    |
 | Policies       | `canManageWorkflows` (ADMIN), `canActivateWorkflows` (OWNER) in `packages/auth/src/policies.ts`      |
 | Tools          | `packages/mcp-tools/src/tools/workflows.ts`, domain `workflows`                                      |
-| Words          | feature entry `agenten-workflows`; error codes `workflow_*` in the `errors` namespace                |
+| Words          | feature entries `agenten-workflows`, `workflow-laeufe`; error codes `workflow_*` in `errors`         |
+| Runtime        | `apps/worker/src/workflows/`: `runtime.ts`, `handlers.ts`, `triggers.ts`, `sweep.ts`                 |
+| Shared writes  | `packages/database/src/workflow-runs.ts`: start, cancel, lock, history events, trigger projection    |
+| Runtime words  | `packages/contracts/src/workflow-runtime.ts`: limits, run error codes, event types, origin header    |
+| Tables         | `workflow_trigger` (self-starting triggers), `workflow_run_event` (history), leases on attempts      |
 
 ## Routes
 
@@ -39,10 +44,9 @@ the editor (#164) and agent authoring (#165) are not built yet.
 | `GET /api/workflows/:id/versions`    | the versions, newest first, without their graphs                                |
 | `GET /api/workflow-versions/:id`     | one version with its graph and hash                                             |
 | `GET /api/workflows/:id/runs`        | the latest 50 runs                                                              |
-| `GET /api/workflow-runs/:id`         | the run, its version's graph, every node attempt and `workflowProgress`         |
-
-There is no route that starts a run: `WorkflowRunsService.start` exists for the
-runtime of #161, and a run nobody executes would sit queued for ever.
+| `POST /api/workflows/:id/runs`       | starts a run by hand; `workflows.enabled`; ADMIN; never a run of the AI         |
+| `GET /api/workflow-runs/:id`         | the run, its graph, every node attempt, the history and `workflowProgress`      |
+| `POST /api/workflow-runs/:id/cancel` | cancels what is queued, running or waiting; ADMIN; never a run of the AI        |
 
 ## The graph
 
@@ -143,6 +147,56 @@ taking the stricter.
   rather than inventing a status of its own.
 - **The draft revision moves with the graph only.** Renaming a workflow does
   not invalidate an editor's open graph.
+
+## The runtime (issue #161, ADR-076)
+
+A run moves one transition per job on the `workflow` queue, and every
+transition is committed before the next is scheduled:
+
+| Job           | What it does                                                                                   |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `advance`     | locks the run, records dead nodes as `skipped`, queues what the limits allow, finishes the run |
+| `execute`     | claims one queued attempt with a lease, runs its handler, records the outcome if still leased  |
+| `resume`      | the same for a waiting attempt, with what woke it (a timer, a work item, an attention item)    |
+| `start-event` | starts a run once the minute's debounce after a page change has passed                         |
+
+What runs where:
+
+- **Handlers** (`handlers.ts`) execute `condition`, `parallel`, `join` and
+  `end`. `agent` and `approval` fail their attempt with
+  `workflow_node_not_executable` until #162 and #163. A handler answers
+  `succeeded` with handles and output, `waiting` with a `workflowWaitSchema`
+  object, or `failed` with an error class; it never writes its own row, and
+  it keys any side effect by `execution.idempotencyKey`.
+- **Idempotent or not** is the handler's declaration. Only an idempotent
+  handler is retried after `retryable` (10 s, 40 s, 160 s, three attempts)
+  or queued again after its worker vanished; any other is failed as
+  `workflow_node_interrupted`.
+- **Limits** are frozen on the run when it starts, each the stricter of the
+  graph's and the workspace's `workflows.*` setting: attempts
+  (`workflow_node_limit`), attempts in flight (waiting ones count; the rest
+  is held back), lifetime (`timed_out`, `workflow_lifetime_exceeded`) and
+  budget (`workflow_budget_exhausted`). `workflows.enabled` defaults off and
+  stops a run in flight at its next step (`cancelled`, `workflow_disabled`).
+- **Starting by itself** reads `workflow_trigger`, which holds a row per
+  schedule and event trigger exactly while the workflow is switched on; it is
+  rebuilt by `syncWorkflowTriggers` when a workflow is published or switched.
+  Event triggers hang off the outbox dispatcher; schedules off the sweep. A
+  self-started run acts as `enabledById`, whoever switched it on.
+- **Loop protection**: a node's write carries `x-exocortex-workflow`
+  (`<workflowId>:<runId>:<executionId>:<depth>`, service tokens only), which
+  the outbox row keeps. A workflow never starts from its own row, and the
+  depth is shared with automations (`AUTOMATION_MAX_DEPTH`).
+- **The sweep** (`sweep-workflow-runs`, every minute) recovers expired leases,
+  re-queues steps due for two minutes, wakes due timers, advances stale runs
+  and runs past their deadline, and starts due schedules.
+- **The history** (`workflow_run_event`) is facts: node queued, started,
+  succeeded, failed, retry scheduled, waiting, resumed, skipped, cancelled,
+  recovered, edge taken, limit reached, run started, finished, cancelled.
+
+Adding a node type's execution means a handler in `DEFAULT_NODE_HANDLERS`,
+a decision whether it is idempotent, and, when it waits, a `resume` and the
+hook that sends the `resume` job when its object has an answer.
 
 ## Statuses
 

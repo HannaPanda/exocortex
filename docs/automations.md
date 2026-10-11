@@ -287,7 +287,9 @@ an infrastructure fault and belongs to the alerts.
 An automation's own writes carry the rule they came from. Two consequences:
 
 - A rule never fires on its own action.
-- A chain through other rules stops at depth 3.
+- A chain through other rules stops at depth 3. Workflow writes count in the
+  same depth (issue #161): a rule reacting to a page a workflow node wrote is
+  one link further, and so is a workflow started by a rule's write.
 
 Neither is configurable, and neither is a substitute for the debounce.
 

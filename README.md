@@ -254,9 +254,16 @@ What is deliberately still missing is listed under
   parallel branches, joins, approvals, ends) through the API and the
   `exo_workflow_*` tools: drafts are validated element by element, published
   as immutable versions, and switched on by the owner; runs and every node
-  attempt are persisted state a restarted process reads back. Nothing
-  executes a run yet, and there is no editor in the browser (ADR-075,
+  attempt are persisted state a restarted process reads back (ADR-075,
   `docs/workflows.md`)
+- workflow runs, by hand, on a schedule or on a page change, one persisted
+  transition at a time: attempts are leased so a redelivered job runs once, a
+  vanished worker is recovered by a minute sweep, waiting holds no worker,
+  retries are bounded and only for idempotent steps, limits on steps,
+  parallelism, lifetime and budget stop a runaway graph, and a workflow never
+  wakes itself through its own writes. Conditions, fan-out, joins and ends
+  execute; agent and approval steps, and an editor in the browser, are the
+  next stages (ADR-076)
 
 ## Stack
 
