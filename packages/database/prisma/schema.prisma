@@ -4671,13 +4671,16 @@ model WorkflowRun {
   /// When the run times out, from `limits.maxLifetimeSeconds`.
   deadlineAt DateTime?
   /// How many automations or workflows deep the change that started it was.
-  chainDepth Int       @default(0)
+  chainDepth Int          @default(0)
+  /// A ceiling on every agent node's write mode (issue #164): a test run
+  /// proposes unless whoever started it chose otherwise. Null: no opinion.
+  writeMode  AiWriteMode?
   /// The last time the runtime looked at the run; the sweep uses it to find
   /// a run whose next step was lost with a worker.
   advancedAt DateTime?
   /// How many history events the run has; the next one gets this plus one.
   /// Incrementing it is also what serialises two writers of one run.
-  eventCount Int       @default(0)
+  eventCount Int          @default(0)
 
   errorCode    String?
   errorMessage String?
@@ -4766,19 +4769,19 @@ model WorkflowNodeExecution {
 /// minute sweep claims a schedule row by filtering on the `nextRunAt` it read
 /// (ADR-038); the outbox dispatcher matches an event row by its `events`.
 model WorkflowTrigger {
-  id          String    @id @default(cuid(2))
-  workflowId  String
-  workflow    Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  id                String    @id @default(cuid(2))
+  workflowId        String
+  workflow          Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workspaceId       String
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   /// The version the row was built from; a run starts on that version.
   workflowVersionId String
-  nodeId      String
+  nodeId            String
   /// `trigger.schedule` or `trigger.event`.
-  nodeType    String
+  nodeType          String
 
   /// Event triggers: the automation triggers the node listens for.
-  events          String[] @default([])
+  events          String[]  @default([])
   scopeDocumentId String?
   /// Schedule triggers: when it fires next; null once a one-off has fired.
   nextRunAt       DateTime?

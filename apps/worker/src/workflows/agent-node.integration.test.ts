@@ -270,10 +270,15 @@ async function publishedWorkflow(graph: WorkflowGraphInput): Promise<string> {
   return workflow.id;
 }
 
-async function start(workflowId: string, input?: Record<string, unknown>): Promise<string> {
+async function start(
+  workflowId: string,
+  input?: Record<string, unknown>,
+  test?: { writeMode: 'read_only' | 'propose' | 'direct' },
+): Promise<string> {
   const started = await startWorkflowRun(prisma, {
     workflowId,
-    origin: 'manual',
+    origin: test === undefined ? 'manual' : 'test',
+    ...(test === undefined ? {} : { writeMode: test.writeMode }),
     triggerNodeId: null,
     startedById: ownerId,
     correlationId: 'test',
@@ -432,6 +437,18 @@ describe('agent node', () => {
     expect(attemptOf(run, 'good')!.firedHandles).toEqual(['true']);
     expect(attemptOf(run, 'no')!.status).toBe('SKIPPED');
     expect(run.spentMicroUsd).toBe(120_000);
+  });
+
+  it('holds the node to the write mode of a test run, and leaves an ordinary run alone', async () => {
+    const workflowId = await publishedWorkflow(scoreGraph());
+    await start(workflowId, undefined, { writeMode: 'propose' });
+    await drain();
+    expect(calls[0]!.body).toMatchObject({ writeMode: 'propose' });
+
+    calls = [];
+    await start(workflowId);
+    await drain();
+    expect(calls[0]!.body).not.toHaveProperty('writeMode');
   });
 
   it('starts nothing twice when the attempt is delivered again', async () => {

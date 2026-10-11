@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
-import { type WorkflowGraph, type WorkflowWait, workflowWaitSchema } from '@exocortex/contracts';
+import {
+  type AiWriteMode,
+  type WorkflowGraph,
+  type WorkflowWait,
+  workflowWaitSchema,
+} from '@exocortex/contracts';
 import {
   appendWorkflowRunEvents,
   lockWorkflowRun,
@@ -23,6 +28,7 @@ import {
   enqueueAll,
   EXECUTION_SELECT,
   handlerFor,
+  lower,
   RUN_SELECT,
   type RunRow,
   type WorkflowRuntimeDependencies,
@@ -186,6 +192,7 @@ async function takeLease(
         workspaceId: run.workspaceId,
         startedById: run.startedById,
         chainDepth: run.chainDepth,
+        writeMode: run.writeMode === null ? null : lower<AiWriteMode>(run.writeMode),
         input: run.input,
         correlationId: run.correlationId,
       },

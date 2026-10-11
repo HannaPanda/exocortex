@@ -9,6 +9,7 @@ import {
 } from '@exocortex/auth';
 import {
   type CreateWorkflowRequest,
+  effectiveWorkflowLimits,
   type DeleteWorkflowResponse,
   emptyWorkflowGraph,
   type PublishWorkflowRequest,
@@ -32,6 +33,7 @@ import { AppError } from '../common/app-error';
 import { currentAiRunId } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 import {
   ACTIVE_RUN_STATUSES,
@@ -63,6 +65,7 @@ export class WorkflowsService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
+    private readonly settings: SettingsService,
   ) {}
 
   async list(input: { workspaceId: string; userId: string }): Promise<WorkflowListResponse> {
@@ -384,11 +387,19 @@ export class WorkflowsService {
 
   private async respond(row: WorkflowRow): Promise<WorkflowResponse> {
     const draft: WorkflowGraph = storedGraph(row.draftGraph);
-    const problems = await this.problemsOf(row.workspaceId, draft);
+    const [problems, settings] = await Promise.all([
+      this.problemsOf(row.workspaceId, draft),
+      this.settings.getForWorkspace(row.workspaceId),
+    ]);
     return {
       workflow: toWorkflowSummary(row, problems.length === 0),
       draft,
       problems,
+      envelope: {
+        workflowsEnabled: settings['workflows.enabled'],
+        writeMode: settings['ai.writeMode'],
+        limits: effectiveWorkflowLimits(draft.limits, settings),
+      },
     };
   }
 

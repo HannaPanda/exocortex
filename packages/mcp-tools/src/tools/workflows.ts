@@ -8,6 +8,7 @@ import {
   startWorkflowRunRequestSchema,
   updateWorkflowRequestSchema,
   WORKFLOW_NODE_HANDLES,
+  type WorkflowEnvelope,
   type WorkflowGraph,
   workflowListResponseSchema,
   type WorkflowProblem,
@@ -77,6 +78,17 @@ function formatSummary(workflow: WorkflowSummary): string {
   );
 }
 
+/** What the workspace holds every run to, which the graph can only narrow. */
+function formatEnvelope(envelope: WorkflowEnvelope): string {
+  const { limits } = envelope;
+  return (
+    `Rahmen des Arbeitsbereichs: Workflows ${envelope.workflowsEnabled ? 'eingeschaltet' : 'ausgeschaltet'}` +
+    ` · Schreibmodus höchstens ${envelope.writeMode}` +
+    ` · ein Lauf jetzt: ${limits.maxNodeExecutions} Schritte, ${limits.maxParallelBranches} parallel, ` +
+    `${limits.maxLifetimeSeconds} s, ${limits.budgetMicroUsd} µ$`
+  );
+}
+
 function formatGraph(graph: WorkflowGraph): string {
   const nodes = graph.nodes.map(
     (node) => `- ${node.id} [${node.type}]${node.label ? ` ${node.label}` : ''}`,
@@ -142,6 +154,7 @@ export const workflowGetTool: AnyToolDefinition = defineTool({
     return {
       text: [
         formatSummary(result.workflow),
+        formatEnvelope(result.envelope),
         formatGraph(result.draft),
         formatProblems(result.problems),
       ].join('\n\n'),
@@ -293,6 +306,7 @@ function formatRun(result: WorkflowRunResponse): string {
         `${run.limits.budgetMicroUsd} µ$, bis ${run.deadlineAt ?? '–'}`;
   return [
     `Lauf ${run.id}: ${run.status}, Version ${run.version}, ${run.origin}` +
+      (run.writeMode === null ? '' : `, Schreibmodus höchstens ${run.writeMode}`) +
       (run.errorCode === null ? '' : ` [${run.errorCode}]`) +
       ` · ${run.nodeExecutionCount} Versuche, ${run.spentMicroUsd} µ$ ausgegeben` +
       limits,
@@ -309,8 +323,11 @@ export const workflowRunStartTool: AnyToolDefinition = defineTool({
   description:
     'Startet einen Lauf der veröffentlichten Version eines Workflows von Hand (nur Admins, und nur ' +
     'wenn Workflows im Arbeitsbereich eingeschaltet sind). Ohne triggerNodeId vom einzigen ' +
-    'manuellen Auslöser; input wird dem Lauf als Auslöser-Daten mitgegeben. Der Lauf arbeitet im ' +
-    'Hintergrund weiter; den Stand liest exo_workflow_run_get.',
+    'manuellen Auslöser; input wird dem Lauf als Auslöser-Daten mitgegeben. test: true ist ein ' +
+    'Probelauf, der auch von einem Zeitplan- oder Ereignis-Auslöser starten darf und dessen ' +
+    'Agent-Knoten nur vorschlagen, solange writeMode nichts anderes sagt. writeMode verschärft ' +
+    'nur: jeder Agent-Knoten arbeitet mit dem strengeren von writeMode und seinem eigenen. Der ' +
+    'Lauf arbeitet im Hintergrund weiter; den Stand liest exo_workflow_run_get.',
   inputSchema: z.object({ workflowId: idSchema }).extend(startWorkflowRunRequestSchema.shape),
   surfaces: ['mcp'],
   domain: 'workflows',

@@ -153,9 +153,13 @@ export class WorkflowRunsService {
       currentAutomation()?.depth ?? 0,
       currentWorkflowOrigin()?.depth ?? 0,
     );
+    // A test proposes unless the person starting it chose otherwise, and
+    // whatever they chose only narrows what each agent node would do.
+    const test = input.request.test === true;
+    const writeMode = input.request.writeMode ?? (test ? 'propose' : null);
     const started = await startWorkflowRun(this.prisma, {
       workflowId: input.workflowId,
-      origin: 'manual',
+      origin: test ? 'test' : 'manual',
       triggerNodeId: input.request.triggerNodeId ?? null,
       ...(input.request.input === undefined
         ? {}
@@ -163,6 +167,7 @@ export class WorkflowRunsService {
       startedById: input.userId,
       correlationId: input.correlationId,
       chainDepth,
+      writeMode,
       settings,
       requireEnabled: false,
     });
@@ -176,7 +181,7 @@ export class WorkflowRunsService {
         targetType: 'workflow',
         targetId: input.workflowId,
         correlationId: input.correlationId,
-        metadata: { runId: started.runId },
+        metadata: { runId: started.runId, test, writeMode },
       }),
     );
     await this.queues.enqueue(QUEUE_NAMES.workflow, {

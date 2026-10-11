@@ -1,4 +1,5 @@
 import {
+  type AiWriteMode,
   effectiveWorkflowLimits,
   isTriggerNode,
   nextWorkflowScheduleRun,
@@ -132,6 +133,8 @@ export interface StartWorkflowRunInput {
   correlationId: string | null;
   /** How many automations or workflows deep the change that starts it was. */
   chainDepth: number;
+  /** A ceiling on every agent node's write mode (issue #164); null or absent: none. */
+  writeMode?: AiWriteMode | null;
   /** The workspace's resolved settings; the run's limits are frozen from them. */
   settings: WorkflowLimitSettings;
   /** A run that starts by itself needs the workflow switched on. */
@@ -204,6 +207,9 @@ export async function startWorkflowRun(
         limits: limits as Prisma.InputJsonObject,
         deadlineAt: new Date(now.getTime() + limits.maxLifetimeSeconds * 1_000),
         chainDepth: input.chainDepth,
+        ...(input.writeMode == null
+          ? {}
+          : { writeMode: input.writeMode.toUpperCase() as Uppercase<AiWriteMode> }),
         createdAt: now,
         startedAt: now,
         advancedAt: now,

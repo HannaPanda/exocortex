@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
 import {
+  type AiWriteMode,
   graphProblems,
   isTriggerNode,
   type WorkflowErrorClass,
@@ -76,6 +77,7 @@ export const RUN_SELECT = {
   limits: true,
   deadlineAt: true,
   chainDepth: true,
+  writeMode: true,
   errorCode: true,
   errorMessage: true,
   summary: true,
@@ -209,6 +211,7 @@ export function toWorkflowRun(row: RunRow): WorkflowRun {
     limits: limits.success ? limits.data : null,
     deadlineAt: row.deadlineAt?.toISOString() ?? null,
     chainDepth: row.chainDepth,
+    writeMode: row.writeMode === null ? null : (row.writeMode.toLowerCase() as AiWriteMode),
     errorCode: row.errorCode,
     errorMessage: row.errorMessage,
     summary: row.summary,

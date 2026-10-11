@@ -1,4 +1,5 @@
 import {
+  type AiWriteMode,
   isInputSource,
   type WorkflowConditionSource,
   type WorkflowErrorClass,
@@ -60,6 +61,8 @@ export interface NodeContext {
     /** Who the run acts as. */
     startedById: string | null;
     chainDepth: number;
+    /** A ceiling on every agent node's write mode (issue #164); null: none. */
+    writeMode: AiWriteMode | null;
     input: unknown;
     correlationId: string | null;
   };

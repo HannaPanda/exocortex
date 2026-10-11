@@ -78,6 +78,7 @@ export const RUN_SELECT = {
   correlationId: true,
   startedById: true,
   chainDepth: true,
+  writeMode: true,
   spentMicroUsd: true,
   nodeExecutionCount: true,
   limits: true,

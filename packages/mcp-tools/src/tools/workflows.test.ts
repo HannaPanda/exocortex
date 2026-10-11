@@ -83,9 +83,24 @@ describe('workflow tools', () => {
   });
 
   it('shows the draft as nodes and edges', async () => {
-    const { client } = fakeClient({ workflow: summary, draft: emptyWorkflowGraph(), problems: [] });
+    const { client } = fakeClient({
+      workflow: summary,
+      draft: emptyWorkflowGraph(),
+      problems: [],
+      envelope: {
+        workflowsEnabled: false,
+        writeMode: 'propose',
+        limits: {
+          maxNodeExecutions: 200,
+          maxParallelBranches: 4,
+          maxLifetimeSeconds: 86_400,
+          budgetMicroUsd: 2_000_000,
+        },
+      },
+    });
     const result = await tool('exo_workflow_get').run(client, { workflowId: summary.id });
     expect(result.text).toContain('- start [trigger.manual]');
+    expect(result.text).toContain('Workflows ausgeschaltet · Schreibmodus höchstens propose');
     expect(result.text).toContain('lässt sich veröffentlichen');
   });
 });

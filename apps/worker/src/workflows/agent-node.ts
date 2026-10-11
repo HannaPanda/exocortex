@@ -1,6 +1,7 @@
 import {
   formatWorkflowOrigin,
   startWorkItemRunResponseSchema,
+  strictestWriteMode,
   WORKFLOW_ORIGIN_HEADER,
   type WorkflowNodeOf,
   workflowRunLimitsSchema,
@@ -97,7 +98,11 @@ async function startWork(
         contextDocumentIds: await contextFor(dependencies.prisma, run, node),
         budgetMicroUsd: budget,
         resultFields: node.outputFields,
-        ...(node.writeMode === null ? {} : { writeMode: node.writeMode }),
+        // The run's ceiling, a test's `propose` for one, narrows the node's
+        // own; the API combines the result with the published node again.
+        ...(node.writeMode === null && run.writeMode === null
+          ? {}
+          : { writeMode: strictestWriteMode(node.writeMode, run.writeMode) }),
         ...(node.agentProfileId === null ? {} : { agentProfileId: node.agentProfileId }),
       },
       responseSchema: workItemResponseSchema,

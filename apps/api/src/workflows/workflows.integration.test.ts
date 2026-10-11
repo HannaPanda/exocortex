@@ -112,7 +112,7 @@ function reviewGraph(goal = 'Review the open ideas'): WorkflowGraphInput {
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const access = new WorkspaceAccessService(prisma);
-  service = new WorkflowsService(prisma, access, new OutboxService(prisma, logger));
+  service = new WorkflowsService(prisma, access, new OutboxService(prisma, logger), settingsStub);
   runs = runsService(prisma);
 
   const suffix = Date.now().toString(36);
@@ -506,6 +506,42 @@ describe('publishing, versions and runs', () => {
         }),
       ),
     ).rejects.toMatchObject({ code: 'forbidden' });
+  });
+
+  it('starts a test run that proposes unless told otherwise, and shows the envelope', async () => {
+    const created = await createWorkflow('Probelauf');
+    expect(created.envelope).toMatchObject({
+      workflowsEnabled: true,
+      writeMode: 'direct',
+      limits: { budgetMicroUsd: expect.any(Number) },
+    });
+    await service.publish({
+      workflowId: created.workflow.id,
+      userId: adminId,
+      request: {},
+      correlationId,
+    });
+    const proposing = await runs.start({
+      workflowId: created.workflow.id,
+      userId: adminId,
+      request: { test: true },
+      correlationId,
+    });
+    expect(proposing.run).toMatchObject({ origin: 'test', writeMode: 'propose' });
+    const reading = await runs.start({
+      workflowId: created.workflow.id,
+      userId: adminId,
+      request: { test: true, writeMode: 'read_only' },
+      correlationId,
+    });
+    expect(reading.run.writeMode).toBe('read_only');
+    const manual = await runs.start({
+      workflowId: created.workflow.id,
+      userId: adminId,
+      request: {},
+      correlationId,
+    });
+    expect(manual.run).toMatchObject({ origin: 'manual', writeMode: null });
   });
 
   it('freezes the stricter limits and cancels everything in flight', async () => {

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { aiWriteModeSchema } from './ai-trust';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { WORKFLOW_LIMITS, WORKFLOW_TRIGGER_TYPES, workflowGraphSchema } from './workflow-graph';
 import { workflowNodeExecutionStatusSchema } from './workflow-progress';
@@ -62,11 +63,28 @@ export type WorkflowSummary = z.infer<typeof workflowSummarySchema>;
 export const workflowListResponseSchema = z.object({ workflows: z.array(workflowSummarySchema) });
 export type WorkflowListResponse = z.infer<typeof workflowListResponseSchema>;
 
+/**
+ * What the workspace allows a run of this workflow (issue #164): the frame
+ * the graph's own settings are combined with by taking the stricter. The
+ * editor shows these effective values beside the configured ones, so an
+ * inherited restriction is never hidden; an agent reads the same.
+ */
+export const workflowEnvelopeSchema = z.object({
+  /** `workflows.enabled`: while off, no run starts, not even by hand. */
+  workflowsEnabled: z.boolean(),
+  /** The workspace's `ai.writeMode`: no agent node writes more freely than this. */
+  writeMode: aiWriteModeSchema,
+  /** The draft's limits combined with the workspace's, as a run started now would freeze them. */
+  limits: workflowRunLimitsSchema,
+});
+export type WorkflowEnvelope = z.infer<typeof workflowEnvelopeSchema>;
+
 export const workflowResponseSchema = z.object({
   workflow: workflowSummarySchema,
   draft: workflowGraphSchema,
   /** What stands between the draft and publishing; empty when it is valid. */
   problems: z.array(workflowProblemSchema),
+  envelope: workflowEnvelopeSchema,
 });
 export type WorkflowResponse = z.infer<typeof workflowResponseSchema>;
 
@@ -251,6 +269,11 @@ export const workflowRunSchema = z.object({
   deadlineAt: isoDateTimeSchema.nullable(),
   /** How many automations or workflows deep the change that started it was. */
   chainDepth: z.number().int(),
+  /**
+   * A ceiling on every agent node's write mode (issue #164); a test run
+   * proposes unless whoever started it chose otherwise. Null: no opinion.
+   */
+  writeMode: aiWriteModeSchema.nullable(),
   errorCode: z.string().nullable(),
   errorMessage: z.string().nullable(),
   /** What the end node the run ended at says about it (issue #163). */
@@ -304,10 +327,18 @@ export type WorkflowRunResponse = z.infer<typeof workflowRunResponseSchema>;
  * Starting a run by hand (issue #161). Without `triggerNodeId` the run starts
  * from the published version's only manual trigger; `input` is handed to the
  * run as what its trigger supplied.
+ *
+ * `test` (issue #164) is a deliberate trial from the editor: it may start
+ * from any trigger, schedule and event ones included, and its agent nodes
+ * propose rather than write unless `writeMode` says otherwise. `writeMode`
+ * only ever narrows: every agent node is held to the stricter of it and its
+ * own, and the work item adds the profile's and the workspace's on top.
  */
 export const startWorkflowRunRequestSchema = z.object({
   triggerNodeId: z.string().min(1).max(64).optional(),
   input: z.record(z.string(), z.unknown()).optional(),
+  test: z.boolean().optional(),
+  writeMode: aiWriteModeSchema.optional(),
 });
 export type StartWorkflowRunRequest = z.infer<typeof startWorkflowRunRequestSchema>;
 

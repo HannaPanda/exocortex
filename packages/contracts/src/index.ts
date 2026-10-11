@@ -57,6 +57,7 @@ export * from './transclusion';
 export * from './work-item-checkpoints';
 export * from './work-item-delegation';
 export * from './work-items';
+export * from './workflow-envelope';
 export * from './workflow-graph';
 export * from './workflow-progress';
 export * from './workflow-result';
