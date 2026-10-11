@@ -58,13 +58,13 @@
       "pt-BR": "caixa de entrada"
     },
     "Freigabe": {
-      "en": "share",
-      "es": "uso compartido",
-      "fr": "partage",
-      "it": "condivisione",
-      "nl": "deling",
-      "pl": "udostępnienie",
-      "pt-BR": "compartilhamento"
+      "en": "share, when a page is shared with somebody; approval, when a person says yes or no to something waiting on them",
+      "es": "uso compartido, cuando se comparte una página; aprobación, cuando una persona dice sí o no a algo que la espera",
+      "fr": "partage, quand une page est partagée ; approbation, quand une personne dit oui ou non à ce qui l’attend",
+      "it": "condivisione, quando si condivide una pagina; approvazione, quando una persona dice sì o no a qualcosa che la aspetta",
+      "nl": "deling, als een pagina gedeeld wordt; goedkeuring, als iemand ja of nee zegt tegen iets dat op hem wacht",
+      "pl": "udostępnienie, gdy strona jest komuś udostępniona; zatwierdzenie, gdy osoba mówi tak lub nie czemuś, co na nią czeka",
+      "pt-BR": "compartilhamento, quando uma página é compartilhada; aprovação, quando uma pessoa diz sim ou não a algo que a espera"
     },
     "Gedächtnis": {
       "en": "memory",
