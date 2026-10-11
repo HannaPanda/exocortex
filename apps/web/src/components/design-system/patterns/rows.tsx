@@ -265,6 +265,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-bytes"
+        title="Größe mit Einheit"
+        source="apps/web/src/components/settings/setting-row.tsx"
+        note="Jede Einstellung, deren Schlüssel auf Bytes endet, zeigt Zahl und Einheit statt einer Bytezahl. Die Einheit wird so gewählt, dass der gespeicherte Wert exakt bleibt: 10485760 erscheint als 10 MiB, 500000000 als 500 MB. Ein Betrag, der keine ganze Zahl von Bytes ergibt, erreicht den Entwurf nicht."
+        stageClassName="p-6 sm:p-6"
+      >
+        <ByteRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-schmal"
         title="Auf dem Telefon"
         source="apps/web/src/components/settings/setting-row.tsx"
@@ -274,6 +284,24 @@ export function SettingRowPattern() {
         <DsNarrowFrame probe="einstellungen" title={NARROW_PROBE_TITLES.einstellungen} />
       </DsExample>
     </DsSection>
+  );
+}
+
+function ByteRowExample() {
+  const [bytes, setBytes] = React.useState(10 * 1_024 * 1_024);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="ai.pdfMaxBytes"
+          value={bytes}
+          onChange={(value) => {
+            if (typeof value === 'number') setBytes(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
   );
 }
 

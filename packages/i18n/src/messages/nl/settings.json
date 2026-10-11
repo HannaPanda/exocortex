@@ -136,7 +136,7 @@
         "help": "Automatisch gebruikt het standaardmodel."
       },
       "pdfMaxBytes": {
-        "label": "Maximale PDF-grootte (bytes)",
+        "label": "Maximale pdf-grootte",
         "help": "PDF’s boven deze grootte worden niet geaccepteerd voor tekstextractie."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Leest Word, Excel, PowerPoint, OpenDocument, RTF, EPUB en CSV rechtstreeks op deze server uit, zonder containers en zonder modelkosten."
       },
       "officeMaxBytes": {
-        "label": "Maximale Office-bestandsgrootte (bytes)",
+        "label": "Maximale grootte van Office-bestanden",
         "help": "Office-bestanden boven deze grootte worden niet geaccepteerd voor tekstextractie."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Daarna wordt de container afgebroken. Een LaTeX-uitvoering die na drie minuten niet klaar is, wacht meestal op invoer die niemand kan geven."
       },
       "maxArtifactBytes": {
-        "label": "Grootste gegenereerde pdf (bytes)",
+        "label": "Grootste gegenereerde pdf",
         "help": "Bovengrens voor het bestand dat een build mag opleveren. Daarboven geldt de uitvoering als mislukt, in plaats van de schijfruimte vol te schrijven."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "Daarna wordt de container afgebroken. Een afstudeerscriptie met literatuurlijst heeft meerdere doorgangen nodig."
       },
       "maxArtifactBytes": {
-        "label": "Grootste gegenereerde pdf (bytes)",
+        "label": "Grootste gegenereerde pdf",
         "help": "Een groter resultaat laat de build mislukken, in plaats van de schijf vol te laten lopen."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Toegestaan: {min, number} tot {max, number}.",
     "invalid": "Deze waarde is niet geldig.",
     "invalidWithRange": "Niet opgeslagen. Toegestaan: {min, number} tot {max, number}.",
+    "rangeHintBytes": "Toegestaan: {min} tot {max}.",
+    "invalidWithRangeBytes": "Niet opgeslagen. Toegestaan: {min} tot {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Eenheid",
+    "byteUnits": {
+      "B": "byte",
+      "KB": "kB",
+      "MB": "MB",
+      "GB": "GB",
+      "KiB": "KiB",
+      "MiB": "MiB",
+      "GiB": "GiB"
+    },
+    "byteUnitsExplained": "1 MB is 1.000.000 byte, 1 MiB is 1.048.576 byte.",
+    "bytesInexact": "Dit levert geen geheel aantal bytes op. De laatst geldige waarde wordt opgeslagen.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (lokaal, gratis, met tekstherkenning)",

@@ -16217,8 +16217,8 @@
       "output": "4343308b33705ca3"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "b8c5a485ed4680e0"
+      "source": "b0acd2cfb90ef432",
+      "output": "34f0a10bd9ff6bd6"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -16273,8 +16273,8 @@
       "output": "98aeb8a8d1f2a8f1"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "894a1b81e8e6319f"
+      "source": "0912632ec1e0d0de",
+      "output": "de0e7fd8d3b00922"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -16769,8 +16769,8 @@
       "output": "42d965317e6d6745"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "30d41af5e47ada6d"
+      "source": "07604e8ed5e03652",
+      "output": "e45941611c2cf5d7"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -16825,8 +16825,8 @@
       "output": "46426551b827d24a"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "30d41af5e47ada6d"
+      "source": "07604e8ed5e03652",
+      "output": "e45941611c2cf5d7"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -16936,6 +16936,50 @@
       "source": "4c2a3993c15df591",
       "output": "d461a493a3753877"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "4e545960f1bffc13"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "277089d91c0bdf4f"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "59281a6b29351cfa"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "88507c9cbc4633a9"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "6b9590a079c2ac44"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "46ca6ab574ea274a"
@@ -16976,6 +17020,10 @@
       "source": "5f5acf828ad49fff",
       "output": "7dced41a6a9aa252"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "85d5d67cef43ac82"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "bc53299aab6c65fd"
@@ -16983,6 +17031,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "48b1731a5b0a6911"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "25483a75ae25169d"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -37827,8 +37879,8 @@
       "output": "803434bfe47aeae2"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "afac7dee6efce698"
+      "source": "b0acd2cfb90ef432",
+      "output": "d0810662809cc339"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -37883,8 +37935,8 @@
       "output": "0a85e89e146217b4"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "def7113d8d786583"
+      "source": "0912632ec1e0d0de",
+      "output": "45b05a98e45fa7c1"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -38379,8 +38431,8 @@
       "output": "aea5c0cb8fea648e"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "dc42d3edfae4515a"
+      "source": "07604e8ed5e03652",
+      "output": "3884c2986f209a10"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -38435,8 +38487,8 @@
       "output": "42e9e02d5013b667"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "c1e86e09bc7f491b"
+      "source": "07604e8ed5e03652",
+      "output": "3884c2986f209a10"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -38546,6 +38598,50 @@
       "source": "4c2a3993c15df591",
       "output": "b803f24d52edd7bc"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "69bc57686922277b"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "277089d91c0bdf4f"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "59281a6b29351cfa"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "032bba9615d2dd72"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "284b07bdb960043a"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "777f4bd5757ebaf7"
@@ -38586,6 +38682,10 @@
       "source": "5f5acf828ad49fff",
       "output": "472b9d15b02afeea"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "1470ee2e03cab5bd"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "ccc30c9e4ffa5f7c"
@@ -38593,6 +38693,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "5c4193ef0914ea77"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "6f6abd867225b1ba"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -59437,8 +59541,8 @@
       "output": "ac57ee120553ed6d"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "81aadeccea44ee57"
+      "source": "b0acd2cfb90ef432",
+      "output": "cb883aafa465df50"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -59493,8 +59597,8 @@
       "output": "ba88fe6cafaab424"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "c0b83a361a929621"
+      "source": "0912632ec1e0d0de",
+      "output": "d62cc59ef5851eb4"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -59989,8 +60093,8 @@
       "output": "9a85bb384921b12e"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "c9bde55142e088b1"
+      "source": "07604e8ed5e03652",
+      "output": "0ddd9c6c8f349c43"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -60045,8 +60149,8 @@
       "output": "aa080774647380e9"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "c9bde55142e088b1"
+      "source": "07604e8ed5e03652",
+      "output": "0ddd9c6c8f349c43"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -60156,6 +60260,50 @@
       "source": "4c2a3993c15df591",
       "output": "89bd8db002892255"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "1ee30a8526db6f84"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "eca54ebd28da6204"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "6cc8519b91584e8b"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "ecf28e55fdeac49e"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "1fdbc74ccfd68d07"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "77f04e87c54842f2"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "d23e867e38e89ebf"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "4c8229b4d63cc5c3"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "bfc40cdf115293ba"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "58ccd6c55bc6a00e"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "c6c6f010ec0e96f5"
@@ -60196,6 +60344,10 @@
       "source": "5f5acf828ad49fff",
       "output": "a5d6133e6f53b2ba"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "505a1c18075d5484"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "5fc6cca5f7b3ff87"
@@ -60203,6 +60355,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "357b2f2e4a21228c"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "577facfc552fb7cd"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -81047,8 +81203,8 @@
       "output": "275e2597470acf16"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "e34fad41788266b7"
+      "source": "b0acd2cfb90ef432",
+      "output": "e8bcd39d10748787"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -81103,8 +81259,8 @@
       "output": "3ec0b984a64ce200"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "457129cd29f56724"
+      "source": "0912632ec1e0d0de",
+      "output": "78fc840814680b50"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -81599,8 +81755,8 @@
       "output": "76ef2e851abd1b76"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "7b9c180b77bf3f3f"
+      "source": "07604e8ed5e03652",
+      "output": "3e748f1dcf24642a"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -81655,8 +81811,8 @@
       "output": "5f870e7e43221578"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "7b9c180b77bf3f3f"
+      "source": "07604e8ed5e03652",
+      "output": "3e748f1dcf24642a"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -81766,6 +81922,50 @@
       "source": "4c2a3993c15df591",
       "output": "4a60514fc91cb571"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "c0bc4ebb683e255b"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "6c19075dcbf5c456"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "59281a6b29351cfa"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "d6f961d3ad80c072"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "26b0911eedfcffc9"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "1ad46746ce895bd7"
@@ -81806,6 +82006,10 @@
       "source": "5f5acf828ad49fff",
       "output": "0cc6d8a037133d5e"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "144ce95d033010e9"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "9a820a01c4bb29f9"
@@ -81813,6 +82017,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "526bf5ee40c0b374"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "721b6de2653cbb89"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -102657,8 +102865,8 @@
       "output": "fe7d6643214b8164"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "542603d762557b5a"
+      "source": "b0acd2cfb90ef432",
+      "output": "7ba28fd7be1055eb"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -102713,8 +102921,8 @@
       "output": "b567d68def003c02"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "4a9b16698e9423d4"
+      "source": "0912632ec1e0d0de",
+      "output": "ab179b2dc58443c1"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -103209,8 +103417,8 @@
       "output": "50e8a39632c30685"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "15b2cdbec8eb4cd7"
+      "source": "07604e8ed5e03652",
+      "output": "38d15f440f066dc8"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -103265,8 +103473,8 @@
       "output": "94bba682851d2356"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "15b2cdbec8eb4cd7"
+      "source": "07604e8ed5e03652",
+      "output": "38d15f440f066dc8"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -103376,6 +103584,50 @@
       "source": "4c2a3993c15df591",
       "output": "4c2a3993c15df591"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "a6e442bbdcb7f40d"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "1c31626f568a075d"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "591e59cef10116c9"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "c058d6eaf4366aa0"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "60e081cc06dac958"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "d7ea49cea51af562"
@@ -103416,6 +103668,10 @@
       "source": "5f5acf828ad49fff",
       "output": "991ac8ab60e86032"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "ae94eccb8325d35a"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "302f6c824fc622e3"
@@ -103423,6 +103679,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "c29fcb42ba814c18"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "8f3ca56b5eb4e4e5"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -124267,8 +124527,8 @@
       "output": "57bb548ab4006119"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "94f759a7cc93cc9e"
+      "source": "b0acd2cfb90ef432",
+      "output": "5443a314d732fea0"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -124323,8 +124583,8 @@
       "output": "cb9fddda0aea1ad6"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "3c83bb1c5d5a38d2"
+      "source": "0912632ec1e0d0de",
+      "output": "d74ddacc79024349"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -124819,8 +125079,8 @@
       "output": "a29e0648e14fb25e"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "ae2160d8e609a802"
+      "source": "07604e8ed5e03652",
+      "output": "e9ab49cb1596560b"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -124875,8 +125135,8 @@
       "output": "8257133d8e63eeb0"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "ae2160d8e609a802"
+      "source": "07604e8ed5e03652",
+      "output": "e9ab49cb1596560b"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -124986,6 +125246,50 @@
       "source": "4c2a3993c15df591",
       "output": "41da6eea7c0c5700"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "b846f55087f306b3"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "48bbc09558cb6df2"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "59281a6b29351cfa"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "53e4f3f5b81a9960"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "848dde15b03e30fd"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "aaa22ca95440fc73"
@@ -125026,6 +125330,10 @@
       "source": "5f5acf828ad49fff",
       "output": "74a773f3e9544510"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "486a0166b2db8b8a"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "fe85628ff82e7b9a"
@@ -125033,6 +125341,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "86fc820873adb375"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "aef7630bf8585e27"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -145877,8 +146189,8 @@
       "output": "be7138f614673866"
     },
     "settings.keys.ai.officeMaxBytes.label": {
-      "source": "aac2389c9cfb3603",
-      "output": "42cdd920f949ddde"
+      "source": "b0acd2cfb90ef432",
+      "output": "9850939cb8b6b65b"
     },
     "settings.keys.ai.pageContextEnabled.help": {
       "source": "c822eac1f6ecb15a",
@@ -145933,8 +146245,8 @@
       "output": "5de2d7ab4f555cd3"
     },
     "settings.keys.ai.pdfMaxBytes.label": {
-      "source": "5c0280b9568cfb89",
-      "output": "22ef9d54262ba09c"
+      "source": "0912632ec1e0d0de",
+      "output": "a70ea9f51c5e70fb"
     },
     "settings.keys.ai.pinnedContextMaxChars.help": {
       "source": "c6d623dc0d26b3ce",
@@ -146429,8 +146741,8 @@
       "output": "37f80a5c59e59ae0"
     },
     "settings.keys.projects.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "48ce3f05da1a4350"
+      "source": "07604e8ed5e03652",
+      "output": "81a51fcaad34381d"
     },
     "settings.keys.projects.maxFileChars.help": {
       "source": "eb43f7788582c90e",
@@ -146485,8 +146797,8 @@
       "output": "0cc6623823f816f8"
     },
     "settings.keys.render.maxArtifactBytes.label": {
-      "source": "e28a76ef86f2d3de",
-      "output": "48ce3f05da1a4350"
+      "source": "07604e8ed5e03652",
+      "output": "81a51fcaad34381d"
     },
     "settings.keys.render.timeoutSeconds.help": {
       "source": "ef0a5be5050f262f",
@@ -146596,6 +146908,50 @@
       "source": "4c2a3993c15df591",
       "output": "b803f24d52edd7bc"
     },
+    "settings.row.byteAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.byteUnit": {
+      "source": "d5ba1549d55b1a43",
+      "output": "208f2cee4cd75283"
+    },
+    "settings.row.byteUnits.B": {
+      "source": "6c19075dcbf5c456",
+      "output": "6c19075dcbf5c456"
+    },
+    "settings.row.byteUnits.GB": {
+      "source": "b4043b0b8297e379",
+      "output": "b4043b0b8297e379"
+    },
+    "settings.row.byteUnits.GiB": {
+      "source": "66a1561b84b46372",
+      "output": "66a1561b84b46372"
+    },
+    "settings.row.byteUnits.KB": {
+      "source": "59281a6b29351cfa",
+      "output": "59281a6b29351cfa"
+    },
+    "settings.row.byteUnits.KiB": {
+      "source": "97ee1b8dd0d5456b",
+      "output": "97ee1b8dd0d5456b"
+    },
+    "settings.row.byteUnits.MB": {
+      "source": "1d09f6fa23235881",
+      "output": "1d09f6fa23235881"
+    },
+    "settings.row.byteUnits.MiB": {
+      "source": "dea6cb8d5e6496df",
+      "output": "dea6cb8d5e6496df"
+    },
+    "settings.row.byteUnitsExplained": {
+      "source": "0acbac7e3d75ba01",
+      "output": "7e1dbfe1af98d9e2"
+    },
+    "settings.row.bytesInexact": {
+      "source": "fc6e3c122b622059",
+      "output": "dffd677a0daceb44"
+    },
     "settings.row.choices.pdfExtractor.docling": {
       "source": "263de4484a620cae",
       "output": "29b29ef8c1262198"
@@ -146636,6 +146992,10 @@
       "source": "5f5acf828ad49fff",
       "output": "1b22b8ac76638e27"
     },
+    "settings.row.invalidWithRangeBytes": {
+      "source": "d8a621e03c3d2d26",
+      "output": "69bc9981faae894f"
+    },
     "settings.row.jsonInvalid": {
       "source": "0a98f06d2c120478",
       "output": "c402f856a3d6286d"
@@ -146643,6 +147003,10 @@
     "settings.row.rangeHint": {
       "source": "01aac8f091b0ac2f",
       "output": "e6dbf9301f26e164"
+    },
+    "settings.row.rangeHintBytes": {
+      "source": "51b8e75b4ec18581",
+      "output": "53af1031732edb2f"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",

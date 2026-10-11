@@ -136,7 +136,7 @@
         "help": "Ustawienie automatyczne używa modelu domyślnego."
       },
       "pdfMaxBytes": {
-        "label": "Maksymalny rozmiar pliku PDF (bajty)",
+        "label": "Maksymalny rozmiar pliku PDF",
         "help": "Pliki PDF przekraczające ten rozmiar nie będą przyjmowane do wyodrębniania tekstu."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Odczytuje pliki Word, Excel, PowerPoint, OpenDocument, RTF, EPUB i CSV bezpośrednio na tym serwerze, bez kontenerów i bez kosztów modeli."
       },
       "officeMaxBytes": {
-        "label": "Maksymalny rozmiar pliku Office (bajty)",
+        "label": "Maksymalny rozmiar pliku Office",
         "help": "Pliki pakietu Office przekraczające ten rozmiar nie będą przyjmowane do wyodrębniania tekstu."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Po tym czasie kontener jest zatrzymywany. Przebieg LaTeX, który nie zakończył się po trzech minutach, najczęściej czeka na dane wejściowe, których nikt nie może podać."
       },
       "maxArtifactBytes": {
-        "label": "Maksymalny rozmiar wygenerowanego PDF (bajty)",
+        "label": "Największy wygenerowany plik PDF",
         "help": "Górny limit rozmiaru pliku, jaki może powstać w wyniku budowania. Powyżej tego limitu przebieg jest uznawany za nieudany, zamiast zapełniać pamięć dyskową."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "Po tym czasie kontener jest zatrzymywany. Praca dyplomowa z bibliografią wymaga kilku przebiegów."
       },
       "maxArtifactBytes": {
-        "label": "Maksymalny rozmiar wygenerowanego PDF (bajty)",
+        "label": "Największy wygenerowany plik PDF",
         "help": "Większy wynik spowoduje niepowodzenie budowania, zamiast zapełniać dysk."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Dopuszczalne: od {min, number} do {max, number}.",
     "invalid": "Ta wartość jest nieprawidłowa.",
     "invalidWithRange": "Nie zapisano. Dopuszczalne: od {min, number} do {max, number}.",
+    "rangeHintBytes": "Dozwolone: od {min} do {max}.",
+    "invalidWithRangeBytes": "Nie zapisano. Dozwolone: od {min} do {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Jednostka",
+    "byteUnits": {
+      "B": "Bajtów",
+      "KB": "KB",
+      "MB": "MB",
+      "GB": "GB",
+      "KiB": "KiB",
+      "MiB": "MiB",
+      "GiB": "GiB"
+    },
+    "byteUnitsExplained": "1 MB to 1 000 000 bajtów, 1 MiB to 1 048 576 bajtów.",
+    "bytesInexact": "Wynik nie daje całkowitej liczby bajtów. Zapisano ostatni prawidłowy stan.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (lokalnie, bezpłatnie, z rozpoznawaniem tekstu)",

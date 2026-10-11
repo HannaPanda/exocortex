@@ -136,7 +136,7 @@
         "help": "Automático usa o modelo padrão."
       },
       "pdfMaxBytes": {
-        "label": "Tamanho máximo de PDF (bytes)",
+        "label": "Tamanho máximo de PDF",
         "help": "PDFs acima desse tamanho não serão aceitos para extração de texto."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Lê Word, Excel, PowerPoint, OpenDocument, RTF, EPUB e CSV diretamente neste servidor, sem contêineres e sem custos de modelo."
       },
       "officeMaxBytes": {
-        "label": "Tamanho máximo de arquivo do Office (bytes)",
+        "label": "Tamanho máximo de arquivo do Office",
         "help": "Arquivos do Office acima desse tamanho não serão aceitos para extração de texto."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Depois disso, o contêiner é interrompido. Uma execução do LaTeX que não termina após três minutos geralmente está aguardando uma entrada que ninguém pode fornecer."
       },
       "maxArtifactBytes": {
-        "label": "Tamanho máximo do PDF gerado (bytes)",
+        "label": "Tamanho máximo do PDF gerado",
         "help": "Limite máximo para o arquivo que uma compilação pode entregar. Acima disso, a execução é considerada com falha em vez de encher o armazenamento."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "Após esse tempo, o contêiner é cancelado. Um trabalho de conclusão de curso com bibliografia precisa de várias passagens."
       },
       "maxArtifactBytes": {
-        "label": "Tamanho máximo do PDF gerado (bytes)",
+        "label": "Tamanho máximo do PDF gerado",
         "help": "Um resultado maior faz a compilação falhar, em vez de lotar o disco."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Permitido: {min, number} a {max, number}.",
     "invalid": "Este valor não é válido.",
     "invalidWithRange": "Não salvo. Permitido: {min, number} a {max, number}.",
+    "rangeHintBytes": "Permitido: {min} a {max}.",
+    "invalidWithRangeBytes": "Não salvo. Permitido: {min} a {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Unidade",
+    "byteUnits": {
+      "B": "Byte",
+      "KB": "KB",
+      "MB": "MB",
+      "GB": "GB",
+      "KiB": "KiB",
+      "MiB": "MiB",
+      "GiB": "GiB"
+    },
+    "byteUnitsExplained": "1 MB equivale a 1.000.000 de bytes, 1 MiB equivale a 1.048.576 bytes.",
+    "bytesInexact": "Isso não resulta em um número inteiro de bytes. O último estado válido será mantido.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (local, gratuito, com reconhecimento de texto)",

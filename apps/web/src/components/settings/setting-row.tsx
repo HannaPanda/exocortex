@@ -25,6 +25,15 @@ import {
 } from '@exocortex/ui';
 
 import { useSettingCopy } from '@/components/settings/setting-copy';
+import {
+  amountInUnit,
+  BYTE_UNITS,
+  type ByteUnit,
+  bytesFromAmount,
+  describeBytes,
+  isByteSettingKey,
+  preferredByteUnit,
+} from '@/lib/byte-size';
 
 /**
  * The vocabulary of the settings forms, shared by both of them.
@@ -104,21 +113,30 @@ export function useSettingMessages(): {
   invalidMessage: (key: SettingKey) => string;
 } {
   const t = useTranslations('settings.row');
-  return React.useMemo(
-    () => ({
+  return React.useMemo(() => {
+    // A byte setting names its bounds in the unit each reads best in
+    // (`1 KiB bis 50 MiB`), never as 52428800 (issue #174).
+    const bytes = (value: number): string => {
+      const { amount, unit } = describeBytes(value);
+      return t('byteAmount', { amount, unit: t(`byteUnits.${unit}`) });
+    };
+    return {
       rangeHint: (key: SettingKey) => {
         const range = SETTING_NUMBER_RANGES[key];
-        return range === undefined ? null : t('rangeHint', { min: range.min, max: range.max });
+        if (range === undefined) return null;
+        return isByteSettingKey(key)
+          ? t('rangeHintBytes', { min: bytes(range.min), max: bytes(range.max) })
+          : t('rangeHint', { min: range.min, max: range.max });
       },
       invalidMessage: (key: SettingKey) => {
         const range = SETTING_NUMBER_RANGES[key];
-        return range === undefined
-          ? t('invalid')
+        if (range === undefined) return t('invalid');
+        return isByteSettingKey(key)
+          ? t('invalidWithRangeBytes', { min: bytes(range.min), max: bytes(range.max) })
           : t('invalidWithRange', { min: range.min, max: range.max });
       },
-    }),
-    [t],
-  );
+    };
+  }, [t]);
 }
 
 /**
@@ -251,6 +269,161 @@ function JsonSettingField({
   );
 }
 
+/** What a byte field shows, and the byte count that text last stood for. */
+interface ByteDraft {
+  amount: string;
+  unit: ByteUnit;
+  bytes: number;
+  inexact: boolean;
+}
+
+function byteDraftOf(bytes: number): ByteDraft {
+  const unit = preferredByteUnit(bytes);
+  return { amount: amountInUnit(bytes, unit), unit, bytes, inexact: false };
+}
+
+/**
+ * A byte-valued setting, edited as an amount and a unit (issue #174).
+ *
+ * The stored value stays bytes; the field converts both ways without rounding
+ * (`lib/byte-size.ts`). An amount that names no whole number of bytes does not
+ * reach the draft, the field says so, and the draft keeps the last value that
+ * was exact. Changing the unit keeps the number and changes what it means,
+ * which is what somebody who typed "500" and then picked MB intended.
+ */
+function ByteSettingField({
+  settingKey,
+  value,
+  onChange,
+  described,
+  id,
+}: {
+  settingKey: SettingKey;
+  value: number;
+  onChange: (value: Settings[SettingKey]) => void;
+  described: { 'aria-describedby': string; 'aria-invalid': boolean };
+  id: string;
+}) {
+  const t = useTranslations('settings.row');
+  const [draft, setDraft] = React.useState(() => byteDraftOf(value));
+  // A value that changed from outside (a discarded draft, a reload) replaces
+  // the text; one this field emitted itself is already what it shows.
+  if (draft.bytes !== value) setDraft(byteDraftOf(value));
+  const inexactId = `${id}-bytes-inexact`;
+
+  function update(amount: string, unit: ByteUnit): void {
+    const bytes = bytesFromAmount(amount, unit);
+    if (bytes === null) {
+      setDraft({ amount, unit, bytes: draft.bytes, inexact: true });
+      return;
+    }
+    setDraft({ amount, unit, bytes, inexact: false });
+    onChange(bytes);
+  }
+
+  return (
+    <>
+      <div className="flex gap-2">
+        <Input
+          id={id}
+          name={settingKey}
+          type="number"
+          inputMode="decimal"
+          autoComplete="off"
+          min={0}
+          step="any"
+          className="min-w-0 flex-1"
+          value={draft.amount}
+          {...described}
+          aria-invalid={described['aria-invalid'] || draft.inexact}
+          aria-describedby={
+            draft.inexact
+              ? `${described['aria-describedby']} ${inexactId}`
+              : described['aria-describedby']
+          }
+          onChange={(event) => update(event.target.value, draft.unit)}
+        />
+        <Select
+          value={draft.unit}
+          onValueChange={(next) => {
+            const unit = BYTE_UNITS.find((candidate) => candidate === next);
+            if (unit !== undefined) update(draft.amount, unit);
+          }}
+        >
+          <SelectTrigger
+            className="w-24 shrink-0"
+            aria-label={t('byteUnit')}
+            data-testid={`${id}-unit`}
+          >
+            <SelectValue>{() => t(`byteUnits.${draft.unit}`)}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {BYTE_UNITS.map((unit) => (
+              <SelectItem key={unit} value={unit}>
+                {t(`byteUnits.${unit}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {draft.inexact ? (
+        <p id={inexactId} className="text-xs text-destructive-text" data-testid={inexactId}>
+          {t('bytesInexact')}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+/** A numeric setting: an amount with a unit for bytes, a plain number otherwise. */
+function NumberSettingField({
+  settingKey,
+  value,
+  onChange,
+  described,
+  id,
+}: {
+  settingKey: SettingKey;
+  value: number;
+  onChange: (value: Settings[SettingKey]) => void;
+  described: { 'aria-describedby': string; 'aria-invalid': boolean };
+  id: string;
+}) {
+  if (isByteSettingKey(settingKey)) {
+    return (
+      <ByteSettingField
+        settingKey={settingKey}
+        value={value}
+        onChange={onChange}
+        described={described}
+        id={id}
+      />
+    );
+  }
+  const range = SETTING_NUMBER_RANGES[settingKey];
+  return (
+    <Input
+      id={id}
+      name={settingKey}
+      type="number"
+      inputMode="numeric"
+      // A deployment setting is not a thing a password manager or an
+      // autofill heuristic has ever seen before, so neither should offer to
+      // fill it in.
+      autoComplete="off"
+      value={value}
+      // Bounds come from the schema (`SETTING_NUMBER_RANGES`), so the spinner
+      // stops where the API does instead of offering values it will refuse.
+      {...(range === undefined ? {} : { min: range.min, max: range.max, step: 1 })}
+      {...described}
+      onChange={(event) => {
+        const next = Number(event.target.value);
+        if (!Number.isNaN(next)) onChange(next);
+      }}
+    />
+  );
+}
+
 export interface SettingRowProps {
   settingKey: SettingKey;
   value: Settings[SettingKey];
@@ -274,7 +447,6 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
   const helpId = `${id}-help`;
   const errorId = `${id}-error`;
 
-  const range = SETTING_NUMBER_RANGES[settingKey];
   const hint = rangeHint(settingKey);
 
   /*
@@ -321,24 +493,12 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
     control = <Switch id={id} checked={value} onCheckedChange={onChange} {...described} />;
   } else if (typeof value === 'number') {
     control = (
-      <Input
-        id={id}
-        name={settingKey}
-        type="number"
-        inputMode="numeric"
-        // A deployment setting is not a thing a password manager or an
-        // autofill heuristic has ever seen before, so neither should offer to
-        // fill it in.
-        autoComplete="off"
+      <NumberSettingField
+        settingKey={settingKey}
         value={value}
-        // Bounds come from the schema (`SETTING_NUMBER_RANGES`), so the spinner
-        // stops where the API does instead of offering values it will refuse.
-        {...(range === undefined ? {} : { min: range.min, max: range.max, step: 1 })}
-        {...described}
-        onChange={(event) => {
-          const next = Number(event.target.value);
-          if (!Number.isNaN(next)) onChange(next);
-        }}
+        onChange={onChange}
+        described={described}
+        id={id}
       />
     );
   } else if (typeof value === 'object' && value !== null) {
@@ -428,7 +588,9 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
       >
         {control}
         <p id={helpId} className="text-xs text-muted-foreground">
-          {hint === null ? copy.help : `${copy.help} ${hint}`}
+          {[copy.help, hint, isByteSettingKey(settingKey) ? t('byteUnitsExplained') : null]
+            .filter((part) => part !== null)
+            .join(' ')}
         </p>
         {error === undefined ? null : (
           <p id={errorId} className="text-xs text-destructive-text" data-testid={`${id}-error`}>

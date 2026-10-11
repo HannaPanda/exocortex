@@ -580,6 +580,13 @@ A page nobody has marked never reaches a model.
    (`components/settings/unsaved-changes-guard.tsx`, issue #113): a setting
    that compares unequal to itself would make the form claim an edit nobody
    made, and warn about losing it on every navigation.
+   The row's control follows from the value and the key's name
+   (`components/settings/setting-row.tsx`): a key ending in `ModelSlug` gets
+   the model picker, and a number whose key ends in `Bytes` gets an amount
+   with a unit (B, KB, MB, GB, KiB, MiB, GiB, issue #174). The value stays
+   bytes on the wire; the field picks the largest unit that shows it exactly
+   and refuses an amount that is no whole number of bytes, so a byte setting
+   needs nothing beyond its name.
 4. Add the row to the table above.
 
 No migration is needed: the `setting` table is key/value.

@@ -136,7 +136,7 @@
         "help": "Automatique utilise le modèle par défaut."
       },
       "pdfMaxBytes": {
-        "label": "Taille maximale des PDF (octets)",
+        "label": "Taille maximale de PDF",
         "help": "Les PDF dépassant cette taille ne sont pas acceptés pour l’extraction de texte."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Lit Word, Excel, PowerPoint, OpenDocument, RTF, EPUB et CSV directement sur ce serveur, sans conteneur et sans frais de modèle."
       },
       "officeMaxBytes": {
-        "label": "Taille maximale des fichiers Office (octets)",
+        "label": "Taille maximale de fichier Office",
         "help": "Les fichiers Office dépassant cette taille ne sont pas acceptés pour l’extraction de texte."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Au-delà, le conteneur est interrompu. Une exécution LaTeX qui n’est pas terminée après trois minutes attend généralement une saisie que personne ne peut fournir."
       },
       "maxArtifactBytes": {
-        "label": "Taille maximale du PDF généré (octets)",
+        "label": "Taille maximale du PDF généré",
         "help": "Limite maximale pour le fichier qu’une compilation peut produire. Au-delà, l’exécution est considérée comme ayant échoué plutôt que de saturer l’espace de stockage."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "Le conteneur s’arrête une fois ce délai dépassé. Un mémoire de fin d’études avec bibliographie nécessite plusieurs passes."
       },
       "maxArtifactBytes": {
-        "label": "Taille maximale du PDF généré (octets)",
+        "label": "Taille maximale du PDF généré",
         "help": "Un résultat plus volumineux fait échouer la compilation au lieu de remplir le disque."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Valeurs acceptées : de {min, number} à {max, number}.",
     "invalid": "Cette valeur n’est pas valide.",
     "invalidWithRange": "Non enregistré. Valeurs acceptées : de {min, number} à {max, number}.",
+    "rangeHintBytes": "Autorisé : de {min} à {max}.",
+    "invalidWithRangeBytes": "Non enregistré. Autorisé : de {min} à {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Unité",
+    "byteUnits": {
+      "B": "octets",
+      "KB": "ko",
+      "MB": "Mo",
+      "GB": "Go",
+      "KiB": "Kio",
+      "MiB": "Mio",
+      "GiB": "Gio"
+    },
+    "byteUnitsExplained": "1 Mo équivaut à 1 000 000 octets, 1 Mio équivaut à 1 048 576 octets.",
+    "bytesInexact": "Cela ne donne pas un nombre entier d’octets. La dernière valeur valide est conservée.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (local, gratuit, avec reconnaissance de texte)",

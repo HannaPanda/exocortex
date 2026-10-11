@@ -136,7 +136,7 @@
         "help": "Automatisch verwendet das Standardmodell."
       },
       "pdfMaxBytes": {
-        "label": "Maximale PDF-Größe (Bytes)",
+        "label": "Maximale PDF-Größe",
         "help": "PDFs über dieser Größe werden nicht für die Textextraktion angenommen."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Liest Word, Excel, PowerPoint, OpenDocument, RTF, EPUB und CSV direkt auf diesem Server aus, ohne Container und ohne Modellkosten."
       },
       "officeMaxBytes": {
-        "label": "Maximale Office-Dateigröße (Bytes)",
+        "label": "Maximale Office-Dateigröße",
         "help": "Office-Dateien über dieser Größe werden nicht für die Textextraktion angenommen."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Danach wird der Container abgebrochen. Ein LaTeX-Lauf, der nach drei Minuten nicht fertig ist, wartet meist auf eine Eingabe, die niemand machen kann."
       },
       "maxArtifactBytes": {
-        "label": "Größtes erzeugtes PDF (Bytes)",
+        "label": "Größtes erzeugtes PDF",
         "help": "Obergrenze für die Datei, die ein Bau abliefern darf. Darüber gilt der Lauf als fehlgeschlagen, statt den Speicher zu füllen."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "Danach wird der Container abgebrochen. Eine Abschlussarbeit mit Literaturverzeichnis braucht mehrere Durchläufe."
       },
       "maxArtifactBytes": {
-        "label": "Größtes erzeugtes PDF (Bytes)",
+        "label": "Größtes erzeugtes PDF",
         "help": "Ein größeres Ergebnis lässt den Bau scheitern, statt die Platte zu füllen."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Zulässig: {min, number} bis {max, number}.",
     "invalid": "Dieser Wert ist nicht gültig.",
     "invalidWithRange": "Nicht gespeichert. Zulässig: {min, number} bis {max, number}.",
+    "rangeHintBytes": "Zulässig: {min} bis {max}.",
+    "invalidWithRangeBytes": "Nicht gespeichert. Zulässig: {min} bis {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Einheit",
+    "byteUnits": {
+      "B": "Byte",
+      "KB": "KB",
+      "MB": "MB",
+      "GB": "GB",
+      "KiB": "KiB",
+      "MiB": "MiB",
+      "GiB": "GiB"
+    },
+    "byteUnitsExplained": "1 MB sind 1.000.000 Byte, 1 MiB sind 1.048.576 Byte.",
+    "bytesInexact": "Das ergibt keine ganze Zahl von Bytes. Gespeichert wird der zuletzt gültige Stand.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (lokal, kostenlos, mit Texterkennung)",

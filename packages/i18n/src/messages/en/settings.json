@@ -136,7 +136,7 @@
         "help": "Automatic uses the default model."
       },
       "pdfMaxBytes": {
-        "label": "Maximum PDF size (bytes)",
+        "label": "Maximum PDF size",
         "help": "PDFs larger than this size will not be accepted for text extraction."
       },
       "officeExtractionEnabled": {
@@ -144,7 +144,7 @@
         "help": "Reads Word, Excel, PowerPoint, OpenDocument, RTF, EPUB, and CSV directly on this server, without containers and without model costs."
       },
       "officeMaxBytes": {
-        "label": "Maximum Office file size (bytes)",
+        "label": "Maximum Office file size",
         "help": "Office files larger than this size will not be accepted for text extraction."
       },
       "imageGenerationEnabled": {
@@ -448,7 +448,7 @@
         "help": "Afterwards, the container is aborted. A LaTeX run that is not finished after three minutes is usually waiting for input that no one can provide."
       },
       "maxArtifactBytes": {
-        "label": "Maximum generated PDF size (bytes)",
+        "label": "Largest generated PDF",
         "help": "Upper limit for the file a build may produce. Above this, the run is considered failed rather than filling storage."
       },
       "jobRetentionDays": {
@@ -470,7 +470,7 @@
         "help": "The container is terminated after this. A thesis with a bibliography requires multiple runs."
       },
       "maxArtifactBytes": {
-        "label": "Maximum generated PDF size (bytes)",
+        "label": "Largest generated PDF",
         "help": "A larger output fails the build instead of filling up the disk."
       },
       "maxFileChars": {
@@ -492,6 +492,21 @@
     "rangeHint": "Allowed: {min, number} to {max, number}.",
     "invalid": "This value is invalid.",
     "invalidWithRange": "Not saved. Allowed: {min, number} to {max, number}.",
+    "rangeHintBytes": "Allowed: {min} to {max}.",
+    "invalidWithRangeBytes": "Not saved. Allowed: {min} to {max}.",
+    "byteAmount": "{amount, number} {unit}",
+    "byteUnit": "Unit",
+    "byteUnits": {
+      "B": "bytes",
+      "KB": "KB",
+      "MB": "MB",
+      "GB": "GB",
+      "KiB": "KiB",
+      "MiB": "MiB",
+      "GiB": "GiB"
+    },
+    "byteUnitsExplained": "1 MB is 1,000,000 bytes, 1 MiB is 1,048,576 bytes.",
+    "bytesInexact": "This does not result in a whole number of bytes. The last valid state is saved.",
     "choices": {
       "pdfExtractor": {
         "docling": "Docling (local, free, with text recognition)",
