@@ -101,8 +101,19 @@ Two things to keep in mind when changing this feature:
   browser offers to create a fresh one with the same scope beside them
   (`share-link-address.tsx`). The token is still in no audit row and no log. A
   deployment without the key stores the hash alone, as before.
-- **An archived page answers a link like a missing one.** Putting a page in the
-  trash says it is out of use, and a link that kept serving it would disagree.
+- **An archived page answers a link like a missing one, and so do its files.**
+  Putting a page in the trash says it is out of use, and a link that kept
+  serving it would disagree. The rule is one check in
+  `PublicSharesService.requireInScope`, which the page read and the file
+  download both go through (issue #179): the page, the shared root and every
+  page between them must be unarchived. For a `SUBTREE` link that means
+  archiving a sub-page takes it and everything under it off the link, files
+  included, while the rest of the branch stays readable; archiving the shared
+  page itself takes everything the link covered off it until the page is
+  restored (the link is not withdrawn by that). Pages above the shared
+  root are not part of the share and are not consulted. Restoring a page brings
+  it back onto the link only if it lands inside the branch again: a page
+  restored under an archived parent moves to the top level and is outside it.
 - **Withdrawing a grant is asked about before it happens**, in the share dialog
   and in both lists alike (`share-revoke-confirm.tsx`), and the question
   names what it costs: a public link's address stops working for everyone and

@@ -611,6 +611,100 @@ describe('a public link', () => {
     expect(withdrawn?.token).toBeNull();
   });
 
+  describe('stops serving files once their page is in the trash (issue #179)', () => {
+    async function branchWithFile(): Promise<{
+      rootId: string;
+      middleId: string;
+      leafId: string;
+      fileOn: (documentId: string) => Promise<string>;
+    }> {
+      const rootId = await createPage('Archivprobe');
+      const middleId = await createPage('Mitte', rootId);
+      const leafId = await createPage('Blatt', middleId);
+      const fileOn = async (documentId: string): Promise<string> => {
+        const attachment = await prisma.attachment.create({
+          data: {
+            workspaceId,
+            documentId,
+            filename: 'karte.png',
+            mimeType: 'image/png',
+            byteSize: 1,
+            storageKey: `test/${randomBytes(12).toString('hex')}`,
+            createdById: ownerId,
+          },
+        });
+        return attachment.id;
+      };
+      return { rootId, middleId, leafId, fileOn };
+    }
+
+    async function linkTo(documentId: string, scope: 'PAGE_ONLY' | 'SUBTREE'): Promise<string> {
+      const created = await shares.create({
+        documentId,
+        userId: ownerId,
+        request: { kind: 'PUBLIC_LINK', permission: 'READ', scope, expiresInDays: null },
+        correlationId,
+      });
+      return created.share.token as string;
+    }
+
+    it('refuses a file on an archived page inside a branch', async () => {
+      const { rootId, leafId, fileOn } = await branchWithFile();
+      const token = await linkTo(rootId, 'SUBTREE');
+      const fileId = await fileOn(leafId);
+      await expect(publicShares.downloadAttachment(token, fileId)).resolves.toBeTruthy();
+
+      await documents.archive({ documentId: leafId, userId: ownerId, correlationId });
+      await expect(publicShares.downloadAttachment(token, fileId)).rejects.toMatchObject({
+        code: 'share_link_invalid',
+      });
+    });
+
+    it('refuses every file once the shared page itself is archived', async () => {
+      const { rootId, leafId, fileOn } = await branchWithFile();
+      const pageToken = await linkTo(rootId, 'PAGE_ONLY');
+      const branchToken = await linkTo(rootId, 'SUBTREE');
+      const onRoot = await fileOn(rootId);
+      const onLeaf = await fileOn(leafId);
+
+      await documents.archive({ documentId: rootId, userId: ownerId, correlationId });
+      for (const [token, fileId] of [
+        [pageToken, onRoot],
+        [branchToken, onRoot],
+        [branchToken, onLeaf],
+      ] as const) {
+        await expect(publicShares.downloadAttachment(token, fileId)).rejects.toMatchObject({
+          code: 'share_link_invalid',
+        });
+      }
+    });
+
+    it('refuses a page and its files under an archived ancestor, whatever the page says', async () => {
+      // Archiving cascades, so this state is written by hand: the rule is the
+      // chain up to the shared root, not the flag on the page alone.
+      const { rootId, middleId, leafId, fileOn } = await branchWithFile();
+      const token = await linkTo(rootId, 'SUBTREE');
+      const fileId = await fileOn(leafId);
+      await prisma.document.update({ where: { id: middleId }, data: { archivedAt: new Date() } });
+
+      await expect(publicShares.read(token, leafId)).rejects.toMatchObject({
+        code: 'share_link_invalid',
+      });
+      await expect(publicShares.downloadAttachment(token, fileId)).rejects.toMatchObject({
+        code: 'share_link_invalid',
+      });
+    });
+
+    it('ignores the trash above the shared root', async () => {
+      const { rootId, middleId, leafId, fileOn } = await branchWithFile();
+      const token = await linkTo(middleId, 'SUBTREE');
+      const fileId = await fileOn(leafId);
+      await prisma.document.update({ where: { id: rootId }, data: { archivedAt: new Date() } });
+
+      await expect(publicShares.downloadAttachment(token, fileId)).resolves.toBeTruthy();
+    });
+  });
+
   it('falls back to a hash alone on a deployment without the key', async () => {
     const keyless = new SharesService(
       prisma,

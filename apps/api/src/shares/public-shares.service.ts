@@ -84,7 +84,8 @@ export class PublicSharesService {
     });
     // An archived page answers like a missing one. Putting a page in the trash
     // is a statement that it is out of use, and a link that kept serving it
-    // would quietly disagree.
+    // would quietly disagree. `requireInScope` has already refused one; the
+    // second look costs nothing and guards the row read here.
     if (document === null || document.archivedAt !== null) {
       throw new AppError('share_link_invalid', 'This link does not lead anywhere');
     }
@@ -218,10 +219,28 @@ export class PublicSharesService {
     };
   }
 
-  /** The page's chain of ancestors, once it is established the link covers it. */
+  /**
+   * The page's chain of ancestors, once it is established the link covers it
+   * and nothing on the way to the shared root is in the trash.
+   *
+   * Every route behind a link starts here, so a page and the files on it are
+   * visible by one rule (issue #179): the page itself, the shared root and
+   * every page between them must be unarchived. Archiving cascades down the
+   * branch and restoring a page under an archived parent moves it to the top
+   * level, so the target alone would usually tell; the walk is what keeps that
+   * true for a row that reached the state some other way. Pages above the
+   * shared root are not part of what was shared and are not consulted.
+   */
   private async requireInScope(share: ResolvedShare, documentId: string): Promise<string[]> {
     const chain = await loadAncestorChain(this.prisma, documentId);
     if (!chainCovers(chain, share.rootId, share.scope)) {
+      throw new AppError('share_link_invalid', 'This link does not lead anywhere');
+    }
+    const upToRoot = chain.slice(0, chain.indexOf(share.rootId) + 1);
+    const archived = await this.prisma.document.count({
+      where: { id: { in: upToRoot }, archivedAt: { not: null } },
+    });
+    if (archived > 0) {
       throw new AppError('share_link_invalid', 'This link does not lead anywhere');
     }
     return chain;
