@@ -71,6 +71,6 @@ being the caller's to choose.
   (`pnpm --filter @exocortex/sandbox start`), listening on
   `EXOCORTEX_SANDBOX_SOCKET`. Without it, builds report the renderer as
   unavailable, the way a missing `docker` binary did.
-- The repository is still writable by the four units, and `deploy.sh`, which
-  a person runs with sudo, lives in it. That is a separate path from a
-  compromised process to root and is not closed by this decision.
+- The repository was still writable by the four units, and `deploy.sh`, which
+  a person runs with sudo, lives in it. That separate path from a compromised
+  process to root is closed by ADR-082.

@@ -44,8 +44,16 @@ listens on `/run/exocortex-sandbox/broker.sock`, which
 `exocortex-sandbox.socket` owns: `exocortex-sandbox:johanna`, mode 0660, so the
 units running as `johanna` may connect and nobody else may. The broker runs
 from a root-owned copy of `packages/sandbox/dist` in
-`/usr/local/lib/exocortex-sandbox`, never from the repository, because the
-repository is writable by the processes it protects against. Whether it ran:
+`/usr/local/lib/exocortex-sandbox`, never from the repository, so the code
+holding the socket is never the copy a developer is editing.
+
+The four units cannot write the repository either (issue #184, ADR-082):
+`ProtectSystem=strict` without any `ReadWritePaths` makes the whole file
+system read-only to them, apart from their private `/tmp`. The repository is
+what `deploy.sh` runs and installs with sudo, so a unit that could edit it
+would reach root at the next deploy. Nothing in the four writes there at run
+time; a feature that needs to has to get its own directory outside the
+repository, never a `ReadWritePaths` back into it. Whether it ran:
 `journalctl -u exocortex-sandbox` has one JSON line per build (`sandbox.run`
 with profile, image, exit code and duration) and one per refusal.
 
@@ -493,7 +501,9 @@ every deploy passes through anyway.
     under `.next-releases/`, followed by `sudo systemctl restart exocortex-web`.
 
 15. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
-    then `systemctl is-active` for all four and for `exocortex-sandbox`.
+    then `systemctl is-active` for all four and for `exocortex-sandbox`, and
+    for all four that the running unit has `ProtectSystem=strict` and no
+    `ReadWritePaths` (ADR-082).
 16. **The marker.** `.last-deployed-sha` is written last and only on full
     success, so a rollout that fell over halfway leaves nothing behind claiming
     it worked, and the next run does everything again rather than believing this

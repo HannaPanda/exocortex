@@ -480,8 +480,12 @@ codes to German messages in `apps/web/src/lib/api/error-messages.ts`.
   attacker down; this is what stops one.
 - All four application processes bind to `127.0.0.1` only. PostgreSQL, Redis, MinIO
   and Mailpit are published to `127.0.0.1` only.
-- systemd units run with `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`,
-  `ProtectHome=true` and a single `ReadWritePaths` entry.
+- The four application units run with `NoNewPrivileges`, `PrivateTmp`,
+  `ProtectSystem=strict`, `ProtectHome=true` and no `ReadWritePaths` at all:
+  the repository is read-only to them, because it holds `scripts/deploy.sh`,
+  `deploy/` and `packages/sandbox/dist`, which a person later runs or installs
+  as root (issue #184, ADR-082). `deploy.sh` reads both properties back from
+  the running units and fails when either has loosened.
 
 ## Reporting
 

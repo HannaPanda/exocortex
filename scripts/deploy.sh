@@ -449,6 +449,16 @@ for unit in "${UNITS[@]}"; do
   state=$(systemctl is-active "$unit" || true)
   [ "$state" = "active" ] || fail "$unit is $state" "Check: journalctl -u $unit -n 50 --no-pager"
 done
+# Issue #184, ADR-082: the repository holds what this script later runs or
+# installs as root, so none of the four may write to it. Read from the running
+# units rather than from the files in deploy/, because the files are what this
+# script trusts and the running definition is what a process gets.
+for unit in "${UNITS[@]}"; do
+  protect=$(systemctl show -p ProtectSystem --value "$unit")
+  writable=$(systemctl show -p ReadWritePaths --value "$unit")
+  [ "$protect" = "strict" ] && [ -z "$writable" ] || fail "$unit can write outside its private /tmp (ProtectSystem=$protect, ReadWritePaths=$writable)" \
+    "A process there could edit scripts/deploy.sh or packages/sandbox/dist before the next deploy runs them as root. Restore the unit from deploy/systemd/."
+done
 state=$(systemctl is-active exocortex-sandbox.service || true)
 [ "$state" = "active" ] || fail "exocortex-sandbox is $state" \
   "LaTeX builds cannot start without it. Check: journalctl -u exocortex-sandbox -n 50 --no-pager"

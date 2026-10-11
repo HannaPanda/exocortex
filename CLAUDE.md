@@ -787,9 +787,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   its own system user that takes a profile, an image and a script and
   chooses every flag itself (`packages/sandbox/src/policy.ts`): no network,
   nobody, no capabilities, a read-only root, no mount, no pull. It runs from
-  a root-owned copy outside the repository, because the repository is
-  writable by what it protects against, and a dropped connection kills the
-  container.
+  a root-owned copy outside the repository, and a dropped connection kills
+  the container.
+- ADR-082: the application cannot write what root later runs. The four units
+  run with `ProtectSystem=strict` and no `ReadWritePaths`, so the repository
+  (`deploy.sh`, `deploy/`, `packages/sandbox/dist`, `node_modules`) is
+  read-only to them and scratch space is the private `/tmp`. A feature that
+  has to write gets a directory outside the repository, never a
+  `ReadWritePaths` back into it; `deploy.sh` reads both properties from the
+  running units and fails when one has loosened.
 
 Full list: `docs/adr/`.
 

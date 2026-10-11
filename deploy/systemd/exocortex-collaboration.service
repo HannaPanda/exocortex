@@ -25,14 +25,20 @@ SyslogIdentifier=exocortex-collaboration
 # Hardening
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=full
+# `strict`, and no `ReadWritePaths`: the whole file system is read-only to this
+# process, the repository included (issue #184, ADR-082). The repository holds
+# what a person later runs or installs as root -- `scripts/deploy.sh`,
+# `deploy/`, `packages/sandbox/dist`, `node_modules` for `build.sh` -- so a
+# process that could edit it would reach root at the next deploy. None of the
+# four writes anything there at run time; scratch space is the private /tmp.
+ProtectSystem=strict
 # `true`, not `read-only`: these services run as `johanna`, so a read-only
 # /home still hands anything that achieves code execution here the SSH private
 # keys in ~/.ssh and the MCP tokens in ~/.claude.json. Nothing under /home is
 # needed -- the code lives in /var/www/exocortex and its configuration comes
-# from the .env there.
+# from the .env there. It also hides /run/user, and with it johanna's own
+# systemd manager, which could otherwise start an unconfined process for her.
 ProtectHome=true
-ReadWritePaths=/var/www/exocortex
 ProtectKernelTunables=true
 ProtectControlGroups=true
 RestrictSUIDSGID=true
