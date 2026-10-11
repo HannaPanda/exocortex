@@ -17,6 +17,7 @@ import { fetchCollaborationTicket } from '@/lib/api/document-queries';
 import { type ConnectionDetailValue, logConnection } from '@/lib/connection-log';
 import { onWakeSignals, type WakeReason } from '@/lib/wake-signals';
 
+import { retireProvider } from './retire-provider';
 import { reviveTimer } from './revive-timer';
 
 /**
@@ -512,7 +513,7 @@ export function useCollaborationConnection({
       if (disposed) {
         providerCount -= 1;
         record('provider.discarded', { reason: 'disposed', live: providerCount });
-        provider.destroy();
+        retireProvider(provider);
         void persistence.destroy();
         ydoc.destroy();
         return;
@@ -532,7 +533,7 @@ export function useCollaborationConnection({
       if (active !== null) {
         providerCount -= 1;
         record('provider.destroy', { live: providerCount });
-        active.provider.destroy();
+        retireProvider(active.provider);
         void active.persistence.destroy();
         active.ydoc.destroy();
       }
