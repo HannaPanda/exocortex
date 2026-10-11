@@ -119,6 +119,34 @@ sudo journalctl -u exocortex-worker -o cat | grep '"traceId":"4bf92f3577b34da6a3
 Without tracing configured the fields are simply absent, and the lines look
 exactly as they did before.
 
+## The run inspector
+
+Traces and logs are for whoever runs the deployment. The person who started
+a run of the built-in AI gets the product's answer to "what did it do, and
+why" at `/laeufe/:runId`, from `GET /api/ai/runs/:id/inspection` and
+`exo_ai_run_inspect` ([ADR-073](adr/ADR-073-a-run-timeline-is-facts-never-content.md)).
+
+| Recorded as `ai_run_event` | Written in                               | Says                                                                |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| `context`                  | `apps/worker/src/processors/ai-run.ts`   | each part of the first prompt, its size, and the sources behind it  |
+| `compaction`               | `.../ai-run/preparation.ts`, `ai-run.ts` | how many messages were folded, before the first turn or a later one |
+| `turn`                     | `.../ai-run/execution.ts`                | model, upstream provider, eligible providers, tokens, cost, ending  |
+| `tool_call`                | `.../ai-run/execution.ts`                | tool, target, status, result size, foreign origin, repeat, pause    |
+| `truncation_retry`         | `.../ai-run/execution.ts`                | an answer picked up again after the output cap                      |
+
+The rule is the span rule: ids, sizes, names, durations and outcomes, never a
+prompt, a message, a tool result or a page's text. Human checkpoints,
+proposals, working states and resumes are not recorded a second time; the
+API joins them in from their own tables when the inspection is read.
+
+The run keeps `correlationId` and, with tracing on, `traceId`, and the
+inspector shows both, so the way from a run somebody is looking at to its log
+lines and its trace is a copy and a `grep`:
+
+```bash
+sudo journalctl -u exocortex-worker -o cat | grep '"correlationId":"<id from the inspector>"'
+```
+
 ## Adding a span
 
 Use `withSpan` from `@exocortex/logger`. Never import `@opentelemetry/*`

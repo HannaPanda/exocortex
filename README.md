@@ -232,6 +232,13 @@ What is deliberately still missing is listed under
   tracing across API, queue, worker and the AI tool loop (ADR-031). Tracing is
   off, and its SDK is not even loaded, until a collector is configured;
   `docs/observability.md` says what a span may contain and what it never may
+- a run inspector for every run of the built-in AI at `/laeufe/:runId`: a
+  timeline of model turns (model, upstream provider, tokens, cost), tool calls
+  (target, duration, result size, foreign origin, repeats), questions, resumes
+  and proposals, and what the first prompt was made of, part by part down to
+  the pages behind it. Recorded as sizes, names and outcomes only, never a
+  prompt or an answer; agents read the same through `exo_ai_run_inspect`
+  (ADR-073)
 
 ## Stack
 

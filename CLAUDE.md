@@ -696,6 +696,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   results into the paused run's conversation, the way an answer carries a
   checkpoint on. Directly writing siblings run one after another, proposing
   ones together, and a parent is not done while a child is open.
+- ADR-073: a run's timeline is recorded as facts, never as content. The
+  worker writes `ai_run_event` rows (context, turn, tool call, compaction,
+  truncation retry) of ids, sizes, names, durations and outcomes through
+  `RunTimeline`, which never fails a run; the system prompt reports its parts
+  and their sources so the context is measured from what was sent. What other
+  tables know (questions, proposals, working states, resumes) is joined when
+  the inspection is read, never copied. Reading it takes what reading the run
+  takes, leaves the answer out, and names pages only from the run's
+  workspace; the run keeps its correlation and trace id instead of the
+  inspector growing its own tracing.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
