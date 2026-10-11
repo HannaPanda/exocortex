@@ -18,6 +18,8 @@ export async function resolveRunWriteMode(input: {
   run: { workItemId: string | null };
   settings: Pick<Settings, 'ai.writeMode'>;
   profileWriteMode?: AiWriteMode | null;
+  /** An eval attempt's replay mode (issue #146). */
+  evalWriteMode?: AiWriteMode | null;
 }): Promise<AiWriteMode> {
   const work =
     input.run.workItemId === null
@@ -27,7 +29,12 @@ export async function resolveRunWriteMode(input: {
           select: { writeMode: true },
         });
   const own = work?.writeMode == null ? null : (work.writeMode.toLowerCase() as AiWriteMode);
-  return strictestWriteMode(input.settings['ai.writeMode'], own, input.profileWriteMode);
+  return strictestWriteMode(
+    input.settings['ai.writeMode'],
+    own,
+    input.profileWriteMode,
+    input.evalWriteMode,
+  );
 }
 
 /** The column's spelling of a mode. */
@@ -53,8 +60,17 @@ const REPORTING =
  * loop and the API refuse regardless; this saves the turn a refused write
  * would cost, and says what to do instead.
  */
-export function writeModeMessage(mode: AiWriteMode): AiMessage | null {
+export function writeModeMessage(
+  mode: AiWriteMode,
+  /**
+   * Whether the run is an attempt at a work item. The reporting tools only
+   * mean something there; a chat turn or an eval attempt told about them
+   * goes looking for a work item it does not have.
+   */
+  onWorkItem: boolean,
+): AiMessage | null {
   if (mode === 'direct') return null;
+  const reporting = onWorkItem ? ` ${REPORTING}` : '';
   return {
     role: 'system',
     content:
@@ -63,8 +79,8 @@ export function writeModeMessage(mode: AiWriteMode): AiMessage | null {
           'Änderung an einer Seite schlägst du mit exo_changeset_propose vor (eine Änderung pro ' +
           'Aufruf, beim ersten ohne changesetId, danach mit der zurückgegebenen), und reichst ' +
           'den Vorschlag am Ende mit exo_changeset_submit ein. Ein Mensch prüft ihn und ' +
-          `übernimmt, was passt. ${REPORTING}`
+          `übernimmt, was passt.${reporting}`
         : 'Dieser Lauf darf nichts an Seiten verändern und nichts vorschlagen. Was du an einer ' +
-          `Seite ändern würdest, sagst du in deiner Antwort. ${REPORTING}`,
+          `Seite ändern würdest, sagst du in deiner Antwort.${reporting}`,
   };
 }

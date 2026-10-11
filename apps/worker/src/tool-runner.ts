@@ -195,6 +195,11 @@ export interface CreateToolRunnerInput {
    * its service token so the API answers every other workspace as foreign.
    */
   confinedWorkspaceId: string | null;
+  /**
+   * The page an eval attempt's run is confined to with everything under it
+   * (issue #146), signed into its service token like the workspace above.
+   */
+  confinedPageRootId: string | null;
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
@@ -228,6 +233,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'requiredDomains'
   | 'allowedDomains'
   | 'confinedWorkspaceId'
+  | 'confinedPageRootId'
   | 'toolCallTimeoutMs'
   | 'agentSession'
   | 'runId'
@@ -418,6 +424,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         runId: input.runId,
         ...(input.writeMode === 'direct' ? {} : { writeMode: input.writeMode }),
         ...(input.confinedWorkspaceId === null ? {} : { workspaceId: input.confinedWorkspaceId }),
+        ...(input.confinedPageRootId === null ? {} : { pageRootId: input.confinedPageRootId }),
       });
       tokenExpiresAt = issued.expiresAt;
       client = createFetchApiClient({

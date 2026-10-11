@@ -109,10 +109,32 @@ async function failDisabledRun(input: {
   payload: AiJob['payload'];
   logger: AiJob['logger'];
 }): Promise<void> {
+  await refuseRun({
+    ...input,
+    errorCode: 'ai_provider_unavailable',
+    reason: 'AI is disabled via the ai.enabled setting',
+  });
+}
+
+/**
+ * Ends a run before it starts and tells the clients why. For the runs that
+ * must not run at all: AI switched off, or an eval attempt whose case can no
+ * longer hold the run (issue #146).
+ */
+export async function refuseRun(input: {
+  prisma: PrismaClient;
+  bus: RedisEventBus;
+  run: AiRun;
+  payload: AiJob['payload'];
+  logger: AiJob['logger'];
+  errorCode: string;
+  /** English, for the log and the event. */
+  reason: string;
+}): Promise<void> {
   const { prisma, bus, run, payload, logger } = input;
   await prisma.aiRun.update({
     where: { id: run.id },
-    data: { status: 'FAILED', errorCode: 'ai_provider_unavailable', finishedAt: new Date() },
+    data: { status: 'FAILED', errorCode: input.errorCode, finishedAt: new Date() },
   });
   await bus.publish({
     type: 'ai.run.failed',
@@ -122,12 +144,16 @@ async function failDisabledRun(input: {
     payload: {
       runId: run.id,
       status: 'failed',
-      errorCode: 'ai_provider_unavailable',
-      reason: 'AI is disabled via the ai.enabled setting',
+      errorCode: input.errorCode,
+      reason: input.reason,
       detail: null,
       detailKey: null,
       detailArgs: null,
     },
   });
-  logger.warn('AI run failed: AI is disabled', { runId: run.id });
+  logger.warn('AI run refused before it started', {
+    runId: run.id,
+    errorCode: input.errorCode,
+    reason: input.reason,
+  });
 }

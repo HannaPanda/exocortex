@@ -52,6 +52,19 @@ export function triggerForEvent(eventType: string): AutomationTrigger | null {
   }
 }
 
+/** Whether the page or a page above it is (or was) an eval attempt's sandbox. */
+async function insideEvalSandbox(
+  prisma: PrismaClient,
+  documentId: string,
+  ancestry: ReadonlySet<string>,
+): Promise<boolean> {
+  const sandbox = await prisma.evalAttempt.findFirst({
+    where: { sandboxDocumentId: { in: [documentId, ...ancestry] } },
+    select: { id: true },
+  });
+  return sandbox !== null;
+}
+
 /** Depth at which the ancestor walk gives up. A page tree is not this deep. */
 const MAX_ANCESTOR_DEPTH = 64;
 
@@ -98,11 +111,11 @@ export async function fireMatchingAutomations(
   });
   if (rules.length === 0) return 0;
 
-  const scoped = rules.filter((rule) => rule.scope !== 'WORKSPACE');
-  const ancestry =
-    scoped.length === 0
-      ? new Set<string>()
-      : await ancestorIds(context.prisma, documentId, event.workspaceId);
+  const ancestry = await ancestorIds(context.prisma, documentId, event.workspaceId);
+  // A page in an eval attempt's sandbox (issue #146, ADR-074) is not a page
+  // anybody wrote: no rule reacts to it, or replaying a task could send a
+  // webhook or a mail on behalf of a copy.
+  if (await insideEvalSandbox(context.prisma, documentId, ancestry)) return 0;
 
   const depth = event.automationDepth + 1;
   let fired = 0;

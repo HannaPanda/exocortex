@@ -17,7 +17,7 @@ import { type ResolvedAiKey } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
 import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
-import { admitRun } from './ai-run/admission';
+import { admitRun, refuseRun } from './ai-run/admission';
 import {
   profileColumns,
   profileLimits,
@@ -39,6 +39,13 @@ import {
   taskTextFor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
+import {
+  type EvalHold,
+  evalLimits,
+  evalProviderRouting,
+  evalToolDomains,
+  resolveEvalHold,
+} from './ai-run/eval-hold';
 import { RunTimeline } from './ai-run/timeline';
 import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
 
@@ -202,6 +209,8 @@ function buildRunRouting(input: {
 /** What holds one run: its mode, its role, its limits (issues #141 and #143). */
 interface RunPolicy {
   profile: RunProfile | null;
+  /** The eval attempt's case, when the run is one (issue #146). */
+  evalHold: EvalHold | null;
   writeMode: AiWriteMode;
   /** System messages before the conversation: the role, then the mode. */
   notes: { key: 'agent_role' | 'write_mode'; message: AiMessage }[];
@@ -220,24 +229,30 @@ async function resolveRunPolicy(input: {
   run: AiRun;
   settings: Settings;
   profile: RunProfile | null;
+  evalHold: EvalHold | null;
 }): Promise<RunPolicy> {
-  const { prisma, run, settings, profile } = input;
+  const { prisma, run, settings, profile, evalHold } = input;
   const writeMode = await resolveRunWriteMode({
     prisma,
     run,
     settings,
     profileWriteMode: profile?.snapshot.writeMode ?? null,
+    evalWriteMode: evalHold?.writeMode ?? null,
   });
   const roleNote = await profileMessage({ prisma, profile, workspaceId: run.workspaceId });
-  const modeNote = writeModeMessage(writeMode);
+  const modeNote = writeModeMessage(writeMode, run.workItemId !== null);
   const base = deriveAiRunTimeouts(settings);
-  const limits = profileLimits(profile, {
-    budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
-    maxToolIterations: settings['ai.maxToolIterations'],
-    runBudgetMs: base.runBudgetMs,
-  });
+  const limits = evalLimits(
+    evalHold,
+    profileLimits(profile, {
+      budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
+      maxToolIterations: settings['ai.maxToolIterations'],
+      runBudgetMs: base.runBudgetMs,
+    }),
+  );
   return {
     profile,
+    evalHold,
     writeMode,
     notes: [
       ...(roleNote === null ? [] : [{ key: 'agent_role' as const, message: roleNote }]),
@@ -283,12 +298,20 @@ function createRunToolRunner(input: {
       // A proposing run needs the proposal tools whatever its words say.
       ...(proposing ? (['changesets'] as const) : []),
     ],
-    // The agent profile's domains are a limit, not an offer (issue #143).
-    allowedDomains: profileToolDomains(policy.profile, {
-      onWorkItem: run.workItemId !== null,
-      proposing,
-    }),
-    confinedWorkspaceId: policy.profile?.snapshot.confineToWorkspace ? run.workspaceId : null,
+    // The agent profile's domains are a limit, not an offer (issue #143),
+    // and an eval case can narrow them further (issue #146).
+    allowedDomains: evalToolDomains(
+      profileToolDomains(policy.profile, { onWorkItem: run.workItemId !== null, proposing }),
+      policy.evalHold,
+      proposing ? ['changesets'] : [],
+    ),
+    // An eval attempt is always held to its workspace, and in the fixture
+    // mode to its sandbox (issue #146).
+    confinedWorkspaceId:
+      policy.profile?.snapshot.confineToWorkspace === true || policy.evalHold !== null
+        ? run.workspaceId
+        : null,
+    confinedPageRootId: policy.evalHold?.pageRootId ?? null,
     toolCallTimeoutMs: policy.timeouts.toolCallTimeoutMs,
     // One run, one session (ADR-022): the unit somebody would want back is
     // "what the assistant did while answering that question".
@@ -376,7 +399,27 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // The agent profile this run works under, if it is an attempt at work
     // that has one (issue #143): its role, its limits, its tools, and routing
     // keys that narrow the endpoints before anything is planned.
-    const profile = await resolveRunProfile({ prisma, run });
+    // An eval attempt (issue #146) is held to its case, or not run at all.
+    const evalHold = await resolveEvalHold({ prisma, run });
+    if (evalHold.kind === 'refused') {
+      await refuseRun({
+        prisma,
+        bus,
+        run,
+        payload,
+        logger,
+        errorCode: 'eval_attempt_invalid',
+        reason: `The eval attempt cannot hold this run: ${evalHold.reason}`,
+      });
+      return;
+    }
+    const hold = evalHold.kind === 'held' ? evalHold.hold : null;
+    const profile = await resolveRunProfile({
+      prisma,
+      run,
+      ...(hold === null ? {} : { evalProfileId: hold.agentProfileId }),
+    });
+    const providerPreferences = evalProviderRouting(profile?.providerRouting ?? null, hold);
 
     const modelRow = withConfiguredEndpoints(
       await resolveModelRow({
@@ -386,7 +429,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         logger,
       }),
       settings,
-      profile?.providerRouting ?? null,
+      providerPreferences,
     );
     const conversation =
       run.conversationId === null
@@ -467,7 +510,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // The mode, the role and the limits this run is held to (issues #141 and
     // #143): told to the model up front, enforced by the loop and, through
     // its signed token, by the API.
-    const policy = await resolveRunPolicy({ prisma, run, settings, profile });
+    const policy = await resolveRunPolicy({ prisma, run, settings, profile, evalHold: hold });
     const messages: AiMessage[] = [
       ...base,
       ...policy.notes.map((note) => note.message),
@@ -547,7 +590,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             toolsEnabled: tools.enabled,
             requiresReasoningEffort,
             floorInputTokens,
-            preferences: profile?.providerRouting ?? null,
+            preferences: providerPreferences,
           }),
         });
         span.setAttributes({

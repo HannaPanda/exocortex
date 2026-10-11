@@ -33,6 +33,8 @@ function harness(input: {
   /** `id -> parentId`, root pages mapping to null. */
   tree?: Record<string, string | null>;
   enabled?: boolean;
+  /** Pages that are an eval attempt's sandbox (issue #146). */
+  sandboxes?: string[];
 }) {
   const queued: { jobId: string; payload: Record<string, unknown>; delayMs: number }[] = [];
   const tree = input.tree ?? {};
@@ -45,6 +47,12 @@ function harness(input: {
     document: {
       findFirst: async ({ where }: { where: { id: string } }) =>
         where.id in tree ? { parentId: tree[where.id] ?? null } : null,
+    },
+    evalAttempt: {
+      findFirst: async ({ where }: { where: { sandboxDocumentId: { in: string[] } } }) =>
+        where.sandboxDocumentId.in.some((id) => (input.sandboxes ?? []).includes(id))
+          ? { id: 'attempt-1' }
+          : null,
     },
   } as unknown as PrismaClient;
 
@@ -217,6 +225,21 @@ describe('matching an event against rules', () => {
     const { context, queued } = harness({ rules: [workspaceRule] });
     const fired = await fireMatchingAutomations(context, event({ automationDepth: 3 }));
     expect(fired).toBe(0);
+    expect(queued).toHaveLength(0);
+  });
+});
+
+describe('an eval sandbox (issue #146)', () => {
+  it('fires no rule for a page inside it, nor for the sandbox itself', async () => {
+    const { context, queued } = harness({
+      rules: [workspaceRule],
+      tree: { 'page-child': 'sandbox', sandbox: null },
+      sandboxes: ['sandbox'],
+    });
+    expect(await fireMatchingAutomations(context, event())).toBe(0);
+    expect(
+      await fireMatchingAutomations(context, event({ payload: { documentId: 'sandbox' } })),
+    ).toBe(0);
     expect(queued).toHaveLength(0);
   });
 });

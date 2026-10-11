@@ -36,7 +36,24 @@ export interface RunProfile {
 export async function resolveRunProfile(input: {
   prisma: PrismaClient;
   run: { workItemId: string | null; workspaceId: string };
+  /**
+   * An eval attempt's case (issue #146) names its profile or none, and never
+   * falls back to the workspace's default: a case taken from a plain chat
+   * turn has to be replayed as one.
+   */
+  evalProfileId?: string | null;
 }): Promise<RunProfile | null> {
+  if (input.evalProfileId !== undefined) {
+    if (input.evalProfileId === null) return null;
+    const row = await input.prisma.agentProfile.findUnique({ where: { id: input.evalProfileId } });
+    if (row === null || row.workspaceId !== input.run.workspaceId) return null;
+    return {
+      snapshot: agentProfileSnapshot({ row, source: 'eval_case' }),
+      instructions: row.instructions,
+      ruleDocumentIds: row.ruleDocumentIds,
+      providerRouting: storedProviderRouting(row.providerRouting),
+    };
+  }
   if (input.run.workItemId === null) return null;
   const work = await input.prisma.workItem.findUnique({
     where: { id: input.run.workItemId },
