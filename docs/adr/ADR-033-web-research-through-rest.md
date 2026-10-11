@@ -107,3 +107,17 @@ attempt, not on the page, so a run cannot retry a broken address for ever.
 - An engine SearXNG cannot reach is maintenance, not a bug. The repair is the
   engine list in `deploy/searxng/settings.yml` or Steel's proxy support, and the
   symptom is visible in `unresponsiveEngines` rather than silent.
+
+## Addendum 2026-10-11: a fetch this process makes binds the check to the socket
+
+The rebinding limit above is about Steel, which resolves the name itself. The
+URL attachment fetch (`attachments/from-url`, issue #117) is a request the API
+makes on its own, and it had the same gap without needing to: it judged the
+name, then `fetch` resolved it again for the connection (issue #178). It now
+goes through `node:http` with `publicOnlyLookup` as the socket's `lookup`, so
+the addresses judged are the only ones the connection is given, at the moment
+it connects, on every redirect hop. `checkPublicAddress` stays in front of it
+as the early refusal with a reason; the binding one is the lookup. The same
+change judges every spelling of an IPv4 address inside IPv6 (mapped in hex,
+compatible, SIIT, 6to4), which the dotted-text test had let through, and strips
+the brackets the URL parser leaves on an IPv6 literal.

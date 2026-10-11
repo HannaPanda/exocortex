@@ -18,12 +18,16 @@ import { checkPublicAddress, isPublicAddress } from './public-address';
  */
 
 describe('which literal addresses count as public', () => {
-  it.each(['1.1.1.1', '93.184.216.34', '2606:4700:4700::1111', '2a00:1450:4001:80f::200e'])(
-    'allows %s',
-    (address) => {
-      expect(isPublicAddress(address)).toBe(true);
-    },
-  );
+  it.each([
+    '1.1.1.1',
+    '93.184.216.34',
+    '2606:4700:4700::1111',
+    '2a00:1450:4001:80f::200e',
+    '::ffff:5db8:d822',
+    '2002:5db8:d822::1',
+  ])('allows %s', (address) => {
+    expect(isPublicAddress(address)).toBe(true);
+  });
 
   it.each([
     ['127.0.0.1', 'loopback'],
@@ -43,6 +47,14 @@ describe('which literal addresses count as public', () => {
     ['ff02::1', 'multicast'],
     ['::ffff:127.0.0.1', 'loopback wearing an IPv6 hat'],
     ['64:ff9b::7f00:1', 'NAT64 pointing at loopback'],
+    ['::ffff:7f00:1', 'mapped loopback in the hex spelling the URL parser writes'],
+    ['::7f00:1', 'IPv4-compatible loopback'],
+    ['::ffff:0:a9fe:a9fe', 'the metadata address in the SIIT form'],
+    ['::ffff:a9fe:a9fe', 'the metadata address, mapped'],
+    ['2002:7f00:1::', '6to4 wrapped around loopback'],
+    ['2002:ac12:1::1', '6to4 wrapped around the Docker bridge'],
+    ['fec0::1', 'site-local'],
+    ['2001::1', 'Teredo'],
   ])('refuses %s (%s)', (address) => {
     expect(isPublicAddress(address)).toBe(false);
   });
@@ -62,6 +74,17 @@ describe('checking an address before it reaches the browser', () => {
   it('refuses something that is not a URL', async () => {
     const result = await checkPublicAddress('not a url');
     expect(result).toMatchObject({ allowed: false, reason: 'malformed_url' });
+  });
+
+  it('judges an IPv6 literal without its brackets', async () => {
+    await expect(checkPublicAddress('http://[::ffff:127.0.0.1]/')).resolves.toMatchObject({
+      allowed: false,
+      reason: 'private_address',
+      detail: '::ffff:7f00:1',
+    });
+    await expect(checkPublicAddress('http://[2606:4700:4700::1111]/')).resolves.toMatchObject({
+      allowed: true,
+    });
   });
 
   it('refuses a literal private address', async () => {

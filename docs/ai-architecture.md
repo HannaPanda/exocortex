@@ -827,6 +827,9 @@ than implied: DNS rebinding is out of reach without an egress firewall around
 the container, and our own back ends (SearXNG, Steel, both on loopback) are
 deliberately not subject to the rule -- it guards a parameter a model supplied,
 not the outgoing HTTP layer.
+A request the API makes itself, the URL attachment fetch, has no rebinding gap:
+it hands the socket `publicOnlyLookup`, so the check and the connection are one
+resolution (issue #178, addendum to ADR-033).
 
 ### Budgets and what comes back
 
