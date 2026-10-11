@@ -2994,7 +2994,7 @@
     },
     "attention.item.actionLabel": {
       "source": "1409d62c51d47ed9",
-      "output": "aecd1eb2a1ff2244"
+      "output": "ec7535ef24d3eab2"
     },
     "attention.item.addNote": {
       "source": "c9ec3d40812694e1",
@@ -3046,7 +3046,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "7eab41b2cfb90793"
+      "output": "1232dc02f02eb5db"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -3063,6 +3063,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "493d3066bf5bb64c"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "208e1b5b2f8dc594"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -3091,6 +3095,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "3a4140a0896fe14c"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "fc862af45c1b937c"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "27050c4f36027f01"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -3146,7 +3158,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "29887a5ff9846ccc"
+      "output": "147fb813a2515718"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -3188,9 +3200,17 @@
       "source": "12dfc0a34c26603e",
       "output": "c253f451bdd56431"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "6007acbe30b2cd98"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "7af6d450c965ba02"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "ab604a360777735f"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -3234,7 +3254,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "fabf9585ec2e57f1"
+      "output": "42171af50ef629c4"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -3246,7 +3266,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "d68d95b1e6389522"
+      "output": "c5f82676d5bace1b"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -9156,6 +9176,10 @@
       "source": "9977703e32828601",
       "output": "736b707e8a001a04"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "13a9ff0ec5db6691"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "1bfbd4867c1b4ab5"
@@ -10897,8 +10921,8 @@
       "output": "03dfddb690f58983"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "e903869624c6081d"
+      "source": "e379bce9f90bc319",
+      "output": "85436070f6f70d7b"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -10909,8 +10933,8 @@
       "output": "fd048d141a73202b"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "379fb86e6b22d9a7"
+      "source": "cb1e52a8ec358c56",
+      "output": "85f4d86807f8ed7e"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -13116,6 +13140,10 @@
       "source": "34a8243714c4ae68",
       "output": "73138971972a1b3a"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "fe4f55a24a0bf631"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "32f0d3cb39250750"
@@ -13204,9 +13232,37 @@
       "source": "976910931b05f68d",
       "output": "42dc22f30e6dddf0"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "2711290869dc87ef"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "b21daf16275458d0"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "d4fe203790b5dbcc"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "c7559611be092784"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "bcd53bcb867f18f3"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "dfaa65e967f29446"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "eb2a3d63e2f8bc7d"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "58accdcf1fd6b508"
+      "source": "1b706a3aa265b42b",
+      "output": "ec8a6d781c367149"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -22812,7 +22868,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "e87e846c6c86cf48"
+      "output": "ee5603a3473aff78"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -22829,6 +22885,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "7bb93a7b11490553"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "d228d815b6e47f15"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -22857,6 +22917,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "3bc0f1a61b83b263"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "b32be600ef9041a7"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "b1b9f591b04ee502"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -22912,7 +22980,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "4da45b20005c555c"
+      "output": "6fb8e0aa6bb5b332"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -22954,9 +23022,17 @@
       "source": "12dfc0a34c26603e",
       "output": "8630a0dc25e2395a"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "10a00fdf1a44dec2"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "1a878a55c594b0f7"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "2a0515602d315876"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -23000,7 +23076,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "f048f3fc25e6ff3b"
+      "output": "a74b336d786fef4c"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -23012,7 +23088,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "a17d1cc09c30838d"
+      "output": "99da8efdf37d64c3"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -28922,6 +28998,10 @@
       "source": "9977703e32828601",
       "output": "886af9688503b413"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "66d485d23b9379ac"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "cb2152faab9196ee"
@@ -30663,8 +30743,8 @@
       "output": "96855ebe6ea320e2"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "920c7a58ef12338d"
+      "source": "e379bce9f90bc319",
+      "output": "c5531f013ef376c1"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -30675,8 +30755,8 @@
       "output": "1ab000100a2cc4bb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "e6801f9e650296b2"
+      "source": "cb1e52a8ec358c56",
+      "output": "b8eab01600fd009d"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -32882,6 +32962,10 @@
       "source": "34a8243714c4ae68",
       "output": "7370a0448161d3b5"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "ff5f47c18a69b6ed"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "51cfbc593fdbeb6f"
@@ -32970,9 +33054,37 @@
       "source": "976910931b05f68d",
       "output": "2b545f1f0e4c2a07"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "afddea1b26cdb8ee"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "ab771653d2542d7f"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "51bc34a000b162ea"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "c2f3d72296f4757e"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "d35769c1d461727d"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "05e6a21f15f891bd"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "c3be94a9dd0baf17"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "237edf45a468e086"
+      "source": "1b706a3aa265b42b",
+      "output": "b945c55ac11ff6e8"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -42526,7 +42638,7 @@
     },
     "attention.item.actionLabel": {
       "source": "1409d62c51d47ed9",
-      "output": "fd9b31aa72a76b74"
+      "output": "dd8ff8b461c9d2fa"
     },
     "attention.item.addNote": {
       "source": "c9ec3d40812694e1",
@@ -42578,7 +42690,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "4dc4cac7f24e6f54"
+      "output": "53d25df8c39b6b1f"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -42595,6 +42707,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "00169c404e7b1603"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "abc19568fd54bc0e"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -42623,6 +42739,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "458be1586efd1039"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "0e921937782f6519"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "d18cee7c1cdc3ae1"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -42678,7 +42802,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "d97e90a32a7e861c"
+      "output": "c993d016ca03e341"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -42720,9 +42844,17 @@
       "source": "12dfc0a34c26603e",
       "output": "05af80398c58d921"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "96fa3db66de18a98"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "f488c800e76284b9"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "283348d05e1cd82a"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -42766,7 +42898,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "aeebbf31784eb084"
+      "output": "53be09fb861d9e17"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -42778,7 +42910,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "372e50325d5e399c"
+      "output": "6b8a702613cf02fa"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -42786,7 +42918,7 @@
     },
     "attention.page.summary.budget": {
       "source": "c2c2e1846313eb26",
-      "output": "6ed628af2191941c"
+      "output": "637517e0580b56e4"
     },
     "attention.page.summary.conflict": {
       "source": "2b91bc83bb9b7db5",
@@ -48688,6 +48820,10 @@
       "source": "9977703e32828601",
       "output": "f3903cb554023d6d"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "3466603528936546"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "0de926d6f20378c7"
@@ -50429,8 +50565,8 @@
       "output": "58db0a5be26fd0f2"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "c670b85f29d9e6cb"
+      "source": "e379bce9f90bc319",
+      "output": "8216570475ea73e6"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -50441,8 +50577,8 @@
       "output": "d5c71fcd6ac7109c"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "8158c770c6bc0170"
+      "source": "cb1e52a8ec358c56",
+      "output": "b92da169f380bad8"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -52648,6 +52784,10 @@
       "source": "34a8243714c4ae68",
       "output": "913af1a44a13abb5"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "43bc857d31205655"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "dbbf0be704928b10"
@@ -52736,9 +52876,37 @@
       "source": "976910931b05f68d",
       "output": "7a9cd6f685be549f"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "642c6975e807dd35"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "22a500d56d96f089"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "bcd3c27185ee5a13"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "fd9b4fa4e57f0c53"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "489b69120b9faf53"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "de0e10601771eac4"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "c69eb60560af6968"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "ad3f8db3788c0a29"
+      "source": "1b706a3aa265b42b",
+      "output": "f3704b88eb8e429f"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -62344,7 +62512,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "f4b9671d8b4af3a8"
+      "output": "d2b5b9ab31c56180"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -62361,6 +62529,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "141edac32f51a9f1"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "9a3841d4d8cc1d2b"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -62389,6 +62561,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "a05f52809e2bd48e"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "32d9464d1940347b"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "ecf478e86f308cf5"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -62444,7 +62624,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "e77984b75c1e0a26"
+      "output": "1b7f5dce008f5d03"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -62486,9 +62666,17 @@
       "source": "12dfc0a34c26603e",
       "output": "aa991fc69838e3b0"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "dc501b99debdf250"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "d287be2d7e14994c"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "cc2a91346b9e25a0"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -62532,7 +62720,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "56ee439769c4c8c8"
+      "output": "e9c820e59a8cde1c"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -62544,7 +62732,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "2a67021214c937cb"
+      "output": "534c2fdca9af4dd0"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -68454,6 +68642,10 @@
       "source": "9977703e32828601",
       "output": "a0c04ede0086a099"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "2ab0e69324282944"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "864a12995788b218"
@@ -70195,8 +70387,8 @@
       "output": "5298f92e313c7d25"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "6c6ea6c9f1f35a12"
+      "source": "e379bce9f90bc319",
+      "output": "8b1772bbea63e7cf"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -70207,8 +70399,8 @@
       "output": "019379af2ddbfbe8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "03cbe41bc8524f50"
+      "source": "cb1e52a8ec358c56",
+      "output": "b1eb7362c87c2d36"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -72414,6 +72606,10 @@
       "source": "34a8243714c4ae68",
       "output": "58020d498feb3036"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "c1bbd5d078fbbe70"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "242a732bafa144e8"
@@ -72502,9 +72698,37 @@
       "source": "976910931b05f68d",
       "output": "240e4b274bad88ad"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "4d0af456a619f5eb"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "6bdaa8d0ec358522"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "31913abc74805611"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "8da2c1b72dce7552"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "741ddcc9a18146cb"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "f27738f89890e691"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "ef52ea3e20644ab6"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "61eb9ec5cf8405bc"
+      "source": "1b706a3aa265b42b",
+      "output": "d6e6a53f31a1f6e6"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -82110,7 +82334,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "d5a5082fe2bdd656"
+      "output": "34459e183d28f81a"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -82127,6 +82351,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "07e23128c8c18192"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "fa0264dbab69e5b1"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -82155,6 +82383,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "c44467dad9a3a600"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "6f4fde7523b26f5d"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "fd1248e6ac2fea6e"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -82210,7 +82446,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "4df3917769ec5d74"
+      "output": "3541e12b5a76d02d"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -82252,9 +82488,17 @@
       "source": "12dfc0a34c26603e",
       "output": "298fbcfcfed19ea8"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "984b9d3829d966a0"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "b4cb960921338200"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "bd0c92cda1b699c2"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -82298,7 +82542,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "4a5a7195bd55dde0"
+      "output": "4ec9f510c6e7e17b"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -82310,7 +82554,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "05239d82df77c751"
+      "output": "26f81f35b439b7a0"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -88220,6 +88464,10 @@
       "source": "9977703e32828601",
       "output": "79154c37bc0a9ba7"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "f9dbd14251603f9c"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "dcb8db9664939236"
@@ -89961,8 +90209,8 @@
       "output": "b47fbfeb5d03fb38"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "d2341be44cf4c395"
+      "source": "e379bce9f90bc319",
+      "output": "806cb7f522c35e36"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -89973,8 +90221,8 @@
       "output": "5a091a1a49d896d8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "e9f42ed42c543cff"
+      "source": "cb1e52a8ec358c56",
+      "output": "463fd8cb6d69d67c"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -92180,6 +92428,10 @@
       "source": "34a8243714c4ae68",
       "output": "e9cdb67beab1a0bb"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "f5a67e958d458ec3"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "cdedf5486cc5103e"
@@ -92268,9 +92520,37 @@
       "source": "976910931b05f68d",
       "output": "355c6438c48ad4bd"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "70253447dc900796"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "043d748df3871c55"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "4ee2ddc87472a1bf"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "c3678181d0dbeb1d"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "b904b08cd8a0483d"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "e2e435722f5c60ca"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "1daffabbd8ac0bcc"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "b043d77eb91eb6ff"
+      "source": "1b706a3aa265b42b",
+      "output": "52e93fd3a158e8dc"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -101824,7 +102104,7 @@
     },
     "attention.item.actionLabel": {
       "source": "1409d62c51d47ed9",
-      "output": "3e7b74189e589197"
+      "output": "139329df7000ac93"
     },
     "attention.item.addNote": {
       "source": "c9ec3d40812694e1",
@@ -101876,7 +102156,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "b244e8e3cdb70199"
+      "output": "17811ff9eada0afe"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -101893,6 +102173,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "8d2767786da45d0b"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "181a3075970d0a20"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -101921,6 +102205,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "3ccca9c5b985e72e"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "b82a1d08fe2cd120"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "730d172211604c23"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -101976,7 +102268,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "40a30d55f07b22a7"
+      "output": "cd53d37b671ce86a"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -102018,9 +102310,17 @@
       "source": "12dfc0a34c26603e",
       "output": "5408922df6f5b9cf"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "34e78226bc597d02"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "c7573e61b1e66ae2"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "593aac22e40f4b95"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -102064,7 +102364,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "549891dd5f0e4e92"
+      "output": "65710b0f9c267d01"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -102076,7 +102376,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "9d6d48a34dcede8e"
+      "output": "00945de1c4f30bb0"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -102084,7 +102384,7 @@
     },
     "attention.page.summary.budget": {
       "source": "c2c2e1846313eb26",
-      "output": "1ab550c066234daf"
+      "output": "7394461b08d822cb"
     },
     "attention.page.summary.conflict": {
       "source": "2b91bc83bb9b7db5",
@@ -107986,6 +108286,10 @@
       "source": "9977703e32828601",
       "output": "e59de886d1db8c35"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "7f5200e327b84a9f"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "60296b5a548b07a0"
@@ -109727,8 +110031,8 @@
       "output": "a57a38fced1c3db0"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "3c7af52bed16a0c9"
+      "source": "e379bce9f90bc319",
+      "output": "a114b22dc1b70993"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -109739,8 +110043,8 @@
       "output": "2c58afd1029e10cb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "88cf2dbb480b735e"
+      "source": "cb1e52a8ec358c56",
+      "output": "94a031d2721e495f"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -111946,6 +112250,10 @@
       "source": "34a8243714c4ae68",
       "output": "77e3dcfe414b76b4"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "fdb47ff26924cefd"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "c7e29bf6dbe0012d"
@@ -112034,9 +112342,37 @@
       "source": "976910931b05f68d",
       "output": "d6f1c5383eaa3c0a"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "590fda52386a8834"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "5037e42f1381dba9"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "206e481426505198"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "239419b58659cf4a"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "dfa23275214fc9d7"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "e00043850b7707f1"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "47a26de8a12df67e"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "05c21cb0476b17a9"
+      "source": "1b706a3aa265b42b",
+      "output": "dcdbd09d597d781a"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",
@@ -121642,7 +121978,7 @@
     },
     "attention.item.obsoleteReason.subject_changed": {
       "source": "1b73c9278a532cda",
-      "output": "267c071112098f5f"
+      "output": "3bc078cf20cd541e"
     },
     "attention.item.obsoleteReason.superseded": {
       "source": "83ff391bc6e29560",
@@ -121659,6 +121995,10 @@
     "attention.item.obsoleteReason.work_item_deleted": {
       "source": "275791f7781a30d8",
       "output": "e39e313a4418ff84"
+    },
+    "attention.item.obsoleteReason.workflow_ended": {
+      "source": "9301a9d6b79d620e",
+      "output": "5994daeaa96c77c5"
     },
     "attention.item.openConversation": {
       "source": "a238d652d00d4a38",
@@ -121687,6 +122027,14 @@
     "attention.item.raisedBySomebody": {
       "source": "3e1e4ef48c0ef015",
       "output": "cc51d88541998803"
+    },
+    "attention.item.raisedByWorkflow": {
+      "source": "ac6c93530218ad7d",
+      "output": "37ce457a5b35aaad"
+    },
+    "attention.item.raisedByWorkflowGone": {
+      "source": "fecfb12c8d6f80dd",
+      "output": "06dfe1698a31dce9"
     },
     "attention.item.resumeFailed": {
       "source": "c0906b758fe01532",
@@ -121742,7 +122090,7 @@
     },
     "attention.kind.approval": {
       "source": "3c540fe0d6fe6146",
-      "output": "6f27b5d22343f7ea"
+      "output": "d9eada774eff449d"
     },
     "attention.kind.blocked": {
       "source": "931f082bf11e4d82",
@@ -121784,9 +122132,17 @@
       "source": "12dfc0a34c26603e",
       "output": "8630a0dc25e2395a"
     },
+    "attention.option.approve": {
+      "source": "4bdc1659681ce22e",
+      "output": "c764f8c3621fb0ab"
+    },
     "attention.option.give_up": {
       "source": "a050ebd54f0705c2",
       "output": "b617daca78aac5b6"
+    },
+    "attention.option.reject": {
+      "source": "7be75ced71620109",
+      "output": "e10d2f8705c22254"
     },
     "attention.option.retry": {
       "source": "6e6fbb841755d582",
@@ -121830,7 +122186,7 @@
     },
     "attention.page.intro": {
       "source": "eefbf76f7359432a",
-      "output": "e26ec89f6c10b2d6"
+      "output": "da49af17e61ce39e"
     },
     "attention.page.loadFailed": {
       "source": "cb9e4185ababe5f5",
@@ -121842,7 +122198,7 @@
     },
     "attention.page.summary.approval": {
       "source": "562c35cebdb401a2",
-      "output": "a4fcfbaac2ea734b"
+      "output": "2b81768fc9d7dfff"
     },
     "attention.page.summary.blocked": {
       "source": "b0dc55566e9d40cc",
@@ -127752,6 +128108,10 @@
       "source": "9977703e32828601",
       "output": "b7678b8eee67c50b"
     },
+    "errors.codes.attention_human_only": {
+      "source": "46a34c87fb84763b",
+      "output": "34b6ac3ef5ea6de0"
+    },
     "errors.codes.attention_item_settled": {
       "source": "fd3452b2c58d3716",
       "output": "2c5c2d6c7e780280"
@@ -129493,8 +129853,8 @@
       "output": "e144f0b48b62ee26"
     },
     "features.agenten-workflows.details.p1": {
-      "source": "52f2bb3db9e0811a",
-      "output": "1f47b1ff80fd987a"
+      "source": "e379bce9f90bc319",
+      "output": "bce32b605ea9f829"
     },
     "features.agenten-workflows.details.p2": {
       "source": "96cd93e0c2821d39",
@@ -129505,8 +129865,8 @@
       "output": "759e3a8546e8ab7e"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "63483514620f3240",
-      "output": "0ae51dd24ecdb7f9"
+      "source": "cb1e52a8ec358c56",
+      "output": "928a0b57a1bc2e2c"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -131712,6 +132072,10 @@
       "source": "34a8243714c4ae68",
       "output": "894ec80e4a7e6eaf"
     },
+    "features.wartet-auf-dich.details.p7": {
+      "source": "19f7ade78cf7734d",
+      "output": "242cc5f45a268034"
+    },
     "features.wartet-auf-dich.summary": {
       "source": "73554cebbb629075",
       "output": "ceb59b09c530ea69"
@@ -131800,9 +132164,37 @@
       "source": "976910931b05f68d",
       "output": "4ef932e216138318"
     },
+    "features.workflow-freigaben.details.p1": {
+      "source": "73113ad6708184c5",
+      "output": "bf36e2184f0bfd33"
+    },
+    "features.workflow-freigaben.details.p2": {
+      "source": "e857d1e3e0cd95d2",
+      "output": "f29835e4113848d0"
+    },
+    "features.workflow-freigaben.details.p3": {
+      "source": "e72bba82ae65db37",
+      "output": "f2aaf322c0bf4c67"
+    },
+    "features.workflow-freigaben.details.p4": {
+      "source": "28acef48c66d3351",
+      "output": "89cc43a6f635af28"
+    },
+    "features.workflow-freigaben.summary": {
+      "source": "e15e55772379b04c",
+      "output": "192a683de95bd61d"
+    },
+    "features.workflow-freigaben.title": {
+      "source": "200fcf504ef74629",
+      "output": "a174623d2c10ff50"
+    },
+    "features.workflow-freigaben.where": {
+      "source": "bf5d2a40c79cdb03",
+      "output": "6d72b973f7395fec"
+    },
     "features.workflow-laeufe.details.p1": {
-      "source": "54ce7b87476ced29",
-      "output": "bab475b0ae2596dd"
+      "source": "1b706a3aa265b42b",
+      "output": "f1baaad59fe7010b"
     },
     "features.workflow-laeufe.details.p2": {
       "source": "e356f9e0d64d5504",

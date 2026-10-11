@@ -58,6 +58,7 @@ function item(overrides: Record<string, unknown> = {}) {
     workState: null,
     subject: null,
     changeset: null,
+    workflow: null,
     settledAt: null,
     settledBy: null,
     resolution: null,

@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "Czeka na ciebie",
-    "intro": "Tutaj znajduje się tylko to, co naprawdę wymaga twojego udziału: decyzje, udostępnienia, wyniki do sprawdzenia, zablokowane zadania i nieudane uruchomienia. To, co wydarzyło się w tle, znajdziesz w historii zadań oraz w powiadomieniach.",
+    "intro": "Tutaj znajduje się tylko to, co naprawdę wymaga twojego udziału: decyzje, zatwierdzenia, wyniki do sprawdzenia, zablokowane zadania oraz nieudane przebiegi. Informacje o tym, co się po prostu wydarzyło, znajdziesz w historii zadań oraz w powiadomieniach.",
     "filterLabel": "Które wpisy",
     "filters": {
       "open": "Otwarte",
@@ -20,10 +20,10 @@
     "summaryLabel": "Otwarte według typu",
     "summary": {
       "decision": "{count, plural, one {# decyzja} few {# decyzje} many {# decyzji} other {# decyzji}}",
-      "approval": "{count, plural, one {# udostępnienie} few {# udostępnienia} many {# udostępnień} other {# udostępnień}}",
+      "approval": "{count, plural, one {# zatwierdzenie} few {# zatwierdzenia} many {# zatwierdzeń} other {# zatwierdzenia}}",
       "review": "{count, plural, one {# wynik do sprawdzenia} few {# wyniki do sprawdzenia} many {# wyników do sprawdzenia} other {# wyników do sprawdzenia}}",
       "blocked": "{count, plural, one {# zablokowane zadanie} few {# zablokowane zadania} many {# zablokowanych zadań} other {# zablokowanych zadań}}",
-      "budget": "{count, plural, one {# zatwierdzenie budżetu} few {# zatwierdzenia budżetu} many {# zatwierdzeń budżetu} other {# zatwierdzeń budżetu}}",
+      "budget": "{count, plural, one {# zatwierdzenie budżetu} few {# zatwierdzenia budżetu} many {# zatwierdzeń budżetu} other {# zatwierdzenia budżetu}}",
       "run_failed": "{count, plural, one {# nieudane uruchomienie} few {# nieudane uruchomienia} many {# nieudanych uruchomień} other {# nieudanych uruchomień}}",
       "conflict": "{count, plural, one {# konflikt} few {# konflikty} many {# konfliktów} other {# konfliktów}}",
       "information": "{count, plural, one {# zapytanie} few {# zapytania} many {# zapytań} other {# zapytań}}"
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Decyzja",
-    "approval": "Udostępnienie",
+    "approval": "Zatwierdzenie",
     "review": "Do sprawdzenia",
     "blocked": "Zablokowane",
     "budget": "Budżet",
@@ -47,6 +47,8 @@
     "raisedBy": "od: {name}",
     "raisedByAgent": "od agenta: {name}",
     "raisedByAssistant": "od wbudowanej AI",
+    "raisedByWorkflow": "z przepływu pracy „{name}”",
+    "raisedByWorkflowGone": "z przepływu pracy, który już nie istnieje",
     "raisedBySomebody": "z usuniętego konta",
     "workspace": "w: {name}",
     "openWorkItem": "Otwórz w zadaniu",
@@ -67,11 +69,12 @@
       "work_item_deleted": "Zadanie zostało usunięte.",
       "withdrawn": "Pytanie zostało wycofane.",
       "superseded": "Nowszy przebieg przejął zadanie.",
-      "subject_changed": "Nie zatwierdzono: jedna ze stron zmieniła się od czasu zadania pytania."
+      "subject_changed": "Nie zatwierdzono: jedna ze stron zmieniła się od czasu pytania.",
+      "workflow_ended": "Uruchomienie przepływu pracy, które zadało to pytanie, zakończyło się wcześniej."
     },
     "quotedNote": "„{note}”",
     "nonBlocking": "Zadanie jest kontynuowane, gdy to pytanie pozostaje otwarte.",
-    "actionLabel": "Co zostanie zatwierdzone",
+    "actionLabel": "Co ma zostać zatwierdzone",
     "subjectLabel": "Dotyczy tych stron w ich obecnym stanie",
     "subjectChanged": "zmieniono od czasu zadania pytania",
     "subjectChangedHint": "Jedna z tych stron zmieniła się od czasu zadania pytania. Odpowiedź niczego teraz nie zatwierdzi; agent dowie się o tym i zapyta ponownie z uwzględnieniem nowego stanu.",
@@ -91,7 +94,9 @@
     "answer": "Odpowiedz",
     "unblock": "Przeszkoda usunięta",
     "retry": "Spróbuj ponownie",
-    "give_up": "Zrezygnuj"
+    "give_up": "Zrezygnuj",
+    "approve": "Zatwierdź",
+    "reject": "Odrzuć"
   },
   "topbar": {
     "label": "{count, plural, one {Jeden wpis czeka na ciebie} few {# wpisy czekają na ciebie} many {# wpisów czeka na ciebie} other {# wpisu czeka na ciebie}}",

@@ -39,6 +39,8 @@ const OPTION_HELP: Record<string, string> = {
   unblock: 'Hindernis ist weg (Auftrag geht zurück in die Warteschlange)',
   retry: 'neuen Lauf starten',
   give_up: 'aufgeben (Auftrag wird failed, Notiz wird der Grund)',
+  approve: 'freigeben (der Workflow-Lauf geht auf dem Ausgang approved weiter; nur ein Mensch)',
+  reject: 'ablehnen (der Workflow-Lauf geht auf dem Ausgang rejected weiter; nur ein Mensch)',
 };
 
 /** What a human checkpoint carries beyond its question (issue #140). */
@@ -81,6 +83,14 @@ function formatItem(item: AttentionItem): string {
     parts.push(`Auftrag „${item.workItem.title}“ (${item.workItem.id}, ${item.workItem.status})`);
   }
   if (item.run !== null) parts.push(`Lauf ${item.run.id}`);
+  if (item.workflow !== null) {
+    parts.push(
+      `Workflow „${item.workflow.workflowName ?? 'gelöscht'}“` +
+        (item.workflow.runId === null
+          ? ''
+          : ` (Lauf ${item.workflow.runId}, Knoten ${item.workflow.nodeId ?? '?'})`),
+    );
+  }
   const lines = [parts.join(' · ')];
   if (item.reason !== null) lines.push(`  Grund: ${item.reason}`);
   lines.push(...checkpointLines(item));

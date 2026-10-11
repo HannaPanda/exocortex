@@ -113,6 +113,7 @@
     "attention_note_required": "A written reply is needed here. Briefly describe what you mean.",
     "attention_target_invalid": "The person or task doesn’t belong to this workspace.",
     "attention_subject_changed": "One of the pages involved in this share has changed since it was read. Read it again and ask with the current version.",
+    "attention_human_only": "This approval belongs to a workflow and is granted by a human, not by an agent or the assistant.",
     "changeset_not_draft": "This suggested change has already been submitted. Changes can only be made to a draft, and decisions are only made after submission.",
     "changeset_closed": "All changes in this suggestion have already been decided.",
     "changeset_empty": "A suggested change with no changes cannot be submitted.",

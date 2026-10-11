@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "In attesa di te",
-    "intro": "Qui trovi solo ciò che richiede davvero il tuo intervento: decisioni, condivisioni, risultati da verificare, incarichi bloccati ed esecuzioni non riuscite. Ciò che è semplicemente accaduto si trova nella cronologia degli incarichi e nelle notifiche.",
+    "intro": "Qui trovi solo ciò che richiede davvero il tuo intervento: decisioni, approvazioni, risultati da esaminare, incarichi bloccati ed esecuzioni non riuscite. Ciò che è semplicemente accaduto si trova nella cronologia degli incarichi e nelle notifiche.",
     "filterLabel": "Quali elementi",
     "filters": {
       "open": "Aperti",
@@ -20,7 +20,7 @@
     "summaryLabel": "Aperti per tipo",
     "summary": {
       "decision": "{count, plural, one {# decisione} many {# decisioni} other {# decisioni}}",
-      "approval": "{count, plural, one {# condivisione} many {# condivisioni} other {# condivisioni}}",
+      "approval": "{count, plural, one {# approvazione} many {# approvazioni} other {# approvazioni}}",
       "review": "{count, plural, one {# risultato da verificare} many {# risultati da verificare} other {# risultati da verificare}}",
       "blocked": "{count, plural, one {# incarico bloccato} many {# incarichi bloccati} other {# incarichi bloccati}}",
       "budget": "{count, plural, one {# approvazione del budget} many {# approvazioni del budget} other {# approvazioni del budget}}",
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Decisione",
-    "approval": "Condivisione",
+    "approval": "Approvazione",
     "review": "Da verificare",
     "blocked": "Bloccato",
     "budget": "Budget",
@@ -47,6 +47,8 @@
     "raisedBy": "da {name}",
     "raisedByAgent": "dall’agente {name}",
     "raisedByAssistant": "dall’IA integrata",
+    "raisedByWorkflow": "dal workflow «{name}»",
+    "raisedByWorkflowGone": "da un workflow che non esiste più",
     "raisedBySomebody": "da un account eliminato",
     "workspace": "in {name}",
     "openWorkItem": "Apri nell’incarico",
@@ -67,7 +69,8 @@
       "work_item_deleted": "L’incarico è stato eliminato.",
       "withdrawn": "La domanda è stata ritirata.",
       "superseded": "È subentrata un’esecuzione più recente.",
-      "subject_changed": "Non approvato: una delle pagine è cambiata rispetto al momento della domanda."
+      "subject_changed": "Non approvato: una delle pagine è cambiata dopo la richiesta.",
+      "workflow_ended": "L’esecuzione del workflow che l’aveva richiesto è terminata prima."
     },
     "quotedNote": "«{note}»",
     "nonBlocking": "L’attività prosegue mentre questa domanda resta aperta.",
@@ -91,7 +94,9 @@
     "answer": "Rispondi",
     "unblock": "Ostacolo rimosso",
     "retry": "Riprova",
-    "give_up": "Abbandona"
+    "give_up": "Abbandona",
+    "approve": "Approva",
+    "reject": "Rifiuta"
   },
   "topbar": {
     "label": "{count, plural, one {Un elemento attende la tua attenzione} many {# elementi attendono la tua attenzione} other {# elementi attendono la tua attenzione}}",

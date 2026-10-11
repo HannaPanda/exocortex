@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "Aguardando você",
-    "intro": "Aqui só aparece o que realmente precisa de você: decisões, compartilhamentos, resultados para revisão, tarefas bloqueadas e execuções com falha. O que apenas aconteceu fica no histórico das tarefas e nas notificações.",
+    "intro": "Aqui está apenas o que realmente precisa de você: decisões, aprovações, resultados para revisão, tarefas bloqueadas e execuções que falharam. O que foi apenas concluído fica no histórico de tarefas e nas notificações.",
     "filterLabel": "Quais itens",
     "filters": {
       "open": "Em aberto",
@@ -20,7 +20,7 @@
     "summaryLabel": "Em aberto por tipo",
     "summary": {
       "decision": "{count, plural, one {# decisão} many {# decisões} other {# decisões}}",
-      "approval": "{count, plural, one {# compartilhamento} many {# compartilhamentos} other {# compartilhamentos}}",
+      "approval": "{count, plural, one {# aprovação} many {# aprovações} other {# aprovações}}",
       "review": "{count, plural, one {# resultado para revisão} many {# resultados para revisão} other {# resultados para revisão}}",
       "blocked": "{count, plural, one {# tarefa bloqueada} many {# tarefas bloqueadas} other {# tarefas bloqueadas}}",
       "budget": "{count, plural, one {# aprovação de orçamento} many {# aprovações de orçamento} other {# aprovações de orçamento}}",
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Decisão",
-    "approval": "Compartilhamento",
+    "approval": "Aprovação",
     "review": "Para revisão",
     "blocked": "Bloqueado",
     "budget": "Orçamento",
@@ -47,6 +47,8 @@
     "raisedBy": "de {name}",
     "raisedByAgent": "do agente {name}",
     "raisedByAssistant": "da IA integrada",
+    "raisedByWorkflow": "do fluxo de trabalho “{name}”",
+    "raisedByWorkflowGone": "de um fluxo de trabalho que não existe mais",
     "raisedBySomebody": "de uma conta excluída",
     "workspace": "em {name}",
     "openWorkItem": "Abrir na tarefa",
@@ -67,7 +69,8 @@
       "work_item_deleted": "O trabalho foi excluído.",
       "withdrawn": "A pergunta foi retirada.",
       "superseded": "Uma execução mais recente assumiu o controle.",
-      "subject_changed": "Não aprovado: uma das páginas foi alterada desde a pergunta."
+      "subject_changed": "Não aprovado: uma das páginas foi alterada desde a solicitação.",
+      "workflow_ended": "A execução do fluxo de trabalho que fez a solicitação terminou antes."
     },
     "quotedNote": "“{note}”",
     "nonBlocking": "A tarefa continua em andamento enquanto esta pergunta estiver aberta.",
@@ -91,7 +94,9 @@
     "answer": "Responder",
     "unblock": "Desbloquear",
     "retry": "Tentar novamente",
-    "give_up": "Desistir"
+    "give_up": "Desistir",
+    "approve": "Aprovar",
+    "reject": "Rejeitar"
   },
   "topbar": {
     "label": "{count, plural, one {1 item aguardando você} many {# itens aguardando você} other {# itens aguardando você}}",

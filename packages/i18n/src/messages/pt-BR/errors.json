@@ -113,6 +113,7 @@
     "attention_note_required": "Uma resposta por escrito é necessária aqui. Escreva brevemente o que você quer dizer.",
     "attention_target_invalid": "A pessoa ou a tarefa não pertence a este espaço de trabalho.",
     "attention_subject_changed": "Uma das páginas cujo compartilhamento está em questão mudou desde a leitura. Leia-a novamente e faça o pedido com o status atualizado.",
+    "attention_human_only": "Esta aprovação faz parte de um fluxo de trabalho e deve ser concedida por uma pessoa, não por um agente ou pelo assistente.",
     "changeset_not_draft": "Esta proposta de alteração já foi enviada. As alterações só vão para um rascunho, e as decisões só são tomadas após o envio.",
     "changeset_closed": "Todas as alterações desta proposta já foram decididas.",
     "changeset_empty": "Não é possível enviar uma proposta de alteração sem alterações.",

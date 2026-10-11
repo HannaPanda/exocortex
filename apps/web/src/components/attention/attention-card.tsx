@@ -7,7 +7,8 @@ import * as React from 'react';
 import {
   type AttentionItem,
   type AttentionOption,
-  SYSTEM_ATTENTION_OPTIONS,
+  CATALOGUED_ATTENTION_OPTIONS,
+  type CataloguedAttentionOption,
   type WorkItemParticipant,
 } from '@exocortex/contracts';
 import { Badge, Button, Textarea } from '@exocortex/ui';
@@ -30,12 +31,17 @@ import { AttentionCheckpoint } from './attention-checkpoint';
  * every review would make a two-second decision look like a form.
  */
 
-const SYSTEM_OPTIONS: ReadonlySet<string> = new Set(SYSTEM_ATTENTION_OPTIONS);
-
-type OptionId = (typeof SYSTEM_ATTENTION_OPTIONS)[number];
+/** Options whose words the reader's catalogue has: the system's and a workflow approval's. */
+const CATALOGUED_OPTIONS: ReadonlySet<string> = new Set(CATALOGUED_ATTENTION_OPTIONS);
 
 /** The option the card leads with: the one that moves the work forward. */
-const PRIMARY: ReadonlySet<string> = new Set<OptionId>(['accept', 'answer', 'unblock', 'retry']);
+const PRIMARY: ReadonlySet<string> = new Set<CataloguedAttentionOption>([
+  'accept',
+  'answer',
+  'unblock',
+  'retry',
+  'approve',
+]);
 
 function kindVariant(item: AttentionItem): 'destructive' | 'outline' | 'default' {
   if (item.kind === 'run_failed' || item.kind === 'conflict') return 'destructive';
@@ -61,12 +67,21 @@ export function AttentionCard({
 
   const optionLabel = (option: AttentionOption): string =>
     option.label ??
-    (SYSTEM_OPTIONS.has(option.id) ? t(`option.${option.id as OptionId}`) : option.id);
+    (CATALOGUED_OPTIONS.has(option.id)
+      ? t(`option.${option.id as CataloguedAttentionOption}`)
+      : option.id);
 
   const moment = (iso: string): string =>
     format.relativeTime(new Date(iso), { now: new Date(), style: 'long' });
 
   const raisedBy = (participant: WorkItemParticipant): string => {
+    // A workflow's approval names the workflow; the person it runs as is who
+    // switched it on, not who is asking (issue #163).
+    if (item.workflow !== null) {
+      return item.workflow.workflowName === null
+        ? t('item.raisedByWorkflowGone')
+        : t('item.raisedByWorkflow', { name: item.workflow.workflowName });
+    }
     if (participant.kind === 'assistant') return t('item.raisedByAssistant');
     if (participant.name === null) return t('item.raisedBySomebody');
     return participant.kind === 'agent'
@@ -222,6 +237,20 @@ function ContextLinks({
   );
 }
 
+/** The reasons an item went obsolete that the catalogue has words for. */
+const OBSOLETE_REASONS = [
+  'work_item_cancelled',
+  'work_item_deleted',
+  'withdrawn',
+  'superseded',
+  'subject_changed',
+  'workflow_ended',
+] as const;
+
+function obsoleteReason(reason: string | undefined): (typeof OBSOLETE_REASONS)[number] | null {
+  return OBSOLETE_REASONS.find((known) => known === reason) ?? null;
+}
+
 function Settled({
   item,
   optionLabel,
@@ -238,15 +267,7 @@ function Settled({
       ? ''
       : format.relativeTime(new Date(item.settledAt), { now: new Date(), style: 'long' });
   const chosen = item.options.find((option) => option.id === item.resolution?.optionId);
-  const reason = item.resolution?.reason;
-  const knownReason =
-    reason === 'work_item_cancelled' ||
-    reason === 'work_item_deleted' ||
-    reason === 'withdrawn' ||
-    reason === 'superseded' ||
-    reason === 'subject_changed'
-      ? reason
-      : null;
+  const knownReason = obsoleteReason(item.resolution?.reason);
   const resumeError = item.resolution?.resumeError;
 
   return (

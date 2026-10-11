@@ -113,6 +113,7 @@
     "attention_note_required": "Une réponse textuelle est requise ici. Écris brièvement ce que tu veux dire.",
     "attention_target_invalid": "La personne ou la tâche n’appartient pas à cet espace de travail.",
     "attention_subject_changed": "L’une des pages concernées par le partage a changé depuis sa lecture. Recharge-la et réessaie avec la version actuelle.",
+    "attention_human_only": "Cette approbation fait partie d’un workflow et est accordée par un humain, pas par un agent ou l’assistant.",
     "changeset_not_draft": "Cette proposition de modification a déjà été soumise. Les modifications ne peuvent être apportées qu’à un brouillon, et les décisions ne sont prises qu’après la soumission.",
     "changeset_closed": "Toutes les modifications de cette proposition ont déjà fait l’objet d’une décision.",
     "changeset_empty": "Une proposition de modification sans modifications ne peut pas être soumise.",

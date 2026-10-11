@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "Wacht op jou",
-    "intro": "Hier staat alleen wat echt jouw aandacht vraagt: beslissingen, delingen, resultaten ter controle, geblokkeerde opdrachten en runs die zijn mislukt. Wat er verder is gebeurd, vind je in de geschiedenis van de opdrachten en bij de meldingen.",
+    "intro": "Hier staat alleen wat echt jouw actie vraagt: beslissingen, goedkeuringen, resultaten ter controle, geblokkeerde opdrachten en runs die mislukt zijn. Wat alleen maar gebeurd is, vind je in de geschiedenis van de opdrachten en bij de meldingen.",
     "filterLabel": "Welke items",
     "filters": {
       "open": "Open",
@@ -20,7 +20,7 @@
     "summaryLabel": "Open per type",
     "summary": {
       "decision": "{count, plural, one {# beslissing} other {# beslissingen}}",
-      "approval": "{count, plural, one {# deling} other {# delingen}}",
+      "approval": "{count, plural, one {# goedkeuring} other {# goedkeuringen}}",
       "review": "{count, plural, one {# resultaat ter controle} other {# resultaten ter controle}}",
       "blocked": "{count, plural, one {# geblokkeerde opdracht} other {# geblokkeerde opdrachten}}",
       "budget": "{count, plural, one {# budgetgoedkeuring} other {# budgetgoedkeuringen}}",
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Beslissing",
-    "approval": "Deling",
+    "approval": "Goedkeuring",
     "review": "Ter controle",
     "blocked": "Geblokkeerd",
     "budget": "Budget",
@@ -47,6 +47,8 @@
     "raisedBy": "door {name}",
     "raisedByAgent": "door agent {name}",
     "raisedByAssistant": "door de ingebouwde AI",
+    "raisedByWorkflow": "uit de workflow „{name}”",
+    "raisedByWorkflowGone": "uit een workflow die niet meer bestaat",
     "raisedBySomebody": "door een verwijderd account",
     "workspace": "in {name}",
     "openWorkItem": "In opdracht openen",
@@ -67,7 +69,8 @@
       "work_item_deleted": "De opdracht is verwijderd.",
       "withdrawn": "De vraag is ingetrokken.",
       "superseded": "Een nieuwere sessie heeft het overgenomen.",
-      "subject_changed": "Niet goedgekeurd: een van de pagina’s is gewijzigd sinds de vraag werd gesteld."
+      "subject_changed": "Niet goedgekeurd: een van de pagina’s was veranderd sinds de vraag.",
+      "workflow_ended": "De workflow-uitvoering die de vraag stelde, is al beëindigd."
     },
     "quotedNote": "„{note}”",
     "nonBlocking": "De opdracht loopt door zolang deze vraag openstaat.",
@@ -91,7 +94,9 @@
     "answer": "Antwoorden",
     "unblock": "Obstakel is weg",
     "retry": "Opnieuw proberen",
-    "give_up": "Opgeven"
+    "give_up": "Opgeven",
+    "approve": "Goedkeuren",
+    "reject": "Afwijzen"
   },
   "topbar": {
     "label": "{count, plural, one {Eén item wacht op je} other {# items wachten op je}}",

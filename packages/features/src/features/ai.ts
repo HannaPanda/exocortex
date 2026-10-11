@@ -168,6 +168,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'workflow-freigaben',
+    area: 'ki',
+    since: '2026-10-11',
+    references: ['#159', '#163', 'ADR-078'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'workflow-laeufe',
     area: 'ki',
     since: '2026-10-11',

@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "En attente de ton action",
-    "intro": "Ici figure uniquement ce qui nécessite vraiment ton intervention : décisions, partages, résultats à vérifier, tâches bloquées et exécutions ayant échoué. Ce qui s’est simplement déroulé apparaît dans l’historique des tâches et dans les notifications.",
+    "intro": "Ici ne figure que ce qui a vraiment besoin de toi : décisions, approbations, résultats à vérifier, tâches bloquées et exécutions ayant échoué. Ce qui s’est simplement passé se trouve dans l’historique des tâches et dans les notifications.",
     "filterLabel": "Quels éléments",
     "filters": {
       "open": "En attente",
@@ -20,10 +20,10 @@
     "summaryLabel": "En attente par type",
     "summary": {
       "decision": "{count, plural, one {# décision} many {# de décisions} other {# décisions}}",
-      "approval": "{count, plural, one {# partage} many {# de partages} other {# partages}}",
+      "approval": "{count, plural, one {# approbation} many {# approbations} other {# approbations}}",
       "review": "{count, plural, one {# résultat à vérifier} many {# de résultats à vérifier} other {# résultats à vérifier}}",
       "blocked": "{count, plural, one {# tâche bloquée} many {# de tâches bloquées} other {# tâches bloquées}}",
-      "budget": "{count, plural, one {# validation de budget} many {# de validations de budget} other {# validations de budget}}",
+      "budget": "{count, plural, one {# approbation de budget} many {# approbations de budget} other {# approbations de budget}}",
       "run_failed": "{count, plural, one {# exécution échouée} many {# d’exécutions échouées} other {# exécutions échouées}}",
       "conflict": "{count, plural, one {# conflit} many {# de conflits} other {# conflits}}",
       "information": "{count, plural, one {# question} many {# de questions} other {# questions}}"
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Décision",
-    "approval": "Partage",
+    "approval": "Approbation",
     "review": "À vérifier",
     "blocked": "Bloqué",
     "budget": "Budget",
@@ -47,6 +47,8 @@
     "raisedBy": "par {name}",
     "raisedByAgent": "par l’agent {name}",
     "raisedByAssistant": "par l’IA intégrée",
+    "raisedByWorkflow": "du workflow « {name} »",
+    "raisedByWorkflowGone": "d’un workflow qui n’existe plus",
     "raisedBySomebody": "par un compte supprimé",
     "workspace": "dans {name}",
     "openWorkItem": "Ouvrir dans la tâche",
@@ -67,11 +69,12 @@
       "work_item_deleted": "La tâche a été supprimée.",
       "withdrawn": "La question a été retirée.",
       "superseded": "Une exécution plus récente a pris le relais.",
-      "subject_changed": "Non validé : l’une des pages a été modifiée depuis la question."
+      "subject_changed": "Non approuvé : l’une des pages a été modifiée depuis la demande.",
+      "workflow_ended": "L’exécution du workflow à l’origine de la demande s’est terminée entre-temps."
     },
     "quotedNote": "« {note} »",
     "nonBlocking": "La tâche continue pendant que cette question reste en attente.",
-    "actionLabel": "Ce qui sera validé",
+    "actionLabel": "Ce qui sera approuvé",
     "subjectLabel": "S’applique à ces pages dans leur état actuel",
     "subjectChanged": "modifiée depuis la question",
     "subjectChangedHint": "L’une de ces pages a été modifiée depuis la question. Répondre ne validera plus rien ; l’agent en sera informé et reposera sa question avec le nouvel état.",
@@ -91,7 +94,9 @@
     "answer": "Répondre",
     "unblock": "Obstacle levé",
     "retry": "Réessayer",
-    "give_up": "Abandonner"
+    "give_up": "Abandonner",
+    "approve": "Approuver",
+    "reject": "Refuser"
   },
   "topbar": {
     "label": "{count, plural, one {Un élément t’attend} many {# éléments t’attendent} other {# éléments t’attendent}}",

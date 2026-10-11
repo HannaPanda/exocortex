@@ -113,6 +113,7 @@
     "attention_note_required": "Hier is een antwoord in woorden nodig. Schrijf kort wat je bedoelt.",
     "attention_target_invalid": "De persoon of de taak hoort niet bij deze werkruimte.",
     "attention_subject_changed": "Een van de pagina’s die gedeeld moeten worden, is gewijzigd sinds het lezen. Lees deze opnieuw en probeer het nogmaals met de huidige versie.",
+    "attention_human_only": "Deze goedkeuring hoort bij een workflow en wordt door een mens gegeven, niet door een agent of de assistent.",
     "changeset_not_draft": "Dit wijzigingsvoorstel is al ingediend. Wijzigingen kunnen alleen aan een concept worden toegevoegd, en beslissingen worden pas na het indienen genomen.",
     "changeset_closed": "Over alle wijzigingen in dit voorstel is al beslist.",
     "changeset_empty": "Een wijzigingsvoorstel zonder wijzigingen kan niet worden ingediend.",

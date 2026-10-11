@@ -47,6 +47,8 @@
     "raisedBy": "von {name}",
     "raisedByAgent": "von Agent {name}",
     "raisedByAssistant": "von der eingebauten KI",
+    "raisedByWorkflow": "aus dem Workflow „{name}“",
+    "raisedByWorkflowGone": "aus einem Workflow, den es nicht mehr gibt",
     "raisedBySomebody": "von einem gelöschten Konto",
     "workspace": "in {name}",
     "openWorkItem": "Im Auftrag öffnen",
@@ -67,7 +69,8 @@
       "work_item_deleted": "Der Auftrag wurde gelöscht.",
       "withdrawn": "Die Frage wurde zurückgezogen.",
       "superseded": "Ein neuerer Lauf hat übernommen.",
-      "subject_changed": "Nicht freigegeben: eine der Seiten hatte sich seit der Frage geändert."
+      "subject_changed": "Nicht freigegeben: eine der Seiten hatte sich seit der Frage geändert.",
+      "workflow_ended": "Der Workflow-Lauf, der gefragt hat, ist vorher zu Ende gegangen."
     },
     "quotedNote": "„{note}“",
     "nonBlocking": "Der Auftrag läuft weiter, während diese Frage offen ist.",
@@ -91,7 +94,9 @@
     "answer": "Antworten",
     "unblock": "Hindernis ist weg",
     "retry": "Neuer Versuch",
-    "give_up": "Aufgeben"
+    "give_up": "Aufgeben",
+    "approve": "Freigeben",
+    "reject": "Ablehnen"
   },
   "topbar": {
     "label": "{count, plural, one {Ein Eintrag wartet auf dich} other {# Einträge warten auf dich}}",

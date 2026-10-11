@@ -4,7 +4,7 @@
   },
   "page": {
     "title": "Waiting for you",
-    "intro": "Only things that truly need you appear here: decisions, shares, results to review, blocked work items, and runs that have failed. Everything that just happened can be found in the work item history and notifications.",
+    "intro": "Only things that truly need you appear here: decisions, approvals, results to review, blocked work items, and runs that failed. What simply happened can be found in the work item history and under notifications.",
     "filterLabel": "Which entries",
     "filters": {
       "open": "Open",
@@ -20,7 +20,7 @@
     "summaryLabel": "Open by kind",
     "summary": {
       "decision": "{count, plural, one {# decision} other {# decisions}}",
-      "approval": "{count, plural, one {# share} other {# shares}}",
+      "approval": "{count, plural, one {# approval} other {# approvals}}",
       "review": "{count, plural, one {# result to review} other {# results to review}}",
       "blocked": "{count, plural, one {# blocked work item} other {# blocked work items}}",
       "budget": "{count, plural, one {# budget approval} other {# budget approvals}}",
@@ -31,7 +31,7 @@
   },
   "kind": {
     "decision": "Decision",
-    "approval": "Share",
+    "approval": "Approval",
     "review": "For review",
     "blocked": "Blocked",
     "budget": "Budget",
@@ -47,6 +47,8 @@
     "raisedBy": "by {name}",
     "raisedByAgent": "by agent {name}",
     "raisedByAssistant": "by the built-in AI",
+    "raisedByWorkflow": "from workflow “{name}”",
+    "raisedByWorkflowGone": "from a workflow that no longer exists",
     "raisedBySomebody": "by a deleted account",
     "workspace": "in {name}",
     "openWorkItem": "Open in work item",
@@ -67,11 +69,12 @@
       "work_item_deleted": "The work item was deleted.",
       "withdrawn": "The question was withdrawn.",
       "superseded": "A newer run took over.",
-      "subject_changed": "Not approved: one of the pages had changed since the question was asked."
+      "subject_changed": "Not approved: one of the pages had changed since the request.",
+      "workflow_ended": "The workflow run that asked ended earlier."
     },
     "quotedNote": "“{note}”",
     "nonBlocking": "Work continues while this question is open.",
-    "actionLabel": "What will be approved",
+    "actionLabel": "What is being approved",
     "subjectLabel": "Applies to these pages in their current state",
     "subjectChanged": "changed since the question was asked",
     "subjectChangedHint": "One of these pages has changed since the question was asked. Replying will no longer approve anything; the agent will be notified and will ask again with the new state.",
@@ -91,7 +94,9 @@
     "answer": "Reply",
     "unblock": "Obstacle resolved",
     "retry": "Try again",
-    "give_up": "Give up"
+    "give_up": "Give up",
+    "approve": "Approve",
+    "reject": "Reject"
   },
   "topbar": {
     "label": "{count, plural, one {One item waiting for you} other {# items waiting for you}}",

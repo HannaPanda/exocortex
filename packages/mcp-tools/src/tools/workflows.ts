@@ -50,11 +50,17 @@ const GRAPH_HELP =
   'einen gewöhnlichen Auftrag an und startet die eingebaute KI darauf; im goal setzen ' +
   '{{knoten.feld}} ein Feld eines vorgelagerten agent-Knotens und {{input.schlüssel}} einen ' +
   'Startwert ein. Sein Ergebnis für spätere Knoten: fields, workItemId, aiRunId, summary, ' +
-  'resultDocumentIds, spentMicroUsd. condition: source {nodeId, field} eines ' +
-  'vorgelagerten agent-Knotens, operator (eq, neq, gt, gte, lt, lte, present, absent, is_true, ' +
-  'is_false), value. join: policy all|any. approval: title, question, assigneeUserId. end: ' +
-  'outcome succeeded|failed|cancelled. Ein Entwurf darf unvollständig sein; ' +
-  'exo_workflow_validate nennt, was vor dem Veröffentlichen fehlt.';
+  'resultDocumentIds, spentMicroUsd. condition: source {nodeId, field} eines vorgelagerten ' +
+  'agent- oder approval-Knotens oder {input: schlüssel} des Startwerts, operator (eq, neq, gt, ' +
+  'gte, lt, lte, present, absent, is_true, is_false), value; entscheidet ohne Modell. parallel: ' +
+  'zwei oder mehr branch-Kanten laufen gleichzeitig. join: policy all (wartet auf jeden ' +
+  'Eingang) oder any (weiter beim ersten; ein gescheiterter anderer Zweig lässt den Lauf dann ' +
+  'nicht scheitern). approval: title, question, assigneeUserId, note none|optional|required; ' +
+  'fragt einen Menschen über "Wartet auf dich" und wartet ohne Worker, Tage lang wenn nötig; ' +
+  'Ergebnis fields.approved (boolean) und fields.note, Ausgang approved oder rejected; nur ' +
+  'ein Mensch kann antworten, kein Agent. end: outcome succeeded|failed|cancelled, summary; ' +
+  'beendet den Lauf sofort und bricht ab, was auf anderen Zweigen noch läuft. Ein Entwurf ' +
+  'darf unvollständig sein; exo_workflow_validate nennt, was vor dem Veröffentlichen fehlt.';
 
 function formatSummary(workflow: WorkflowSummary): string {
   const published =
