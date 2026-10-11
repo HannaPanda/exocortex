@@ -17,33 +17,14 @@ import { fetchCollaborationTicket } from '@/lib/api/document-queries';
 import { type ConnectionDetailValue, logConnection } from '@/lib/connection-log';
 import { onWakeSignals, type WakeReason } from '@/lib/wake-signals';
 
+import { reviveTimer } from './revive-timer';
+
 /**
  * How long a burst of typing has to be quiet before it counts as settled.
  * Yjs sends every update immediately; this only debounces the *display* of that
  * fact, so the indicator does not strobe while the user is writing.
  */
 const SETTLE_DELAY_MS = 700;
-
-/**
- * How long the connection may stay unusable before it is built again from a
- * fresh ticket.
- *
- * The provider reconnects on its own and never gives up, but that only covers
- * a socket that was open once and then closed: `onOpen` is what clears its
- * retry canceller. A handshake refused outright never reaches `onOpen`, so the
- * retry loop is the only thing left holding the connection, and when it ends
- * the tab is simply dead. On 2026-09-08 a deploy restarted the collaboration
- * unit under an open page, nginx answered the upgrade with 502, and the tab sat
- * disconnected for eight minutes without one further attempt reaching the
- * server. Only F5 brought it back.
- *
- * Rebuilding is cheap and lossless: the Yjs document merges rather than
- * replaces, and the offline copy carries whatever was typed in the meantime.
- */
-const REVIVE_DELAY_MS = 20_000;
-
-/** The revive delay doubles per consecutive failure, up to this ceiling. */
-const REVIVE_MAX_DELAY_MS = 120_000;
 
 /**
  * Writes one collaboration event to the shared connection log.
@@ -321,7 +302,9 @@ export function useCollaborationConnection({
     // Cancels the save indicator's debounce; set once `connect()` has run.
     let stopSaveIndicator: (() => void) | undefined;
     // Watchdog for a connection that never came back; cleared on unmount.
-    let revive: ReturnType<typeof setTimeout> | undefined;
+    // No `disposed` check in the rebuild: the cleanup cancels the timer, and
+    // `now()` is only reached from a handler that checks it first.
+    const revive = reviveTimer(reviveCount, retry, record);
 
     /**
      * What a wake signal should do, once there is a connection to do it to.
@@ -365,7 +348,20 @@ export function useCollaborationConnection({
         record('ticket.failed', {
           message: cause instanceof Error ? cause.message : String(cause),
         });
-        if (!disposed) setFailed(true);
+        if (disposed) return;
+        setFailed(true);
+        // Nothing below has run, so neither the watchdog nor the wake handler
+        // is armed, and the retry button was the only way back. When the
+        // watchdog itself rebuilt the connection during an API outage, that
+        // left the tab without a socket and without a further attempt for as
+        // long as it stayed open (issue #166). The failed ticket is one more
+        // failure for the same backoff, and a returning reader still retries
+        // at once.
+        revive.schedule({ reason: 'ticket' });
+        onWake = (reason: WakeReason): void => {
+          record('wake', { reason, ticket: false, disposed });
+          if (!disposed) revive.now();
+        };
         return;
       }
       record('ticket.granted', {
@@ -419,19 +415,12 @@ export function useCollaborationConnection({
        * its own before the connection is thrown away and built again.
        */
       const armRevive = (): void => {
-        clearTimeout(revive);
+        revive.cancel();
         if (live()) {
           reviveCount.current = 0;
           return;
         }
-        const delay = Math.min(REVIVE_DELAY_MS * 2 ** reviveCount.current, REVIVE_MAX_DELAY_MS);
-        record('revive.armed', { delayMs: delay, socket: socketStatus, authenticated });
-        revive = setTimeout(() => {
-          if (disposed) return;
-          reviveCount.current += 1;
-          record('revive.fired', { count: reviveCount.current });
-          retry();
-        }, delay);
+        revive.schedule({ socket: socketStatus, authenticated });
       };
 
       const publishStatus = (): void => {
@@ -516,9 +505,7 @@ export function useCollaborationConnection({
       onWake = (reason: WakeReason): void => {
         record('wake', { reason, socket: socketStatus, authenticated, disposed });
         if (disposed || live() || socketStatus === 'connecting') return;
-        clearTimeout(revive);
-        reviveCount.current = 0;
-        retry();
+        revive.now();
       };
 
       active = { provider, ydoc, persistence };
@@ -540,7 +527,7 @@ export function useCollaborationConnection({
       record('teardown');
       onWake = null;
       stopSaveIndicator?.();
-      clearTimeout(revive);
+      revive.cancel();
       detachWake();
       if (active !== null) {
         providerCount -= 1;
