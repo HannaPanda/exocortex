@@ -27,6 +27,7 @@ export const QUEUE_NAMES = {
   projectBuild: 'project-build',
   push: 'push',
   mail: 'mail',
+  workflow: 'workflow',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -46,6 +47,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.projectBuild,
   QUEUE_NAMES.push,
   QUEUE_NAMES.mail,
+  QUEUE_NAMES.workflow,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -265,6 +267,15 @@ export const maintenanceJobSchema = jobBase.extend({
      * what it finds on a deployment with no scheduled rules.
      */
     'run-due-automations',
+    /**
+     * Keeps workflow runs moving (issue #161, ADR-076): starts the workflows
+     * whose schedule has come due, recovers node attempts whose worker
+     * vanished (an expired lease), hands back attempts and runs whose next
+     * job was lost, wakes attempts waiting on a timer, and times out runs
+     * past their lifetime. Every minute; a deployment without workflows pays
+     * for a handful of indexed queries that find nothing.
+     */
+    'sweep-workflow-runs',
     /**
      * Closes builds whose worker never came back and deletes finished ones
      * older than `render.jobRetentionDays` (issue #44, ADR-026). The PDFs they
@@ -597,6 +608,57 @@ export const mailDeliveryJobSchema = jobBase.extend({
 });
 export type MailDeliveryJob = z.infer<typeof mailDeliveryJobSchema>;
 
+/**
+ * One step of a workflow run (issue #161, ADR-076).
+ *
+ * Three kinds, and none of them carries state: everything a step needs is on
+ * the run and its node executions, so a job delivered twice, late, or after
+ * a restart finds the rows as they are and does the right thing or nothing.
+ *
+ * - `advance` asks what may run next, records it, and finishes the run when
+ *   nothing more can. Serialised per run by a row lock, so two at once are
+ *   one after the other.
+ * - `execute` runs one node attempt. The attempt is claimed with a lease
+ *   before its handler is called; a second delivery finds it claimed.
+ * - `resume` continues a waiting attempt once what it waits for happened
+ *   (a timer, a work item, an attention item), claimed the same way.
+ * - `start-event` starts a run from a page change once its debounce window
+ *   has passed, re-checking that the workflow may still start by itself.
+ */
+export const workflowJobSchema = z.discriminatedUnion('kind', [
+  jobBase.extend({ kind: z.literal('advance'), runId: idSchema }),
+  jobBase.extend({ kind: z.literal('execute'), runId: idSchema, executionId: idSchema }),
+  jobBase.extend({
+    kind: z.literal('resume'),
+    runId: idSchema,
+    executionId: idSchema,
+    wake: z.discriminatedUnion('kind', [
+      z.object({ kind: z.literal('timer') }),
+      z.object({
+        kind: z.literal('work_item'),
+        workItemId: idSchema,
+        payload: z.record(z.string(), z.unknown()).optional(),
+      }),
+      z.object({
+        kind: z.literal('attention_item'),
+        attentionItemId: idSchema,
+        payload: z.record(z.string(), z.unknown()).optional(),
+      }),
+    ]),
+  }),
+  jobBase.extend({
+    kind: z.literal('start-event'),
+    workflowId: idSchema,
+    workspaceId: idSchema,
+    nodeId: z.string().min(1).max(64),
+    documentId: idSchema,
+    trigger: automationTriggerSchema,
+    /** How many automations or workflows deep the change was, plus one. */
+    depth: z.number().int().min(0).max(10),
+  }),
+]);
+export type WorkflowJob = z.infer<typeof workflowJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -614,6 +676,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.projectBuild]: projectBuildJobSchema,
   [QUEUE_NAMES.push]: pushDeliveryJobSchema,
   [QUEUE_NAMES.mail]: mailDeliveryJobSchema,
+  [QUEUE_NAMES.workflow]: workflowJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -633,4 +696,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.projectBuild]: ProjectBuildJob;
   [QUEUE_NAMES.push]: PushDeliveryJob;
   [QUEUE_NAMES.mail]: MailDeliveryJob;
+  [QUEUE_NAMES.workflow]: WorkflowJob;
 };

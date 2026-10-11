@@ -185,6 +185,12 @@ export const API_ERROR_CODES = [
   'workflow_not_published',
   /** A run of this workflow has not finished; it cannot be deleted under it. */
   'workflow_has_active_runs',
+  /** Workflows are switched off for this workspace (`workflows.enabled`, issue #161). */
+  'workflows_disabled',
+  /** The run has already finished; there is nothing left to cancel. */
+  'workflow_run_finished',
+  /** No trigger was named and the version has none or several manual ones. */
+  'workflow_trigger_ambiguous',
   /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
   'work_checkpoint_summary_required',
   /** The named checkpoint does not belong to this work item. */
@@ -434,6 +440,9 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   workflow_revision_conflict: 409,
   workflow_not_published: 409,
   workflow_has_active_runs: 409,
+  workflows_disabled: 409,
+  workflow_run_finished: 409,
+  workflow_trigger_ambiguous: 422,
   work_checkpoint_summary_required: 422,
   work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.

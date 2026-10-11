@@ -86,6 +86,16 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   // What is *not* retried at all is a refusal: `createMailDeliveryProcessor`
   // turns a 5xx and a rejected recipient into an unrecoverable failure, so
   // these attempts only ever buy another try at a fault that could pass.
+  // A workflow step is idempotent by construction (issue #161): an advance
+  // reads the rows and writes only what is missing, an execute claims its
+  // attempt before calling the handler and finds it claimed the second time.
+  // So BullMQ may retry an infrastructure error, quickly; a node's own
+  // failure is never a thrown error here, it is a row the runtime retries
+  // itself, bounded and visible.
+  [QUEUE_NAMES.workflow]: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 2_000 },
+  },
   [QUEUE_NAMES.mail]: {
     attempts: 5,
     backoff: { type: 'exponential', delay: 30_000 },
@@ -455,6 +465,10 @@ export class QueueRegistry {
     // The clock's half of the automation trigger side: one indexed query over
     // `nextRunAt` that finds nothing on a deployment with no scheduled rules.
     await schedule('run-due-automations', { every: 60_000 });
+    // Every minute, the workflow runtime's net (issue #161): due schedules,
+    // expired leases, lost jobs, timers and deadlines. Each half is one
+    // indexed query that finds nothing on a deployment without workflows.
+    await schedule('sweep-workflow-runs', { every: 60_000 });
     // Every minute, and a no-op on almost all of them: nobody has comment
     // mail switched on by default, and the sweep's first query asks whether
     // anybody is owed anything (issue #106). The cadence is the finest a

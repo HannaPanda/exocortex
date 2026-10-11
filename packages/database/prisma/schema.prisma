@@ -112,6 +112,7 @@ model User {
   workflowsUpdated            Workflow[]               @relation("WorkflowUpdatedBy")
   workflowVersionsPublished   WorkflowVersion[]        @relation("WorkflowVersionPublishedBy")
   workflowRunsStarted         WorkflowRun[]            @relation("WorkflowRunStartedBy")
+  workflowsEnabled            Workflow[]               @relation("WorkflowEnabledBy")
   changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
 
   @@map("user")
@@ -612,6 +613,7 @@ model Workspace {
   evalRuns                EvalRun[]
   workflows               Workflow[]
   workflowRuns            WorkflowRun[]
+  workflowTriggers        WorkflowTrigger[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -1662,6 +1664,15 @@ model OutboxEvent {
   /// How many automations deep the write was. `AUTOMATION_MAX_DEPTH` is where
   /// the chain stops firing further rules.
   automationDepth  Int     @default(0)
+
+  /// The workflow, run and node attempt whose action caused this write
+  /// (issue #161), from the same kind of header. Plain columns for the same
+  /// reason as the rule id: the origin must outlive the run it names. A
+  /// workflow never starts from a change it made itself, and the depth above
+  /// counts automations and workflows together.
+  workflowId              String?
+  workflowRunId           String?
+  workflowNodeExecutionId String?
 
   @@index([processedAt, createdAt])
   @@map("outbox_event")
@@ -4560,6 +4571,10 @@ model Workflow {
   publishedVersion   WorkflowVersion? @relation("WorkflowPublishedVersion", fields: [publishedVersionId], references: [id], onDelete: NoAction)
   /// May start by itself. Only ever true while a version is published.
   enabled            Boolean          @default(false)
+  /// Who switched it on (issue #161). A run started by the clock or by a
+  /// change acts as this person, the way an automation acts as its owner.
+  enabledById        String?
+  enabledBy          User?            @relation("WorkflowEnabledBy", fields: [enabledById], references: [id], onDelete: SetNull)
 
   createdById String?
   createdBy   User?    @relation("WorkflowCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
@@ -4570,6 +4585,7 @@ model Workflow {
 
   versions WorkflowVersion[] @relation("WorkflowVersions")
   runs     WorkflowRun[]
+  triggers WorkflowTrigger[]
 
   @@unique([workspaceId, name])
   @@index([workspaceId, enabled])
@@ -4630,6 +4646,20 @@ model WorkflowRun {
   spentMicroUsd      Int @default(0)
   nodeExecutionCount Int @default(0)
 
+  /// The limits in force, frozen when the run starts (issue #161): each one
+  /// the stricter of the graph's and the workspace's, `workflowRunLimitsSchema`.
+  limits     Json?
+  /// When the run times out, from `limits.maxLifetimeSeconds`.
+  deadlineAt DateTime?
+  /// How many automations or workflows deep the change that started it was.
+  chainDepth Int       @default(0)
+  /// The last time the runtime looked at the run; the sweep uses it to find
+  /// a run whose next step was lost with a worker.
+  advancedAt DateTime?
+  /// How many history events the run has; the next one gets this plus one.
+  /// Incrementing it is also what serialises two writers of one run.
+  eventCount Int       @default(0)
+
   errorCode    String?
   errorMessage String?
   waitingSince DateTime?
@@ -4640,10 +4670,12 @@ model WorkflowRun {
   finishedAt DateTime?
 
   nodeExecutions WorkflowNodeExecution[]
+  events         WorkflowRunEvent[]
 
   @@index([workflowId, createdAt])
   @@index([workspaceId, status])
   @@index([status, updatedAt])
+  @@index([status, deadlineAt])
   @@map("workflow_run")
 }
 
@@ -4682,9 +4714,76 @@ model WorkflowNodeExecution {
   startedAt  DateTime?
   finishedAt DateTime?
 
+  /// Not claimed before this moment: the backoff of a retry (issue #161).
+  availableAt    DateTime  @default(now())
+  /// Who holds a RUNNING attempt and until when. A worker that dies leaves an
+  /// expired lease, which the sweep recovers; one that lost its lease cannot
+  /// write a result, because the completion names the token.
+  leaseToken     String?
+  leaseExpiresAt DateTime?
+  /// A WAITING attempt on a timer resumes at this moment.
+  wakeAt         DateTime?
+
   @@unique([runId, nodeId, attempt])
   @@index([runId, queuedAt])
+  @@index([status, leaseExpiresAt])
+  @@index([status, availableAt])
+  @@index([status, wakeAt])
   @@index([workItemId])
   @@index([aiRunId])
   @@map("workflow_node_execution")
+}
+
+/// The triggers of an enabled workflow's published version that start it by
+/// themselves (issue #161): one row per schedule or event trigger node.
+///
+/// A projection, rebuilt whenever a workflow is published or switched on or
+/// off, so a row exists exactly while its workflow may start by itself. The
+/// minute sweep claims a schedule row by filtering on the `nextRunAt` it read
+/// (ADR-038); the outbox dispatcher matches an event row by its `events`.
+model WorkflowTrigger {
+  id          String    @id @default(cuid(2))
+  workflowId  String
+  workflow    Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// The version the row was built from; a run starts on that version.
+  workflowVersionId String
+  nodeId      String
+  /// `trigger.schedule` or `trigger.event`.
+  nodeType    String
+
+  /// Event triggers: the automation triggers the node listens for.
+  events          String[] @default([])
+  scopeDocumentId String?
+  /// Schedule triggers: when it fires next; null once a one-off has fired.
+  nextRunAt       DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([workflowId, nodeId])
+  @@index([nodeType, nextRunAt])
+  @@index([workspaceId, nodeType])
+  @@map("workflow_trigger")
+}
+
+/// What a workflow run did, in order, as facts (issue #161): a node queued,
+/// started, finished, waited, resumed; an edge taken; a limit reached.
+/// Ids, handles, attempt numbers, durations and error classes, never the
+/// content a node read or wrote. The debugger of issue #164 replays it.
+model WorkflowRunEvent {
+  id          String      @id @default(cuid(2))
+  runId       String
+  run         WorkflowRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  /// Monotonic within a run, so two events in one millisecond keep their order.
+  sequence    Int
+  type        String
+  nodeId      String?
+  executionId String?
+  attempt     Int?
+  detail      Json?
+  at          DateTime    @default(now())
+
+  @@unique([runId, sequence])
+  @@map("workflow_run_event")
 }

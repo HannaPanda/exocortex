@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { WORKFLOW_LIMITS, WORKFLOW_TRIGGER_TYPES, workflowGraphSchema } from './workflow-graph';
 import { workflowNodeExecutionStatusSchema } from './workflow-progress';
+import { workflowRunEventTypeSchema, workflowRunLimitsSchema } from './workflow-runtime';
 import { workflowProblemSchema } from './workflow-validation';
 
 /**
@@ -244,6 +245,12 @@ export const workflowRunSchema = z.object({
   /** Millionths of a dollar spent by every AI run the workflow caused. */
   spentMicroUsd: z.number().int(),
   nodeExecutionCount: z.number().int(),
+  /** The limits the run executes under, frozen when it started (issue #161). */
+  limits: workflowRunLimitsSchema.nullable(),
+  /** When it times out. */
+  deadlineAt: isoDateTimeSchema.nullable(),
+  /** How many automations or workflows deep the change that started it was. */
+  chainDepth: z.number().int(),
   errorCode: z.string().nullable(),
   errorMessage: z.string().nullable(),
   waitingSince: isoDateTimeSchema.nullable(),
@@ -253,6 +260,22 @@ export const workflowRunSchema = z.object({
 });
 export type WorkflowRun = z.infer<typeof workflowRunSchema>;
 
+/**
+ * One fact of a run's history (issue #161): what happened, to which node and
+ * attempt, when. `detail` carries ids, handles, durations and error classes,
+ * never content.
+ */
+export const workflowRunEventSchema = z.object({
+  sequence: z.number().int(),
+  type: workflowRunEventTypeSchema,
+  nodeId: z.string().nullable(),
+  executionId: idSchema.nullable(),
+  attempt: z.number().int().nullable(),
+  detail: z.record(z.string(), z.unknown()).nullable(),
+  at: isoDateTimeSchema,
+});
+export type WorkflowRunEvent = z.infer<typeof workflowRunEventSchema>;
+
 export const workflowRunListResponseSchema = z.object({ runs: z.array(workflowRunSchema) });
 export type WorkflowRunListResponse = z.infer<typeof workflowRunListResponseSchema>;
 
@@ -261,6 +284,8 @@ export const workflowRunResponseSchema = z.object({
   /** The graph of the version the run started on, never the current draft. */
   graph: workflowGraphSchema,
   nodeExecutions: z.array(workflowNodeExecutionSchema),
+  /** The history in order, enough to replay the path the run took. */
+  events: z.array(workflowRunEventSchema),
   /** `workflowProgress` over the rows above. */
   progress: z.object({
     runnable: z.array(z.string()),
@@ -270,3 +295,23 @@ export const workflowRunResponseSchema = z.object({
   }),
 });
 export type WorkflowRunResponse = z.infer<typeof workflowRunResponseSchema>;
+
+/**
+ * Starting a run by hand (issue #161). Without `triggerNodeId` the run starts
+ * from the published version's only manual trigger; `input` is handed to the
+ * run as what its trigger supplied.
+ */
+export const startWorkflowRunRequestSchema = z.object({
+  triggerNodeId: z.string().min(1).max(64).optional(),
+  input: z.record(z.string(), z.unknown()).optional(),
+});
+export type StartWorkflowRunRequest = z.infer<typeof startWorkflowRunRequestSchema>;
+
+export const workflowRunStartResponseSchema = z.object({ run: workflowRunSchema });
+export type WorkflowRunStartResponse = z.infer<typeof workflowRunStartResponseSchema>;
+
+/** Cancelling a run: what is queued or waiting stops, a running step finishes unrecorded. */
+export const cancelWorkflowRunRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+});
+export type CancelWorkflowRunRequest = z.infer<typeof cancelWorkflowRunRequestSchema>;

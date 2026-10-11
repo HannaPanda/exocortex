@@ -617,6 +617,37 @@ export const settingsSchema = z.object({
   'automations.runRetentionDays': z.number().int().min(0).max(3_650).default(30),
 
   /**
+   * Whether workflow runs execute at all (issue #161, ADR-076).
+   *
+   * The emergency stop for workflows, for the same reason as the one for
+   * automations: a workflow starts agents and spends money, and when one is
+   * doing what it should not, the person at the keyboard needs one switch.
+   * Off means no run starts, by hand or by itself, and a run in flight stops
+   * at its next step. Defaults **off**: nothing begins to run because a
+   * version was deployed.
+   */
+  'workflows.enabled': z.boolean().default(false),
+  /**
+   * Node attempts one run may make, retries included. A graph may set fewer;
+   * the run takes the stricter of the two when it starts.
+   */
+  'workflows.maxNodeExecutions': z.number().int().min(1).max(1_000).default(200),
+  /** Node attempts of one run that may be in flight at once, waiting ones included. */
+  'workflows.maxParallelBranches': z.number().int().min(1).max(20).default(5),
+  /** Seconds a run may live, waiting included, before it is timed out. */
+  'workflows.maxLifetimeSeconds': z
+    .number()
+    .int()
+    .min(60)
+    .max(30 * 24 * 3_600)
+    .default(7 * 24 * 3_600),
+  /**
+   * What one run may spend on AI, every agent it starts included, in
+   * millionths of a dollar. A graph's own budget can only be lower.
+   */
+  'workflows.budgetMicroUsdPerRun': z.number().int().min(1_000).max(100_000_000).default(2_000_000),
+
+  /**
    * Whether overview pages compose their text (issue #53, ADR-028).
    *
    * Defaults **on**, and what it switches is only the composing: an overview
@@ -912,6 +943,16 @@ export const SETTING_SCOPES = {
   'automations.webhookTimeoutSeconds': 'deployment',
   'automations.runRetentionDays': 'deployment',
   /**
+   * A workspace may switch its own workflows off and narrow every limit, and
+   * a deployment that switches them off or lowers a limit pulls every
+   * workspace with it (`SETTING_CEILINGS`).
+   */
+  'workflows.enabled': 'workspace',
+  'workflows.maxNodeExecutions': 'workspace',
+  'workflows.maxParallelBranches': 'workspace',
+  'workflows.maxLifetimeSeconds': 'workspace',
+  'workflows.budgetMicroUsdPerRun': 'workspace',
+  /**
    * A workspace may switch its own overviews off, and a deployment that
    * switches them off switches every workspace off with it.
    */
@@ -977,6 +1018,11 @@ export const workspaceSettingKeySchema = z.enum(
  */
 export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'automations.enabled',
+  'workflows.enabled',
+  'workflows.maxNodeExecutions',
+  'workflows.maxParallelBranches',
+  'workflows.maxLifetimeSeconds',
+  'workflows.budgetMicroUsdPerRun',
   'overview.enabled',
   'render.enabled',
   'projects.enabled',
