@@ -221,6 +221,11 @@ function LoadedEditor({
     });
     setGraph(result.graph);
     setSelection({ kind: 'node', id: result.nodeId });
+    // A node added from the palette lands right of the graph; bring it into
+    // view once React Flow has measured it, so the next choice is visible.
+    if (position === undefined) {
+      window.setTimeout(() => void flow.fitView({ padding: 0.2, maxZoom: 1, duration: 200 }), 60);
+    }
   };
 
   const focusProblem = (problem: WorkflowProblem): void => {
