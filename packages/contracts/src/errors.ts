@@ -212,6 +212,8 @@ export const API_ERROR_CODES = [
   'attention_target_invalid',
   /** A page an approval is to be bound to changed since the asker read it (issue #140). */
   'attention_subject_changed',
+  /** A workflow's approval is answered by a person, never by an agent or the built-in AI (issue #163). */
+  'attention_human_only',
   /** The changeset was already handed in; only a draft takes or loses changes (issue #141). */
   'changeset_not_draft',
   /** Every change of the changeset is decided; nothing is left to apply or reject. */
@@ -459,6 +461,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   attention_note_required: 422,
   attention_target_invalid: 422,
   attention_subject_changed: 409,
+  attention_human_only: 403,
   // The changeset is past the state this asks for: handed in, or decided.
   changeset_not_draft: 409,
   changeset_closed: 409,

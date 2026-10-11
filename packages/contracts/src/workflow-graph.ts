@@ -202,11 +202,40 @@ export const WORKFLOW_CONDITION_OPERATORS = [
 export const workflowConditionOperatorSchema = z.enum(WORKFLOW_CONDITION_OPERATORS);
 export type WorkflowConditionOperator = z.infer<typeof workflowConditionOperatorSchema>;
 
+/** A field of an upstream node's structured output: an agent's or an approval's. */
+export const workflowNodeFieldSourceSchema = z.object({
+  nodeId: workflowNodeIdSchema,
+  field: workflowFieldNameSchema,
+});
+
+/**
+ * A key of what the trigger handed the run (issue #163): `trigger` and
+ * `documentId` of a page change, `scheduledFor` of a schedule, whatever a
+ * manual start sent. Untyped, so a comparison with the wrong type is false.
+ */
+export const workflowInputSourceSchema = z.object({ input: workflowFieldNameSchema });
+
+/**
+ * What a condition reads. A union rather than a discriminated one, because
+ * every graph stored before #163 names a node without saying so.
+ */
+export const workflowConditionSourceSchema = z.union([
+  workflowNodeFieldSourceSchema,
+  workflowInputSourceSchema,
+]);
+export type WorkflowConditionSource = z.infer<typeof workflowConditionSourceSchema>;
+
+export function isInputSource(
+  source: WorkflowConditionSource,
+): source is z.infer<typeof workflowInputSourceSchema> {
+  return 'input' in source;
+}
+
 const conditionNodeSchema = z.object({
   ...nodeBase,
   type: z.literal('condition'),
-  /** A field of an upstream agent node's structured output. */
-  source: z.object({ nodeId: workflowNodeIdSchema, field: workflowFieldNameSchema }),
+  /** A field of an upstream node's structured output, or a key of the run's input. */
+  source: workflowConditionSourceSchema,
   operator: workflowConditionOperatorSchema,
   /** Compared against; absent for the operators that take none. */
   value: z
@@ -227,6 +256,10 @@ const joinNodeSchema = z.object({
   policy: workflowJoinPolicySchema,
 });
 
+/** Whether the person answering an approval writes a sentence with it (issue #163). */
+export const WORKFLOW_APPROVAL_NOTE_MODES = ['none', 'optional', 'required'] as const;
+export const workflowApprovalNoteModeSchema = z.enum(WORKFLOW_APPROVAL_NOTE_MODES);
+
 const approvalNodeSchema = z.object({
   ...nodeBase,
   type: z.literal('approval'),
@@ -234,7 +267,23 @@ const approvalNodeSchema = z.object({
   question: z.string().trim().max(WORKFLOW_LIMITS.questionMaxChars),
   /** Null: anybody who may answer in the workspace (ADR-067). */
   assigneeUserId: idSchema.nullable().default(null),
+  /**
+   * Added by #163 with a default, so a graph stored before parses to an
+   * approval that takes an optional sentence. The sentence is the approval's
+   * `note` field, which a condition or a later goal can read.
+   */
+  note: workflowApprovalNoteModeSchema.default('optional'),
 });
+
+/**
+ * The structured output every approval has (issue #163), in the shape an
+ * agent node declares its own: what a condition and a goal placeholder can
+ * read from it.
+ */
+export const WORKFLOW_APPROVAL_FIELDS: readonly WorkflowOutputField[] = [
+  { name: 'approved', type: 'boolean', values: [], required: true, description: null },
+  { name: 'note', type: 'string', values: [], required: false, description: null },
+];
 
 export const WORKFLOW_END_OUTCOMES = ['succeeded', 'failed', 'cancelled'] as const;
 export const workflowEndOutcomeSchema = z.enum(WORKFLOW_END_OUTCOMES);
@@ -281,6 +330,19 @@ export const WORKFLOW_TRIGGER_TYPES = [
   'trigger.event',
 ] as const satisfies readonly WorkflowNodeType[];
 export type WorkflowTriggerType = (typeof WORKFLOW_TRIGGER_TYPES)[number];
+
+/**
+ * The fields of a node's structured output that later nodes may read, or null
+ * for a node that has none: an agent declares its own, an approval always has
+ * `approved` and `note` (issue #163).
+ */
+export function workflowNodeOutputFields(
+  node: WorkflowNode,
+): readonly WorkflowOutputField[] | null {
+  if (node.type === 'agent') return node.outputFields;
+  if (node.type === 'approval') return WORKFLOW_APPROVAL_FIELDS;
+  return null;
+}
 
 export function isTriggerNode(
   node: WorkflowNode,

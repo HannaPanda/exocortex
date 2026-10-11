@@ -253,6 +253,10 @@ export const workflowRunSchema = z.object({
   chainDepth: z.number().int(),
   errorCode: z.string().nullable(),
   errorMessage: z.string().nullable(),
+  /** What the end node the run ended at says about it (issue #163). */
+  summary: z.string().nullable(),
+  /** The end node the run ended at; null for a run that ended anywhere else. */
+  endNodeId: z.string().nullable(),
   waitingSince: isoDateTimeSchema.nullable(),
   createdAt: isoDateTimeSchema,
   startedAt: isoDateTimeSchema.nullable(),

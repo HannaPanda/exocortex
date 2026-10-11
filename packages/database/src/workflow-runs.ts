@@ -258,7 +258,32 @@ export async function startWorkflowRun(
 }
 
 export type CancelWorkflowRunResult =
-  { ok: true } | { ok: false; reason: 'not_found' | 'already_finished' };
+  | { ok: true; obsoleteAttentionItemIds: string[] }
+  | { ok: false; reason: 'not_found' | 'already_finished' };
+
+/**
+ * Settles the open approvals of node attempts that ended without an answer
+ * (issue #163): the run was cancelled, timed out, or ended at another node.
+ * Obsolete, never resolved, because nobody decided anything; the item stays
+ * as the record that the question was asked. Returns the settled items with
+ * their workspace, so the caller can tell the inboxes.
+ */
+export async function obsoleteWorkflowApprovals(
+  tx: PrismaTransactionClient,
+  executionIds: readonly string[],
+  now: Date,
+): Promise<{ id: string; workspaceId: string }[]> {
+  if (executionIds.length === 0) return [];
+  return tx.attentionItem.updateManyAndReturn({
+    where: { workflowExecutionId: { in: [...executionIds] }, status: 'OPEN' },
+    data: {
+      status: 'OBSOLETE',
+      settledAt: now,
+      resolution: { reason: 'workflow_ended' } satisfies Prisma.InputJsonObject,
+    },
+    select: { id: true, workspaceId: true },
+  });
+}
 
 /**
  * Cancels a run: the run and everything queued, running or waiting in it
@@ -316,7 +341,12 @@ export async function cancelWorkflowRun(
       })),
       { type: 'run.cancelled', detail: { byUserId: input.byUserId }, at: now },
     ]);
-    return { ok: true };
+    const settled = await obsoleteWorkflowApprovals(
+      tx,
+      open.map((row) => row.id),
+      now,
+    );
+    return { ok: true, obsoleteAttentionItemIds: settled.map((item) => item.id) };
   });
 }
 

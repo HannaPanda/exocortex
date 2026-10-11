@@ -87,6 +87,22 @@ export const SYSTEM_ATTENTION_OPTIONS = [
 ] as const;
 export type SystemAttentionOption = (typeof SYSTEM_ATTENTION_OPTIONS)[number];
 
+/**
+ * The two answers to an approval a workflow asks for (issue #163). Like the
+ * system options their words come from the reader's catalogue; unlike them
+ * they change no work item, they continue the workflow run on one branch or
+ * the other.
+ */
+export const WORKFLOW_APPROVAL_OPTIONS = ['approve', 'reject'] as const;
+export type WorkflowApprovalOption = (typeof WORKFLOW_APPROVAL_OPTIONS)[number];
+
+/** Every option id whose words the catalogue has rather than the row. */
+export const CATALOGUED_ATTENTION_OPTIONS = [
+  ...SYSTEM_ATTENTION_OPTIONS,
+  ...WORKFLOW_APPROVAL_OPTIONS,
+] as const;
+export type CataloguedAttentionOption = (typeof CATALOGUED_ATTENTION_OPTIONS)[number];
+
 const optionIdSchema = z
   .string()
   .trim()
@@ -159,8 +175,9 @@ export const attentionResolutionSchema = z.object({
   runId: idSchema.optional(),
   /**
    * Why an item became obsolete: `work_item_cancelled`, `work_item_deleted`,
-   * `withdrawn`, `superseded`, or `subject_changed` when an approval was
-   * answered after what it was bound to had moved (issue #140).
+   * `withdrawn`, `superseded`, `subject_changed` when an approval was
+   * answered after what it was bound to had moved (issue #140), or
+   * `workflow_ended` when the workflow run that asked ended first (issue #163).
    */
   reason: z.string().optional(),
   /** The run the answer carried the paused work on in (issue #140). */
@@ -206,6 +223,19 @@ export const attentionItemSchema = z.object({
   workState: z.string().nullable(),
   /** The pages an approval is bound to; null when it is bound to none. */
   subject: z.array(attentionSubjectPageSchema).nullable(),
+  /**
+   * The workflow run an approval node raised this for (issue #163); null for
+   * every other item. Answering it continues that run.
+   */
+  workflow: z
+    .object({
+      /** The ids and the name are null once the workflow is gone: the question is still on record. */
+      workflowId: idSchema.nullable(),
+      workflowName: z.string().nullable(),
+      runId: idSchema.nullable(),
+      nodeId: z.string().nullable(),
+    })
+    .nullable(),
   /** The changeset a review or approval is about (issue #141); null otherwise. */
   changeset: z
     .object({

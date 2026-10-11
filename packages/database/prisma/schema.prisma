@@ -4108,6 +4108,12 @@ model AttentionItem {
   /// new. A settled item frees the key.
   dedupeKey String?
 
+  /// The workflow approval attempt that raised it (issue #163), unique so a
+  /// second delivery of the attempt finds this item instead of raising
+  /// another. A plain column like `work_item.workflowExecutionId`: the item
+  /// is the record of a decision and outlives the run that asked for it.
+  workflowExecutionId String? @unique
+
   settledAt     DateTime?
   settledByKind WorkItemParticipantKind?
   settledById   String?
@@ -4675,6 +4681,11 @@ model WorkflowRun {
 
   errorCode    String?
   errorMessage String?
+  /// What the end node the run ended at says about it (issue #163); null
+  /// for a run that ended anywhere else.
+  summary      String?
+  /// The end node the run ended at (issue #163).
+  endNodeId    String?
   waitingSince DateTime?
 
   createdAt  DateTime  @default(now())

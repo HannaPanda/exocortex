@@ -104,7 +104,7 @@ export const WORKFLOW_RUN_ERROR_CODES = [
   'workflow_node_error',
   /** The worker running a node vanished and the node may not be repeated. */
   'workflow_node_interrupted',
-  /** A node type whose execution has not been built yet (issue #163). */
+  /** A node whose handler needs something this worker was started without. */
   'workflow_node_not_executable',
   /** The API refused to create an agent node's work item or to start its run (issue #162). */
   'workflow_agent_refused',
@@ -120,6 +120,11 @@ export const WORKFLOW_RUN_ERROR_CODES = [
   'workflow_output_invalid',
   /** A waiting node was woken by something it does not know how to resume from. */
   'workflow_resume_unsupported',
+  /**
+   * An approval node's attention item is gone, or was settled without an
+   * approve or a reject (issue #163).
+   */
+  'workflow_approval_gone',
 ] as const;
 export type WorkflowRunErrorCode = (typeof WORKFLOW_RUN_ERROR_CODES)[number];
 

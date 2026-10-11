@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { parseCron } from './automation-schedule';
 import {
+  isInputSource,
   isTriggerNode,
   WORKFLOW_EXCLUSIVE_NODE_TYPES,
   WORKFLOW_FAN_OUT_HANDLES,
@@ -12,6 +13,8 @@ import {
   workflowGraphSchema,
   type WorkflowNode,
   type WorkflowNodeOf,
+  workflowNodeOutputFields,
+  type WorkflowOutputField,
 } from './workflow-graph';
 import { workflowGoalPlaceholders } from './workflow-result';
 
@@ -470,10 +473,19 @@ function conditionProblems(
   for (const node of nodes.values()) {
     if (node.type !== 'condition') continue;
     const at = { nodeId: node.id };
+    if (isInputSource(node.source)) {
+      problems.push(...inputOperatorProblems(node));
+      continue;
+    }
     const source = nodes.get(node.source.nodeId);
-    if (source?.type !== 'agent') {
+    const fields = source === undefined ? null : workflowNodeOutputFields(source);
+    if (source === undefined || fields === null) {
       problems.push(
-        problem('condition_unknown_source', 'A condition reads the output of an agent node', at),
+        problem(
+          'condition_unknown_source',
+          'A condition reads the output of an agent or approval node, or the run input',
+          at,
+        ),
       );
       continue;
     }
@@ -482,20 +494,42 @@ function conditionProblems(
         problem('condition_not_upstream', 'The node a condition reads must come before it', at),
       );
     }
-    const field = source.outputFields.find((candidate) => candidate.name === node.source.field);
+    const name = node.source.field;
+    const field = fields.find((candidate) => candidate.name === name);
     if (field === undefined) {
       problems.push(
-        problem(
-          'condition_unknown_field',
-          `Node "${source.id}" declares no field "${node.source.field}"`,
-          at,
-        ),
+        problem('condition_unknown_field', `Node "${source.id}" declares no field "${name}"`, at),
       );
       continue;
     }
     problems.push(...operatorProblems(node, field));
   }
   return problems;
+}
+
+/**
+ * A key of the run's input has no declared type, so only the shape of the
+ * comparison is checked: an ordering compares numbers, a test needs no value,
+ * everything else needs one.
+ */
+function inputOperatorProblems(node: WorkflowNodeOf<'condition'>): WorkflowProblem[] {
+  const at = { nodeId: node.id };
+  switch (node.operator) {
+    case 'present':
+    case 'absent':
+    case 'is_true':
+    case 'is_false':
+      return [];
+    case 'eq':
+    case 'neq':
+      return node.value === null
+        ? [problem('condition_value_invalid', 'The comparison needs a value', at)]
+        : [];
+    default:
+      return typeof node.value === 'number'
+        ? []
+        : [problem('condition_value_invalid', 'The comparison needs a number value', at)];
+  }
 }
 
 /**
@@ -514,17 +548,18 @@ function goalPlaceholderProblems(
     for (const { source, key } of workflowGoalPlaceholders(node.goal)) {
       if (source === 'input') continue;
       const upstream = nodes.get(source);
-      if (upstream?.type !== 'agent' || !upstreamOf(node.id, edges).has(source)) {
+      const fields = upstream === undefined ? null : workflowNodeOutputFields(upstream);
+      if (fields === null || !upstreamOf(node.id, edges).has(source)) {
         problems.push(
           problem(
             'goal_placeholder_invalid',
-            `"{{${source}.${key}}}" names no agent node before this one`,
+            `"{{${source}.${key}}}" names no agent or approval node before this one`,
             at,
           ),
         );
         continue;
       }
-      if (!upstream.outputFields.some((field) => field.name === key)) {
+      if (!fields.some((field) => field.name === key)) {
         problems.push(
           problem('goal_placeholder_invalid', `Node "${source}" declares no field "${key}"`, at),
         );
@@ -543,7 +578,7 @@ const COMPARISONS_BY_TYPE: Readonly<Record<string, readonly string[]>> = {
 
 function operatorProblems(
   node: WorkflowNodeOf<'condition'>,
-  field: WorkflowNodeOf<'agent'>['outputFields'][number],
+  field: WorkflowOutputField,
 ): WorkflowProblem[] {
   const at = { nodeId: node.id };
   if (node.operator === 'present' || node.operator === 'absent') return [];
