@@ -166,7 +166,6 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     since: '2026-10-11',
     references: ['#159', '#162', 'ADR-077'],
     ui: {},
-    tools: ['exo_work_item_create', 'exo_work_item_update', 'exo_workflow_run_get'],
   }),
   defineFeature({
     id: 'workflow-laeufe',
