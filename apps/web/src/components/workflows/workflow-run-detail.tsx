@@ -126,7 +126,7 @@ function LoadedRun({
     selection?.kind === 'node' ? graph.nodes.find((node) => node.id === selection.id) : undefined;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+    <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="flex flex-col gap-3 border-b border-border px-6 pt-5 pb-4">
         <Link
           href={`/arbeitsbereich/${workspaceId}/workflows/${workflowId}?tab=laeufe`}
@@ -179,9 +179,9 @@ function LoadedRun({
         )}
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 p-6 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 p-6 @4xl:flex-row">
         <div
-          className="h-[60dvh] min-h-80 overflow-hidden rounded-lg border border-border lg:h-auto lg:min-h-0 lg:flex-1"
+          className="h-[60dvh] min-h-80 overflow-hidden rounded-lg border border-border @4xl:h-auto @4xl:min-h-0 @4xl:flex-1"
           data-testid="workflow-run-canvas"
         >
           <WorkflowCanvas
@@ -196,7 +196,7 @@ function LoadedRun({
           />
         </div>
         <aside
-          className="flex shrink-0 flex-col gap-6 lg:w-96 lg:overflow-y-auto lg:pr-1"
+          className="flex shrink-0 flex-col gap-6 @4xl:w-96 @4xl:overflow-y-auto @4xl:pr-1"
           aria-label={t('panelLabel')}
         >
           {selectedNode === undefined ? (

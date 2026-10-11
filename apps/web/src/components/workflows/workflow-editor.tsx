@@ -248,8 +248,10 @@ function LoadedEditor({
     onSelectProblem: focusProblem,
   };
 
+  // Three columns only where the main area itself is wide enough: with the
+  // sidebar and the chat open, a wide window leaves the canvas too little.
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+    <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="flex flex-col gap-3 border-b border-border px-6 pt-5 pb-3">
         <Link
           href={`/arbeitsbereich/${workspaceId}/workflows`}
@@ -306,13 +308,13 @@ function LoadedEditor({
 
         <TabsContent
           value="entwurf"
-          className="flex min-h-0 flex-1 flex-col gap-4 p-6 pt-3 lg:flex-row"
+          className="flex min-h-0 flex-1 flex-col gap-4 p-6 pt-3 @5xl:flex-row"
         >
-          <aside className="order-2 shrink-0 lg:order-none lg:w-48 lg:overflow-y-auto">
+          <aside className="order-2 shrink-0 @5xl:order-none @5xl:w-48 @5xl:overflow-y-auto">
             <WorkflowPalette onAdd={(type) => add(type)} disabled={readOnly} />
           </aside>
           <div
-            className="order-1 h-[60dvh] min-h-80 overflow-hidden rounded-lg border border-border lg:order-none lg:h-auto lg:min-h-0 lg:flex-1"
+            className="order-1 h-[60dvh] min-h-80 overflow-hidden rounded-lg border border-border @5xl:order-none @5xl:h-auto @5xl:min-h-0 @5xl:flex-1"
             data-testid="workflow-canvas"
           >
             <WorkflowCanvas
@@ -328,7 +330,7 @@ function LoadedEditor({
             />
           </div>
           <aside
-            className="order-3 flex shrink-0 flex-col gap-5 lg:w-80 lg:overflow-y-auto lg:pr-1"
+            className="order-3 flex shrink-0 flex-col gap-5 @5xl:w-80 @5xl:overflow-y-auto @5xl:pr-1"
             aria-label={t('inspectorLabel')}
           >
             {selectedNode !== undefined ? (
