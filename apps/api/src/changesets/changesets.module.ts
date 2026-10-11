@@ -26,5 +26,7 @@ import { ChangesetsService } from './changesets.service';
     ChangesetApplyService,
     ChangesetReviewService,
   ],
+  // For the eval attempts, which close the proposals their runs made (issue #146).
+  exports: [ChangesetsService],
 })
 export class ChangesetsModule {}

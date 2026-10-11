@@ -221,3 +221,32 @@ describe('the proposal mode (issue #141, ADR-070)', () => {
     await expect(callWith(mint(), 'POST', '/api/documents/d1/content/block')).resolves.toBe(true);
   });
 });
+
+describe('an eval sandbox (issue #146)', () => {
+  it('confines a service token with a page root to that branch, and nothing else', async () => {
+    const mint = (pageRootId?: string) =>
+      issueServiceToken({
+        secret: env.SERVICE_TOKEN_SECRET!,
+        userId,
+        purpose: 'ai-tools',
+        ttlSeconds: 60,
+        runId: 'run-eval',
+        ...(pageRootId === undefined ? {} : { pageRootId }),
+      }).token;
+    const confined = contextFor(`Bearer ${mint('doc-sandbox')}`, 'GET', '/api/workspaces');
+    await sessionGuard.canActivate(confined);
+    expect(confined.switchToHttp().getRequest<{ exocortexPageScopes?: unknown }>()).toMatchObject({
+      exocortexPageScopes: {
+        tokenId: 'run:run-eval',
+        declared: true,
+        scopes: [{ documentId: 'doc-sandbox', scope: 'SUBTREE' }],
+      },
+    });
+
+    const free = contextFor(`Bearer ${mint()}`, 'GET', '/api/workspaces');
+    await sessionGuard.canActivate(free);
+    expect(
+      free.switchToHttp().getRequest<{ exocortexPageScopes?: unknown }>().exocortexPageScopes,
+    ).toBeUndefined();
+  });
+});

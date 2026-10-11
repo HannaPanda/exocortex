@@ -320,6 +320,46 @@ function createRunToolRunner(input: {
   });
 }
 
+/**
+ * The eval attempt (issue #146) and the agent profile (issue #143) a run
+ * works under, and the provider keys both lay over the configuration. Null
+ * when the run was refused, because an attempt that cannot hold its run must
+ * not let it run unheld.
+ */
+async function resolveRunHold(input: {
+  prisma: PrismaClient;
+  bus: RedisEventBus;
+  run: AiRun;
+  payload: JobContext<typeof QUEUE_NAMES.ai>['payload'];
+  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
+}): Promise<{
+  hold: EvalHold | null;
+  profile: RunProfile | null;
+  providerPreferences: ProviderRoutingOverride | null;
+} | null> {
+  const { prisma, run } = input;
+  const evalHold = await resolveEvalHold({ prisma, run });
+  if (evalHold.kind === 'refused') {
+    await refuseRun({
+      ...input,
+      errorCode: 'eval_attempt_invalid',
+      reason: `The eval attempt cannot hold this run: ${evalHold.reason}`,
+    });
+    return null;
+  }
+  const hold = evalHold.kind === 'held' ? evalHold.hold : null;
+  const profile = await resolveRunProfile({
+    prisma,
+    run,
+    ...(hold === null ? {} : { evalProfileId: hold.agentProfileId }),
+  });
+  return {
+    hold,
+    profile,
+    providerPreferences: evalProviderRouting(profile?.providerRouting ?? null, hold),
+  };
+}
+
 /** The row as it starts running, with what it is held to and where its logs are. */
 async function markRunning(input: {
   prisma: PrismaClient;
@@ -399,27 +439,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // The agent profile this run works under, if it is an attempt at work
     // that has one (issue #143): its role, its limits, its tools, and routing
     // keys that narrow the endpoints before anything is planned.
-    // An eval attempt (issue #146) is held to its case, or not run at all.
-    const evalHold = await resolveEvalHold({ prisma, run });
-    if (evalHold.kind === 'refused') {
-      await refuseRun({
-        prisma,
-        bus,
-        run,
-        payload,
-        logger,
-        errorCode: 'eval_attempt_invalid',
-        reason: `The eval attempt cannot hold this run: ${evalHold.reason}`,
-      });
-      return;
-    }
-    const hold = evalHold.kind === 'held' ? evalHold.hold : null;
-    const profile = await resolveRunProfile({
-      prisma,
-      run,
-      ...(hold === null ? {} : { evalProfileId: hold.agentProfileId }),
-    });
-    const providerPreferences = evalProviderRouting(profile?.providerRouting ?? null, hold);
+    const held = await resolveRunHold({ prisma, bus, run, payload, logger });
+    if (held === null) return;
+    const { hold, profile, providerPreferences } = held;
 
     const modelRow = withConfiguredEndpoints(
       await resolveModelRow({

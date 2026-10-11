@@ -52,17 +52,24 @@ export function triggerForEvent(eventType: string): AutomationTrigger | null {
   }
 }
 
-/** Whether the page or a page above it is (or was) an eval attempt's sandbox. */
+/**
+ * Whether the page or a page above it is (or was) an eval sandbox: an
+ * attempt's, or the page an eval run's sandboxes hang under.
+ */
 async function insideEvalSandbox(
   prisma: PrismaClient,
   documentId: string,
   ancestry: ReadonlySet<string>,
 ): Promise<boolean> {
-  const sandbox = await prisma.evalAttempt.findFirst({
-    where: { sandboxDocumentId: { in: [documentId, ...ancestry] } },
-    select: { id: true },
-  });
-  return sandbox !== null;
+  const ids = [documentId, ...ancestry];
+  const [attempt, run] = await Promise.all([
+    prisma.evalAttempt.findFirst({
+      where: { sandboxDocumentId: { in: ids } },
+      select: { id: true },
+    }),
+    prisma.evalRun.findFirst({ where: { sandboxDocumentId: { in: ids } }, select: { id: true } }),
+  ]);
+  return attempt !== null || run !== null;
 }
 
 /** Depth at which the ancestor walk gives up. A page tree is not this deep. */

@@ -532,6 +532,46 @@ describe('deciding', () => {
     expect(await prisma.document.count({ where: { workspaceId, title: 'Idee' } })).toBe(0);
   });
 
+  it('never applies an eval attempt’s proposal and raises nothing for it (issue #146)', async () => {
+    const created = await service.create({
+      workspaceId,
+      actor: human(memberId),
+      request: { title: 'Eval', change: { kind: 'create', title: 'Aus dem Eval', markdown: 'x' } },
+      correlationId,
+    });
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: memberId,
+        provider: 'mock',
+        model: 'mock/model',
+        messages: [],
+        evalAttemptId: 'attempt-under-test',
+      },
+    });
+    await prisma.changeset.update({
+      where: { id: created.changeset.id },
+      data: { aiRunId: run.id },
+    });
+    await service.submit({
+      changesetId: created.changeset.id,
+      actor: human(memberId),
+      request: {},
+      correlationId,
+    });
+    const row = await prisma.changeset.findUniqueOrThrow({ where: { id: created.changeset.id } });
+    expect(row.attentionItemId).toBeNull();
+    await expect(
+      service.apply({
+        changesetId: created.changeset.id,
+        actor: human(ownerId),
+        request: {},
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'eval_changeset_not_appliable' });
+    expect(await prisma.document.count({ where: { workspaceId, title: 'Aus dem Eval' } })).toBe(0);
+  });
+
   it('applies a new page', async () => {
     const created = await service.create({
       workspaceId,

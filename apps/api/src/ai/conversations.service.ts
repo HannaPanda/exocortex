@@ -314,6 +314,13 @@ export class ConversationsService {
      * message cannot attach its run to somebody's work.
      */
     workItemId?: string;
+    /**
+     * The eval attempt this turn is (issue #146). Internal like `workItemId`:
+     * set by the eval runner only, and written onto the run in the same
+     * statement that creates it, so the worker can never pick the run up
+     * before it knows what holds it.
+     */
+    evalAttemptId?: string;
   }): Promise<PostConversationMessageResponse> {
     const conversation = await this.loadOwned(input.conversationId, input.userId);
 
@@ -449,6 +456,7 @@ export class ConversationsService {
         conversationId: conversation.id,
         reasoningLevel: REASONING_LEVEL_TO_PRISMA[clampedReasoning],
         workItemId: input.workItemId ?? null,
+        evalAttemptId: input.evalAttemptId ?? null,
       },
     });
 

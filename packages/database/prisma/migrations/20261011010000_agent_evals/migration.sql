@@ -53,6 +53,7 @@ CREATE TABLE "eval_run" (
     "suite" TEXT,
     "variants" JSONB NOT NULL,
     "repetitions" INTEGER NOT NULL,
+    "sandboxDocumentId" TEXT,
     "createdById" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -103,6 +104,9 @@ CREATE UNIQUE INDEX "eval_case_workspaceId_name_key" ON "eval_case"("workspaceId
 
 -- CreateIndex
 CREATE INDEX "eval_run_workspaceId_createdAt_idx" ON "eval_run"("workspaceId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "eval_run_sandboxDocumentId_idx" ON "eval_run"("sandboxDocumentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "eval_attempt_aiRunId_key" ON "eval_attempt"("aiRunId");

@@ -56,6 +56,7 @@ export const APPLICATION_EVENT_TYPES = [
   'work-item.changed',
   'attention.changed',
   'changeset.changed',
+  'eval.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -391,6 +392,17 @@ export const workItemChangedPayloadSchema = z.object({
 export type WorkItemChangedPayload = z.infer<typeof workItemChangedPayloadSchema>;
 
 /**
+ * An eval case or an eval run changed, or one of its attempts moved on (issue
+ * #146). Ids only, like every event here: an open list or comparison re-reads.
+ */
+export const evalChangedPayloadSchema = z.object({
+  evalCaseId: idSchema.nullable(),
+  evalRunId: idSchema.nullable(),
+  action: z.enum(['created', 'updated', 'deleted', 'attempt_settled']),
+});
+export type EvalChangedPayload = z.infer<typeof evalChangedPayloadSchema>;
+
+/**
  * Attention items were raised or settled (issue #139).
  *
  * Ids only. The browser re-reads its inbox and the count beside it; who an
@@ -500,6 +512,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('work-item.changed', workItemChangedPayloadSchema),
   envelope('attention.changed', attentionChangedPayloadSchema),
   envelope('changeset.changed', changesetChangedPayloadSchema),
+  envelope('eval.changed', evalChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

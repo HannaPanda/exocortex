@@ -173,6 +173,8 @@ export const API_ERROR_CODES = [
   'eval_changeset_not_appliable',
   /** The attempt has not finished yet; a review needs its result. */
   'eval_attempt_not_finished',
+  /** An eval attempt could not be started: no run came of it. Says nothing about the model. */
+  'eval_launch_failed',
   /** A work item's first checkpoint came without a summary; later ones carry it forward (issue #142). */
   'work_checkpoint_summary_required',
   /** The named checkpoint does not belong to this work item. */
@@ -416,6 +418,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   eval_run_too_large: 422,
   eval_changeset_not_appliable: 409,
   eval_attempt_not_finished: 409,
+  eval_launch_failed: 500,
   work_checkpoint_summary_required: 422,
   work_checkpoint_not_found: 404,
   // Somebody else settled it first, or the work moved on: re-read, do not retry.

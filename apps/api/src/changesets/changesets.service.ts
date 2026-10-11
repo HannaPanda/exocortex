@@ -208,6 +208,10 @@ export class ChangesetsService {
       data: { status: 'READY', submittedAt: new Date(), contentHash },
     });
     await this.announce(row.workspaceId, row.id, 'submitted', input.correlationId);
+    // An eval attempt's proposal is evidence, not a request (issue #146): it
+    // asks nobody, and the attempt rejects it when it ends.
+    if (await this.fromEval(row.id))
+      return this.get({ changesetId: row.id, userId: input.actor.userId });
     await this.review.raise({
       changesetId: row.id,
       actor: input.actor,
@@ -224,6 +228,12 @@ export class ChangesetsService {
     correlationId: string;
   }): Promise<ChangesetDecisionResponse> {
     const { row, selected, outcomes } = await this.decidable(input);
+    if (await this.fromEval(row.id)) {
+      throw new AppError(
+        'eval_changeset_not_appliable',
+        'A proposal made by an eval attempt is never applied',
+      );
+    }
     for (const change of selected) {
       outcomes.push(
         await this.applying.applyOne({
@@ -261,6 +271,15 @@ export class ChangesetsService {
       outcomes.push({ changeId: change.id, outcome: 'rejected', errorCode: null, message: null });
     }
     return this.afterDecision(row, input, outcomes);
+  }
+
+  /** Whether the set was proposed by a run that is an eval attempt (issue #146). */
+  private async fromEval(changesetId: string): Promise<boolean> {
+    const row = await this.prisma.changeset.findUnique({
+      where: { id: changesetId },
+      select: { aiRun: { select: { evalAttemptId: true } } },
+    });
+    return row?.aiRun?.evalAttemptId != null;
   }
 
   /** The handed-in set, and the pending changes a decision is about. */

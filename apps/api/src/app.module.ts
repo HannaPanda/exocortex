@@ -24,6 +24,7 @@ import { ContextModule } from './context/context.module';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { EntitiesModule } from './entities/entities.module';
+import { EvalsModule } from './evals/evals.module';
 import { FeaturesModule } from './features/features.module';
 import { HealthModule } from './health/health.module';
 import { InboxModule } from './inbox/inbox.module';
@@ -82,6 +83,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AgentProfilesModule,
     AttentionModule,
     ChangesetsModule,
+    EvalsModule,
     AttachmentsModule,
     AiModule,
     AdminModule,

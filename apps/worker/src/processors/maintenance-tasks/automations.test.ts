@@ -54,6 +54,7 @@ function harness(input: {
           ? { id: 'attempt-1' }
           : null,
     },
+    evalRun: { findFirst: async () => null },
   } as unknown as PrismaClient;
 
   const queues = {

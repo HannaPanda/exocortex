@@ -4402,12 +4402,15 @@ model EvalRun {
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  label       String?
+  label             String?
   /// The suite it was started for, when it was.
-  suite       String?
+  suite             String?
   /// `evalVariantSchema` list.
-  variants    Json
-  repetitions Int
+  variants          Json
+  repetitions       Int
+  /// The one page every fixture attempt's sandbox hangs under while the run
+  /// is open, deleted with the last of them. A plain id like the attempt's.
+  sandboxDocumentId String?
 
   createdById String?
   createdBy   User?    @relation("EvalRunCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
@@ -4416,6 +4419,7 @@ model EvalRun {
   attempts EvalAttempt[]
 
   @@index([workspaceId, createdAt])
+  @@index([sandboxDocumentId])
   @@map("eval_run")
 }
 
