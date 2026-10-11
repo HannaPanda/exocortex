@@ -761,6 +761,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   makes its open approvals obsolete (`workflow_ended`); a failure absorbed by
   a join for any input does not fail the run; a condition may read an
   approval's fields or the run's input.
+- ADR-079: a test run is an ordinary run of the published version on the
+  real runtime (`origin: test`), never a browser simulation and never the
+  draft; it may start from any trigger. A run carries a write-mode ceiling
+  (`workflow_run.writeMode`, `propose` for a test unless named) that every
+  agent node combines with its own by taking the stricter. What a node will
+  really run under is `workflowAgentNodeEffect` over the GET's `envelope`,
+  and the editor shows it beside the configured value.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -799,7 +806,7 @@ Each of these has a step-by-step recipe:
 | new attention kind, system option, who sees an item      | `docs/attention.md`         |
 | new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 | new kind of eval check, a replay mode, an eval metric    | `docs/evals.md`             |
-| new workflow node type, a graph check, a run status      | `docs/workflows.md`         |
+| new workflow node type, its editor form, a run status    | `docs/workflows.md`         |
 
 ## Deployment on this machine
 

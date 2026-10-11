@@ -1,16 +1,18 @@
 # Agent workflows
 
-Issues #160, #161, #162 and #163 under the epic #159,
+Issues #160, #161, #162, #163 and #164 under the epic #159,
 [ADR-075](adr/ADR-075-a-workflow-run-reads-the-version-it-started-on.md),
 [ADR-076](adr/ADR-076-a-workflow-run-moves-one-persisted-transition-at-a-time.md),
-[ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md) and
-[ADR-078](adr/ADR-078-an-approval-node-is-an-attention-item-only-a-person-answers.md).
+[ADR-077](adr/ADR-077-an-agent-node-waits-for-its-work-item-not-its-run.md),
+[ADR-078](adr/ADR-078-an-approval-node-is-an-attention-item-only-a-person-answers.md) and
+[ADR-079](adr/ADR-079-a-test-run-is-a-real-run-under-a-write-mode-ceiling.md).
 A workflow is a versioned graph of typed nodes and edges: triggers start it,
 agent nodes hand work to the built-in AI, control nodes branch, fan out, join,
 ask a person and end it. This document covers what exists today: the graph
 contract, its validation, drafts and versions, the runtime that executes
-runs, agent nodes, and approvals and control flow. The editor (#164) and
-agent authoring (#165) are not built yet.
+runs, agent nodes, approvals and control flow, and the editor and run
+debugger in the browser. Agent-authored drafts with their own boundary
+(#165) are not built yet.
 
 ## Where things are
 
@@ -34,6 +36,9 @@ agent authoring (#165) are not built yet.
 | Result         | `packages/contracts/src/workflow-result.ts`: `checkStructuredResult`, `workflowAgentResultSchema`    |
 | Wake           | `apps/api/src/workflows/workflow-wake.service.ts`, `apps/api/src/work-items/work-item-workflow.ts`   |
 | Approval node  | `apps/worker/src/workflows/approval-node.ts`; `attention_item.workflowExecutionId`                   |
+| Envelope       | `packages/contracts/src/workflow-envelope.ts`: `workflowAgentNodeEffect`; `envelope` on the GET      |
+| Editor         | `apps/web/src/components/workflows/`; routes under `/arbeitsbereich/:id/workflows`                   |
+| Editing        | `workflow-draft.ts` (pure graph edits), `workflow-run-view.ts` (a run on its graph), both tested     |
 
 ## Routes
 
@@ -41,7 +46,7 @@ agent authoring (#165) are not built yet.
 | ------------------------------------ | ------------------------------------------------------------------------------- |
 | `GET /api/workspaces/:id/workflows`  | every workflow with its published version, switch and active runs               |
 | `POST /api/workspaces/:id/workflows` | a draft; one manual trigger when no graph is sent; ADMIN                        |
-| `GET /api/workflows/:id`             | the summary, the draft graph and its problems                                   |
+| `GET /api/workflows/:id`             | the summary, the draft graph, its problems and the workspace's `envelope`       |
 | `PATCH /api/workflows/:id`           | name, description, graph; `expectedRevision` refuses a lost edit; ADMIN         |
 | `POST /api/workflows/:id/validate`   | checks the sent graph, or the draft; stores nothing; a read-class request       |
 | `POST /api/workflows/:id/publish`    | freezes the draft as the next version, or answers with the identical newest one |
@@ -50,7 +55,7 @@ agent authoring (#165) are not built yet.
 | `GET /api/workflows/:id/versions`    | the versions, newest first, without their graphs                                |
 | `GET /api/workflow-versions/:id`     | one version with its graph and hash                                             |
 | `GET /api/workflows/:id/runs`        | the latest 50 runs                                                              |
-| `POST /api/workflows/:id/runs`       | starts a run by hand; `workflows.enabled`; ADMIN; never a run of the AI         |
+| `POST /api/workflows/:id/runs`       | starts a run by hand, or a test (`test`, `writeMode`); ADMIN; never the AI      |
 | `GET /api/workflow-runs/:id`         | the run, its graph, every node attempt, the history and `workflowProgress`      |
 | `POST /api/workflow-runs/:id/cancel` | cancels what is queued, running or waiting; ADMIN; never a run of the AI        |
 
@@ -292,3 +297,51 @@ carries an error class: `retryable` (the only one a runtime retries, bounded),
 `terminal`, `timeout`, `cancelled`, `limit_exceeded`. What a waiting node
 waits for is `waitingOn`: a work item, an attention item or a timer. A run
 that ended at an end node carries its `summary` and `endNodeId`.
+
+## The editor and the run debugger (issue #164, ADR-079)
+
+`/arbeitsbereich/:id/workflows` lists the workflows; each opens in the
+editor, whose tabs are the draft, its runs and its published versions; a run
+opens in the debugger under `…/workflows/:id/laeufe/:runId`.
+
+- **One model.** The editor holds the contract's `WorkflowGraph` and nothing
+  else. Every gesture is a function in `workflow-draft.ts` (`addNode`,
+  `connect`, `removeNodes`, `duplicateNode`, `replaceNode`, `moveNode`), and
+  the canvas (`workflow-canvas.tsx`, React Flow) only reports gestures back.
+  React Flow keeps what it measured and a drag in progress; the graph is
+  merged in while rendering, never from an effect.
+- **No pointer needed.** A palette button adds a node after the selected one
+  and wires it into its next free handle; the panel offers each handle's
+  target as a choice and a fan-out's branches as a list. The canvas is
+  keyboard-operable through React Flow's own node focus, with its labels
+  translated in `workflows.canvas.a11y`.
+- **Validation as you type.** `validateWorkflowGraph` runs on every change
+  and its problems sit on their node (a count and a border) or edge (dashed);
+  a problem in the list selects and centres its element. The server's
+  `reference_not_found` problems are added from the last save. A draft the
+  schema refuses cannot be saved; one with problems can, and only cannot be
+  published.
+- **Effective values.** An agent node shows the write mode and budget that
+  will hold (`workflowAgentNodeEffect`), the graph's limits show the
+  workspace's value beside them, and switching on lists the published
+  version's triggers, agents and limits before it is confirmed.
+- **Saving and conflicts.** A save sends `expectedRevision`; a
+  `workflow_revision_conflict` keeps the local draft and offers to load the
+  newer one. `Strg + S` saves; leaving with unsaved changes asks first.
+- **Test runs.** `POST /api/workflows/:id/runs` with `test: true` starts the
+  published version from any trigger, with `origin: test` and a write-mode
+  ceiling on the run (`workflow_run.writeMode`, `propose` unless the request
+  names one). Each agent node asks for the stricter of its own mode and the
+  ceiling (`agent-node.ts`), and the work item combines it with the profile
+  and the workspace as always.
+- **The debugger** is `workflowRunView` over the run's own rows: the latest
+  attempt per node as its state (icon and word), edges whose source took
+  their handle as the taken path, retries, waits with what they wait on,
+  links to the work item and the AI run, the structured output, spend
+  against budget and the history. An unfinished run is read every three
+  seconds.
+
+Adding a node type to the editor means a default in `newNode`, its form in
+`workflow-node-forms.tsx` (or its own file), its summary line in
+`workflow-summaries.ts`, an icon in `NODE_ICONS` and its words in the
+`workflows` catalogue.

@@ -273,8 +273,14 @@ What is deliberately still missing is listed under
   person can answer it, and the answer continues the run once on the branch
   chosen; conditions read an agent's or an approval's fields or the run's
   input, a join for any input tolerates the branch that failed, and an end
-  node ends the run at once with its outcome and summary (ADR-078). An
-  editor in the browser is the next stage
+  node ends the run at once with its outcome and summary (ADR-078)
+- a workflow editor and run debugger in the browser: nodes from a palette,
+  connections chosen per handle so the keyboard suffices, every validation
+  problem on its node or edge, effective write modes and budgets shown beside
+  the configured ones, publishing and switching on as separate steps, a test
+  run on the real runtime whose agents propose unless told otherwise, and a
+  run drawn on its version with the path taken, attempts, waits, spend and
+  history (ADR-079, `docs/workflows.md`)
 
 ## Stack
 

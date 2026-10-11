@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-289 routes are reachable from at least one client; 166 from all three.
+291 routes are reachable from at least one client; 172 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -53,7 +53,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_revoke` |
 | `DELETE /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_delete` |
 | `DELETE /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_delete` |
-| `DELETE /api/workflows/:x` | · | · | ✓ | `exo_workflow_delete` |
+| `DELETE /api/workflows/:x` | ✓ | · | ✓ | `exo_workflow_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `DELETE /api/workspaces/:x/members/:x` | ✓ | · | · | — |
@@ -135,11 +135,11 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_get` |
 | `GET /api/work-items/:x/checkpoints` | ✓ | ✓ | ✓ | `exo_work_item_checkpoints` |
 | `GET /api/work-items/:x/children/results` | ✓ | ✓ | ✓ | `exo_work_item_child_results` |
-| `GET /api/workflow-runs/:x` | · | ✓ | ✓ | `exo_workflow_run_get` |
-| `GET /api/workflow-versions/:x` | · | ✓ | ✓ | `exo_workflow_version_get` |
-| `GET /api/workflows/:x` | · | ✓ | ✓ | `exo_workflow_get` |
-| `GET /api/workflows/:x/runs` | · | ✓ | ✓ | `exo_workflow_runs` |
-| `GET /api/workflows/:x/versions` | · | ✓ | ✓ | `exo_workflow_versions` |
+| `GET /api/workflow-runs/:x` | ✓ | ✓ | ✓ | `exo_workflow_run_get` |
+| `GET /api/workflow-versions/:x` | ✓ | ✓ | ✓ | `exo_workflow_version_get` |
+| `GET /api/workflows/:x` | ✓ | ✓ | ✓ | `exo_workflow_get` |
+| `GET /api/workflows/:x/runs` | ✓ | ✓ | ✓ | `exo_workflow_runs` |
+| `GET /api/workflows/:x/versions` | ✓ | ✓ | ✓ | `exo_workflow_versions` |
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/agent-profiles` | ✓ | ✓ | ✓ | `exo_agent_profile_list` |
@@ -168,7 +168,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_list` |
 | `GET /api/workspaces/:x/trash` | ✓ | ✓ | ✓ | `exo_page_trash` |
 | `GET /api/workspaces/:x/work-items` | ✓ | ✓ | ✓ | `exo_work_item_list` |
-| `GET /api/workspaces/:x/workflows` | · | ✓ | ✓ | `exo_workflow_list` |
+| `GET /api/workspaces/:x/workflows` | ✓ | ✓ | ✓ | `exo_workflow_list` |
 | `PATCH /api/admin/ai-models/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/settings` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x` | ✓ | · | · | — |
@@ -196,7 +196,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_update` |
 | `PATCH /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_update` |
 | `PATCH /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_update` |
-| `PATCH /api/workflows/:x` | · | · | ✓ | `exo_workflow_update` |
+| `PATCH /api/workflows/:x` | ✓ | · | ✓ | `exo_workflow_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
@@ -280,8 +280,10 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/work-items/:x/delegate` | ✓ | ✓ | ✓ | `exo_work_item_delegate` |
 | `POST /api/work-items/:x/notes` | ✓ | ✓ | ✓ | `exo_work_item_note` |
 | `POST /api/work-items/:x/runs` | ✓ | ✓ | ✓ | `exo_work_item_start_run` |
-| `POST /api/workflow-runs/:x/cancel` | · | · | ✓ | `exo_workflow_run_cancel` |
-| `POST /api/workflows/:x/runs` | · | · | ✓ | `exo_workflow_run_start` |
+| `POST /api/workflow-runs/:x/cancel` | ✓ | · | ✓ | `exo_workflow_run_cancel` |
+| `POST /api/workflows/:x/activation` | ✓ | · | · | — |
+| `POST /api/workflows/:x/publish` | ✓ | · | · | — |
+| `POST /api/workflows/:x/runs` | ✓ | · | ✓ | `exo_workflow_run_start` |
 | `POST /api/workflows/:x/validate` | · | ✓ | ✓ | `exo_workflow_validate` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/agent-profiles` | ✓ | · | ✓ | `exo_agent_profile_create` |
@@ -311,12 +313,12 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/work-items` | ✓ | ✓ | ✓ | `exo_work_item_create` |
-| `POST /api/workspaces/:x/workflows` | · | · | ✓ | `exo_workflow_create` |
+| `POST /api/workspaces/:x/workflows` | ✓ | · | ✓ | `exo_workflow_create` |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 
 ## Routes the browser reaches and agents do not
 
-65 of them. Each is covered by a documented exemption; the reasons
+72 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -328,6 +330,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `DELETE /api/eval-runs/:x` (reachable from MCP)
 - `DELETE /api/me/api-tokens/:x`
 - `DELETE /api/me/connections/:x`
+- `DELETE /api/workflows/:x` (reachable from MCP)
 - `DELETE /api/workspaces/:x/credentials/:x`
 - `DELETE /api/workspaces/:x/members/:x`
 - `GET /api/admin/ai-models`
@@ -354,6 +357,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/ai/conversations/:x/sources/:x`
 - `PATCH /api/eval-attempts/:x/review` (reachable from MCP)
 - `PATCH /api/eval-cases/:x` (reachable from MCP)
+- `PATCH /api/workflows/:x` (reachable from MCP)
 - `PATCH /api/workspaces/:x/members/:x`
 - `PATCH /api/workspaces/:x/settings`
 - `POST /api/admin/ai-models`
@@ -377,12 +381,17 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/invitations/preview`
 - `POST /api/me/api-tokens`
 - `POST /api/me/push/devices`
+- `POST /api/workflow-runs/:x/cancel` (reachable from MCP)
+- `POST /api/workflows/:x/activation`
+- `POST /api/workflows/:x/publish`
+- `POST /api/workflows/:x/runs` (reachable from MCP)
 - `POST /api/workspaces`
 - `POST /api/workspaces/:x/agent-profiles` (reachable from MCP)
 - `POST /api/workspaces/:x/eval-cases` (reachable from MCP)
 - `POST /api/workspaces/:x/eval-runs` (reachable from MCP)
 - `POST /api/workspaces/:x/trash/delete`
 - `POST /api/workspaces/:x/trash/deletion-preview`
+- `POST /api/workspaces/:x/workflows` (reachable from MCP)
 - `PUT /api/workspaces/:x/credentials/:x`
 
 ## Tools offered to one kind of agent only
