@@ -85,6 +85,9 @@ function childDetail() {
     events: [],
     checkpointCount: 0,
     latestCheckpointAt: null,
+    resultFields: [],
+    structuredResult: null,
+    workflow: null,
   };
 }
 

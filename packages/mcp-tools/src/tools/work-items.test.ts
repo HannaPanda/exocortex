@@ -103,6 +103,9 @@ function detail() {
     ],
     checkpointCount: 1,
     latestCheckpointAt: NOW,
+    resultFields: [],
+    structuredResult: null,
+    workflow: null,
   };
 }
 
