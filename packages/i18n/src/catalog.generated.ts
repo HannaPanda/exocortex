@@ -34,6 +34,7 @@ import de_shares from './messages/de/shares.json';
 import de_shell from './messages/de/shell.json';
 import de_ui from './messages/de/ui.json';
 import de_workItems from './messages/de/workItems.json';
+import de_workflows from './messages/de/workflows.json';
 import en_account from './messages/en/account.json';
 import en_admin from './messages/en/admin.json';
 import en_agentProfiles from './messages/en/agentProfiles.json';
@@ -67,6 +68,7 @@ import en_shares from './messages/en/shares.json';
 import en_shell from './messages/en/shell.json';
 import en_ui from './messages/en/ui.json';
 import en_workItems from './messages/en/workItems.json';
+import en_workflows from './messages/en/workflows.json';
 import es_account from './messages/es/account.json';
 import es_admin from './messages/es/admin.json';
 import es_agentProfiles from './messages/es/agentProfiles.json';
@@ -100,6 +102,7 @@ import es_shares from './messages/es/shares.json';
 import es_shell from './messages/es/shell.json';
 import es_ui from './messages/es/ui.json';
 import es_workItems from './messages/es/workItems.json';
+import es_workflows from './messages/es/workflows.json';
 import fr_account from './messages/fr/account.json';
 import fr_admin from './messages/fr/admin.json';
 import fr_agentProfiles from './messages/fr/agentProfiles.json';
@@ -133,6 +136,7 @@ import fr_shares from './messages/fr/shares.json';
 import fr_shell from './messages/fr/shell.json';
 import fr_ui from './messages/fr/ui.json';
 import fr_workItems from './messages/fr/workItems.json';
+import fr_workflows from './messages/fr/workflows.json';
 import it_account from './messages/it/account.json';
 import it_admin from './messages/it/admin.json';
 import it_agentProfiles from './messages/it/agentProfiles.json';
@@ -166,6 +170,7 @@ import it_shares from './messages/it/shares.json';
 import it_shell from './messages/it/shell.json';
 import it_ui from './messages/it/ui.json';
 import it_workItems from './messages/it/workItems.json';
+import it_workflows from './messages/it/workflows.json';
 import nl_account from './messages/nl/account.json';
 import nl_admin from './messages/nl/admin.json';
 import nl_agentProfiles from './messages/nl/agentProfiles.json';
@@ -199,6 +204,7 @@ import nl_shares from './messages/nl/shares.json';
 import nl_shell from './messages/nl/shell.json';
 import nl_ui from './messages/nl/ui.json';
 import nl_workItems from './messages/nl/workItems.json';
+import nl_workflows from './messages/nl/workflows.json';
 import pl_account from './messages/pl/account.json';
 import pl_admin from './messages/pl/admin.json';
 import pl_agentProfiles from './messages/pl/agentProfiles.json';
@@ -232,6 +238,7 @@ import pl_shares from './messages/pl/shares.json';
 import pl_shell from './messages/pl/shell.json';
 import pl_ui from './messages/pl/ui.json';
 import pl_workItems from './messages/pl/workItems.json';
+import pl_workflows from './messages/pl/workflows.json';
 import pt_BR_account from './messages/pt-BR/account.json';
 import pt_BR_admin from './messages/pt-BR/admin.json';
 import pt_BR_agentProfiles from './messages/pt-BR/agentProfiles.json';
@@ -265,8 +272,9 @@ import pt_BR_shares from './messages/pt-BR/shares.json';
 import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
+import pt_BR_workflows from './messages/pt-BR/workflows.json';
 
-export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems"] as const;
+export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems","workflows"] as const;
 
 export const CATALOG = {
   'de': {
@@ -303,6 +311,7 @@ export const CATALOG = {
     "shell": de_shell,
     "ui": de_ui,
     "workItems": de_workItems,
+    "workflows": de_workflows,
   },
   'en': {
     "account": en_account,
@@ -338,6 +347,7 @@ export const CATALOG = {
     "shell": en_shell,
     "ui": en_ui,
     "workItems": en_workItems,
+    "workflows": en_workflows,
   },
   'es': {
     "account": es_account,
@@ -373,6 +383,7 @@ export const CATALOG = {
     "shell": es_shell,
     "ui": es_ui,
     "workItems": es_workItems,
+    "workflows": es_workflows,
   },
   'fr': {
     "account": fr_account,
@@ -408,6 +419,7 @@ export const CATALOG = {
     "shell": fr_shell,
     "ui": fr_ui,
     "workItems": fr_workItems,
+    "workflows": fr_workflows,
   },
   'it': {
     "account": it_account,
@@ -443,6 +455,7 @@ export const CATALOG = {
     "shell": it_shell,
     "ui": it_ui,
     "workItems": it_workItems,
+    "workflows": it_workflows,
   },
   'nl': {
     "account": nl_account,
@@ -478,6 +491,7 @@ export const CATALOG = {
     "shell": nl_shell,
     "ui": nl_ui,
     "workItems": nl_workItems,
+    "workflows": nl_workflows,
   },
   'pl': {
     "account": pl_account,
@@ -513,6 +527,7 @@ export const CATALOG = {
     "shell": pl_shell,
     "ui": pl_ui,
     "workItems": pl_workItems,
+    "workflows": pl_workflows,
   },
   'pt-BR': {
     "account": pt_BR_account,
@@ -548,5 +563,6 @@ export const CATALOG = {
     "shell": pt_BR_shell,
     "ui": pt_BR_ui,
     "workItems": pt_BR_workItems,
+    "workflows": pt_BR_workflows,
   },
 } as const;

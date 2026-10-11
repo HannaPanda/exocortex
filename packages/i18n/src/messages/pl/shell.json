@@ -245,9 +245,13 @@
         "label": "Otwórz ewaluacje",
         "keywords": "eval evals ewaluacja ewaluacje test przypadek testowy benchmark porównanie modeli porównaj modele regresja powtórka powtórki replay mierzenie jakość koszty dostawca"
       },
+      "workflows": {
+        "label": "Otwórz przepływy pracy",
+        "keywords": "workflow workflows przepływ pracy przepływy graf orkiestracja agent agenci zatwierdzenie przebieg testowy harmonogram edytor"
+      },
       "automations": {
         "label": "Otwórz automatyzacje",
-        "keywords": "automatyzacja reguła harmonogram wyzwalacz workflow"
+        "keywords": "automatyzacja reguła harmonogram wyzwalacz webhook"
       },
       "templates": {
         "label": "Otwórz szablony",
@@ -332,6 +336,9 @@
       "workItem": "Nowe zadanie",
       "workItemHint": "Przekaż pracę osobie, agentowi lub sztucznej inteligencji",
       "workItemKeywords": "zadanie deleguj przekaż zleć agent ai ki work item",
+      "workflow": "Nowy przepływ pracy",
+      "workflowHint": "Zbuduj przepływ z wyzwalaczy, agentów, warunków i zatwierdzeń",
+      "workflowKeywords": "workflow przepływ pracy graf orkiestracja agenci automatyzacja automatyzuj zatwierdzenie",
       "fromTemplate": "Utwórz stronę z szablonu",
       "fromTemplateKeywords": "szablon template wzorzec nowa strona utwórz",
       "fromTemplatePlaceholder": "Który szablon?",

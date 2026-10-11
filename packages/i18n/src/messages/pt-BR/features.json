@@ -535,9 +535,20 @@
       "p1": "Um grafo consiste em nós e arestas. Os gatilhos são „manualmente“, um agendamento (único, diário, semanal, mensal ou como cron) ou uma alteração em páginas. Uma etapa de agente define o objetivo, páginas de contexto, perfil de agente, modo de escrita, orçamento e os campos que seu resultado deve fornecer. Uma condição ramifica com base em um desses campos, na resposta a uma aprovação ou em um valor inicial, sem consultar um modelo; „Paralelo“ abre vários ramos, „Mesclar“ aguarda todos ou o primeiro; uma aprovação pergunta a uma pessoa; um fim conclui a execução.",
       "p2": "A validação aponta cada problema com o nó ou a aresta em questão: uma aresta para o vazio, uma saída que o nó não possui, um ciclo, uma mesclagem cujos ramos são mutuamente exclusivos, uma condição para um campo que ninguém fornece ou um perfil e uma página que não pertencem a este espaço de trabalho. Um rascunho pode ser salvo incompleto, mas apenas um completo pode ser publicado.",
       "p3": "A publicação congela o rascunho como a próxima versão. Uma execução sempre lê a versão com a qual começou, mesmo que o rascunho seja modificado ou republicado depois; o banco de dados não permite mais alterar uma versão. Execuções e cada tentativa de cada nó são estados salvos, a partir dos quais é possível identificar o que pode ser executado a seguir após cada reinicialização.",
-      "p4": "Rascunhos são criados por admins do espaço de trabalho, a ativação só pode ser feita pelo owner, e uma versão surge apenas por publicação, nunca por uma ferramenta. Agentes leem workflows, versões e execuções através das ferramentas exo_workflow e validam grafos; a IA integrada até agora só pode ler workflows. A execução de uma execução é descrita em „Executar workflows“; o que uma etapa de agente faz, em „Etapas de agente em workflows“; como aprovações, mesclagem e fim funcionam, em „Aprovações e ramificações em workflows“; o editor virá na próxima etapa de desenvolvimento."
+      "p4": "Os rascunhos são criados por admins do espaço de trabalho, a ativação só pode ser feita pela pessoa proprietária (owner) e uma versão só surge por meio da publicação, nunca por uma ferramenta. Os agentes leem workflows, versões e execuções por meio das ferramentas exo_workflow e validam grafos; a IA integrada só pode ler workflows até o momento. Como uma execução é processada está descrito em „Executar workflows“; o que uma etapa de agente faz, em „Etapas de agente em workflows“; como funcionam aprovações, mesclagem e término, em „Aprovações e ramificações em workflows“; e a criação e o acompanhamento de workflows acontecem no editor (veja „Criar workflows no editor e acompanhar execuções“)."
     },
-    "where": "Por meio das ferramentas exo_workflow e da API em /api/workflows; ainda não há uma visualização própria no espaço de trabalho."
+    "where": "No espaço de trabalho em „Workflows“ (também via Strg + K e a partir de „Tarefas“), por meio das ferramentas exo_workflow e pela interface em /api/workflows."
+  },
+  "workflow-editor": {
+    "title": "Criar workflows no editor e acompanhar execuções",
+    "summary": "Um workflow é criado no navegador como um grafo: adicione nós da paleta, conecte-os e configure-os à direita, sem JSON. A validação mostra cada problema diretamente no nó afetado, uma execução de teste apenas sugere mudanças por padrão e cada execução pode ser acompanhada passo a passo em seu grafo.",
+    "details": {
+      "p1": "A paleta organiza os nós por gatilhos, trabalho e controle. Um clique anexa o novo nó após o selecionado e o conecta; arrastar posiciona-o em um espaço livre. O destino de uma saída também pode ser escolhido à direita para cada saída, permitindo fazer tudo pelo teclado: alcance os nós com Tab, selecione com Enter, mova com as teclas de seta, exclua com Delete; Strg + S salva.",
+      "p2": "Configurações de grande impacto ficam visíveis no nó: um agente mostra o modo de escrita efetivamente aplicado e, logo ao lado, o perfil e o orçamento conforme limitados em conjunto pelo perfil, espaço de trabalho e execução, e não apenas pelo nome dado no nó. Os limites do workflow são exibidos ao lado dos valores definidos pelo espaço de trabalho.",
+      "p3": "Salvar armazena o rascunho; publicar cria uma versão imutável; e a ativação ocorre em uma etapa própria, que mostra com antecedência o que passará a rodar automaticamente. Se outra pessoa tiver salvado nesse meio-tempo, o editor avisa em vez de sobrescrever algo. Uma execução de teste usa a versão publicada no ambiente real a partir de qualquer gatilho, e seus agentes apenas sugerem mudanças por padrão; para permitir que escrevam diretamente, escolha isso explicitamente e veja um aviso.",
+      "p4": "A visualização de uma execução mostra a sua versão com o caminho percorrido: o que foi concluído, o que está aguardando, o que falhou ou foi tentado novamente, sempre com ícone e texto, não apenas por cor. Para cada nó são exibidas as tentativas com duração, erro, a tarefa e a execução de IA subjacentes e o resultado estruturado, além dos custos em relação ao orçamento e ao histórico da execução. O andamento da execução é atualizado a cada poucos segundos."
+    },
+    "where": "No espaço de trabalho em „Workflows“, via Strg + K („Abrir workflows“, „Novo workflow“) e pelo link na página „Tarefas“."
   },
   "workflow-agentenschritte": {
     "title": "Etapas de agente em workflows: tarefas com resultado validado",
@@ -548,7 +559,7 @@
       "p3": "O fluxo continua quando a tarefa for concluída ou, se a etapa assim definir, logo na entrega para aprovação. Se uma proposta ainda estiver aguardando aprovação ou se o perfil exigir a aprovação por uma pessoa, o workflow também aguarda. Se a tarefa falhar, for cancelada, excluída ou ficar parada sem que nada mais esteja trabalhando nela, a etapa termina com uma mensagem clara.",
       "p4": "Aguardar não consome nenhum worker: a etapa é acionada assim que a tarefa é alterada, e uma verificação a cada minuto recupera o que eventualmente se perder. O custo da tarefa e de suas subtarefas é debitado do orçamento da execução; etapas paralelas reservam sua parte com antecedência para que, juntas, não gastem mais do que o permitido para a execução."
     },
-    "where": "No grafo do workflow como nó do tipo agent; a tarefa criada fica em „Tarefas”, com a indicação de qual etapa de workflow ela se originou."
+    "where": "No editor de workflows como nó „Agente“; a tarefa criada é listada em „Tarefas“ com a indicação de qual etapa do workflow ela se originou."
   },
   "workflow-freigaben": {
     "title": "Aprovações e ramificações em workflows",
@@ -559,7 +570,7 @@
       "p3": "Uma condição decide sem modelo, com base em um campo de uma etapa de agente, de uma aprovação ou de um valor inicial da execução, como o evento que a acionou. „Mesclar“ aguarda todos os ramos ou continua no primeiro; no segundo caso, outro ramo que tenha falhado não faz a execução falhar.",
       "p4": "Um fim encerra a execução imediatamente com seu resultado: com sucesso, com falha ou cancelada, e com um resumo, se houver. O que ainda estiver em execução em outros ramos é cancelado. Se uma execução terminar antes que alguém tenha respondido, sua aprovação aberta em „Aguardando você“ será marcada como obsoleta."
     },
-    "where": "Em „Aguardando você“ para responder; no grafo por meio das ferramentas exo_workflow, que descrevem os tipos de nó „approval“, „condition“, „join“ e „end“. Ainda não há uma visualização própria para workflows."
+    "where": "Em „Aguardando você“ para a resposta; no editor de workflows como nós „Aprovação“, „Condição“, „Mesclagem“ e „Fim“, e pelas ferramentas exo_workflow."
   },
   "workflow-laeufe": {
     "title": "Executar fluxos de trabalho, mesmo após reiniciar",
@@ -570,7 +581,7 @@
       "p3": "Limites controlam a execução: no máximo tantas etapas, tantas em simultâneo, tanto tempo no total e tanto custo quanto permitido pelas configurações em „Fluxos de trabalho“. Um fluxo de trabalho pode tornar cada limite mais restrito, nunca mais amplo, e a execução adota o valor mais rigoroso ao iniciar. O interruptor principal „Fluxos de trabalho ativados“ vem desativado por padrão e também pausa execuções em andamento no próximo passo.",
       "p4": "Um fluxo de trabalho nunca dispara a partir de uma alteração feita por ele mesmo, e uma cadeia de automações e fluxos de trabalho para após três elos. Uma execução iniciada automaticamente age em nome de quem ativou o fluxo de trabalho. O histórico de uma execução registra qual nó rodou, aguardou, falhou ou foi ignorado, em qual momento, e qual transição foi seguida; conteúdos de páginas não aparecem nele. Quem for admin pode iniciar e cancelar via exo_workflow_run_start e exo_workflow_run_cancel; a IA integrada só pode consultar execuções."
     },
-    "where": "Via exo_workflow_run_start, exo_workflow_run_cancel e exo_workflow_run_get ou pela interface em /api/workflows/…/runs; os limites ficam nas configurações em „Fluxos de trabalho“. Ainda não há uma visualização dedicada no espaço de trabalho."
+    "where": "No editor de workflows por „Execução de teste“ e pela aba „Execuções“, via exo_workflow_run_start, exo_workflow_run_cancel e exo_workflow_run_get ou pela interface em /api/workflows/…/runs; os limites estão nas configurações em „Workflows“."
   },
   "ki-chat": {
     "title": "Conversar com um modelo sobre as suas páginas",

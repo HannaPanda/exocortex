@@ -535,9 +535,20 @@
       "p1": "Graf składa się z węzłów i krawędzi. Wyzwalaczami są „ręcznie”, harmonogram (jednorazowy, codzienny, cotygodniowy, comiesięczny lub jako cron) albo zmiana na stronach. Krok agenta określa cel, strony kontekstu, profil agenta, tryb zapisu, budżet oraz pola, które musi zwrócić jego wynik. Warunek rozgałęzia przepływ na podstawie jednego z tych pól, odpowiedzi na zatwierdzenie lub wartości początkowej, bez pytania modelu; „Równolegle” otwiera wiele gałęzi, „Scal” czeka na wszystkie lub na pierwszą; zatwierdzenie pyta człowieka; koniec zamyka bieg.",
       "p2": "Weryfikacja wskazuje każdy problem z danym węzłem lub krawędzią: krawędź prowadzącą donikąd, wyjście, którego węzeł nie posiada, cykl, scalanie, którego gałęzie wzajemnie się wykluczają, warunek oparty na polu, którego nikt nie dostarcza, lub profil i stronę nienależące do tego obszaru roboczego. Wersję roboczą można zapisać jako niekompletną, ale publikowana jest tylko wersja kompletna.",
       "p3": "Publikacja zamraża wersję roboczą jako kolejną wersję. Przebieg zawsze odczytuje wersję, z którą się rozpoczął, nawet jeśli wersja robocza zostanie potem zmieniona lub ponownie opublikowana; baza danych w ogóle nie pozwala już na modyfikację wersji. Przebiegi oraz każda próba każdego węzła stanowią zapisany stan, z którego po każdym restarcie można odczytać, co może zostać uruchomione w następnej kolejności.",
-      "p4": "Wersje robocze tworzą administratorzy obszaru roboczego, włączyć może go tylko właściciel, a wersja powstaje wyłącznie przez publikację, nigdy przez narzędzie. Agenci odczytują przepływy pracy, wersje i biegi za pomocą narzędzi exo_workflow oraz sprawdzają grafy; wbudowana AI może na razie tylko czytać przepływy pracy. To, jak wykonywany jest bieg, opisuje „Wykonywanie przepływów pracy”; co robi krok agenta – „Kroki agenta w przepływach pracy”; jak działają zatwierdzenia, scalanie i koniec – „Zatwierdzenia i rozgałęzienia w przepływach pracy”; edytor pojawi się w kolejnym etapie rozwoju."
+      "p4": "Szkice tworzą administratorzy obszaru roboczego, włączyć workflow może tylko właściciel, a wersja powstaje wyłącznie przez publikację – nigdy przez narzędzie. Agenci odczytują workflowy, wersje i uruchomienia przez narzędzia exo_workflow oraz sprawdzają grafy; wbudowana sztuczna inteligencja może na razie tylko odczytywać workflowy. Sposób wykonywania uruchomienia opisuje sekcja „Wykonywanie workflowów”; działanie kroku agenta – „Kroki agenta w workflowach”; funkcjonowanie zatwierdzeń, scalania i zakończenia – „Zatwierdzenia i rozgałęzienia w workflowach”; budowanie i śledzenie workflowów odbywa się w edytorze (zobacz „Budowanie workflowów w edytorze i śledzenie uruchomień”)."
     },
-    "where": "Za pomocą narzędzi exo_workflow oraz interfejsu pod adresem /api/workflows; dedykowany widok w obszarze roboczym jeszcze nie istnieje."
+    "where": "W obszarze roboczym w sekcji „Workflowy” (również przez Strg + K i z poziomu „Zadania”), przez narzędzia exo_workflow oraz przez interfejs pod adresem /api/workflows."
+  },
+  "workflow-editor": {
+    "title": "Budowanie workflowów w edytorze i śledzenie uruchomień",
+    "summary": "Workflow powstaje w przeglądarce jako graf: dodawaj węzły z palety, łącz je i konfiguruj po prawej stronie – bez pisania JSON-a. Walidacja wskazuje każdy problem przy danym węźle, przebieg próbny domyślnie tylko proponuje zmiany, a każde uruchomienie można śledzić krok po kroku na jego grafie.",
+    "details": {
+      "p1": "Paleta grupuje węzły według wyzwalaczy, pracy i sterowania. Kliknięcie dołącza nowy węzeł za zaznaczonym i tworzy połączenie, a przeciągnięcie umieszcza go w pustym miejscu. Cel każdego wyjścia można też wybrać po prawej stronie, dzięki czemu wszystko da się obsłużyć z klawiatury: przechodź między węzłami za pomocą Tab, wybieraj klawiszem Enter, przesuwaj strzałkami i usuwaj klawiszem Delete; Strg + S zapisuje zmiany.",
+      "p2": "Istotne ustawienia są widoczne bezpośrednio na węźle: agent pokazuje rzeczywiście obowiązujący tryb zapisu, a tuż obok profil i budżet – tak jak wspólnie ograniczają je profil, obszar roboczy i uruchomienie, a nie tylko jak określa je sam węzeł. Limity workflowu są wyświetlane obok wartości zdefiniowanych przez obszar roboczy.",
+      "p3": "Zapisywany jest szkic, publikowana jest niezmienna wersja, a włączenie następuje w osobnym kroku, który wcześniej pokazuje, co będzie uruchamiać się automatycznie. Jeśli w międzyczasie ktoś inny zapisze zmiany, edytor poinformuje o tym zamiast nadpisywać dane. Przebieg próbny wykonuje opublikowaną wersję w rzeczywistym środowisku uruchomieniowym z dowolnego wyzwalacza, a jego agenci domyślnie tylko proponują zmiany; aby pozwolić im na bezpośredni zapis, trzeba to wyraźnie wybrać i potwierdzić ostrzeżenie.",
+      "p4": "Widok uruchomienia przedstawia jego wersję wraz z przebytą ścieżką: co zostało ukończone, co oczekuje, co zakończyło się błędem lub zostało ponowione – za każdym razem za pomocą symbolu i słowa, nie tylko koloru. Przy każdym węźle widać jego próby wraz z czasem trwania, błędem, powiązanym zadaniem i przebiegiem AI oraz ustrukturyzowanym wynikiem, a także koszty w odniesieniu do budżetu i historię uruchomienia. Bieżący stan uruchomienia jest odświeżany co kilka sekund."
+    },
+    "where": "W obszarze roboczym w sekcji „Workflowy”, przez Strg + K („Otwórz workflowy”, „Nowy workflow”) oraz przez link na stronie „Zadania”."
   },
   "workflow-agentenschritte": {
     "title": "Kroki agenta w przepływach pracy: zadania ze sprawdzonym wynikiem",
@@ -548,7 +559,7 @@
       "p3": "Przejście dalej następuje po ukończeniu zadania lub – jeśli krok tego wymaga – już w momencie przekazania do akceptacji. Jeśli jakaś propozycja nadal czeka na udostępnienie lub profil wymaga zatwierdzenia przez człowieka, przepływ pracy również czeka. Jeśli zadanie zakończy się niepowodzeniem, zostanie przerwane lub usunięte, albo zatrzyma się i nic już nad nim nie pracuje, krok kończy się jasnym komunikatem.",
       "p4": "Oczekiwanie nie zajmuje workera: krok budzi się, gdy tylko zadanie ulegnie zmianie, a cominutowa weryfikacja wyłapuje to, co mogłoby zostać utracone. Koszt zadania wraz z podzadaniami wlicza się do budżetu uruchomienia; kroki równoległe rezerwują swoją część z wyprzedzeniem, aby łącznie nie wydać więcej, niż pozwala na to uruchomienie."
     },
-    "where": "W grafie przepływu pracy jako węzeł typu agent; utworzone zadanie znajduje się w sekcji „Zadania” wraz z informacją, z którego kroku przepływu pracy pochodzi."
+    "where": "W edytorze workflow jako węzeł „Agent”; utworzone zadanie znajduje się w sekcji „Zadania” z informacją, z którego kroku workflowu pochodzi."
   },
   "workflow-freigaben": {
     "title": "Zatwierdzenia i rozgałęzienia w przepływach pracy",
@@ -559,7 +570,7 @@
       "p3": "Warunek decyduje bez użycia modelu, na podstawie pola z kroku agenta, zatwierdzenia lub wartości początkowej biegu, na przykład zdarzenia, które go wywołało. „Scal” czeka albo na wszystkie gałęzie, albo kontynuuje przy pierwszej; w tym drugim przypadku niepowodzenie innej gałęzi nie przerywa biegu.",
       "p4": "Koniec natychmiast kończy bieg z jego wynikiem – sukcesem, niepowodzeniem lub anulowaniem – oraz z podsumowaniem, jeśli zostało podane. To, co jeszcze działa na innych gałęziach, zostaje anulowane. Jeśli bieg zakończy się, zanim ktoś odpowie, jego otwarte zatwierdzenie w sekcji „Czeka na ciebie” zostanie oznaczone jako bezprzedmiotowe."
     },
-    "where": "W sekcji „Czeka na ciebie” dla odpowiedzi; w grafie za pośrednictwem narzędzi exo_workflow, które opisują typy węzłów „approval”, „condition”, „join” i „end”. Osobny widok dla przepływów pracy jeszcze nie istnieje."
+    "where": "W sekcji „Czeka na ciebie”, aby odpowiedzieć; w edytorze workflow jako węzły „Zatwierdzenie”, „Warunek”, „Scalenie” i „Koniec”, a także przez narzędzia exo_workflow."
   },
   "workflow-laeufe": {
     "title": "Uruchamianie workflowów, nawet po restarcie",
@@ -570,7 +581,7 @@
       "p3": "Limity zatrzymują przebieg: maksymalnie tyle kroków, tyle jednocześnie, łączny czas i koszt, na ile pozwalają ustawienia w sekcji „Workflowy”. Workflow może zaostrzyć każdy limit, ale nigdy go rozszerzyć, a przebieg przyjmuje przy starcie bardziej rygorystyczną wartość. Główny przełącznik „Workflowy włączone” jest domyślnie wyłączony i wstrzymuje również trwające przebiegi przy kolejnym kroku.",
       "p4": "Workflow nigdy nie uruchamia się w wyniku zmiany, którą sam wprowadził, a łańcuch automatyzacji i workflowów kończy się po trzech ogniwach. Przebieg uruchomiony automatycznie działa w imieniu osoby, która włączyła dany workflow. Historia przebiegu rejestruje, który węzeł kiedy działał, czekał, zakończył się błędem lub został pominięty oraz którą krawędź wybrano; treść stron nie jest w niej zapisywana. Uruchamiać i anulować mogą administratorzy za pomocą exo_workflow_run_start i exo_workflow_run_cancel; wbudowana sztuczna inteligencja może przebiegi tylko odczytywać."
     },
-    "where": "Za pomocą exo_workflow_run_start, exo_workflow_run_cancel i exo_workflow_run_get lub przez interfejs pod /api/workflows/…/runs; limity znajdują się w ustawieniach w sekcji „Workflowy”. Dedykowany widok w obszarze roboczym jeszcze nie istnieje."
+    "where": "W edytorze workflow przez przycisk „Przebieg próbny” i zakładkę „Uruchomienia”, przez exo_workflow_run_start, exo_workflow_run_cancel i exo_workflow_run_get lub przez interfejs pod adresem /api/workflows/…/runs; limity znajdują się w ustawieniach w sekcji „Workflowy”."
   },
   "ki-chat": {
     "title": "Rozmowa z modelem o twoich stronach",

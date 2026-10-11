@@ -535,9 +535,20 @@
       "p1": "A graph consists of nodes and edges. Triggers are “manual”, a schedule (once, daily, weekly, monthly, or as a cron expression), or a change to pages. An agent step specifies a goal, context pages, agent profile, write mode, budget, and the fields its result must provide. A condition branches based on one of these fields, the response to an approval, or an initial value, without asking a model; “Parallel” opens multiple branches, “Join” waits for all branches or the first one; an approval asks a human; an end completes the run.",
       "p2": "Validation reports every issue alongside the node or edge involved: an edge leading nowhere, an exit the node does not have, a cycle, a merge whose branches are mutually exclusive, a condition on a field that no one provides, or a profile and page that do not belong to this workspace. A draft may be saved in an incomplete state, but only a complete one can be published.",
       "p3": "Publishing freezes the draft as the next version. A run always reads the version it started with, even if the draft is modified or republished afterwards; the database does not allow modifying a version at all. Runs and every attempt of each node are saved state, from which what can run next can be determined after every restart.",
-      "p4": "Drafts are written by workspace admins, only the owner may enable it, and a version is created solely through publishing, never by a tool. Agents read workflows, versions, and runs via the exo_workflow tools and validate graphs; the built-in AI may currently only read workflows. How a run executes is described in “Running workflows”; what an agent step does, in “Agent steps in workflows”; how approvals, join, and end work, in “Approvals and branches in workflows”; the editor will follow in the next release stage."
+      "p4": "Drafts are written by workspace admins, only the owner may enable them, and a version is only created by publishing, never by a tool. Agents read workflows, versions, and runs via the exo_workflow tools and validate graphs; the built-in AI can only read workflows so far. How a run is executed is described in “Run workflows”; what an agent step does, in “Agent steps in workflows”; how approvals, merging, and ending work, in “Approvals and branches in workflows”; workflows are built and tracked in the editor (see “Build workflows in the editor and track runs”)."
     },
-    "where": "Via the exo_workflow tools and the interface at /api/workflows; a dedicated view in the workspace does not exist yet."
+    "where": "In the workspace under “Workflows” (also via Strg + K and from “Jobs”), via the exo_workflow tools, and through the API at /api/workflows."
+  },
+  "workflow-editor": {
+    "title": "Build workflows in the editor and track runs",
+    "summary": "A workflow is created in the browser as a graph: add nodes from the palette, connect them, and configure them on the right, without JSON. Validation shows every issue on the affected node, a test run only suggests by default, and a run can be tracked step by step on its graph.",
+    "details": {
+      "p1": "The palette organizes nodes by triggers, work, and control. Clicking appends the new node after the selected one and connects it, while dragging places it on an empty spot. Where an output leads can also be chosen on the right for each output, so everything works via keyboard too: reach nodes with Tab, select with Enter, move with the arrow keys, delete with Delete; Strg + S saves.",
+      "p2": "High-impact settings are visible directly on the node: an agent shows the write mode that actually applies, and right next to it the profile and budget as constrained together by profile, workspace, and run, not just how the node names them. The workflow’s limits appear alongside the values specified by the workspace.",
+      "p3": "Saving stores the draft, publishing creates an immutable version, and enabling happens in a separate step that previews what will then run automatically. If someone else has saved in the meantime, the editor lets you know instead of overwriting anything. A test run takes the published version on the real runtime, starting from any trigger, and its agents only suggest by default; if you want them to write directly, you must choose so explicitly and will see a warning.",
+      "p4": "The run view shows its version along with the path taken: what is finished, what is waiting, what failed or was retried, each with an icon and word, not just color. For each node, you find its attempts with duration, error, the job and AI run behind it, and the structured result, plus costs compared to the budget and the run history. Whatever a run is still doing updates every few seconds."
+    },
+    "where": "In the workspace under “Workflows”, via Strg + K (“Open workflows”, “New workflow”), and via the link on the “Jobs” page."
   },
   "workflow-agentenschritte": {
     "title": "Agent steps in workflows: Tasks with verified results",
@@ -548,7 +559,7 @@
       "p3": "It continues once the task is finished or, if the step is configured that way, already upon submission for review. If a suggestion is still awaiting approval or the profile requires human approval, the workflow waits as well. If the task fails, is cancelled or deleted, or stalls without anything actively working on it, the step ends with a clear message.",
       "p4": "Waiting does not occupy a worker: the step wakes up as soon as the task changes, and a minute-by-minute check catches anything that might get lost. Whatever the task and its subtasks cost counts against the run’s budget; parallel steps reserve their share beforehand so that together they do not spend more than the run allows."
     },
-    "where": "In the workflow graph as a node of type agent; the created task is listed under “Tasks” with a note indicating which workflow step it originates from."
+    "where": "In the workflow editor as an “Agent” node; the created job is listed under “Jobs” with a note indicating which workflow step it came from."
   },
   "workflow-freigaben": {
     "title": "Approvals and branches in workflows",
@@ -559,7 +570,7 @@
       "p3": "A condition decides without a model, based on a field from an agent step, an approval, or an initial value of the run, such as the event that triggered it. “Join” either waits for all branches or proceeds on the first one; in the latter case, a failed alternate branch does not cause the run to fail.",
       "p4": "An end immediately terminates the run with its result—successful, failed, or cancelled—and with a summary, if it has one. Anything still running on other branches is cancelled. If a run ends before anyone has responded, its pending approval in “Waiting on you” is marked as obsolete."
     },
-    "where": "In “Waiting on you” for the response; in the graph via the exo_workflow tools, which describe the node types “approval”, “condition”, “join”, and “end”. A dedicated view for workflows does not yet exist."
+    "where": "In “Waiting on you” for the response; in the workflow editor as “Approval”, “Condition”, “Merge”, and “End” nodes, and via the exo_workflow tools."
   },
   "workflow-laeufe": {
     "title": "Run workflows, even across restarts",
@@ -570,7 +581,7 @@
       "p3": "Limits stop a run: at most as many steps, as many concurrently, as long in total, and as much cost as permitted by the settings under “Workflows”. A workflow can tighten any limit, never loosen it, and a run adopts the stricter value at launch. The master switch “Workflows enabled” is off by default and also pauses running runs at the next step.",
       "p4": "A workflow never triggers from a change it made itself, and a chain of automations and workflows ends after three links. An automatically triggered run acts on behalf of the person who turned the workflow on. The run history records which node ran, waited, failed, or was skipped at what time, and which edge was taken; page contents are not included. Admins may start and cancel runs via exo_workflow_run_start and exo_workflow_run_cancel; the built-in AI may only read runs."
     },
-    "where": "Via exo_workflow_run_start, exo_workflow_run_cancel, and exo_workflow_run_get or the API at /api/workflows/…/runs; the limits are located in settings under “Workflows”. A dedicated view in the workspace is not yet available."
+    "where": "In the workflow editor via “Test run” and the “Runs” tab, via exo_workflow_run_start, exo_workflow_run_cancel, and exo_workflow_run_get, or through the API at /api/workflows/…/runs; the limits can be found in the settings under “Workflows”."
   },
   "ki-chat": {
     "title": "Talk with a model about your pages",

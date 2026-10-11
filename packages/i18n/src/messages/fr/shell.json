@@ -245,9 +245,13 @@
         "label": "Ouvrir les évals",
         "keywords": "éval évals test cas de test benchmark comparatif de modèles comparer modèles régression replay mesurer qualité coûts fournisseur"
       },
+      "workflows": {
+        "label": "Ouvrir les workflows",
+        "keywords": "workflow workflows flux graphe orchestration agent agents approbation essai planification éditeur"
+      },
       "automations": {
         "label": "Ouvrir les automatisations",
-        "keywords": "automatisation règle planification déclencheur workflow"
+        "keywords": "automatisation règle planification déclencheur webhook"
       },
       "templates": {
         "label": "Ouvrir les modèles",
@@ -332,6 +336,9 @@
       "workItem": "Nouvelle tâche",
       "workItemHint": "Confier du travail à une personne, un agent ou l’IA",
       "workItemKeywords": "tâche mission déléguer confier faire faire agent ia work item",
+      "workflow": "Nouveau workflow",
+      "workflowHint": "Construire un flux avec des déclencheurs, des agents, des conditions et des approbations",
+      "workflowKeywords": "workflow flux graphe orchestration agents automatiser approbation",
       "fromTemplate": "Créer une page à partir d’un modèle",
       "fromTemplateKeywords": "modèle template nouveau page créer",
       "fromTemplatePlaceholder": "Quel modèle ?",

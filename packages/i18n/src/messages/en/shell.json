@@ -245,9 +245,13 @@
         "label": "Open evals",
         "keywords": "eval evals test testcase benchmark model comparison compare models regression replay measure quality cost provider"
       },
+      "workflows": {
+        "label": "Open workflows",
+        "keywords": "workflow workflows sequence flow graph orchestration agent agents approval test run dry run schedule editor"
+      },
       "automations": {
         "label": "Open automations",
-        "keywords": "automation rule schedule trigger workflow"
+        "keywords": "automation rule schedule trigger webhook"
       },
       "templates": {
         "label": "Open templates",
@@ -332,6 +336,9 @@
       "workItem": "New work item",
       "workItemHint": "Hand off work to a person, an agent, or the AI",
       "workItemKeywords": "work item task delegate hand off have completed agent ai work item",
+      "workflow": "New workflow",
+      "workflowHint": "Build a flow of triggers, agents, conditions, and approvals",
+      "workflowKeywords": "workflow flow sequence graph orchestration agents automate approval",
       "fromTemplate": "Create page from template",
       "fromTemplateKeywords": "template pattern new page create",
       "fromTemplatePlaceholder": "Which template?",

@@ -245,9 +245,13 @@
         "label": "Evals openen",
         "keywords": "eval evals test testcase benchmark modelvergelijking modellen vergelijken regressie replay meten kwaliteit kosten provider aanbieder"
       },
+      "workflows": {
+        "label": "Workflows openen",
+        "keywords": "workflow workflows proces graaf orkestratie agent agenten goedkeuring proefdraaien planning editor"
+      },
       "automations": {
         "label": "Automatiseringen openen",
-        "keywords": "automatisering regel schema trigger workflow"
+        "keywords": "automatisering regel planning trigger webhook"
       },
       "templates": {
         "label": "Sjablonen openen",
@@ -332,6 +336,9 @@
       "workItem": "Nieuwe opdracht",
       "workItemHint": "Werk overdragen aan een persoon, een agent of de AI",
       "workItemKeywords": "opdracht taak delegeren overdragen laten uitvoeren agent ai work item",
+      "workflow": "Nieuwe workflow",
+      "workflowHint": "Een proces bouwen met triggers, agenten, voorwaarden en goedkeuringen",
+      "workflowKeywords": "workflow proces graaf orkestratie agenten automatiseren goedkeuring",
       "fromTemplate": "Pagina maken van sjabloon",
       "fromTemplateKeywords": "sjabloon template voorbeeld nieuw pagina maken",
       "fromTemplatePlaceholder": "Welk sjabloon?",

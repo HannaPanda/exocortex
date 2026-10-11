@@ -535,9 +535,20 @@
       "p1": "Een graaf bestaat uit knooppunten en verbindingen. Triggers zijn „handmatig”, een schema (eenmalig, dagelijks, wekelijks, maandelijks of als cron) of een wijziging aan pagina’s. Een agentstap specificeert het doel, contextpagina’s, agentprofiel, de schrijfmodus, het budget en de velden die het resultaat moet opleveren. Een voorwaarde vertakt op basis van een van deze velden, het antwoord op een goedkeuring of een startwaarde, zonder een model te raadplegen; „Parallel” opent meerdere takken, „Samenvoegen” wacht op alle of de eerste; een goedkeuring vraagt een mens; een einde rondt de uitvoering af.",
       "p2": "De validatie vermeldt elk probleem met het betreffende knooppunt of de betreffende verbinding: een verbinding naar het niets, een uitgang die het knooppunt niet heeft, een lus, een samenvoeging waarvan de takken elkaar wederzijds uitsluiten, een voorwaarde op een veld dat niemand oplevert, of een profiel en pagina die niet bij deze werkruimte horen. Een concept mag onvolledig worden opgeslagen, maar publiceren kan alleen als het volledig is.",
       "p3": "Publiceren bevriest het concept als volgende versie. Een uitvoering leest altijd de versie waarmee deze is gestart, zelfs als het concept daarna wordt gewijzigd of opnieuw wordt gepubliceerd; de database staat het überhaupt niet meer toe om een versie te wijzigen. Uitvoeringen en elke poging van elk knooppunt vormen opgeslagen status, waaruit na elke herstart kan worden afgelezen wat er als volgende kan draaien.",
-      "p4": "Concepten worden geschreven door admins van de werkruimte, inschakelen mag alleen de eigenaar, en een versie ontstaat uitsluitend door publicatie, nooit via een tool. Agents lezen workflows, versies en uitvoeringen via de exo_workflow-tools en controleren grafen; de ingebouwde AI mag workflows voorlopig alleen lezen. Hoe een uitvoering verloopt, beschrijft „Workflows uitvoeren”; wat een agentstap doet, „Agentstappen in workflows”; hoe goedkeuringen, samenvoegen en einde werken, „Goedkeuringen en vertakkingen in workflows”; de editor volgt in de volgende ontwikkelfase."
+      "p4": "Ontwerpen worden geschreven door admins van de werkruimte, inschakelen mag alleen de eigenaar, en een versie ontstaat alleen door te publiceren, nooit via een tool. Agents lezen workflows, versies en runs via de exo_workflow-tools en controleren grafen; de ingebouwde AI mag workflows tot nu toe alleen lezen. Hoe een run wordt uitgevoerd, beschrijft „Workflows uitvoeren”; wat een agent-stap doet, „Agent-stappen in workflows”; hoe goedkeuringen, samenvoegen en beëindigen werken, „Goedkeuringen en vertakkingen in workflows”; workflows worden gebouwd en gevolgd in de editor (zie „Workflows in de editor bouwen en runs volgen”)."
     },
-    "where": "Via de exo_workflow-tools en de interface onder /api/workflows; een eigen weergave in de werkruimte is er nog niet."
+    "where": "In de werkruimte onder „Workflows” (ook via Strg + K en vanuit „Taken”), via de exo_workflow-tools en de API onder /api/workflows."
+  },
+  "workflow-editor": {
+    "title": "Workflows in de editor bouwen en runs volgen",
+    "summary": "Een workflow ontstaat in de browser als een graaf: knooppunten toevoegen vanuit het palet, verbinden en rechts instellen, zonder JSON. De validatie toont elk probleem bij het betreffende knooppunt, een proefuitvoering doet standaard alleen voorstellen en een run kan stap voor stap op zijn graaf worden gevolgd.",
+    "details": {
+      "p1": "Het palet deelt knooppunten in op triggers, werk en besturing. Eén klik plaatst het nieuwe knooppunt achter het geselecteerde en verbindt het; slepen zet het op een vrije plek. Waar een uitgang naartoe leidt, kun je ook rechts voor elke uitgang kiezen, daarom werkt alles ook met het toetsenbord: knooppunten bereiken met Tab, selecteren met Enter, verplaatsen met de pijltjestoetsen, verwijderen met Delete; Strg + S slaat op.",
+      "p2": "Ingrijpende instellingen staan zichtbaar op het knooppunt: een agent toont de schrijfmodus die daadwerkelijk geldt, en daarnaast profiel en budget, zoals profiel, werkruimte en run ze samen beperken, niet alleen zoals het knooppunt ze noemt. De limieten van de workflow staan naast de waarden die de werkruimte voorschrijft.",
+      "p3": "Opgeslagen wordt het ontwerp, gepubliceerd een onveranderlijke versie; inschakelen gebeurt in een aparte stap die vooraf toont wat er daarna vanzelf draait. Heeft iemand anders intussen opgeslagen, dan meldt de editor dat in plaats van iets te overschrijven. Een proefuitvoering gebruikt de gepubliceerde versie op de echte runtime, vanaf elke trigger, en zijn agents doen standaard alleen voorstellen; wie ze zelf wil laten schrijven, kiest dat uitdrukkelijk en ziet een waarschuwing.",
+      "p4": "De weergave van een run toont zijn versie met het gevolgde pad: wat voltooid is, wat wacht, wat mislukt is of opnieuw geprobeerd werd, telkens met symbool en woord, niet alleen met kleur. Bij elk knooppunt staan de pogingen met duur, fout, de taak en de AI-run erachter en het gestructureerde resultaat, plus kosten ten opzichte van het budget en het verloop van de run. Wat een run nog doet, wordt elke paar seconden opnieuw uitgelezen."
+    },
+    "where": "In de werkruimte onder „Workflows”, via Strg + K („Workflows openen”, „Nieuwe workflow”) en via de link op de pagina „Taken”."
   },
   "workflow-agentenschritte": {
     "title": "Agent-stappen in workflows: taken met gecontroleerd resultaat",
@@ -548,7 +559,7 @@
       "p3": "Het proces gaat verder wanneer de taak is voltooid of, als de stap dat wil, al bij het indienen ter goedkeuring. Wacht er nog een voorstel op deling of vereist het profiel goedkeuring door een mens, dan wacht ook de workflow. Mislukt de taak, wordt deze afgebroken of verwijderd, of staat hij stil zonder dat er nog iets aan werkt, dan eindigt de stap met een duidelijke melding.",
       "p4": "Wachten bezet geen worker: de stap wordt wakker zodra de taak verandert, en een controle per minuut vangt op wat daarbij verloren gaat. Wat de taak inclusief deeltaken kost, telt mee voor het budget van de run; parallelle stappen reserveren hun aandeel vooraf, zodat ze samen niet meer uitgeven dan de run mag."
     },
-    "where": "In de workflowgraaf als node van het type agent; de aangemaakte taak staat onder „Taken” met de vermelding uit welke workflowstap deze afkomstig is."
+    "where": "In de workflow-editor als knooppunt „Agent”; de aangemaakte taak staat onder „Taken” met de vermelding uit welke workflow-stap deze afkomstig is."
   },
   "workflow-freigaben": {
     "title": "Goedkeuringen en vertakkingen in workflows",
@@ -559,7 +570,7 @@
       "p3": "Een voorwaarde beslist zonder model, op basis van een veld uit een agentstap, een goedkeuring of een startwaarde van de uitvoering, zoals de gebeurtenis die deze heeft getriggerd. „Samenvoegen” wacht ofwel op alle takken of gaat verder bij de eerste; in het tweede geval zorgt een mislukte andere tak er niet voor dat de uitvoering faalt.",
       "p4": "Een einde beëindigt de uitvoering direct met het bijbehorende resultaat: geslaagd, mislukt of geannuleerd, en met een samenvatting als die er is. Wat op andere takken nog loopt, wordt geannuleerd. Eindigt een uitvoering voordat iemand heeft geantwoord, dan wordt de openstaande goedkeuring in „Wacht op jou” gemarkeerd als vervallen."
     },
-    "where": "In „Wacht op jou” voor het antwoord; in de graaf via de exo_workflow-tools, die de knooppunttypen „approval”, „condition”, „join” en „end” beschrijven. Een eigen weergave voor workflows is er nog niet."
+    "where": "In „Wacht op jou” voor het antwoord; in de workflow-editor als de knooppunten „Goedkeuring”, „Voorwaarde”, „Samenvoeging” en „Einde”, en via de exo_workflow-tools."
   },
   "workflow-laeufe": {
     "title": "Workflows uitvoeren, ook na een herstart",
@@ -570,7 +581,7 @@
       "p3": "Limieten houden een run tegen: hoogstens zoveel stappen, zoveel gelijktijdig, zolang in totaal en zoveel geld als de instellingen onder „Workflows” toestaan. Een workflow kan elke limiet strenger instellen, nooit ruimer, en een run neemt bij de start de strengere waarde over. De hoofdschakelaar „Workflows geactiveerd” staat standaard uit en pauzeert ook actieve runs bij de volgende stap.",
       "p4": "Een workflow start nooit door een wijziging die hij zelf heeft gedaan, en een keten van automatiseringen en workflows eindigt na drie schakels. Een automatisch gestarte run handelt namens de persoon die de workflow heeft ingeschakeld. De geschiedenis van een run legt vast welke knoop wanneer draaide, wachtte, mislukte of werd overgeslagen en welke verbinding is gekozen; inhoud van pagina’s staat er niet in. Starten en annuleren mogen admins, via exo_workflow_run_start en exo_workflow_run_cancel; de ingebouwde AI mag runs alleen lezen."
     },
-    "where": "Via exo_workflow_run_start, exo_workflow_run_cancel en exo_workflow_run_get of de interface onder /api/workflows/…/runs; de limieten staan in de instellingen onder „Workflows”. Een eigen weergave in de werkruimte is er nog niet."
+    "where": "In de workflow-editor via „Proefuitvoering” en het tabblad „Runs”, via exo_workflow_run_start, exo_workflow_run_cancel en exo_workflow_run_get of de API onder /api/workflows/…/runs; de limieten staan in de instellingen onder „Workflows”."
   },
   "ki-chat": {
     "title": "Met een model over je pagina’s praten",

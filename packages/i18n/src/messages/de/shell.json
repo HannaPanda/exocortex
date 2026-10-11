@@ -245,9 +245,13 @@
         "label": "Evals öffnen",
         "keywords": "eval evals test testfall benchmark modellvergleich modelle vergleichen regression replay messen qualität kosten anbieter"
       },
+      "workflows": {
+        "label": "Workflows öffnen",
+        "keywords": "workflow workflows ablauf graph orchestrierung agent agenten freigabe probelauf zeitplan editor"
+      },
       "automations": {
         "label": "Automationen öffnen",
-        "keywords": "automation regel zeitplan auslöser workflow"
+        "keywords": "automation regel zeitplan auslöser webhook"
       },
       "templates": {
         "label": "Vorlagen öffnen",
@@ -332,6 +336,9 @@
       "workItem": "Neuer Auftrag",
       "workItemHint": "Arbeit an eine Person, einen Agenten oder die KI übergeben",
       "workItemKeywords": "auftrag aufgabe delegieren übergeben erledigen lassen agent ki work item",
+      "workflow": "Neuer Workflow",
+      "workflowHint": "Einen Ablauf aus Auslösern, Agenten, Bedingungen und Freigaben bauen",
+      "workflowKeywords": "workflow ablauf graph orchestrierung agenten automatisieren freigabe",
       "fromTemplate": "Seite aus Vorlage erstellen",
       "fromTemplateKeywords": "vorlage template muster neu seite erstellen",
       "fromTemplatePlaceholder": "Welche Vorlage?",

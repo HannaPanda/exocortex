@@ -245,9 +245,13 @@
         "label": "Abrir evaluaciones",
         "keywords": "eval evals evaluación evaluaciones prueba caso de prueba benchmark comparar modelos comparación de modelos regresión replay medir calidad coste costes proveedor proveedores"
       },
+      "workflows": {
+        "label": "Abrir flujos de trabajo",
+        "keywords": "flujo flujos trabajo proceso grafo orquestación agente agentes aprobación prueba ensayo programación editor"
+      },
       "automations": {
         "label": "Abrir automatizaciones",
-        "keywords": "automatización regla programación disparador workflow flujo de trabajo"
+        "keywords": "automatización regla programación disparador activador webhook"
       },
       "templates": {
         "label": "Abrir plantillas",
@@ -332,6 +336,9 @@
       "workItem": "Nueva tarea",
       "workItemHint": "Delegar trabajo a una persona, un agente o la IA",
       "workItemKeywords": "tarea encargo delegar asignar completar agente ia work item",
+      "workflow": "Nuevo flujo de trabajo",
+      "workflowHint": "Crear un flujo con activadores, agentes, condiciones y aprobaciones",
+      "workflowKeywords": "flujo trabajo proceso grafo orquestación agentes automatizar aprobación",
       "fromTemplate": "Crear página desde plantilla",
       "fromTemplateKeywords": "plantilla template modelo nueva página crear",
       "fromTemplatePlaceholder": "¿Qué plantilla?",

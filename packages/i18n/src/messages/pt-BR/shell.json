@@ -245,9 +245,13 @@
         "label": "Abrir Evals",
         "keywords": "eval evals teste caso de teste benchmark comparação de modelos comparar modelos regressão replay medir qualidade custos provedor"
       },
+      "workflows": {
+        "label": "Abrir workflows",
+        "keywords": "workflow workflows fluxo grafo orquestração agente agentes aprovação teste agendamento editor"
+      },
       "automations": {
         "label": "Abrir automações",
-        "keywords": "automação regra agendamento gatilho workflow"
+        "keywords": "automação regra agendamento gatilho webhook"
       },
       "templates": {
         "label": "Abrir modelos",
@@ -332,6 +336,9 @@
       "workItem": "Nova tarefa de trabalho",
       "workItemHint": "Delegar trabalho a uma pessoa, um agente ou à IA",
       "workItemKeywords": "tarefa trabalho delegar passar encarregar agente ia work item",
+      "workflow": "Novo workflow",
+      "workflowHint": "Criar um fluxo com gatilhos, agentes, condições e aprovações",
+      "workflowKeywords": "workflow fluxo grafo orquestração agentes automatizar aprovação",
       "fromTemplate": "Criar página a partir de modelo",
       "fromTemplateKeywords": "modelo template padrão novo página criar",
       "fromTemplatePlaceholder": "Qual modelo?",

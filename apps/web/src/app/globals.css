@@ -796,3 +796,86 @@
     user-select: none;
   }
 }
+
+/*
+ * The workflow canvas (issue #164). React Flow brings its own stylesheet,
+ * unlayered, with its own palette in `--xy-*` variables; the canvas sets
+ * those variables to the tokens instead of restating the rules, which is
+ * the one hook the library offers that survives its next release. These
+ * rules are unlayered too, because a layered rule loses to the library's
+ * whatever its specificity.
+ *
+ * Lines are structure (`signal-line`); a line a run took is the one thing on
+ * the canvas that happened, so it is the signal, and thicker, so it does not
+ * rely on its colour. A line the check objects to is dashed for the same
+ * reason.
+ */
+.exocortex-workflow-canvas {
+  --xy-background-color: var(--background);
+  --xy-background-pattern-color: var(--border);
+  --xy-edge-stroke: var(--signal-line);
+  --xy-edge-stroke-selected: var(--primary);
+  --xy-edge-stroke-width: 1.5;
+  --xy-connectionline-stroke: var(--primary);
+  --xy-connectionline-stroke-width: 2;
+  --xy-handle-background-color: var(--card);
+  --xy-handle-border-color: var(--border-strong);
+  --xy-edge-label-background-color: var(--background);
+  --xy-edge-label-color: var(--muted-foreground);
+  --xy-controls-button-background-color: var(--popover);
+  --xy-controls-button-background-color-hover: var(--accent-solid);
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-color-hover: var(--foreground);
+  --xy-controls-button-border-color: var(--border-strong);
+  --xy-controls-box-shadow: var(--shadow-md);
+  --xy-selection-background-color: color-mix(in oklab, var(--primary) 12%, transparent);
+  --xy-selection-border: 1px dashed var(--primary);
+  font-family: inherit;
+}
+
+.exocortex-workflow-canvas .react-flow__edge.is-taken {
+  --xy-edge-stroke: var(--primary);
+  --xy-edge-stroke-width: 2.5;
+}
+
+.exocortex-workflow-canvas .react-flow__edge.has-problem {
+  --xy-edge-stroke: var(--destructive-text);
+}
+
+.exocortex-workflow-canvas .react-flow__edge.has-problem .react-flow__edge-path {
+  stroke-dasharray: 6 4;
+}
+
+.exocortex-workflow-canvas .react-flow__edge-text {
+  font-size: var(--text-micro, 0.6875rem);
+}
+
+.exocortex-workflow-canvas .exocortex-workflow-handle {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-width: 1.5px;
+}
+
+/* The product's one focus ring, on a node and on a line, rather than the
+   library's own. */
+.exocortex-workflow-canvas .react-flow__node:focus-visible,
+.exocortex-workflow-canvas .react-flow__edge:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.exocortex-workflow-canvas .react-flow__node:focus-visible > div {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
+.exocortex-workflow-canvas .react-flow__edge:focus-visible .react-flow__edge-path {
+  --xy-edge-stroke: var(--primary);
+  --xy-edge-stroke-width: 3;
+}
+
+@media (forced-colors: active) {
+  .exocortex-workflow-canvas .react-flow__node:focus-visible > div {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}

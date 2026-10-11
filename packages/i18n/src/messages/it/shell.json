@@ -245,9 +245,13 @@
         "label": "Apri Evals",
         "keywords": "eval evals test caso di test benchmark confronto modelli confrontare modelli regressione replay misurare qualità costi fornitore"
       },
+      "workflows": {
+        "label": "Apri flussi di lavoro",
+        "keywords": "workflow flussi lavoro flusso grafico orchestrazione agente agenti approvazione prova pianificazione editor"
+      },
       "automations": {
         "label": "Apri automazioni",
-        "keywords": "automazione regola pianificazione trigger workflow"
+        "keywords": "automazione regola pianificazione trigger attivatore webhook"
       },
       "templates": {
         "label": "Apri modelli",
@@ -332,6 +336,9 @@
       "workItem": "Nuovo incarico",
       "workItemHint": "Affida il lavoro a una persona, a un agente o all’IA",
       "workItemKeywords": "incarico compito delegare affidare far svolgere agente ia work item",
+      "workflow": "Nuovo flusso di lavoro",
+      "workflowHint": "Crea un flusso composto da attivatori, agenti, condizioni e approvazioni",
+      "workflowKeywords": "workflow flusso lavoro grafico orchestrazione agenti automatizzare approvazione",
       "fromTemplate": "Crea pagina da modello",
       "fromTemplateKeywords": "modello template nuovo pagina crea",
       "fromTemplatePlaceholder": "Quale modello?",

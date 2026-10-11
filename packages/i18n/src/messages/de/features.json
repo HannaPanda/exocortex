@@ -535,9 +535,20 @@
       "p1": "Ein Graph besteht aus Knoten und Kanten. Auslöser sind „von Hand“, ein Zeitplan (einmalig, täglich, wöchentlich, monatlich oder als Cron) oder eine Änderung an Seiten. Ein Agentenschritt nennt Ziel, Kontextseiten, Agentenprofil, Schreibmodus, Budget und die Felder, die sein Ergebnis liefern muss. Eine Bedingung verzweigt anhand eines dieser Felder, der Antwort auf eine Freigabe oder eines Startwerts, ohne ein Modell zu fragen; „Parallel“ öffnet mehrere Zweige, „Zusammenführen“ wartet auf alle oder den ersten; eine Freigabe fragt einen Menschen; ein Ende schließt den Lauf ab.",
       "p2": "Die Prüfung nennt jedes Problem mit dem Knoten oder der Kante, um die es geht: eine Kante ins Leere, ein Ausgang, den der Knoten nicht hat, ein Kreis, ein Zusammenführen, dessen Zweige sich gegenseitig ausschließen, eine Bedingung auf ein Feld, das niemand liefert, oder ein Profil und eine Seite, die nicht zu diesem Arbeitsbereich gehören. Ein Entwurf darf unvollständig gespeichert werden, veröffentlicht wird nur ein vollständiger.",
       "p3": "Veröffentlichen friert den Entwurf als nächste Version ein. Ein Lauf liest immer die Version, mit der er begonnen hat, auch wenn der Entwurf danach geändert oder neu veröffentlicht wird; die Datenbank lässt eine Version gar nicht mehr ändern. Läufe und jeder Versuch jedes Knotens sind gespeicherter Zustand, aus dem sich nach jedem Neustart ablesen lässt, was als Nächstes laufen kann.",
-      "p4": "Entwürfe schreiben Admins des Arbeitsbereichs, einschalten darf ihn nur der Owner, und eine Version entsteht nur durch Veröffentlichen, nie durch ein Werkzeug. Agenten lesen Workflows, Versionen und Läufe über die exo_workflow-Werkzeuge und prüfen Graphen; die eingebaute KI darf Workflows bisher nur lesen. Wie ein Lauf ausgeführt wird, beschreibt „Workflows ausführen“; was ein Agentenschritt tut, „Agentenschritte in Workflows“; wie Freigaben, Zusammenführen und Ende arbeiten, „Freigaben und Verzweigungen in Workflows“; der Editor folgt in der nächsten Ausbaustufe."
+      "p4": "Entwürfe schreiben Admins des Arbeitsbereichs, einschalten darf ihn nur der Owner, und eine Version entsteht nur durch Veröffentlichen, nie durch ein Werkzeug. Agenten lesen Workflows, Versionen und Läufe über die exo_workflow-Werkzeuge und prüfen Graphen; die eingebaute KI darf Workflows bisher nur lesen. Wie ein Lauf ausgeführt wird, beschreibt „Workflows ausführen“; was ein Agentenschritt tut, „Agentenschritte in Workflows“; wie Freigaben, Zusammenführen und Ende arbeiten, „Freigaben und Verzweigungen in Workflows“; gebaut und verfolgt werden Workflows im Editor (siehe „Workflows im Editor bauen und Läufe verfolgen“)."
     },
-    "where": "Über die exo_workflow-Werkzeuge und die Schnittstelle unter /api/workflows; eine eigene Ansicht im Arbeitsbereich gibt es noch nicht."
+    "where": "Im Arbeitsbereich unter „Workflows“ (auch über Strg + K und von „Aufträge“ aus), über die exo_workflow-Werkzeuge und die Schnittstelle unter /api/workflows."
+  },
+  "workflow-editor": {
+    "title": "Workflows im Editor bauen und Läufe verfolgen",
+    "summary": "Ein Workflow entsteht im Browser als Graph: Knoten aus der Palette hinzufügen, verbinden und rechts einstellen, ohne JSON. Die Prüfung zeigt jedes Problem am betroffenen Knoten, ein Probelauf schlägt standardmäßig nur vor, und ein Lauf lässt sich Schritt für Schritt auf seinem Graphen verfolgen.",
+    "details": {
+      "p1": "Die Palette ordnet Knoten nach Auslösern, Arbeit und Steuerung. Ein Klick hängt den neuen Knoten hinter den ausgewählten und verbindet ihn, Ziehen setzt ihn an eine freie Stelle. Wohin ein Ausgang führt, lässt sich auch rechts für jeden Ausgang wählen, deshalb geht alles auch mit der Tastatur: Knoten mit Tab erreichen, mit Eingabe auswählen, mit den Pfeiltasten verschieben, mit Entfernen löschen; Strg + S speichert.",
+      "p2": "Folgenreiche Einstellungen stehen sichtbar am Knoten: ein Agent zeigt den Schreibmodus, der tatsächlich gilt, und rechts daneben Profil und Budget, so wie Profil, Arbeitsbereich und Lauf sie gemeinsam einschränken, nicht nur wie der Knoten sie nennt. Die Grenzen des Workflows stehen neben den Werten, die der Arbeitsbereich vorgibt.",
+      "p3": "Gespeichert wird der Entwurf, veröffentlicht eine unveränderliche Version, eingeschaltet wird er in einem eigenen Schritt, der vorher zeigt, was dann von selbst läuft. Hat jemand anderes inzwischen gespeichert, sagt der Editor das, statt etwas zu überschreiben. Ein Probelauf nimmt die veröffentlichte Version auf der echten Laufzeit, von jedem Auslöser aus, und seine Agenten schlagen standardmäßig nur vor; wer sie selbst schreiben lassen will, wählt das ausdrücklich und sieht eine Warnung.",
+      "p4": "Die Ansicht eines Laufs zeigt seine Version mit dem genommenen Weg: was erledigt ist, was wartet, was scheiterte oder neu versucht wurde, jeweils mit Zeichen und Wort, nicht nur mit Farbe. Zu jedem Knoten gibt es seine Versuche mit Dauer, Fehler, dem Auftrag und dem KI-Lauf dahinter und dem strukturierten Ergebnis, dazu Kosten gegen das Budget und den Verlauf des Laufs. Was ein Lauf noch tut, wird alle paar Sekunden neu gelesen."
+    },
+    "where": "Im Arbeitsbereich unter „Workflows“, über Strg + K („Workflows öffnen“, „Neuer Workflow“) und über den Link auf der Seite „Aufträge“."
   },
   "workflow-agentenschritte": {
     "title": "Agentenschritte in Workflows: Aufträge mit geprüftem Ergebnis",
@@ -548,7 +559,7 @@
       "p3": "Weiter geht es, wenn der Auftrag erledigt ist, oder, wenn der Schritt das so will, schon bei der Abgabe zur Abnahme. Wartet noch ein Vorschlag auf Freigabe oder verlangt das Profil eine Abnahme durch einen Menschen, wartet auch der Workflow. Scheitert der Auftrag, wird er abgebrochen oder gelöscht, oder steht er still, ohne dass noch etwas an ihm arbeitet, endet der Schritt mit einer klaren Meldung.",
       "p4": "Warten belegt keinen Worker: der Schritt wacht auf, sobald sich der Auftrag ändert, und eine minütliche Prüfung fängt ab, was dabei verloren geht. Was der Auftrag samt Teilaufträgen kostet, zählt gegen das Budget des Laufs; parallele Schritte reservieren ihren Anteil vorher, damit sie zusammen nicht mehr ausgeben, als der Lauf darf."
     },
-    "where": "Im Workflow-Graphen als Knoten vom Typ agent; der angelegte Auftrag steht unter „Aufträge“ mit dem Hinweis, aus welchem Workflow-Schritt er stammt."
+    "where": "Im Workflow-Editor als Knoten „Agent“; der angelegte Auftrag steht unter „Aufträge“ mit dem Hinweis, aus welchem Workflow-Schritt er stammt."
   },
   "workflow-freigaben": {
     "title": "Freigaben und Verzweigungen in Workflows",
@@ -559,7 +570,7 @@
       "p3": "Eine Bedingung entscheidet ohne Modell, anhand eines Felds aus einem Agentenschritt, einer Freigabe oder eines Startwerts des Laufs, etwa des Ereignisses, das ihn ausgelöst hat. „Zusammenführen“ wartet entweder auf alle Zweige oder geht beim ersten weiter; im zweiten Fall lässt ein gescheiterter anderer Zweig den Lauf nicht scheitern.",
       "p4": "Ein Ende beendet den Lauf sofort mit seinem Ergebnis, erfolgreich, gescheitert oder abgebrochen, und mit einer Zusammenfassung, wenn es eine hat. Was auf anderen Zweigen noch läuft, wird abgebrochen. Endet ein Lauf, bevor jemand geantwortet hat, wird seine offene Freigabe in „Wartet auf dich“ als hinfällig markiert."
     },
-    "where": "In „Wartet auf dich“ für die Antwort; im Graphen über die exo_workflow-Werkzeuge, die Knotentypen „approval“, „condition“, „join“ und „end“ beschreiben. Eine eigene Ansicht für Workflows gibt es noch nicht."
+    "where": "In „Wartet auf dich“ für die Antwort; im Workflow-Editor als Knoten „Freigabe“, „Bedingung“, „Zusammenführung“ und „Ende“, und über die exo_workflow-Werkzeuge."
   },
   "workflow-laeufe": {
     "title": "Workflows ausführen, auch nach einem Neustart",
@@ -570,7 +581,7 @@
       "p3": "Grenzen halten einen Lauf auf: höchstens so viele Schritte, so viele gleichzeitig, so lange insgesamt und so viel Geld, wie die Einstellungen unter „Workflows“ erlauben. Ein Workflow kann jede Grenze enger ziehen, nie weiter, und ein Lauf nimmt beim Start den strengeren Wert. Der Hauptschalter „Workflows aktiviert“ ist standardmäßig aus und hält auch laufende Läufe beim nächsten Schritt an.",
       "p4": "Ein Workflow startet nie aus einer Änderung, die er selbst gemacht hat, und eine Kette aus Automationen und Workflows endet nach drei Gliedern. Ein selbst gestarteter Lauf handelt im Namen der Person, die den Workflow eingeschaltet hat. Der Verlauf eines Laufs hält fest, welcher Knoten wann lief, wartete, scheiterte oder übersprungen wurde und welche Kante genommen wurde; Inhalte von Seiten stehen nicht darin. Starten und abbrechen dürfen Admins, über exo_workflow_run_start und exo_workflow_run_cancel; die eingebaute KI darf Läufe nur lesen."
     },
-    "where": "Über exo_workflow_run_start, exo_workflow_run_cancel und exo_workflow_run_get oder die Schnittstelle unter /api/workflows/…/runs; die Grenzen stehen in den Einstellungen unter „Workflows“. Eine eigene Ansicht im Arbeitsbereich gibt es noch nicht."
+    "where": "Im Workflow-Editor über „Probelauf“ und den Reiter „Läufe“, über exo_workflow_run_start, exo_workflow_run_cancel und exo_workflow_run_get oder die Schnittstelle unter /api/workflows/…/runs; die Grenzen stehen in den Einstellungen unter „Workflows“."
   },
   "ki-chat": {
     "title": "Mit einem Modell über deine Seiten reden",
