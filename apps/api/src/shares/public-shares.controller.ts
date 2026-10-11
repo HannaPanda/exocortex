@@ -4,6 +4,7 @@ import { type FastifyReply } from 'fastify';
 
 import { type PublicShareResponse, publicShareResponseSchema } from '@exocortex/contracts';
 
+import { fileResponseHeaders } from '../attachments/file-response-headers';
 import { Public } from '../auth/session.guard';
 import { openApiResponseSchema } from '../common/zod';
 
@@ -50,14 +51,16 @@ export class PublicSharesController {
   ): Promise<void> {
     const result = await this.shares.downloadAttachment(token, attachmentId);
     void reply
-      .header('content-type', result.mimeType)
-      .header('content-length', String(result.byteSize))
       // `inline`, unlike the authenticated download: an image on a shared page
-      // is meant to be rendered in it, not saved. The filename is stripped of
-      // everything outside printable ASCII for the same reason it is there.
-      .header(
-        'content-disposition',
-        `inline; filename="${result.filename.replace(/[^\x20-\x7e]/g, '_')}"`,
+      // is meant to be rendered in it, not saved. That is safe for an SVG
+      // only because of the sandboxing policy these headers carry (#177).
+      .headers(
+        fileResponseHeaders({
+          mimeType: result.mimeType,
+          byteSize: result.byteSize,
+          filename: result.filename,
+          disposition: 'inline',
+        }),
       )
       // A link is not a cache key anybody else holds, but it is one the reader
       // holds: a revoked link must stop working, so nothing is cached shared.

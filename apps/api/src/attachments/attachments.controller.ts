@@ -37,6 +37,7 @@ import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { AttachmentsService } from './attachments.service';
+import { fileResponseHeaders } from './file-response-headers';
 
 /**
  * Multipart uploads are read through `@fastify/multipart`, which enforces the
@@ -113,11 +114,13 @@ export class AttachmentsController {
       variant === 'preview' ? 'preview' : 'original',
     );
     void reply
-      .header('content-type', result.mimeType)
-      .header('content-length', String(result.byteSize))
-      .header(
-        'content-disposition',
-        `attachment; filename="${result.filename.replace(/[^\x20-\x7e]/g, '_')}"`,
+      .headers(
+        fileResponseHeaders({
+          mimeType: result.mimeType,
+          byteSize: result.byteSize,
+          filename: result.filename,
+          disposition: 'attachment',
+        }),
       )
       .send(result.stream);
   }

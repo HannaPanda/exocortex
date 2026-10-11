@@ -92,6 +92,57 @@ test.describe('shares', () => {
     expect(await anonymous.text()).not.toContain(workspaceId);
   });
 
+  test('an SVG on a shared page runs no script when opened directly (#177)', async ({
+    browser,
+  }) => {
+    const workspaceId = await createWorkspace('Freigabe SVG');
+    const documentId = await createDocument(workspaceId, 'Mit Bild');
+    // Harmless: the script only marks the document, so the test can see
+    // whether it ran and nothing happens anywhere if it does.
+    const svg = Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">' +
+        '<script>document.documentElement.setAttribute("data-ran", String(document.cookie.length >= 0))</script>' +
+        '<rect width="10" height="10" fill="red"/></svg>',
+    );
+    const upload = await johannaApi.post(`${origin}/api/workspaces/${workspaceId}/attachments`, {
+      multipart: {
+        file: { name: 'aktiv.svg', mimeType: 'image/svg+xml', buffer: svg },
+        documentId,
+      },
+      headers: { origin },
+    });
+    expect(upload.status(), await upload.text()).toBe(201);
+    const uploaded = (await upload.json()) as { attachment: { id: string; mimeType: string } };
+    expect(uploaded.attachment.mimeType).toBe('image/svg+xml');
+    const created = await share(documentId, { kind: 'PUBLIC_LINK', scope: 'PAGE_ONLY' });
+    const url = `${origin}/api/share/${created.token ?? ''}/attachments/${uploaded.attachment.id}`;
+
+    const served = await anonymousApi.get(url);
+    expect(served.status()).toBe(200);
+    expect(served.headers()['content-security-policy']).toMatch(/(^|; )sandbox$/);
+    expect(served.headers()['x-content-type-options']).toContain('nosniff');
+
+    // The authenticated download carries the same policy.
+    const own = await johannaApi.get(
+      `${origin}/api/attachments/${uploaded.attachment.id}/download`,
+    );
+    expect(own.headers()['content-security-policy']).toMatch(/(^|; )sandbox$/);
+
+    const context = await browser.newContext({ httpCredentials: BASIC_AUTH_CREDENTIALS });
+    try {
+      const page = await context.newPage();
+      const response = await page.goto(url);
+      expect(response?.status()).toBe(200);
+      const ran = await page.evaluate(() => document.documentElement.getAttribute('data-ran'));
+      expect(ran).toBeNull();
+      // The sandbox gives the document an opaque origin, so even a script
+      // that did run would hold no cookie and reach no API.
+      expect(await page.evaluate(() => self.origin)).toBe('null');
+    } finally {
+      await context.close();
+    }
+  });
+
   test('a withdrawn link answers exactly like a guessed one', async () => {
     const workspaceId = await createWorkspace('Freigabe Widerruf');
     const documentId = await createDocument(workspaceId, 'Zurückgezogen');
