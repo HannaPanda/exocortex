@@ -107,7 +107,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     references: ['ADR-073'],
     ui: {},
     tools: ['exo_ai_run_inspect'],
-    claims: { screens: ['/laeufe/:x'] },
+    claims: { screens: ['/arbeitsbereich/:x/laeufe/:x', '/laeufe/:x'] },
   }),
   defineFeature({
     id: 'automationen',

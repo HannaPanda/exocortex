@@ -4,6 +4,7 @@ import { ArrowLeftIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import * as React from 'react';
 
 import { type AiRun, type AiRunInspection } from '@exocortex/contracts';
 import {
@@ -22,6 +23,7 @@ import { useAiRunInspection } from '@/lib/api/ai-queries';
 import { ContextComposition, ToolResults } from './run-inspector-context';
 import { type RunFormat, useRunFormat } from './run-inspector-format';
 import { RunTimeline } from './run-inspector-timeline';
+import { runInspectorHref } from './run-links';
 
 function statusVariant(
   status: AiRun['status'],
@@ -169,9 +171,18 @@ function InspectionView({ inspection }: { inspection: AiRunInspection }) {
 }
 
 /** The run inspector (issue #145, ADR-073): what one run did and what its prompt was made of. */
-export function RunInspectorPage({ runId }: { runId: string }) {
+export function RunInspectorPage({ workspaceId, runId }: { workspaceId: string; runId: string }) {
   const t = useTranslations('runInspector.page');
+  const router = useRouter();
   const query = useAiRunInspection(runId);
+  const actualWorkspaceId = query.data?.run.workspaceId ?? null;
+  // An address with the wrong workspace in it is corrected rather than shown
+  // under a shell that describes a different workspace than the run's.
+  React.useEffect(() => {
+    if (actualWorkspaceId !== null && actualWorkspaceId !== workspaceId) {
+      router.replace(runInspectorHref(actualWorkspaceId, runId));
+    }
+  }, [router, actualWorkspaceId, workspaceId, runId]);
   if (query.isPending) return <LoadingState variant="skeleton" rows={8} label={t('loading')} />;
   if (query.isError) {
     return <ErrorState title={t('loadFailed')} onRetry={() => void query.refetch()} />;

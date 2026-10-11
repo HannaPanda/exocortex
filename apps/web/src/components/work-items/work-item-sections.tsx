@@ -7,6 +7,7 @@ import * as React from 'react';
 import { type WorkItemDetail, type WorkItemRef } from '@exocortex/contracts';
 import { Badge, Button, Checkbox, Label, Textarea } from '@exocortex/ui';
 
+import { runInspectorHref } from '@/components/runs/run-links';
 import { useAddWorkItemNote, useUpdateWorkItem } from '@/lib/api/work-item-queries';
 
 import { useWorkItemWording } from './work-item-labels';
@@ -226,7 +227,7 @@ export function RunsSection({ item, action }: { item: WorkItemDetail; action: Re
                 </Link>
               )}
               {/* What the run did and what its prompt was made of (issue #145). */}
-              <Link href={`/laeufe/${run.id}`} className="hover:underline">
+              <Link href={runInspectorHref(item.workspaceId, run.id)} className="hover:underline">
                 {tRun('fromWorkItem')}
               </Link>
             </li>

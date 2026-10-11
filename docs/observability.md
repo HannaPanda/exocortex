@@ -123,7 +123,7 @@ exactly as they did before.
 
 Traces and logs are for whoever runs the deployment. The person who started
 a run of the built-in AI gets the product's answer to "what did it do, and
-why" at `/laeufe/:runId`, from `GET /api/ai/runs/:id/inspection` and
+why" at `/arbeitsbereich/:id/laeufe/:runId` (the short `/laeufe/:runId` sends there), from `GET /api/ai/runs/:id/inspection` and
 `exo_ai_run_inspect` ([ADR-073](adr/ADR-073-a-run-timeline-is-facts-never-content.md)).
 
 | Recorded as `ai_run_event` | Written in                               | Says                                                                |

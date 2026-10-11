@@ -8,6 +8,7 @@ import { type AiRunInspection, type AiRunTimelineEntry } from '@exocortex/contra
 import { cn, SectionRule } from '@exocortex/ui';
 
 import { type RunFormat } from './run-inspector-format';
+import { runInspectorHref } from './run-links';
 
 type Entry<K extends AiRunTimelineEntry['kind']> = Extract<AiRunTimelineEntry, { kind: K }>;
 type Translate = ReturnType<typeof useTranslations<'runInspector.timeline'>>;
@@ -77,9 +78,9 @@ function toolLine(
   };
 }
 
-function runLink(runId: string, label: string): React.ReactNode {
+function runLink(workspaceId: string, runId: string, label: string): React.ReactNode {
   return (
-    <Link href={`/laeufe/${runId}`} className="hover:underline">
+    <Link href={runInspectorHref(workspaceId, runId)} className="hover:underline">
       {label}
     </Link>
   );
@@ -144,9 +145,9 @@ function entryLine(
     case 'work_checkpoint':
       return plain(t('workCheckpoint'));
     case 'resumed_from':
-      return plain(runLink(entry.runId, t('resumedFrom')));
+      return plain(runLink(workspaceId, entry.runId, t('resumedFrom')));
     case 'resumed_as':
-      return plain(runLink(entry.runId, t('resumedAs')));
+      return plain(runLink(workspaceId, entry.runId, t('resumedAs')));
     case 'finished':
       return {
         label: t('finished'),

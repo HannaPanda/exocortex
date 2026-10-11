@@ -232,7 +232,7 @@ What is deliberately still missing is listed under
   tracing across API, queue, worker and the AI tool loop (ADR-031). Tracing is
   off, and its SDK is not even loaded, until a collector is configured;
   `docs/observability.md` says what a span may contain and what it never may
-- a run inspector for every run of the built-in AI at `/laeufe/:runId`: a
+- a run inspector for every run of the built-in AI at `/arbeitsbereich/:id/laeufe/:runId` (`/laeufe/:runId` sends there): a
   timeline of model turns (model, upstream provider, tokens, cost), tool calls
   (target, duration, result size, foreign origin, repeats), questions, resumes
   and proposals, and what the first prompt was made of, part by part down to

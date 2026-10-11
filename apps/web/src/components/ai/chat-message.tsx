@@ -8,6 +8,8 @@ import * as React from 'react';
 import { type AiConversationMessage } from '@exocortex/contracts';
 import { Badge, cn, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
+import { runInspectorShortHref } from '@/components/runs/run-links';
+
 import { ChatMarkdown, CopyMarkdownButton } from './chat-markdown';
 
 export interface ChatMessageProps {
@@ -100,7 +102,7 @@ function RunLink({ runId }: { runId: string }) {
   const t = useTranslations('runInspector.links');
   return (
     <Link
-      href={`/laeufe/${runId}`}
+      href={runInspectorShortHref(runId)}
       className="text-xs text-muted-foreground hover:text-foreground hover:underline"
     >
       {t('fromChat')}
