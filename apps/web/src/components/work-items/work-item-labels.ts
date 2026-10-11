@@ -128,7 +128,12 @@ export function useWorkItemWording() {
     };
 
     /** One history line, in words. The note itself is shown beside it. */
-    const event = (value: WorkItemEvent): string => delegationEvent(value) ?? plainEvent(value);
+    const event = (value: WorkItemEvent): string =>
+      delegationEvent(value) ??
+      // Its own line since issue #162, apart so the switch above stays readable.
+      (value.kind === 'structured_result_recorded'
+        ? t('event.structuredResultRecorded')
+        : plainEvent(value));
 
     return { status, priority, participant, moment, day, money, event };
   }, [format, t]);

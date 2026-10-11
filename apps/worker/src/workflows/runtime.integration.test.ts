@@ -252,7 +252,7 @@ const agentHandler: NodeHandler = {
     }
     if (!effects.includes(execution.idempotencyKey)) effects.push(execution.idempotencyKey);
     const output = goal.startsWith('score:')
-      ? { score: Number(goal.slice('score:'.length)) }
+      ? { fields: { score: Number(goal.slice('score:'.length)) } }
       : null;
     return { status: 'succeeded', handles: ['next'], output };
   },

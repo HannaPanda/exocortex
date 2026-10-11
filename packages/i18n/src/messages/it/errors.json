@@ -88,6 +88,7 @@
     "work_item_child_invalid": "Almeno una delle attività indicate non è una sotto-attività di questa attività.",
     "work_item_children_limit": "Questa attività ha già raggiunto il numero massimo consentito di sotto-attività. Unisci alcune parti o chiudi quelle completate.",
     "work_item_children_open": "Questa attività ha ancora sotto-attività aperte. Completale o annullale prima di contrassegnarla come completata.",
+    "work_item_result_invalid": "Il risultato strutturato non corrisponde ai campi richiesti dall’attività: un campo sconosciuto, un tipo errato o un campo obbligatorio mancante.",
     "work_item_start_needs_assistant": "È possibile avviare subito solo una sotto-attività per l’IA integrata. Per persone e agenti viene solo creata.",
     "agent_profile_name_taken": "In quest’area di lavoro esiste già un profilo agente con questo nome.",
     "agent_profile_invalid": "Il profilo fa riferimento a qualcosa che qui non esiste: una pagina di regole esterna all’area di lavoro o un modello non abilitato.",

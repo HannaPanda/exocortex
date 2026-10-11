@@ -2,7 +2,11 @@ import {
   type AgentProfileRef,
   agentProfileSnapshotSchema,
   type AiWriteMode,
+  resultFieldsSchema,
   stricterLimit,
+  type StructuredResult,
+  structuredResultSchema,
+  type WorkflowOutputField,
   type WorkItemAwaiting,
   type WorkItemCriterion,
   workItemCriterionSchema,
@@ -101,6 +105,7 @@ export const EVENT_KIND_TO_PRISMA: Record<WorkItemEventKind, PrismaEventKind> = 
   delegated: 'DELEGATED',
   children_awaited: 'CHILDREN_AWAITED',
   children_returned: 'CHILDREN_RETURNED',
+  structured_result_recorded: 'STRUCTURED_RESULT_RECORDED',
 };
 const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   CREATED: 'created',
@@ -118,6 +123,7 @@ const EVENT_KIND_FROM_PRISMA: Record<PrismaEventKind, WorkItemEventKind> = {
   DELEGATED: 'delegated',
   CHILDREN_AWAITED: 'children_awaited',
   CHILDREN_RETURNED: 'children_returned',
+  STRUCTURED_RESULT_RECORDED: 'structured_result_recorded',
 };
 
 const RUN_STATUS_FROM_PRISMA: Record<PrismaAiRunStatus, WorkItemRun['status']> = {
@@ -173,6 +179,9 @@ export const WORK_ITEM_DETAIL_SELECT = {
   awaitingChildIds: true,
   awaitingRunId: true,
   awaitingSince: true,
+  resultFields: true,
+  structuredResult: true,
+  workflowExecutionId: true,
   // The item's own profile and the workspace's default, in the same read
   // (issue #143): the detail says which one holds and what budget follows.
   agentProfile: { select: AGENT_PROFILE_REF_SELECT },
@@ -354,7 +363,22 @@ function refsOf(row: WorkItemDetailRow, role: 'CONTEXT' | 'RESULT'): WorkItemRef
  * What the detail needs beyond the row (issue #144): the budget over the
  * subtree and its ancestors, which takes queries of its own.
  */
-export type WorkItemDetailExtras = BudgetStanding;
+export type WorkItemDetailExtras = BudgetStanding & {
+  /** The workflow node that created the item (issue #162), while its run still exists. */
+  workflow: WorkItemDetail['workflow'];
+};
+
+/** The declared fields as stored; a row that does not parse promises nothing. */
+export function parseResultFields(value: Prisma.JsonValue): WorkflowOutputField[] {
+  const parsed = resultFieldsSchema.safeParse(value);
+  return parsed.success ? parsed.data : [];
+}
+
+function parseStructuredResult(value: Prisma.JsonValue): StructuredResult | null {
+  if (value === null) return null;
+  const parsed = structuredResultSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
 
 /** What the item waits for, with the children that are not back yet. */
 function awaitingOf(row: WorkItemDetailRow): WorkItemAwaiting | null {
@@ -400,5 +424,8 @@ export function toWorkItemDetail(
     events: row.events.map(toEvent),
     checkpointCount: row._count.checkpoints,
     latestCheckpointAt: row.checkpoints[0]?.createdAt.toISOString() ?? null,
+    resultFields: parseResultFields(row.resultFields),
+    structuredResult: parseStructuredResult(row.structuredResult),
+    workflow: extras.workflow,
   };
 }

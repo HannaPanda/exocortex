@@ -152,6 +152,19 @@ export const workflowOutputFieldSchema = z.object({
 });
 export type WorkflowOutputField = z.infer<typeof workflowOutputFieldSchema>;
 
+/**
+ * When an agent node counts as complete (issue #162).
+ *
+ * `review`: once the work is handed in (`review`) or closed as `done`, unless
+ * a person still has to decide about it: a proposal waiting to be applied,
+ * or a profile that wants a review before done. `done`: only once it is
+ * `done`, which for work the built-in AI hands in means a person accepted it.
+ * `failed` and `cancelled` fail the node either way.
+ */
+export const WORKFLOW_AGENT_COMPLETIONS = ['review', 'done'] as const;
+export const workflowAgentCompletionSchema = z.enum(WORKFLOW_AGENT_COMPLETIONS);
+export type WorkflowAgentCompletion = z.infer<typeof workflowAgentCompletionSchema>;
+
 const agentNodeSchema = z.object({
   ...nodeBase,
   type: z.literal('agent'),
@@ -165,6 +178,11 @@ const agentNodeSchema = z.object({
   writeMode: aiWriteModeSchema.nullable().default(null),
   budgetMicroUsd: microUsdSchema.nullable().default(null),
   outputFields: z.array(workflowOutputFieldSchema).max(WORKFLOW_LIMITS.maxOutputFields).default([]),
+  /**
+   * Added by #162 with a default, so every graph stored before still parses
+   * to the behaviour it would have had: continue once the work is handed in.
+   */
+  completion: workflowAgentCompletionSchema.default('review'),
 });
 
 // -- control --------------------------------------------------------------------

@@ -5,6 +5,7 @@ import { type AgentProfilesService } from '../agent-profiles/agent-profiles.serv
 import { currentAutomation } from '../common/correlation';
 
 import { assertMayChooseProfile } from './work-item-access';
+import { type VerifiedWorkflowNode } from './work-item-workflow';
 
 /**
  * The agent profile side of a work item (issue #143, ADR-071): which profile a
@@ -55,14 +56,25 @@ export async function profilePreferences(
  */
 export async function profileForNewItem(
   deps: { prisma: PrismaClient; profiles: AgentProfilesService },
-  workspaceId: string,
-  userId: string,
-  request: CreateWorkItemRequest,
-  mayChoose: boolean,
+  input: {
+    workspaceId: string;
+    userId: string;
+    request: CreateWorkItemRequest;
+    mayChoose: boolean;
+    /** The agent node creating the item (issue #162), verified against its run. */
+    workflowNode?: VerifiedWorkflowNode | undefined;
+  },
 ): Promise<string | null> {
+  const { workspaceId, userId, request, mayChoose, workflowNode } = input;
   if (request.agentProfileId !== undefined) {
+    // A workflow's agent node may name exactly the profile its published
+    // version names (issue #162): an admin chose it when writing the graph,
+    // and the owner switched the workflow on, as for an automation rule.
+    const nodeNamesProfile =
+      workflowNode !== undefined && workflowNode.node.agentProfileId === request.agentProfileId;
     assertMayChooseProfile(
       mayChoose ||
+        nodeNamesProfile ||
         (await ruleNamesProfile(deps.prisma, workspaceId, userId, request.agentProfileId)),
     );
     if (request.agentProfileId === null) return null;

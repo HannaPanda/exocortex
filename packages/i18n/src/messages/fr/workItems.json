@@ -43,7 +43,8 @@
       "delegated": "a délégué une partie à {assignee}",
       "childrenAwaited": "attend {count, plural, one {un sous-ordre} many {# sous-ordres} other {# sous-ordres}}",
       "childrenReturned": "{count, plural, one {Le sous-ordre est de retour} many {Les # sous-ordres sont de retour} other {Les # sous-ordres sont de retour}}",
-      "childrenReturnedResumed": "{count, plural, one {Le sous-ordre est de retour} many {Les # sous-ordres sont de retour} other {Les # sous-ordres sont de retour}}, le travail continue avec les résultats"
+      "childrenReturnedResumed": "{count, plural, one {Le sous-ordre est de retour} many {Les # sous-ordres sont de retour} other {Les # sous-ordres sont de retour}}, le travail continue avec les résultats",
+      "structuredResultRecorded": "a enregistré le résultat structuré"
     },
     "trigger": {
       "step": "étape intermédiaire",
@@ -143,7 +144,12 @@
     "noteLabel": "Note",
     "addNote": "Ajouter une note",
     "budgetWithChildren": "{spent} sur {budget} consommés, sous-ordres compris",
-    "budgetLimitedBy": "Encore {remaining} restant, limité par le budget de « {title} »"
+    "budgetLimitedBy": "Encore {remaining} restant, limité par le budget de « {title} »",
+    "structuredHeading": "Résultat structuré",
+    "structuredHint": "Le résultat doit renseigner ces champs. Tu ne pourras soumettre la tâche que lorsque tous les champs obligatoires (*) seront remplis.",
+    "structuredMissing": "manquant",
+    "structuredRequired": "Champ obligatoire",
+    "fromWorkflow": "Créé par l’étape de workflow « {node} »"
   },
   "startRun": {
     "title": "Lancer une exécution de l’IA",

@@ -43,7 +43,8 @@
       "delegated": "heeft een deel overgedragen aan {assignee}",
       "childrenAwaited": "wacht op {count, plural, one {één deeltaak} other {# deeltaken}}",
       "childrenReturned": "{count, plural, one {De deeltaak is} other {De # deeltaken zijn}} terug",
-      "childrenReturnedResumed": "{count, plural, one {De deeltaak is} other {De # deeltaken zijn}} terug, het werk gaat door met de resultaten"
+      "childrenReturnedResumed": "{count, plural, one {De deeltaak is} other {De # deeltaken zijn}} terug, het werk gaat door met de resultaten",
+      "structuredResultRecorded": "heeft het gestructureerde resultaat ingevoerd"
     },
     "trigger": {
       "step": "tussenstand",
@@ -143,7 +144,12 @@
     "noteLabel": "Notitie",
     "addNote": "Notitie toevoegen",
     "budgetWithChildren": "{spent} van {budget} verbruikt, inclusief deeltaken",
-    "budgetLimitedBy": "Nog {remaining} over, beperkt door het budget van „{title}”"
+    "budgetLimitedBy": "Nog {remaining} over, beperkt door het budget van „{title}”",
+    "structuredHeading": "Gestructureerd resultaat",
+    "structuredHint": "Deze velden moet het resultaat bevatten. Je kunt de taak pas inleveren als alle verplichte velden (*) zijn ingevuld.",
+    "structuredMissing": "ontbreekt",
+    "structuredRequired": "Verplicht veld",
+    "fromWorkflow": "Aangemaakt door workflowstap „{node}“"
   },
   "startRun": {
     "title": "AI-run starten",

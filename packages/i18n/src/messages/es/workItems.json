@@ -43,7 +43,8 @@
       "delegated": "ha delegado una parte a {assignee}",
       "childrenAwaited": "espera {count, plural, one {un subencargo} many {# subencargos} other {# subencargos}}",
       "childrenReturned": "{count, plural, one {El subencargo ha} many {Los # subencargos han} other {Los # subencargos han}} vuelto",
-      "childrenReturnedResumed": "{count, plural, one {El subencargo ha} many {Los # subencargos han} other {Los # subencargos han}} vuelto, el trabajo continúa con los resultados"
+      "childrenReturnedResumed": "{count, plural, one {El subencargo ha} many {Los # subencargos han} other {Los # subencargos han}} vuelto, el trabajo continúa con los resultados",
+      "structuredResultRecorded": "ha registrado el resultado estructurado"
     },
     "trigger": {
       "step": "Paso intermedio",
@@ -143,7 +144,12 @@
     "noteLabel": "Nota",
     "addNote": "Añadir nota",
     "budgetWithChildren": "{spent} de {budget} consumidos, subencargos incluidos",
-    "budgetLimitedBy": "Quedan {remaining}, con el límite del presupuesto de «{title}»"
+    "budgetLimitedBy": "Quedan {remaining}, con el límite del presupuesto de «{title}»",
+    "structuredHeading": "Resultado estructurado",
+    "structuredHint": "Estos campos deben incluirse en el resultado. Solo podrás entregar la tarea cuando todos los campos obligatorios (*) estén completos.",
+    "structuredMissing": "falta",
+    "structuredRequired": "Obligatorio",
+    "fromWorkflow": "Creado por el paso de flujo de trabajo «{node}»"
   },
   "startRun": {
     "title": "Iniciar ejecución de IA",

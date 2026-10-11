@@ -88,6 +88,7 @@
     "work_item_child_invalid": "At least one of the specified tasks is not a subtask of this task.",
     "work_item_children_limit": "This task already has as many subtasks as one can have. Combine parts or complete finished ones.",
     "work_item_children_open": "This task still has open subtasks. Complete or cancel them before marking it as done.",
+    "work_item_result_invalid": "The structured result does not match the fields required by the task: an unknown field, an incorrect type, or a missing required field.",
     "work_item_start_needs_assistant": "Only a subtask for the built-in AI can be started immediately. For people and agents, it is only created.",
     "agent_profile_name_taken": "An agent profile with this name already exists in this workspace.",
     "agent_profile_invalid": "The profile references something that doesn’t exist here: a rules page outside the workspace or a model that isn’t enabled.",

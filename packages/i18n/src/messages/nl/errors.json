@@ -88,6 +88,7 @@
     "work_item_child_invalid": "Ten minste een van de genoemde taken is geen deeltaak van deze taak.",
     "work_item_children_limit": "Deze taak heeft al het maximale aantal deeltaken. Voeg delen samen of sluit voltooide deeltaken af.",
     "work_item_children_open": "Deze taak heeft nog openstaande deeltaken. Sluit ze af of breek ze af voordat je deze taak als voltooid markeert.",
+    "work_item_result_invalid": "Het gestructureerde resultaat komt niet overeen met de velden die de taak vereist: een onbekend veld, een onjuist type of een ontbrekend verplicht veld.",
     "work_item_start_needs_assistant": "Direct starten is alleen mogelijk voor een deeltaak van de ingebouwde AI. Voor personen en agenten wordt deze alleen aangemaakt.",
     "agent_profile_name_taken": "Er bestaat in deze werkruimte al een agentprofiel met deze naam.",
     "agent_profile_invalid": "Het profiel verwijst naar iets wat hier niet bestaat: een regelpagina buiten de werkruimte of een model dat niet is vrijgeschakeld.",

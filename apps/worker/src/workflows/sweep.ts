@@ -1,7 +1,12 @@
-import { workflowWaitSchema } from '@exocortex/contracts';
-import { appendWorkflowRunEvents, lockWorkflowRun } from '@exocortex/database';
+import { type WorkflowNodeOf, workflowWaitSchema } from '@exocortex/contracts';
+import {
+  appendWorkflowRunEvents,
+  lockWorkflowRun,
+  parseStoredWorkflowGraph,
+} from '@exocortex/database';
 import { createCorrelationId } from '@exocortex/logger';
 
+import { agentCompletion, loadAgentWork } from './agent-completion';
 import {
   advanceJob,
   enqueueAll,
@@ -27,7 +32,11 @@ import { startDueWorkflows, type WorkflowTriggerContext } from './triggers';
  * 3. a queued attempt that is due and has been for a while is queued again;
  * 4. a waiting attempt whose timer is due is woken;
  * 5. a run that nobody advanced for a while, or whose deadline passed, is
- *    advanced, which also times it out.
+ *    advanced, which also times it out;
+ * 6. an agent node waiting on a work item that would settle it now -- the
+ *    item closed, handed in, deleted, or stalled with no run left -- is
+ *    woken, for the wake the API sends after a change can be lost and a run
+ *    ending sends none (issue #162).
  *
  * A duplicate costs nothing: every job claims or locks before it acts, so a
  * second copy finds the work done.
@@ -119,14 +128,66 @@ export async function sweepWorkflowRuns(
     });
   }
 
+  const settled = await settledAgentNodes(dependencies, inRun, now);
+  for (const row of settled) {
+    jobs.push({
+      job: {
+        kind: 'resume',
+        runId: row.runId,
+        executionId: row.id,
+        wake: { kind: 'work_item', workItemId: row.workItemId },
+        correlationId: createCorrelationId(),
+      },
+      jobId: `workflow-resume-${row.id}-${String(minute)}`,
+    });
+  }
+
   await enqueueAll(dependencies, jobs);
   return {
     started,
     recovered,
     requeued: stalled.length,
-    woken: timers.length,
+    woken: timers.length + settled.length,
     advanced: runs.length,
   };
+}
+
+/**
+ * Waiting agent nodes whose work item would settle them if they were woken.
+ * Asked with the same `agentCompletion` the node's resume uses, so the sweep
+ * queues a resume only when the node would move, not one per minute per
+ * waiting node.
+ */
+async function settledAgentNodes(
+  dependencies: WorkflowRuntimeDependencies,
+  inRun: { run?: { workspaceId: string } },
+  now: Date,
+): Promise<{ id: string; runId: string; workItemId: string }[]> {
+  const waiting = await dependencies.prisma.workflowNodeExecution.findMany({
+    where: { status: 'WAITING', nodeType: 'agent', ...inRun },
+    select: {
+      id: true,
+      runId: true,
+      nodeId: true,
+      waitingOn: true,
+      run: { select: { workflowVersion: { select: { graph: true } } } },
+    },
+    take: BATCH,
+  });
+  const due: { id: string; runId: string; workItemId: string }[] = [];
+  for (const row of waiting) {
+    const wait = workflowWaitSchema.safeParse(row.waitingOn);
+    if (!wait.success || wait.data.kind !== 'work_item') continue;
+    const graph = parseStoredWorkflowGraph(row.run.workflowVersion.graph);
+    const node = graph?.nodes.find((candidate) => candidate.id === row.nodeId);
+    if (node?.type !== 'agent') continue;
+    const work = await loadAgentWork(dependencies.prisma, wait.data.workItemId);
+    const decision = agentCompletion(node as WorkflowNodeOf<'agent'>, work, now);
+    if (decision.kind !== 'wait') {
+      due.push({ id: row.id, runId: row.runId, workItemId: wait.data.workItemId });
+    }
+  }
+  return due;
 }
 
 /**

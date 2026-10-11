@@ -3749,6 +3749,8 @@ enum WorkItemEventKind {
   CHILDREN_AWAITED
   /// The children it waited for came back; the run may have been carried on.
   CHILDREN_RETURNED
+  /// The structured result was written or cleared (issue #162).
+  STRUCTURED_RESULT_RECORDED
 }
 
 /// Why a page hangs on a piece of work: what it was given, or what it made.
@@ -3832,6 +3834,17 @@ model WorkItem {
   /// key: a run row may go, and the resume then starts a new run instead.
   awaitingRunId    String?
   awaitingSince    DateTime?
+
+  /// The fields its result promises (issue #162): `workflowOutputFieldSchema`
+  /// objects, fixed at creation. Empty promises nothing.
+  resultFields        Json    @default("[]")
+  /// The values, checked against `resultFields` on every write.
+  structuredResult    Json?
+  /// The workflow node attempt that created it, from the verified origin
+  /// header. Unique, which is what makes creating it again from a retried
+  /// attempt answer with the same item. Not a foreign key: the attempt goes
+  /// with its workflow, the work stays.
+  workflowExecutionId String? @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

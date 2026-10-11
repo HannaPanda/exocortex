@@ -43,7 +43,8 @@
       "delegated": "hat einen Teil an {assignee} abgegeben",
       "childrenAwaited": "wartet auf {count, plural, one {einen Teilauftrag} other {# Teilaufträge}}",
       "childrenReturned": "{count, plural, one {Der Teilauftrag ist} other {Die # Teilaufträge sind}} zurück",
-      "childrenReturnedResumed": "{count, plural, one {Der Teilauftrag ist} other {Die # Teilaufträge sind}} zurück, die Arbeit läuft mit den Ergebnissen weiter"
+      "childrenReturnedResumed": "{count, plural, one {Der Teilauftrag ist} other {Die # Teilaufträge sind}} zurück, die Arbeit läuft mit den Ergebnissen weiter",
+      "structuredResultRecorded": "hat das strukturierte Ergebnis eingetragen"
     },
     "trigger": {
       "step": "Zwischenstand",
@@ -143,7 +144,12 @@
     "noteLabel": "Notiz",
     "addNote": "Notiz hinzufügen",
     "budgetWithChildren": "{spent} von {budget} verbraucht, Teilaufträge eingerechnet",
-    "budgetLimitedBy": "Noch {remaining} übrig, begrenzt durch das Budget von „{title}“"
+    "budgetLimitedBy": "Noch {remaining} übrig, begrenzt durch das Budget von „{title}“",
+    "structuredHeading": "Strukturiertes Ergebnis",
+    "structuredHint": "Diese Felder muss das Ergebnis liefern. Abgeben lässt sich der Auftrag erst, wenn alle Pflichtfelder (*) gefüllt sind.",
+    "structuredMissing": "fehlt",
+    "structuredRequired": "Pflichtfeld",
+    "fromWorkflow": "Angelegt vom Workflow-Schritt „{node}“"
   },
   "startRun": {
     "title": "KI-Lauf starten",

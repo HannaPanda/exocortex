@@ -43,7 +43,8 @@
       "delegated": "oddelegowano część do {assignee}",
       "childrenAwaited": "czeka na {count, plural, one {jedno podzadanie} few {# podzadania} many {# podzadań} other {# podzadania}}",
       "childrenReturned": "{count, plural, one {Podzadanie wróciło} few {# podzadania wróciły} many {# podzadań wróciło} other {# podzadania wróciło}}",
-      "childrenReturnedResumed": "{count, plural, one {Podzadanie wróciło} few {# podzadania wróciły} many {# podzadań wróciło} other {# podzadania wróciło}}, praca jest kontynuowana z wynikami"
+      "childrenReturnedResumed": "{count, plural, one {Podzadanie wróciło} few {# podzadania wróciły} many {# podzadań wróciło} other {# podzadania wróciło}}, praca jest kontynuowana z wynikami",
+      "structuredResultRecorded": "wpisuje wynik ustrukturyzowany"
     },
     "trigger": {
       "step": "stan pośredni",
@@ -143,7 +144,12 @@
     "noteLabel": "Notatka",
     "addNote": "Dodaj notatkę",
     "budgetWithChildren": "Wykorzystano {spent} z {budget}, wliczając podzadania",
-    "budgetLimitedBy": "Pozostało jeszcze {remaining}, z ograniczeniem przez budżet „{title}”"
+    "budgetLimitedBy": "Pozostało jeszcze {remaining}, z ograniczeniem przez budżet „{title}”",
+    "structuredHeading": "Wynik ustrukturyzowany",
+    "structuredHint": "Te pola muszą znaleźć się w wyniku. Zadanie można oddać dopiero wtedy, gdy wszystkie wymagane pola (*) są wypełnione.",
+    "structuredMissing": "brak",
+    "structuredRequired": "Pole wymagane",
+    "fromWorkflow": "Utworzono przez krok przepływu pracy „{node}”"
   },
   "startRun": {
     "title": "Uruchom AI",

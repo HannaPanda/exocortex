@@ -1,4 +1,8 @@
-import { type WorkItemCriterion, type WorkItemRef } from '@exocortex/contracts';
+import {
+  type WorkflowOutputField,
+  type WorkItemCriterion,
+  type WorkItemRef,
+} from '@exocortex/contracts';
 
 /**
  * The first message of a run started from a work item (issue #138).
@@ -22,6 +26,8 @@ export interface WorkItemPromptInput {
   instructions: string | null;
   /** The work this is a part of (issue #144), when it was handed on. */
   parent?: { id: string; title: string } | null;
+  /** The fields the result has to fill in (issue #162), usually a workflow's. */
+  resultFields?: readonly WorkflowOutputField[];
 }
 
 export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
@@ -47,6 +53,10 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
     sections.push(`Kontextseiten (bei Bedarf mit exo_page_read lesen):\n${lines.join('\n')}`);
   }
 
+  if (input.resultFields !== undefined && input.resultFields.length > 0) {
+    sections.push(resultFieldsSection(input.resultFields));
+  }
+
   if (input.previousResult !== null && input.previousResult.length > 0) {
     sections.push(`Bisheriges Ergebnis aus einem früheren Versuch:\n${input.previousResult}`);
   }
@@ -63,6 +73,32 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
 }
 
 /**
+ * The structured result the work promises (issue #162). A workflow branches
+ * on these values, so the section says what each one is and that the API
+ * checks them; an `enum` lists its values, because a near miss is refused.
+ */
+export function resultFieldsSection(fields: readonly WorkflowOutputField[]): string {
+  const lines = fields.map((field) => {
+    const type =
+      field.type === 'enum' ? `einer von: ${field.values.join(', ')}` : TYPE_WORDS[field.type];
+    const required = field.required ? 'Pflicht' : 'optional';
+    const description =
+      field.description === null || field.description === undefined ? '' : `: ${field.description}`;
+    return `- ${field.name} (${type}, ${required})${description}`;
+  });
+  return [
+    'Strukturiertes Ergebnis: Dieser Auftrag verlangt neben dem Ergebnistext diese Felder. Trage sie mit exo_work_item_update als structuredResult ein, ein Objekt mit genau diesen Namen. Andere Namen und falsche Typen werden abgelehnt, und ohne die Pflichtfelder lässt sich der Auftrag nicht abgeben.',
+    ...lines,
+  ].join('\n');
+}
+
+const TYPE_WORDS: Record<Exclude<WorkflowOutputField['type'], 'enum'>, string> = {
+  string: 'Text',
+  number: 'Zahl',
+  boolean: 'true oder false',
+};
+
+/**
  * How a run keeps the item current. Shared with the message that carries a
  * paused run on (issue #140), because the resumed run has to be told the same
  * rules the first one was.
@@ -70,7 +106,7 @@ export function buildWorkItemPrompt(input: WorkItemPromptInput): string {
 export function reportingInstructions(workItemId: string): string {
   return [
     'So hältst du den Auftrag aktuell:',
-    `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${workItemId}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, und setze status auf review.`,
+    `- Wenn du fertig bist, trage das Ergebnis mit exo_work_item_update (workItemId ${workItemId}) ein: result, erzeugte Seiten als resultDocumentIds, erfüllte Kriterien mit met: true, verlangte Felder als structuredResult, und setze status auf review.`,
     `- Brauchst du eine Entscheidung, eine Freigabe oder eine Information von einem Menschen, frag mit exo_attention_request (workItemId ${workItemId}): mit options für eine Wahl, ohne für eine Antwort in Worten, bei einer Freigabe mit action und den betroffenen Seiten als subjectPages. Halte in workState fest, was erledigt ist und was danach kommt. Der Auftrag wartet dann, dieser Lauf endet, und die Antwort setzt die Arbeit in diesem Chat fort.`,
     `- Halte nach jedem größeren Arbeitsschritt und bevor du aufhörst deinen Arbeitsstand mit exo_work_item_checkpoint (workItemId ${workItemId}) fest: summary, plan mit status done/in_progress/open, Annahmen, Erkenntnisse, lastAction, nextStep und die erzeugten Seiten. Weggelassene Felder bleiben wie beim letzten Mal. Ein späterer Lauf, auch mit einem anderen Modell, setzt genau dort an.`,
     '- Kurze Hinweise für Menschen kannst du mit exo_work_item_note in die Historie schreiben.',

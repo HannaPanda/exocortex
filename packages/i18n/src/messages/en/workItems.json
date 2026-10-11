@@ -43,7 +43,8 @@
       "delegated": "delegated a subtask to {assignee}",
       "childrenAwaited": "is waiting for {count, plural, one {one subtask} other {# subtasks}}",
       "childrenReturned": "{count, plural, one {The subtask has} other {# subtasks have}} returned",
-      "childrenReturnedResumed": "{count, plural, one {The subtask has} other {# subtasks have}} returned, work continues with the results"
+      "childrenReturnedResumed": "{count, plural, one {The subtask has} other {# subtasks have}} returned, work continues with the results",
+      "structuredResultRecorded": "recorded the structured result"
     },
     "trigger": {
       "step": "interim progress",
@@ -143,7 +144,12 @@
     "noteLabel": "Note",
     "addNote": "Add note",
     "budgetWithChildren": "{spent} of {budget} spent, including subtasks",
-    "budgetLimitedBy": "{remaining} remaining, limited by the budget of “{title}”"
+    "budgetLimitedBy": "{remaining} remaining, limited by the budget of “{title}”",
+    "structuredHeading": "Structured result",
+    "structuredHint": "The result must provide these fields. The work item can only be submitted once all required fields (*) are filled in.",
+    "structuredMissing": "missing",
+    "structuredRequired": "Required field",
+    "fromWorkflow": "Created by workflow step “{node}”"
   },
   "startRun": {
     "title": "Start AI run",

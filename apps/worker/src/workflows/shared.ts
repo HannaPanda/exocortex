@@ -11,8 +11,10 @@ import {
 } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 import { createCorrelationId, type Logger } from '@exocortex/logger';
+import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { createAgentNodeHandler } from './agent-node';
 import { DEFAULT_NODE_HANDLERS, type NodeHandler, type NodeHandlerRegistry } from './handlers';
 
 /**
@@ -26,6 +28,13 @@ export interface WorkflowRuntimeDependencies {
   queues: Pick<QueueRegistry, 'enqueue'>;
   settings: (workspaceId: string) => Promise<Settings>;
   logger: Logger;
+  /**
+   * How the agent node reaches the API as the person a run acts for (issue
+   * #162). Null or absent where no service token is configured, and an agent
+   * node then fails with `workflow_agent_refused`.
+   */
+  apiClientFor?:
+    ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
   handlers?: NodeHandlerRegistry;
   now?: () => Date;
 }
@@ -89,7 +98,14 @@ export function handlerFor(
   dependencies: WorkflowRuntimeDependencies,
   nodeType: string,
 ): NodeHandler | undefined {
-  const registry = dependencies.handlers ?? DEFAULT_NODE_HANDLERS;
+  const registry = dependencies.handlers ?? {
+    ...DEFAULT_NODE_HANDLERS,
+    agent: createAgentNodeHandler({
+      prisma: dependencies.prisma,
+      apiClientFor: dependencies.apiClientFor ?? null,
+      ...(dependencies.now === undefined ? {} : { now: dependencies.now }),
+    }),
+  };
   return (registry as Readonly<Record<string, NodeHandler>>)[nodeType];
 }
 

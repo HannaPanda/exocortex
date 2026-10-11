@@ -88,6 +88,7 @@
     "work_item_child_invalid": "Mindestens einer der genannten Aufträge ist kein Teilauftrag dieses Auftrags.",
     "work_item_children_limit": "Dieser Auftrag hat schon so viele Teilaufträge, wie einer haben kann. Fasse Teile zusammen oder schließe erledigte ab.",
     "work_item_children_open": "Dieser Auftrag hat noch offene Teilaufträge. Schließe sie ab oder brich sie ab, bevor du ihn erledigt nennst.",
+    "work_item_result_invalid": "Das strukturierte Ergebnis passt nicht zu den Feldern, die der Auftrag verlangt: ein unbekanntes Feld, ein falscher Typ oder ein fehlendes Pflichtfeld.",
     "work_item_start_needs_assistant": "Sofort starten lässt sich nur ein Teilauftrag für die eingebaute KI. Für Personen und Agenten wird er nur angelegt.",
     "agent_profile_name_taken": "Ein Agentenprofil mit diesem Namen gibt es in diesem Arbeitsbereich schon.",
     "agent_profile_invalid": "Das Profil nennt etwas, das es hier nicht gibt: eine Regelseite außerhalb des Arbeitsbereichs oder ein Modell, das nicht freigeschaltet ist.",

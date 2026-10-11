@@ -5,6 +5,8 @@ import { aiRunStatusSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
 import { aiWriteModeSchema } from './ai-trust';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { workflowOutputFieldSchema } from './workflow-graph';
+import { resultFieldsSchema, structuredResultSchema } from './workflow-result';
 
 /**
  * Delegated work (issue #138, ADR-066).
@@ -154,6 +156,7 @@ export const WORK_ITEM_EVENT_KINDS = [
   'delegated',
   'children_awaited',
   'children_returned',
+  'structured_result_recorded',
 ] as const;
 export const workItemEventKindSchema = z.enum(WORK_ITEM_EVENT_KINDS);
 export type WorkItemEventKind = z.infer<typeof workItemEventKindSchema>;
@@ -276,6 +279,17 @@ export const workItemDetailSchema = workItemSummarySchema.extend({
   /** How many working states were recorded (issue #142); read them with the checkpoint list. */
   checkpointCount: z.number().int(),
   latestCheckpointAt: isoDateTimeSchema.nullable(),
+  /**
+   * The fields this work promises to fill in (issue #162); empty when it
+   * promises none. Set when the work is created, by a workflow's agent node
+   * or by whoever asked for it, and not changed afterwards: a workflow
+   * branches on them.
+   */
+  resultFields: z.array(workflowOutputFieldSchema),
+  /** The values, checked against `resultFields` whenever they are written. */
+  structuredResult: structuredResultSchema.nullable(),
+  /** The workflow node this work was created by, when one was. */
+  workflow: z.object({ workflowId: idSchema, runId: idSchema, nodeId: z.string() }).nullable(),
 });
 export type WorkItemDetail = z.infer<typeof workItemDetailSchema>;
 
@@ -326,6 +340,11 @@ export const createWorkItemRequestSchema = z.object({
   agentProfileId: idSchema.nullable().optional(),
   dueAt: isoDateTimeSchema.nullable().optional(),
   parentId: idSchema.nullable().optional(),
+  /**
+   * The fields the result has to fill in (issue #162). Only set on creation:
+   * handing the work in (`review`) refuses while a required one is missing.
+   */
+  resultFields: resultFieldsSchema.optional(),
 });
 export type CreateWorkItemRequest = z.infer<typeof createWorkItemRequestSchema>;
 
@@ -346,6 +365,12 @@ export const updateWorkItemRequestSchema = z
     assignee: workItemAssigneeInputSchema.nullable().optional(),
     acceptanceCriteria: criteriaSchema.optional(),
     result: z.string().trim().max(WORK_ITEM_RESULT_MAX_CHARS).nullable().optional(),
+    /**
+     * Replaces the structured result as a whole (issue #162); null clears it.
+     * Checked against the item's `resultFields`: an undeclared field or a
+     * wrong type is refused with `work_item_result_invalid`.
+     */
+    structuredResult: structuredResultSchema.nullable().optional(),
     contextDocumentIds: refIdsSchema.optional(),
     resultDocumentIds: refIdsSchema.optional(),
     budgetMicroUsd: budgetSchema.nullable().optional(),

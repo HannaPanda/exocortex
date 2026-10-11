@@ -7,7 +7,7 @@ import {
   type WorkItemParticipant,
 } from '@exocortex/contracts';
 import {
-  type Prisma,
+  Prisma,
   type WorkItemEventKind as PrismaEventKind,
   type WorkItemParticipantKind as PrismaParticipantKind,
   type WorkItemStatus as PrismaStatus,
@@ -163,6 +163,16 @@ function planResult(
   }
   if (request.resultDocumentIds !== undefined) fields.push('resultDocumentIds');
   if (fields.length > 0) plan.events.push({ kind: 'RESULT_RECORDED', data: { fields } });
+  // Its own line (issue #162), naming the fields written, never their values:
+  // the history is a receipt, and the values are on the item.
+  if (request.structuredResult !== undefined) {
+    plan.data.structuredResult =
+      request.structuredResult === null ? Prisma.DbNull : request.structuredResult;
+    plan.events.push({
+      kind: 'STRUCTURED_RESULT_RECORDED',
+      data: { fields: Object.keys(request.structuredResult ?? {}) },
+    });
+  }
 }
 
 function planPlainFields(request: UpdateWorkItemRequest, plan: WorkItemUpdatePlan): string[] {

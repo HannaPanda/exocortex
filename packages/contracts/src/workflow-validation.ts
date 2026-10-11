@@ -13,6 +13,7 @@ import {
   type WorkflowNode,
   type WorkflowNodeOf,
 } from './workflow-graph';
+import { workflowGoalPlaceholders } from './workflow-result';
 
 /**
  * Whether a workflow graph makes sense (issue #160, ADR-075).
@@ -54,6 +55,7 @@ export const WORKFLOW_PROBLEM_CODES = [
   'condition_unknown_field',
   'condition_operator_mismatch',
   'condition_value_invalid',
+  'goal_placeholder_invalid',
   'schedule_invalid',
   'reference_not_found',
 ] as const;
@@ -135,6 +137,7 @@ export function graphProblems(graph: WorkflowGraph): WorkflowProblem[] {
   problems.push(...reachabilityProblems(nodes, edges));
   problems.push(...joinProblems(order, nodes, edges));
   problems.push(...conditionProblems(nodes, edges));
+  problems.push(...goalPlaceholderProblems(nodes, edges));
   return problems;
 }
 
@@ -491,6 +494,42 @@ function conditionProblems(
       continue;
     }
     problems.push(...operatorProblems(node, field));
+  }
+  return problems;
+}
+
+/**
+ * A placeholder in a goal names `input` or an agent node upstream of this one
+ * and a field it declares (issue #162): a sentence that silently keeps
+ * `{{review.socre}}` because of a typo would reach the model as written.
+ */
+function goalPlaceholderProblems(
+  nodes: ReadonlyMap<string, WorkflowNode>,
+  edges: readonly WorkflowEdge[],
+): WorkflowProblem[] {
+  const problems: WorkflowProblem[] = [];
+  for (const node of nodes.values()) {
+    if (node.type !== 'agent') continue;
+    const at = { nodeId: node.id };
+    for (const { source, key } of workflowGoalPlaceholders(node.goal)) {
+      if (source === 'input') continue;
+      const upstream = nodes.get(source);
+      if (upstream?.type !== 'agent' || !upstreamOf(node.id, edges).has(source)) {
+        problems.push(
+          problem(
+            'goal_placeholder_invalid',
+            `"{{${source}.${key}}}" names no agent node before this one`,
+            at,
+          ),
+        );
+        continue;
+      }
+      if (!upstream.outputFields.some((field) => field.name === key)) {
+        problems.push(
+          problem('goal_placeholder_invalid', `Node "${source}" declares no field "${key}"`, at),
+        );
+      }
+    }
   }
   return problems;
 }

@@ -152,6 +152,13 @@ export const API_ERROR_CODES = [
   'work_item_start_needs_assistant',
   /** `done` while a child is still open; close or cancel the children first. */
   'work_item_children_open',
+  /**
+   * A structured result that does not match the fields the work declared
+   * (issue #162): an unknown field, a wrong type, a value not allowed, or a
+   * required field missing when the work is handed in. `details.problems`
+   * names each one.
+   */
+  'work_item_result_invalid',
   /** Another agent profile in this workspace already has that name. */
   'agent_profile_name_taken',
   /**
@@ -427,6 +434,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   work_item_children_limit: 409,
   work_item_start_needs_assistant: 422,
   work_item_children_open: 409,
+  work_item_result_invalid: 422,
   agent_profile_name_taken: 409,
   agent_profile_invalid: 400,
   eval_case_name_taken: 409,

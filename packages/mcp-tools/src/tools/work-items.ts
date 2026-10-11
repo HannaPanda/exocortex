@@ -130,6 +130,7 @@ function formatDetail(item: WorkItemDetail): string {
       ...item.resultRefs.map((ref) => `- ${ref.title} (id: ${ref.documentId})`),
     );
   }
+  lines.push(...structuredResultLines(item));
   if (item.parent !== null)
     lines.push('', `Teil von: ${item.parent.title} (id: ${item.parent.id})`);
   lines.push(...childLines(item));
@@ -235,6 +236,31 @@ export const workItemGetTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** The promised fields with what is filled in (issue #162), and where the work came from. */
+function structuredResultLines(item: WorkItemDetail): string[] {
+  const lines: string[] = [];
+  if (item.resultFields.length > 0) {
+    const values = item.structuredResult ?? {};
+    lines.push(
+      '',
+      'Strukturiertes Ergebnis:',
+      ...item.resultFields.map((field) => {
+        const value = values[field.name];
+        const shown = value === undefined || value === null ? '(fehlt)' : JSON.stringify(value);
+        const kind = field.type === 'enum' ? `enum: ${field.values.join('|')}` : field.type;
+        return `- ${field.name} (${kind}${field.required ? ', Pflicht' : ''}): ${shown}`;
+      }),
+    );
+  }
+  if (item.workflow !== null) {
+    lines.push(
+      '',
+      `Aus Workflow ${item.workflow.workflowId}, Lauf ${item.workflow.runId}, Knoten ${item.workflow.nodeId}`,
+    );
+  }
+  return lines;
+}
+
 export const workItemCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_work_item_create',
   description:
@@ -242,7 +268,9 @@ export const workItemCreateTool: AnyToolDefinition = defineTool({
     '([{"text":…,"met":false}]), Kontextseiten (contextDocumentIds), Priorität (low, normal, high, ' +
     'urgent), Fälligkeit (dueAt, ISO), Budget in Mikro-USD, übergeordnetem Auftrag (parentId) und ' +
     'Agentenprofil (agentProfileId, siehe exo_agent_profile_list; ein Teilauftrag übernimmt sonst ' +
-    'das seines Elternauftrags). ' +
+    'das seines Elternauftrags). resultFields legt fest, welche Felder das Ergebnis strukturiert ' +
+    'liefern muss ([{name, type: string|number|boolean|enum, values, required, description}]); ' +
+    'abgeben lässt sich der Auftrag dann erst mit allen Pflichtfeldern. ' +
     `Du selbst wirst als Auftraggeber eingetragen. ${ASSIGNEE_HELP}`,
   inputSchema: z.object({ workspaceId: idSchema }).extend(createWorkItemRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
@@ -270,7 +298,9 @@ export const workItemUpdateTool: AnyToolDefinition = defineTool({
     'Ändert einen Auftrag. Nur die genannten Felder ändern sich, null leert ein Feld. So trägst du ' +
     'Fortschritt ein: status (mit statusReason, wenn er blockiert ist oder wartet), result (das ' +
     'Ergebnis in Worten), resultDocumentIds (erzeugte Seiten, ersetzt die Liste), ' +
-    'acceptanceCriteria (die ganze Liste, erfüllte mit met: true). Außerdem title, goal, priority, ' +
+    'acceptanceCriteria (die ganze Liste, erfüllte mit met: true), structuredResult (ein Objekt ' +
+    'mit den Feldern aus resultFields, ersetzt das bisherige; fremde Namen und falsche Typen werden ' +
+    'abgelehnt). Außerdem title, goal, priority, ' +
     'assignee, contextDocumentIds, budgetMicroUsd, dueAt, parentId, agentProfileId (null nimmt ' +
     'das Standardprofil). Ein Profil wählen darf nur ein Mensch oder ein schreibender Token. ' +
     `${STATUS_HELP} ${ASSIGNEE_HELP}`,

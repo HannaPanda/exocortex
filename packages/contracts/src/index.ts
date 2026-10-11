@@ -59,6 +59,7 @@ export * from './work-item-delegation';
 export * from './work-items';
 export * from './workflow-graph';
 export * from './workflow-progress';
+export * from './workflow-result';
 export * from './workflow-runtime';
 export * from './workflow-validation';
 export * from './workflows';

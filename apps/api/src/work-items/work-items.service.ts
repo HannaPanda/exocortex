@@ -10,14 +10,13 @@ import {
   type StartWorkItemRunResponse,
   type UpdateWorkItemRequest,
   type WorkItemAssigneeInput,
+  type WorkItemDetail,
   type WorkItemListResponse,
   type WorkItemResponse,
 } from '@exocortex/contracts';
 import {
   type Prisma,
   type PrismaClient,
-  type PrismaTransactionClient,
-  type WorkItemRefRole,
   type WorkItemStatus as PrismaStatus,
 } from '@exocortex/database';
 
@@ -56,6 +55,7 @@ import { WorkItemCheckpointsService } from './work-item-checkpoints.service';
 import { eventActor, writeDelegatedEvent, writeEvents } from './work-item-events';
 import {
   parseCriteria,
+  parseResultFields,
   PARTICIPANT_TO_PRISMA,
   PRIORITY_TO_PRISMA,
   STATUS_TO_PRISMA,
@@ -63,10 +63,20 @@ import {
   toWorkItemSummary,
   WORK_ITEM_DETAIL_SELECT,
   WORK_ITEM_SUMMARY_SELECT,
+  type WorkItemDetailRow,
 } from './work-item-mapper';
 import { profileForNewItem, profilePreferences } from './work-item-profile';
 import { buildWorkItemPrompt } from './work-item-prompt';
+import { replaceRefs, validateParent, validateRefs } from './work-item-refs';
+import { assertStructuredResult } from './work-item-result';
 import { assertChildrenClosed, assertSiblingsAllowRun } from './work-item-siblings';
+import { WorkItemTransitions } from './work-item-transitions';
+import {
+  itemMadeBy,
+  nodeTerms,
+  verifiedWorkflowNode,
+  workflowOriginOf,
+} from './work-item-workflow';
 
 /**
  * Delegated work (issue #138, ADR-066).
@@ -88,26 +98,13 @@ const ASSIGNEE_FIELDS = new Set<keyof UpdateWorkItemRequest>([
   'acceptanceCriteria',
   'result',
   'resultDocumentIds',
+  'structuredResult',
 ]);
-
-/** Deep enough for any real hierarchy, short enough that a corrupt loop ends. */
-const MAX_PARENT_DEPTH = 64;
 
 type Action = 'created' | 'updated' | 'deleted';
 
-/**
- * Told when a child's status may have changed what its parent waits for
- * (issue #144). The delegation service registers itself here rather than
- * being a dependency, because it depends on this service.
- */
-export type ChildChangeListener = (
-  parentId: string,
-  actor: WorkItemActor,
-  correlationId: string,
-) => Promise<void>;
-
 @Injectable()
-export class WorkItemsService {
+export class WorkItemsService extends WorkItemTransitions {
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     private readonly access: WorkspaceAccessService,
@@ -115,22 +112,8 @@ export class WorkItemsService {
     private readonly conversations: ConversationsService,
     private readonly checkpoints: WorkItemCheckpointsService,
     private readonly profiles: AgentProfilesService,
-  ) {}
-
-  private readonly childListeners: ChildChangeListener[] = [];
-
-  onChildChange(listener: ChildChangeListener): void {
-    this.childListeners.push(listener);
-  }
-
-  /** After a committed change to a child: whatever waits on it hears about it. */
-  async afterChildChange(
-    parentId: string | null,
-    actor: WorkItemActor,
-    correlationId: string,
-  ): Promise<void> {
-    if (parentId === null) return;
-    for (const listener of this.childListeners) await listener(parentId, actor, correlationId);
+  ) {
+    super();
   }
 
   async list(input: {
@@ -157,7 +140,15 @@ export class WorkItemsService {
 
   async get(input: { workItemId: string; userId: string }): Promise<WorkItemResponse> {
     const row = await this.loadReadable(input.workItemId, input.userId);
-    return { workItem: toWorkItemDetail(row, await budgetStanding(this.prisma, row.id)) };
+    return { workItem: await this.detailOf(row) };
+  }
+
+  /** The detail with what it needs beyond the row: the budget, and where it came from. */
+  private async detailOf(row: WorkItemDetailRow): Promise<WorkItemDetail> {
+    return toWorkItemDetail(row, {
+      ...(await budgetStanding(this.prisma, row.id)),
+      workflow: await workflowOriginOf(this.prisma, row.workflowExecutionId),
+    });
   }
 
   async create(input: {
@@ -173,20 +164,31 @@ export class WorkItemsService {
     const { request, actor } = input;
     const role = await this.access.requireRole(input.workspaceId, actor.userId);
     assertPolicy(canManageWorkItems(role));
+    const workflowNode = await verifiedWorkflowNode(this.prisma, input.workspaceId, actor.userId);
+    const made = await itemMadeBy(this.prisma, workflowNode);
+    if (made !== null) return this.get({ workItemId: made, userId: actor.userId });
     const agentProfileId = await profileForNewItem(
       { prisma: this.prisma, profiles: this.profiles },
-      input.workspaceId,
-      actor.userId,
-      request,
-      input.mayChooseProfile ?? false,
+      {
+        workspaceId: input.workspaceId,
+        userId: actor.userId,
+        request,
+        mayChoose: input.mayChooseProfile ?? false,
+        workflowNode,
+      },
     );
+    const { resultFields, writeMode } = nodeTerms(workflowNode, request);
 
     const assignee = request.assignee ?? null;
     const assigneeName = await this.validateAssignee(input.workspaceId, assignee);
     if (request.parentId !== undefined && request.parentId !== null) {
-      await this.validateParent(input.workspaceId, null, request.parentId);
+      await validateParent(this.prisma, input.workspaceId, null, request.parentId);
     }
-    const contextIds = await this.validateRefs(input.workspaceId, request.contextDocumentIds);
+    const contextIds = await validateRefs(
+      this.prisma,
+      input.workspaceId,
+      request.contextDocumentIds,
+    );
 
     const id = await this.prisma.$transaction(async (tx) => {
       const created = await tx.workItem.create({
@@ -200,15 +202,17 @@ export class WorkItemsService {
           ...assigneeColumns(assignee),
           acceptanceCriteria: request.acceptanceCriteria ?? [],
           budgetMicroUsd: request.budgetMicroUsd ?? null,
-          writeMode: writeModeToPrisma(request.writeMode ?? null),
+          writeMode: writeModeToPrisma(writeMode),
           agentProfileId,
+          resultFields,
+          workflowExecutionId: workflowNode?.executionId ?? null,
           dueAt:
             request.dueAt === undefined || request.dueAt === null ? null : new Date(request.dueAt),
           parentId: request.parentId ?? null,
         },
         select: { id: true },
       });
-      await this.replaceRefs(tx, created.id, 'CONTEXT', contextIds ?? []);
+      await replaceRefs(tx, created.id, 'CONTEXT', contextIds ?? []);
       const events: WorkItemEventDraft[] = [{ kind: 'CREATED', data: {} }];
       if (assignee !== null) {
         events.push({
@@ -256,6 +260,7 @@ export class WorkItemsService {
       await assertRunMayClose(this.prisma, existing.status);
       await assertChildrenClosed(this.prisma, existing.id);
     }
+    assertStructuredResult(parseResultFields(existing.resultFields), existing, request);
     const progressOnly = Object.keys(request).every((key) =>
       ASSIGNEE_FIELDS.has(key as keyof UpdateWorkItemRequest),
     );
@@ -266,10 +271,18 @@ export class WorkItemsService {
         ? null
         : await this.validateAssignee(existing.workspaceId, request.assignee);
     if (request.parentId !== undefined && request.parentId !== null) {
-      await this.validateParent(existing.workspaceId, existing.id, request.parentId);
+      await validateParent(this.prisma, existing.workspaceId, existing.id, request.parentId);
     }
-    const contextIds = await this.validateRefs(existing.workspaceId, request.contextDocumentIds);
-    const resultIds = await this.validateRefs(existing.workspaceId, request.resultDocumentIds);
+    const contextIds = await validateRefs(
+      this.prisma,
+      existing.workspaceId,
+      request.contextDocumentIds,
+    );
+    const resultIds = await validateRefs(
+      this.prisma,
+      existing.workspaceId,
+      request.resultDocumentIds,
+    );
 
     const plan = planWorkItemUpdate({ existing, request, assigneeName, now: new Date() });
 
@@ -277,8 +290,8 @@ export class WorkItemsService {
       // Written even when only the references changed, so `updatedAt` moves
       // and the item rises in the list like any other change would make it.
       await tx.workItem.update({ where: { id: existing.id }, data: plan.data });
-      if (contextIds !== undefined) await this.replaceRefs(tx, existing.id, 'CONTEXT', contextIds);
-      if (resultIds !== undefined) await this.replaceRefs(tx, existing.id, 'RESULT', resultIds);
+      if (contextIds !== undefined) await replaceRefs(tx, existing.id, 'CONTEXT', contextIds);
+      if (resultIds !== undefined) await replaceRefs(tx, existing.id, 'RESULT', resultIds);
       await writeEvents(tx, existing.id, actor, plan.events, input.correlationId);
       const next = (plan.data.status as PrismaStatus | undefined) ?? existing.status;
       return syncAfterTransition(tx, {
@@ -295,7 +308,7 @@ export class WorkItemsService {
     await this.announce(existing.workspaceId, existing.id, 'updated', input.correlationId);
     await this.announceAttention(existing.workspaceId, attention, input.correlationId);
     if (plan.data.status !== undefined) {
-      await this.afterChildChange(existing.parentId, actor, input.correlationId);
+      await this.afterTransition(existing, actor, input.correlationId);
     }
     return this.get({ workItemId: existing.id, userId: actor.userId });
   }
@@ -364,7 +377,7 @@ export class WorkItemsService {
     await this.announce(existing.workspaceId, existing.id, 'deleted', input.correlationId);
     await this.announceAttention(existing.workspaceId, attention, input.correlationId);
     // A child that is gone cannot be waited for any more.
-    await this.afterChildChange(existing.parentId, actor, input.correlationId);
+    await this.afterTransition(existing, actor, input.correlationId);
     return { deleted: true, detachedChildren };
   }
 
@@ -388,7 +401,7 @@ export class WorkItemsService {
     const row = await this.loadReadable(input.workItemId, input.actor.userId);
     const role = await this.access.requireRole(row.workspaceId, input.actor.userId);
     assertPolicy(canManageWorkItems(role));
-    const item = toWorkItemDetail(row, await budgetStanding(this.prisma, row.id));
+    const item = await this.detailOf(row);
 
     if (row.closedAt !== null) {
       throw new AppError('work_item_closed', 'The work item is closed');
@@ -445,6 +458,7 @@ export class WorkItemsService {
           checkpoint: resume?.text ?? null,
           instructions: input.request.instructions ?? null,
           parent: row.parent,
+          resultFields: item.resultFields,
         }),
       },
     });
@@ -577,6 +591,8 @@ export class WorkItemsService {
         writeMode: true,
         parentId: true,
         closedAt: true,
+        resultFields: true,
+        structuredResult: true,
       },
     });
     if (row === null) throw AppError.notFound('Work item');
@@ -618,64 +634,6 @@ export class WorkItemsService {
       throw new AppError('work_item_assignee_invalid', 'The assignee is not a member here');
     }
     return member.user.name;
-  }
-
-  /**
-   * Same workspace, not the item itself, not below it.
-   *
-   * Walked upwards from the candidate: if the walk meets the item, the item
-   * would become its own ancestor.
-   */
-  private async validateParent(
-    workspaceId: string,
-    workItemId: string | null,
-    parentId: string,
-  ): Promise<void> {
-    let cursor: string | null = parentId;
-    for (let depth = 0; cursor !== null && depth < MAX_PARENT_DEPTH; depth += 1) {
-      if (cursor === workItemId) {
-        throw new AppError('work_item_parent_invalid', 'The parent would create a cycle');
-      }
-      const current: { workspaceId: string; parentId: string | null } | null =
-        await this.prisma.workItem.findUnique({
-          where: { id: cursor },
-          select: { workspaceId: true, parentId: true },
-        });
-      if (current === null || current.workspaceId !== workspaceId) {
-        throw new AppError('work_item_parent_invalid', 'The parent is not in this workspace');
-      }
-      cursor = current.parentId;
-    }
-  }
-
-  /** Pages of this workspace only; `undefined` means the list is not being changed. */
-  private async validateRefs(
-    workspaceId: string,
-    documentIds: readonly string[] | undefined,
-  ): Promise<string[] | undefined> {
-    if (documentIds === undefined) return undefined;
-    const unique = [...new Set(documentIds)];
-    if (unique.length === 0) return [];
-    const found = await this.prisma.document.count({
-      where: { id: { in: unique }, workspaceId },
-    });
-    if (found !== unique.length) {
-      throw new AppError('work_item_ref_invalid', 'A referenced page is not in this workspace');
-    }
-    return unique;
-  }
-
-  private async replaceRefs(
-    tx: PrismaTransactionClient,
-    workItemId: string,
-    role: WorkItemRefRole,
-    documentIds: readonly string[],
-  ): Promise<void> {
-    await tx.workItemRef.deleteMany({ where: { workItemId, role } });
-    if (documentIds.length === 0) return;
-    await tx.workItemRef.createMany({
-      data: documentIds.map((documentId) => ({ workItemId, documentId, role })),
-    });
   }
 
   async announceAttention(

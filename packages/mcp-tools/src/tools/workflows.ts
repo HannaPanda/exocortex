@@ -45,7 +45,12 @@ const GRAPH_HELP =
   '. Eine Kante: {id, kind: "flow", source: {nodeId, handle}, target: {nodeId}}. Nur ein join ' +
   'hat mehrere Eingänge, nur parallel.branch mehrere Ausgänge; keine Zyklen. agent: goal, ' +
   'documentIds, agentProfileId, writeMode, budgetMicroUsd, outputFields [{name, type: ' +
-  'string|number|boolean|enum, values, required}]. condition: source {nodeId, field} eines ' +
+  'string|number|boolean|enum, values, required}], completion review|done (weiter, sobald der ' +
+  'Auftrag abgegeben ist, oder erst, wenn ein Mensch ihn erledigt hat). Ein agent-Knoten legt ' +
+  'einen gewöhnlichen Auftrag an und startet die eingebaute KI darauf; im goal setzen ' +
+  '{{knoten.feld}} ein Feld eines vorgelagerten agent-Knotens und {{input.schlüssel}} einen ' +
+  'Startwert ein. Sein Ergebnis für spätere Knoten: fields, workItemId, aiRunId, summary, ' +
+  'resultDocumentIds, spentMicroUsd. condition: source {nodeId, field} eines ' +
   'vorgelagerten agent-Knotens, operator (eq, neq, gt, gte, lt, lte, present, absent, is_true, ' +
   'is_false), value. join: policy all|any. approval: title, question, assigneeUserId. end: ' +
   'outcome succeeded|failed|cancelled. Ein Entwurf darf unvollständig sein; ' +

@@ -172,7 +172,7 @@ export class WorkItemQuestionsService {
     );
     await this.workItems.announceAttention(existing.workspaceId, attention, input.correlationId);
     // A child in review has come back to a parent that may wait for it (issue #144).
-    await this.workItems.afterChildChange(existing.parentId, input.actor, input.correlationId);
+    await this.workItems.afterTransition(existing, input.actor, input.correlationId);
     const open = await this.prisma.attentionItem.findFirst({
       where: { workItemId: existing.id, kind: 'REVIEW', status: 'OPEN' },
       select: { id: true },

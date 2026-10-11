@@ -43,7 +43,8 @@
       "delegated": "delegou uma parte para {assignee}",
       "childrenAwaited": "está aguardando {count, plural, one {uma subtarefa} many {# subtarefas} other {# subtarefas}}",
       "childrenReturned": "{count, plural, one {A subtarefa retornou} many {As # subtarefas retornaram} other {As # subtarefas retornaram}}",
-      "childrenReturnedResumed": "{count, plural, one {A subtarefa retornou} many {As # subtarefas retornaram} other {As # subtarefas retornaram}}, o trabalho continua com os resultados"
+      "childrenReturnedResumed": "{count, plural, one {A subtarefa retornou} many {As # subtarefas retornaram} other {As # subtarefas retornaram}}, o trabalho continua com os resultados",
+      "structuredResultRecorded": "registrou o resultado estruturado"
     },
     "trigger": {
       "step": "progresso intermediário",
@@ -143,7 +144,12 @@
     "noteLabel": "Nota",
     "addNote": "Adicionar nota",
     "budgetWithChildren": "{spent} de {budget} consumidos, incluindo subtarefas",
-    "budgetLimitedBy": "Restam {remaining}, limitado pelo orçamento de “{title}”"
+    "budgetLimitedBy": "Restam {remaining}, limitado pelo orçamento de “{title}”",
+    "structuredHeading": "Resultado estruturado",
+    "structuredHint": "Estes campos devem ser fornecidos pelo resultado. O trabalho só pode ser entregue quando todos os campos obrigatórios (*) estiverem preenchidos.",
+    "structuredMissing": "ausente",
+    "structuredRequired": "Obrigatório",
+    "fromWorkflow": "Criado pela etapa do fluxo de trabalho “{node}”"
   },
   "startRun": {
     "title": "Iniciar execução de IA",

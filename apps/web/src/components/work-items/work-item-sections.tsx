@@ -169,6 +169,58 @@ export function ResultSection({
   );
 }
 
+/**
+ * The fields the result promises and what is filled in (issue #162). Shown,
+ * not edited here: they are written by the run that does the work, checked
+ * by the API on every write, and read by the workflow that asked for them.
+ */
+export function StructuredResultSection({ item }: { item: WorkItemDetail }) {
+  const t = useTranslations('workItems.detail');
+  if (item.resultFields.length === 0 && item.workflow === null) return null;
+  const values = item.structuredResult ?? {};
+  return (
+    <Section title={t('structuredHeading')}>
+      {item.workflow === null ? null : (
+        <p className="text-xs text-muted-foreground">
+          {t('fromWorkflow', { node: item.workflow.nodeId })}
+        </p>
+      )}
+      {item.resultFields.length === 0 ? null : (
+        <dl
+          className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm"
+          data-testid="work-item-structured-result"
+        >
+          {item.resultFields.map((field) => {
+            const value = values[field.name];
+            const missing = value === undefined || value === null;
+            return (
+              <React.Fragment key={field.name}>
+                <dt className="font-mono text-xs leading-6 text-muted-foreground">
+                  {field.name}
+                  {field.required ? (
+                    <span className="sr-only"> ({t('structuredRequired')})</span>
+                  ) : null}
+                  {field.required ? <span aria-hidden="true">*</span> : null}
+                </dt>
+                <dd className="min-w-0 break-words">
+                  {missing ? (
+                    <Badge variant="outline">{t('structuredMissing')}</Badge>
+                  ) : (
+                    String(value)
+                  )}
+                </dd>
+              </React.Fragment>
+            );
+          })}
+        </dl>
+      )}
+      {item.resultFields.length === 0 ? null : (
+        <p className="text-xs text-muted-foreground">{t('structuredHint')}</p>
+      )}
+    </Section>
+  );
+}
+
 function runVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
   if (status === 'completed') return 'default';
   if (status === 'pending' || status === 'running') return 'secondary';

@@ -104,8 +104,20 @@ export const WORKFLOW_RUN_ERROR_CODES = [
   'workflow_node_error',
   /** The worker running a node vanished and the node may not be repeated. */
   'workflow_node_interrupted',
-  /** A node type whose execution has not been built yet (issues #162, #163). */
+  /** A node type whose execution has not been built yet (issue #163). */
   'workflow_node_not_executable',
+  /** The API refused to create an agent node's work item or to start its run (issue #162). */
+  'workflow_agent_refused',
+  /** An agent node's work item was closed as failed. */
+  'workflow_work_item_failed',
+  /** An agent node's work item was cancelled. */
+  'workflow_work_item_cancelled',
+  /** An agent node's work item was deleted while the node waited for it. */
+  'workflow_work_item_gone',
+  /** An agent node's work is open, but no run is working on it and nothing it waits for is pending. */
+  'workflow_work_item_stalled',
+  /** An agent node's structured result does not match the fields it declared. */
+  'workflow_output_invalid',
   /** A waiting node was woken by something it does not know how to resume from. */
   'workflow_resume_unsupported',
 ] as const;

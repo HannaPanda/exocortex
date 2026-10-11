@@ -88,6 +88,7 @@
     "work_item_child_invalid": "Al menos uno de los encargos indicados no es una subtarea de este encargo.",
     "work_item_children_limit": "Este encargo ya tiene el número máximo permitido de subtareas. Agrupa partes o completa las que ya estén listas.",
     "work_item_children_open": "Este encargo aún tiene subtareas pendientes. Complétalas o cancelas antes de marcarlo como completado.",
+    "work_item_result_invalid": "El resultado estructurado no coincide con los campos que requiere la tarea: hay un campo desconocido, un tipo incorrecto o falta un campo obligatorio.",
     "work_item_start_needs_assistant": "Solo se puede iniciar de inmediato una subtarea asignada a la IA integrada. Para personas y agentes, solo se crea.",
     "agent_profile_name_taken": "Ya existe un perfil de agente con este nombre en este espacio de trabajo.",
     "agent_profile_invalid": "El perfil indica algo que no existe aquí: una página de reglas fuera del espacio de trabajo o un modelo que no está habilitado.",

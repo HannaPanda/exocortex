@@ -1,5 +1,5 @@
 import { stricterLimit } from '@exocortex/contracts';
-import { Prisma, type PrismaClient } from '@exocortex/database';
+import { Prisma, type PrismaClient, workItemSubtreeSpend } from '@exocortex/database';
 
 /**
  * A budget over a whole piece of work, children included (issue #144,
@@ -20,24 +20,6 @@ export interface BudgetStanding {
   subtreeSpentMicroUsd: number;
   budgetRemainingMicroUsd: number | null;
   budgetLimitedBy: { id: string; title: string } | null;
-}
-
-/** What the runs of this item and of everything below it cost. */
-export async function subtreeSpend(prisma: PrismaClient, rootId: string): Promise<number> {
-  // `UNION`, not `UNION ALL`: a cycle the API failed to refuse ends here
-  // instead of recursing until the statement times out.
-  const rows = await prisma.$queryRaw<{ spent: bigint | null }[]>(Prisma.sql`
-    WITH RECURSIVE tree AS (
-      SELECT id FROM work_item WHERE id = ${rootId}
-      UNION
-      SELECT child.id FROM work_item child JOIN tree ON child."parentId" = tree.id
-    )
-    SELECT COALESCE(SUM(COALESCE(run."providerCostMicroUsd", run."estimatedCostMicroUsd", 0)), 0)
-      AS spent
-    FROM ai_run run
-    WHERE run."workItemId" IN (SELECT id FROM tree)
-  `);
-  return Number(rows[0]?.spent ?? 0);
 }
 
 /** The item and its ancestors, nearest first. */
@@ -102,7 +84,7 @@ export async function budgetStanding(
     // The item's own spend is needed whatever its budget; an ancestor's only
     // when it has one.
     if (id !== itemId && budget === null) continue;
-    const spent = await subtreeSpend(prisma, id);
+    const spent = await workItemSubtreeSpend(prisma, id);
     if (id === itemId) subtreeSpentMicroUsd = spent;
     if (budget === null) continue;
     const left = budget - spent;

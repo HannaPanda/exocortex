@@ -43,7 +43,8 @@
       "delegated": "ha delegato una parte a {assignee}",
       "childrenAwaited": "in attesa di {count, plural, one {un sotto-incarico} many {# sotto-incarichi} other {# sotto-incarichi}}",
       "childrenReturned": "{count, plural, one {Il sotto-incarico è completato} many {# sotto-incarichi sono completati} other {# sotto-incarichi sono completati}}",
-      "childrenReturnedResumed": "{count, plural, one {Il sotto-incarico è completato} many {# sotto-incarichi sono completati} other {# sotto-incarichi sono completati}}, il lavoro prosegue con i risultati"
+      "childrenReturnedResumed": "{count, plural, one {Il sotto-incarico è completato} many {# sotto-incarichi sono completati} other {# sotto-incarichi sono completati}}, il lavoro prosegue con i risultati",
+      "structuredResultRecorded": "ha registrato il risultato strutturato"
     },
     "trigger": {
       "step": "stato intermedio",
@@ -143,7 +144,12 @@
     "noteLabel": "Nota",
     "addNote": "Aggiungi nota",
     "budgetWithChildren": "{spent} di {budget} utilizzati, sotto-incarichi inclusi",
-    "budgetLimitedBy": "Ancora {remaining} rimanenti, con il limite del budget di «{title}»"
+    "budgetLimitedBy": "Ancora {remaining} rimanenti, con il limite del budget di «{title}»",
+    "structuredHeading": "Risultato strutturato",
+    "structuredHint": "Questi campi devono essere forniti dal risultato. L’incarico può essere inviato solo dopo aver compilato tutti i campi obbligatori (*).",
+    "structuredMissing": "mancante",
+    "structuredRequired": "Campo obbligatorio",
+    "fromWorkflow": "Creato dal passaggio del workflow «{node}»"
   },
   "startRun": {
     "title": "Avvia esecuzione dell’IA",

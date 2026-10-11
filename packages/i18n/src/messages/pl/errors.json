@@ -88,6 +88,7 @@
     "work_item_child_invalid": "Co najmniej jedno z wymienionych zadań nie jest podzadaniem tego zadania.",
     "work_item_children_limit": "To zadanie ma już maksymalną dozwoloną liczbę podzadań. Połącz niektóre części lub zamknij te ukończone.",
     "work_item_children_open": "To zadanie ma jeszcze otwarte podzadania. Zakończ je lub anuluj, zanim oznaczysz je jako zrobione.",
+    "work_item_result_invalid": "Strukturyzowany wynik nie pasuje do pól wymaganych przez zadanie: nieznane pole, nieprawidłowy typ lub brakujące pole wymagane.",
     "work_item_start_needs_assistant": "Natychmiast można uruchomić tylko podzadanie dla wbudowanej sztucznej inteligencji. W przypadku osób i agentów zostaje ono tylko utworzone.",
     "agent_profile_name_taken": "Profil agenta o tej nazwie już istnieje w tym obszarze roboczym.",
     "agent_profile_invalid": "Profil wskazuje na coś, czego tutaj nie ma: stronę reguł spoza obszaru roboczego lub model, który nie jest odblokowany.",

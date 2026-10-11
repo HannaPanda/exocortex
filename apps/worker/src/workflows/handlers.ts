@@ -30,6 +30,8 @@ export type NodeOutcome =
       output?: Record<string, unknown> | null;
       workItemId?: string | null;
       aiRunId?: string | null;
+      /** What the node's work cost, added to the run's spend (issue #162). */
+      spentMicroUsd?: number;
     }
   | {
       status: 'waiting';
@@ -44,6 +46,8 @@ export type NodeOutcome =
       code: WorkflowRunErrorCode | (string & {});
       /** For a person; never a stack trace and never page content. */
       message: string;
+      /** What the node's work cost before it failed, added to the run's spend. */
+      spentMicroUsd?: number;
     };
 
 export interface NodeContext {
@@ -107,10 +111,10 @@ const triggerHandler: NodeHandler = {
 };
 
 /**
- * A node type whose execution belongs to a later issue: agent nodes are
- * #162, approvals #163. Failing the attempt names that, and the run ends
- * instead of hanging; a graph with such a node can be published and is
- * honestly refused when it gets there.
+ * A node type whose execution belongs to a later issue: approvals are #163.
+ * Failing the attempt names that, and the run ends instead of hanging; a
+ * graph with such a node can be published and is honestly refused when it
+ * gets there.
  */
 function notExecutable(issue: string): NodeHandler {
   return {
@@ -175,9 +179,13 @@ export function evaluateCondition(
   condition: WorkflowNodeOf<'condition'>,
   output: Record<string, unknown> | null,
 ): boolean {
-  const value = output === null ? undefined : output[condition.source.field];
+  // An agent node keeps its checked values under `fields` (issue #162).
+  const fields = output?.fields;
+  const value =
+    typeof fields === 'object' && fields !== null && !Array.isArray(fields)
+      ? (fields as Record<string, unknown>)[condition.source.field]
+      : undefined;
   const present = value !== undefined && value !== null;
-  const expected = condition.value;
   switch (condition.operator) {
     case 'present':
       return present;
@@ -188,28 +196,58 @@ export function evaluateCondition(
     case 'is_false':
       return value === false;
     case 'eq':
-      return present && value === expected;
+      return present && value === condition.value;
     case 'neq':
-      return present && value !== expected;
-    case 'gt':
-    case 'gte':
-    case 'lt':
-    case 'lte': {
-      if (typeof value !== 'number' || typeof expected !== 'number') return false;
-      if (condition.operator === 'gt') return value > expected;
-      if (condition.operator === 'gte') return value >= expected;
-      if (condition.operator === 'lt') return value < expected;
-      return value <= expected;
-    }
+      return present && value !== condition.value;
+    default:
+      return compareNumbers(condition.operator, value, condition.value);
   }
 }
 
-/** The handlers this deployment executes. A test passes its own registry. */
+/** The ordering operators: both sides numbers, or the comparison is false. */
+function compareNumbers(
+  operator: 'gt' | 'gte' | 'lt' | 'lte',
+  value: unknown,
+  expected: unknown,
+): boolean {
+  if (typeof value !== 'number' || typeof expected !== 'number') return false;
+  switch (operator) {
+    case 'gt':
+      return value > expected;
+    case 'gte':
+      return value >= expected;
+    case 'lt':
+      return value < expected;
+    case 'lte':
+      return value <= expected;
+  }
+}
+
+/**
+ * Stands in for the agent node where nothing to start work with was handed
+ * over; the runtime replaces it with `createAgentNodeHandler` (issue #162).
+ */
+const agentWithoutDependencies: NodeHandler = {
+  idempotent: true,
+  maxAttempts: 1,
+  execute: async () => ({
+    status: 'failed',
+    errorClass: 'terminal',
+    code: 'workflow_agent_refused',
+    message: 'This worker was started without a way to create work items',
+  }),
+};
+
+/**
+ * The handlers that need nothing but the node. The runtime adds the agent
+ * node's, which needs the database and an API client (`shared.ts`); a test
+ * passes its own registry.
+ */
 export const DEFAULT_NODE_HANDLERS: NodeHandlerRegistry = {
   'trigger.manual': triggerHandler,
   'trigger.schedule': triggerHandler,
   'trigger.event': triggerHandler,
-  agent: notExecutable('#162'),
+  agent: agentWithoutDependencies,
   approval: notExecutable('#163'),
   condition: conditionHandler,
   parallel: parallelHandler,

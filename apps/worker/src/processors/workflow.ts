@@ -1,5 +1,6 @@
 import { type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, type QueueRegistry } from '@exocortex/queue';
 
 import { runWorkflowJob } from '../workflows/runtime';
@@ -14,6 +15,9 @@ export interface WorkflowProcessorDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
   settings: (workspaceId?: string) => Promise<Settings>;
+  /** For the agent node (issue #162); null without a service token. */
+  apiClientFor:
+    ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
 }
 
 export function createWorkflowProcessor(dependencies: WorkflowProcessorDependencies) {
@@ -22,6 +26,7 @@ export function createWorkflowProcessor(dependencies: WorkflowProcessorDependenc
       prisma: dependencies.prisma,
       queues: dependencies.queues,
       settings: (workspaceId: string) => dependencies.settings(workspaceId),
+      apiClientFor: dependencies.apiClientFor,
       logger,
     };
     await runWorkflowJob(runtime, payload, async (job) => {

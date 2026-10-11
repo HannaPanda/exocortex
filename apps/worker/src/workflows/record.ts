@@ -97,6 +97,15 @@ export async function recordOutcome(
       durationMs: now.getTime() - (execution.startedAt ?? now).getTime(),
     };
     const advance = advanceJob(runId, claimed.context.run.correlationId);
+    // What the node's work cost counts against the run (issue #162), in the
+    // transaction that settles the node, so the budget the next advance
+    // checks already includes it.
+    if (outcome.status !== 'waiting' && (outcome.spentMicroUsd ?? 0) > 0) {
+      await tx.workflowRun.update({
+        where: { id: runId },
+        data: { spentMicroUsd: { increment: outcome.spentMicroUsd } },
+      });
+    }
     switch (outcome.status) {
       case 'succeeded':
         await recordSuccess(recording, outcome);

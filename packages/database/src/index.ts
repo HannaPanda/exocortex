@@ -21,4 +21,5 @@ export * from './search';
 export * from './semantic-search';
 export * from './tree';
 export * from './work-checkpoints';
+export * from './work-item-spend';
 export * from './workflow-runs';

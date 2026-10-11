@@ -60,6 +60,7 @@ import {
   HistorySection,
   ResultSection,
   RunsSection,
+  StructuredResultSection,
 } from './work-item-sections';
 
 /**
@@ -185,6 +186,7 @@ function WorkItemView({
       <CriteriaSection item={item} canProgress={canProgress} />
       <ContextSection item={item} />
       <ResultSection item={item} canProgress={canProgress} />
+      <StructuredResultSection item={item} />
       <WorkItemChangesets item={item} canWrite={canWrite} />
       <CheckpointSection item={item} />
       <RunsSection
