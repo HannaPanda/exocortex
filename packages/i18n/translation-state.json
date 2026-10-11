@@ -9568,6 +9568,18 @@
       "source": "eaac9d2e63076c84",
       "output": "8edcb12a97dd40ef"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "f4709a222050f701"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "0dfd4ecf343e02c4"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "86e4a29c59e2f191"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "46d1d61abb1f13e7"
@@ -10893,8 +10905,8 @@
       "output": "fd048d141a73202b"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "e70ef87e0f298cb7"
+      "source": "ce19750d919a7bd1",
+      "output": "c58b6d6e6100595c"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -13159,6 +13171,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "6fe03ddbae1bce4e"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "b1fc2d27773affb2"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "f04723945bc0ede0"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "ae2811ff09f23171"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "d46e8e97f3b07b34"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "584eda361e9d3e63"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "2b46b0418cf5cff3"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "40e6b46ed6173c18"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -15844,6 +15884,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "49c266baaaa70981"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "3a801e31b3bd6d59"
@@ -16667,6 +16711,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "5943ef5c3f1a4545"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "f094a8333d69b175"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "d84ce965c4ae481f"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "75d62cad925e903a"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "f15a193c33b71eb1"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "ea838799f57f5f0e"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "40a39e89aa23e835"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "3e0d5edfa53a82e8"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "94a929f2dd26dfef"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "f5ea82dc93757be7"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "293f05d14fb0376e"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -18527,6 +18611,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "7525ebe68aad804f"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "3d8d9e49665c57c8"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -29190,6 +29278,18 @@
       "source": "eaac9d2e63076c84",
       "output": "7be872f979e55e6f"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "4e7e587f3cad2427"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "a9bee22df95d84e0"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "d11dc80202f75c18"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "384825e76c344ed0"
@@ -30515,8 +30615,8 @@
       "output": "1ab000100a2cc4bb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "b1fd6e4eb8f28b50"
+      "source": "ce19750d919a7bd1",
+      "output": "6fe40fdde67fd54d"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -32781,6 +32881,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "510c52afecc754d9"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "32d24d4940bee5a4"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "e4a06f3b446b4d1b"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "0cbefa3e593c6d47"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "92b0b6e26a7c2a7d"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "aab748b14cd385db"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "57d42e53b8f4e1d9"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "cb343a97443ed379"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -35466,6 +35594,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "d6f7feda7a7e2af7"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "810271920a9c3acd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "2fd341cfe6b6920d"
@@ -36289,6 +36421,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "ba3ce98c4784b90d"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "518e2f5ebb1554ac"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "4c675de82a8938a2"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "5093476a659e1fd1"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "24047ffa321b5ded"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "b91a7f23cc3b2557"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "b543ba06ffa64558"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "bc371a7e3f8f2bad"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "035b60c987158c4f"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "421dcbee8b162ff7"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "925cbf32fe80294e"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -38149,6 +38321,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "289026255951cbd6"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "b141bb1a32ec12f7"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -48812,6 +48988,18 @@
       "source": "eaac9d2e63076c84",
       "output": "9ba48d89dda598eb"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "227b698e20cca346"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "30780f7254be7412"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "955b19c4480a072c"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "5d656ebd95dd5c05"
@@ -50137,8 +50325,8 @@
       "output": "d5c71fcd6ac7109c"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "9c5be1872a4bd9e6"
+      "source": "ce19750d919a7bd1",
+      "output": "d120c0748c1a2903"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -52403,6 +52591,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "6162f4dfd4c90ed4"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "3f631e26f2ee4136"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "003e3725f753c4df"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "4fa223010453b383"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "d12c2edd054d1c55"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "059291d5d45d7137"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "8d7d22aba0204a50"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "90980c1dae4d1a0a"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -55088,6 +55304,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "a12b73cf58da594f"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "9c5dd8fe3d2518c7"
@@ -55911,6 +56131,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "4dcdc873651fb6a1"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "c91cd1329c21bcba"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "a4205c66f297c87b"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "04aafb35d2e3ab8b"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "2a53a41ae51b0b54"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "0ff19a4df2d46202"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "5f70fb6b6ae39cd9"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "1c358d35a857cfa9"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "481a53478faa4733"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "4233c622e31ca714"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "8548d6998cf9a4c2"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -57771,6 +58031,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "57ee2314fb6a6e63"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "b222e09fbfd4ff5f"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -68434,6 +68698,18 @@
       "source": "eaac9d2e63076c84",
       "output": "83aa83abf7640ccc"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "b2a732266d03d9aa"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "7cb34fe7928f0387"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "1ab861ccc0af0d2d"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "f32e56bde89e50d4"
@@ -69759,8 +70035,8 @@
       "output": "019379af2ddbfbe8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "c1ae043eac663c0f"
+      "source": "ce19750d919a7bd1",
+      "output": "31dfd2aa5eda80f2"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -72025,6 +72301,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "1338ca4263ec6474"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "8877791e7342af46"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "d7899eba027437ae"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "f6ef9cd3bf334a39"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "4da2c6ca0ebf766c"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "f58151452ee81b6e"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "1e2dba27c92d6469"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "2f6be28868147aa7"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -74710,6 +75014,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "152c39591d41248d"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "2e2d5c5649b718b5"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "cf1840a2be3a9037"
@@ -75533,6 +75841,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "7c0203e6aaedfb64"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "88560c761053502e"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "14909794fc404294"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "93b61ae106b6e041"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "bed78a0d2a4280ec"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "5f0d5e3e9e583505"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "5bc3c5d7048b13cf"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "a05109253869f993"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "784456af4a84b4df"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "dd50b5a6751fc3de"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "a0a35bbedc0175e0"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -77393,6 +77741,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "6e523d07ca245e9c"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "d6dea60f3785153a"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -88056,6 +88408,18 @@
       "source": "eaac9d2e63076c84",
       "output": "43aa3b0a309c550d"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "e61693a9516fe1df"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "4c40c9aa898024ee"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "c521d3ccd43ffbfa"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "700d272cc4b47ad2"
@@ -89381,8 +89745,8 @@
       "output": "5a091a1a49d896d8"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "5c7c3345e307645f"
+      "source": "ce19750d919a7bd1",
+      "output": "e50d7f0bf2ad2b42"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -91647,6 +92011,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "3abd451e00881549"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "bf93c1404b0e3e45"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "3347f3ed28306fa1"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "51b48b2b6fa255ee"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "86af3b34d0631e77"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "6fc62d77369d74c0"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "20c6c2e909818b5e"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "63b0785678380819"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -94332,6 +94724,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "5d33a9ac30b91d99"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "d3dacdea0ef2b100"
@@ -95155,6 +95551,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "ea49de10b1ac1cc4"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "9d6a2c1f0a232845"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "01dec0fd228fe7bd"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "a708ba89a827f205"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "acbd269fc27b65a2"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "0fbe2adeea258bc2"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "8505e012a0226df9"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "6a0b249c6fd4d27b"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "1261c6504cc1414e"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "76854732122ba893"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "5031a92e7e61af46"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -97015,6 +97451,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "9f215d5eb4d23dc6"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "2be5237e0c73b548"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -107678,6 +108118,18 @@
       "source": "eaac9d2e63076c84",
       "output": "75ebfee14d477059"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "476658711088f491"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "fe7fbad3c98c6d2f"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "998aa35df3b5820c"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "05c3537b2416974d"
@@ -109003,8 +109455,8 @@
       "output": "2c58afd1029e10cb"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "e855390324355292"
+      "source": "ce19750d919a7bd1",
+      "output": "ce64e2a1b09ca16f"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -111269,6 +111721,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "ccdbe41d093961b5"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "fcbeae246f7cfe0e"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "ef279e4323740921"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "73da238eae303006"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "ed151e906529fa47"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "a8d663a78e38223d"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "98fc30cbebc08e6e"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "5be49a298fd0a8af"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -113954,6 +114434,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "e73da6141da5c1dd"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "1ee2df3935383a65"
@@ -114777,6 +115261,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "737b851df28234cc"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "bdec4b45962326d1"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "e0601831f9b84181"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "0074a55d43ff0998"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "a74131f6838a9396"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "5f26f4a5c9870497"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "ed58ecf57e4d87c0"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "ba972b10cd27083c"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "111c740f2bdc8e81"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "8b3a25a9f5e862d8"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "040ef20714aa7883"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -116637,6 +117161,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "ea38ed3b6cb00267"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "760c9729f5f5166f"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",
@@ -127300,6 +127828,18 @@
       "source": "eaac9d2e63076c84",
       "output": "58b36689962fdbf4"
     },
+    "errors.codes.workflow_run_finished": {
+      "source": "9991c61929236e5c",
+      "output": "098b1e225fe0271f"
+    },
+    "errors.codes.workflow_trigger_ambiguous": {
+      "source": "db3f89db25899461",
+      "output": "782408360af6517c"
+    },
+    "errors.codes.workflows_disabled": {
+      "source": "21db360a0dfef8fc",
+      "output": "1e53df64510c2615"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "4e134d996b25056b"
@@ -128625,8 +129165,8 @@
       "output": "759e3a8546e8ab7e"
     },
     "features.agenten-workflows.details.p4": {
-      "source": "2c6f9de0f0742e72",
-      "output": "8123092dedf569c3"
+      "source": "ce19750d919a7bd1",
+      "output": "1495b26e2ce391eb"
     },
     "features.agenten-workflows.summary": {
       "source": "4b8b43c6e7f3096c",
@@ -130891,6 +131431,34 @@
     "features.web-recherche.where": {
       "source": "1196095f393aadcb",
       "output": "02a5696ba603563b"
+    },
+    "features.workflow-laeufe.details.p1": {
+      "source": "daeadc76d67a903d",
+      "output": "0d5b37b9bea04142"
+    },
+    "features.workflow-laeufe.details.p2": {
+      "source": "e356f9e0d64d5504",
+      "output": "bed0904f6781adf3"
+    },
+    "features.workflow-laeufe.details.p3": {
+      "source": "c0393dea7e40febe",
+      "output": "ba043dad4fe54781"
+    },
+    "features.workflow-laeufe.details.p4": {
+      "source": "2ed402567f052207",
+      "output": "23988831e447f0c9"
+    },
+    "features.workflow-laeufe.summary": {
+      "source": "82b9a2f834d7a205",
+      "output": "a49e5cfe28ddb00d"
+    },
+    "features.workflow-laeufe.title": {
+      "source": "c2f479b0ba601f01",
+      "output": "f822176b63ef4b4e"
+    },
+    "features.workflow-laeufe.where": {
+      "source": "e78bef17f8b07aaf",
+      "output": "793fb7cf2c3b6aa7"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -133576,6 +134144,10 @@
       "source": "a4f2922e2d958e6a",
       "output": "6894441b3fa528b2"
     },
+    "settings.groups.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
       "source": "140e37cfe17ddc4e",
       "output": "7bf2142ee8803e8a"
@@ -134399,6 +134971,46 @@
     "settings.keys.search.semanticWeightPercent.label": {
       "source": "15dd454fe457a0d0",
       "output": "e5d7a004afc36195"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.help": {
+      "source": "ee95070b34374695",
+      "output": "59e67ce1a0619110"
+    },
+    "settings.keys.workflows.budgetMicroUsdPerRun.label": {
+      "source": "e5b673b1ae0e1637",
+      "output": "3e728b36d0563a1d"
+    },
+    "settings.keys.workflows.enabled.help": {
+      "source": "8008c676576c5a1a",
+      "output": "db654df5e51475db"
+    },
+    "settings.keys.workflows.enabled.label": {
+      "source": "f65aeaced7f5cd01",
+      "output": "7dfff4e57cf735e8"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.help": {
+      "source": "690c01b72cbfb5be",
+      "output": "851039bf7112f1c8"
+    },
+    "settings.keys.workflows.maxLifetimeSeconds.label": {
+      "source": "8c377e5e22ffba16",
+      "output": "4b7bf4dc30cebf3e"
+    },
+    "settings.keys.workflows.maxNodeExecutions.help": {
+      "source": "d9d3bd818dea5cd5",
+      "output": "75e69b3b4954617e"
+    },
+    "settings.keys.workflows.maxNodeExecutions.label": {
+      "source": "0da58f4bd2c9db39",
+      "output": "a5221135d09df251"
+    },
+    "settings.keys.workflows.maxParallelBranches.help": {
+      "source": "d60ba944d8f4f19f",
+      "output": "8aa4a144c16b5bd9"
+    },
+    "settings.keys.workflows.maxParallelBranches.label": {
+      "source": "6019ad29cef69bd3",
+      "output": "6c8a6cce0beb2520"
     },
     "settings.language.followBrowser": {
       "source": "aeeefdcb2da2cf38",
@@ -136259,6 +136871,10 @@
     "shell.paletteCommands.settings.groups.search": {
       "source": "6aa43e4e3be2bafe",
       "output": "4b39bfc5b8180f96"
+    },
+    "shell.paletteCommands.settings.groups.workflows": {
+      "source": "cce2ac7561c9f5b8",
+      "output": "f96756d7b5db0c2a"
     },
     "shell.paletteCommands.settings.menu": {
       "source": "f5750a5d7231e1f7",

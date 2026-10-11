@@ -19,6 +19,7 @@
     "notifications": "Notifiche",
     "activity": "Attività",
     "automations": "Automazioni",
+    "workflows": "Workflow",
     "overview": "Pagine di panoramica",
     "render": "Pubblicazione",
     "projects": "Progetti",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Conserva il registro delle esecuzioni (giorni)",
         "help": "Per quanto tempo rimane visibile ciò che le automazioni hanno fatto. Le regole stesse rimangono inalterate. 0 significa: per sempre."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Workflow abilitati",
+        "help": "L’interruttore principale per le esecuzioni dei workflow. Se disattivato: nessuna esecuzione viene avviata, né manualmente né automaticamente, e un’esecuzione in corso si interrompe al passaggio successivo. Disattivato per impostazione predefinita, poiché un workflow avvia agenti e comporta costi. Un’area di lavoro può disattivare i workflow per sé, ma non abilitarli ignorando questa impostazione."
+      },
+      "maxNodeExecutions": {
+        "label": "Passaggi per esecuzione",
+        "help": "Il numero massimo di tentativi di nodi consentiti per un’esecuzione, inclusi i tentativi ripetuti. Un workflow può impostare autonomamente un valore inferiore; all’avvio l’esecuzione applica il limite più restrittivo. Raggiunto il limite, l’esecuzione termina come non riuscita."
+      },
+      "maxParallelBranches": {
+        "label": "Passaggi simultanei per esecuzione",
+        "help": "Il numero massimo di nodi di un’esecuzione che possono essere attivi contemporaneamente, compresi quelli in attesa. I nodi in eccesso rimangono in attesa finché non si libera un posto."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Durata massima (secondi)",
+        "help": "La durata complessiva massima di un’esecuzione, tempi di attesa inclusi. Dopodiché viene terminata come scaduta. L’impostazione predefinita è di sette giorni."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Budget per esecuzione (milionesimi di dollaro)",
+        "help": "Quanto può spendere al massimo un’esecuzione per l’IA, compresi tutti gli agenti avviati. Un workflow può definire un budget inferiore, mai superiore. Una volta esaurito, l’esecuzione non avvia alcun passaggio successivo."
       }
     },
     "overview": {

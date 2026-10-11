@@ -19,6 +19,7 @@
     "notifications": "Meldingen",
     "activity": "Activiteit",
     "automations": "Automatiseringen",
+    "workflows": "Workflows",
     "overview": "Overzichtspagina’s",
     "render": "Publiceren",
     "projects": "Projecten",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Uitvoeringslogboek bewaren (dagen)",
         "help": "Zo lang blijft zichtbaar wat de automatiseringen hebben gedaan. De regels zelf blijven onaangeroerd. 0 betekent: voor altijd."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Workflows ingeschakeld",
+        "help": "De hoofdschakelaar voor workflow-uitvoeringen. Uit betekent: er start geen enkele uitvoering, noch handmatig noch automatisch, en een actieve uitvoering stopt bij de volgende stap. Standaard uitgeschakeld, omdat een workflow agenten start en geld kost. Een werkruimte mag workflows voor zichzelf uitschakelen, maar niet tegen deze instelling in inschakelen."
+      },
+      "maxNodeExecutions": {
+        "label": "Stappen per uitvoering",
+        "help": "Zoveel knooppuntpogingen mag een uitvoering doen, inclusief herhalingen. Een workflow kan zelf minder instellen; de uitvoering kiest bij de start de strengste waarde. Is de limiet bereikt, dan eindigt de uitvoering als mislukt."
+      },
+      "maxParallelBranches": {
+        "label": "Gelijktijdige stappen per uitvoering",
+        "help": "Zoveel knooppunten van een uitvoering mogen gelijktijdig actief zijn, inclusief wachtende. Alles wat daarboven komt, wacht tot er een plek vrijkomt."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Maximale looptijd (seconden)",
+        "help": "Zolang mag een uitvoering in totaal duren, inclusief wachttijden. Daarna wordt deze als verlopen beëindigd. Standaard is zeven dagen."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Budget per uitvoering (miljoenste dollar)",
+        "help": "Zoveel mag een uitvoering aan AI uitgeven, inclusief alle agenten die deze start. Een workflow kan een kleiner budget instellen, nooit een groter. Is het opgebruikt, dan start de uitvoering geen volgende stap meer."
       }
     },
     "overview": {

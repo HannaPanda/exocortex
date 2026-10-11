@@ -125,6 +125,16 @@ const SURFACE_EXEMPT = [
       "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
   },
   {
+    tool: 'exo_workflow_run_start',
+    reason:
+      "A workflow run starts agents and spends a budget by itself once it is under way (issue #161, ADR-076). Starting one by hand is an admin's decision, made with an admin token until the editor of issue #164 gives it a button; the API refuses it from a run's service token, so the built-in AI cannot start more agent work than its own run, and agent-started workflows are issue #165 with their own boundary.",
+  },
+  {
+    tool: 'exo_workflow_run_cancel',
+    reason:
+      "Cancelling ends a run and everything in flight in it (issue #161, ADR-076). It belongs with starting: an admin's decision made with an admin token, refused from a run's service token, so the built-in AI can neither start nor stop workflow runs until issue #165 gives it a boundary of its own.",
+  },
+  {
     tool: 'exo_changeset_apply',
     reason:
       "Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.",

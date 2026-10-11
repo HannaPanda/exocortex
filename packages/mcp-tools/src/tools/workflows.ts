@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
 import {
+  cancelWorkflowRunRequestSchema,
   createWorkflowRequestSchema,
   deleteWorkflowResponseSchema,
   idSchema,
+  startWorkflowRunRequestSchema,
   updateWorkflowRequestSchema,
   WORKFLOW_NODE_HANDLES,
   type WorkflowGraph,
@@ -11,7 +13,9 @@ import {
   type WorkflowProblem,
   workflowResponseSchema,
   workflowRunListResponseSchema,
+  type WorkflowRunResponse,
   workflowRunResponseSchema,
+  workflowRunStartResponseSchema,
   type WorkflowSummary,
   workflowValidationResponseSchema,
   workflowVersionListResponseSchema,
@@ -29,7 +33,8 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * on both agent surfaces. Writing a draft is MCP only and an admin's; the
  * built-in AI's own authoring is issue #165. Publishing and switching on
  * are no tools at all: a person decides what becomes a version and what may
- * start by itself.
+ * start by itself. Starting and cancelling a run by hand (issue #161) is MCP
+ * only and an admin's too, because a run spends what its agents spend.
  */
 
 const GRAPH_HELP =
@@ -253,24 +258,91 @@ export const workflowRunGetTool: AnyToolDefinition = defineTool({
       path: `/api/workflow-runs/${input.runId}`,
       responseSchema: workflowRunResponseSchema,
     });
-    const steps = result.nodeExecutions.map(
-      (step) =>
-        `- ${step.nodeId} #${step.attempt}: ${step.status}` +
-        (step.firedHandles.length > 0 ? ` → ${step.firedHandles.join(', ')}` : '') +
-        (step.waitingOn === null ? '' : ` (wartet auf ${step.waitingOn.kind})`) +
-        (step.errorClass === null ? '' : ` [${step.errorClass}: ${step.errorCode ?? ''}]`),
-    );
-    const { progress } = result;
+    return { text: formatRun(result), data: result };
+  },
+});
+
+/** A run as text: status, limits, every attempt, what comes next, the path taken. */
+function formatRun(result: WorkflowRunResponse): string {
+  const { run, progress } = result;
+  const steps = result.nodeExecutions.map(
+    (step) =>
+      `- ${step.nodeId} #${step.attempt}: ${step.status}` +
+      (step.firedHandles.length > 0 ? ` → ${step.firedHandles.join(', ')}` : '') +
+      (step.waitingOn === null ? '' : ` (wartet auf ${step.waitingOn.kind})`) +
+      (step.errorClass === null ? '' : ` [${step.errorClass}: ${step.errorCode ?? ''}]`),
+  );
+  const edges = result.events
+    .filter((event) => event.type === 'edge.taken')
+    .map((event) => String(event.detail?.edgeId ?? '?'));
+  const limits =
+    run.limits === null
+      ? ''
+      : ` · Grenzen: ${run.limits.maxNodeExecutions} Schritte, ${run.limits.maxParallelBranches} parallel, ` +
+        `${run.limits.budgetMicroUsd} µ$, bis ${run.deadlineAt ?? '–'}`;
+  return [
+    `Lauf ${run.id}: ${run.status}, Version ${run.version}, ${run.origin}` +
+      (run.errorCode === null ? '' : ` [${run.errorCode}]`) +
+      ` · ${run.nodeExecutionCount} Versuche, ${run.spentMicroUsd} µ$ ausgegeben` +
+      limits,
+    'Schritte:',
+    ...steps,
+    `Als Nächstes: ${progress.runnable.join(', ') || '–'} · aktiv: ${progress.active.join(', ') || '–'}` +
+      ` · übersprungen: ${progress.dead.join(', ') || '–'}`,
+    `Genommene Kanten: ${edges.join(', ') || '–'} · ${result.events.length} Ereignisse im Verlauf`,
+  ].join('\n');
+}
+
+export const workflowRunStartTool: AnyToolDefinition = defineTool({
+  name: 'exo_workflow_run_start',
+  description:
+    'Startet einen Lauf der veröffentlichten Version eines Workflows von Hand (nur Admins, und nur ' +
+    'wenn Workflows im Arbeitsbereich eingeschaltet sind). Ohne triggerNodeId vom einzigen ' +
+    'manuellen Auslöser; input wird dem Lauf als Auslöser-Daten mitgegeben. Der Lauf arbeitet im ' +
+    'Hintergrund weiter; den Stand liest exo_workflow_run_get.',
+  inputSchema: z.object({ workflowId: idSchema }).extend(startWorkflowRunRequestSchema.shape),
+  surfaces: ['mcp'],
+  domain: 'workflows',
+  mutating: true,
+  target: (input) => `workflow:${input.workflowId}`,
+  async execute(client, input) {
+    const { workflowId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workflows/${workflowId}/runs`,
+      body,
+      responseSchema: workflowRunStartResponseSchema,
+    });
     return {
-      text: [
-        `Lauf ${result.run.id}: ${result.run.status}, Version ${result.run.version}, ${result.run.origin}`,
-        'Schritte:',
-        ...steps,
-        `Als Nächstes: ${progress.runnable.join(', ') || '–'} · aktiv: ${progress.active.join(', ') || '–'}` +
-          ` · übersprungen: ${progress.dead.join(', ') || '–'}`,
-      ].join('\n'),
+      text:
+        `Lauf ${result.run.id} gestartet (Version ${result.run.version}, Status ${result.run.status}). ` +
+        'Den Fortschritt liest exo_workflow_run_get.',
       data: result,
     };
+  },
+});
+
+export const workflowRunCancelTool: AnyToolDefinition = defineTool({
+  name: 'exo_workflow_run_cancel',
+  description:
+    'Bricht einen Workflow-Lauf ab, der noch läuft oder wartet (nur Admins). Was eingereiht ist ' +
+    'oder wartet, endet sofort; ein Schritt, der gerade läuft, wird nicht mehr verbucht. reason ' +
+    'steht danach am Lauf.',
+  inputSchema: z.object({ runId: idSchema }).extend(cancelWorkflowRunRequestSchema.shape),
+  surfaces: ['mcp'],
+  domain: 'workflows',
+  mutating: true,
+  destructive: true,
+  target: (input) => `workflow-run:${input.runId}`,
+  async execute(client, input) {
+    const { runId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workflow-runs/${runId}/cancel`,
+      body,
+      responseSchema: workflowRunResponseSchema,
+    });
+    return { text: `Abgebrochen.\n${formatRun(result)}`, data: result };
   },
 });
 
@@ -361,6 +433,8 @@ export const WORKFLOW_TOOLS: readonly AnyToolDefinition[] = [
   workflowVersionGetTool,
   workflowRunsTool,
   workflowRunGetTool,
+  workflowRunStartTool,
+  workflowRunCancelTool,
   workflowCreateTool,
   workflowUpdateTool,
   workflowDeleteTool,

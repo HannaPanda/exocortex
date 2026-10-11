@@ -300,6 +300,7 @@
         "notifications": "notifications mail push",
         "activity": "activity history log",
         "automations": "automation rule schedule webhook",
+        "workflows": "workflow workflows flow flows graph run runs steps budget runtime parallel",
         "overview": "overview page summary digest",
         "render": "publish pdf export pandoc",
         "projects": "project latex build compile",

@@ -19,6 +19,7 @@
     "notifications": "Powiadomienia",
     "activity": "Aktywność",
     "automations": "Automatyzacje",
+    "workflows": "Workflows",
     "overview": "Strony przeglądowe",
     "render": "Publikowanie",
     "projects": "Projekty",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Przechowywanie dziennika uruchomień (dni)",
         "help": "Przez ten czas pozostaje widoczne, co zrobiły automatyzacje. Same reguły pozostają nienaruszone. 0 oznacza: bezterminowo."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Workflows włączone",
+        "help": "Główny przełącznik uruchamiania workflow. Gdy jest wyłączony, żaden przebieg nie wystartuje – ani ręcznie, ani automatycznie – a trwający zatrzyma się przy następnym kroku. Domyślnie wyłączone, ponieważ workflow uruchamia agentów i generuje koszty. Obszar roboczy może wyłączyć u siebie workflows, ale nie może ich włączyć wbrew temu ustawieniu."
+      },
+      "maxNodeExecutions": {
+        "label": "Kroki na przebieg",
+        "help": "Tyle prób wykonania węzłów może wykonać przebieg, wliczając powtórzenia. Sam workflow może określić mniejszą wartość; przy starcie przebieg przyjmuje bardziej restrykcyjny limit. Po osiągnięciu limitu przebieg kończy się niepowodzeniem."
+      },
+      "maxParallelBranches": {
+        "label": "Jednoczesne kroki na przebieg",
+        "help": "Tyle węzłów jednego przebiegu może działać jednocześnie, wliczając oczekujące. Węzły ponad ten limit czekają, aż zwolni się miejsce."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Maksymalny czas działania (sekundy)",
+        "help": "Tyle może trwać przebieg łącznie z czasem oczekiwania. Po upływie tego czasu zostaje zakończony jako przedawniony. Wartość domyślna to siedem dni."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Budżet na przebieg (milionowe części dolara)",
+        "help": "Tyle przebieg może wydać na AI, wliczając wszystkich uruchamianych przez siebie agentów. Workflow może określić mniejszy budżet, ale nigdy większy. Po jego wyczerpaniu przebieg nie uruchomi kolejnego kroku."
       }
     },
     "overview": {

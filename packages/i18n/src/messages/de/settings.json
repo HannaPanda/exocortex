@@ -19,6 +19,7 @@
     "notifications": "Benachrichtigungen",
     "activity": "Aktivität",
     "automations": "Automationen",
+    "workflows": "Workflows",
     "overview": "Übersichtsseiten",
     "render": "Veröffentlichen",
     "projects": "Projekte",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Lauf-Protokoll aufbewahren (Tage)",
         "help": "So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt. 0 bedeutet: für immer."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Workflows aktiviert",
+        "help": "Der Hauptschalter für Workflow-Läufe. Aus heißt: kein Lauf startet, weder von Hand noch von selbst, und ein laufender hält beim nächsten Schritt an. Standardmäßig aus, weil ein Workflow Agenten startet und Geld ausgibt. Ein Arbeitsbereich darf Workflows für sich abschalten, aber nicht gegen diese Einstellung einschalten."
+      },
+      "maxNodeExecutions": {
+        "label": "Schritte pro Lauf",
+        "help": "So viele Knotenversuche darf ein Lauf machen, Wiederholungen mitgezählt. Ein Workflow kann selbst weniger festlegen; der Lauf nimmt beim Start den strengeren Wert. Ist die Grenze erreicht, endet der Lauf als fehlgeschlagen."
+      },
+      "maxParallelBranches": {
+        "label": "Gleichzeitige Schritte pro Lauf",
+        "help": "So viele Knoten eines Laufs dürfen gleichzeitig unterwegs sein, wartende mitgezählt. Was darüber hinausgeht, wartet, bis ein Platz frei wird."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Höchste Laufzeit (Sekunden)",
+        "help": "So lange darf ein Lauf insgesamt dauern, Wartezeiten eingeschlossen. Danach wird er als abgelaufen beendet. Standard sind sieben Tage."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Budget pro Lauf (Millionstel Dollar)",
+        "help": "So viel darf ein Lauf für KI ausgeben, alle Agenten eingeschlossen, die er startet. Ein Workflow kann ein kleineres Budget festlegen, nie ein größeres. Ist es aufgebraucht, startet der Lauf keinen weiteren Schritt."
       }
     },
     "overview": {

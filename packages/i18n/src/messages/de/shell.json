@@ -300,6 +300,7 @@
         "notifications": "benachrichtigung mail push",
         "activity": "aktivität verlauf protokoll",
         "automations": "automation regel zeitplan webhook",
+        "workflows": "workflow workflows ablauf abläufe graph lauf läufe schritte budget laufzeit parallel",
         "overview": "übersichtsseite zusammenfassung digest",
         "render": "veröffentlichen pdf export pandoc",
         "projects": "projekt latex build kompilieren",

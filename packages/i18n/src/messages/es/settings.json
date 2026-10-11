@@ -19,6 +19,7 @@
     "notifications": "Notificaciones",
     "activity": "Actividad",
     "automations": "Automatizaciones",
+    "workflows": "Flujos de trabajo",
     "overview": "Páginas de resumen",
     "render": "Publicar",
     "projects": "Proyectos",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Conservar registro de ejecuciones (días)",
         "help": "Durante este tiempo permanece visible lo que hicieron las automatizaciones. Las reglas no se ven afectadas. 0 significa: para siempre."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Flujos de trabajo activados",
+        "help": "El interruptor principal para las ejecuciones de flujos de trabajo. Desactivado significa: ninguna ejecución se inicia, ni manualmente ni de forma automática, y cualquier ejecución en curso se detiene en el siguiente paso. Desactivado por defecto, ya que un flujo de trabajo inicia agentes y gasta dinero. Un espacio de trabajo puede desactivar los flujos de trabajo por su cuenta, pero no activarlos si esta opción está desactivada."
+      },
+      "maxNodeExecutions": {
+        "label": "Pasos por ejecución",
+        "help": "El número de intentos de nodo que puede realizar una ejecución, incluidos los reintentos. Un flujo de trabajo puede definir menos por su cuenta; la ejecución adopta el valor más estricto al iniciarse. Si se alcanza el límite, la ejecución finaliza como fallida."
+      },
+      "maxParallelBranches": {
+        "label": "Pasos simultáneos por ejecución",
+        "help": "El número de nodos de una ejecución que pueden estar en marcha al mismo tiempo, incluidos los que están en espera. Todo lo que supere este límite esperará hasta que quede un hueco libre."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Tiempo máximo de ejecución (segundos)",
+        "help": "El tiempo total que puede durar una ejecución, incluidos los tiempos de espera. Después, finalizará como expirada. El valor predeterminado son siete días."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Presupuesto por ejecución (millonésimas de dólar)",
+        "help": "La cantidad que puede gastar una ejecución en IA, incluidos todos los agentes que inicie. Un flujo de trabajo puede establecer un presupuesto menor, nunca mayor. Una vez agotado, la ejecución no iniciará ningún paso más."
       }
     },
     "overview": {

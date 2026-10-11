@@ -41,6 +41,7 @@ export const SETTING_GROUPS = [
   'notifications',
   'activity',
   'automations',
+  'workflows',
   'overview',
   'render',
   'projects',

@@ -19,6 +19,7 @@
     "notifications": "Notifications",
     "activity": "Activity",
     "automations": "Automations",
+    "workflows": "Workflows",
     "overview": "Overview pages",
     "render": "Publishing",
     "projects": "Projects",
@@ -383,6 +384,28 @@
       "runRetentionDays": {
         "label": "Retain run log (days)",
         "help": "How long what the automations did remains visible. The rules themselves remain unaffected. 0 means: forever."
+      }
+    },
+    "workflows": {
+      "enabled": {
+        "label": "Workflows enabled",
+        "help": "The master switch for workflow runs. Off means: no run starts, neither manually nor automatically, and a running one stops at the next step. Off by default because a workflow launches agents and spends money. A workspace may turn workflows off for itself, but cannot turn them on against this setting."
+      },
+      "maxNodeExecutions": {
+        "label": "Steps per run",
+        "help": "The maximum number of node attempts a run may make, retries included. A workflow can set a lower limit; the run takes the stricter value at launch. Once the limit is reached, the run ends as failed."
+      },
+      "maxParallelBranches": {
+        "label": "Concurrent steps per run",
+        "help": "The maximum number of nodes in a run that may be active at the same time, waiting ones included. Anything beyond waits until a slot opens up."
+      },
+      "maxLifetimeSeconds": {
+        "label": "Maximum run time (seconds)",
+        "help": "How long a run may last in total, waiting times included. After that, it is ended as expired. The default is seven days."
+      },
+      "budgetMicroUsdPerRun": {
+        "label": "Budget per run (micro-USD)",
+        "help": "How much a run may spend on AI, including all agents it launches. A workflow can set a smaller budget, never a larger one. Once it is used up, the run starts no further step."
       }
     },
     "overview": {

@@ -300,6 +300,7 @@
         "notifications": "melding e-mail push",
         "activity": "activiteit geschiedenis logboek",
         "automations": "automatisering regel planning webhook",
+        "workflows": "workflow workflows proces processen graaf run runs stappen budget looptijd parallel",
         "overview": "overzichtspagina samenvatting digest",
         "render": "publiceren pdf export pandoc",
         "projects": "project latex build compileren",

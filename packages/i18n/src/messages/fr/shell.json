@@ -300,6 +300,7 @@
         "notifications": "notification e-mail mail push",
         "activity": "activité historique journal",
         "automations": "automatisation règle planification webhook",
+        "workflows": "workflow workflows flux processus graphe exécution exécutions étapes budget durée parallèle",
         "overview": "page de synthèse résumé digest",
         "render": "publier pdf export pandoc",
         "projects": "projet latex build compiler",

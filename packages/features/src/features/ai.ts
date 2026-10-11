@@ -161,6 +161,21 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'workflow-laeufe',
+    area: 'ki',
+    since: '2026-10-11',
+    references: ['#159', '#161', 'ADR-076'],
+    ui: {},
+    tools: ['exo_workflow_run_start', 'exo_workflow_run_cancel'],
+    settings: [
+      'workflows.enabled',
+      'workflows.maxNodeExecutions',
+      'workflows.maxParallelBranches',
+      'workflows.maxLifetimeSeconds',
+      'workflows.budgetMicroUsdPerRun',
+    ],
+  }),
+  defineFeature({
     id: 'automationen',
     area: 'automationen',
     since: '2026-09-12',
