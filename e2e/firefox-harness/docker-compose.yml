@@ -1,0 +1,47 @@
+# Throwaway Postgres and Redis for the Firefox harness (issue #166).
+#
+# A copy of docker-compose.test.yml under its own project name, container names
+# and ports, so the harness and the integration suites can run side by side and
+# neither can tear the other down. Same rules as there: tmpfs instead of
+# volumes, no restart, nothing that survives the run. run.sh brings it up and
+# removes it with `down -v`.
+name: exocortex-ffharness
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: exocortex-ffharness-postgres
+    restart: 'no'
+    environment:
+      POSTGRES_USER: ffharness
+      POSTGRES_PASSWORD: ffharness
+      POSTGRES_DB: ffharness
+      POSTGRES_INITDB_ARGS: '--nosync'
+    command:
+      ['postgres', '-c', 'fsync=off', '-c', 'synchronous_commit=off', '-c', 'full_page_writes=off']
+    ports:
+      - '127.0.0.1:${HARNESS_PG_PORT:-5437}:5432'
+    tmpfs:
+      - /var/lib/postgresql/data:size=1g
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ffharness -d ffharness']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  redis:
+    image: redis:8-alpine
+    container_name: exocortex-ffharness-redis
+    restart: 'no'
+    command:
+      ['redis-server', '--save', '', '--appendonly', 'no', '--maxmemory-policy', 'noeviction']
+    ports:
+      - '127.0.0.1:${HARNESS_REDIS_PORT:-6384}:6379'
+    tmpfs:
+      - /data:size=64m
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30

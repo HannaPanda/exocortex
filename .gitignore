@@ -89,3 +89,10 @@ __pycache__/
 !.impeccable/config.json
 apps/web/.impeccable/
 packages/mail/mail-preview/
+
+# Firefox harness (issue #166): downloaded browser and driver, its own npm
+# dependencies, its web builds and its results
+e2e/firefox-harness/.bin/
+e2e/firefox-harness/node_modules/
+e2e/firefox-harness/results/
+apps/web/.next-harness-*/

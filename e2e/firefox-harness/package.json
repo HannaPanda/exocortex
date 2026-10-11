@@ -1,0 +1,14 @@
+{
+  "name": "exocortex-firefox-harness",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Firefox WebSocket regression harness (issue #166). Deliberately outside the pnpm workspace: adding selenium to e2e reshuffled peer resolutions across the whole lockfile.",
+  "type": "module",
+  "scripts": {
+    "harness": "bash run.sh"
+  },
+  "dependencies": {
+    "selenium-webdriver": "4.51.0",
+    "ws": "8.21.3"
+  }
+}

@@ -217,6 +217,20 @@ decision they record. Rewriting baselines to get a build green defeats the
 gate. An axe exception goes into `EXCEPTIONS` in `a11y.spec.ts` with its reason,
 scoped to the elements it covers; the rule keeps running everywhere else.
 
+### The Firefox WebSocket harness
+
+`bash e2e/firefox-harness/run.sh` (issue #166) replays deploys and outages
+against an isolated eXocortex in a real Firefox release and watches an
+unrelated WebSocket origin in the same browser while it does. It is not part
+of `build.sh`: one run takes the better part of an hour. It needs Docker and
+the built API and collaboration server, fetches Firefox and geckodriver into
+`e2e/firefox-harness/.bin` on its own, builds its own copy of the web app
+(`apps/web/.next-harness-<label>`) and never touches a live unit, database,
+Redis or bucket. Run it after a change to `collaboration-connection.ts`,
+`realtime-provider.tsx`, the wake signals or the proxy configuration;
+`e2e/firefox-harness/README.md` has the scenarios, the variants (negative
+control, several tabs, a lowered WebSocket cap) and how to read the results.
+
 ### Which half a test belongs in
 
 The file name decides, and the test-split gate

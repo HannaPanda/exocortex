@@ -356,8 +356,10 @@ const config = {
     // -------------------------------------------------- command line utilities
     {
       // Seeding and maintenance scripts are CLIs: printing to stdout is their
-      // interface, not a forgotten debug statement.
-      files: ['**/prisma/seed*.ts', '**/scripts/**/*.{mjs,ts}'],
+      // interface, not a forgotten debug statement. The Firefox harness
+      // (issue #166) is one too: its progress lines are what an unattended
+      // run leaves behind.
+      files: ['**/prisma/seed*.ts', '**/scripts/**/*.{mjs,ts}', 'e2e/firefox-harness/**/*.mjs'],
       rules: {
         'no-console': 'off',
         // A Next.js rule about the bundler's `module` binding, which has

@@ -3288,7 +3288,8 @@
     {
       "files": [
         "**/prisma/seed*.ts",
-        "**/scripts/**/*.{mjs,ts}"
+        "**/scripts/**/*.{mjs,ts}",
+        "e2e/firefox-harness/**/*.mjs"
       ],
       "rules": {
         "no-console": "off",
