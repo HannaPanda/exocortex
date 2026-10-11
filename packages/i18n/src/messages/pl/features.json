@@ -528,6 +528,17 @@
     },
     "where": "W obszarze roboczym w sekcji „Ewaluacje” (również przez Strg + K) oraz w inspektorze przebiegów przez „Zapisz jako przypadek ewaluacyjny”."
   },
+  "agenten-workflows": {
+    "title": "Zapisywanie przepływów pracy agentów jako wersjonowanych grafów",
+    "summary": "Przepływ pracy opisuje w postaci grafu powiązania w pracy agentów: co go uruchamia, jakie zadania otrzymuje wbudowana sztuczna inteligencja, kiedy następuje rozgałęzienie, praca równoległa, scalanie lub zapytanie człowieka. Wersje robocze można weryfikować i publikować jako niezmienne wersje.",
+    "details": {
+      "p1": "Graf składa się z węzłów i krawędzi. Wyzwalaczami są „ręcznie”, harmonogram (jednorazowy, codzienny, cotygodniowy, comiesięczny lub cron) albo zmiana stron. Krok agenta określa cel, strony kontekstu, profil agenta, tryb zapisu, budżet oraz pola, które musi dostarczyć jego wynik. Warunek tworzy rozgałęzienie na podstawie jednego z tych pól bez odpytywania modelu; „Równolegle” otwiera wiele gałęzi, „Scalanie” czeka na wszystkie lub pierwszą; udostępnienie pyta człowieka; koniec zamyka przebieg.",
+      "p2": "Weryfikacja wskazuje każdy problem z danym węzłem lub krawędzią: krawędź prowadzącą donikąd, wyjście, którego węzeł nie posiada, cykl, scalanie, którego gałęzie wzajemnie się wykluczają, warunek oparty na polu, którego nikt nie dostarcza, lub profil i stronę nienależące do tego obszaru roboczego. Wersję roboczą można zapisać jako niekompletną, ale publikowana jest tylko wersja kompletna.",
+      "p3": "Publikacja zamraża wersję roboczą jako kolejną wersję. Przebieg zawsze odczytuje wersję, z którą się rozpoczął, nawet jeśli wersja robocza zostanie potem zmieniona lub ponownie opublikowana; baza danych w ogóle nie pozwala już na modyfikację wersji. Przebiegi oraz każda próba każdego węzła stanowią zapisany stan, z którego po każdym restarcie można odczytać, co może zostać uruchomione w następnej kolejności.",
+      "p4": "Wersje robocze tworzą administratorzy obszaru roboczego, włączyć może je tylko właściciel, a wersja powstaje wyłącznie przez publikację, nigdy przez narzędzie. Agenci odczytują przepływy pracy, wersje i przebiegi za pomocą narzędzi exo_workflow oraz weryfikują grafy; wbudowana sztuczna inteligencja może na razie przepływy pracy tylko czytać. Wykonywanie, edytor i widok przebiegu pojawią się w kolejnych etapach rozwoju."
+    },
+    "where": "Za pomocą narzędzi exo_workflow oraz interfejsu pod adresem /api/workflows; dedykowany widok w obszarze roboczym jeszcze nie istnieje."
+  },
   "ki-chat": {
     "title": "Rozmowa z modelem o twoich stronach",
     "summary": "Czat działa obok strony i zna tytuł oraz ścieżkę otwartej strony. To, który model odpowiada, określa zarządzanie modelami; bez skonfigurowanego dostawcy odpowiada lokalny model zastępczy, aby nic od tego nie zależało.",

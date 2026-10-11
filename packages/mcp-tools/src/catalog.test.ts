@@ -150,6 +150,10 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_user_delete',
       'exo_user_set_disabled',
       'exo_work_item_delete',
+      'exo_workflow_delete',
+      // Saving a draft graph (issue #160) replaces the whole draft; only what
+      // was published survives as a version.
+      'exo_workflow_update',
       'exo_workspace_rename',
     ]);
   });
@@ -191,6 +195,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_share_create',
       'exo_user_delete',
       'exo_work_item_delete',
+      'exo_workflow_delete',
     ]);
   });
 

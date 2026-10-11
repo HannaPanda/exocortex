@@ -528,6 +528,17 @@
     },
     "where": "In the workspace under “Evals” (also via Ctrl + K), and in the run inspector via “Save as eval case”."
   },
+  "agenten-workflows": {
+    "title": "Store agent workflows as versioned graphs",
+    "summary": "A workflow uses a graph to describe how agent work connects: what triggers it, which tasks the built-in AI receives, when to branch, work in parallel, merge, or ask a human. Drafts can be validated and published as an immutable version.",
+    "details": {
+      "p1": "A graph consists of nodes and edges. Triggers are “manual”, a schedule (once, daily, weekly, monthly, or as a cron expression), or a change to pages. An agent step specifies the goal, context pages, agent profile, write mode, budget, and the fields its result must provide. A condition branches based on one of these fields without consulting a model; “Parallel” opens multiple branches, “Merge” waits for all or the first one; a share asks a human; an end completes the run.",
+      "p2": "Validation reports every issue alongside the node or edge involved: an edge leading nowhere, an exit the node does not have, a cycle, a merge whose branches are mutually exclusive, a condition on a field that no one provides, or a profile and page that do not belong to this workspace. A draft may be saved in an incomplete state, but only a complete one can be published.",
+      "p3": "Publishing freezes the draft as the next version. A run always reads the version it started with, even if the draft is modified or republished afterwards; the database does not allow modifying a version at all. Runs and every attempt of each node are saved state, from which what can run next can be determined after every restart.",
+      "p4": "Workspace admins write drafts, only the owner may enable them, and a version is created solely by publishing, never by a tool. Agents read workflows, versions, and runs via the exo_workflow tools and validate graphs; the built-in AI is currently only allowed to read workflows. Execution, editor, and run view will follow in upcoming development stages."
+    },
+    "where": "Via the exo_workflow tools and the interface at /api/workflows; a dedicated view in the workspace does not exist yet."
+  },
   "ki-chat": {
     "title": "Talk with a model about your pages",
     "summary": "The chat runs alongside the page and knows the title and path of the open page. Which model responds is set in model administration; without a configured provider, a local dummy model responds so nothing depends on it.",

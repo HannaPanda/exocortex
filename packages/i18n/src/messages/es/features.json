@@ -528,6 +528,17 @@
     },
     "where": "En el espacio de trabajo en «Evals» (también mediante Strg + K), y en el inspector de ejecuciones mediante «Guardar como caso de eval»."
   },
+  "agenten-workflows": {
+    "title": "Guardar flujos de trabajo de agentes como grafos versionados",
+    "summary": "Un flujo de trabajo describe mediante un grafo cómo se interconecta el trabajo de los agentes: qué lo activa, qué tareas recibe la IA integrada, cuándo se divide en ramas, trabaja en paralelo, se fusiona o consulta a una persona. Los borradores se pueden validar y publicar como una versión inmutable.",
+    "details": {
+      "p1": "Un grafo consta de nodos y aristas. Los desencadenadores son «manual», una programación (única, diaria, semanal, mensual o mediante cron) o un cambio en páginas. Un paso de agente define el objetivo, las páginas de contexto, el perfil de agente, el modo de escritura, el presupuesto y los campos que debe devolver su resultado. Una condición bifurca según uno de estos campos sin consultar a un modelo; «Paralelo» abre varias ramas, «Fusionar» espera a todas o a la primera; un uso compartido consulta a una persona; un fin concluye la ejecución.",
+      "p2": "La validación indica cada problema con el nodo o la arista en cuestión: una arista hacia la nada, una salida que el nodo no tiene, un ciclo, una fusión cuyas ramas son mutuamente excluyentes, una condición sobre un campo que nadie proporciona, o un perfil y una página que no pertenecen a este espacio de trabajo. Se permite guardar un borrador incompleto, pero solo se publica si está completo.",
+      "p3": "Al publicar, el borrador se congela como la siguiente versión. Una ejecución siempre lee la versión con la que comenzó, incluso si el borrador se modifica o se vuelve a publicar después; la base de datos ya no permite modificar una versión en absoluto. Las ejecuciones y cada intento de cada nodo son estados guardados a partir de los cuales se puede deducir qué puede ejecutarse a continuación tras cada reinicio.",
+      "p4": "Los borradores los escriben quienes administran el espacio de trabajo, solo quien ostenta la propiedad puede activarlos y una versión solo se crea al publicar, nunca mediante una herramienta. Los agentes leen flujos de trabajo, versiones y ejecuciones a través de las herramientas exo_workflow y validan grafos; hasta ahora, la IA integrada solo puede leer flujos de trabajo. La ejecución, el editor y la vista de flujo llegarán en las próximas fases de desarrollo."
+    },
+    "where": "A través de las herramientas exo_workflow y la interfaz en /api/workflows; todavía no hay una vista propia en el espacio de trabajo."
+  },
   "ki-chat": {
     "title": "Hablar con un modelo sobre tus páginas",
     "summary": "El chat se ejecuta junto a la página y conoce el título y la ruta de la página abierta. Qué modelo responde se define en la gestión de modelos; si no hay ningún proveedor configurado, responde un modelo simulado local para que nada quede bloqueado.",

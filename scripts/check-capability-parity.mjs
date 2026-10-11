@@ -110,6 +110,21 @@ const SURFACE_EXEMPT = [
       "An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
   },
   {
+    tool: 'exo_workflow_create',
+    reason:
+      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
+  },
+  {
+    tool: 'exo_workflow_update',
+    reason:
+      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
+  },
+  {
+    tool: 'exo_workflow_delete',
+    reason:
+      "A workflow starts agents under profiles and budgets once it is published and switched on (issue #160, ADR-075). Writing the definitions that would start further runs is a person's or an admin token's; the built-in AI's own drafting is issue #165, with its own boundary, and the API refuses every workflow write from a run's service token until then.",
+  },
+  {
     tool: 'exo_changeset_apply',
     reason:
       "Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.",

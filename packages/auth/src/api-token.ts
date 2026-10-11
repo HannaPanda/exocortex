@@ -118,10 +118,11 @@ export function requestClassFor(method: string, path: string): RequestClass {
     return 'admin';
   }
   // A workflow is a standing instruction too (issue #160, ADR-075): once
-  // enabled it starts agents by itself. Checking a graph changes nothing and
-  // stays an ordinary write, so a client can repair a draft it may not save.
-  if (path.includes('/workflows') && !SAFE_METHODS.has(verb) && !path.endsWith('/validate')) {
-    return 'admin';
+  // enabled it starts agents by itself. Checking a graph is a POST only
+  // because the graph travels in the body; it stores nothing, so it is a read
+  // and a read-only client can still find out why a draft would not publish.
+  if (path.includes('/workflows') && !SAFE_METHODS.has(verb)) {
+    return /^\/api\/workflows\/[^/]+\/validate$/u.test(path) ? 'read' : 'admin';
   }
   if (SAFE_METHODS.has(verb)) return 'read';
   if (matches(REPORT_ROUTES, verb, path)) return 'report';

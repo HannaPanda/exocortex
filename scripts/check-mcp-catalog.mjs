@@ -295,6 +295,17 @@ const EXEMPT = [
     reason:
       'Applies one nightly consolidation run (issue #46). It rewrites what the memory believes in a single call, for a job that has just read the notes it is judging; a model able to call it directly could rewrite its own past without a note saying so. Reading is `exo_memory_facts`, promoting is `exo_memory_fact_promote`.',
   },
+  // -- what a person decides -------------------------------------------------
+  {
+    route: 'POST /api/workflows/:x/publish',
+    reason:
+      'Freezes a workflow draft as the version runs will execute (issue #160, ADR-075). Publishing is the review boundary of issue #165: an agent may write and validate a draft through `exo_workflow_create`, `exo_workflow_update` and `exo_workflow_validate`, and a person decides what becomes a version. Reading versions is a tool (`exo_workflow_versions`).',
+  },
+  {
+    route: 'POST /api/workflows/:x/activation',
+    reason:
+      "Switches a published workflow on or off (issue #160, ADR-075). An enabled workflow starts agents by itself on a schedule or on changes, so whether it may is the owner's decision and never a tool call; the state is readable through `exo_workflow_get`.",
+  },
 ];
 
 // ---------------------------------------------------------------------------

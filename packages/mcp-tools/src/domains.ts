@@ -220,6 +220,11 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'exo_eval',
     ],
   },
+  workflows: {
+    label:
+      'Agenten-Workflows: versionierte Graphen aus Auslösern, Agentenschritten, Bedingungen, Verzweigungen und Freigaben, mit ihren Läufen.',
+    keywords: ['workflow', 'ablaufgraph', 'orchestrier', 'exo_workflow', 'knoten und kanten'],
+  },
   shares: {
     label: 'Freigaben und öffentliche Links.',
     keywords: ['freigab', 'freigeb', 'teilen', 'geteilt', 'share', 'öffentlicher link', 'zugriff'],

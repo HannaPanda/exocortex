@@ -40,6 +40,7 @@ import { WEB_TOOLS } from './tools/web.js';
 import { WORK_CHECKPOINT_TOOLS } from './tools/work-item-checkpoints.js';
 import { WORK_ITEM_DELEGATION_TOOLS } from './tools/work-item-delegation.js';
 import { WORK_ITEM_TOOLS } from './tools/work-items.js';
+import { WORKFLOW_TOOLS } from './tools/workflows.js';
 import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 
 /**
@@ -71,6 +72,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...ATTENTION_TOOLS,
   ...CHANGESET_TOOLS,
   ...EVAL_TOOLS,
+  ...WORKFLOW_TOOLS,
   ...WEB_TOOLS,
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,

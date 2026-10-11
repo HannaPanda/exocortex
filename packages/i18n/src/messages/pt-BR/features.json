@@ -528,6 +528,17 @@
     },
     "where": "No espaço de trabalho em “Evals” (também via Strg + K) e no inspetor de execuções em “Salvar como caso de eval”."
   },
+  "agenten-workflows": {
+    "title": "Armazenar fluxos de trabalho de agentes como grafos versionados",
+    "summary": "Um fluxo de trabalho descreve como grafo a conexão do trabalho dos agentes: o que o dispara, quais tarefas a IA integrada recebe, quando ramificar, trabalhar em paralelo, mesclar ou consultar uma pessoa. Rascunhos podem ser validados e publicados como uma versão imutável.",
+    "details": {
+      "p1": "Um grafo consiste em nós e arestas. Os gatilhos são „manual“, um agendamento (único, diário, semanal, mensal ou via Cron) ou uma alteração em páginas. Uma etapa de agente define o objetivo, páginas de contexto, perfil de agente, modo de escrita, orçamento e os campos que seu resultado deve fornecer. Uma condição se ramifica com base em um desses campos, sem consultar um modelo; „Paralelo“ abre vários ramos, „Mesclar“ aguarda todos ou o primeiro; um compartilhamento consulta uma pessoa; um fim conclui a execução.",
+      "p2": "A validação aponta cada problema com o nó ou a aresta em questão: uma aresta para o vazio, uma saída que o nó não possui, um ciclo, uma mesclagem cujos ramos são mutuamente exclusivos, uma condição para um campo que ninguém fornece ou um perfil e uma página que não pertencem a este espaço de trabalho. Um rascunho pode ser salvo incompleto, mas apenas um completo pode ser publicado.",
+      "p3": "A publicação congela o rascunho como a próxima versão. Uma execução sempre lê a versão com a qual começou, mesmo que o rascunho seja modificado ou republicado depois; o banco de dados não permite mais alterar uma versão. Execuções e cada tentativa de cada nó são estados salvos, a partir dos quais é possível identificar o que pode ser executado a seguir após cada reinicialização.",
+      "p4": "Administradores do espaço de trabalho criam rascunhos, apenas o proprietário pode ativá-lo, e uma versão só é criada por meio da publicação, nunca por uma ferramenta. Agentes leem fluxos de trabalho, versões e execuções por meio das ferramentas exo_workflow e validam grafos; a IA integrada só pode ler fluxos de trabalho por enquanto. Execução, editor e visualização de execução virão nas próximas etapas de desenvolvimento."
+    },
+    "where": "Por meio das ferramentas exo_workflow e da API em /api/workflows; ainda não há uma visualização própria no espaço de trabalho."
+  },
   "ki-chat": {
     "title": "Conversar com um modelo sobre as suas páginas",
     "summary": "O chat fica ao lado da página e conhece o título e o caminho da página aberta. Qual modelo responde é definido no gerenciamento de modelos; sem um provedor configurado, um modelo simulado local responde para que nada dependa disso.",

@@ -2160,6 +2160,10 @@
       "source": "317e945179ce8499",
       "output": "5759a416f2b3b4ff"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "2828d910c046ace8"
@@ -9544,6 +9548,26 @@
       "source": "aa200cf818e953cd",
       "output": "0cde62be10d496b7"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "4e40aee4cfabb90e"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "f4f94174c8e5a5c3"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "b3e7f12f8ab27b88"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "c605bbde734acb19"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "8edcb12a97dd40ef"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "46d1d61abb1f13e7"
@@ -10855,6 +10879,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "03dfddb690f58983"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "e903869624c6081d"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "5f6b9965ac71c7aa"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "fd048d141a73202b"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "e70ef87e0f298cb7"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "09a65cd3fbe1666e"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "cc64e7013ac74f42"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "372b0aa4c0282ca5"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -21730,6 +21782,10 @@
       "source": "317e945179ce8499",
       "output": "ab434464d1900142"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "810271920a9c3acd"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "23e249b5e1b0f496"
@@ -29114,6 +29170,26 @@
       "source": "aa200cf818e953cd",
       "output": "5946a59de20eb8b3"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "ede018cebef54db4"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "841e592213be5002"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "9a788d2ec21468ea"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "5730d844dec3e5b4"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "7be872f979e55e6f"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "384825e76c344ed0"
@@ -30425,6 +30501,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "96855ebe6ea320e2"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "920c7a58ef12338d"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "f7b4f8d46c62286f"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "1ab000100a2cc4bb"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "b1fd6e4eb8f28b50"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "c5ad8645abbabf21"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "f12b769668df8708"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "dae72fa8324d9097"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -41300,6 +41404,10 @@
       "source": "317e945179ce8499",
       "output": "8c7e07ce9d89c682"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "f3d7043f6aa1227f"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "14e0cfdb5653c102"
@@ -48684,6 +48792,26 @@
       "source": "aa200cf818e953cd",
       "output": "dabd2ffc49209044"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "d32453f98fe4361e"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "c2711f6a452d3172"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "65307160874d8fbd"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "1b7c92ba296081ac"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "9ba48d89dda598eb"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "5d656ebd95dd5c05"
@@ -49995,6 +50123,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "58db0a5be26fd0f2"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "c670b85f29d9e6cb"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "42898ead5e507121"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "d5c71fcd6ac7109c"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "9c5be1872a4bd9e6"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "f91bf646f153de08"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "30a269399474c4a5"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "83ac278e826bebce"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -60870,6 +61026,10 @@
       "source": "317e945179ce8499",
       "output": "65f179dcd199cc00"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "8dcb5497c651bc70"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "a0ceefc94cbf021e"
@@ -68254,6 +68414,26 @@
       "source": "aa200cf818e953cd",
       "output": "9f85c596ac51d779"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "6cb957693cc82b10"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "382cea8bf5959c27"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "ba11d6a455f940a8"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "c14dd5f4ab361f6a"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "83aa83abf7640ccc"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "f32e56bde89e50d4"
@@ -69565,6 +69745,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "5298f92e313c7d25"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "6c6ea6c9f1f35a12"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "e2a4a7dd3459a61a"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "019379af2ddbfbe8"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "c1ae043eac663c0f"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "00a7fb32a6ecd6a3"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "336efde3800c5a42"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "f5ec4e1e64502805"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -80440,6 +80648,10 @@
       "source": "317e945179ce8499",
       "output": "406a25e02c7354d3"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "b07375d3f1991f5c"
@@ -87824,6 +88036,26 @@
       "source": "aa200cf818e953cd",
       "output": "2b71981a19b2175e"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "e72fc795c60722d5"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "77ecc0713e08a13b"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "ea86923cbe048342"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "377486172ab08ac3"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "43aa3b0a309c550d"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "700d272cc4b47ad2"
@@ -89135,6 +89367,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "b47fbfeb5d03fb38"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "d2341be44cf4c395"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "4cfcfd585c4fd561"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "5a091a1a49d896d8"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "5c7c3345e307645f"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "bf066cecdcf0fba3"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "407cbf7cca035e09"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "d9cf414e1b002b43"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -100010,6 +100270,10 @@
       "source": "317e945179ce8499",
       "output": "b0098c6accc81a6b"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e05a95d2b235ce24"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "c3a97f470ef716fb"
@@ -107394,6 +107658,26 @@
       "source": "aa200cf818e953cd",
       "output": "9d157ec25b31df94"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "f14b2ebad240a9ce"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "2fe2928cf8a555ea"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "7825bbe58a3ece48"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "f656a80c9e01221d"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "75ebfee14d477059"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "05c3537b2416974d"
@@ -108705,6 +108989,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "a57a38fced1c3db0"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "3c7af52bed16a0c9"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "8d33a3d42acc5e8d"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "2c58afd1029e10cb"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "e855390324355292"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "eab8b5b889df247e"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "ae45c9d5392e762e"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "f592a160e8686e7c"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",
@@ -119580,6 +119892,10 @@
       "source": "317e945179ce8499",
       "output": "4b2b8ace4d3742f1"
     },
+    "agentProfiles.labels.domains.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "92ddb9c592298a40"
+    },
     "agentProfiles.list.adminOnly": {
       "source": "063f3209b5579e8a",
       "output": "0a010b77ad6d7e90"
@@ -126964,6 +127280,26 @@
       "source": "aa200cf818e953cd",
       "output": "16de9b759d128c20"
     },
+    "errors.codes.workflow_has_active_runs": {
+      "source": "712f975869f414f9",
+      "output": "d76a511d17b8bd2f"
+    },
+    "errors.codes.workflow_invalid": {
+      "source": "8114ea8b6cd3d81b",
+      "output": "6587c201d90b8226"
+    },
+    "errors.codes.workflow_name_taken": {
+      "source": "b787ed7806bb5128",
+      "output": "4fecea7daac46923"
+    },
+    "errors.codes.workflow_not_published": {
+      "source": "bfb52199ecd0c5c1",
+      "output": "25a69d02ea6f6365"
+    },
+    "errors.codes.workflow_revision_conflict": {
+      "source": "eaac9d2e63076c84",
+      "output": "58b36689962fdbf4"
+    },
     "errors.codes.workspace_access_denied": {
       "source": "f5ed0bf332f566d0",
       "output": "4e134d996b25056b"
@@ -128275,6 +128611,34 @@
     "features.agenten-journal.where": {
       "source": "1271b57393f88b34",
       "output": "e144f0b48b62ee26"
+    },
+    "features.agenten-workflows.details.p1": {
+      "source": "52f2bb3db9e0811a",
+      "output": "1f47b1ff80fd987a"
+    },
+    "features.agenten-workflows.details.p2": {
+      "source": "96cd93e0c2821d39",
+      "output": "d977d0eba7a0d3d7"
+    },
+    "features.agenten-workflows.details.p3": {
+      "source": "a1121930daa55812",
+      "output": "759e3a8546e8ab7e"
+    },
+    "features.agenten-workflows.details.p4": {
+      "source": "2c6f9de0f0742e72",
+      "output": "8123092dedf569c3"
+    },
+    "features.agenten-workflows.summary": {
+      "source": "4b8b43c6e7f3096c",
+      "output": "0638d1f73e79a320"
+    },
+    "features.agenten-workflows.title": {
+      "source": "a0e5c715b973873e",
+      "output": "a71aae2d1883f65a"
+    },
+    "features.agenten-workflows.where": {
+      "source": "f5c9f414e0ca4040",
+      "output": "f9829f37dd7fbdc2"
     },
     "features.agentenprofile.details.p1": {
       "source": "2787f11a6931eba7",

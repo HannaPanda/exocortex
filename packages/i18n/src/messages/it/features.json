@@ -528,6 +528,17 @@
     },
     "where": "Nell’area di lavoro sotto «Eval» (anche tramite Ctrl + K) e nell’ispettore delle esecuzioni tramite «Salva come caso di eval»."
   },
+  "agenten-workflows": {
+    "title": "Salvare workflow di agenti come grafi con controllo delle versioni",
+    "summary": "Un workflow descrive sotto forma di grafo come si articola il lavoro degli agenti: cosa lo attiva, quali incarichi riceve l’IA integrata, quando diramare, lavorare in parallelo, unire o chiedere l’intervento umano. Le bozze possono essere verificate e pubblicate come versioni non modificabili.",
+    "details": {
+      "p1": "Un grafo è composto da nodi e archi. I trigger possono essere «manuale», una pianificazione (singola, giornaliera, settimanale, mensile o come cron) oppure una modifica alle pagine. Un passaggio dell’agente definisce obiettivo, pagine di contesto, profilo dell’agente, modalità di scrittura, budget e i campi che il risultato deve fornire. Una condizione crea una diramazione in base a uno di questi campi, senza interrogare un modello; «Parallelo» apre più rami, «Unisci» attende tutti o il primo; una condivisione richiede l’intervento umano; una fine conclude l’esecuzione.",
+      "p2": "La verifica segnala ogni problema relativo al nodo o all’arco interessato: un arco verso il vuoto, un’uscita di cui il nodo è sprovvisto, un ciclo, un’unione i cui rami si escludono a vicenda, una condizione applicata a un campo non fornito da nessuno, oppure un profilo e una pagina che non appartengono a questa area di lavoro. Una bozza può essere salvata incompleta, ma è possibile pubblicare solo workflow completi.",
+      "p3": "La pubblicazione blocca la bozza come versione successiva. Un’esecuzione legge sempre la versione con cui è iniziata, anche se la bozza viene successivamente modificata o ripubblicata; il database non permette più di modificare una versione. Le esecuzioni e ogni tentativo di ciascun nodo costituiscono uno stato salvato da cui è possibile dedurre, dopo ogni riavvio, cosa eseguire in seguito.",
+      "p4": "Le bozze vengono create dagli amministratori dell’area di lavoro, solo il proprietario può attivarle, e una versione si genera unicamente tramite pubblicazione, mai tramite uno strumento. Gli agenti leggono workflow, versioni ed esecuzioni tramite gli strumenti exo_workflow e convalidano i grafi; l’IA integrata può attualmente solo leggere i workflow. L’esecuzione, l’editor e la visualizzazione del flusso seguiranno nelle prossime fasi di sviluppo."
+    },
+    "where": "Tramite gli strumenti exo_workflow e l’interfaccia all’indirizzo /api/workflows; non esiste ancora una visualizzazione dedicata nell’area di lavoro."
+  },
   "ki-chat": {
     "title": "Discutere delle tue pagine con un modello",
     "summary": "La chat affianca la pagina e ne conosce titolo e percorso. Quale modello risponda è stabilito nella gestione modelli; in assenza di un provider configurato risponde un modello fittizio locale, così da non bloccare alcuna operazione.",

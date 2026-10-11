@@ -528,6 +528,17 @@
     },
     "where": "Dans l’espace de travail sous « Évals » (aussi via Strg + K), et dans l’inspecteur d’exécution via « Enregistrer comme cas d’éval »."
   },
+  "agenten-workflows": {
+    "title": "Enregistrer les workflows d’agents sous forme de graphes versionnés",
+    "summary": "Un workflow décrit sous forme de graphe l’enchaînement du travail des agents : ce qui le déclenche, les tâches confiées à l’IA intégrée, les moments où bifurquer, travailler en parallèle, fusionner ou solliciter une personne. Tu peux vérifier les brouillons et les publier sous forme de version immuable.",
+    "details": {
+      "p1": "Un graphe se compose de nœuds et d’arêtes. Les déclencheurs sont « manuel », une planification (ponctuelle, quotidienne, hebdomadaire, mensuelle ou via Cron) ou une modification de pages. Une étape d’agent définit la cible, les pages de contexte, le profil d’agent, le mode d’écriture, le budget et les champs que son résultat doit fournir. Une condition crée une branche selon l’un de ces champs sans interroger de modèle ; « Parallèle » ouvre plusieurs branches, « Fusionner » attend toutes les branches ou la première ; un partage sollicite une personne ; une fin termine l’exécution.",
+      "p2": "La validation signale chaque problème avec le nœud ou l’arête concerné : une arête vers le vide, une sortie que le nœud ne possède pas, une boucle, une fusion dont les branches s’excluent mutuellement, une condition portant sur un champ qu’aucun élément ne fournit, ou un profil et une page qui n’appartiennent pas à cet espace de travail. Un brouillon peut être enregistré incomplet, mais seule une version complète peut être publiée.",
+      "p3": "La publication fige le brouillon en tant que version suivante. Une exécution lit toujours la version avec laquelle elle a démarré, même si le brouillon est modifié ou republié par la suite ; la base de données ne permet plus du tout de modifier une version. Les exécutions et chaque tentative de chaque nœud constituent un état enregistré qui permet de savoir, après chaque redémarrage, ce qui peut s’exécuter ensuite.",
+      "p4": "Les admins de l’espace de travail rédigent les brouillons, seule la personne propriétaire peut l’activer, et une version n’est créée que par la publication, jamais par un outil. Les agents lisent les workflows, les versions et les exécutions via les outils exo_workflow et vérifient les graphes ; l’IA intégrée ne peut pour l’instant que lire les workflows. L’exécution, l’éditeur et la vue du déroulement suivront dans les prochaines étapes de développement."
+    },
+    "where": "Via les outils exo_workflow et l’interface sous /api/workflows ; il n’y a pas encore de vue dédiée dans l’espace de travail."
+  },
   "ki-chat": {
     "title": "Discuter avec un modèle au sujet de tes pages",
     "summary": "Le chat s’exécute à côté de la page et connaît le titre ainsi que le chemin de la page ouverte. Le modèle qui répond est défini dans la gestion des modèles ; si aucun fournisseur n’est configuré, un modèle fictif local répond afin de ne rien bloquer.",

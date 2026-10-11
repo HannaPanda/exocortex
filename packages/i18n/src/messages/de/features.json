@@ -528,6 +528,17 @@
     },
     "where": "Im Arbeitsbereich unter „Evals“ (auch über Strg + K), und im Lauf-Inspektor über „Als Eval-Fall speichern“."
   },
+  "agenten-workflows": {
+    "title": "Agenten-Workflows als versionierte Graphen ablegen",
+    "summary": "Ein Workflow beschreibt als Graph, wie Agentenarbeit zusammenhängt: was ihn auslöst, welche Aufträge die eingebaute KI bekommt, wann verzweigt, parallel gearbeitet, zusammengeführt oder ein Mensch gefragt wird. Entwürfe lassen sich prüfen und als unveränderliche Version veröffentlichen.",
+    "details": {
+      "p1": "Ein Graph besteht aus Knoten und Kanten. Auslöser sind „von Hand“, ein Zeitplan (einmalig, täglich, wöchentlich, monatlich oder als Cron) oder eine Änderung an Seiten. Ein Agentenschritt nennt Ziel, Kontextseiten, Agentenprofil, Schreibmodus, Budget und die Felder, die sein Ergebnis liefern muss. Eine Bedingung verzweigt anhand eines dieser Felder, ohne ein Modell zu fragen; „Parallel“ öffnet mehrere Zweige, „Zusammenführen“ wartet auf alle oder den ersten; eine Freigabe fragt einen Menschen; ein Ende schließt den Lauf ab.",
+      "p2": "Die Prüfung nennt jedes Problem mit dem Knoten oder der Kante, um die es geht: eine Kante ins Leere, ein Ausgang, den der Knoten nicht hat, ein Kreis, ein Zusammenführen, dessen Zweige sich gegenseitig ausschließen, eine Bedingung auf ein Feld, das niemand liefert, oder ein Profil und eine Seite, die nicht zu diesem Arbeitsbereich gehören. Ein Entwurf darf unvollständig gespeichert werden, veröffentlicht wird nur ein vollständiger.",
+      "p3": "Veröffentlichen friert den Entwurf als nächste Version ein. Ein Lauf liest immer die Version, mit der er begonnen hat, auch wenn der Entwurf danach geändert oder neu veröffentlicht wird; die Datenbank lässt eine Version gar nicht mehr ändern. Läufe und jeder Versuch jedes Knotens sind gespeicherter Zustand, aus dem sich nach jedem Neustart ablesen lässt, was als Nächstes laufen kann.",
+      "p4": "Entwürfe schreiben Admins des Arbeitsbereichs, einschalten darf ihn nur der Owner, und eine Version entsteht nur durch Veröffentlichen, nie durch ein Werkzeug. Agenten lesen Workflows, Versionen und Läufe über die exo_workflow-Werkzeuge und prüfen Graphen; die eingebaute KI darf Workflows bisher nur lesen. Ausführen, Editor und Ablaufansicht folgen in den nächsten Ausbaustufen."
+    },
+    "where": "Über die exo_workflow-Werkzeuge und die Schnittstelle unter /api/workflows; eine eigene Ansicht im Arbeitsbereich gibt es noch nicht."
+  },
   "ki-chat": {
     "title": "Mit einem Modell über deine Seiten reden",
     "summary": "Der Chat läuft neben der Seite und kennt Titel und Pfad der offenen Seite. Welches Modell antwortet, steht in der Modellverwaltung; ohne eingerichteten Anbieter antwortet ein lokales Attrappenmodell, damit nichts davon abhängt.",

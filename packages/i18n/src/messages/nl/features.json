@@ -528,6 +528,17 @@
     },
     "where": "In de werkruimte onder „Evals” (ook via Strg + K), en in de uitvoeringsinspector via „Als eval-case opslaan”."
   },
+  "agenten-workflows": {
+    "title": "Agent-workflows opslaan als geversioneerde grafen",
+    "summary": "Een workflow beschrijft als graaf hoe agent-werk samenhangt: wat hem triggert, welke opdrachten de ingebouwde AI krijgt, wanneer er vertakt, parallel gewerkt, samengevoegd of om menselijke input gevraagd wordt. Concepten kunnen worden gevalideerd en als onveranderlijke versie worden gepubliceerd.",
+    "details": {
+      "p1": "Een graaf bestaat uit knooppunten en verbindingen. Triggers zijn „handmatig”, een planning (eenmalig, dagelijks, wekelijks, maandelijks of als cron) of een wijziging aan pagina’s. Een agent-stap specificeert doel, contextpagina’s, agent-profiel, schrijfmodus, budget en de velden die het resultaat moet opleveren. Een voorwaarde vertakt op basis van een van deze velden, zonder een model te raadplegen; „Parallel” opent meerdere takken, „Samenvoegen” wacht op alle of de eerste; een deling vraagt om menselijke input; een einde sluit de uitvoering af.",
+      "p2": "De validatie vermeldt elk probleem met het betreffende knooppunt of de betreffende verbinding: een verbinding naar het niets, een uitgang die het knooppunt niet heeft, een lus, een samenvoeging waarvan de takken elkaar wederzijds uitsluiten, een voorwaarde op een veld dat niemand oplevert, of een profiel en pagina die niet bij deze werkruimte horen. Een concept mag onvolledig worden opgeslagen, maar publiceren kan alleen als het volledig is.",
+      "p3": "Publiceren bevriest het concept als volgende versie. Een uitvoering leest altijd de versie waarmee deze is gestart, zelfs als het concept daarna wordt gewijzigd of opnieuw wordt gepubliceerd; de database staat het überhaupt niet meer toe om een versie te wijzigen. Uitvoeringen en elke poging van elk knooppunt vormen opgeslagen status, waaruit na elke herstart kan worden afgelezen wat er als volgende kan draaien.",
+      "p4": "Concepten worden geschreven door admins van de werkruimte, inschakelen mag alleen de eigenaar, en een versie ontstaat alleen door publicatie, nooit via een tool. Agents lezen workflows, versies en uitvoeringen via de exo_workflow-tools en valideren grafen; de ingebouwde AI mag workflows tot nu toe alleen lezen. Uitvoeren, editor en weergave van het verloop volgen in de volgende fases."
+    },
+    "where": "Via de exo_workflow-tools en de interface onder /api/workflows; een eigen weergave in de werkruimte is er nog niet."
+  },
   "ki-chat": {
     "title": "Met een model over je pagina’s praten",
     "summary": "De chat draait naast de pagina en kent titel en pad van de geopende pagina. Welk model antwoordt, staat in het modelbeheer; zonder ingestelde provider antwoordt een lokaal dummy-model, zodat niets ervan afhangt.",

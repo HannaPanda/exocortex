@@ -43,6 +43,7 @@ export const TOOL_DOMAINS = [
   'attention',
   'changesets',
   'evals',
+  'workflows',
   'shares',
   'entities',
   'memory',
