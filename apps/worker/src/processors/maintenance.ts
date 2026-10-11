@@ -35,6 +35,7 @@ import {
 } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
 import { checkpointInterruptedRuns } from './maintenance-tasks/work-checkpoints';
+import { sweepWorkflows } from './maintenance-tasks/workflows';
 
 export { pruneSnapshotIds } from './maintenance-tasks/snapshots';
 
@@ -110,6 +111,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'prune-agent-journal': pruneAgentJournal,
   'prune-automation-runs': pruneAutomationRuns,
   'run-due-automations': runDueAutomations,
+  'sweep-workflow-runs': sweepWorkflows,
   'sync-ai-model-routes': syncAiModelRoutes,
   'reap-render-jobs': reapRenderJobs,
   'reap-project-builds': reapProjectBuilds,

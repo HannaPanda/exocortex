@@ -2,6 +2,8 @@ import { QUEUE_NAMES as QUEUES } from '@exocortex/contracts';
 import { type OutboxEvent, type PrismaClient } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
 
+import { startMatchingWorkflows } from '../../workflows/triggers';
+
 import { fireMatchingAutomations } from './automations';
 import { scheduleCommentNotifications } from './comment-notifications';
 import { isMissingRow, type MaintenanceTask } from './context';
@@ -116,6 +118,20 @@ async function dispatchEvent(
       correlationId: event.correlationId,
       automationRuleId: event.automationRuleId,
       automationDepth: event.automationDepth,
+    },
+  );
+  // Workflows with an event trigger hang off the outbox for the same reason
+  // (issue #161): the change passes here exactly once, and a workspace with
+  // no switched-on workflow pays for one cached settings read.
+  await startMatchingWorkflows(
+    { prisma, queues, logger, settings: (workspaceId) => context.settings(workspaceId) },
+    {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+      workflowId: event.workflowId,
+      depth: event.automationDepth,
     },
   );
   // Overview pages hang off the outbox for the same reason automations do

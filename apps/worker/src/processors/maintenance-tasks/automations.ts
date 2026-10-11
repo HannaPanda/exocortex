@@ -70,7 +70,7 @@ export async function pageInEvalSandbox(
  * Whether the page or a page above it is (or was) an eval sandbox: an
  * attempt's, or the page an eval run's sandboxes hang under.
  */
-async function insideEvalSandbox(
+export async function insideEvalSandbox(
   prisma: PrismaClient,
   documentId: string,
   ancestry: ReadonlySet<string>,
@@ -197,7 +197,7 @@ export async function fireMatchingAutomations(
  * `documentId` is the collection, because that is what a client invalidates,
  * and a rule scoped to a database has to act on the row that changed.
  */
-function subjectDocumentId(event: AutomationEvent): string | null {
+export function subjectDocumentId(event: Pick<AutomationEvent, 'payload'>): string | null {
   if (typeof event.payload !== 'object' || event.payload === null) return null;
   const payload = event.payload as Record<string, unknown>;
   const rowId = payload.rowId;
@@ -236,7 +236,7 @@ function inScope(
  * `workspaceId` bounds it: a parent chain must never leave the workspace the
  * event belongs to, and if it somehow did, a rule there must not see it.
  */
-async function ancestorIds(
+export async function ancestorIds(
   prisma: PrismaClient,
   documentId: string,
   workspaceId: string,

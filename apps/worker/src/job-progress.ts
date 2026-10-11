@@ -47,6 +47,9 @@ export interface JobProgressEvent {
     // Nor does a mail, for the same reason one layer further out: it has no
     // workspace, and its reader is not in a browser here (issue #102).
     | typeof QUEUE_NAMES.mail
+    // Nor does a workflow step: a run's progress is its history, read from
+    // the run, and a step is over before a bar could move (issue #161).
+    | typeof QUEUE_NAMES.workflow
   >;
   workspaceId: string;
   correlationId: string;

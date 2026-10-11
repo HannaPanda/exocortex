@@ -30,13 +30,14 @@ import { createMemoryConsolidateProcessor } from './processors/memory-consolidat
 import { createProjectBuildProcessor } from './processors/project-build';
 import { createPushDeliveryProcessor } from './processors/push-delivery';
 import { createRenderProcessor } from './processors/render';
+import { createWorkflowProcessor } from './processors/workflow';
 import { type WorkerRuntime } from './runtime';
 
 /**
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the sixteen of them only share this much.
+ * its own payload type, so the seventeen of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -44,7 +45,7 @@ export interface QueueWorker {
 }
 
 /**
- * The sixteen queues this process listens on, in three groups.
+ * The seventeen queues this process listens on, in three groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -408,6 +409,18 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  // Concurrency 4: a workflow step is a few short transactions (issue #161).
+  // A node that does real work starts it elsewhere -- a work item, an AI run
+  // -- and waits without holding a worker, so this number bounds database
+  // load, not spending; the run's own limits bound that.
+  const workflow = createTypedWorker({
+    name: QUEUE_NAMES.workflow,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 4,
+    handler: createWorkflowProcessor({ prisma, queues, settings: readSettings }),
+  });
+
   // Concurrency 1: a LaTeX run is CPU-bound and this host shares its cores with
   // everything else on it. Two builds at once would not finish a single PDF any
   // sooner and would take the machine down with them on a big document.
@@ -457,6 +470,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     memoryConsolidate,
     entityRescan,
     automation,
+    workflow,
     render,
     projectBuild,
   ];
