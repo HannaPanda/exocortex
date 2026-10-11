@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Symbol zastępczy w celu odwołuje się do czegoś, co nie zwraca wyniku przed tym węzłem.",
       "schedule_invalid": "Harmonogram jest nieprawidłowy. Sprawdź godzinę, strefę czasową i wyrażenie cron.",
       "reference_not_found": "Odwołanie jest nieprawidłowe: profil, strona lub osoba nie istnieje w tym obszarze roboczym."
+    },
+    "writeMode": {
+      "read_only": "Tylko do odczytu",
+      "propose": "Tylko sugerowanie",
+      "direct": "Bezpośredni zapis"
     }
   },
   "canvas": {

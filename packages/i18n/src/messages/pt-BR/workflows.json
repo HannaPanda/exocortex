@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Um marcador no objetivo aponta para algo que não produz nenhum resultado antes deste nó.",
       "schedule_invalid": "O agendamento não está correto. Verifique o horário, o fuso horário e a expressão cron.",
       "reference_not_found": "Uma referência aponta para o vazio: o perfil, a página ou a pessoa não existe neste espaço de trabalho."
+    },
+    "writeMode": {
+      "read_only": "Somente leitura",
+      "propose": "Apenas sugerir",
+      "direct": "Gravação direta"
     }
   },
   "canvas": {

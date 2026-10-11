@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Un espace réservé dans l’objectif ne renvoie à rien qui fournisse un résultat avant ce nœud.",
       "schedule_invalid": "Le calendrier n’est pas valide. Vérifie l’heure, le fuseau horaire et l’expression cron.",
       "reference_not_found": "Une référence pointe dans le vide : le profil, la page ou la personne n’existe pas dans cet espace de travail."
+    },
+    "writeMode": {
+      "read_only": "Lecture seule",
+      "propose": "Suggérer uniquement",
+      "direct": "Écriture directe"
     }
   },
   "canvas": {

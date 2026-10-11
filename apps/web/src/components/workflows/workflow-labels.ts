@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  type AiWriteMode,
   type WorkflowErrorClass,
   type WorkflowNodeType,
   type WorkflowProblem,
@@ -71,6 +72,7 @@ export function useWorkflowWording() {
       runStatus: (status: WorkflowRunStatus): string => t(`runStatus.${status}`),
       nodeState: (state: WorkflowNodeRunState): string => t(`nodeState.${state}`),
       origin: (origin: WorkflowRunOrigin): string => t(`origin.${origin}`),
+      writeMode: (mode: AiWriteMode): string => t(`writeMode.${mode}`),
       errorClass: (value: WorkflowErrorClass): string => t(`errorClass.${value}`),
       /** A problem in the reader's words; the code decides, never the English message. */
       problem: (problem: WorkflowProblem): string => t(`problems.${problem.code}`),

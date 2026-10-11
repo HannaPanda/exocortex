@@ -15,10 +15,10 @@ import {
   type WorkspaceMember,
 } from '@exocortex/contracts';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 import { useAutomationWording } from '../automations/automation-labels';
 
 import { type WorkflowNodeDecoration } from './workflow-canvas';
+import { useWorkflowWording } from './workflow-labels';
 
 /**
  * The one line a node card says about itself (issue #164), and the
@@ -40,7 +40,7 @@ export function useNodeDecorations({
   members: readonly WorkspaceMember[];
 }): Map<string, WorkflowNodeDecoration> {
   const summary = useNodeSummary(members);
-  const profileWording = useAgentProfileWording();
+  const modeWording = useWorkflowWording();
   const t = useTranslations('workflows.summary');
   return React.useMemo(() => {
     const counts = new Map<string, number>();
@@ -53,7 +53,7 @@ export function useNodeDecorations({
       const badge =
         node.type === 'agent' && envelope !== null
           ? t('writeModeBadge', {
-              mode: profileWording.writeMode(
+              mode: modeWording.writeMode(
                 workflowAgentNodeEffect({ node, envelope, profiles }).writeMode,
               ),
             })
@@ -65,7 +65,7 @@ export function useNodeDecorations({
       });
     }
     return map;
-  }, [envelope, graph, problems, profileWording, profiles, summary, t]);
+  }, [envelope, graph, modeWording, problems, profiles, summary, t]);
 }
 
 export function useNodeSummary(members: readonly WorkspaceMember[]) {

@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Een tijdelijke aanduiding in het doel verwijst naar iets dat vóór deze node geen resultaat oplevert.",
       "schedule_invalid": "De planning klopt niet. Controleer tijd, tijdzone en cron-expressie.",
       "reference_not_found": "Een verwijzing leidt nergens toe: het profiel, de pagina of de persoon bestaat niet in deze werkruimte."
+    },
+    "writeMode": {
+      "read_only": "Alleen lezen",
+      "propose": "Alleen voorstellen",
+      "direct": "Direct schrijven"
     }
   },
   "canvas": {

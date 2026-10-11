@@ -19408,6 +19408,10 @@
       "source": "a238d652d00d4a38",
       "output": "7047b9af7a4cd070"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "aaf7fccc7d1315f2"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "d334ca62310fbddb"
@@ -20963,6 +20967,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "f4830a1dae298044"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "b8ca2b88612be906"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "c8edb92bf5556d1d"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "72bb90897ab1eadc"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -40942,6 +40958,10 @@
       "source": "a238d652d00d4a38",
       "output": "b8badd9c554ae790"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "777d100e74c9fad3"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "7009e86600df89a0"
@@ -42497,6 +42517,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "bd7f1dbc1a01c23c"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "90d78ed3f77f0b81"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "4f1c3866802d1aeb"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "6e3c2c930b472294"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -62476,6 +62508,10 @@
       "source": "a238d652d00d4a38",
       "output": "71e59b56869b6774"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "5b55a18bf92ed4c9"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "b0014d729afe76e1"
@@ -64031,6 +64067,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "99cd3ee62339bdc0"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "88442ab8df9b5637"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "90233eee05ce9eb6"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "2af697456ab21797"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -84010,6 +84058,10 @@
       "source": "a238d652d00d4a38",
       "output": "1b01fb896aca3936"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "aadf8844e437ab4f"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "b953f6aaf585947d"
@@ -85565,6 +85617,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "fd8b9fa999e38b6f"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "40ccc610249fd872"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "d21d66a7f8bc4826"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "fb863b0b30216107"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -105544,6 +105608,10 @@
       "source": "a238d652d00d4a38",
       "output": "1beecf213692d574"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "676bfe4933d2d870"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "292855546e7c104e"
@@ -107099,6 +107167,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "07b091a3fdc4e4c0"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "3f6186167d717434"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "c2ca7c73b82962cb"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "f856e33b9e467362"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -127078,6 +127158,10 @@
       "source": "a238d652d00d4a38",
       "output": "7dd8120be3ebe142"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "aae7a48c28d35dca"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "a54df2c42bee852e"
@@ -128633,6 +128717,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "b680635ecadd37b0"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "e863deec8d820fdf"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "d77b50d41d8eb589"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "93bc3c3938729df9"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",
@@ -148612,6 +148708,10 @@
       "source": "a238d652d00d4a38",
       "output": "a8bba40ab0e0d188"
     },
+    "workItems.detail.openWorkflowRun": {
+      "source": "5aa200350750a374",
+      "output": "a3aa5ceac630bca5"
+    },
     "workItems.detail.reasonLabel": {
       "source": "e5ff3f97ee8482d4",
       "output": "728e79c25ca9a0e6"
@@ -150167,6 +150267,18 @@
     "workflows.labels.types.schedule": {
       "source": "e1ad30dfb0f53808",
       "output": "5346b63860bd4858"
+    },
+    "workflows.labels.writeMode.direct": {
+      "source": "de782300922cc8eb",
+      "output": "5b328076a0e8bff6"
+    },
+    "workflows.labels.writeMode.propose": {
+      "source": "9c079e4c38e051c9",
+      "output": "fe5fe422683adbdd"
+    },
+    "workflows.labels.writeMode.read_only": {
+      "source": "bba5cbd143244da0",
+      "output": "0e156e8eefc13f45"
     },
     "workflows.list.activeRuns": {
       "source": "2b1ce2986eb312cf",

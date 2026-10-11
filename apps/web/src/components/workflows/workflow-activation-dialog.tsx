@@ -28,7 +28,6 @@ import {
 
 import { useSetWorkflowActivation, useWorkflowVersion } from '@/lib/api/workflow-queries';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 import { useRunFormat } from '../runs/run-inspector-format';
 
 import { useWorkflowWording } from './workflow-labels';
@@ -118,7 +117,6 @@ function ActivationSummary({
 }) {
   const t = useTranslations('workflows.activation');
   const wording = useWorkflowWording();
-  const profileWording = useAgentProfileWording();
   const format = useRunFormat();
   const summary = useNodeSummary([]);
   const triggers = graph.nodes.filter(isTriggerNode);
@@ -151,7 +149,7 @@ function ActivationSummary({
             <Readout
               key={node.id}
               label={node.label ?? node.id}
-              value={profileWording.writeMode(effect.writeMode)}
+              value={wording.writeMode(effect.writeMode)}
               note={t('agentNote', {
                 profile: effect.profile?.name ?? t('noProfile'),
                 budget: format.money(effect.budgetMicroUsd),

@@ -16,7 +16,6 @@ import {
 } from '@exocortex/contracts';
 import { Button, Input, Readout, SectionRule, Textarea } from '@exocortex/ui';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 import { useRunFormat } from '../runs/run-inspector-format';
 
 import { AgentNodeForm } from './workflow-agent-form';
@@ -365,7 +364,7 @@ export function WorkflowInspector({
 }) {
   const t = useTranslations('workflows.settings');
   const format = useRunFormat();
-  const profileWording = useAgentProfileWording();
+  const modeWording = useWorkflowWording();
   const { graph, readOnly, onGraphChange } = shared;
   const limits = graph.limits;
   const setLimit = (key: keyof typeof limits, value: number | null): void =>
@@ -450,10 +449,7 @@ export function WorkflowInspector({
           label={t('workflowsEnabled')}
           value={envelope.workflowsEnabled ? t('on') : t('off')}
         />
-        <Readout
-          label={t('writeModeCeiling')}
-          value={profileWording.writeMode(envelope.writeMode)}
-        />
+        <Readout label={t('writeModeCeiling')} value={modeWording.writeMode(envelope.writeMode)} />
       </section>
 
       {graph.nodes.some((node) => node.type.startsWith('trigger.')) || readOnly ? null : (

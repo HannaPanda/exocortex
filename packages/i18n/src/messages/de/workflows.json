@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Ein Platzhalter im Ziel verweist auf nichts, das vor diesem Knoten ein Ergebnis liefert.",
       "schedule_invalid": "Der Zeitplan stimmt nicht. Prüfe Uhrzeit, Zeitzone und Cron-Ausdruck.",
       "reference_not_found": "Ein Verweis zeigt ins Leere: Das Profil, die Seite oder die Person gibt es in diesem Arbeitsbereich nicht."
+    },
+    "writeMode": {
+      "read_only": "Nur lesen",
+      "propose": "Nur vorschlagen",
+      "direct": "Direkt schreiben"
     }
   },
   "canvas": {

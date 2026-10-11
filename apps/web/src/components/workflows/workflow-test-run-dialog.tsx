@@ -27,8 +27,6 @@ import {
 
 import { useStartWorkflowRun, useWorkflowVersion } from '@/lib/api/workflow-queries';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
-
 import { ChoiceField, Field } from './workflow-fields';
 import { useWorkflowWording } from './workflow-labels';
 
@@ -54,7 +52,6 @@ export function WorkflowTestRunDialog({
 }) {
   const t = useTranslations('workflows.test');
   const wording = useWorkflowWording();
-  const profileWording = useAgentProfileWording();
   const router = useRouter();
   const { workflow, envelope } = response;
   const version = useWorkflowVersion(open ? workflow.publishedVersion?.id : undefined);
@@ -132,7 +129,7 @@ export function WorkflowTestRunDialog({
                 testId="workflow-test-write-mode"
                 options={AI_WRITE_MODES.map((mode) => ({
                   value: mode,
-                  label: profileWording.writeMode(mode),
+                  label: wording.writeMode(mode),
                 }))}
                 onChange={setWriteMode}
               />

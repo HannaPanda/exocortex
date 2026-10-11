@@ -27,7 +27,6 @@ import {
 import { useCancelWorkflowRun, useWorkflowRun } from '@/lib/api/workflow-queries';
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 import { type RunFormat, useRunFormat } from '../runs/run-inspector-format';
 import { runInspectorHref } from '../runs/run-links';
 
@@ -248,7 +247,7 @@ function useNow(): number | null {
 
 function RunSummary({ response, format }: { response: WorkflowRunResponse; format: RunFormat }) {
   const t = useTranslations('workflows.run');
-  const profileWording = useAgentProfileWording();
+  const modeWording = useWorkflowWording();
   const { run, progress } = response;
   const limits = run.limits;
   const now = useNow();
@@ -289,9 +288,7 @@ function RunSummary({ response, format }: { response: WorkflowRunResponse; forma
       )}
       <Readout
         label={t('writeMode')}
-        value={
-          run.writeMode === null ? t('writeModeNone') : profileWording.writeMode(run.writeMode)
-        }
+        value={run.writeMode === null ? t('writeModeNone') : modeWording.writeMode(run.writeMode)}
       />
       <Readout label={t('startedBy')} value={run.startedBy?.name ?? t('unknown')} />
       {run.chainDepth > 0 ? (

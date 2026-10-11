@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Un marcador de posición del objetivo no apunta a nada que devuelva un resultado antes de este nodo.",
       "schedule_invalid": "La programación no es válida. Comprueba la hora, la zona horaria y la expresión cron.",
       "reference_not_found": "Una referencia no apunta a nada: el perfil, la página o la persona no existen en este espacio de trabajo."
+    },
+    "writeMode": {
+      "read_only": "Solo lectura",
+      "propose": "Solo proponer",
+      "direct": "Escritura directa"
     }
   },
   "canvas": {

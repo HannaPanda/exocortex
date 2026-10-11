@@ -20,11 +20,11 @@ import {
 } from '@exocortex/contracts';
 import { Button, Checkbox, Input, Label, Readout, Textarea } from '@exocortex/ui';
 
-import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 import { useRunFormat } from '../runs/run-inspector-format';
 
 import { upstreamOf } from './workflow-draft';
 import { ChoiceField, Field, NumberField } from './workflow-fields';
+import { useWorkflowWording } from './workflow-labels';
 import { WorkflowPagePicker } from './workflow-page-picker';
 
 type AgentNode = WorkflowNodeOf<'agent'>;
@@ -58,7 +58,7 @@ export function AgentNodeForm({
   onChange: (node: AgentNode) => void;
 }) {
   const t = useTranslations('workflows.agent');
-  const profileWording = useAgentProfileWording();
+  const modeWording = useWorkflowWording();
   const format = useRunFormat();
   const effect = workflowAgentNodeEffect({ node, envelope, profiles });
   const defaultProfile = profiles.find((profile) => profile.isDefault) ?? null;
@@ -134,7 +134,7 @@ export function AgentNodeForm({
         testId="workflow-agent-write-mode"
         options={[
           { value: NO_MODE, label: t('writeModeNone') },
-          ...AI_WRITE_MODES.map((mode) => ({ value: mode, label: profileWording.writeMode(mode) })),
+          ...AI_WRITE_MODES.map((mode) => ({ value: mode, label: modeWording.writeMode(mode) })),
         ]}
         onChange={(value) => onChange({ ...node, writeMode: value === NO_MODE ? null : value })}
       />
@@ -181,7 +181,7 @@ export function AgentNodeForm({
         />
         <Readout
           label={t('effectiveWriteMode')}
-          value={profileWording.writeMode(effect.writeMode)}
+          value={modeWording.writeMode(effect.writeMode)}
           note={effect.writeModeNarrowed ? t('effectiveWriteModeNarrowed') : undefined}
         />
         <Readout

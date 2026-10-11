@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "Un segnaposto nell’obiettivo non fa riferimento a nulla che produca un risultato prima di questo nodo.",
       "schedule_invalid": "La pianificazione non è corretta. Controlla orario, fuso orario ed espressione cron.",
       "reference_not_found": "Un riferimento rimanda a vuoto: il profilo, la pagina o la persona non esiste in questa area di lavoro."
+    },
+    "writeMode": {
+      "read_only": "Sola lettura",
+      "propose": "Solo proposta",
+      "direct": "Scrittura diretta"
     }
   },
   "canvas": {

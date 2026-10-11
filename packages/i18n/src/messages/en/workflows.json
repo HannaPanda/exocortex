@@ -102,6 +102,11 @@
       "goal_placeholder_invalid": "A placeholder in the goal refers to nothing that provides an output before this node.",
       "schedule_invalid": "The schedule is invalid. Check the time, time zone, and cron expression.",
       "reference_not_found": "A reference points to nothing: the profile, page, or person does not exist in this workspace."
+    },
+    "writeMode": {
+      "read_only": "Read-only",
+      "propose": "Propose only",
+      "direct": "Write directly"
     }
   },
   "canvas": {
