@@ -151,6 +151,9 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_user_set_disabled',
       'exo_work_item_delete',
       'exo_workflow_delete',
+      // Cancelling a run (issue #161) ends every step in flight, and a step
+      // running at that moment is not recorded; a new run starts from scratch.
+      'exo_workflow_run_cancel',
       // Saving a draft graph (issue #160) replaces the whole draft; only what
       // was published survives as a version.
       'exo_workflow_update',
