@@ -4,10 +4,12 @@ import {
   cancelWorkflowRunRequestSchema,
   createWorkflowRequestSchema,
   deleteWorkflowResponseSchema,
+  duplicateWorkflowRequestSchema,
   idSchema,
   startWorkflowRunRequestSchema,
   updateWorkflowRequestSchema,
   WORKFLOW_NODE_HANDLES,
+  type WorkflowAuthor,
   type WorkflowEnvelope,
   type WorkflowGraph,
   workflowListResponseSchema,
@@ -31,11 +33,14 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * A workflow is a versioned graph: triggers start it, agent nodes hand work
  * to the built-in AI, control nodes branch, fan out, join, ask a person and
  * end it. Reading workflows, their versions and runs and checking a graph is
- * on both agent surfaces. Writing a draft is MCP only and an admin's; the
- * built-in AI's own authoring is issue #165. Publishing and switching on
- * are no tools at all: a person decides what becomes a version and what may
- * start by itself. Starting and cancelling a run by hand (issue #161) is MCP
- * only and an admin's too, because a run spends what its agents spend.
+ * on both agent surfaces, and so is writing a draft (issue #165, ADR-080):
+ * create, revise, duplicate, validate, repair. A run of the built-in AI may
+ * not put an agent under a looser profile into it than its own. Publishing
+ * and switching on are no tools at all, and the API refuses them to any
+ * agent: a person decides what becomes a version and what may start by
+ * itself, and the draft says who wrote it. Starting and cancelling a run by
+ * hand (issue #161) and deleting are MCP only and an admin's, because a run
+ * spends what its agents spend.
  */
 
 const GRAPH_HELP =
@@ -44,7 +49,9 @@ const GRAPH_HELP =
     .map(([type, handles]) => `${type} (${handles.join('/') || 'keine'})`)
     .join(', ') +
   '. Eine Kante: {id, kind: "flow", source: {nodeId, handle}, target: {nodeId}}. Nur ein join ' +
-  'hat mehrere Eingänge, nur parallel.branch mehrere Ausgänge; keine Zyklen. agent: goal, ' +
+  'hat mehrere Eingänge, nur parallel.branch mehrere Ausgänge; keine Zyklen. trigger.schedule: ' +
+  'schedule {kind: DAILY|WEEKLY|MONTHLY|ONCE|CRON, time "HH:MM", weekday 0-6 (0 Sonntag), ' +
+  'dayOfMonth, at, cron, timeZone}. agent: goal, ' +
   'documentIds, agentProfileId, writeMode, budgetMicroUsd, outputFields [{name, type: ' +
   'string|number|boolean|enum, values, required}], completion review|done (weiter, sobald der ' +
   'Auftrag abgegeben ist, oder erst, wenn ein Mensch ihn erledigt hat). Ein agent-Knoten legt ' +
@@ -63,6 +70,73 @@ const GRAPH_HELP =
   'beendet den Lauf sofort und bricht ab, was auf anderen Zweigen noch läuft. Ein Entwurf ' +
   'darf unvollständig sein; exo_workflow_validate nennt, was vor dem Veröffentlichen fehlt.';
 
+/**
+ * A small graph that publishes as it is, and the repair loop around it. Kept
+ * beside the help so an agent copies a shape that works rather than one it
+ * reconstructed from prose (issue #165).
+ */
+/** Sunday evening: read the open ideas, propose five next tasks, ask a person. */
+export const EXAMPLE_WORKFLOW_GRAPH = {
+  schemaVersion: 1,
+  nodes: [
+    {
+      id: 'start',
+      type: 'trigger.schedule',
+      schedule: { kind: 'WEEKLY', time: '18:00', weekday: 0, timeZone: 'Europe/Berlin' },
+    },
+    {
+      id: 'sichten',
+      type: 'agent',
+      goal: 'Lies die offenen technischen Ideen und schlage die fünf besten nächsten Aufgaben vor.',
+      writeMode: 'propose',
+      outputFields: [{ name: 'anzahl', type: 'number', required: true }],
+    },
+    {
+      id: 'pruefen',
+      type: 'approval',
+      title: 'Vorschläge ansehen',
+      question: 'Passen die fünf Aufgaben?',
+    },
+    { id: 'ende', type: 'end', outcome: 'succeeded' },
+  ],
+  edges: [
+    {
+      id: 'e1',
+      kind: 'flow',
+      source: { nodeId: 'start', handle: 'next' },
+      target: { nodeId: 'sichten' },
+    },
+    {
+      id: 'e2',
+      kind: 'flow',
+      source: { nodeId: 'sichten', handle: 'next' },
+      target: { nodeId: 'pruefen' },
+    },
+    {
+      id: 'e3',
+      kind: 'flow',
+      source: { nodeId: 'pruefen', handle: 'approved' },
+      target: { nodeId: 'ende' },
+    },
+  ],
+  limits: {},
+} as const;
+
+const GRAPH_EXAMPLE =
+  'Beispiel, jeden Sonntag um 18 Uhr offene Ideen sichten und fünf nächste Aufgaben vorschlagen: ' +
+  JSON.stringify(EXAMPLE_WORKFLOW_GRAPH) +
+  '. Reparieren: exo_workflow_validate mit dem geänderten graph aufrufen, bis valid true ist; ' +
+  'jedes Problem nennt code und nodeId, edgeId oder path. "[edge_invalid_handle] e3: A approval ' +
+  'node has no handle yes" heißt etwa: handle auf approved oder rejected setzen. Dann mit ' +
+  'exo_workflow_update und expectedRevision speichern.';
+
+function formatAuthor(author: WorkflowAuthor): string {
+  const name = author.account?.name ?? 'unbekannt';
+  if (author.kind === 'agent') return `Agent ${author.agentLabel ?? 'ohne Namen'} für ${name}`;
+  if (author.kind === 'assistant') return `eingebaute KI für ${name}`;
+  return name;
+}
+
 function formatSummary(workflow: WorkflowSummary): string {
   const published =
     workflow.publishedVersion === null
@@ -73,6 +147,7 @@ function formatSummary(workflow: WorkflowSummary): string {
     `${workflow.enabled ? 'eingeschaltet' : 'aus'} · Entwurf Stand ${workflow.draftRevision}` +
     (workflow.hasUnpublishedChanges ? ', unveröffentlichte Änderungen' : '') +
     (workflow.draftValid ? '' : ', Entwurf unvollständig') +
+    ` (geschrieben von ${formatAuthor(workflow.draftAuthor)})` +
     ` · Auslöser: ${workflow.triggerTypes.join(', ') || 'keine'}` +
     (workflow.activeRunCount > 0 ? ` · ${workflow.activeRunCount} laufend` : '')
   );
@@ -168,7 +243,7 @@ export const workflowValidateTool: AnyToolDefinition = defineTool({
   description:
     'Prüft einen Workflow-Graphen, ohne etwas zu speichern: den mitgeschickten oder, ohne graph, ' +
     'den gespeicherten Entwurf. Jedes Problem hat einen festen code und nennt Knoten, Kante ' +
-    `oder Pfad, damit sich der Graph gezielt reparieren lässt. ${GRAPH_HELP}`,
+    `oder Pfad, damit sich der Graph gezielt reparieren lässt. ${GRAPH_HELP} ${GRAPH_EXAMPLE}`,
   inputSchema: z.object({ workflowId: idSchema, graph: z.unknown().optional() }),
   surfaces: ['mcp', 'ai'],
   domain: 'workflows',
@@ -207,7 +282,8 @@ export const workflowVersionsTool: AnyToolDefinition = defineTool({
               .map(
                 (version) =>
                   `Version ${version.version} (id: ${version.id}) vom ${version.publishedAt.slice(0, 16)}` +
-                  ` von ${version.publishedBy?.name ?? 'unbekannt'}, Entwurfsstand ${version.draftRevision}`,
+                  ` von ${version.publishedBy?.name ?? 'unbekannt'}, Entwurfsstand ${version.draftRevision}` +
+                  ` geschrieben von ${formatAuthor(version.draftAuthor)}`,
               )
               .join('\n'),
       data: result,
@@ -378,10 +454,15 @@ export const workflowCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_workflow_create',
   description:
     'Legt einen Workflow als Entwurf an (nur Admins). Ohne graph beginnt er mit einem manuellen ' +
-    'Auslöser. Veröffentlichen und Einschalten entscheidet ein Mensch. ' +
-    GRAPH_HELP,
+    'Auslöser. Ein Entwurf startet nichts: Veröffentlichen und Einschalten entscheidet ein Mensch ' +
+    'im Browser, und der Entwurf zeigt, welcher Agent ihn geschrieben hat. Ein KI-Lauf darf ' +
+    'keinem Agent-Knoten ein lockereres Profil geben als sein eigenes ' +
+    '(workflow_exceeds_author nennt die Knoten). ' +
+    GRAPH_HELP +
+    ' ' +
+    GRAPH_EXAMPLE,
   inputSchema: z.object({ workspaceId: idSchema }).extend(createWorkflowRequestSchema.shape),
-  surfaces: ['mcp'],
+  surfaces: ['mcp', 'ai'],
   domain: 'workflows',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}:workflows`,
@@ -405,10 +486,11 @@ export const workflowUpdateTool: AnyToolDefinition = defineTool({
   description:
     'Ändert Name, Beschreibung oder den Entwurfsgraphen eines Workflows (nur Admins). graph ' +
     'ersetzt den ganzen Entwurf; expectedRevision verhindert, eine fremde Änderung zu ' +
-    'überschreiben. Laufende Läufe und veröffentlichte Versionen bleiben unberührt. ' +
+    'überschreiben. Laufende Läufe und veröffentlichte Versionen bleiben unberührt; was du ' +
+    'änderst, wird erst wirksam, wenn ein Mensch es veröffentlicht. ' +
     GRAPH_HELP,
   inputSchema: z.object({ workflowId: idSchema }).extend(updateWorkflowRequestSchema.shape),
-  surfaces: ['mcp'],
+  surfaces: ['mcp', 'ai'],
   domain: 'workflows',
   mutating: true,
   destructive: true,
@@ -423,6 +505,32 @@ export const workflowUpdateTool: AnyToolDefinition = defineTool({
     });
     return {
       text: `Workflow geändert:\n${formatSummary(result.workflow)}\n\n${formatProblems(result.problems)}`,
+      data: result,
+    };
+  },
+});
+
+export const workflowDuplicateTool: AnyToolDefinition = defineTool({
+  name: 'exo_workflow_duplicate',
+  description:
+    'Kopiert den Entwurf eines Workflows in einen neuen Workflow (nur Admins), als Ausgangspunkt ' +
+    'für eine Variante. Ohne name heißt er "<Name> (Kopie)". Die Kopie ist nur ein Entwurf: keine ' +
+    'Versionen, keine Läufe, ausgeschaltet.',
+  inputSchema: z.object({ workflowId: idSchema }).extend(duplicateWorkflowRequestSchema.shape),
+  surfaces: ['mcp', 'ai'],
+  domain: 'workflows',
+  mutating: true,
+  target: (input) => `workflow:${input.workflowId}`,
+  async execute(client, input) {
+    const { workflowId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workflows/${workflowId}/duplicate`,
+      body,
+      responseSchema: workflowResponseSchema,
+    });
+    return {
+      text: `Workflow kopiert:\n${formatSummary(result.workflow)}\n\n${formatProblems(result.problems)}`,
       data: result,
     };
   },
@@ -465,5 +573,6 @@ export const WORKFLOW_TOOLS: readonly AnyToolDefinition[] = [
   workflowRunCancelTool,
   workflowCreateTool,
   workflowUpdateTool,
+  workflowDuplicateTool,
   workflowDeleteTool,
 ];

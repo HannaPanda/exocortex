@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { emptyWorkflowGraph } from '@exocortex/contracts';
+import { emptyWorkflowGraph, validateWorkflowGraph } from '@exocortex/contracts';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { WORKFLOW_TOOLS } from './workflows.js';
+import { EXAMPLE_WORKFLOW_GRAPH, WORKFLOW_TOOLS } from './workflows.js';
 
 const NOW = '2026-10-11T10:00:00.000Z';
 
@@ -40,6 +40,7 @@ const summary = {
   publishedVersion: null,
   triggerTypes: ['trigger.manual'],
   activeRunCount: 0,
+  draftAuthor: { kind: 'agent', account: null, agentLabel: 'Hermes', aiRunId: null, at: NOW },
   createdBy: null,
   updatedBy: null,
   createdAt: NOW,
@@ -47,14 +48,58 @@ const summary = {
 };
 
 describe('workflow tools', () => {
-  it('offers reading and checking on both surfaces, writing on MCP only, and no publish', () => {
+  it('offers drafting on both surfaces, deleting and runs on MCP only, and no publish', () => {
     const both = WORKFLOW_TOOLS.filter((entry) => entry.surfaces.includes('ai')).map(
       (entry) => entry.name,
     );
-    expect(both.every((name) => !tool(name).mutating)).toBe(true);
-    expect(tool('exo_workflow_create').surfaces).toEqual(['mcp']);
-    expect(WORKFLOW_TOOLS.map((entry) => entry.name)).not.toContain('exo_workflow_publish');
+    expect(both.filter((name) => tool(name).mutating).toSorted()).toEqual([
+      'exo_workflow_create',
+      'exo_workflow_duplicate',
+      'exo_workflow_update',
+    ]);
+    for (const name of [
+      'exo_workflow_delete',
+      'exo_workflow_run_start',
+      'exo_workflow_run_cancel',
+    ]) {
+      expect(tool(name).surfaces).toEqual(['mcp']);
+    }
+    const names = WORKFLOW_TOOLS.map((entry) => entry.name);
+    expect(names).not.toContain('exo_workflow_publish');
+    expect(names).not.toContain('exo_workflow_activate');
     expect(WORKFLOW_TOOLS.every((entry) => entry.domain === 'workflows')).toBe(true);
+  });
+
+  it('documents an example graph that publishes as it is', () => {
+    expect(validateWorkflowGraph(EXAMPLE_WORKFLOW_GRAPH).problems).toEqual([]);
+    expect(tool('exo_workflow_create').description).toContain('"trigger.schedule"');
+    expect(tool('exo_workflow_validate').description).toContain('Reparieren');
+  });
+
+  it('copies a draft and says who wrote it', async () => {
+    const { client, calls } = fakeClient({
+      workflow: { ...summary, name: 'Sonntagsrunde (Kopie)' },
+      draft: emptyWorkflowGraph(),
+      problems: [],
+      envelope: {
+        workflowsEnabled: false,
+        writeMode: 'direct',
+        limits: {
+          maxNodeExecutions: 50,
+          maxParallelBranches: 4,
+          maxLifetimeSeconds: 3600,
+          budgetMicroUsd: 1000,
+        },
+      },
+    });
+    const result = await tool('exo_workflow_duplicate').run(client, {
+      workflowId: 'workflow1234',
+    });
+    expect(calls).toEqual([
+      { method: 'POST', path: '/api/workflows/workflow1234/duplicate', body: {} },
+    ]);
+    expect(result.text).toContain('Sonntagsrunde (Kopie)');
+    expect(result.text).toContain('Agent Hermes');
   });
 
   it('names every problem with its code and element so an agent can repair the graph', async () => {
