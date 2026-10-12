@@ -58,7 +58,9 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
   );
   const [moment, setMoment] = React.useState<number | null>(null);
   const [calm, setCalm] = React.useState(false);
-  const [follow, setFollow] = React.useState(true);
+  // Off until somebody asks for it: a camera that flies to every read swept
+  // the viewer through the cloud until they no longer knew where they were.
+  const [follow, setFollow] = React.useState(false);
   const [tour, setTour] = React.useState<MapTour | null>(null);
   const [appearanceOpen, setAppearanceOpen] = React.useState(false);
   const graphRef = React.useRef<MapGraph | null>(null);
