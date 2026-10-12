@@ -31,6 +31,7 @@ export * from './features';
 export * from './inbox';
 export * from './invitations';
 export * from './jobs';
+export * from './knowledge-map';
 export * from './locale';
 export * from './lucide-icon-names';
 export * from './mail';

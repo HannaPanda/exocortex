@@ -29,6 +29,7 @@ import { FeaturesModule } from './features/features.module';
 import { HealthModule } from './health/health.module';
 import { InboxModule } from './inbox/inbox.module';
 import { InvitationsModule } from './invitations/invitations.module';
+import { KnowledgeMapModule } from './knowledge-map/knowledge-map.module';
 import { McpModule } from './mcp/mcp.module';
 import { MeModule } from './me/me.module';
 import { MemoryModule } from './memory/memory.module';
@@ -95,6 +96,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     MeModule,
     MemoryModule,
     EntitiesModule,
+    KnowledgeMapModule,
     FeaturesModule,
     McpModule,
     AgentSessionsModule,
