@@ -421,6 +421,10 @@
       "showView": "Ansicht wechseln",
       "showViewPlaceholder": "Welche Ansicht?",
       "showViewKeywords": "ansicht view wechseln zeigen"
+    },
+    "knowledgeMap": {
+      "appearance": "Aussehen der Wissenskarte",
+      "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen"
     }
   },
   "documentTopBar": {

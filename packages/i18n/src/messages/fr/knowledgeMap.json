@@ -14,7 +14,8 @@
     "noWebglTitle": "Ce navigateur ne peut pas afficher la carte",
     "noWebglDescription": "La carte des connaissances nécessite WebGL. Il est probablement désactivé dans les paramètres du navigateur, ou la carte graphique n’est pas prise en charge.",
     "canvasLabel": "Carte des connaissances en 3D. Fais pivoter et zoome avec la souris, clique sur un point pour le sélectionner. La recherche en haut à droite mène aux pages sans manipuler la carte.",
-    "fit": "Tout afficher"
+    "fit": "Tout afficher",
+    "appearance": "Apparence"
   },
   "legend": {
     "title": "Lignes",
@@ -66,5 +67,46 @@
     "created": "nouveau : {title}",
     "removed": "supprimé : {title}",
     "unknownPage": "une page"
+  },
+  "appearance": {
+    "title": "Apparence",
+    "description": "S’applique uniquement à toi, sur tous tes appareils. La carte en arrière-plan affiche chaque modification immédiatement.",
+    "close": "Fermer l’apparence",
+    "stars": "Étoiles",
+    "core": "Noyau",
+    "halo": "Halo",
+    "softness": "Douceur",
+    "glow": "Lueur",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Rayon du bloom",
+    "bloomThreshold": "Seuil",
+    "saturation": "Saturation",
+    "correction": "Correction de l’espace colorimétrique",
+    "correctionHint": "Convertit l’image finale en sRGB. Plus lumineux, et le bleu et le violet brillent alors autant que le vert.",
+    "points": "Couleurs des zones",
+    "pointsHint": "Les zones prennent leur couleur selon leur taille : la plus grande en bleu, puis en vert, violet, orange et ainsi de suite.",
+    "pointGlow": "Lueur",
+    "pointLightness": "Luminosité",
+    "pulses": "Couleurs des événements",
+    "colours": {
+      "blue": "Bleu",
+      "green": "Vert",
+      "purple": "Violet",
+      "orange": "Orange",
+      "pink": "Rose",
+      "yellow": "Jaune",
+      "red": "Rouge",
+      "brown": "Marron",
+      "gray": "Gris",
+      "entity": "Entités",
+      "read": "L’IA lit",
+      "write": "L’IA écrit",
+      "created": "Nouvelle page",
+      "removed": "Page supprimée"
+    },
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "isDefault": "Par défaut",
+    "reset": "Réinitialiser"
   }
 }

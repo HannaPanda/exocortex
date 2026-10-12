@@ -1,6 +1,6 @@
 'use client';
 
-import { PauseIcon, PlayIcon, ScanIcon } from 'lucide-react';
+import { PaletteIcon, PauseIcon, PlayIcon, ScanIcon } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -19,11 +19,15 @@ export function MapHeader({
   lines,
   semantic,
   onFit,
+  appearanceOpen,
+  onAppearance,
 }: {
   pages: number;
   lines: number;
   semantic: KnowledgeMapSemanticState;
   onFit: () => void;
+  appearanceOpen: boolean;
+  onAppearance: () => void;
 }) {
   const t = useTranslations('knowledgeMap.screen');
   return (
@@ -38,6 +42,17 @@ export function MapHeader({
           onClick={onFit}
         >
           <ScanIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t('appearance')}
+          aria-pressed={appearanceOpen}
+          title={t('appearance')}
+          onClick={onAppearance}
+          data-testid="map-appearance-toggle"
+        >
+          <PaletteIcon />
         </Button>
       </div>
       <p className="exocortex-numeric text-xs text-muted-foreground">

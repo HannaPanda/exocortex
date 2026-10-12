@@ -14,7 +14,8 @@
     "noWebglTitle": "Questo browser non può visualizzare la mappa",
     "noWebglDescription": "La mappa della conoscenza richiede WebGL. Probabilmente è disattivato nelle impostazioni del browser, oppure la scheda grafica non è supportata.",
     "canvasLabel": "Mappa della conoscenza tridimensionale. Usa il mouse per ruotare e ingrandire, fai clic su un punto per selezionarlo. La ricerca in alto a destra porta alle pagine senza dover esplorare la mappa.",
-    "fit": "Mostra tutto"
+    "fit": "Mostra tutto",
+    "appearance": "Aspetto"
   },
   "legend": {
     "title": "Linee",
@@ -66,5 +67,46 @@
     "created": "nuovo: {title}",
     "removed": "rimosso: {title}",
     "unknownPage": "una pagina"
+  },
+  "appearance": {
+    "title": "Aspetto",
+    "description": "Vale solo per te, su tutti i dispositivi. La mappa sottostante mostra subito ogni modifica.",
+    "close": "Chiudi aspetto",
+    "stars": "Stelle",
+    "core": "Nucleo",
+    "halo": "Alone",
+    "softness": "Morbidezza",
+    "glow": "Bagliore",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Raggio bloom",
+    "bloomThreshold": "Soglia",
+    "saturation": "Saturazione",
+    "correction": "Correzione spazio colore",
+    "correctionHint": "Converte l’immagine finale in sRGB. Più luminosa, con blu e viola che brillano con la stessa intensità del verde.",
+    "points": "Colori delle aree",
+    "pointsHint": "Le aree prendono il colore in base alla dimensione: la più grande in blu, poi verde, viola, arancione e così via.",
+    "pointGlow": "Bagliore",
+    "pointLightness": "Luminosità",
+    "pulses": "Colori degli eventi",
+    "colours": {
+      "blue": "Blu",
+      "green": "Verde",
+      "purple": "Viola",
+      "orange": "Arancione",
+      "pink": "Rosa",
+      "yellow": "Giallo",
+      "red": "Rosso",
+      "brown": "Marrone",
+      "gray": "Grigio",
+      "entity": "Entità",
+      "read": "L’IA legge",
+      "write": "L’IA scrive",
+      "created": "Nuova pagina",
+      "removed": "Pagina rimossa"
+    },
+    "saving": "Salvataggio…",
+    "saved": "Salvato",
+    "isDefault": "Predefinito",
+    "reset": "Ripristina"
   }
 }

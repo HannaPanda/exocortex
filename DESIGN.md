@@ -500,7 +500,10 @@ seconds, a new page arrives in `success`, a removed one leaves in
 has a calm switch. Under `prefers-reduced-motion` the room stands still, no
 light travels and the camera jumps instead of flying, and nothing else is
 lost. The movement never leaves the canvas: the panels around the map behave
-like every other panel.
+like every other panel. Each point is a star (a core plus a halo facing the
+camera), and how strongly it glows is the viewer's own setting, tuned in the
+map's "Aussehen" panel: the hues stay the tokens, only their glow, lightness
+and saturation are personal.
 
 **The Signal-Fires-Then-Fades Rule.** When amber marks an event rather than a
 place (the save heartbeat), it brightens instantly and decays over

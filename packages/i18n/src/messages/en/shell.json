@@ -421,6 +421,10 @@
       "showView": "Switch view",
       "showViewPlaceholder": "Which view?",
       "showViewKeywords": "view switch show"
+    },
+    "knowledgeMap": {
+      "appearance": "Knowledge map appearance",
+      "appearanceKeywords": "map colors glow bloom shine stars halo look design customize"
     }
   },
   "documentTopBar": {

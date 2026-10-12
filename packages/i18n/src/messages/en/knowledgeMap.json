@@ -14,7 +14,8 @@
     "noWebglTitle": "This browser can’t render the map",
     "noWebglDescription": "The knowledge map requires WebGL. It might be disabled in your browser settings, or your graphics card isn’t supported.",
     "canvasLabel": "Three-dimensional knowledge map. Rotate and zoom with the mouse, click a point to select it. The search at the top right leads to pages without having to navigate the map.",
-    "fit": "Fit to view"
+    "fit": "Fit to view",
+    "appearance": "Appearance"
   },
   "legend": {
     "title": "Lines",
@@ -66,5 +67,46 @@
     "created": "new: {title}",
     "removed": "removed: {title}",
     "unknownPage": "a page"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "description": "Only applies to you, across all devices. The map behind reflects every change right away.",
+    "close": "Close appearance",
+    "stars": "Stars",
+    "core": "Core",
+    "halo": "Halo",
+    "softness": "Softness",
+    "glow": "Glow",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Bloom radius",
+    "bloomThreshold": "Threshold",
+    "saturation": "Saturation",
+    "correction": "Color space correction",
+    "correctionHint": "Converts the final image to sRGB. Brighter, and makes blue and purple glow as vividly as green.",
+    "points": "Area colors",
+    "pointsHint": "Areas get their color by size: the largest blue, then green, purple, orange, and so on.",
+    "pointGlow": "Glow",
+    "pointLightness": "Brightness",
+    "pulses": "Event colors",
+    "colours": {
+      "blue": "Blue",
+      "green": "Green",
+      "purple": "Purple",
+      "orange": "Orange",
+      "pink": "Pink",
+      "yellow": "Yellow",
+      "red": "Red",
+      "brown": "Brown",
+      "gray": "Gray",
+      "entity": "Entities",
+      "read": "AI reading",
+      "write": "AI writing",
+      "created": "New page",
+      "removed": "Removed page"
+    },
+    "saving": "Saving…",
+    "saved": "Saved",
+    "isDefault": "Default",
+    "reset": "Reset"
   }
 }

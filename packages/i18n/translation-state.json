@@ -13264,6 +13264,10 @@
       "source": "0811543a2263e1e7",
       "output": "43dc28036f88c75e"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "5cc42fb7aa582df7"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "32eb88e2cf748dd7"
@@ -13888,6 +13892,154 @@
       "source": "53705d162b9ef78f",
       "output": "f66293c6e6958056"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "9d5169a511cec02b"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "0da627ada476c179"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "a4c30c450c0e8459"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "ec7d56a01607001e"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "18f285592896ec8e"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "40126b0e9d2e5f2f"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "7fdb3ccec0e0d236"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "0d5adda3cdccf937"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "d486dfbd5fb57834"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "78e7771b8b46e11d"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "bd38ed7732402b1a"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "7d465fb9b9314846"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "29bf475364fe8d5b"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "ba19e9c3d5f49882"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "eb3007d2110e5fea"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "91a422eaed38ac67"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "19dd83f117525b93"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "70ea1983c983deac"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "cc611c5fc8d33494"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "5f0ddfdbaf44b302"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "7020be9fd98f3142"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "f534ed976dc8838f"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "4e86512d9a0af8a7"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "21b111cbfe6e8fca"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "f534ed976dc8838f"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "ec811d30a89ce96d"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "6c29878063b24778"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "6cd56cc78f3c4f39"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "e334f6bdfb7765bc"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "daee7606b339f3c3"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "993f024b650eaf0f"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "b5c120b316c237a0"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "23e39291d6135814"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "64a30875505e551a"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "4e44daeed574e7c8"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "3907fa7f80722a6f"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "8b930328dd402c03"
@@ -14003,6 +14155,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "3f403b6e5726a304"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "3907fa7f80722a6f"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -18611,6 +18767,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "52476eb9b57f3a5d"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "65d36bbfa1d40de2"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "ce8f778daeaf2fa6"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -35306,6 +35470,10 @@
       "source": "0811543a2263e1e7",
       "output": "09c8665ae321e7de"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "3018bd34e1c069fa"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "bfb324772474a6c6"
@@ -35930,6 +36098,154 @@
       "source": "53705d162b9ef78f",
       "output": "ab6bf2c9505bb0fc"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "79402a9d3b81c2e7"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "e01f7bf79e0efe9d"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "dc9c39131d6f1ae1"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "b0bf526b23af1961"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "46d5664fccba625c"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "eab14fc4c8beea75"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "a3346c788a2a24be"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "e8650efbfda55fe8"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "15263c30b9565395"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "264f2ba06e85cbaf"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "010977c33574595e"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "7069e90c206b0e2d"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "7a76115cb4bdf485"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "870c35efecfc77f7"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "8a7ae3ac199faeda"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "424372288cafcaf7"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "90a11fcb7f505a9c"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "bfdabac2fc855fad"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "09be92bd93e06106"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "97eba63984eab3ff"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "4e86512d9a0af8a7"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "13bd6e86a13953ee"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "60cc230929e1108b"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "89ead2f28eefa010"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "e59fb0cbfea9f3c0"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "d7557a05a03d3805"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "65f4a2b9424e90c2"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "9b0c3e4077f88dd8"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "031e83ce72904e5c"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "3a660ff5fb7c1989"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "3c8dc4dc7a83dd2d"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "fcb3a3546a1e8451"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "ca60461a6cec02e8"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "e3e9cbaccaec3d2a"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "135cb064c3700fdb"
@@ -36045,6 +36361,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "0f9829256c656467"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "e3e9cbaccaec3d2a"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -40653,6 +40973,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "b0dba37c53f6ae0b"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "8daac4e180b4beda"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "4eff4faff0d104d6"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -57348,6 +57676,10 @@
       "source": "0811543a2263e1e7",
       "output": "8ebabc7a69200cf0"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "d02e06d0a5ed0aa6"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "a6f888fec5f040df"
@@ -57972,6 +58304,154 @@
       "source": "53705d162b9ef78f",
       "output": "80a4199be7aa91fd"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "d06a76142c18bf0f"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "eb212e3d44c1d6a4"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "2384678341feb279"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "573a30914f3e3150"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "cf43d022604e2545"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "a5c1a2ad0a9a056b"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "bc4ba6ceee475507"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "e8650efbfda55fe8"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "ccd3bc7eac6cd282"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "78e7771b8b46e11d"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "e10d850954a8e611"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "2a36428839a37e68"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "f0ca9ca2664a679b"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "31c2afaf8ba87d89"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "b4378627a98671b5"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "165a1b7d5220bdd0"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "dea9f56b97dc3a87"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "ac25343e6edb19f9"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "1efd900656a4681c"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "8b05b3231ba4e4c7"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "d9233f7717478747"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "0661e8bba5d98486"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "4e86512d9a0af8a7"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "291b4fc834dc08c6"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "0661e8bba5d98486"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "5b661b4e3e14e163"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "c07cd480cb52e1d0"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "a2cd452e5cf5fc28"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "f8864bf9f32f0d90"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "5b35e0e35591b44c"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "993f024b650eaf0f"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "166301d01bba068c"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "0f02d9ec0f505050"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "f25da4703c581128"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "c6796e8c560fe700"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "04140bf2a113078a"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "5050a31d32b0f17b"
@@ -58087,6 +58567,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "fbfd9b816d253dc4"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "04140bf2a113078a"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -62695,6 +63179,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "e11fdb4bd7ffddcd"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "d947bcbb3c386420"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "9ed5d7193f17493d"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -79390,6 +79882,10 @@
       "source": "0811543a2263e1e7",
       "output": "d74a4446fbcb651d"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "0a4a633bdf5270c6"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "d49c00010659e54e"
@@ -80014,6 +80510,154 @@
       "source": "53705d162b9ef78f",
       "output": "d80d8baa48ecd50f"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "25d32924dee2bb93"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "597709a303bf6522"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "cc8ea65315872437"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "be284ff59808c39f"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "bb63cb3b4fcbb66f"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "cb6df28e8a83a283"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "2fdf94e2f33027e0"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "2d7a1404cb988089"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "88b03fc50fb24490"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "caeda42e92f6e40a"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "2b812a19f7fe1271"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "4b3b853599579fa0"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "86e11693473c8242"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "ee47f02bb34668e6"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "464dabe236e57131"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "471990e1b65e4a9c"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "ee2596a725b3c58f"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "f2e1252a7b25b858"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "9cf4bdb5ccf14d5b"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "d95ec0f3f3f5c582"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "13758a65cfccdbc0"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "7315f406dbc3c7eb"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "d95ec0f3f3f5c582"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "48f971e2c07b3f3e"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "e015da468d2ef2f8"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "b2564fe8117a268a"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "3880d9830b3608a0"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "cf1718087073466d"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "43362651e7ad674c"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "2a4e8552e04ac890"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "c4f57f0165aad7c3"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "5aff9f9244dff959"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "5daced501715f651"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "f9ce8fd2b603f6c6"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "814b1269870fea83"
@@ -80129,6 +80773,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "5281d4441007b9b8"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "f9ce8fd2b603f6c6"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -84737,6 +85385,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "67640a4cdd04c0eb"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "1e1e4c6ea88d60fe"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "6a56c122817df20c"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -101432,6 +102088,10 @@
       "source": "0811543a2263e1e7",
       "output": "ae56f5fee7139841"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "44c465cf358a3407"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "4b47281a50bf1976"
@@ -102056,6 +102716,154 @@
       "source": "53705d162b9ef78f",
       "output": "d012579768ca231f"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "b9a4709a4923200c"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "42c74e6d88ea8130"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "5bbeab517d432e77"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "8d62fc0ef5579dd2"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "de608b67854475a9"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "0b60fef36dc6276d"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "02062c946e54489d"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "84c06341796659fa"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "f65563753a672e07"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "b015c89d8fe6644f"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "b19aadc6238ecded"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "8b358118e156fa4e"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "d770dacdad7e517c"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "8ceda96681d3f60d"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "a3fc98b5c350cb43"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "281dcca64c2e44c4"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "7e80575c49f94971"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "46fe9030bb434182"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "ee15818fa9c96c6e"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "7b26ad5ad967b6e8"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "076398e7c9328e78"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "266c948f37f4b63f"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "4e86512d9a0af8a7"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "ee5c2e8c51cf80b8"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "f534ed976dc8838f"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "00a84b5b30eef40c"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "03451095901a90f8"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "f9c8f46e36eb4aeb"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "08437f57c2633470"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "6f145b9f0f585f7a"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "90b87dcd5eff9c27"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "65f8a7cee480f07c"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "2d514f491f7878f3"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "4678bf4284fac027"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "fa4711c26c96f90b"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "55ee378df93e9691"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "30c55453ecb35ac5"
@@ -102171,6 +102979,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "98eda75b2e013bbb"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "55ee378df93e9691"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -106779,6 +107591,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "8255b14628de63bf"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "4d467f323b7cccb1"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "8c753c9657eaab4a"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -123474,6 +124294,10 @@
       "source": "0811543a2263e1e7",
       "output": "d67bd341aeec12b8"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "b49779eece01115e"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "fff53741fcaccadf"
@@ -124098,6 +124922,154 @@
       "source": "53705d162b9ef78f",
       "output": "cdd4fb4790a7b9b3"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "16fcef8e7fb47f1c"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "b9c6b42a001a3f7a"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "9271d9408628c81c"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "3c5cc4457ac63c50"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "e16cc3ee7a1f15ea"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "950b93ceb4c560ed"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "5955dc3db3b2dab5"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "aa1f055d056bdd5e"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "904fc77b881c205a"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "bfb4a9d806c658ea"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "a1efdf4c1f9dcb82"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "5f80602d4cc4ff08"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "713d39d973ec078e"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "110b498c062e1aea"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "bdad29429ba02c95"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "6e2b86a6dea66995"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "822b9d465c5b26b7"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "3add3df9fc48395a"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "3cee52da254e95cf"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "71ca195ec3cce776"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "26c90d8c108897a1"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "51f7d28ae216f91b"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "325cdf434d4b5713"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "1ceebedcf37350b8"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "e67a2e4cebc81b7f"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "787b2a6f246260fe"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "694b6be4042c7ae6"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "9590a70970e7a050"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "7b3f6b0419ee42aa"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "01c975e470061e8b"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "c33230734aca8f98"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "6ea375a18485dbb5"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "177003e98398e66d"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "576e4698b098ae62"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "f519a4867559dd31"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "4cdc1e9a89c35591"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "e143f1870ed89fc4"
@@ -124213,6 +125185,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "3a68a51c3e8bfa16"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "4cdc1e9a89c35591"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -128821,6 +129797,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "27280198e8118cc5"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "aa6199ed2a1adb88"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "03d4160aab69dcdc"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -145516,6 +146500,10 @@
       "source": "0811543a2263e1e7",
       "output": "acc399f84edbc52d"
     },
+    "features.wissenskarte.details.p4": {
+      "source": "46c93b44beeb49d0",
+      "output": "36b613daf3ddcdaf"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "a13f4908d9958dd5"
@@ -146140,6 +147128,154 @@
       "source": "53705d162b9ef78f",
       "output": "a0592f5ad3be3f9d"
     },
+    "knowledgeMap.appearance.bloomRadius": {
+      "source": "cde2b3fc57ebee12",
+      "output": "483dff36d7d433cb"
+    },
+    "knowledgeMap.appearance.bloomStrength": {
+      "source": "fe689170440f9903",
+      "output": "fe689170440f9903"
+    },
+    "knowledgeMap.appearance.bloomThreshold": {
+      "source": "b6176acbc26e34eb",
+      "output": "3b46fb29f2da0f1e"
+    },
+    "knowledgeMap.appearance.close": {
+      "source": "6ee3026618831f70",
+      "output": "42bfd422c02f928a"
+    },
+    "knowledgeMap.appearance.colours.blue": {
+      "source": "8d55f705cf2bad60",
+      "output": "b0bf526b23af1961"
+    },
+    "knowledgeMap.appearance.colours.brown": {
+      "source": "8a446a936d39871c",
+      "output": "6c4eae2375dcf642"
+    },
+    "knowledgeMap.appearance.colours.created": {
+      "source": "561543dd929630dc",
+      "output": "71bed7d578c49012"
+    },
+    "knowledgeMap.appearance.colours.entity": {
+      "source": "215ed630221b9c58",
+      "output": "a3346c788a2a24be"
+    },
+    "knowledgeMap.appearance.colours.gray": {
+      "source": "6a8f4aecb9d96f2a",
+      "output": "1a31c2cb1e4bc436"
+    },
+    "knowledgeMap.appearance.colours.green": {
+      "source": "995223df54c67b63",
+      "output": "40598e1cb1d239fd"
+    },
+    "knowledgeMap.appearance.colours.orange": {
+      "source": "78e7771b8b46e11d",
+      "output": "2b2b4ad00333d993"
+    },
+    "knowledgeMap.appearance.colours.pink": {
+      "source": "bd38ed7732402b1a",
+      "output": "75f9577a1637cf7a"
+    },
+    "knowledgeMap.appearance.colours.purple": {
+      "source": "9e93662965a5dd7d",
+      "output": "264f2ba06e85cbaf"
+    },
+    "knowledgeMap.appearance.colours.read": {
+      "source": "650fa1318194873a",
+      "output": "eb717d52e2f5ce9c"
+    },
+    "knowledgeMap.appearance.colours.red": {
+      "source": "2207deb65b865e54",
+      "output": "6741b8b5e1c22dad"
+    },
+    "knowledgeMap.appearance.colours.removed": {
+      "source": "e02cd4ea78c2b1aa",
+      "output": "b6ffeeeb520e976e"
+    },
+    "knowledgeMap.appearance.colours.write": {
+      "source": "fb078463c8970db2",
+      "output": "00cd8b85b915c032"
+    },
+    "knowledgeMap.appearance.colours.yellow": {
+      "source": "5fa3188cc950d6d3",
+      "output": "1875203bcdcc507d"
+    },
+    "knowledgeMap.appearance.core": {
+      "source": "46fe9030bb434182",
+      "output": "424372288cafcaf7"
+    },
+    "knowledgeMap.appearance.correction": {
+      "source": "42b27c3c7478ccfa",
+      "output": "7a934dc6cf3d61c9"
+    },
+    "knowledgeMap.appearance.correctionHint": {
+      "source": "a2361ed41d4b9b48",
+      "output": "3dfa1c2ada92b386"
+    },
+    "knowledgeMap.appearance.description": {
+      "source": "2437985197481b7a",
+      "output": "7af071d71c940d5f"
+    },
+    "knowledgeMap.appearance.glow": {
+      "source": "cb9196407c8f5b07",
+      "output": "ff070ada77b9fef3"
+    },
+    "knowledgeMap.appearance.halo": {
+      "source": "39420a46578fae39",
+      "output": "4e86512d9a0af8a7"
+    },
+    "knowledgeMap.appearance.isDefault": {
+      "source": "ef6691545d2c5523",
+      "output": "0758c00e6ea0ca61"
+    },
+    "knowledgeMap.appearance.pointGlow": {
+      "source": "f534ed976dc8838f",
+      "output": "f534ed976dc8838f"
+    },
+    "knowledgeMap.appearance.pointLightness": {
+      "source": "00b737a90a4ac2f3",
+      "output": "32efc388f8918ae1"
+    },
+    "knowledgeMap.appearance.points": {
+      "source": "d8d33216d7a72125",
+      "output": "4f2a320841cdbe41"
+    },
+    "knowledgeMap.appearance.pointsHint": {
+      "source": "8294b1aa70c3a6c4",
+      "output": "3e4ebb86af7419bc"
+    },
+    "knowledgeMap.appearance.pulses": {
+      "source": "94287d5867378dfd",
+      "output": "79ac54d1ef325d88"
+    },
+    "knowledgeMap.appearance.reset": {
+      "source": "1ba0463c46e6cafa",
+      "output": "c54fabd99e6202b6"
+    },
+    "knowledgeMap.appearance.saturation": {
+      "source": "36b84f2a02a82a07",
+      "output": "e18cbc44b23c7f78"
+    },
+    "knowledgeMap.appearance.saved": {
+      "source": "5e2338e21142a567",
+      "output": "db14b511e33aa987"
+    },
+    "knowledgeMap.appearance.saving": {
+      "source": "4e85ab638cd27cad",
+      "output": "52d95692274b8b24"
+    },
+    "knowledgeMap.appearance.softness": {
+      "source": "58c31bcd0a8c6543",
+      "output": "97d2111d75a27c3b"
+    },
+    "knowledgeMap.appearance.stars": {
+      "source": "14dd39ba3edb90ca",
+      "output": "beacc3e324b4301b"
+    },
+    "knowledgeMap.appearance.title": {
+      "source": "da9695dd40c94255",
+      "output": "04f9f0a78dbe13be"
+    },
     "knowledgeMap.ask.failed": {
       "source": "e6d7f918847539a4",
       "output": "9858c00ea985d15d"
@@ -146255,6 +147391,10 @@
     "knowledgeMap.route.title": {
       "source": "c6fdfb998c32138b",
       "output": "c29b8c5171afa28c"
+    },
+    "knowledgeMap.screen.appearance": {
+      "source": "da9695dd40c94255",
+      "output": "04f9f0a78dbe13be"
     },
     "knowledgeMap.screen.canvasLabel": {
       "source": "c1bb72271ed8ce16",
@@ -150863,6 +152003,14 @@
     "shell.paletteCommands.hideSidebar": {
       "source": "1fb7bb479657b60b",
       "output": "83097cd12556628c"
+    },
+    "shell.paletteCommands.knowledgeMap.appearance": {
+      "source": "5305d28ed148e94f",
+      "output": "9c60986c655158af"
+    },
+    "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
+      "source": "631ceb33c32a500f",
+      "output": "b137f6527028bac1"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",

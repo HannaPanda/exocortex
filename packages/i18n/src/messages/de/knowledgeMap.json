@@ -14,7 +14,8 @@
     "noWebglTitle": "Dieser Browser kann die Karte nicht zeichnen",
     "noWebglDescription": "Die Wissenskarte braucht WebGL. In den Browsereinstellungen ist es vermutlich abgeschaltet, oder die Grafikkarte wird nicht unterstützt.",
     "canvasLabel": "Dreidimensionale Wissenskarte. Mit der Maus drehen und zoomen, einen Punkt anklicken, um ihn auszuwählen. Die Suche oben rechts führt zu Seiten, ohne die Karte zu bedienen.",
-    "fit": "Alles zeigen"
+    "fit": "Alles zeigen",
+    "appearance": "Aussehen"
   },
   "legend": {
     "title": "Linien",
@@ -66,5 +67,46 @@
     "created": "neu: {title}",
     "removed": "entfernt: {title}",
     "unknownPage": "eine Seite"
+  },
+  "appearance": {
+    "title": "Aussehen",
+    "description": "Gilt nur für dich, auf allen Geräten. Die Karte dahinter zeigt jede Änderung sofort.",
+    "close": "Aussehen schließen",
+    "stars": "Sterne",
+    "core": "Kern",
+    "halo": "Lichthof",
+    "softness": "Weichheit",
+    "glow": "Leuchten",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Bloom-Radius",
+    "bloomThreshold": "Schwelle",
+    "saturation": "Sättigung",
+    "correction": "Farbraum-Korrektur",
+    "correctionHint": "Rechnet das fertige Bild nach sRGB um. Heller, und Blau und Violett leuchten dann so stark wie Grün.",
+    "points": "Farben der Bereiche",
+    "pointsHint": "Die Bereiche bekommen ihre Farbe nach Größe: der größte Blau, dann Grün, Violett, Orange und so weiter.",
+    "pointGlow": "Glow",
+    "pointLightness": "Helligkeit",
+    "pulses": "Farben der Ereignisse",
+    "colours": {
+      "blue": "Blau",
+      "green": "Grün",
+      "purple": "Violett",
+      "orange": "Orange",
+      "pink": "Pink",
+      "yellow": "Gelb",
+      "red": "Rot",
+      "brown": "Braun",
+      "gray": "Grau",
+      "entity": "Entitäten",
+      "read": "KI liest",
+      "write": "KI schreibt",
+      "created": "Neue Seite",
+      "removed": "Entfernte Seite"
+    },
+    "saving": "Speichert …",
+    "saved": "Gespeichert",
+    "isDefault": "Standard",
+    "reset": "Zurücksetzen"
   }
 }

@@ -421,6 +421,10 @@
       "showView": "Alternar visualização",
       "showViewPlaceholder": "Qual visualização?",
       "showViewKeywords": "visualização view alternar mostrar"
+    },
+    "knowledgeMap": {
+      "appearance": "Aparência do mapa de conhecimento",
+      "appearanceKeywords": "mapa cores brilho bloom luz estrelas halo visual design personalizar"
     }
   },
   "documentTopBar": {

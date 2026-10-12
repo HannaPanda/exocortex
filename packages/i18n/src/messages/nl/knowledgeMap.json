@@ -14,7 +14,8 @@
     "noWebglTitle": "Deze browser kan de kaart niet weergeven",
     "noWebglDescription": "De kenniskaart heeft WebGL nodig. Waarschijnlijk is dit uitgeschakeld in de browserinstellingen of wordt de grafische kaart niet ondersteund.",
     "canvasLabel": "Driedimensionale kenniskaart. Draai en zoom met de muis, klik op een punt om het te selecteren. De zoekfunctie rechtsboven brengt je naar pagina’s zonder de kaart te bedienen.",
-    "fit": "Alles tonen"
+    "fit": "Alles tonen",
+    "appearance": "Uiterlijk"
   },
   "legend": {
     "title": "Lijnen",
@@ -66,5 +67,46 @@
     "created": "nieuw: {title}",
     "removed": "verwijderd: {title}",
     "unknownPage": "een pagina"
+  },
+  "appearance": {
+    "title": "Uiterlijk",
+    "description": "Geldt alleen voor jou, op al je apparaten. De kaart erachter toont elke wijziging direct.",
+    "close": "Uiterlijk sluiten",
+    "stars": "Sterren",
+    "core": "Kern",
+    "halo": "Halo",
+    "softness": "Zachtheid",
+    "glow": "Gloed",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Bloom-straal",
+    "bloomThreshold": "Drempelwaarde",
+    "saturation": "Verzadiging",
+    "correction": "Kleurruimtecorrectie",
+    "correctionHint": "Zet het voltooide beeld om naar sRGB. Helderder, en blauw en paars lichten dan even sterk op als groen.",
+    "points": "Kleuren van de gebieden",
+    "pointsHint": "De gebieden krijgen hun kleur op basis van grootte: de grootste blauw, daarna groen, paars, oranje enzovoort.",
+    "pointGlow": "Glow",
+    "pointLightness": "Helderheid",
+    "pulses": "Kleuren van de gebeurtenissen",
+    "colours": {
+      "blue": "Blauw",
+      "green": "Groen",
+      "purple": "Paars",
+      "orange": "Oranje",
+      "pink": "Roze",
+      "yellow": "Geel",
+      "red": "Rood",
+      "brown": "Bruin",
+      "gray": "Grijs",
+      "entity": "Entiteiten",
+      "read": "AI leest",
+      "write": "AI schrijft",
+      "created": "Nieuwe pagina",
+      "removed": "Verwijderde pagina"
+    },
+    "saving": "Opslaan …",
+    "saved": "Opgeslagen",
+    "isDefault": "Standaard",
+    "reset": "Herstellen"
   }
 }

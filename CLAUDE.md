@@ -819,7 +819,8 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   page. `ai.run.tool_call` carries the page a call is about as `subject`, so
   reads light up as well as writes. `/arbeitsbereich/:x/karte` is drawn
   without the page tree, and the Map-Is-A-Room Rule in `DESIGN.md` is the one
-  bounded exception to Motion-Is-State.
+  bounded exception to Motion-Is-State. A point is a star, and how it glows
+  is the viewer's: `User.knowledgeMapAppearance`, tuned on the map itself.
 
 Full list: `docs/adr/`.
 

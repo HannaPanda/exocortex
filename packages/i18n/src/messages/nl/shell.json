@@ -421,6 +421,10 @@
       "showView": "Weergave wisselen",
       "showViewPlaceholder": "Welke weergave?",
       "showViewKeywords": "weergave view wisselen tonen"
+    },
+    "knowledgeMap": {
+      "appearance": "Uiterlijk van de kenniskaart",
+      "appearanceKeywords": "kaart kleuren glow bloom gloeien sterren halo look design aanpassen"
     }
   },
   "documentTopBar": {

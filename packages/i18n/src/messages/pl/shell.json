@@ -421,6 +421,10 @@
       "showView": "Przełącz widok",
       "showViewPlaceholder": "Który widok?",
       "showViewKeywords": "widok view przełącz pokaż"
+    },
+    "knowledgeMap": {
+      "appearance": "Wygląd mapy wiedzy",
+      "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj"
     }
   },
   "documentTopBar": {

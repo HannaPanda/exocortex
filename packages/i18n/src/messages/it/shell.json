@@ -421,6 +421,10 @@
       "showView": "Cambia vista",
       "showViewPlaceholder": "Quale vista?",
       "showViewKeywords": "vista view cambia mostra"
+    },
+    "knowledgeMap": {
+      "appearance": "Aspetto della mappa della conoscenza",
+      "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare"
     }
   },
   "documentTopBar": {

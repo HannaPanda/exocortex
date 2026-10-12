@@ -421,6 +421,10 @@
       "showView": "Changer de vue",
       "showViewPlaceholder": "Quelle vue ?",
       "showViewKeywords": "vue view changer afficher"
+    },
+    "knowledgeMap": {
+      "appearance": "Apparence de la carte des connaissances",
+      "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser"
     }
   },
   "documentTopBar": {

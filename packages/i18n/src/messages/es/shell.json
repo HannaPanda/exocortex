@@ -421,6 +421,10 @@
       "showView": "Cambiar de vista",
       "showViewPlaceholder": "¿Qué vista?",
       "showViewKeywords": "vista view cambiar mostrar"
+    },
+    "knowledgeMap": {
+      "appearance": "Aspecto del mapa de conocimiento",
+      "appearanceKeywords": "mapa colores resplandor brillo destello estrellas halo look diseno personalizar"
     }
   },
   "documentTopBar": {

@@ -14,7 +14,8 @@
     "noWebglTitle": "Este navegador no puede renderizar el mapa",
     "noWebglDescription": "El mapa de conocimiento necesita WebGL. Es probable que esté desactivado en los ajustes del navegador o que la tarjeta gráfica no sea compatible.",
     "canvasLabel": "Mapa de conocimiento tridimensional. Gira y haz zoom con el ratón, haz clic en un punto para seleccionarlo. La búsqueda arriba a la derecha te lleva a las páginas sin necesidad de interactuar con el mapa.",
-    "fit": "Mostrar todo"
+    "fit": "Mostrar todo",
+    "appearance": "Apariencia"
   },
   "legend": {
     "title": "Líneas",
@@ -66,5 +67,46 @@
     "created": "nueva: {title}",
     "removed": "eliminada: {title}",
     "unknownPage": "una página"
+  },
+  "appearance": {
+    "title": "Apariencia",
+    "description": "Solo se aplica a ti, en todos los dispositivos. El mapa detrás muestra cada cambio al instante.",
+    "close": "Cerrar apariencia",
+    "stars": "Estrellas",
+    "core": "Núcleo",
+    "halo": "Halo",
+    "softness": "Suavidad",
+    "glow": "Brillo",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Radio de bloom",
+    "bloomThreshold": "Umbral",
+    "saturation": "Saturación",
+    "correction": "Corrección del espacio de color",
+    "correctionHint": "Convierte la imagen final a sRGB. Más brillante, y el azul y el violeta brillan con la misma intensidad que el verde.",
+    "points": "Colores de las áreas",
+    "pointsHint": "Las áreas reciben su color según el tamaño: la más grande azul, luego verde, violeta, naranja y así sucesivamente.",
+    "pointGlow": "Resplandor",
+    "pointLightness": "Luminosidad",
+    "pulses": "Colores de los eventos",
+    "colours": {
+      "blue": "Azul",
+      "green": "Verde",
+      "purple": "Violeta",
+      "orange": "Naranja",
+      "pink": "Rosa",
+      "yellow": "Amarillo",
+      "red": "Rojo",
+      "brown": "Marrón",
+      "gray": "Gris",
+      "entity": "Entidades",
+      "read": "La IA lee",
+      "write": "La IA escribe",
+      "created": "Página nueva",
+      "removed": "Página eliminada"
+    },
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "isDefault": "Predeterminado",
+    "reset": "Restablecer"
   }
 }

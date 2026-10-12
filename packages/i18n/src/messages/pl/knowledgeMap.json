@@ -14,7 +14,8 @@
     "noWebglTitle": "Ta przeglądarka nie może wyrenderować mapy",
     "noWebglDescription": "Mapa wiedzy wymaga WebGL. Prawdopodobnie funkcja ta jest wyłączona w ustawieniach przeglądarki lub karta graficzna nie jest obsługiwana.",
     "canvasLabel": "Trójwymiarowa mapa wiedzy. Obracaj i przybliżaj myszą, kliknij punkt, aby go zaznaczyć. Wyszukiwanie w prawym górnym rogu prowadzi do stron bez konieczności poruszania się po mapie.",
-    "fit": "Pokaż wszystko"
+    "fit": "Pokaż wszystko",
+    "appearance": "Wygląd"
   },
   "legend": {
     "title": "Linie",
@@ -66,5 +67,46 @@
     "created": "nowe: {title}",
     "removed": "usunięte: {title}",
     "unknownPage": "strona"
+  },
+  "appearance": {
+    "title": "Wygląd",
+    "description": "Dotyczy tylko ciebie, na wszystkich urządzeniach. Mapa w tle od razu pokazuje każdą zmianę.",
+    "close": "Zamknij wygląd",
+    "stars": "Gwiazdy",
+    "core": "Jądro",
+    "halo": "Aureola",
+    "softness": "Miękkość",
+    "glow": "Poświata",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Promień efektu bloom",
+    "bloomThreshold": "Próg",
+    "saturation": "Nasycenie",
+    "correction": "Korekcja przestrzeni barw",
+    "correctionHint": "Przelicza gotowy obraz na sRGB. Jest jaśniejszy, a niebieski i fioletowy świecą wtedy tak mocno jak zielony.",
+    "points": "Kolory obszarów",
+    "pointsHint": "Obszary otrzymują kolor według rozmiaru: największy niebieski, potem zielony, fioletowy, pomarańczowy i tak dalej.",
+    "pointGlow": "Blask",
+    "pointLightness": "Jasność",
+    "pulses": "Kolory zdarzeń",
+    "colours": {
+      "blue": "Niebieski",
+      "green": "Zielony",
+      "purple": "Fioletowy",
+      "orange": "Pomarańczowy",
+      "pink": "Różowy",
+      "yellow": "Żółty",
+      "red": "Czerwony",
+      "brown": "Brązowy",
+      "gray": "Szary",
+      "entity": "Encje",
+      "read": "AI czyta",
+      "write": "AI pisze",
+      "created": "Nowa strona",
+      "removed": "Usunięta strona"
+    },
+    "saving": "Zapisywanie…",
+    "saved": "Zapisano",
+    "isDefault": "Domyślne",
+    "reset": "Zresetuj"
   }
 }

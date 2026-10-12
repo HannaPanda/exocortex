@@ -1,8 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { type KnowledgeMapResponse } from '@exocortex/contracts';
+import {
+  type KnowledgeMapAppearancePatch,
+  type KnowledgeMapAppearanceResponse,
+  type KnowledgeMapResponse,
+} from '@exocortex/contracts';
 
 import { apiRequest } from './client';
 
@@ -21,5 +25,29 @@ export function useKnowledgeMap(workspaceId: string) {
     queryFn: () => apiRequest<KnowledgeMapResponse>(`/api/workspaces/${workspaceId}/map`),
     staleTime: Infinity,
     refetchOnWindowFocus: false,
+  });
+}
+
+export const knowledgeMapAppearanceKey = ['me', 'knowledge-map-appearance'] as const;
+
+/** How the map looks to the signed-in person (issue #189). Theirs on every device. */
+export function useKnowledgeMapAppearance() {
+  return useQuery({
+    queryKey: knowledgeMapAppearanceKey,
+    queryFn: () => apiRequest<KnowledgeMapAppearanceResponse>('/api/me/knowledge-map-appearance'),
+    staleTime: 30_000,
+  });
+}
+
+/** Saves a change to the look, or `'reset'` for the defaults. */
+export function useSetKnowledgeMapAppearance() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (change: KnowledgeMapAppearancePatch | 'reset') =>
+      apiRequest<KnowledgeMapAppearanceResponse>(
+        '/api/me/knowledge-map-appearance',
+        change === 'reset' ? { method: 'DELETE' } : { method: 'PATCH', body: change },
+      ),
+    onSuccess: (result) => client.setQueryData(knowledgeMapAppearanceKey, result),
   });
 }

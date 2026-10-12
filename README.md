@@ -66,7 +66,9 @@ What is deliberately still missing is listed under
   page tree, with the assistant beside it. What a run or an external agent
   reads, writes, creates or removes lights up while it happens; a search flies
   the camera to its hits, and a timeline replays how the workspace grew
-  (`/arbeitsbereich/:x/karte`, `exo_knowledge_map`, ADR-084)
+  (`/arbeitsbereich/:x/karte`, `exo_knowledge_map`, ADR-084); every page is a
+  star, and its glow, halo and colours are tuned per person in the map's
+  "Aussehen" panel (`exo_knowledge_map_appearance`)
 - overview pages whose text is composed from the digests of their children
   (ADR-028)
 - an agent memory in its own workspace, with distilled facts above its session

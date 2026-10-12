@@ -7,13 +7,16 @@ import * as React from 'react';
 import { type KnowledgeMapEdgeKind } from '@exocortex/contracts';
 import { EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
+import { useKnowledgeMapCommands } from '@/components/palette/knowledge-map-commands';
 import { useKnowledgeMap } from '@/lib/api/knowledge-map-queries';
 
+import { MapAppearancePanel } from './map-appearance-panel';
 import { MapCanvas } from './map-canvas';
 import { type MapEngine } from './map-engine';
 import { type MapGraph, mergeGraph, type PulseKind, timelineBounds, tourStops } from './map-model';
 import { MapHeader, MapLegend, MapTimeline } from './map-overlays';
 import { MapActivityFeed, MapAsk, MapNodeCard, type MapTour, TOUR_STOPS } from './map-panels';
+import { useMapAppearance } from './use-map-appearance';
 import { useMapLive } from './use-map-live';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -57,7 +60,11 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
   const [calm, setCalm] = React.useState(false);
   const [follow, setFollow] = React.useState(true);
   const [tour, setTour] = React.useState<MapTour | null>(null);
+  const [appearanceOpen, setAppearanceOpen] = React.useState(false);
   const graphRef = React.useRef<MapGraph | null>(null);
+  const appearance = useMapAppearance();
+  const openAppearance = React.useCallback(() => setAppearanceOpen(true), []);
+  useKnowledgeMapCommands({ onAppearance: openAppearance });
 
   // A fresh answer is merged into what is on screen, so points keep their
   // place and only the new ones arrive (and flash).
@@ -69,6 +76,10 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
     setGraph(merged.graph);
   }, [query.data, engine]);
 
+  React.useEffect(
+    () => engine?.setAppearance(appearance.appearance),
+    [engine, appearance.appearance],
+  );
   React.useEffect(() => engine?.setShownKinds(shown), [engine, shown]);
   React.useEffect(() => engine?.setMoment(moment), [engine, moment]);
   React.useEffect(() => engine?.setCalm(calm), [engine, calm]);
@@ -191,12 +202,19 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
       {query.data !== undefined && query.data.nodes.length > 0 ? (
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <MapHeader
-              pages={query.data.nodes.length}
-              lines={lineCount}
-              semantic={query.data.semantic}
-              onFit={() => engine?.zoomToFit()}
-            />
+            <div className="flex flex-col gap-2">
+              <MapHeader
+                pages={query.data.nodes.length}
+                lines={lineCount}
+                semantic={query.data.semantic}
+                onFit={() => engine?.zoomToFit()}
+                appearanceOpen={appearanceOpen}
+                onAppearance={() => setAppearanceOpen((open) => !open)}
+              />
+              {appearanceOpen ? (
+                <MapAppearancePanel state={appearance} onClose={() => setAppearanceOpen(false)} />
+              ) : null}
+            </div>
             <div className="flex w-full max-w-sm flex-col gap-2">
               <MapAsk
                 workspaceId={workspaceId}

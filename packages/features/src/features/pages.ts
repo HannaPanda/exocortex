@@ -171,7 +171,11 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     references: ['#189', 'ADR-084'],
     ui: { path: '/arbeitsbereich/:x/karte' },
     shortcuts: ['Strg+K, dann „Wissenskarte“'],
-    tools: ['exo_knowledge_map'],
+    tools: [
+      'exo_knowledge_map',
+      'exo_knowledge_map_appearance',
+      'exo_knowledge_map_appearance_set',
+    ],
     claims: { screens: ['/arbeitsbereich/:x/karte'] },
   }),
   defineFeature({

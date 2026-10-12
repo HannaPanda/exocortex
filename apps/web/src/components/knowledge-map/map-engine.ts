@@ -3,21 +3,24 @@ import {
   type BufferGeometry,
   Color,
   DodecahedronGeometry,
-  Group,
+  type Group,
   IcosahedronGeometry,
   LineBasicMaterial,
-  Mesh,
-  MeshBasicMaterial,
   OctahedronGeometry,
   SphereGeometry,
   type Sprite,
   Vector2,
 } from 'three';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-import { type KnowledgeMapEdgeKind } from '@exocortex/contracts';
+import {
+  DEFAULT_KNOWLEDGE_MAP_APPEARANCE,
+  type KnowledgeMapAppearance,
+  type KnowledgeMapEdgeKind,
+} from '@exocortex/contracts';
 
-import { cssOf, type MapPalette } from './map-colors';
+import { cssOf, type MapPalette, type PointColours, pointColours } from './map-colors';
 import { disposeLabel, makeLabel } from './map-labels';
 import {
   branchColourIndex,
@@ -33,6 +36,7 @@ import {
   pulseStrength,
   supersedes,
 } from './map-model';
+import { disposeStar, haloGeometry, makeStar, paintStar, type Star } from './map-star';
 
 /**
  * The library's constructor, typed for the map's own points and lines. Its
@@ -51,6 +55,8 @@ const MapForceGraph = ForceGraph3D as unknown as MapForceGraphConstructor;
 
 /** How many of the best connected points always carry a label. */
 const ALWAYS_LABELLED = 12;
+/** The bloom is gentler when the system asks for less motion; this much of the chosen strength. */
+const REDUCED_MOTION_BLOOM = 0.65;
 /** How long the room waits after the last touch before it starts turning again. */
 const IDLE_BEFORE_TURNING_MS = 15_000;
 
@@ -98,7 +104,7 @@ function isTurningControls(controls: object): controls is TurningControls {
 
 interface NodeVisual {
   group: Group;
-  mesh: Mesh<BufferGeometry, MeshBasicMaterial>;
+  star: Star;
   radius: number;
   label: Sprite | null;
 }
@@ -130,6 +136,14 @@ export class MapEngine {
     Record<LinkState, LineBasicMaterial>
   >;
   private readonly geometries: Record<'page' | 'collection' | 'entity' | 'project', BufferGeometry>;
+  private readonly quad = haloGeometry();
+  private readonly starUniforms = {
+    uSoftness: { value: DEFAULT_KNOWLEDGE_MAP_APPEARANCE.star.softness },
+  };
+  private readonly bloom: UnrealBloomPass;
+  private readonly outputPass = new OutputPass();
+  private look: KnowledgeMapAppearance = DEFAULT_KNOWLEDGE_MAP_APPEARANCE;
+  private colours: PointColours;
   private data: MapGraph = { nodes: [], links: [] };
   private branchIndex = new Map<string, number>();
   private labelled = new Set<string>();
@@ -149,6 +163,7 @@ export class MapEngine {
     private readonly palette: MapPalette,
     private readonly options: MapEngineOptions,
   ) {
+    this.colours = pointColours(palette, this.look);
     this.geometries = {
       page: new SphereGeometry(1, 20, 14),
       collection: new IcosahedronGeometry(1.25, 0),
@@ -222,16 +237,18 @@ export class MapEngine {
     this.graph.scene().background = palette.space.clone();
 
     // The glow: everything bright enough bleeds light into the dark room.
-    // Moderate on purpose. At full strength every point turned white and the
+    // Moderate by default. At full strength every point turned white and the
     // branch colours were gone; the threshold keeps the lines and the labels
-    // out of it, so only the points and the pulses glow.
-    const bloom = new UnrealBloomPass(
+    // out of it, so only the stars and the pulses glow. Its values are the
+    // person's look (`setAppearance`).
+    this.bloom = new UnrealBloomPass(
       new Vector2(element.clientWidth, element.clientHeight),
-      options.reducedMotion ? 0.45 : 0.7,
+      0.7,
       0.4,
       0.32,
     );
-    this.graph.postProcessingComposer().addPass(bloom);
+    this.graph.postProcessingComposer().addPass(this.bloom);
+    this.setAppearance(this.look);
 
     const controls = this.graph.controls();
     if (isTurningControls(controls)) {
@@ -251,7 +268,7 @@ export class MapEngine {
       this.visuals.delete(id);
     }
     this.data = graph;
-    this.branchIndex = branchColourIndex(graph.nodes, this.palette.branches.length);
+    this.branchIndex = branchColourIndex(graph.nodes, this.colours.branches.length);
     this.labelled = labelledNodeIds(graph.nodes, ALWAYS_LABELLED);
     // A renamed page needs a new label texture.
     for (const node of graph.nodes) {
@@ -312,6 +329,28 @@ export class MapEngine {
     this.graph.linkDirectionalParticles(this.graph.linkDirectionalParticles());
   }
 
+  /**
+   * How the room looks to this person: the glow, the colours and the stars.
+   * Applied at once, so the panel that tunes it is a live preview; the next
+   * frame paints every star from the new colours.
+   */
+  setAppearance(look: KnowledgeMapAppearance): void {
+    this.look = look;
+    this.colours = pointColours(this.palette, look);
+    this.starUniforms.uSoftness.value = look.star.softness;
+    this.bloom.strength =
+      look.bloom.strength * (this.options.reducedMotion ? REDUCED_MOTION_BLOOM : 1);
+    this.bloom.radius = look.bloom.radius;
+    this.bloom.threshold = look.bloom.threshold;
+    // Without it the linear picture is shown as it is: darker, and blue and
+    // purple glow less than green. Off by default because the room was
+    // designed that way; the person decides.
+    const composer = this.graph.postProcessingComposer();
+    const corrected = composer.passes.includes(this.outputPass);
+    if (look.colourCorrection && !corrected) composer.addPass(this.outputPass);
+    if (!look.colourCorrection && corrected) composer.removePass(this.outputPass);
+  }
+
   setSize(width: number, height: number): void {
     this.graph.width(width).height(height);
   }
@@ -356,6 +395,8 @@ export class MapEngine {
     for (const visual of this.visuals.values()) this.disposeVisual(visual);
     this.visuals.clear();
     for (const geometry of Object.values(this.geometries)) geometry.dispose();
+    this.quad.dispose();
+    this.outputPass.dispose();
     for (const states of Object.values(this.linkMaterials)) {
       for (const material of Object.values(states)) material.dispose();
     }
@@ -419,33 +460,24 @@ export class MapEngine {
           : node.type === 'PROJECT'
             ? this.geometries.project
             : this.geometries.page;
-    const mesh = new Mesh(
-      geometry,
-      new MeshBasicMaterial({ color: this.baseColour(node), transparent: true }),
-    );
+    const star = makeStar(geometry, this.quad, geometry, this.starUniforms);
     const radius = 1.4 + Math.sqrt(node.degree) * 0.95;
-    mesh.scale.setScalar(radius);
-    const group = new Group();
-    group.add(mesh);
-    const visual: NodeVisual = { group, mesh, radius, label: null };
+    const visual: NodeVisual = { group: star.group, star, radius, label: null };
     this.visuals.set(node.id, visual);
     return visual;
   }
 
   private baseColour(node: MapNode): Color {
-    if (node.kind === 'entity') return this.palette.entity;
-    return this.palette.branches[this.branchIndex.get(node.rootId) ?? 0] ?? this.palette.foreground;
+    if (node.kind === 'entity') return this.colours.entity;
+    return this.colours.branches[this.branchIndex.get(node.rootId) ?? 0] ?? this.palette.foreground;
   }
 
   private pulseColour(kind: PulseKind): Color {
-    if (kind === 'write') return this.palette.signal;
-    if (kind === 'read') return this.palette.read;
-    if (kind === 'created') return this.palette.created;
-    return this.palette.removed;
+    return this.colours.pulses[kind];
   }
 
   private disposeVisual(visual: NodeVisual): void {
-    visual.mesh.material.dispose();
+    disposeStar(visual.star);
     if (visual.label !== null) disposeLabel(visual.label);
   }
 
@@ -486,11 +518,9 @@ export class MapEngine {
     if (pulse !== undefined && strength > 0) {
       this.scratch.lerp(this.pulseColour(pulse.kind), Math.min(1, strength * 1.4));
     }
-    visual.mesh.material.color.copy(this.scratch);
     const inFocus = this.highlighted === null || this.highlighted.has(node.id);
-    visual.mesh.material.opacity = inFocus || strength > 0 ? 1 : 0.14;
     const size = visual.radius * this.growth(strength) * this.emphasis(node.id);
-    visual.mesh.scale.setScalar(size);
+    paintStar(visual.star, this.scratch, inFocus || strength > 0 ? 1 : 0.14, size, this.look.star);
     this.syncLabel(node, visual, strength > 0, size);
   }
 
@@ -516,7 +546,8 @@ export class MapEngine {
     }
     if (visual.label !== null) {
       visual.label.visible = wantsLabel;
-      visual.label.position.set(0, size + 2, 0);
+      // Above the visible part of the halo, which fades out well before its edge.
+      visual.label.position.set(0, size * Math.max(1, this.look.star.halo * 0.45) + 2, 0);
     }
   }
 }

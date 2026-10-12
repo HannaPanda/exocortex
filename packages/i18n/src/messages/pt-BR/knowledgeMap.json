@@ -14,7 +14,8 @@
     "noWebglTitle": "Este navegador não consegue renderizar o mapa",
     "noWebglDescription": "O mapa de conhecimento precisa de WebGL. Provavelmente está desativado nas configurações do navegador ou a placa de vídeo não é compatível.",
     "canvasLabel": "Mapa de conhecimento tridimensional. Gire e dê zoom com o mouse; clique em um ponto para selecioná-lo. A busca no canto superior direito leva a páginas sem precisar navegar pelo mapa.",
-    "fit": "Ajustar à tela"
+    "fit": "Ajustar à tela",
+    "appearance": "Aparência"
   },
   "legend": {
     "title": "Linhas",
@@ -66,5 +67,46 @@
     "created": "novo: {title}",
     "removed": "removido: {title}",
     "unknownPage": "uma página"
+  },
+  "appearance": {
+    "title": "Aparência",
+    "description": "Vale apenas para você, em todos os dispositivos. O mapa ao fundo mostra cada alteração imediatamente.",
+    "close": "Fechar aparência",
+    "stars": "Estrelas",
+    "core": "Núcleo",
+    "halo": "Halo",
+    "softness": "Suavidade",
+    "glow": "Brilho",
+    "bloomStrength": "Bloom",
+    "bloomRadius": "Raio do bloom",
+    "bloomThreshold": "Limiar",
+    "saturation": "Saturação",
+    "correction": "Correção de espaço de cor",
+    "correctionHint": "Converte a imagem final para sRGB. Fica mais claro, e o azul e o violeta brilham com a mesma intensidade que o verde.",
+    "points": "Cores das áreas",
+    "pointsHint": "As áreas ganham cores de acordo com o tamanho: a maior em azul, depois verde, violeta, laranja e assim por diante.",
+    "pointGlow": "Glow",
+    "pointLightness": "Luminosidade",
+    "pulses": "Cores dos eventos",
+    "colours": {
+      "blue": "Azul",
+      "green": "Verde",
+      "purple": "Violeta",
+      "orange": "Laranja",
+      "pink": "Rosa",
+      "yellow": "Amarelo",
+      "red": "Vermelho",
+      "brown": "Marrom",
+      "gray": "Cinza",
+      "entity": "Entidades",
+      "read": "IA lendo",
+      "write": "IA escrevendo",
+      "created": "Nova página",
+      "removed": "Página removida"
+    },
+    "saving": "Salvando…",
+    "saved": "Salvo",
+    "isDefault": "Padrão",
+    "reset": "Redefinir"
   }
 }

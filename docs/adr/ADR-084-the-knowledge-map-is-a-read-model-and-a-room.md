@@ -76,6 +76,17 @@ to spend every time a run re-embeds the page it just wrote.
   whole graph as structured data and, as text, what a model can use: hubs
   without the tree, the biggest branches, pages standing alone, and the
   strongest similar pairs nobody linked, which is the work of linking.
+- **A point is a star, and its look is the viewer's.** Every point is a small
+  core in the page's shape with a soft halo that faces the camera; the halo
+  carries the colour, so branches stay apart where the bloom alone washed them
+  towards white. It was chosen from six styles side by side. Bloom, halo,
+  saturation, an optional sRGB output pass and a glow and lightness per colour
+  are tuned in a panel on the map with the canvas as its preview, stored on
+  the account (`User.knowledgeMapAppearance`, `NULL` is the defaults) under
+  `/api/me/knowledge-map-appearance`, and read back over the defaults, so a
+  key added later needs no migration. Taste follows the person, not a
+  workspace. The colours stay the tokens; only how they become light is
+  stored. `exo_knowledge_map_appearance` and `_set` reach the same.
 
 ## Consequences
 
