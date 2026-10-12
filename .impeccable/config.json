@@ -12,9 +12,7 @@
       {
         "rule": "border-accent-on-rounded",
         "value": "*",
-        "files": [
-          "apps/web/src/components/knowledge-map/map-overlays.tsx"
-        ],
+        "files": ["apps/web/src/components/knowledge-map/map-overlays.tsx"],
         "createdAt": "2026-10-12T20:24:49.254Z",
         "reason": "Claude: the legend swatch for similarity lines is drawn as an arc (top border on a rounded-top span) to mirror the curved lines on the canvas; not a card accent"
       }
