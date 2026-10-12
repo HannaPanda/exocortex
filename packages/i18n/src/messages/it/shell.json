@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Aspetto della mappa della conoscenza",
-      "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare"
+      "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare",
+      "screensaver": "Mappa della conoscenza come salvaschermo",
+      "screensaverKeywords": "mappa salvaschermo screensaver schermo intero guardare decorazione illuminazione demo"
     }
   },
   "documentTopBar": {

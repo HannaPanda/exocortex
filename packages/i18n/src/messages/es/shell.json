@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Aspecto del mapa de conocimiento",
-      "appearanceKeywords": "mapa colores resplandor brillo destello estrellas halo look diseno personalizar"
+      "appearanceKeywords": "mapa colores resplandor brillo destello estrellas halo look diseno personalizar",
+      "screensaver": "Mapa de conocimiento como salvapantallas",
+      "screensaverKeywords": "mapa salvapantallas screensaver pantalla completa mirar decorativo brillo demo"
     }
   },
   "documentTopBar": {

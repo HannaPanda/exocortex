@@ -15,6 +15,8 @@
     "noWebglDescription": "La mappa della conoscenza richiede WebGL. Probabilmente è disattivato nelle impostazioni del browser, oppure la scheda grafica non è supportata.",
     "canvasLabel": "Mappa della conoscenza tridimensionale. Usa il mouse per ruotare e ingrandire, fai clic su un punto per selezionarlo. La ricerca in alto a destra porta alle pagine senza dover esplorare la mappa.",
     "fit": "Mostra tutto",
+    "screensaver": "Salvaschermo",
+    "screensaverExit": "Esci dal salvaschermo (Esc)",
     "appearance": "Aspetto"
   },
   "legend": {

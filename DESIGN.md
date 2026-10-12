@@ -503,7 +503,13 @@ lost. The movement never leaves the canvas: the panels around the map behave
 like every other panel. Each point is a star (a core plus a halo facing the
 camera), and how strongly it glows is the viewer's own setting, tuned in the
 map's "Aussehen" panel: the hues stay the tokens, only their glow, lightness
-and saturation are personal.
+and saturation are personal. A point carries its name only while it is lit,
+hovered, selected or found; the rest stay nameless, so a name on screen always
+means something is happening there. The screensaver is the one place the light
+is played rather than reported: a person switches it on, the panels are gone
+while it runs, a faint exit stays in the corner, and Escape ends it, so nobody
+mistakes its amber for a run. A lit point gives off a few motes that drift and
+fade; they are part of the light, so calm and reduced motion drop them.
 
 **The Signal-Fires-Then-Fades Rule.** When amber marks an event rather than a
 place (the save heartbeat), it brightens instantly and decays over

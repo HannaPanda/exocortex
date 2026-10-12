@@ -15,6 +15,8 @@
     "noWebglDescription": "Mapa wiedzy wymaga WebGL. Prawdopodobnie funkcja ta jest wyłączona w ustawieniach przeglądarki lub karta graficzna nie jest obsługiwana.",
     "canvasLabel": "Trójwymiarowa mapa wiedzy. Obracaj i przybliżaj myszą, kliknij punkt, aby go zaznaczyć. Wyszukiwanie w prawym górnym rogu prowadzi do stron bez konieczności poruszania się po mapie.",
     "fit": "Pokaż wszystko",
+    "screensaver": "Wygaszacz ekranu",
+    "screensaverExit": "Zamknij wygaszacz ekranu (Esc)",
     "appearance": "Wygląd"
   },
   "legend": {

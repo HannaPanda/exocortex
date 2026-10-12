@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Apparence de la carte des connaissances",
-      "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser"
+      "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser",
+      "screensaver": "Carte des connaissances en économiseur d’écran",
+      "screensaverKeywords": "carte économiseur ecran veille screensaver plein écran regarder déco lueur démo"
     }
   },
   "documentTopBar": {

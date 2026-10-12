@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Knowledge map appearance",
-      "appearanceKeywords": "map colors glow bloom shine stars halo look design customize"
+      "appearanceKeywords": "map colors glow bloom shine stars halo look design customize",
+      "screensaver": "Knowledge map as screensaver",
+      "screensaverKeywords": "map screensaver fullscreen watch decoration glow demo"
     }
   },
   "documentTopBar": {

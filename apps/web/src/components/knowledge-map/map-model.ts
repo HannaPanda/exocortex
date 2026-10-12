@@ -104,12 +104,14 @@ export type PulseKind = 'read' | 'write' | 'created' | 'removed';
  * How long each kind of light takes to fade. A read is the briefest, because
  * a run reads in bursts and a long glow would light the whole map; a new page
  * stays longest, because it is the one thing somebody watching wants to find.
+ * A lit point also carries its title, so the light lasts long enough to read
+ * the name it stands for.
  */
 export const PULSE_MS: Record<PulseKind, number> = {
-  read: 2_600,
-  write: 5_000,
-  created: 8_000,
-  removed: 2_000,
+  read: 3_900,
+  write: 7_500,
+  created: 12_000,
+  removed: 3_000,
 };
 
 export interface Pulse {
@@ -184,21 +186,6 @@ export function branchColourIndex(
     index.set(rootId, Math.min(position, paletteSize - 1));
   });
   return index;
-}
-
-/**
- * The points that always carry their title: the best connected ones. Every
- * other point is named on hover, on selection and while it is lit; 800 labels
- * at once are not a map, they are a wall of text.
- */
-export function labelledNodeIds(nodes: readonly KnowledgeMapNode[], count: number): Set<string> {
-  return new Set(
-    [...nodes]
-      .filter((node) => node.degree > 0)
-      .sort((a, b) => b.degree - a.degree || a.title.localeCompare(b.title))
-      .slice(0, count)
-      .map((node) => node.id),
-  );
 }
 
 /** The direct neighbours of a point, through lines of the kinds shown. */

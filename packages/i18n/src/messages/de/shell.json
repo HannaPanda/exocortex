@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Aussehen der Wissenskarte",
-      "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen"
+      "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen",
+      "screensaver": "Wissenskarte als Bildschirmschoner",
+      "screensaverKeywords": "karte bildschirmschoner screensaver vollbild zuschauen deko leuchten demo"
     }
   },
   "documentTopBar": {

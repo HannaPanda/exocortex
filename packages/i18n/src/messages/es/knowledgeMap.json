@@ -15,6 +15,8 @@
     "noWebglDescription": "El mapa de conocimiento necesita WebGL. Es probable que esté desactivado en los ajustes del navegador o que la tarjeta gráfica no sea compatible.",
     "canvasLabel": "Mapa de conocimiento tridimensional. Gira y haz zoom con el ratón, haz clic en un punto para seleccionarlo. La búsqueda arriba a la derecha te lleva a las páginas sin necesidad de interactuar con el mapa.",
     "fit": "Mostrar todo",
+    "screensaver": "Salvapantallas",
+    "screensaverExit": "Salir del salvapantallas (Esc)",
     "appearance": "Apariencia"
   },
   "legend": {

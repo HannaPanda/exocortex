@@ -13268,6 +13268,10 @@
       "source": "46c93b44beeb49d0",
       "output": "5cc42fb7aa582df7"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "ebc5b64b677c8320"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "32eb88e2cf748dd7"
@@ -14191,6 +14195,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "8be05ecbcd620610"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "7c9b526d4ae707e7"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "97af6bfe67c82a6f"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -18839,6 +18851,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "ce8f778daeaf2fa6"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "f5fbefd53e91cda7"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "184004702f08627b"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -35538,6 +35558,10 @@
       "source": "46c93b44beeb49d0",
       "output": "3018bd34e1c069fa"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "2aa8389f3dad4101"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "bfb324772474a6c6"
@@ -36461,6 +36485,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "eaa2f224a0e6d872"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "4477221293d61b38"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "71dad0c6d98c07db"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -41109,6 +41141,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "4eff4faff0d104d6"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "228ee8b1765f7cb8"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "f094de98d325c669"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -57808,6 +57848,10 @@
       "source": "46c93b44beeb49d0",
       "output": "d02e06d0a5ed0aa6"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "a208c3adca32cfc4"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "a6f888fec5f040df"
@@ -58731,6 +58775,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "1fe0100552e0e538"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "90823c9df32f013e"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "a34c92a924ec8a09"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -63379,6 +63431,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "9ed5d7193f17493d"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "e4619d7e875e6372"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "45ca67acf6de9165"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -80078,6 +80138,10 @@
       "source": "46c93b44beeb49d0",
       "output": "0a4a633bdf5270c6"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "a09aebd19452a0fa"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "d49c00010659e54e"
@@ -81001,6 +81065,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "6db52fb9e394ce65"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "30131fac7960bfca"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "8aafc13127eeca20"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -85649,6 +85721,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "6a56c122817df20c"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "80c62c2686415900"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "f88272382c21e2fe"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -102348,6 +102428,10 @@
       "source": "46c93b44beeb49d0",
       "output": "44c465cf358a3407"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "075865d1d5c93004"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "4b47281a50bf1976"
@@ -103271,6 +103355,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "1f7265b6fbd5da27"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "bcc0c70166009b33"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "2bf0b28417a4b844"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -107919,6 +108011,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "8c753c9657eaab4a"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "1d36853b94e11f6c"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "7059821e71167d53"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -124618,6 +124718,10 @@
       "source": "46c93b44beeb49d0",
       "output": "b49779eece01115e"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "e987a2f4667047c0"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "fff53741fcaccadf"
@@ -125541,6 +125645,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "83bd15b3e2e73a1b"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "2e0391a91f5d3f82"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "f68461e06c874f0a"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -130189,6 +130301,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "03d4160aab69dcdc"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "ecfe8b80f94ecbbb"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "3344d524fb0d6861"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",
@@ -146888,6 +147008,10 @@
       "source": "46c93b44beeb49d0",
       "output": "36b613daf3ddcdaf"
     },
+    "features.wissenskarte.details.p5": {
+      "source": "b4ae8ceef0836a54",
+      "output": "c293adc362e2d8e9"
+    },
     "features.wissenskarte.summary": {
       "source": "58ab87a6e0256f72",
       "output": "a13f4908d9958dd5"
@@ -147811,6 +147935,14 @@
     "knowledgeMap.screen.noWebglTitle": {
       "source": "e60a91cb9449908b",
       "output": "5610967d0f921708"
+    },
+    "knowledgeMap.screen.screensaver": {
+      "source": "3ea1ed78003c8063",
+      "output": "996f068c7e684486"
+    },
+    "knowledgeMap.screen.screensaverExit": {
+      "source": "27fad7bf806b65ba",
+      "output": "ab13b60dad768a6d"
     },
     "knowledgeMap.screen.semanticDisabled": {
       "source": "92841725cc46ded8",
@@ -152459,6 +152591,14 @@
     "shell.paletteCommands.knowledgeMap.appearanceKeywords": {
       "source": "631ceb33c32a500f",
       "output": "b137f6527028bac1"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaver": {
+      "source": "96d1ea4939df6991",
+      "output": "66a2f5ec1af0ed84"
+    },
+    "shell.paletteCommands.knowledgeMap.screensaverKeywords": {
+      "source": "548321ddfc31f54e",
+      "output": "26f1da351a9c175b"
     },
     "shell.paletteCommands.navigation.admin.keywords": {
       "source": "c3980a4c4ac75abe",

@@ -1,6 +1,6 @@
 'use client';
 
-import { PaletteIcon, PauseIcon, PlayIcon, ScanIcon } from 'lucide-react';
+import { MonitorPlayIcon, PaletteIcon, PauseIcon, PlayIcon, ScanIcon } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -21,6 +21,7 @@ export function MapHeader({
   onFit,
   appearanceOpen,
   onAppearance,
+  onScreensaver,
 }: {
   pages: number;
   lines: number;
@@ -28,6 +29,7 @@ export function MapHeader({
   onFit: () => void;
   appearanceOpen: boolean;
   onAppearance: () => void;
+  onScreensaver: () => void;
 }) {
   const t = useTranslations('knowledgeMap.screen');
   return (
@@ -53,6 +55,16 @@ export function MapHeader({
           data-testid="map-appearance-toggle"
         >
           <PaletteIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t('screensaver')}
+          title={t('screensaver')}
+          onClick={onScreensaver}
+          data-testid="map-screensaver"
+        >
+          <MonitorPlayIcon />
         </Button>
       </div>
       <p className="exocortex-numeric text-xs text-muted-foreground">

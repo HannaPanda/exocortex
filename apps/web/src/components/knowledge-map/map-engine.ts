@@ -1,12 +1,17 @@
 import ForceGraph3D, { type ConfigOptions, type ForceGraph3DInstance } from '3d-force-graph';
 import {
-  type BufferGeometry,
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  CanvasTexture,
   Color,
   DodecahedronGeometry,
   type Group,
   IcosahedronGeometry,
   LineBasicMaterial,
   OctahedronGeometry,
+  Points,
+  PointsMaterial,
   SphereGeometry,
   type Sprite,
   Vector2,
@@ -26,7 +31,6 @@ import {
   branchColourIndex,
   endpointId,
   existsAt,
-  labelledNodeIds,
   linkDegrees,
   type MapGraph,
   type MapLink,
@@ -55,12 +59,47 @@ type MapForceGraphConstructor = new (
 ) => ForceGraph3DInstance<MapNode, MapLink>;
 const MapForceGraph = ForceGraph3D as unknown as MapForceGraphConstructor;
 
-/** How many of the best connected points always carry a label. */
-const ALWAYS_LABELLED = 12;
 /** The bloom is gentler when the system asks for less motion; this much of the chosen strength. */
 const REDUCED_MOTION_BLOOM = 0.65;
 /** How long the room waits after the last touch before it starts turning again. */
 const IDLE_BEFORE_TURNING_MS = 15_000;
+/** How fast the room turns on its own; faster while it is a screensaver. */
+const TURNING_SPEED = 0.35;
+const SCREENSAVER_TURNING_SPEED = 0.6;
+
+/**
+ * The spark a lit point gives off: a few motes drifting outwards and fading.
+ * Light on purpose, a flicker around the star rather than an explosion, and
+ * capped, because a screensaver lights a point every few hundred milliseconds.
+ */
+const SPARK_MOTES = 14;
+const SPARK_MS = 1_500;
+const SPARK_SPEED: readonly [number, number] = [6, 20];
+const SPARK_LIMIT = 40;
+
+interface Spark {
+  points: Points;
+  velocities: Float32Array;
+  born: number;
+  last: number;
+}
+
+/** A soft round mote, drawn once: without it a point sprite is a square. */
+function moteTexture(): CanvasTexture | null {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const context = canvas.getContext('2d');
+  if (context === null) return null;
+  const glow = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+  glow.addColorStop(0, 'rgba(255,255,255,1)');
+  glow.addColorStop(0.4, 'rgba(255,255,255,0.45)');
+  glow.addColorStop(1, 'rgba(255,255,255,0)');
+  context.fillStyle = glow;
+  context.fillRect(0, 0, 32, 32);
+  return new CanvasTexture(canvas);
+}
 
 /**
  * How far apart two connected points settle. Wide enough that a big branch is
@@ -210,7 +249,9 @@ export class MapEngine {
   private data: MapGraph = { nodes: [], links: [] };
   private branchIndex = new Map<string, number>();
   private degrees = new Map<string, number>();
-  private labelled = new Set<string>();
+  private readonly sparks: Spark[] = [];
+  private readonly mote = moteTexture();
+  private screensaver = false;
   private shown: ReadonlySet<KnowledgeMapEdgeKind> = new Set(['link', 'similar', 'entity']);
   private moment: number | null = null;
   private selected: string | null = null;
@@ -316,7 +357,7 @@ export class MapEngine {
 
     const controls = this.graph.controls();
     if (isTurningControls(controls)) {
-      controls.autoRotateSpeed = 0.35;
+      controls.autoRotateSpeed = TURNING_SPEED;
       controls.addEventListener('start', () => this.touch());
     }
     this.lastTouch = performance.now() - IDLE_BEFORE_TURNING_MS;
@@ -334,7 +375,6 @@ export class MapEngine {
     this.data = graph;
     this.degrees = linkDegrees(graph.links);
     this.branchIndex = branchColourIndex(graph.nodes, this.colours.branches.length);
-    this.labelled = labelledNodeIds(graph.nodes, ALWAYS_LABELLED);
     // A renamed page needs a new label texture.
     for (const node of graph.nodes) {
       const visual = this.visuals.get(node.id);
@@ -389,6 +429,20 @@ export class MapEngine {
     this.refreshLinks();
   }
 
+  /**
+   * The room as a screensaver: it keeps turning whatever the last touch was,
+   * a little faster, and shows the whole cloud. What lights up comes from
+   * outside (`map-screensaver.ts`) through `pulse`, like everything else.
+   */
+  setScreensaver(on: boolean): void {
+    this.screensaver = on;
+    const controls = this.graph.controls();
+    if (isTurningControls(controls)) {
+      controls.autoRotateSpeed = on ? SCREENSAVER_TURNING_SPEED : TURNING_SPEED;
+    }
+    if (on) this.zoomToFit();
+  }
+
   setCalm(calm: boolean): void {
     this.calm = calm;
     this.graph.linkDirectionalParticles(this.graph.linkDirectionalParticles());
@@ -426,6 +480,7 @@ export class MapEngine {
     if (!supersedes(next, this.pulses.get(nodeId), now)) return;
     this.pulses.set(nodeId, next);
     if (this.options.reducedMotion || this.calm) return;
+    this.spark(nodeId, kind, now);
     for (const entry of this.data.links) {
       if (!this.linkVisible(entry)) continue;
       if (endpointId(entry.source) === nodeId || endpointId(entry.target) === nodeId) {
@@ -457,6 +512,8 @@ export class MapEngine {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
+    for (const spark of this.sparks.splice(0)) this.disposeSpark(spark);
+    this.mote?.dispose();
     for (const visual of this.visuals.values()) this.disposeVisual(visual);
     this.visuals.clear();
     for (const geometry of Object.values(this.geometries)) geometry.dispose();
@@ -550,6 +607,78 @@ export class MapEngine {
     return this.colours.pulses[kind];
   }
 
+  /** A few motes in the pulse's colour, leaving the point in every direction. */
+  private spark(nodeId: string, kind: PulseKind, now: number): void {
+    const node = this.data.nodes.find((entry) => entry.id === nodeId);
+    if (node?.x === undefined || node.y === undefined || node.z === undefined) return;
+    if (!existsAt(node, this.moment)) return;
+    if (this.sparks.length >= SPARK_LIMIT) {
+      const oldest = this.sparks.shift();
+      if (oldest !== undefined) this.disposeSpark(oldest);
+    }
+    const positions = new Float32Array(SPARK_MOTES * 3);
+    const velocities = new Float32Array(SPARK_MOTES * 3);
+    const [slow, fast] = SPARK_SPEED;
+    for (let mote = 0; mote < SPARK_MOTES; mote += 1) {
+      // A uniform direction on the sphere, not a cube's corners.
+      const z = Math.random() * 2 - 1;
+      const angle = Math.random() * Math.PI * 2;
+      const ring = Math.sqrt(1 - z * z);
+      const speed = slow + Math.random() * (fast - slow);
+      positions.set([node.x, node.y, node.z], mote * 3);
+      velocities.set(
+        [ring * Math.cos(angle) * speed, ring * Math.sin(angle) * speed, z * speed],
+        mote * 3,
+      );
+    }
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new BufferAttribute(positions, 3));
+    const material = new PointsMaterial({
+      color: this.pulseColour(kind),
+      size: 2.4,
+      map: this.mote,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      blending: AdditiveBlending,
+    });
+    const points = new Points(geometry, material);
+    points.frustumCulled = false;
+    this.graph.scene().add(points);
+    this.sparks.push({ points, velocities, born: now, last: now });
+  }
+
+  /** Moves every mote on, slowing as it fades, and clears the spent ones. */
+  private driftSparks(now: number): void {
+    for (let index = this.sparks.length - 1; index >= 0; index -= 1) {
+      const spark = this.sparks[index];
+      if (spark === undefined) continue;
+      const age = (now - spark.born) / SPARK_MS;
+      if (age >= 1) {
+        this.sparks.splice(index, 1);
+        this.disposeSpark(spark);
+        continue;
+      }
+      const seconds = Math.min(0.05, (now - spark.last) / 1_000) * (1 - age);
+      spark.last = now;
+      const attribute = spark.points.geometry.getAttribute('position');
+      const positions = attribute.array;
+      for (let offset = 0; offset < positions.length; offset += 1) {
+        positions[offset] = (positions[offset] ?? 0) + (spark.velocities[offset] ?? 0) * seconds;
+      }
+      attribute.needsUpdate = true;
+      const material = spark.points.material;
+      if (material instanceof PointsMaterial) material.opacity = 0.85 * (1 - age) * (1 - age);
+    }
+  }
+
+  private disposeSpark(spark: Spark): void {
+    this.graph.scene().remove(spark.points);
+    spark.points.geometry.dispose();
+    const material = spark.points.material;
+    if (material instanceof PointsMaterial) material.dispose();
+  }
+
   private disposeVisual(visual: NodeVisual): void {
     disposeStar(visual.star);
     if (visual.label !== null) disposeLabel(visual.label);
@@ -572,9 +701,10 @@ export class MapEngine {
       controls.autoRotate =
         !this.options.reducedMotion &&
         !this.calm &&
-        this.selected === null &&
-        now - this.lastTouch > IDLE_BEFORE_TURNING_MS;
+        (this.screensaver ||
+          (this.selected === null && now - this.lastTouch > IDLE_BEFORE_TURNING_MS));
     }
+    this.driftSparks(now);
 
     for (const node of this.data.nodes) {
       const visual = this.visuals.get(node.id);
@@ -612,7 +742,7 @@ export class MapEngine {
       node.id === this.selected ||
       node.id === this.hovered ||
       lit ||
-      (this.highlighted === null ? this.labelled.has(node.id) : this.highlighted.has(node.id));
+      (this.focus !== null && this.focus.has(node.id));
     if (wantsLabel && visual.label === null) {
       visual.label = makeLabel(node.title, this.palette.muted);
       visual.label.name = node.title;

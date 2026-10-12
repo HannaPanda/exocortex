@@ -424,7 +424,9 @@
     },
     "knowledgeMap": {
       "appearance": "Wygląd mapy wiedzy",
-      "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj"
+      "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj",
+      "screensaver": "Mapa wiedzy jako wygaszacz ekranu",
+      "screensaverKeywords": "mapa wygaszacz ekranu screensaver pełny ekran oglądanie dekoracja świecenie demo"
     }
   },
   "documentTopBar": {

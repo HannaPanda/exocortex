@@ -6,7 +6,6 @@ import {
   branchColourIndex,
   documentIdOfSubject,
   existsAt,
-  labelledNodeIds,
   linkDegrees,
   mergeGraph,
   neighboursOf,
@@ -83,7 +82,7 @@ describe('pulses', () => {
   it('starts at full strength and is gone after its duration', () => {
     expect(pulseStrength({ kind: 'read', at: 1000 }, 1000)).toBe(1);
     expect(pulseStrength({ kind: 'read', at: 1000 }, 2000)).toBeGreaterThan(0);
-    expect(pulseStrength({ kind: 'read', at: 1000 }, 1000 + 2600)).toBe(0);
+    expect(pulseStrength({ kind: 'read', at: 1000 }, 1000 + 3900)).toBe(0);
   });
 
   it('lets a write outrank a read, and anything replace a pulse that is over', () => {
@@ -126,10 +125,6 @@ describe('labels, colours, neighbours and tours', () => {
     node('mid0000000', { degree: 3, rootId: 'hub0000000' }),
     node('alone00000', { degree: 0 }),
   ];
-
-  it('labels the best connected points and never an unconnected one', () => {
-    expect([...labelledNodeIds(nodes, 5)]).toEqual(['hub0000000', 'mid0000000']);
-  });
 
   it('gives the biggest branch the first colour and clamps to the palette', () => {
     const index = branchColourIndex(nodes, 1);

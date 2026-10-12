@@ -15,6 +15,8 @@
     "noWebglDescription": "La carte des connaissances nécessite WebGL. Il est probablement désactivé dans les paramètres du navigateur, ou la carte graphique n’est pas prise en charge.",
     "canvasLabel": "Carte des connaissances en 3D. Fais pivoter et zoome avec la souris, clique sur un point pour le sélectionner. La recherche en haut à droite mène aux pages sans manipuler la carte.",
     "fit": "Tout afficher",
+    "screensaver": "Écran de veille",
+    "screensaverExit": "Quitter l’écran de veille (Échap)",
     "appearance": "Apparence"
   },
   "legend": {

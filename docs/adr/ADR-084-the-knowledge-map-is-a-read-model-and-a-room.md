@@ -62,6 +62,15 @@ to spend every time a run re-embeds the page it just wrote.
   of the built-in AI made it, so a person in the browser is never announced
   and a run's read is not announced twice. Sent after the read answered,
   never awaited, never stored.
+- **Names follow activity, and the screensaver plays it.** No point carries
+  its title permanently any more; a name appears while a point is lit,
+  hovered, selected or found, and the light lasts half as long again so it can
+  be read. The screensaver (`map-screensaver.ts`) lets five imaginary walkers
+  loose: one follows references, one similarity, one the page tree depth
+  first, one reads around a page and then writes it, one looks anywhere. Each
+  step goes through the same `pulse` a real event does, and nothing reaches
+  the server, the live feed or the memory. A lit point gives off a light,
+  capped spark of motes.
 - **The browser merges, it does not reload.** A fresh answer is merged into
   the graph on screen, keeping the objects (and with them the positions) of
   points that stay, so only the new parts arrive and flash. The map refetches,

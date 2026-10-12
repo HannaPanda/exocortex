@@ -15,6 +15,8 @@
     "noWebglDescription": "The knowledge map requires WebGL. It might be disabled in your browser settings, or your graphics card isn’t supported.",
     "canvasLabel": "Three-dimensional knowledge map. Rotate and zoom with the mouse, click a point to select it. The search at the top right leads to pages without having to navigate the map.",
     "fit": "Fit to view",
+    "screensaver": "Screensaver",
+    "screensaverExit": "Exit screensaver (Esc)",
     "appearance": "Appearance"
   },
   "legend": {

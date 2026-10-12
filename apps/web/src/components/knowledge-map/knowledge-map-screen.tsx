@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type KnowledgeMapEdgeKind } from '@exocortex/contracts';
-import { EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useKnowledgeMapCommands } from '@/components/palette/knowledge-map-commands';
 import { useKnowledgeMap } from '@/lib/api/knowledge-map-queries';
@@ -18,6 +18,7 @@ import { MapHeader, MapLegend, MapTimeline } from './map-overlays';
 import { MapActivityFeed, MapAsk, MapNodeCard, type MapTour, TOUR_STOPS } from './map-panels';
 import { useMapAppearance } from './use-map-appearance';
 import { useMapLive } from './use-map-live';
+import { useMapScreensaver } from './use-map-screensaver';
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
@@ -63,10 +64,36 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
   const [follow, setFollow] = React.useState(false);
   const [tour, setTour] = React.useState<MapTour | null>(null);
   const [appearanceOpen, setAppearanceOpen] = React.useState(false);
+  const [screensaver, setScreensaver] = React.useState(false);
+  const roomRef = React.useRef<HTMLDivElement | null>(null);
   const graphRef = React.useRef<MapGraph | null>(null);
   const appearance = useMapAppearance();
   const openAppearance = React.useCallback(() => setAppearanceOpen(true), []);
-  useKnowledgeMapCommands({ onAppearance: openAppearance });
+
+  // The screensaver hides the furniture and takes the whole screen when the
+  // browser lets it; leaving full screen (Escape does) ends it as well.
+  const startScreensaver = React.useCallback(() => {
+    setSelected(null);
+    setTour(null);
+    setAppearanceOpen(false);
+    setScreensaver(true);
+    void roomRef.current?.requestFullscreen?.().catch(() => undefined);
+  }, []);
+  const stopScreensaver = React.useCallback(() => {
+    setScreensaver(false);
+    if (document.fullscreenElement !== null && document.fullscreenElement === roomRef.current) {
+      void document.exitFullscreen().catch(() => undefined);
+    }
+  }, []);
+  React.useEffect(() => {
+    if (!screensaver) return;
+    const onChange = (): void => {
+      if (document.fullscreenElement === null) setScreensaver(false);
+    };
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, [screensaver]);
+  useKnowledgeMapCommands({ onAppearance: openAppearance, onScreensaver: startScreensaver });
 
   // A fresh answer is merged into what is on screen, so points keep their
   // place and only the new ones arrive (and flash).
@@ -85,6 +112,7 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
   React.useEffect(() => engine?.setShownKinds(shown), [engine, shown]);
   React.useEffect(() => engine?.setMoment(moment), [engine, moment]);
   React.useEffect(() => engine?.setCalm(calm), [engine, calm]);
+  React.useEffect(() => engine?.setScreensaver(screensaver), [engine, screensaver]);
   React.useEffect(() => engine?.setSelected(selected), [engine, selected]);
   React.useEffect(() => {
     if (engine === null) return;
@@ -111,6 +139,7 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
     [engine, selected, tour],
   );
   const feed = useMapLive({ workspaceId, onPulse, onFollow, follow });
+  useMapScreensaver({ active: screensaver, graph, onPulse });
 
   const onResults = React.useCallback(
     (asked: string, hitIds: string[]): boolean => {
@@ -141,6 +170,7 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
       if (event.key !== 'Escape') return;
       setSelected(null);
       setTour(null);
+      setScreensaver(false);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -171,7 +201,11 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
   const lineCount = (query.data?.edges ?? []).filter((edge) => shown.has(edge.kind)).length;
 
   return (
-    <div className="relative flex-1 overflow-hidden bg-map-space" data-testid="knowledge-map">
+    <div
+      ref={roomRef}
+      className="relative flex-1 overflow-hidden bg-map-space"
+      data-testid="knowledge-map"
+    >
       <MapCanvas
         label={t('canvasLabel')}
         reducedMotion={reducedMotion}
@@ -201,7 +235,19 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
         </div>
       ) : null}
 
-      {query.data !== undefined && query.data.nodes.length > 0 ? (
+      {screensaver ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={stopScreensaver}
+          className="absolute top-3 right-3 opacity-40 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+          data-testid="map-screensaver-exit"
+        >
+          {t('screensaverExit')}
+        </Button>
+      ) : null}
+
+      {query.data !== undefined && query.data.nodes.length > 0 && !screensaver ? (
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between gap-3 p-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex flex-col gap-2">
@@ -212,6 +258,7 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
                 onFit={() => engine?.zoomToFit()}
                 appearanceOpen={appearanceOpen}
                 onAppearance={() => setAppearanceOpen((open) => !open)}
+                onScreensaver={startScreensaver}
               />
               {appearanceOpen ? (
                 <MapAppearancePanel state={appearance} onClose={() => setAppearanceOpen(false)} />
