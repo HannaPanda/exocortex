@@ -16869,8 +16869,8 @@
       "output": "1e0590de68baf215"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "0e4a2b6725f2165c"
+      "source": "216e63c9de29a4c7",
+      "output": "52c8c779a9ac0660"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -17467,6 +17467,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "72bb90897ab1eadc"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "9fd728c66c9a256b"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "b0c1efe8bfa093de"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "64e38c9c6986331c"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "c33872945aace668"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "e0e797ad4edc9ec1"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "191f75dd7ed33d5d"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "ddacc1ea835d5db9"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "5284aec7f7cc8766"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "2d489fd66c35b9d6"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "7f5974ef2e4edd1a"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "7b8d00c4294865cd"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "30e2aa60d2f8a1e9"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "d2d0804238e2c0eb"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "1dd2a673b95109b4"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -39075,8 +39139,8 @@
       "output": "de89263ba7c2c44e"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "bc8a894dfc84b518"
+      "source": "216e63c9de29a4c7",
+      "output": "7d74d975e2c13a0f"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -39673,6 +39737,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "6e3c2c930b472294"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "7542a5e800f9280a"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "3ae22ab01ebe2854"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "93fa1d8e5e9fb9fa"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "cba9d4d6019d216a"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "2dd8ff620c462238"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "30c81df3df501df6"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "d1bb206dc1ec177c"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "11eab99ff17bdd20"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "f0a6b06314bb71b2"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "bedacdb6358863c7"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "89db17ec21cb6a6c"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "fcf6fd82439c6f9d"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "7592e1293e53bcae"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "fd8e1b4122afbc45"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -61281,8 +61409,8 @@
       "output": "95d456cb8ee17968"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "36720c8bab1656d9"
+      "source": "216e63c9de29a4c7",
+      "output": "e2092e2f27a27a49"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -61879,6 +62007,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "2af697456ab21797"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "00f9c5334547a30f"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "163add32f5133054"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "3fa31e76e0485633"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "e519601050fd0403"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "ac5257fe415f9083"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "ce74e88af76339e2"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "416bd8acd7343280"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "5adee9fe43d3ff48"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "1871db37993e395e"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "dd96734fd30925e8"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "9af37869340182e9"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "629550662ce09c90"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "e4c297787a4dc18c"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "b313124fe306fb00"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "e94b485a8610aa57"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -83487,8 +83679,8 @@
       "output": "072c09472d0a0618"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "9daf84f7bc78353d"
+      "source": "216e63c9de29a4c7",
+      "output": "15496ea5ca171ee0"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -84085,6 +84277,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "fb863b0b30216107"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "84cbef7b19b823d9"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "f71ee0dc5bb55636"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "88838b041cf501ec"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "e825ca76d00bcc94"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "d6bbc8d7753c04ff"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "9e474ac3a7c1f713"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "f9d4669c4b297a93"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "1e0177251f6c79fb"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "a62eae5e86d027fb"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "de7370d48581152a"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "5bcedaf2da588653"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "5e204510b20d8c7f"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "ba6626cf806f8ef8"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "eea7c031bb7604a0"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -105693,8 +105949,8 @@
       "output": "5da2700e6936d997"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "860d70fd7bb2c0d7"
+      "source": "216e63c9de29a4c7",
+      "output": "395783c7eaf00624"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -106291,6 +106547,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "f856e33b9e467362"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "f993e2f49b3c68f1"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "d90bcc31411ae5b1"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "a9131715314fd764"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "e773515ff7559c19"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "37ea2f961bf1add6"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "bfafc80f93e47011"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "7cc5fc7add92c1d4"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "1cfec05412db2d65"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "1d5db75533e48a8c"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "095dfca0b0e2a0e1"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "432d53025ebc8bf7"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "33407b9f79557ab2"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "0f1f3877561f17ee"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "ba06eb9e384d93f7"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -127899,8 +128219,8 @@
       "output": "4e5bcc3b308eb91b"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "ac71cd097aabeb99"
+      "source": "216e63c9de29a4c7",
+      "output": "d9f30b05be35a731"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -128497,6 +128817,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "93bc3c3938729df9"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "6caa5f4498e5bfc1"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "c24a30f9a33b395b"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "f002e8663b6a6ce0"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "7e236453ce90a1d8"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "24be1730766c8042"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "6ffd8f519384d3dc"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "78824d8705b7b1a6"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "5fd87a39ffe954c6"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "6afdeb3f368971da"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "2df8804349243078"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "b90c9ed2940b89b9"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "6d5137d9c36bc532"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "5fff1fdc00097a07"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "f45c9a3eaac6f0ca"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",
@@ -150105,8 +150489,8 @@
       "output": "b0ffe6e5560f7c56"
     },
     "settings.keys.automations.webhookAllowedHosts.help": {
-      "source": "bc9451f1fed61d9a",
-      "output": "573f08a164d42b68"
+      "source": "216e63c9de29a4c7",
+      "output": "a8157776abf817c2"
     },
     "settings.keys.automations.webhookAllowedHosts.label": {
       "source": "aac8bb09aae40593",
@@ -150703,6 +151087,70 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "b0034ac3db6c5d61"
+    },
+    "settings.row.hostList.add": {
+      "source": "cbb95cf02b7d0216",
+      "output": "967bcf34a9138e10"
+    },
+    "settings.row.hostList.addPlaceholder": {
+      "source": "742013c7806d7aa0",
+      "output": "742013c7806d7aa0"
+    },
+    "settings.row.hostList.empty": {
+      "source": "d88e3d4fdab6daf8",
+      "output": "4fbdae4554c5a611"
+    },
+    "settings.row.hostList.entryLabel": {
+      "source": "c30f80e79c37e5ab",
+      "output": "c30f80e79c37e5ab"
+    },
+    "settings.row.hostList.listLabel": {
+      "source": "ae0b94d8848de696",
+      "output": "93fa1d8e5e9fb9fa"
+    },
+    "settings.row.hostList.present": {
+      "source": "203fc0e5fb6302c4",
+      "output": "bf9bfed2c41b407a"
+    },
+    "settings.row.hostList.problems.covered": {
+      "source": "08f4297ce9a87cbb",
+      "output": "132ed6148836106c"
+    },
+    "settings.row.hostList.problems.duplicate": {
+      "source": "b4ca819dc7450b5a",
+      "output": "cea41105e275f906"
+    },
+    "settings.row.hostList.problems.idn": {
+      "source": "09c92f7215ff7248",
+      "output": "28a8d739a4180472"
+    },
+    "settings.row.hostList.problems.invalid": {
+      "source": "d381b9b79579872e",
+      "output": "5a44766a0eb376f2"
+    },
+    "settings.row.hostList.problems.rewritten": {
+      "source": "21e64a8330fb6589",
+      "output": "b8655bf36132debb"
+    },
+    "settings.row.hostList.problems.unusable": {
+      "source": "aea7e9225ebca09d",
+      "output": "e0cb4cbc3ef573e5"
+    },
+    "settings.row.hostList.problems.wildcard": {
+      "source": "86dca4bafe1db04a",
+      "output": "bab5127ddb1f90fe"
+    },
+    "settings.row.hostList.refused": {
+      "source": "3515ec022b7c5fcd",
+      "output": "b9eb9ecb8a21a0b2"
+    },
+    "settings.row.hostList.remove": {
+      "source": "1780e279da4587ab",
+      "output": "90a4c8b190d53b39"
+    },
+    "settings.row.hostList.removed": {
+      "source": "69311794e1f2372b",
+      "output": "9b4fd5d1543a75ea"
     },
     "settings.row.invalid": {
       "source": "a1a407cbec0bb4bc",

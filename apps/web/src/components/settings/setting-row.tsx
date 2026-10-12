@@ -27,6 +27,7 @@ import {
 import { DurationInput, useDurationWords } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
 import { useSettingCopy } from '@/components/settings/setting-copy';
+import { TextSettingField } from '@/components/settings/text-setting-field';
 import {
   amountInUnit,
   BYTE_UNITS,
@@ -534,6 +535,11 @@ export interface SettingRowProps {
   models: AiModel[];
   /** Set when the last save attempt refused this value. */
   error?: string;
+  /**
+   * The value on the server, for a control that says what saving would
+   * change rather than only what the draft is (the webhook host list).
+   */
+  stored?: Settings[SettingKey];
 }
 
 /**
@@ -541,7 +547,14 @@ export interface SettingRowProps {
  * `*ModelSlug` naming convention), not from a hardcoded per-key list, so a
  * setting added later to `settingsSchema` renders here automatically.
  */
-export function SettingRow({ settingKey, value, onChange, models, error }: SettingRowProps) {
+export function SettingRow({
+  settingKey,
+  value,
+  onChange,
+  models,
+  error,
+  stored,
+}: SettingRowProps) {
   const t = useTranslations('settings.row');
   const copy = useSettingCopy()(settingKey);
   const choices = useSettingChoices()(settingKey);
@@ -635,29 +648,15 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
         </SelectContent>
       </Select>
     );
-  } else if (settingKey === 'ai.systemPrompt') {
-    control = (
-      <Textarea
-        id={id}
-        name={settingKey}
-        rows={4}
-        value={typeof value === 'string' ? value : ''}
-        {...described}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    );
   } else {
     control = (
-      <Input
-        id={id}
-        name={settingKey}
-        type="text"
-        autoComplete="off"
-        // These are slugs, model identifiers and hosts, not prose.
-        spellCheck={false}
+      <TextSettingField
+        settingKey={settingKey}
         value={typeof value === 'string' ? value : ''}
-        {...described}
-        onChange={(event) => onChange(event.target.value)}
+        stored={typeof stored === 'string' ? stored : undefined}
+        onChange={onChange}
+        described={described}
+        id={id}
       />
     );
   }

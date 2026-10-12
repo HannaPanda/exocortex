@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Erlaubte Webhook-Hosts",
-        "help": "Kommagetrennt, ohne Schema und Port (etwa „hooks.example.org, 127.0.0.1“). Ein Unterbereich zählt mit. Leer bedeutet: keine Webhook-Regel kann angelegt werden und keine bestehende läuft. Geprüft wird beim Speichern und noch einmal beim Auslösen, damit ein Kürzen dieser Liste auch die Regeln stoppt, die es schon gibt."
+        "help": "Ein Host pro Eintrag, ohne Schema und Port (etwa „hooks.example.org“ oder „127.0.0.1“). Mehrere auf einmal lassen sich einfügen, getrennt durch Komma oder Zeilenumbruch. Ein Unterbereich zählt mit. Leer bedeutet: keine Webhook-Regel kann angelegt werden und keine bestehende läuft. Geprüft wird beim Speichern und noch einmal beim Auslösen, damit ein Kürzen dieser Liste auch die Regeln stoppt, die es schon gibt."
       },
       "maxConsecutiveFailures": {
         "label": "Fehlschläge bis zur Selbstabschaltung",
@@ -527,7 +527,27 @@
         "read_only": "Nur lesen"
       }
     },
-    "jsonInvalid": "Das ist so kein gültiger Wert. Gespeichert wird der zuletzt gültige Stand."
+    "jsonInvalid": "Das ist so kein gültiger Wert. Gespeichert wird der zuletzt gültige Stand.",
+    "hostList": {
+      "listLabel": "Erlaubte Hosts",
+      "entryLabel": "Host {position, number}",
+      "remove": "{host} entfernen",
+      "add": "Hinzufügen",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {Nicht übernommen: {hosts}. Dieser Eintrag würde nie zu einer Webhook-Adresse passen, er steht noch im Feld, damit du ihn korrigieren kannst.} other {Nicht übernommen: {hosts}. Diese Einträge würden nie zu einer Webhook-Adresse passen, sie stehen noch im Feld, damit du sie korrigieren kannst.}}",
+      "present": "{count, plural, one {Steht schon in der Liste: {hosts}.} other {Stehen schon in der Liste: {hosts}.}}",
+      "empty": "Die Liste ist leer. Damit kann keine Webhook-Regel angelegt werden, und keine bestehende läuft.",
+      "removed": "{count, plural, one {Nach dem Speichern ist {hosts} nicht mehr erlaubt. Bestehende Regeln, die dorthin senden, laufen dann nicht mehr.} other {Nach dem Speichern sind {hosts} nicht mehr erlaubt. Bestehende Regeln, die dorthin senden, laufen dann nicht mehr.}}",
+      "problems": {
+        "unusable": "Hier steht kein Host. Dieser Eintrag erlaubt nichts. Eine IPv6-Adresse gehört in eckige Klammern, etwa [2001:db8::1].",
+        "wildcard": "Platzhalter wie * gelten nicht. Dieser Eintrag erlaubt nichts. Ein Host erlaubt seine Unterbereiche ohnehin mit.",
+        "invalid": "Das ist kein Host, den eine Adresse nennen kann. Dieser Eintrag erlaubt nichts.",
+        "idn": "Adressen kommen in ASCII-Schreibweise an. So erlaubt dieser Eintrag nichts, schreib stattdessen {ascii}.",
+        "rewritten": "Gilt als {host}.",
+        "duplicate": "Steht schon weiter oben. Doppelt schadet nicht, nützt aber auch nichts.",
+        "covered": "Ist durch {host} schon erlaubt, weil Unterbereiche mitzählen."
+      }
+    }
   },
   "groupNav": {
     "rejected": "abgelehnter Wert",

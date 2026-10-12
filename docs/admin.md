@@ -533,7 +533,13 @@ ADR-024):
   rule can be created and none can fire. Hosts are comma-separated, without
   scheme or port; a subdomain of an allowed host counts. It is checked when a
   rule is saved and again every time one fires, so shortening this list stops
-  the rules that already exist.
+  the rules that already exist. The admin form edits it as a list, one host
+  per entry (issue #173), and stores the same comma-separated string; the
+  marks under an entry come from the server's own parser and matcher
+  (`apps/web/src/lib/webhook-hosts.ts`), so an entry that can never match
+  (`*`, an unbracketed IPv6 address, a Unicode host) is named rather than
+  dropped, and before saving the form names every host the edit would stop
+  allowing.
 
 Neither is reachable from a workspace's own settings. Everything else about
 automations is, including the run log: `docs/automations.md`.

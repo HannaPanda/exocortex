@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Dozwolone hosty webhooków",
-        "help": "Rozdzielone przecinkami, bez schematu i portu (np. „hooks.example.org, 127.0.0.1”). Obejmuje subdomeny. Puste pole oznacza: nie można utworzyć żadnej reguły webhooka i żadna istniejąca nie będzie działać. Sprawdzane przy zapisie i ponownie przy wywołaniu, dzięki czemu skrócenie tej listy zatrzymuje także reguły, które już istnieją."
+        "help": "Jeden host na wpis, bez schematu i portu (np. „hooks.example.org” lub „127.0.0.1”). Możesz wkleić kilka naraz, rozdzielając je przecinkami lub znakami nowej linii. Poddomeny są uwzględniane automatycznie. Puste pole oznacza: nie można utworzyć żadnej reguły webhooka, a istniejące nie działają. Sprawdzanie odbywa się podczas zapisywania i ponownie przy wyzwalaniu, dzięki czemu skrócenie tej listy zatrzymuje również już istniejące reguły."
       },
       "maxConsecutiveFailures": {
         "label": "Liczba niepowodzeń do wyłączenia",
@@ -527,7 +527,27 @@
         "read_only": "Tylko do odczytu"
       }
     },
-    "jsonInvalid": "To nie jest prawidłowa wartość. Zostanie zapisany ostatni poprawny stan."
+    "jsonInvalid": "To nie jest prawidłowa wartość. Zostanie zapisany ostatni poprawny stan.",
+    "hostList": {
+      "listLabel": "Dozwolone hosty",
+      "entryLabel": "Host {position, number}",
+      "remove": "Usuń {host}",
+      "add": "Dodaj",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {Nie dodano: {hosts}. Ten wpis nigdy nie pasowałby do adresu webhooka – pozostaje w polu, aby można było go poprawić.} few {Nie dodano: {hosts}. Te wpisy nigdy nie pasowałyby do adresu webhooka – pozostają w polu, aby można było je poprawić.} many {Nie dodano: {hosts}. Te wpisy nigdy nie pasowałyby do adresu webhooka – pozostają w polu, aby można było je poprawić.} other {Nie dodano: {hosts}. Te wpisy nigdy nie pasowałyby do adresu webhooka – pozostają w polu, aby można było je poprawić.}}",
+      "present": "{count, plural, one {Już znajduje się na liście: {hosts}.} few {Już znajdują się na liście: {hosts}.} many {Już znajduje się na liście: {hosts}.} other {Już znajduje się na liście: {hosts}.}}",
+      "empty": "Lista jest pusta. Oznacza to, że nie można utworzyć żadnej reguły webhooka, a istniejące nie działają.",
+      "removed": "{count, plural, one {Po zapisaniu host {hosts} nie będzie już dozwolony. Istniejące reguły wysyłające na ten adres przestaną działać.} few {Po zapisaniu hosty {hosts} nie będą już dozwolone. Istniejące reguły wysyłające na te adresy przestaną działać.} many {Po zapisaniu hosty {hosts} nie będą już dozwolone. Istniejące reguły wysyłające na te adresy przestaną działać.} other {Po zapisaniu hosty {hosts} nie będą już dozwolone. Istniejące reguły wysyłające na te adresy przestaną działać.}}",
+      "problems": {
+        "unusable": "Tutaj nie podano hosta. Ten wpis niczego nie zezwala. Adres IPv6 należy ująć w nawiasy kwadratowe, np. [2001:db8::1].",
+        "wildcard": "Symbole wieloznaczne, takie jak *, nie są obsługiwane. Ten wpis niczego nie zezwala. Host i tak automatycznie obejmuje swoje poddomeny.",
+        "invalid": "To nie jest prawidłowy host, którego mógłby użyć adres URL. Ten wpis niczego nie zezwala.",
+        "idn": "Adresy są przetwarzane w zapisie ASCII. W tej formie ten wpis niczego nie zezwala – wpisz zamiast tego {ascii}.",
+        "rewritten": "Traktowany jako {host}.",
+        "duplicate": "Znajduje się już wyżej na liście. Duplikat nie szkodzi, ale też nic nie zmienia.",
+        "covered": "Jest już dozwolony przez {host}, ponieważ poddomeny są uwzględniane automatycznie."
+      }
+    }
   },
   "groupNav": {
     "rejected": "odrzucona wartość",

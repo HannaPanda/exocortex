@@ -269,6 +269,7 @@ export function SettingsForm({ requestedGroup = null }: { requestedGroup?: strin
                     onChange={(value) => updateField(key, value)}
                     models={modelsQuery.data?.models ?? []}
                     error={fieldErrors[key]}
+                    stored={original[key]}
                   />
                 </div>
               ))}

@@ -295,6 +295,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-hosts"
+        title="Liste von Hosts"
+        source="apps/web/src/components/settings/host-list-field.tsx"
+        note="Die erlaubten Webhook-Hosts: ein Eintrag pro Host, einzeln bearbeitbar und entfernbar, gespeichert bleibt die kommagetrennte Zeichenkette. Eingefügter Text wird an Komma, Leerraum und Zeilenumbruch zerlegt. Die Hinweise unter einem Eintrag fragen den Parser und den Abgleich des Servers: rot heißt, der Eintrag erlaubt nie etwas, grau heißt, er ist harmlos. Vor dem Speichern nennt die Zeile jeden Host, der danach nicht mehr erlaubt wäre."
+        stageClassName="p-6 sm:p-6"
+      >
+        <HostListRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-schmal"
         title="Auf dem Telefon"
         source="apps/web/src/components/settings/setting-row.tsx"
@@ -317,6 +327,26 @@ function ByteRowExample() {
           value={bytes}
           onChange={(value) => {
             if (typeof value === 'number') setBytes(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
+  );
+}
+
+function HostListRowExample() {
+  const stored = 'hooks.example.org, n8n.example.net';
+  const [hosts, setHosts] = React.useState(`${stored}, *.example.com, api.hooks.example.org`);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="automations.webhookAllowedHosts"
+          value={hosts}
+          stored={stored}
+          onChange={(value) => {
+            if (typeof value === 'string') setHosts(value);
           }}
           models={[]}
         />

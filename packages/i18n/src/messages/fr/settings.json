@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Hôtes de webhook autorisés",
-        "help": "Séparés par des virgules, sans schéma ni port (par exemple « hooks.example.org, 127.0.0.1 »). Les sous-domaines sont inclus. Laisser vide signifie : aucune règle de webhook ne peut être créée et aucune règle existante ne s’exécute. Vérifié lors de l’enregistrement puis lors du déclenchement, afin que raccourcir cette liste arrête aussi les règles existantes."
+        "help": "Un hôte par entrée, sans schéma ni port (par exemple « hooks.example.org » ou « 127.0.0.1 »). Tu peux en coller plusieurs d’un coup, séparés par une virgule ou un saut de ligne. Les sous-domaines sont inclus. Laisser vide signifie : aucune règle de webhook ne peut être créée et aucune règle existante ne s’exécute. La vérification a lieu à l’enregistrement puis au déclenchement, afin que raccourcir cette liste bloque aussi les règles déjà en place."
       },
       "maxConsecutiveFailures": {
         "label": "Échecs avant désactivation automatique",
@@ -527,7 +527,27 @@
         "read_only": "Lecture seule"
       }
     },
-    "jsonInvalid": "Ce n’est pas une valeur valide. La dernière version valide sera enregistrée."
+    "jsonInvalid": "Ce n’est pas une valeur valide. La dernière version valide sera enregistrée.",
+    "hostList": {
+      "listLabel": "Hôtes autorisés",
+      "entryLabel": "Hôte {position, number}",
+      "remove": "Supprimer {host}",
+      "add": "Ajouter",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {Non pris en compte : {hosts}. Cette entrée ne correspondrait jamais à une adresse de webhook ; elle reste dans le champ pour que tu puisses la corriger.} many {Non pris en compte : {hosts}. Ces entrées ne correspondraient jamais à une adresse de webhook ; elles restent dans le champ pour que tu puisses les corriger.} other {Non pris en compte : {hosts}. Ces entrées ne correspondraient jamais à une adresse de webhook ; elles restent dans le champ pour que tu puisses les corriger.}}",
+      "present": "{count, plural, one {Déjà dans la liste : {hosts}.} many {Déjà dans la liste : {hosts}.} other {Déjà dans la liste : {hosts}.}}",
+      "empty": "La liste est vide. Aucune règle de webhook ne peut donc être créée, et aucune règle existante ne s’exécute.",
+      "removed": "{count, plural, one {Après enregistrement, {hosts} ne sera plus autorisé. Les règles existantes qui envoient vers cet hôte ne s’exécuteront plus.} many {Après enregistrement, {hosts} ne seront plus autorisés. Les règles existantes qui envoient vers ces hôtes ne s’exécuteront plus.} other {Après enregistrement, {hosts} ne seront plus autorisés. Les règles existantes qui envoient vers ces hôtes ne s’exécuteront plus.}}",
+      "problems": {
+        "unusable": "Ceci n’est pas un hôte. Cette entrée n’autorise rien. Une adresse IPv6 doit être placée entre crochets, par exemple [2001:db8::1].",
+        "wildcard": "Les caractères génériques comme * ne sont pas valides. Cette entrée n’autorise rien. Un hôte autorise de toute façon déjà ses sous-domaines.",
+        "invalid": "Ceci n’est pas un hôte pouvant figurer dans une adresse. Cette entrée n’autorise rien.",
+        "idn": "Les adresses arrivent au format ASCII. Sous cette forme, cette entrée n’autorise rien ; écris plutôt {ascii}.",
+        "rewritten": "Considéré comme {host}.",
+        "duplicate": "Déjà présent plus haut. Les doublons ne posent pas problème, mais sont inutiles.",
+        "covered": "Déjà autorisé par {host}, car les sous-domaines sont inclus."
+      }
+    }
   },
   "groupNav": {
     "rejected": "valeur refusée",

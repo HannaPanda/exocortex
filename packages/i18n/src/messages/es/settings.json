@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Hosts de webhook permitidos",
-        "help": "Separados por comas, sin esquema ni puerto (por ejemplo, «hooks.example.org, 127.0.0.1»). Se incluyen los subdominios. Vacío significa: no se puede crear ninguna regla de webhook y no se ejecuta ninguna existente. Se comprueba al guardar y otra vez al activarse, de modo que recortar esta lista también detiene las reglas ya creadas."
+        "help": "Un host por entrada, sin esquema ni puerto (por ejemplo, «hooks.example.org» o «127.0.0.1»). Puedes pegar varios a la vez separados por comas o saltos de línea. Los subdominios se incluyen automáticamente. Si se deja vacío: no se podrá crear ninguna regla de webhook y no se ejecutará ninguna de las existentes. Se comprueba al guardar y de nuevo al activarse, de modo que reducir esta lista también detiene las reglas ya existentes."
       },
       "maxConsecutiveFailures": {
         "label": "Fallos consecutivos antes de la desactivación automática",
@@ -527,7 +527,27 @@
         "read_only": "Solo lectura"
       }
     },
-    "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido."
+    "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido.",
+    "hostList": {
+      "listLabel": "Hosts permitidos",
+      "entryLabel": "Host {position, number}",
+      "remove": "Eliminar {host}",
+      "add": "Añadir",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {No se ha añadido: {hosts}. Esta entrada nunca coincidiría con una dirección de webhook; permanece en el campo para que puedas corregirla.} many {No se han añadido: {hosts}. Estas entradas nunca coincidirían con una dirección de webhook; permanecen en el campo para que puedas corregirlas.} other {No se han añadido: {hosts}. Estas entradas nunca coincidirían con una dirección de webhook; permanecen en el campo para que puedas corregirlas.}}",
+      "present": "{count, plural, one {Ya está en la lista: {hosts}.} many {Ya están en la lista: {hosts}.} other {Ya están en la lista: {hosts}.}}",
+      "empty": "La lista está vacía. Por tanto, no se puede crear ninguna regla de webhook y no se ejecutará ninguna de las existentes.",
+      "removed": "{count, plural, one {Al guardar, {hosts} dejará de estar permitido. Las reglas existentes que envíen datos allí dejarán de ejecutarse.} many {Al guardar, {hosts} dejarán de estar permitidos. Las reglas existentes que envíen datos allí dejarán de ejecutarse.} other {Al guardar, {hosts} dejarán de estar permitidos. Las reglas existentes que envíen datos allí dejarán de ejecutarse.}}",
+      "problems": {
+        "unusable": "Aquí no hay ningún host. Esta entrada no permite nada. Las direcciones IPv6 deben ir entre corchetes, por ejemplo [2001:db8::1].",
+        "wildcard": "Los caracteres comodín como * no son válidos. Esta entrada no permite nada. Un host ya incluye sus subdominios de por sí.",
+        "invalid": "No es un host que una dirección pueda especificar. Esta entrada no permite nada.",
+        "idn": "Las direcciones se reciben en formato ASCII. De este modo, esta entrada no permite nada; escribe {ascii} en su lugar.",
+        "rewritten": "Se interpreta como {host}.",
+        "duplicate": "Ya aparece más arriba. Duplicarlo no genera errores, pero tampoco aporta nada.",
+        "covered": "Ya está permitido a través de {host}, ya que los subdominios se incluyen automáticamente."
+      }
+    }
   },
   "groupNav": {
     "rejected": "valor rechazado",

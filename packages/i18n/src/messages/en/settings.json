@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Allowed webhook hosts",
-        "help": "Comma-separated, without scheme and port (e.g. “hooks.example.org, 127.0.0.1”). Subdomains are included. Empty means: no webhook rule can be created and no existing one runs. Checked when saving and again when triggered, so shortening this list also stops rules that already exist."
+        "help": "One host per entry, without scheme and port (such as “hooks.example.org” or “127.0.0.1”). Multiple hosts can be pasted at once, separated by commas or line breaks. Subdomains are included. Empty means: no webhook rules can be created and no existing ones will run. Checked when saving and again when triggered, so shortening this list also stops rules that already exist."
       },
       "maxConsecutiveFailures": {
         "label": "Failures until auto-disable",
@@ -527,7 +527,27 @@
         "read_only": "Read-only"
       }
     },
-    "jsonInvalid": "This is not a valid value. The last valid state will be saved."
+    "jsonInvalid": "This is not a valid value. The last valid state will be saved.",
+    "hostList": {
+      "listLabel": "Allowed hosts",
+      "entryLabel": "Host {position, number}",
+      "remove": "Remove {host}",
+      "add": "Add",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {Not accepted: {hosts}. This entry would never match a webhook URL; it remains in the field so you can correct it.} other {Not accepted: {hosts}. These entries would never match a webhook URL; they remain in the field so you can correct them.}}",
+      "present": "{count, plural, one {Already on the list: {hosts}.} other {Already on the list: {hosts}.}}",
+      "empty": "The list is empty. As a result, no webhook rules can be created, and no existing ones will run.",
+      "removed": "{count, plural, one {After saving, {hosts} is no longer allowed. Existing rules that send there will no longer run.} other {After saving, {hosts} are no longer allowed. Existing rules that send there will no longer run.}}",
+      "problems": {
+        "unusable": "No host specified here. This entry allows nothing. An IPv6 address belongs in square brackets, such as [2001:db8::1].",
+        "wildcard": "Wildcards like * do not apply. This entry allows nothing. A host automatically includes its subdomains anyway.",
+        "invalid": "This is not a host that a URL can specify. This entry allows nothing.",
+        "idn": "URLs arrive in ASCII notation. As written, this entry allows nothing; write {ascii} instead.",
+        "rewritten": "Treated as {host}.",
+        "duplicate": "Already listed above. Duplicates do no harm, but provide no benefit either.",
+        "covered": "Already allowed by {host}, because subdomains are included."
+      }
+    }
   },
   "groupNav": {
     "rejected": "rejected value",

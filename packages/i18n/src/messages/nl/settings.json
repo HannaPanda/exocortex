@@ -375,7 +375,7 @@
       },
       "webhookAllowedHosts": {
         "label": "Toegestane webhook-hosts",
-        "help": "Door komma’s gescheiden, zonder schema en poort (bijvoorbeeld „hooks.example.org, 127.0.0.1”). Subdomeinen tellen mee. Leeg betekent: er kan geen webhook-regel worden aangemaakt en geen bestaande regel wordt uitgevoerd. Wordt gecontroleerd bij het opslaan en nogmaals bij het activeren, zodat het inkorten van deze lijst ook bestaande regels stopt."
+        "help": "Eén host per invoer, zonder schema en poort (bijvoorbeeld „hooks.example.org” of „127.0.0.1”). Je kunt er meerdere tegelijk invoegen, gescheiden door komma’s of regeleinden. Subdomeinen tellen automatisch mee. Leeg betekent: er kan geen webhook-regel worden aangemaakt en geen enkele bestaande regel wordt uitgevoerd. Er wordt gecontroleerd bij het opslaan en nogmaals bij het activeren, zodat het inkorten van deze lijst ook bestaande regels direct stopt."
       },
       "maxConsecutiveFailures": {
         "label": "Mislukkingen tot zelfuitschakeling",
@@ -527,7 +527,27 @@
         "read_only": "Alleen lezen"
       }
     },
-    "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen."
+    "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen.",
+    "hostList": {
+      "listLabel": "Toegestane hosts",
+      "entryLabel": "Host {position, number}",
+      "remove": "{host} verwijderen",
+      "add": "Toevoegen",
+      "addPlaceholder": "hooks.example.org",
+      "refused": "{count, plural, one {Niet overgenomen: {hosts}. Dit item zou nooit overeenkomen met een webhook-adres; het blijft in het veld staan zodat je het kunt corrigeren.} other {Niet overgenomen: {hosts}. Deze items zouden nooit overeenkomen met een webhook-adres; ze blijven in het veld staan zodat je ze kunt corrigeren.}}",
+      "present": "{count, plural, one {Staat al in de lijst: {hosts}.} other {Staan al in de lijst: {hosts}.}}",
+      "empty": "De lijst is leeg. Hierdoor kan er geen webhook-regel worden aangemaakt en wordt er geen enkele bestaande regel uitgevoerd.",
+      "removed": "{count, plural, one {Na het opslaan is {hosts} niet meer toegestaan. Bestaande regels die hiernaartoe verzenden, werken dan niet meer.} other {Na het opslaan zijn {hosts} niet meer toegestaan. Bestaande regels die hiernaartoe verzenden, werken dan niet meer.}}",
+      "problems": {
+        "unusable": "Hier staat geen host. Dit item staat niets toe. Plaats een IPv6-adres tussen vierkante haken, zoals [2001:db8::1].",
+        "wildcard": "Jokers zoals * zijn niet toegestaan. Dit item staat niets toe. Een host staat subdomeinen automatisch al toe.",
+        "invalid": "Dit is geen host die in een adres kan worden gebruikt. Dit item staat niets toe.",
+        "idn": "Adressen komen binnen in ASCII-notatie. Zo staat dit item niets toe; gebruik in plaats daarvan {ascii}.",
+        "rewritten": "Geldt als {host}.",
+        "duplicate": "Staat al eerder in de lijst. Dubbeling schaadt niet, maar heeft ook geen nut.",
+        "covered": "Is al toegestaan via {host}, omdat subdomeinen meetellen."
+      }
+    }
   },
   "groupNav": {
     "rejected": "geweigerde waarde",
