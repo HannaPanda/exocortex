@@ -27,6 +27,7 @@ import {
   endpointId,
   existsAt,
   labelledNodeIds,
+  linkDegrees,
   type MapGraph,
   type MapLink,
   type MapNode,
@@ -34,6 +35,7 @@ import {
   type Pulse,
   type PulseKind,
   pulseStrength,
+  sharedPull,
   supersedes,
 } from './map-model';
 import { disposeStar, haloGeometry, makeStar, paintStar, type Star } from './map-star';
@@ -71,8 +73,8 @@ const LINK_DISTANCE: Record<KnowledgeMapEdgeKind, number> = {
   entity: 60,
   similar: 75,
 };
-/** How hard a line pulls its two points together. */
-function linkStrength(link: MapLink): number {
+/** How hard a line of this kind pulls its two points together, before it is shared. */
+function kindPull(link: MapLink): number {
   if (link.kind === 'similar') return 0.15 + link.weight * 0.25;
   // The tree pulls even while it is hidden, and a parent with a hundred
   // children pulled them into a ball; looser, it still keeps the branch together.
@@ -82,6 +84,38 @@ function linkStrength(link: MapLink): number {
 
 /** How hard every point pushes the others away. */
 const CHARGE = -130;
+/**
+ * How far that push reaches. Unbounded, two branches with no line between
+ * them pushed each other apart for as long as the simulation ran, and a new
+ * area ended up a speck at the edge of the room.
+ */
+const CHARGE_REACH = 360;
+/**
+ * How hard the room's centre pulls every point back, per tick of the
+ * simulation. Weak enough that a branch keeps its own shape, strong enough
+ * that an island without a line to the rest stays in sight of it.
+ */
+const GRAVITY = 0.035;
+
+/** A pull towards the origin, d3's `forceX/Y/Z` in one force without the dependency. */
+function gravity(strength: number): ((alpha: number) => void) & {
+  initialize: (nodes: MapNode[]) => void;
+} {
+  let nodes: MapNode[] = [];
+  const force = (alpha: number): void => {
+    const pull = strength * alpha;
+    for (const node of nodes) {
+      node.vx = (node.vx ?? 0) - (node.x ?? 0) * pull;
+      node.vy = (node.vy ?? 0) - (node.y ?? 0) * pull;
+      node.vz = (node.vz ?? 0) - (node.z ?? 0) * pull;
+    }
+  };
+  force.initialize = (next: MapNode[]): void => {
+    nodes = next;
+  };
+  return force;
+}
+
 /**
  * How much a similarity line bows. A one-pixel line cannot be told apart by
  * colour alone (white and pastel looked the same), so the line nobody drew
@@ -97,6 +131,7 @@ interface LinkForce {
 
 interface ChargeForce {
   strength(value: number): ChargeForce;
+  distanceMax(value: number): ChargeForce;
 }
 
 function isLinkForce(force: unknown): force is LinkForce {
@@ -110,7 +145,13 @@ function isLinkForce(force: unknown): force is LinkForce {
 }
 
 function isChargeForce(force: unknown): force is ChargeForce {
-  return typeof force === 'function' && 'strength' in force && typeof force.strength === 'function';
+  return (
+    typeof force === 'function' &&
+    'strength' in force &&
+    typeof force.strength === 'function' &&
+    'distanceMax' in force &&
+    typeof force.distanceMax === 'function'
+  );
 }
 
 /** The orbit controls' knobs the map uses; the library returns them as `object`. */
@@ -168,6 +209,7 @@ export class MapEngine {
   private colours: PointColours;
   private data: MapGraph = { nodes: [], links: [] };
   private branchIndex = new Map<string, number>();
+  private degrees = new Map<string, number>();
   private labelled = new Set<string>();
   private shown: ReadonlySet<KnowledgeMapEdgeKind> = new Set(['link', 'similar', 'entity']);
   private moment: number | null = null;
@@ -246,10 +288,11 @@ export class MapEngine {
 
     const link = this.graph.d3Force('link');
     if (isLinkForce(link)) {
-      link.distance((entry) => LINK_DISTANCE[entry.kind]).strength(linkStrength);
+      link.distance((entry) => LINK_DISTANCE[entry.kind]).strength((entry) => this.pullOf(entry));
     }
     const charge = this.graph.d3Force('charge');
-    if (isChargeForce(charge)) charge.strength(CHARGE);
+    if (isChargeForce(charge)) charge.strength(CHARGE).distanceMax(CHARGE_REACH);
+    this.graph.d3Force('gravity', gravity(GRAVITY));
 
     // The room is the scene's background, not the renderer's clear colour:
     // the bloom pass composites over a cleared target and lifts a clear colour
@@ -289,6 +332,7 @@ export class MapEngine {
       this.visuals.delete(id);
     }
     this.data = graph;
+    this.degrees = linkDegrees(graph.links);
     this.branchIndex = branchColourIndex(graph.nodes, this.colours.branches.length);
     this.labelled = labelledNodeIds(graph.nodes, ALWAYS_LABELLED);
     // A renamed page needs a new label texture.
@@ -428,6 +472,15 @@ export class MapEngine {
 
   private touch(): void {
     this.lastTouch = performance.now();
+  }
+
+  /** Read by d3 when it is handed a graph, which `setGraph` does after counting the degrees. */
+  private pullOf(link: MapLink): number {
+    return sharedPull(
+      kindPull(link),
+      this.degrees.get(endpointId(link.source)) ?? 1,
+      this.degrees.get(endpointId(link.target)) ?? 1,
+    );
   }
 
   private linkVisible(link: MapLink): boolean {

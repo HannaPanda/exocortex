@@ -236,3 +236,26 @@ export function tourStops(
   }
   return stops;
 }
+
+/** How many lines meet at each point, the tree included because it pulls too. */
+export function linkDegrees(links: readonly MapLink[]): Map<string, number> {
+  const degrees = new Map<string, number>();
+  for (const link of links) {
+    for (const end of [endpointId(link.source), endpointId(link.target)]) {
+      degrees.set(end, (degrees.get(end) ?? 0) + 1);
+    }
+  }
+  return degrees;
+}
+
+/**
+ * How hard one line pulls, given how hard its kind pulls and how many lines
+ * meet at its two ends. d3's own rule: the busier end decides nothing, the
+ * quieter one shares its pull among its lines. Without it a branch where every
+ * page links to every sibling collapsed into a knot while a sparse branch
+ * stayed wide, because each of a dozen lines pulled as hard as a single one.
+ */
+export function sharedPull(kindPull: number, sourceDegree: number, targetDegree: number): number {
+  const quieter = Math.max(1, Math.min(sourceDegree, targetDegree));
+  return Math.min(kindPull, (kindPull * 2) / quieter);
+}

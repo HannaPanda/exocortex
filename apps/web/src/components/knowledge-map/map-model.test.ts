@@ -7,9 +7,11 @@ import {
   documentIdOfSubject,
   existsAt,
   labelledNodeIds,
+  linkDegrees,
   mergeGraph,
   neighboursOf,
   pulseStrength,
+  sharedPull,
   supersedes,
   timelineBounds,
   tourStops,
@@ -150,5 +152,29 @@ describe('labels, colours, neighbours and tours', () => {
   it('tours the hits the map knows, best first, without repeats', () => {
     const known = new Set(['a', 'b', 'c']);
     expect(tourStops(['x', 'b', 'b', 'a', 'c'], known, 2)).toEqual(['b', 'a']);
+  });
+});
+
+describe('linkDegrees', () => {
+  it('counts both ends of every line, whichever spelling the library left', () => {
+    const a = { ...node('a') };
+    const degrees = linkDegrees([
+      { key: '1', source: a, target: 'b', kind: 'link', weight: 1 },
+      { key: '2', source: 'a', target: 'c', kind: 'tree', weight: 1 },
+    ]);
+    expect(degrees.get('a')).toBe(2);
+    expect(degrees.get('b')).toBe(1);
+    expect(degrees.get('c')).toBe(1);
+  });
+});
+
+describe('sharedPull', () => {
+  it('leaves a sparse line at its full pull', () => {
+    expect(sharedPull(0.6, 1, 2)).toBe(0.6);
+    expect(sharedPull(0.6, 2, 30)).toBe(0.6);
+  });
+
+  it('shares the pull among the lines of the quieter end', () => {
+    expect(sharedPull(0.6, 12, 8)).toBeCloseTo(0.15);
   });
 });
