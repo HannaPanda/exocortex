@@ -3,7 +3,7 @@ import { CanvasTexture, type Color, LinearFilter, Sprite, SpriteMaterial } from 
 import { cssOf } from './map-colors';
 
 /** Height of a label in world units: about the diameter of a well-connected point. */
-const LABEL_HEIGHT = 6.5;
+const LABEL_HEIGHT = 8;
 /** Titles longer than this are cut, since a label names a point rather than describing it. */
 const MAX_LABEL_CHARS = 38;
 

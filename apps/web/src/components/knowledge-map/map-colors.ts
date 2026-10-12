@@ -58,6 +58,20 @@ function resolver(): (token: string) => Color {
   };
 }
 
+/**
+ * A content colour turned into a point colour: the same hue, more saturated
+ * and darker. The content tokens are pastel because they are made for text on
+ * a dark page; as points under the glow they all bloomed to white and the
+ * branches could not be told apart. Derived, not written down, so the map
+ * still follows the token's hue.
+ */
+function asPoint(colour: Color): Color {
+  const hsl = { h: 0, s: 0, l: 0 };
+  // In sRGB, so 0.55 is a lightness a person sees rather than linear light.
+  colour.getHSL(hsl, 'srgb');
+  return colour.clone().setHSL(hsl.h, Math.min(1, hsl.s * 2.2), 0.55, 'srgb');
+}
+
 export function readMapPalette(): MapPalette {
   const resolve = resolver();
   return {
@@ -68,9 +82,9 @@ export function readMapPalette(): MapPalette {
     read: resolve('--info'),
     created: resolve('--success'),
     removed: resolve('--destructive'),
-    entity: resolve('--warning'),
+    entity: asPoint(resolve('--warning')),
     found: resolve('--primary-text'),
-    branches: BRANCH_TOKENS.map(resolve),
+    branches: BRANCH_TOKENS.map((token) => asPoint(resolve(token))),
   };
 }
 
