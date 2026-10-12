@@ -15,6 +15,7 @@ import { DocumentDiffController } from './document-diff.controller';
 import { DocumentDiffService } from './document-diff.service';
 import { DocumentEditController } from './document-edit.controller';
 import { DocumentEditService } from './document-edit.service';
+import { DocumentExportController } from './document-export.controller';
 import { DocumentFragmentController } from './document-fragment.controller';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
@@ -44,6 +45,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentDiffController,
     DocumentFragmentController,
     DocumentEditController,
+    DocumentExportController,
   ],
   providers: [
     DocumentsService,
