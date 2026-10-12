@@ -260,6 +260,14 @@ pnpm test:styleguide   # screenshot baselines, axe and keyboard checks on
                        # test:styleguide:update rewrites the baselines
 ```
 
+Typecheck through turbo, never with a bare `tsc` inside a workspace:
+`pnpm typecheck` for everything, `pnpm turbo run typecheck --filter=@exocortex/web`
+for one workspace. Turbo builds the packages a workspace depends on first
+(`dependsOn: ["^build"]`); a bare `tsc` checks against whatever `dist/` happens
+to be lying around. A stale `dist/` of `@exocortex/i18n` once made a new message
+namespace a type error in `apps/web`, and `tsc` spent more than 6 GB trying to
+explain it, which starved the live units on this host.
+
 A test belongs to one half or the other by its file name, and the test-split
 gate enforces it: `*.integration.test.ts` may open a database, Redis or storage
 connection, and nothing else may. Adding a test that needs infrastructure means

@@ -109,6 +109,10 @@ pnpm typecheck
 pnpm test:unit
 ```
 
+Typecheck one workspace with `pnpm turbo run typecheck --filter=<package>`, never
+with a bare `tsc` inside it: turbo builds the packages it depends on first, a
+bare `tsc` checks against a possibly stale `dist/` (see `CLAUDE.md`).
+
 For UI or flow changes also run `pnpm test:e2e` against a running deployment,
 and `pnpm test:styleguide` for anything the styleguide shows; the checklist at
 the end of `DESIGN.md` §7 is what a UI change is finished against.

@@ -13,6 +13,9 @@
     "./catalog": {
       "types": "./dist/catalog.d.ts",
       "default": "./dist/catalog.js"
+    },
+    "./messages": {
+      "types": "./src/catalog.ts"
     }
   },
   "files": [

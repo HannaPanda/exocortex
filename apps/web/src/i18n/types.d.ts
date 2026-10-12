@@ -1,9 +1,16 @@
-import { type Locale, type Messages } from '@exocortex/i18n';
+import { type Locale } from '@exocortex/i18n';
+import { type Messages } from '@exocortex/i18n/messages';
 
 /**
  * Types every `useTranslations()` and `t()` against the German catalogue,
  * which is the source every other locale is translated from. A key that
  * German does not have is a compile error (issue #98).
+ *
+ * `Messages` comes from the message files themselves, not from the built
+ * `dist/` of `@exocortex/i18n`: a `dist/` older than a new namespace made every
+ * use of it a type error, and checking those against the whole catalogue took
+ * `tsc` past 6 GB. The `./messages` entry point is types only; nothing at
+ * runtime imports it.
  */
 declare module 'next-intl' {
   interface AppConfig {
