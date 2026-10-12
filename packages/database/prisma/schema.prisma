@@ -30,27 +30,34 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String    @id @default(cuid(2))
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
+  id                     String    @id @default(cuid(2))
+  name                   String
+  email                  String    @unique
+  emailVerified          Boolean   @default(false)
+  image                  String?
   /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
   /// administers the deployment, a workspace ADMIN administers one workspace.
-  role          UserRole  @default(USER)
+  role                   UserRole  @default(USER)
   /// When set, the account exists but may not act: sign-in is refused and every
   /// credential is rejected. Deliberately not a deletion -- documents point at
   /// their author through `createdById`/`updatedById`, so removing the row would
   /// take the history with it. Reversible by clearing the field.
-  disabledAt    DateTime?
+  disabledAt             DateTime?
   /// The interface language this person chose (issue #98, ADR-062), a tag
   /// from `SUPPORTED_LOCALES`. `NULL` means never chosen, and is a different
   /// answer from 'de': an undecided account follows its browser. No check
   /// constraint on purpose -- adding a language must not need a migration,
   /// and `resolveLocale` already ignores a tag the deployment no longer has.
-  locale        String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  locale                 String?
+  /// How this person likes the knowledge map to look (issue #189): bloom,
+  /// glow per colour, the size of a star's halo. `NULL` means the defaults in
+  /// `DEFAULT_KNOWLEDGE_MAP_APPEARANCE`; a stored value is read through
+  /// `knowledgeMapAppearanceSchema` with the defaults beneath it, so a key
+  /// added later needs no migration. Taste belongs to the viewer, not to a
+  /// workspace, which is why this is on the account.
+  knowledgeMapAppearance Json?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   sessions                    Session[]
   accounts                    Account[]

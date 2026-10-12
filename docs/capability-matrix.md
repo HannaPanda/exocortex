@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-293 routes are reachable from at least one client; 176 from all three.
+296 routes are reachable from at least one client; 177 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -44,6 +44,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/eval-runs/:x` | ✓ | · | ✓ | `exo_eval_run_delete` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
+| `DELETE /api/me/knowledge-map-appearance` | · | ✓ | ✓ | `exo_knowledge_map_appearance_set` |
 | `DELETE /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_remove` |
 | `DELETE /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_delete` |
 | `DELETE /api/projects/:x/files` | ✓ | ✓ | ✓ | `exo_project_delete_file` |
@@ -108,6 +109,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
 | `GET /api/me/connections` | ✓ | · | · | — |
+| `GET /api/me/knowledge-map-appearance` | ✓ | ✓ | ✓ | `exo_knowledge_map_appearance` |
 | `GET /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preferences` |
 | `GET /api/me/outgoing-shares` | ✓ | ✓ | ✓ | `exo_share_mine` |
 | `GET /api/me/preferences` | ✓ | ✓ | ✓ | `exo_me_preferences` |
@@ -188,6 +190,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
 | `PATCH /api/eval-attempts/:x/review` | ✓ | · | ✓ | `exo_eval_attempt_review` |
 | `PATCH /api/eval-cases/:x` | ✓ | · | ✓ | `exo_eval_case_update` |
+| `PATCH /api/me/knowledge-map-appearance` | · | ✓ | ✓ | `exo_knowledge_map_appearance_set` |
 | `PATCH /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preference_set` |
 | `PATCH /api/me/preferences` | ✓ | ✓ | ✓ | `exo_me_preferences_set` |
 | `PATCH /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_update` |
