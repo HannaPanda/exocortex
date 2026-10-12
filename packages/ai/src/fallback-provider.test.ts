@@ -172,10 +172,14 @@ describe('withFallback (issue #187)', () => {
   it('falls back when the request never reached the upstream', async () => {
     const unreachable: AiProvider = {
       ...scripted('cline', []).provider,
-      // eslint-disable-next-line require-yield -- fails before its first event, like a refused fetch
-      async *stream() {
-        throw new TypeError('fetch failed');
-      },
+      // Fails before its first event, like a fetch that never got an answer.
+      stream: () => ({
+        [Symbol.asyncIterator]: () => ({
+          next: async (): Promise<IteratorResult<AiStreamEvent>> => {
+            throw new TypeError('fetch failed');
+          },
+        }),
+      }),
     };
     const secondary = scripted('openrouter', answer);
 

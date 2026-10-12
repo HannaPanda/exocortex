@@ -193,6 +193,79 @@ export function ModelDialog({ open, onOpenChange, model, models }: ModelDialogPr
   );
 }
 
+/** Who serves the model (issue #187): OpenRouter or a checked subscription preset. */
+function ProviderField({
+  value,
+  onChange,
+}: {
+  value: AiModelProvider;
+  onChange: (provider: AiModelProvider) => void;
+}) {
+  const t = useTranslations('admin.modelDialog');
+  const providerLabel = useTranslations('admin.modelProviders');
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="model-provider">{t('fields.provider')}</Label>
+      <Select
+        value={value}
+        onValueChange={(next) => {
+          if (next !== null && isModelProvider(next)) onChange(next);
+        }}
+      >
+        <SelectTrigger
+          id="model-provider"
+          className="w-full"
+          aria-describedby="model-provider-help"
+        >
+          <SelectValue>{() => providerLabel(value)}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {providerOptions(value).map((entry) => (
+            <SelectItem key={entry} value={entry}>
+              {providerLabel(entry)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <p id="model-provider-help" className="text-xs text-muted-foreground">
+        {t('fields.providerHelp')}
+      </p>
+    </div>
+  );
+}
+
+/** The model's override of `ai.providerRouting` as JSON text (ADR-063). */
+function ProviderRoutingField({
+  value,
+  invalid,
+  onChange,
+}: {
+  value: string;
+  invalid: boolean;
+  onChange: (text: string) => void;
+}) {
+  const t = useTranslations('admin.modelDialog');
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="model-provider-routing">{t('fields.providerRouting')}</Label>
+      <Textarea
+        id="model-provider-routing"
+        rows={3}
+        spellCheck={false}
+        className="font-mono text-xs"
+        placeholder={PROVIDER_ROUTING_PLACEHOLDER}
+        aria-describedby="model-provider-routing-help"
+        aria-invalid={invalid}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <p id="model-provider-routing-help" className="text-xs text-muted-foreground">
+        {t('fields.providerRoutingHelp')}
+      </p>
+    </div>
+  );
+}
+
 interface ModelDialogFormProps {
   model?: AiModel;
   models: AiModel[];
@@ -208,7 +281,6 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
   const [fieldErrors, setFieldErrors] = React.useState<FieldErrorKey[]>([]);
   const t = useTranslations('admin.modelDialog');
   const reasoningLabel = useTranslations('admin.reasoningLevels');
-  const providerLabel = useTranslations('admin.modelProviders');
   const createModel = useCreateAiModel();
   const updateModel = useUpdateAiModel();
 
@@ -333,36 +405,10 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="model-provider">{t('fields.provider')}</Label>
-          <Select
-            value={form.provider}
-            onValueChange={(next) =>
-              setForm((prev) => ({
-                ...prev,
-                provider: next !== null && isModelProvider(next) ? next : prev.provider,
-              }))
-            }
-          >
-            <SelectTrigger
-              id="model-provider"
-              className="w-full"
-              aria-describedby="model-provider-help"
-            >
-              <SelectValue>{() => providerLabel(form.provider)}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {providerOptions(form.provider).map((entry) => (
-                <SelectItem key={entry} value={entry}>
-                  {providerLabel(entry)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p id="model-provider-help" className="text-xs text-muted-foreground">
-            {t('fields.providerHelp')}
-          </p>
-        </div>
+        <ProviderField
+          value={form.provider}
+          onChange={(provider) => setForm((prev) => ({ ...prev, provider }))}
+        />
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="model-description">{t('fields.description')}</Label>
@@ -516,25 +562,11 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="model-provider-routing">{t('fields.providerRouting')}</Label>
-          <Textarea
-            id="model-provider-routing"
-            rows={3}
-            spellCheck={false}
-            className="font-mono text-xs"
-            placeholder={PROVIDER_ROUTING_PLACEHOLDER}
-            aria-describedby="model-provider-routing-help"
-            aria-invalid={fieldErrors.includes('providerRoutingInvalid')}
-            value={form.providerRouting}
-            onChange={(event) =>
-              setForm((prev) => ({ ...prev, providerRouting: event.target.value }))
-            }
-          />
-          <p id="model-provider-routing-help" className="text-xs text-muted-foreground">
-            {t('fields.providerRoutingHelp')}
-          </p>
-        </div>
+        <ProviderRoutingField
+          value={form.providerRouting}
+          invalid={fieldErrors.includes('providerRoutingInvalid')}
+          onChange={(providerRouting) => setForm((prev) => ({ ...prev, providerRouting }))}
+        />
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

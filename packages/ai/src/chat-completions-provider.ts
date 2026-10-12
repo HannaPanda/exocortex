@@ -460,15 +460,7 @@ export class ChatCompletionsProvider implements AiProvider {
     const choice = chunk.choices?.[0];
     const delta = choice?.delta;
 
-    // The first sign of an answer, thinking included: what a person waits
-    // through before anything moves, and the half of a slow provider that the
-    // total duration hides (issue #187).
-    if (
-      state.firstTokenAt === null &&
-      (Boolean(delta?.content) || Boolean(delta?.reasoning) || delta?.tool_calls !== undefined)
-    ) {
-      state.firstTokenAt = Date.now();
-    }
+    if (state.firstTokenAt === null && isFirstSign(delta)) state.firstTokenAt = Date.now();
 
     // Reasoning *text* is still deliberately dropped: it is not the answer
     // and would corrupt `resultText`. Only its size is passed on, so a
@@ -597,6 +589,18 @@ interface PartialToolCall {
   id: string;
   name: string;
   args: string;
+}
+
+/**
+ * Whether a delta is the first sign of an answer, thinking included: what a
+ * person waits through before anything moves, and the half of a slow provider
+ * that the total duration hides (issue #187).
+ */
+function isFirstSign(
+  delta: NonNullable<CompletionStreamChunk['choices']>[number]['delta'],
+): boolean {
+  if (delta === undefined) return false;
+  return Boolean(delta.content) || Boolean(delta.reasoning) || delta.tool_calls !== undefined;
 }
 
 /**

@@ -1,12 +1,12 @@
 import { type ProviderRouting } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
+import { ChatCompletionsProvider } from './chat-completions-provider';
 import {
   type ImageGenerator,
   MockImageGenerator,
   OpenRouterImageGenerator,
 } from './image-generator';
-import { ChatCompletionsProvider } from './chat-completions-provider';
 import { MockAiProvider } from './mock-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { type AiProvider } from './provider';
