@@ -288,7 +288,7 @@ async function upload(say, apiUrl, token, marker) {
       transcript: selfTestTranscript(marker),
     },
   });
-  if (captured.status !== 200) {
+  if (captured.status < 200 || captured.status >= 300) {
     say(`1. Hochladen: ${diagnose(captured.status, captured.text)}`);
     return null;
   }
