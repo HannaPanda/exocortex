@@ -44,6 +44,7 @@ import {
   supersedes,
 } from './map-model';
 import { disposeStar, haloGeometry, makeStar, paintStar, type Star } from './map-star';
+import { TrafficLayer } from './map-traffic-layer';
 
 /**
  * The library's constructor, typed for the map's own points and lines. Its
@@ -258,6 +259,7 @@ export class MapEngine {
   private degrees = new Map<string, number>();
   private readonly sparks: Spark[] = [];
   private readonly mote = moteTexture();
+  private readonly traffic: TrafficLayer;
   private screensaver = false;
   private shown: ReadonlySet<KnowledgeMapEdgeKind> = new Set(['link', 'similar', 'entity']);
   private moment: number | null = null;
@@ -313,10 +315,6 @@ export class MapEngine {
       .linkVisibility((link) => this.linkVisible(link))
       .linkMaterial((link) => this.linkMaterials[link.kind][this.linkState(link)])
       .linkCurvature((link) => (link.kind === 'similar' ? SIMILAR_CURVATURE : 0))
-      .linkDirectionalParticles((link) => this.particlesOf(link))
-      .linkDirectionalParticleSpeed((link) => 0.0025 + link.weight * 0.003)
-      .linkDirectionalParticleWidth((link) => (link.kind === 'link' ? 1.1 : 0.8))
-      .linkDirectionalParticleColor((link) => cssOf(this.particleColour(link)))
       .enableNodeDrag(false)
       .warmupTicks(60)
       .cooldownTime(12_000)
@@ -347,6 +345,14 @@ export class MapEngine {
     // into the slate of the page (measured: #09151c came out as #36566a),
     // while a scene background is drawn as geometry and stays what it is.
     this.graph.scene().background = palette.space.clone();
+
+    // The motes on the lines are the map's own, not the library's: see `map-traffic.ts`.
+    this.traffic = new TrafficLayer(this.graph.scene(), this.mote, {
+      links: () => this.data.links,
+      visible: (entry) => this.linkVisible(entry),
+      state: (entry) => this.linkState(entry),
+      colour: (entry) => this.particleColour(entry),
+    });
 
     // The glow: everything bright enough bleeds light into the dark room.
     // Moderate by default. At full strength every point turned white and the
@@ -396,12 +402,13 @@ export class MapEngine {
       }
     }
     this.graph.graphData(graph);
+    this.traffic.setGraph(graph.nodes, graph.links);
     const now = performance.now();
     for (const id of added.nodes) this.pulse(id, 'created', now);
     if (!this.options.reducedMotion) {
       const addedLinks = new Set(added.links);
       for (const entry of graph.links) {
-        if (addedLinks.has(entry.key)) this.graph.emitParticle(entry);
+        if (addedLinks.has(entry.key)) this.traffic.send(entry, true, now);
       }
     }
   }
@@ -452,7 +459,6 @@ export class MapEngine {
 
   setCalm(calm: boolean): void {
     this.calm = calm;
-    this.graph.linkDirectionalParticles(this.graph.linkDirectionalParticles());
   }
 
   /**
@@ -481,19 +487,14 @@ export class MapEngine {
     this.graph.width(width).height(height);
   }
 
-  /** Lights a point up, and sends light along its lines. */
+  /** Lights a point up, and sends light along its lines: in for a read, out for the rest. */
   pulse(nodeId: string, kind: PulseKind, now = performance.now()): void {
     const next = { kind, at: now };
     if (!supersedes(next, this.pulses.get(nodeId), now)) return;
     this.pulses.set(nodeId, next);
     if (this.options.reducedMotion || this.calm) return;
     this.spark(nodeId, kind, now);
-    for (const entry of this.data.links) {
-      if (!this.linkVisible(entry)) continue;
-      if (endpointId(entry.source) === nodeId || endpointId(entry.target) === nodeId) {
-        this.graph.emitParticle(entry);
-      }
-    }
+    this.traffic.burst(nodeId, kind, now);
   }
 
   /** Flies the camera to a point, or jumps there when motion is reduced. */
@@ -520,6 +521,7 @@ export class MapEngine {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
     for (const spark of this.sparks.splice(0)) this.disposeSpark(spark);
+    this.traffic.dispose();
     this.mote.dispose();
     for (const visual of this.visuals.values()) this.disposeVisual(visual);
     this.visuals.clear();
@@ -566,14 +568,6 @@ export class MapEngine {
     return this.highlighted.has(source) && this.highlighted.has(target) ? 'lit' : 'dim';
   }
 
-  private particlesOf(link: MapLink): number {
-    if (this.options.reducedMotion || this.calm) return 0;
-    if (this.linkState(link) === 'lit') return 3;
-    if (link.kind === 'link') return 1;
-    if (link.kind === 'similar') return link.weight > 0.5 ? 1 : 0;
-    return 0;
-  }
-
   private particleColour(link: MapLink): Color {
     if (link.kind === 'link') return this.palette.foreground;
     if (link.kind === 'entity') return this.palette.entity;
@@ -581,10 +575,7 @@ export class MapEngine {
   }
 
   private refreshLinks(): void {
-    this.graph
-      .linkVisibility(this.graph.linkVisibility())
-      .linkMaterial(this.graph.linkMaterial())
-      .linkDirectionalParticles(this.graph.linkDirectionalParticles());
+    this.graph.linkVisibility(this.graph.linkVisibility()).linkMaterial(this.graph.linkMaterial());
   }
 
   private visualOf(node: MapNode): NodeVisual {
@@ -712,6 +703,7 @@ export class MapEngine {
           (this.selected === null && now - this.lastTouch > IDLE_BEFORE_TURNING_MS));
     }
     this.driftSparks(now);
+    this.traffic.frame(now, !this.options.reducedMotion && !this.calm);
 
     for (const node of this.data.nodes) {
       const visual = this.visuals.get(node.id);

@@ -71,6 +71,14 @@ to spend every time a run re-embeds the page it just wrote.
   step goes through the same `pulse` a real event does, and nothing reaches
   the server, the live feed or the memory. A lit point gives off a light,
   capped spark of motes.
+- **The lines carry traffic made of facts.** The library's particles moved a
+  fixed share of their line per frame, so a burst left and arrived everywhere
+  at once. The map draws its own motes (`map-traffic.ts`, one point cloud in
+  `map-traffic-layer.ts`): a mote has a speed in world units from the line's
+  weight, a pulse sends along the point's lines over 0.9 s in order of
+  importance, a read flows towards the point and every other kind away, and
+  the idle traffic on a line follows how recently its livelier page was
+  edited (half-life two weeks), sometimes as a short convoy.
 - **The browser merges, it does not reload.** A fresh answer is merged into
   the graph on screen, keeping the objects (and with them the positions) of
   points that stay, so only the new parts arrive and flash. The map refetches,

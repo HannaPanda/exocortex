@@ -510,6 +510,12 @@ is played rather than reported: a person switches it on, the panels are gone
 while it runs, a faint exit stays in the corner, and Escape ends it, so nobody
 mistakes its amber for a run. A lit point gives off a few motes that drift and
 fade; they are part of the light, so calm and reduced motion drop them.
+The motes travelling the lines are traffic, not decoration, and every
+difference between them is a fact: their speed is in world units (a near
+neighbour hears first), the line's weight is its lane, a used point sends
+along its lines one after another (references first, the tree last), a read
+flows in and a write flows out, and a line between recently edited pages is
+busier than one in the archive.
 
 **The Signal-Fires-Then-Fades Rule.** When amber marks an event rather than a
 place (the save heartbeat), it brightens instantly and decays over
