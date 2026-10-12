@@ -200,6 +200,16 @@
     },
     "where": "En el editor, escribe «[[»; los vínculos inversos están en el panel de contexto a la derecha."
   },
+  "wissenskarte": {
+    "title": "Mapa de conocimiento: todo tu segundo cerebro como un espacio 3D brillante",
+    "summary": "Todas las páginas de un espacio de trabajo flotan como puntos de luz en el espacio, conectadas mediante referencias, similitud de contenido y entidades. A la derecha se encuentra el chat de IA y, mientras una ejecución o un agente trabaja, se iluminan las páginas que está leyendo, escribiendo, creando o eliminando.",
+    "details": {
+      "p1": "Cada rama del árbol de páginas tiene su propio color, de modo que las páginas relacionadas aparecen como una nube; los puntos grandes representan páginas bien conectadas. Las líneas muestran quién enlaza a quién, qué páginas son similares en contenido sin que nadie las haya vinculado y qué personas, lugares o proyectos menciona una página. En la leyenda puedes activar y desactivar cada tipo de línea por separado.",
+      "p2": "Si le encargas una tarea al chat de la derecha, verás cómo trabaja: en azul se ilumina lo que se lee, en ámbar lo que se está escribiendo, en verde aparecen las páginas nuevas y en rojo desaparecen las eliminadas. Con «Seguir a la IA», la cámara se mueve a la par. Lo mismo se aplica a los agentes externos como Claude Code que escriben a través de MCP, y el cuadro en vivo abajo a la derecha lo explica adicionalmente con palabras.",
+      "p3": "«Preguntar al mapa», arriba a la derecha, busca como Strg+K y sobrevuela los resultados uno tras otro. El control deslizante de tiempo en la parte inferior reproduce cómo ha ido creciendo tu segundo cerebro. Si no te gusta el movimiento, activa «Reposo»; si tienes activada la reducción de movimiento en el sistema operativo, el espacio permanece quieto por defecto. El mapa necesita WebGL y muestra todo el espacio de trabajo, por lo que no se abre con un acceso limitado a páginas individuales."
+    },
+    "where": "Strg+K y «Mapa de conocimiento», o directamente en /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Búsqueda en todo, incluso sin las palabras exactas",
     "summary": "Strg+K abre la búsqueda en títulos y texto completo. Si la búsqueda semántica está activada, encuentra además páginas de las que ya no recuerdas la redacción exacta y, en páginas largas, el pasaje adecuado en lugar de limitarse a la página entera.",

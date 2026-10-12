@@ -165,6 +165,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_page_backlinks', 'exo_page_related', 'exo_page_resolve_link'],
   }),
   defineFeature({
+    id: 'wissenskarte',
+    area: 'suche',
+    since: '2026-10-12',
+    references: ['#189', 'ADR-084'],
+    ui: { path: '/arbeitsbereich/:x/karte' },
+    shortcuts: ['Strg+K, dann „Wissenskarte“'],
+    tools: ['exo_knowledge_map'],
+    claims: { screens: ['/arbeitsbereich/:x/karte'] },
+  }),
+  defineFeature({
     id: 'gespeicherte-suchen',
     area: 'suche',
     since: '2026-09-19',

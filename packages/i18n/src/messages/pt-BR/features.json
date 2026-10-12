@@ -200,6 +200,16 @@
     },
     "where": "No editor, digite \"[[\"; referências reversas na área de contexto à direita."
   },
+  "wissenskarte": {
+    "title": "Mapa de conhecimento: todo o Second Brain como um espaço 3D luminoso",
+    "summary": "Todas as páginas de um espaço de trabalho flutuam como pontos de luz no espaço, conectadas por links, similaridade de conteúdo e entidades. À direita fica o chat de IA e, enquanto uma execução ou um agente trabalha, as páginas que ele está lendo, escrevendo, criando ou removendo se iluminam.",
+    "details": {
+      "p1": "Cada ramo da árvore de páginas tem sua própria cor, fazendo com que páginas relacionadas apareçam como uma nuvem; pontos grandes são páginas bem conectadas. As linhas mostram quem aponta para quem, quais páginas são semanticamente semelhantes sem terem sido vinculadas diretamente e quais pessoas, lugares ou projetos uma página menciona. Na legenda, você pode ativar e desativar cada tipo de linha individualmente.",
+      "p2": "Ao passar uma tarefa para o chat à direita, você acompanha o trabalho em tempo real: o que está sendo lido brilha em azul, o que está sendo escrito fica em âmbar, novas páginas aparecem em verde e páginas removidas desaparecem em vermelho. Com „Seguir IA“, a câmera acompanha o percurso. O mesmo vale para agentes externos como Claude Code gravando via MCP, e a caixa em tempo real no canto inferior direito também descreve tudo em palavras.",
+      "p3": "„Perguntar ao mapa“ no canto superior direito pesquisa como Strg+K e sobrevoa os resultados um a um. O controle deslizante de tempo na parte inferior reproduz o crescimento do Second Brain. Se preferir não ter movimento, ative „Pausa“; com a redução de movimento ativada no sistema operacional, o espaço permanece estático por padrão. O mapa requer WebGL e exibe todo o espaço de trabalho, por isso não abre com um acesso limitado apenas a páginas individuais."
+    },
+    "where": "Strg+K e „Mapa de conhecimento“, ou diretamente em /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Pesquisa em tudo, mesmo sem as palavras exatas",
     "summary": "Strg+K abre a pesquisa em títulos e no texto completo. Se a pesquisa semântica estiver ativada, ela também encontra páginas cujo texto exato você não lembra e, em páginas longas, o trecho relevante em vez de apenas a página inteira.",

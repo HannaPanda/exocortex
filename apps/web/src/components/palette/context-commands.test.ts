@@ -214,6 +214,7 @@ describe('workspaceCommands', () => {
 describe('shellCommands', () => {
   const base = {
     hasWorkspace: true,
+    hasNavigation: true,
     hasDocument: false,
     sidebarOpen: false,
     contextOpen: false,
@@ -244,6 +245,12 @@ describe('shellCommands', () => {
 
   it('starts no chat outside a workspace', () => {
     expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain('command-new-chat');
+  });
+
+  it('offers no navigation toggle where no page tree is drawn, as on the map', () => {
+    const onMap = ids(shellCommands({ ...base, hasNavigation: false }));
+    expect(onMap).not.toContain('command-sidebar');
+    expect(onMap).toContain('command-new-chat');
   });
 });
 

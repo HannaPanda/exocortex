@@ -1,7 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -82,6 +82,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   const workspaceId = params.workspaceId ?? null;
   const documentId = params.documentId ?? null;
+  // The knowledge map is a room of its own (issue #189): the map fills the
+  // left, the assistant stands on the right, and the page tree would only be
+  // a second, smaller map of the same pages beside it.
+  const pathname = usePathname();
+  const immersive = isKnowledgeMapPath(pathname);
+  const showNavigation = workspaceId !== null && !immersive;
 
   // Below the mobile breakpoint, panels overlay the canvas instead of sharing
   // it, so a first-time visitor should not land with one already covering the
@@ -151,6 +157,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     handledCommentRequest.current = requestId;
     if (!contextOpen) setContextOpen(true);
   }, [pendingCommentRequest, contextOpen, setContextOpen]);
+
+  useAssistantBesideMap(immersive, contextOpen, setContextOpen);
 
   // Redirect unauthenticated visitors. The API is the source of truth.
   React.useEffect(() => {
@@ -240,6 +248,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     () =>
       shellCommands({
         hasWorkspace: workspaceId !== null,
+        hasNavigation: showNavigation,
         hasDocument: documentId !== null,
         sidebarOpen,
         contextOpen,
@@ -271,6 +280,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       setContextOpen,
       setSidebar,
       setSidebarOpen,
+      showNavigation,
       sidebar,
       sidebarOpen,
       tCommands,
@@ -303,7 +313,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       if (
         (event.metaKey || event.ctrlKey) &&
         event.key.toLowerCase() === 'b' &&
-        workspaceId !== null &&
+        showNavigation &&
         !isTypingTarget(event.target)
       ) {
         event.preventDefault();
@@ -329,7 +339,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, workspaceId]);
+  }, [contextOpen, setContextOpen, setSidebarOpen, showNavigation, sidebarOpen, workspaceId]);
 
   return (
     <AppShellFrame>
@@ -338,6 +348,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
       <Topbar
         workspaceId={workspaceId}
+        hasNavigation={showNavigation}
         sidebarOpen={sidebarOpen}
         onSidebarOpenChange={setSidebarOpen}
         contextOpen={contextOpen}
@@ -350,7 +361,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       />
 
       <AppBody>
-        {workspaceId !== null ? (
+        {showNavigation ? (
           isMobile ? (
             <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
               <SheetContent side="left" data-testid="sidebar">
@@ -436,4 +447,30 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <JobProgressIndicator />
     </AppShellFrame>
   );
+}
+
+/**
+ * The map is watched while the assistant works, so the assistant opens beside
+ * it. Once per arrival: closing it on the map is a choice that stays made.
+ */
+function useAssistantBesideMap(
+  onMap: boolean,
+  contextOpen: boolean,
+  setContextOpen: (open: boolean) => void,
+): void {
+  const arrived = React.useRef(false);
+  React.useEffect(() => {
+    if (!onMap) {
+      arrived.current = false;
+      return;
+    }
+    if (arrived.current) return;
+    arrived.current = true;
+    if (!contextOpen) setContextOpen(true);
+  }, [onMap, contextOpen, setContextOpen]);
+}
+
+/** `/arbeitsbereich/<id>/karte`, the one route the shell draws without its navigation. */
+export function isKnowledgeMapPath(pathname: string | null): boolean {
+  return pathname !== null && /^\/arbeitsbereich\/[^/]+\/karte\/?$/.test(pathname);
 }

@@ -200,6 +200,16 @@
     },
     "where": "In de editor \"[[\" typen; terugverwijzingen in het contextgebied rechts."
   },
+  "wissenskarte": {
+    "title": "Kenniskaart: je hele Second Brain als oplichtende 3D-ruimte",
+    "summary": "Alle pagina’s van een werkruimte zweven als lichtpunten in de ruimte, verbonden door verwijzingen, inhoudelijke gelijkenis en entiteiten. Rechts daarnaast staat de AI-chat, en terwijl een run of een agent aan het werk is, lichten de pagina’s op die hij op dat moment leest, schrijft, aanmaakt of verwijdert.",
+    "details": {
+      "p1": "Elke tak van de paginaboom heeft zijn eigen kleur, zodat pagina’s die bij elkaar horen als een wolk verschijnen; grote punten zijn goed verbonden pagina’s. De lijnen laten zien wie naar wie verwijst, welke pagina’s qua inhoud op elkaar lijken zonder dat iemand ze gelinkt heeft, en welke personen, plaatsen of projecten een pagina noemt. In de legenda schakel je elk type lijn afzonderlijk in en uit.",
+      "p2": "Geef je de chat rechts een taak, dan zie je hem aan het werk: wat gelezen wordt licht blauw op, wat geschreven wordt oranje/amber, nieuwe pagina’s verschijnen in het groen en verwijderde pagina’s verdwijnen in het rood. Met „AI volgen” vliegt de camera mee. Hetzelfde geldt voor externe agenten zoals Claude Code die via MCP schrijven, en het live-venster rechtsonder vertelt het er nog eens in woorden bij.",
+      "p3": "„Vraag de kaart” rechtsboven zoekt net als Strg+K en vliegt de resultaten één voor één af. De tijdregelaar onderaan speelt af hoe het Second Brain gegroeid is. Wie niet van beweging houdt, schakelt „Rust” in; bij verminderde beweging in het besturingssysteem staat de ruimte sowieso stil. De kaart vereist WebGL en toont de hele werkruimte, waardoor hij niet opent met toegang die tot individuele pagina’s beperkt is."
+    },
+    "where": "Strg+K en „Kenniskaart”, of rechtstreeks via /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Zoeken naar alles, ook zonder de juiste woorden",
     "summary": "Ctrl+K opent de zoekfunctie over titels en volledige tekst. Is semantisch zoeken ingeschakeld, dan vindt deze bovendien pagina’s waarvan je de precieze bewoording niet meer weet, en bij lange pagina’s het passende fragment in plaats van alleen de pagina.",

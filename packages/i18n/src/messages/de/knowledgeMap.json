@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Wissenskarte"
+  },
+  "screen": {
+    "title": "Wissenskarte",
+    "stats": "{pages, plural, one {# Seite} other {# Seiten}} · {lines, plural, one {# Verbindung} other {# Verbindungen}}",
+    "semanticPartial": "Einige Seiten haben noch keinen Suchvektor und stehen ohne Ähnlichkeitslinien da.",
+    "semanticDisabled": "Ohne semantische Suche zeigt die Karte keine inhaltlichen Ähnlichkeiten.",
+    "loading": "Die Karte wird aufgebaut …",
+    "emptyTitle": "Noch keine Seiten",
+    "emptyDescription": "Sobald es in diesem Arbeitsbereich Seiten gibt, erscheinen sie hier als Punkte.",
+    "errorTitle": "Die Karte ließ sich nicht laden",
+    "noWebglTitle": "Dieser Browser kann die Karte nicht zeichnen",
+    "noWebglDescription": "Die Wissenskarte braucht WebGL. In den Browsereinstellungen ist es vermutlich abgeschaltet, oder die Grafikkarte wird nicht unterstützt.",
+    "canvasLabel": "Dreidimensionale Wissenskarte. Mit der Maus drehen und zoomen, einen Punkt anklicken, um ihn auszuwählen. Die Suche oben rechts führt zu Seiten, ohne die Karte zu bedienen.",
+    "fit": "Alles zeigen"
+  },
+  "legend": {
+    "title": "Linien",
+    "link": "Verweise",
+    "similar": "Ähnlich, ohne Verweis",
+    "entity": "Entitäten",
+    "tree": "Seitenbaum",
+    "shapes": "Kugel: Seite · Raute: Entität · Ikosaeder: Datenbank",
+    "calm": "Ruhe",
+    "calmHint": "Hält den Raum an und schaltet die wandernden Lichter ab.",
+    "follow": "KI folgen",
+    "followHint": "Fliegt zu der Seite, die ein Lauf gerade liest oder schreibt."
+  },
+  "timeline": {
+    "label": "Zeitreise",
+    "play": "Wachstum abspielen",
+    "pause": "Anhalten",
+    "now": "Jetzt",
+    "nowLabel": "Heute",
+    "thumb": "Zeitpunkt der Karte"
+  },
+  "ask": {
+    "label": "Frag die Karte",
+    "placeholder": "Frag die Karte …",
+    "submit": "Suchen und hinfliegen",
+    "searching": "Sucht …",
+    "noHits": "Nichts auf der Karte gefunden zu „{query}“.",
+    "stop": "Rundflug beenden",
+    "station": "Station {current} von {total}",
+    "next": "Nächste Station",
+    "failed": "Die Suche ist fehlgeschlagen."
+  },
+  "node": {
+    "kindPage": "Seite",
+    "kindEntity": "Entität",
+    "kindCollection": "Datenbank",
+    "kindProject": "Projekt",
+    "connections": "{count, plural, one {# Verbindung} other {# Verbindungen}}",
+    "created": "Angelegt {when}",
+    "edited": "Zuletzt bearbeitet {when}",
+    "open": "Öffnen",
+    "close": "Auswahl aufheben"
+  },
+  "activity": {
+    "title": "Live",
+    "empty": "Hier erscheint, was ein Lauf oder ein Agent gerade liest und schreibt.",
+    "read": "liest {title}",
+    "write": "schreibt {title}",
+    "created": "neu: {title}",
+    "removed": "entfernt: {title}",
+    "unknownPage": "eine Seite"
+  }
+}

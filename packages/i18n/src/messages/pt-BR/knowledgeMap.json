@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Mapa de conhecimento"
+  },
+  "screen": {
+    "title": "Mapa de conhecimento",
+    "stats": "{pages, plural, one {# página} many {# páginas} other {# páginas}} · {lines, plural, one {# conexão} many {# conexões} other {# conexões}}",
+    "semanticPartial": "Algumas páginas ainda não têm vetor de busca e aparecem sem linhas de similaridade.",
+    "semanticDisabled": "Sem a busca semântica, o mapa não mostra similaridades de conteúdo.",
+    "loading": "Construindo o mapa…",
+    "emptyTitle": "Nenhuma página ainda",
+    "emptyDescription": "Assim que houver páginas neste espaço de trabalho, elas aparecerão aqui como pontos.",
+    "errorTitle": "Não foi possível carregar o mapa",
+    "noWebglTitle": "Este navegador não consegue renderizar o mapa",
+    "noWebglDescription": "O mapa de conhecimento precisa de WebGL. Provavelmente está desativado nas configurações do navegador ou a placa de vídeo não é compatível.",
+    "canvasLabel": "Mapa de conhecimento tridimensional. Gire e dê zoom com o mouse; clique em um ponto para selecioná-lo. A busca no canto superior direito leva a páginas sem precisar navegar pelo mapa.",
+    "fit": "Ajustar à tela"
+  },
+  "legend": {
+    "title": "Linhas",
+    "link": "Referências",
+    "similar": "Semelhante, sem referência",
+    "entity": "Entidades",
+    "tree": "Árvore de páginas",
+    "shapes": "Esfera: página · Losango: entidade · Icosaedro: banco de dados",
+    "calm": "Modo calmo",
+    "calmHint": "Pausa o espaço e desativa as luzes em movimento.",
+    "follow": "Seguir IA",
+    "followHint": "Voa até a página que uma execução está lendo ou gravando no momento."
+  },
+  "timeline": {
+    "label": "Linha do tempo",
+    "play": "Reproduzir evolução",
+    "pause": "Pausar",
+    "now": "Agora",
+    "nowLabel": "Hoje",
+    "thumb": "Momento do mapa"
+  },
+  "ask": {
+    "label": "Pergunte ao mapa",
+    "placeholder": "Pergunte ao mapa…",
+    "submit": "Buscar e voar até lá",
+    "searching": "Buscando…",
+    "noHits": "Nada encontrado no mapa para „{query}”.",
+    "stop": "Encerrar tour",
+    "station": "Parada {current} de {total}",
+    "next": "Próxima parada",
+    "failed": "A busca falhou."
+  },
+  "node": {
+    "kindPage": "Página",
+    "kindEntity": "Entidade",
+    "kindCollection": "Banco de dados",
+    "kindProject": "Projeto",
+    "connections": "{count, plural, one {# conexão} many {# conexões} other {# conexões}}",
+    "created": "Criado {when}",
+    "edited": "Última edição {when}",
+    "open": "Abrir",
+    "close": "Desmarcar seleção"
+  },
+  "activity": {
+    "title": "Ao vivo",
+    "empty": "O que uma execução ou um agente estiver lendo e gravando no momento aparecerá aqui.",
+    "read": "lê {title}",
+    "write": "escreve {title}",
+    "created": "novo: {title}",
+    "removed": "removido: {title}",
+    "unknownPage": "uma página"
+  }
+}

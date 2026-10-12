@@ -127,6 +127,7 @@
     "moveUp": "Sposta “{name}” in alto",
     "moveDown": "Sposta “{name}” in basso",
     "openSearch": "Ricerca e ricerche salvate",
+    "openKnowledgeMap": "Mappa della conoscenza",
     "openWorkItems": "Incarichi",
     "openChangesets": "Proposte"
   },
@@ -220,6 +221,10 @@
       "workspaceHome": {
         "label": "Pagina iniziale dell’area di lavoro",
         "keywords": "inizio home panoramica area di lavoro workspace"
+      },
+      "knowledgeMap": {
+        "label": "Apri mappa della conoscenza",
+        "keywords": "mappa grafo grafo della conoscenza rete collegamenti relazioni jarvis 3d galassia panoramica connessioni"
       },
       "workspaceSearch": {
         "label": "Ricerca avanzata con filtri",

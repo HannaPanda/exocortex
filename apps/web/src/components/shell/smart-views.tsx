@@ -6,6 +6,7 @@ import {
   ClipboardListIcon,
   GitPullRequestIcon,
   ListFilterIcon,
+  OrbitIcon,
   SearchIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -115,6 +116,16 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
       >
         <SearchIcon className="size-3.5" />
         {t('openSearch')}
+      </Link>
+      {/* The knowledge map (issue #189): the same pages as the tree above,
+          drawn by how they connect rather than where they hang. */}
+      <Link
+        href={`/arbeitsbereich/${workspaceId}/karte`}
+        data-testid="open-knowledge-map"
+        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+      >
+        <OrbitIcon className="size-3.5" />
+        {t('openKnowledgeMap')}
       </Link>
       {/* Delegated work (issue #138) sits beside the search: both are ways
           into the workspace that are not a page in its tree. */}

@@ -200,6 +200,16 @@
     },
     "where": "W edytorze wpisz „[[”; linki zwrotne znajdują się w panelu kontekstowym po prawej stronie."
   },
+  "wissenskarte": {
+    "title": "Mapa wiedzy: cały Second Brain jako świecąca przestrzeń 3D",
+    "summary": "Wszystkie strony obszaru roboczego unoszą się w przestrzeni jako punkty świetlne, połączone odnośnikami, podobieństwem treści i encjami. Po prawej stronie znajduje się czat AI, a gdy trwa przebieg lub pracuje agent, podświetlają się strony, które właśnie czyta, pisze, tworzy lub usuwa.",
+    "details": {
+      "p1": "Każda gałąź drzewa stron ma własny kolor, dzięki czemu powiązane strony tworzą chmurę; duże punkty to dobrze połączone strony. Linie pokazują powiązania między stronami, podobieństwo treści bez bezpośrednich linków oraz osoby, miejsca lub projekty wspomniane na danej stronie. W legendzie możesz włączać i wyłączać poszczególne rodzaje linii.",
+      "p2": "Gdy zlecisz zadanie na czacie po prawej, możesz obserwować przebieg pracy: na niebiesko świeci to, co jest czytane, na bursztynowo to, co jest pisane, nowe strony pojawiają się na zielono, a usuwane znikają na czerwono. Dzięki opcji „Podążaj za AI” kamera przemieszcza się automatycznie. To samo dotyczy zewnętrznych agentów, takich jak Claude Code piszących przez MCP, a pole na żywo w prawym dolnym rogu dodatkowo opisuje to słowami.",
+      "p3": "Opcja „Zapytaj mapę” w prawym górnym rogu wyszukuje tak jak Strg+K i przelatuje po kolei przez trafienia. Suwak czasu na dole odtwarza historię rozwoju twojego Second Brain. Jeśli wolisz statyczny widok, włącz „Spokój”; przy włączonej redukcji ruchu w systemie operacyjnym przestrzeń pozostaje nieruchoma. Mapa wymaga WebGL i pokazuje cały obszar roboczy, dlatego nie otworzy się przy dostępie ograniczonym tylko do pojedynczych stron."
+    },
+    "where": "Strg+K i „Mapa wiedzy” lub bezpośrednio pod adresem /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Przeszukiwanie wszystkiego, nawet bez właściwych słów",
     "summary": "Strg+K otwiera wyszukiwanie po tytułach i pełnym tekście. Jeśli wyszukiwanie semantyczne jest włączone, znajduje dodatkowo strony, których dokładnego sformułowania już nie pamiętasz, a w przypadku długich stron – właściwy fragment zamiast samej strony.",

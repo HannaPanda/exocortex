@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Kenniskaart"
+  },
+  "screen": {
+    "title": "Kenniskaart",
+    "stats": "{pages, plural, one {# pagina} other {# pagina’s}} · {lines, plural, one {# verbinding} other {# verbindingen}}",
+    "semanticPartial": "Sommige pagina’s hebben nog geen zoekvector en worden zonder overeenkomstlijnen weergegeven.",
+    "semanticDisabled": "Zonder semantische zoekfunctie toont de kaart geen inhoudelijke overeenkomsten.",
+    "loading": "De kaart wordt opgebouwd …",
+    "emptyTitle": "Nog geen pagina’s",
+    "emptyDescription": "Zodra er pagina’s in deze werkruimte zijn, verschijnen ze hier als punten.",
+    "errorTitle": "De kaart kon niet worden geladen",
+    "noWebglTitle": "Deze browser kan de kaart niet weergeven",
+    "noWebglDescription": "De kenniskaart heeft WebGL nodig. Waarschijnlijk is dit uitgeschakeld in de browserinstellingen of wordt de grafische kaart niet ondersteund.",
+    "canvasLabel": "Driedimensionale kenniskaart. Draai en zoom met de muis, klik op een punt om het te selecteren. De zoekfunctie rechtsboven brengt je naar pagina’s zonder de kaart te bedienen.",
+    "fit": "Alles tonen"
+  },
+  "legend": {
+    "title": "Lijnen",
+    "link": "Verwijzingen",
+    "similar": "Vergelijkbaar, zonder verwijzing",
+    "entity": "Entiteiten",
+    "tree": "Paginaboom",
+    "shapes": "Bol: pagina · Ruit: entiteit · Icosaëder: database",
+    "calm": "Rust",
+    "calmHint": "Zet de ruimte stil en schakelt de bewegende lichten uit.",
+    "follow": "AI volgen",
+    "followHint": "Vliegt naar de pagina die een run op dat moment leest of schrijft."
+  },
+  "timeline": {
+    "label": "Tijdreis",
+    "play": "Groei afspelen",
+    "pause": "Pauzeren",
+    "now": "Nu",
+    "nowLabel": "Vandaag",
+    "thumb": "Tijdstip van de kaart"
+  },
+  "ask": {
+    "label": "Vraag de kaart",
+    "placeholder": "Vraag de kaart …",
+    "submit": "Zoeken en ernaartoe vliegen",
+    "searching": "Zoeken …",
+    "noHits": "Niets op de kaart gevonden voor „{query}”.",
+    "stop": "Rondvlucht beëindigen",
+    "station": "Station {current} van {total}",
+    "next": "Volgend station",
+    "failed": "Het zoeken is mislukt."
+  },
+  "node": {
+    "kindPage": "Pagina",
+    "kindEntity": "Entiteit",
+    "kindCollection": "Database",
+    "kindProject": "Project",
+    "connections": "{count, plural, one {# verbinding} other {# verbindingen}}",
+    "created": "Aangemaakt {when}",
+    "edited": "Laatst bewerkt {when}",
+    "open": "Openen",
+    "close": "Selectie opheffen"
+  },
+  "activity": {
+    "title": "Live",
+    "empty": "Hier verschijnt wat een sessie of een agent op dit moment leest en schrijft.",
+    "read": "leest {title}",
+    "write": "schrijft {title}",
+    "created": "nieuw: {title}",
+    "removed": "verwijderd: {title}",
+    "unknownPage": "een pagina"
+  }
+}

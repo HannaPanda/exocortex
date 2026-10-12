@@ -45,6 +45,7 @@ import { WorkspaceSwitcher } from './workspace-switcher';
  */
 export function Topbar({
   workspaceId,
+  hasNavigation,
   sidebarOpen,
   onSidebarOpenChange,
   contextOpen,
@@ -54,6 +55,8 @@ export function Topbar({
   onSignOut,
 }: {
   workspaceId: string | null;
+  /** Whether a page tree is drawn at all; false outside a workspace and on the map. */
+  hasNavigation: boolean;
   sidebarOpen: boolean;
   onSidebarOpenChange: (open: boolean) => void;
   contextOpen: boolean;
@@ -93,7 +96,7 @@ export function Topbar({
           something that could not happen -- pressed, released, nothing. A
           control that does nothing teaches people not to trust the ones beside
           it. The palette's command already refuses for the same reason. */}
-      {workspaceId === null ? null : (
+      {!hasNavigation ? null : (
         <Tooltip>
           <TooltipTrigger
             render={

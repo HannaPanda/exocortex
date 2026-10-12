@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Mappa della conoscenza"
+  },
+  "screen": {
+    "title": "Mappa della conoscenza",
+    "stats": "{pages, plural, one {# pagina} many {# pagine} other {# pagine}} · {lines, plural, one {# collegamento} many {# collegamenti} other {# collegamenti}}",
+    "semanticPartial": "Alcune pagine non hanno ancora un vettore di ricerca e non mostrano linee di similarità.",
+    "semanticDisabled": "Senza ricerca semantica, la mappa non mostra similarità di contenuto.",
+    "loading": "Caricamento della mappa…",
+    "emptyTitle": "Nessuna pagina",
+    "emptyDescription": "Non appena ci saranno pagine in questa area di lavoro, appariranno qui come punti.",
+    "errorTitle": "Impossibile caricare la mappa",
+    "noWebglTitle": "Questo browser non può visualizzare la mappa",
+    "noWebglDescription": "La mappa della conoscenza richiede WebGL. Probabilmente è disattivato nelle impostazioni del browser, oppure la scheda grafica non è supportata.",
+    "canvasLabel": "Mappa della conoscenza tridimensionale. Usa il mouse per ruotare e ingrandire, fai clic su un punto per selezionarlo. La ricerca in alto a destra porta alle pagine senza dover esplorare la mappa.",
+    "fit": "Mostra tutto"
+  },
+  "legend": {
+    "title": "Linee",
+    "link": "Riferimenti",
+    "similar": "Simili, senza riferimento",
+    "entity": "Entità",
+    "tree": "Albero delle pagine",
+    "shapes": "Sfera: pagina · Rombo: entità · Icosaedro: database",
+    "calm": "Calma",
+    "calmHint": "Mette in pausa lo spazio e disattiva le luci in movimento.",
+    "follow": "Segui l’IA",
+    "followHint": "Raggiunge la pagina che un’esecuzione sta leggendo o scrivendo."
+  },
+  "timeline": {
+    "label": "Viaggio nel tempo",
+    "play": "Riproduci crescita",
+    "pause": "Pausa",
+    "now": "Adesso",
+    "nowLabel": "Oggi",
+    "thumb": "Momento della mappa"
+  },
+  "ask": {
+    "label": "Chiedi alla mappa",
+    "placeholder": "Chiedi alla mappa…",
+    "submit": "Cerca e vola lì",
+    "searching": "Ricerca in corso…",
+    "noHits": "Nessun risultato sulla mappa per «{query}».",
+    "stop": "Termina tour",
+    "station": "Tappa {current} di {total}",
+    "next": "Tappa successiva",
+    "failed": "La ricerca non è riuscita."
+  },
+  "node": {
+    "kindPage": "Pagina",
+    "kindEntity": "Entità",
+    "kindCollection": "Database",
+    "kindProject": "Progetto",
+    "connections": "{count, plural, one {# connessione} many {# connessioni} other {# connessioni}}",
+    "created": "Creazione: {when}",
+    "edited": "Ultima modifica: {when}",
+    "open": "Apri",
+    "close": "Deseleziona"
+  },
+  "activity": {
+    "title": "In tempo reale",
+    "empty": "Qui compare ciò che un’esecuzione o un agente sta leggendo e scrivendo.",
+    "read": "legge {title}",
+    "write": "scrive {title}",
+    "created": "nuovo: {title}",
+    "removed": "rimosso: {title}",
+    "unknownPage": "una pagina"
+  }
+}

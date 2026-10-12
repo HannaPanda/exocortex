@@ -200,6 +200,16 @@
     },
     "where": "Nell’editor digita \"[[\"; collegamenti in entrata nell’area del contesto a destra."
   },
+  "wissenskarte": {
+    "title": "Mappa della conoscenza: l’intero Second Brain come spazio 3D luminoso",
+    "summary": "Tutte le pagine di un’area di lavoro fluttuano nello spazio come punti luminosi, collegate da riferimenti, somiglianze di contenuto ed entità. Sulla destra c’è la chat con l’IA e, mentre un’esecuzione o un agente lavora, si illuminano le pagine che sta leggendo, scrivendo, creando o rimuovendo.",
+    "details": {
+      "p1": "Ogni ramo dell’albero delle pagine ha il proprio colore, così che le pagine correlate appaiano come una nuvola; i punti grandi indicano pagine ben collegate. Le linee mostrano chi rimanda a chi, quali pagine si somigliano nei contenuti senza che nessuno le abbia collegate tra loro e quali persone, luoghi o progetti una pagina menziona. Nella legenda puoi attivare e disattivare ogni tipo di linea singolarmente.",
+      "p2": "Se assegni un compito alla chat a destra, puoi guardarla lavorare: in blu si illumina ciò che viene letto, in ambra ciò che viene scritto, in verde compaiono le nuove pagine e in rosso spariscono quelle rimosse. Con «Segui l’IA» la telecamera si sposta insieme ad essa. Lo stesso vale per agenti esterni come Claude Code che scrivono tramite MCP, e il riquadro live in basso a destra lo descrive anche a parole.",
+      "p3": "«Chiedi alla mappa» in alto a destra cerca come Strg+K e sorvola i risultati uno dopo l’altro. Il cursore temporale in basso riproduce la crescita del Second Brain. Se non ami il movimento, puoi attivare «Riposo»; con le animazioni ridotte nel sistema operativo lo spazio resta comunque immobile. La mappa richiede WebGL e mostra l’intera area di lavoro, perciò non si apre con un accesso limitato solo a singole pagine."
+    },
+    "where": "Strg+K e «Mappa della conoscenza», oppure direttamente su /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Cerca ovunque, anche senza le parole esatte",
     "summary": "Ctrl+K apre la ricerca tra titoli e testo intero. Se la ricerca semantica è attiva, trova inoltre le pagine di cui non ricordi più le parole precise e, per le pagine lunghe, individua il punto esatto anziché limitarsi alla pagina.",

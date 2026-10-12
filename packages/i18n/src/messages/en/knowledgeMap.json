@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Knowledge map"
+  },
+  "screen": {
+    "title": "Knowledge map",
+    "stats": "{pages, plural, one {# page} other {# pages}} · {lines, plural, one {# connection} other {# connections}}",
+    "semanticPartial": "Some pages don’t have a search vector yet and appear without similarity lines.",
+    "semanticDisabled": "Without semantic search, the map doesn’t show content similarities.",
+    "loading": "Building the map …",
+    "emptyTitle": "No pages yet",
+    "emptyDescription": "As soon as there are pages in this workspace, they will appear here as points.",
+    "errorTitle": "The map couldn’t be loaded",
+    "noWebglTitle": "This browser can’t render the map",
+    "noWebglDescription": "The knowledge map requires WebGL. It might be disabled in your browser settings, or your graphics card isn’t supported.",
+    "canvasLabel": "Three-dimensional knowledge map. Rotate and zoom with the mouse, click a point to select it. The search at the top right leads to pages without having to navigate the map.",
+    "fit": "Fit to view"
+  },
+  "legend": {
+    "title": "Lines",
+    "link": "References",
+    "similar": "Similar, no reference",
+    "entity": "Entities",
+    "tree": "Page tree",
+    "shapes": "Sphere: page · Diamond: entity · Icosahedron: database",
+    "calm": "Calm",
+    "calmHint": "Freezes the space and turns off traveling lights.",
+    "follow": "Follow AI",
+    "followHint": "Flies to the page that a run is currently reading or writing."
+  },
+  "timeline": {
+    "label": "Time travel",
+    "play": "Play growth",
+    "pause": "Pause",
+    "now": "Now",
+    "nowLabel": "Today",
+    "thumb": "Map point in time"
+  },
+  "ask": {
+    "label": "Ask the map",
+    "placeholder": "Ask the map …",
+    "submit": "Search and fly there",
+    "searching": "Searching …",
+    "noHits": "Nothing found on the map for “{query}”.",
+    "stop": "End flythrough",
+    "station": "Stop {current} of {total}",
+    "next": "Next stop",
+    "failed": "Search failed."
+  },
+  "node": {
+    "kindPage": "Page",
+    "kindEntity": "Entity",
+    "kindCollection": "Database",
+    "kindProject": "Project",
+    "connections": "{count, plural, one {# connection} other {# connections}}",
+    "created": "Created {when}",
+    "edited": "Last edited {when}",
+    "open": "Open",
+    "close": "Deselect"
+  },
+  "activity": {
+    "title": "Live",
+    "empty": "What a run or an agent is reading and writing will appear here.",
+    "read": "reading {title}",
+    "write": "writing {title}",
+    "created": "new: {title}",
+    "removed": "removed: {title}",
+    "unknownPage": "a page"
+  }
+}

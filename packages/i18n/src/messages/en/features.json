@@ -200,6 +200,16 @@
     },
     "where": "Type \"[[\" in the editor; backlinks in the context panel on the right."
   },
+  "wissenskarte": {
+    "title": "Knowledge map: your entire second brain as a glowing 3D space",
+    "summary": "All pages of a workspace float as points of light in space, connected by references, topical similarity, and entities. The AI chat sits right next to it, and while a run or an agent is working, the pages it is reading, writing, creating, or removing light up.",
+    "details": {
+      "p1": "Each branch of the page tree has its own color, so related pages appear as a cloud; larger dots are well-connected pages. The lines show who links to whom, which pages are similar in content without anyone having linked them, and which people, places, or projects a page mentions. In the legend, you can toggle each type of line individually.",
+      "p2": "When you give the chat on the right a task, you can watch it work: blue glows for what is being read, amber for what is being written, green appears for new pages, and red vanishes for removed ones. With “Follow AI”, the camera flies along. The same applies to external agents like Claude Code writing via MCP, and the live box at the bottom right describes it in words as well.",
+      "p3": "“Ask the map” at the top right searches just like Strg+K and flies through the matches one by one. The time slider at the bottom replays how your second brain grew. If you do not like motion, turn on “Still”; with reduced motion enabled in your operating system, the space stays still anyway. The map requires WebGL and displays the entire workspace, so it does not open with access restricted only to individual pages."
+    },
+    "where": "Strg+K and “Knowledge map”, or directly at /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Search across everything, even without the exact words",
     "summary": "Ctrl+K opens search across titles and full text. When semantic search is enabled, it additionally finds pages whose phrasing you no longer recall, and for long pages, the matching passage rather than just the page.",

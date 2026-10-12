@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Mapa wiedzy"
+  },
+  "screen": {
+    "title": "Mapa wiedzy",
+    "stats": "{pages, plural, one {# strona} few {# strony} many {# stron} other {# strony}} · {lines, plural, one {# połączenie} few {# połączenia} many {# połączeń} other {# połączenia}}",
+    "semanticPartial": "Część stron nie ma jeszcze wektora wyszukiwania i wyświetla się bez linii podobieństwa.",
+    "semanticDisabled": "Bez wyszukiwania semantycznego mapa nie pokazuje podobieństw treści.",
+    "loading": "Tworzenie mapy…",
+    "emptyTitle": "Brak stron",
+    "emptyDescription": "Gdy tylko w tym obszarze roboczym pojawią się strony, zobaczysz je tutaj jako punkty.",
+    "errorTitle": "Nie udało się załadować mapy",
+    "noWebglTitle": "Ta przeglądarka nie może wyrenderować mapy",
+    "noWebglDescription": "Mapa wiedzy wymaga WebGL. Prawdopodobnie funkcja ta jest wyłączona w ustawieniach przeglądarki lub karta graficzna nie jest obsługiwana.",
+    "canvasLabel": "Trójwymiarowa mapa wiedzy. Obracaj i przybliżaj myszą, kliknij punkt, aby go zaznaczyć. Wyszukiwanie w prawym górnym rogu prowadzi do stron bez konieczności poruszania się po mapie.",
+    "fit": "Pokaż wszystko"
+  },
+  "legend": {
+    "title": "Linie",
+    "link": "Odnośniki",
+    "similar": "Podobne, bez odnośnika",
+    "entity": "Encje",
+    "tree": "Drzewo stron",
+    "shapes": "Kula: strona · Romb: encja · Dwudziestościan: baza danych",
+    "calm": "Spokój",
+    "calmHint": "Zatrzymuje przestrzeń i wyłącza wędrujące światła.",
+    "follow": "Śledź AI",
+    "followHint": "Przelatuje do strony, którą aktualnie odczytuje lub zapisuje proces."
+  },
+  "timeline": {
+    "label": "Oś czasu",
+    "play": "Odtwórz rozwój",
+    "pause": "Wstrzymaj",
+    "now": "Teraz",
+    "nowLabel": "Dzisiaj",
+    "thumb": "Punkt w czasie na mapie"
+  },
+  "ask": {
+    "label": "Zapytaj mapę",
+    "placeholder": "Zapytaj mapę…",
+    "submit": "Szukaj i przeleć",
+    "searching": "Szukanie…",
+    "noHits": "Nie znaleziono niczego na mapie dla „{query}”.",
+    "stop": "Zakończ przelot",
+    "station": "Przystanek {current} z {total}",
+    "next": "Następny przystanek",
+    "failed": "Wyszukiwanie nie powiodło się."
+  },
+  "node": {
+    "kindPage": "Strona",
+    "kindEntity": "Encja",
+    "kindCollection": "Baza danych",
+    "kindProject": "Projekt",
+    "connections": "{count, plural, one {# połączenie} few {# połączenia} many {# połączeń} other {# połączenia}}",
+    "created": "Utworzono {when}",
+    "edited": "Ostatnia edycja {when}",
+    "open": "Otwórz",
+    "close": "Odznacz"
+  },
+  "activity": {
+    "title": "Na żywo",
+    "empty": "Tutaj pojawi się to, co uruchomiony proces lub agent właśnie czyta i zapisuje.",
+    "read": "czyta {title}",
+    "write": "zapisuje {title}",
+    "created": "nowe: {title}",
+    "removed": "usunięte: {title}",
+    "unknownPage": "strona"
+  }
+}

@@ -22,6 +22,7 @@ import de_evals from './messages/de/evals.json';
 import de_features from './messages/de/features.json';
 import de_help from './messages/de/help.json';
 import de_invitations from './messages/de/invitations.json';
+import de_knowledgeMap from './messages/de/knowledgeMap.json';
 import de_mail from './messages/de/mail.json';
 import de_memory from './messages/de/memory.json';
 import de_projects from './messages/de/projects.json';
@@ -56,6 +57,7 @@ import en_evals from './messages/en/evals.json';
 import en_features from './messages/en/features.json';
 import en_help from './messages/en/help.json';
 import en_invitations from './messages/en/invitations.json';
+import en_knowledgeMap from './messages/en/knowledgeMap.json';
 import en_mail from './messages/en/mail.json';
 import en_memory from './messages/en/memory.json';
 import en_projects from './messages/en/projects.json';
@@ -90,6 +92,7 @@ import es_evals from './messages/es/evals.json';
 import es_features from './messages/es/features.json';
 import es_help from './messages/es/help.json';
 import es_invitations from './messages/es/invitations.json';
+import es_knowledgeMap from './messages/es/knowledgeMap.json';
 import es_mail from './messages/es/mail.json';
 import es_memory from './messages/es/memory.json';
 import es_projects from './messages/es/projects.json';
@@ -124,6 +127,7 @@ import fr_evals from './messages/fr/evals.json';
 import fr_features from './messages/fr/features.json';
 import fr_help from './messages/fr/help.json';
 import fr_invitations from './messages/fr/invitations.json';
+import fr_knowledgeMap from './messages/fr/knowledgeMap.json';
 import fr_mail from './messages/fr/mail.json';
 import fr_memory from './messages/fr/memory.json';
 import fr_projects from './messages/fr/projects.json';
@@ -158,6 +162,7 @@ import it_evals from './messages/it/evals.json';
 import it_features from './messages/it/features.json';
 import it_help from './messages/it/help.json';
 import it_invitations from './messages/it/invitations.json';
+import it_knowledgeMap from './messages/it/knowledgeMap.json';
 import it_mail from './messages/it/mail.json';
 import it_memory from './messages/it/memory.json';
 import it_projects from './messages/it/projects.json';
@@ -192,6 +197,7 @@ import nl_evals from './messages/nl/evals.json';
 import nl_features from './messages/nl/features.json';
 import nl_help from './messages/nl/help.json';
 import nl_invitations from './messages/nl/invitations.json';
+import nl_knowledgeMap from './messages/nl/knowledgeMap.json';
 import nl_mail from './messages/nl/mail.json';
 import nl_memory from './messages/nl/memory.json';
 import nl_projects from './messages/nl/projects.json';
@@ -226,6 +232,7 @@ import pl_evals from './messages/pl/evals.json';
 import pl_features from './messages/pl/features.json';
 import pl_help from './messages/pl/help.json';
 import pl_invitations from './messages/pl/invitations.json';
+import pl_knowledgeMap from './messages/pl/knowledgeMap.json';
 import pl_mail from './messages/pl/mail.json';
 import pl_memory from './messages/pl/memory.json';
 import pl_projects from './messages/pl/projects.json';
@@ -260,6 +267,7 @@ import pt_BR_evals from './messages/pt-BR/evals.json';
 import pt_BR_features from './messages/pt-BR/features.json';
 import pt_BR_help from './messages/pt-BR/help.json';
 import pt_BR_invitations from './messages/pt-BR/invitations.json';
+import pt_BR_knowledgeMap from './messages/pt-BR/knowledgeMap.json';
 import pt_BR_mail from './messages/pt-BR/mail.json';
 import pt_BR_memory from './messages/pt-BR/memory.json';
 import pt_BR_projects from './messages/pt-BR/projects.json';
@@ -274,7 +282,7 @@ import pt_BR_ui from './messages/pt-BR/ui.json';
 import pt_BR_workItems from './messages/pt-BR/workItems.json';
 import pt_BR_workflows from './messages/pt-BR/workflows.json';
 
-export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems","workflows"] as const;
+export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","knowledgeMap","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems","workflows"] as const;
 
 export const CATALOG = {
   'de': {
@@ -299,6 +307,7 @@ export const CATALOG = {
     "features": de_features,
     "help": de_help,
     "invitations": de_invitations,
+    "knowledgeMap": de_knowledgeMap,
     "mail": de_mail,
     "memory": de_memory,
     "projects": de_projects,
@@ -335,6 +344,7 @@ export const CATALOG = {
     "features": en_features,
     "help": en_help,
     "invitations": en_invitations,
+    "knowledgeMap": en_knowledgeMap,
     "mail": en_mail,
     "memory": en_memory,
     "projects": en_projects,
@@ -371,6 +381,7 @@ export const CATALOG = {
     "features": es_features,
     "help": es_help,
     "invitations": es_invitations,
+    "knowledgeMap": es_knowledgeMap,
     "mail": es_mail,
     "memory": es_memory,
     "projects": es_projects,
@@ -407,6 +418,7 @@ export const CATALOG = {
     "features": fr_features,
     "help": fr_help,
     "invitations": fr_invitations,
+    "knowledgeMap": fr_knowledgeMap,
     "mail": fr_mail,
     "memory": fr_memory,
     "projects": fr_projects,
@@ -443,6 +455,7 @@ export const CATALOG = {
     "features": it_features,
     "help": it_help,
     "invitations": it_invitations,
+    "knowledgeMap": it_knowledgeMap,
     "mail": it_mail,
     "memory": it_memory,
     "projects": it_projects,
@@ -479,6 +492,7 @@ export const CATALOG = {
     "features": nl_features,
     "help": nl_help,
     "invitations": nl_invitations,
+    "knowledgeMap": nl_knowledgeMap,
     "mail": nl_mail,
     "memory": nl_memory,
     "projects": nl_projects,
@@ -515,6 +529,7 @@ export const CATALOG = {
     "features": pl_features,
     "help": pl_help,
     "invitations": pl_invitations,
+    "knowledgeMap": pl_knowledgeMap,
     "mail": pl_mail,
     "memory": pl_memory,
     "projects": pl_projects,
@@ -551,6 +566,7 @@ export const CATALOG = {
     "features": pt_BR_features,
     "help": pt_BR_help,
     "invitations": pt_BR_invitations,
+    "knowledgeMap": pt_BR_knowledgeMap,
     "mail": pt_BR_mail,
     "memory": pt_BR_memory,
     "projects": pt_BR_projects,

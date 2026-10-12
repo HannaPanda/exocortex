@@ -200,6 +200,16 @@
     },
     "where": "Im Editor \"[[\" tippen; Rückverweise im Kontextbereich rechts."
   },
+  "wissenskarte": {
+    "title": "Wissenskarte: das ganze Second Brain als leuchtender 3D-Raum",
+    "summary": "Alle Seiten eines Arbeitsbereichs schweben als Lichtpunkte im Raum, verbunden durch Verweise, inhaltliche Ähnlichkeit und Entitäten. Rechts daneben steht der KI-Chat, und während ein Lauf oder ein Agent arbeitet, leuchten die Seiten auf, die er gerade liest, schreibt, anlegt oder entfernt.",
+    "details": {
+      "p1": "Jeder Zweig des Seitenbaums hat seine eigene Farbe, sodass zusammengehörige Seiten als Wolke erscheinen; große Punkte sind gut vernetzte Seiten. Die Linien zeigen, wer auf wen verweist, welche Seiten sich inhaltlich ähneln, ohne dass sie jemand verlinkt hat, und welche Personen, Orte oder Projekte eine Seite erwähnt. In der Legende schaltest du jede Linienart einzeln an und aus.",
+      "p2": "Gibst du dem Chat rechts eine Aufgabe, siehst du ihr beim Arbeiten zu: blau leuchtet, was gelesen wird, amber, was gerade geschrieben wird, grün erscheinen neue Seiten und rot verschwinden entfernte. Mit „KI folgen“ fliegt die Kamera mit. Dasselbe gilt für externe Agenten wie Claude Code, die über MCP schreiben, und der Live-Kasten unten rechts sagt es zusätzlich in Worten.",
+      "p3": "„Frag die Karte“ oben rechts sucht wie Strg+K und fliegt die Treffer nacheinander ab. Der Zeitregler unten spielt ab, wie das Second Brain gewachsen ist. Wer Bewegung nicht mag, schaltet „Ruhe“ ein; mit reduzierter Bewegung im Betriebssystem steht der Raum ohnehin still. Die Karte braucht WebGL und zeigt den ganzen Arbeitsbereich, deshalb öffnet sie sich nicht mit einem Zugang, der nur auf einzelne Seiten beschränkt ist."
+    },
+    "where": "Strg+K und „Wissenskarte“, oder direkt unter /arbeitsbereich/…/karte."
+  },
   "suche": {
     "title": "Suche über alles, auch ohne die richtigen Wörter",
     "summary": "Strg+K öffnet die Suche über Titel und Volltext. Ist die semantische Suche eingeschaltet, findet sie zusätzlich Seiten, deren Wortlaut du nicht mehr weißt, und bei langen Seiten die passende Stelle statt nur die Seite.",

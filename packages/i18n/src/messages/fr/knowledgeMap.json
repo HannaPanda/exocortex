@@ -1,0 +1,70 @@
+{
+  "route": {
+    "title": "Carte des connaissances"
+  },
+  "screen": {
+    "title": "Carte des connaissances",
+    "stats": "{pages, plural, one {# page} many {# pages} other {# pages}} · {lines, plural, one {# connexion} many {# connexions} other {# connexions}}",
+    "semanticPartial": "Certaines pages n’ont pas encore de vecteur de recherche et apparaissent sans lignes de similarité.",
+    "semanticDisabled": "Sans recherche sémantique, la carte n’affiche aucune similarité de contenu.",
+    "loading": "Génération de la carte…",
+    "emptyTitle": "Pas encore de pages",
+    "emptyDescription": "Dès que cet espace de travail contiendra des pages, elles apparaîtront ici sous forme de points.",
+    "errorTitle": "Impossible de charger la carte",
+    "noWebglTitle": "Ce navigateur ne peut pas afficher la carte",
+    "noWebglDescription": "La carte des connaissances nécessite WebGL. Il est probablement désactivé dans les paramètres du navigateur, ou la carte graphique n’est pas prise en charge.",
+    "canvasLabel": "Carte des connaissances en 3D. Fais pivoter et zoome avec la souris, clique sur un point pour le sélectionner. La recherche en haut à droite mène aux pages sans manipuler la carte.",
+    "fit": "Tout afficher"
+  },
+  "legend": {
+    "title": "Lignes",
+    "link": "Liens",
+    "similar": "Similaires, sans lien",
+    "entity": "Entités",
+    "tree": "Arborescence des pages",
+    "shapes": "Sphère : page · Losange : entité · Icosaèdre : base de données",
+    "calm": "Calme",
+    "calmHint": "Fige l’espace et éteint les lueurs en mouvement.",
+    "follow": "Suivre l’IA",
+    "followHint": "Vole vers la page qu’une exécution est en train de lire ou d’écrire."
+  },
+  "timeline": {
+    "label": "Voyage dans le temps",
+    "play": "Lire l’évolution",
+    "pause": "Mettre en pause",
+    "now": "Maintenant",
+    "nowLabel": "Aujourd’hui",
+    "thumb": "Moment de la carte"
+  },
+  "ask": {
+    "label": "Interroger la carte",
+    "placeholder": "Interroge la carte…",
+    "submit": "Rechercher et survoler",
+    "searching": "Recherche…",
+    "noHits": "Rien trouvé sur la carte pour « {query} ».",
+    "stop": "Arrêter le survol",
+    "station": "Étape {current} sur {total}",
+    "next": "Étape suivante",
+    "failed": "La recherche a échoué."
+  },
+  "node": {
+    "kindPage": "Page",
+    "kindEntity": "Entité",
+    "kindCollection": "Base de données",
+    "kindProject": "Projet",
+    "connections": "{count, plural, one {# connexion} many {# connexions} other {# connexions}}",
+    "created": "Créé {when}",
+    "edited": "Dernière modification {when}",
+    "open": "Ouvrir",
+    "close": "Désélectionner"
+  },
+  "activity": {
+    "title": "En direct",
+    "empty": "Ce qu’une exécution ou un agent lit et écrit apparaît ici.",
+    "read": "lit {title}",
+    "write": "écrit {title}",
+    "created": "nouveau : {title}",
+    "removed": "supprimé : {title}",
+    "unknownPage": "une page"
+  }
+}

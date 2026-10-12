@@ -18,6 +18,7 @@ import {
   LayoutTemplateIcon,
   MessagesSquareIcon,
   NetworkIcon,
+  OrbitIcon,
   PaletteIcon,
   Settings2Icon,
   Share2Icon,
@@ -62,6 +63,7 @@ interface Place {
     | 'language'
     | 'workspaces'
     | 'workspaceHome'
+    | 'knowledgeMap'
     | 'workspaceSearch'
     | 'workspaceShares'
     | 'workItems'
@@ -119,6 +121,15 @@ const PLACES: readonly Place[] = [
   { key: 'language', screen: '/einstellungen/sprache', audience: 'everyone', icon: LanguagesIcon },
   { key: 'workspaces', screen: '/arbeitsbereich', audience: 'everyone', icon: LayoutGridIcon },
   { key: 'workspaceHome', screen: '/arbeitsbereich/:x', audience: 'workspace', icon: HouseIcon },
+  {
+    key: 'knowledgeMap',
+    screen: '/arbeitsbereich/:x/karte',
+    audience: 'workspace',
+    icon: OrbitIcon,
+    // A place one goes to look at, not to find by name: offered before a key
+    // is pressed, like the full search page below it.
+    idle: true,
+  },
   {
     key: 'workspaceSearch',
     screen: '/arbeitsbereich/:x/suche',

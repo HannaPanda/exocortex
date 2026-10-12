@@ -42,6 +42,8 @@ const CONTEXT_TAB_COMMANDS: readonly {
 
 export interface ShellCommandInput {
   hasWorkspace: boolean;
+  /** Whether a page tree is drawn; the knowledge map has a workspace and none. */
+  hasNavigation: boolean;
   hasDocument: boolean;
   sidebarOpen: boolean;
   contextOpen: boolean;
@@ -89,9 +91,10 @@ export function shellCommands(input: ShellCommandInput): PaletteCommand[] {
   // that says "Navigation ausblenden" is a promise, and one that says
   // "Navigation" leaves you to find out.
   //
-  // Only inside a workspace, because outside one there is no page tree to show
-  // or hide: the entry would name a thing that does not happen.
-  if (hasWorkspace) {
+  // Only where a page tree is drawn: outside a workspace and on the knowledge
+  // map there is none to show or hide, so the entry would name a thing that
+  // does not happen.
+  if (input.hasNavigation) {
     commands.push({
       id: 'command-sidebar',
       group: 'view',

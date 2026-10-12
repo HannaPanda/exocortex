@@ -127,6 +127,7 @@
     "moveUp": "Move “{name}” up",
     "moveDown": "Move “{name}” down",
     "openSearch": "Search and saved searches",
+    "openKnowledgeMap": "Knowledge map",
     "openWorkItems": "Work items",
     "openChangesets": "Suggestions"
   },
@@ -220,6 +221,10 @@
       "workspaceHome": {
         "label": "Workspace home",
         "keywords": "start home overview workspace"
+      },
+      "knowledgeMap": {
+        "label": "Open knowledge map",
+        "keywords": "map graph knowledge graph network connections relations jarvis 3d galaxy overview context"
       },
       "workspaceSearch": {
         "label": "Advanced search with filters",

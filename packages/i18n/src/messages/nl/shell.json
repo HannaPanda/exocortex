@@ -127,6 +127,7 @@
     "moveUp": "„{name}“ omhoog",
     "moveDown": "„{name}“ omlaag",
     "openSearch": "Zoeken en opgeslagen zoekopdrachten",
+    "openKnowledgeMap": "Kenniskaart",
     "openWorkItems": "Opdrachten",
     "openChangesets": "Voorstellen"
   },
@@ -220,6 +221,10 @@
       "workspaceHome": {
         "label": "Startpagina van de werkruimte",
         "keywords": "start home overzicht werkruimte workspace"
+      },
+      "knowledgeMap": {
+        "label": "Kenniskaart openen",
+        "keywords": "kaart graaf kennisgraaf netwerk verbindingen relaties jarvis 3d melkweg overzicht verbanden"
       },
       "workspaceSearch": {
         "label": "Uitgebreid zoeken met filters",
