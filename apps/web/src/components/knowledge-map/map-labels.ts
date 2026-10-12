@@ -2,8 +2,12 @@ import { CanvasTexture, type Color, LinearFilter, Sprite, SpriteMaterial } from 
 
 import { cssOf } from './map-colors';
 
-/** Height of a label in world units: about the diameter of a well-connected point. */
-const LABEL_HEIGHT = 8;
+/**
+ * Height of a label as a share of the canvas height. Fixed on screen rather
+ * than in the room: a label sized in world units was unreadable from afar and
+ * filled the screen, glowing, once the camera flew up to its point.
+ */
+const LABEL_HEIGHT = 0.026;
 /** Titles longer than this are cut, since a label names a point rather than describing it. */
 const MAX_LABEL_CHARS = 38;
 
@@ -37,8 +41,11 @@ export function makeLabel(text: string, colour: Color): Sprite {
     map: texture,
     transparent: true,
     depthWrite: false,
-    // A label is read, not lit: kept out of the glow so it stays sharp.
+    // A label is read, not lit: kept out of tone mapping so it stays sharp,
+    // and drawn the same size wherever its point is.
     toneMapped: false,
+    sizeAttenuation: false,
+    depthTest: false,
   });
   const sprite = new Sprite(material);
   sprite.scale.set((LABEL_HEIGHT * canvas.width) / canvas.height, LABEL_HEIGHT, 1);

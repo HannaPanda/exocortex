@@ -35,6 +35,8 @@ export interface MapPalette {
   entity: Color;
   /** What a search found, while the tour visits it. */
   found: Color;
+  /** The similarity lines: the content colour as it is, quieter than the points. */
+  similar: Color;
   branches: Color[];
 }
 
@@ -84,6 +86,7 @@ export function readMapPalette(): MapPalette {
     removed: resolve('--destructive'),
     entity: asPoint(resolve('--warning')),
     found: resolve('--primary-text'),
+    similar: resolve('--content-purple'),
     branches: BRANCH_TOKENS.map((token) => asPoint(resolve(token))),
   };
 }

@@ -159,7 +159,7 @@ export class MapEngine {
       new LineBasicMaterial({ color: colour, transparent: true, opacity, depthWrite: false });
     const kinds: Record<KnowledgeMapEdgeKind, [Color, number]> = {
       link: [palette.foreground, 0.42],
-      similar: [palette.branches[2] ?? palette.muted, 0.3],
+      similar: [palette.similar, 0.26],
       entity: [palette.entity, 0.32],
       tree: [palette.muted, 0.14],
     };
@@ -335,7 +335,8 @@ export class MapEngine {
     const node = this.data.nodes.find((entry) => entry.id === nodeId);
     if (node?.x === undefined || node.y === undefined || node.z === undefined) return;
     this.touch();
-    const distance = 70;
+    // Far enough to see the neighbourhood, not so close the neighbours fill the screen.
+    const distance = 160;
     const length = Math.hypot(node.x, node.y, node.z) || 1;
     const ratio = 1 + distance / length;
     this.graph.cameraPosition(
@@ -397,7 +398,7 @@ export class MapEngine {
   private particleColour(link: MapLink): Color {
     if (link.kind === 'link') return this.palette.foreground;
     if (link.kind === 'entity') return this.palette.entity;
-    return this.palette.branches[2] ?? this.palette.muted;
+    return this.palette.similar;
   }
 
   private refreshLinks(): void {
@@ -515,7 +516,7 @@ export class MapEngine {
     }
     if (visual.label !== null) {
       visual.label.visible = wantsLabel;
-      visual.label.position.set(0, size + 3.2, 0);
+      visual.label.position.set(0, size + 2, 0);
     }
   }
 }
