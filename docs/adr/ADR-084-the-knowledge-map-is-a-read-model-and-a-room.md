@@ -54,7 +54,14 @@ to spend every time a run re-embeds the page it just wrote.
   call's `documentId` argument. Still an id and never the payload, refused
   when the argument is not shaped like an id. A write from an external agent
   already arrives as `document.content.replaced`; creation, archiving and
-  deletion have their own events. The map needs no channel of its own.
+  deletion have their own events.
+- **An external agent's read is announced.** An agent over MCP reaches the
+  API directly, so its reads left no trace while its writes lit up. The page
+  read and the fragment read send `agent.page.read` (page id and client label,
+  nothing else) when the request named an agent session (ADR-022) and no run
+  of the built-in AI made it, so a person in the browser is never announced
+  and a run's read is not announced twice. Sent after the read answered,
+  never awaited, never stored.
 - **The browser merges, it does not reload.** A fresh answer is merged into
   the graph on screen, keeping the objects (and with them the positions) of
   points that stay, so only the new parts arrive and flash. The map refetches,

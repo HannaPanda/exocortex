@@ -38,8 +38,8 @@ export interface MapLiveInput {
  *
  * A run's tool calls arrive on the application socket with the page they are
  * about (`subject`), so a read lights a point blue and a write amber while it
- * happens. A write from an external agent arrives as `document.content.replaced`
- * and lights up the same way. Everything that changes points or lines asks the
+ * happens. An external agent's read arrives as `agent.page.read` and its write
+ * as `document.content.replaced`, and both light up the same way. Everything that changes points or lines asks the
  * API for the map again, debounced, and the merge lets the new parts flash.
  */
 export function useMapLive({
@@ -101,6 +101,10 @@ export function useMapLive({
     const writes = event.payload.target === event.payload.subject;
     if (event.payload.status === 'started') happened(documentId, writes ? 'write' : 'read');
     else if (event.payload.status === 'succeeded' && writes) refetchSoon();
+  });
+  useRealtimeEvent('agent.page.read', (event) => {
+    if (!mine(event)) return;
+    happened(event.payload.documentId, 'read');
   });
   useRealtimeEvent('document.content.replaced', (event) => {
     if (!mine(event)) return;

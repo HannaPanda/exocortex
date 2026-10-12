@@ -97,6 +97,7 @@ import { API_ENV } from '../common/logger.provider';
 import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { AgentReadNoticeService } from './agent-read-notice.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
@@ -281,6 +282,7 @@ export class DocumentsController {
     private readonly cover: DocumentCoverService,
     private readonly documentLinks: DocumentLinksService,
     private readonly relatedDocuments: RelatedDocumentsService,
+    private readonly agentReads: AgentReadNoticeService,
     @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
 
@@ -501,7 +503,9 @@ export class DocumentsController {
     @Param('documentId') documentId: string,
     @Query(zodPipe(markdownExportRequestSchema)) query: MarkdownExportRequest,
   ): Promise<MarkdownExportResponse> {
-    return this.markdown.export(documentId, session.userId, query);
+    const exported = await this.markdown.export(documentId, session.userId, query);
+    this.agentReads.announce(documentId);
+    return exported;
   }
 
   @Get(':documentId/snapshots')

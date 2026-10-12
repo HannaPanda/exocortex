@@ -57,6 +57,7 @@ export const APPLICATION_EVENT_TYPES = [
   'attention.changed',
   'changeset.changed',
   'eval.changed',
+  'agent.page.read',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -235,6 +236,19 @@ export const documentContentReplacedPayloadSchema = z.object({
   documentId: idSchema,
   snapshotId: idSchema,
   source: z.enum(['api', 'ai', 'import']),
+});
+
+/**
+ * An external agent read a page (issue #189).
+ *
+ * Sent for reads that arrive with an agent session (ADR-022), so the knowledge
+ * map lights them up the way it lights up the built-in AI's tool calls, which
+ * already travel as `ai.run.tool_call`. Nothing is stored and nothing of the
+ * content travels: the page id and the client's own label, nothing else.
+ */
+export const agentPageReadPayloadSchema = z.object({
+  documentId: idSchema,
+  clientLabel: z.string().nullable(),
 });
 
 /**
@@ -518,6 +532,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('work-item.changed', workItemChangedPayloadSchema),
   envelope('attention.changed', attentionChangedPayloadSchema),
   envelope('changeset.changed', changesetChangedPayloadSchema),
+  envelope('agent.page.read', agentPageReadPayloadSchema),
   envelope('eval.changed', evalChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;

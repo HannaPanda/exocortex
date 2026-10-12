@@ -12,6 +12,7 @@ import {
 import { CurrentSession } from '../auth/session.guard';
 import { openApiResponseSchema, zodPipe } from '../common/zod';
 
+import { AgentReadNoticeService } from './agent-read-notice.service';
 import { DocumentFragmentService } from './document-fragment.service';
 
 /**
@@ -29,7 +30,10 @@ import { DocumentFragmentService } from './document-fragment.service';
 @ApiTags('documents')
 @Controller('api/documents')
 export class DocumentFragmentController {
-  constructor(private readonly fragments: DocumentFragmentService) {}
+  constructor(
+    private readonly fragments: DocumentFragmentService,
+    private readonly agentReads: AgentReadNoticeService,
+  ) {}
 
   @Get(':documentId/fragment')
   @ApiQuery({ name: 'blockId', required: false })
@@ -43,6 +47,8 @@ export class DocumentFragmentController {
     @Param('documentId') documentId: string,
     @Query(zodPipe(documentFragmentRequestSchema)) query: DocumentFragmentRequest,
   ): Promise<DocumentFragmentResponse> {
-    return this.fragments.read(documentId, session.userId, query);
+    const fragment = await this.fragments.read(documentId, session.userId, query);
+    this.agentReads.announce(documentId);
+    return fragment;
   }
 }

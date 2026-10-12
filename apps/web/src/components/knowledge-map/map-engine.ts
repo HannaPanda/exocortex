@@ -68,10 +68,10 @@ const IDLE_BEFORE_TURNING_MS = 15_000;
  * one white blot and its colour was gone.
  */
 const LINK_DISTANCE: Record<KnowledgeMapEdgeKind, number> = {
-  tree: 40,
-  link: 55,
-  entity: 60,
-  similar: 75,
+  tree: 50,
+  link: 70,
+  entity: 75,
+  similar: 95,
 };
 /** How hard a line of this kind pulls its two points together, before it is shared. */
 function kindPull(link: MapLink): number {
@@ -89,7 +89,7 @@ const CHARGE = -130;
  * them pushed each other apart for as long as the simulation ran, and a new
  * area ended up a speck at the edge of the room.
  */
-const CHARGE_REACH = 360;
+const CHARGE_REACH = 450;
 /**
  * How hard the room's centre pulls every point back, per tick of the
  * simulation. Weak enough that a branch keeps its own shape, strong enough

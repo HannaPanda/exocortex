@@ -5,6 +5,7 @@ import { OutboxService } from '../common/outbox.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 import { SearchModule } from '../search/search.module';
 
+import { AgentReadNoticeService } from './agent-read-notice.service';
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentActivityService } from './document-activity.service';
@@ -66,6 +67,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     PageLinkIdentityService,
     CollaborationTicketService,
     CollaborationBridgeService,
+    AgentReadNoticeService,
     OutboxService,
   ],
   exports: [

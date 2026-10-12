@@ -817,7 +817,8 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   nobody linked, entity mention, tree) and stores nothing; the similarity
   index lives in the API's memory and recomputes one row per re-embedded
   page. `ai.run.tool_call` carries the page a call is about as `subject`, so
-  reads light up as well as writes. `/arbeitsbereich/:x/karte` is drawn
+  reads light up as well as writes, and an external agent's read arrives as
+  `agent.page.read`. `/arbeitsbereich/:x/karte` is drawn
   without the page tree, and the Map-Is-A-Room Rule in `DESIGN.md` is the one
   bounded exception to Motion-Is-State. A point is a star, and how it glows
   is the viewer's: `User.knowledgeMapAppearance`, tuned on the map itself.
