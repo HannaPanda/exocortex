@@ -151,7 +151,7 @@ function eventDetails(entry) {
         `Plugin-Token übergeben: ${entry.env.pluginOptionToken ? 'ja' : 'nein'}`,
     );
   }
-  if (typeof entry.status === 'number' && entry.status !== 200 && entry.status !== 0) {
+  if (typeof entry.status === 'number' && entry.status >= 300) {
     details.push(diagnose(entry.status, ''));
   }
   if (entry.error === 'timeout') details.push('Zeitüberschreitung beim Server.');
