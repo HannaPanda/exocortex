@@ -22,6 +22,8 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { formatMicroUsd } from '@/lib/money';
+
 /** Sentinel for "no vision companion for this conversation" (request sends `'off'`). */
 const OFF_COMPANION = 'off';
 /** Sentinel for "use the admin-configured default companion" (request sends `null`). */
@@ -50,12 +52,7 @@ function useModelTooltip(): (model: AiModel) => string {
   const format = useFormatter();
   // Prices are stored in micro-dollars per million tokens and shown in dollars.
   const usd = (microUsdPerMillionTokens: number): string =>
-    format.number(microUsdPerMillionTokens / 1_000_000, {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    formatMicroUsd(format, microUsdPerMillionTokens, 'price');
   return (model) =>
     [
       model.slug,

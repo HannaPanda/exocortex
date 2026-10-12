@@ -12,6 +12,9 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
+import { MoneyInput } from '@/components/money-input';
+import { BUDGET_MAX_MICRO_USD } from '@/lib/money';
+
 /**
  * The few field shapes the workflow panels are made of (issue #164): a
  * label above its control and a hint below it, as in every other form here.
@@ -145,6 +148,46 @@ export function NumberField({
             if (min === undefined || stored >= min) onChange(stored);
           }
         }}
+      />
+    </Field>
+  );
+}
+
+/**
+ * A nullable amount of money, stored in micro-dollars and shown in dollars
+ * (issue #167). Empty means "inherit", like every other limit here; an amount
+ * the field refuses keeps the last valid value and says so.
+ */
+export function MoneyField({
+  id,
+  label,
+  hint,
+  value,
+  onChange,
+  placeholder,
+  testId,
+}: {
+  id: string;
+  label: string;
+  hint?: React.ReactNode;
+  value: number | null;
+  onChange: (value: number | null) => void;
+  placeholder?: string;
+  testId?: string;
+}) {
+  return (
+    <Field id={id} label={label} hint={hint}>
+      <MoneyInput
+        id={id}
+        value={value}
+        min={0}
+        max={BUDGET_MAX_MICRO_USD}
+        allowEmpty
+        keepsLastValid
+        placeholder={placeholder}
+        className="max-w-40"
+        data-testid={testId}
+        onChange={onChange}
       />
     </Field>
   );

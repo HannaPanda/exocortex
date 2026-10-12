@@ -1029,12 +1029,12 @@
       "output": "bc99cf788ac6177d"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "dd42983cee32ca83"
+      "source": "0d3dc0434a963775",
+      "output": "3b422c50e65308d5"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "908e212ce72a2b00"
+      "source": "7291099a32824732",
+      "output": "41af27bf99c0d9af"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -1073,8 +1073,8 @@
       "output": "92c1cdfdf4cb9cf6"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "70c0c20e4a4e786b"
+      "source": "d4f774008c4df031",
+      "output": "3ee166cce7475acc"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -1085,8 +1085,8 @@
       "output": "2044fbdb55f92386"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "6018d32729f226dd"
+      "source": "16dc3e205ac66a9a",
+      "output": "562273d2d64e876c"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -16101,8 +16101,8 @@
       "output": "859e1640fa5e00ec"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "4b920e63b383912a"
+      "source": "c1ba112d4c26807b",
+      "output": "5f9193fb27305161"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -16861,8 +16861,8 @@
       "output": "f094a8333d69b175"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "d84ce965c4ae481f"
+      "source": "05f7b247c85aebc5",
+      "output": "becec746347337a9"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -19295,6 +19295,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "ac576a66d4563e60"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "ee8a9e5243218374"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "f389745f33e6f512"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "25483a75ae25169d"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -22743,12 +22755,12 @@
       "output": "063203c978487b18"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "09659be35e7c9b6e"
+      "source": "0d3dc0434a963775",
+      "output": "6a365b12aa5c299c"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "da487878448a00bc"
+      "source": "7291099a32824732",
+      "output": "ab5ee351fd62b1ed"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -22787,8 +22799,8 @@
       "output": "723858144bd5482d"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "8e0f94a0ccccb84e"
+      "source": "d4f774008c4df031",
+      "output": "8e564622a48f58b2"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -22799,8 +22811,8 @@
       "output": "1b8cda424ec6bc2d"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "63ded2d2a2b9f41c"
+      "source": "16dc3e205ac66a9a",
+      "output": "5aa1adb44c918985"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -37815,8 +37827,8 @@
       "output": "d7f884ff6a4bb15a"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "0300a975b72711ef"
+      "source": "c1ba112d4c26807b",
+      "output": "6fb4053fb45790a2"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -38575,8 +38587,8 @@
       "output": "518e2f5ebb1554ac"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "4c675de82a8938a2"
+      "source": "05f7b247c85aebc5",
+      "output": "b08e21cef16bb8a8"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -41009,6 +41021,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "fdab69210d5cdafd"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "97f1a8bbb6e662c1"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "16ebfdade80a8191"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "6f6abd867225b1ba"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -44457,12 +44481,12 @@
       "output": "b6c05bc4d8123fcc"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "c079a905706ac047"
+      "source": "0d3dc0434a963775",
+      "output": "bb3a7b670294f1ff"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "3bf1e01fcf2bde1d"
+      "source": "7291099a32824732",
+      "output": "15a5bd21f6cbd04a"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -44501,8 +44525,8 @@
       "output": "df16db5ac6986ccc"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "d5294eb09c44f1a6"
+      "source": "d4f774008c4df031",
+      "output": "ddc80d5e9e33f7a2"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -44513,8 +44537,8 @@
       "output": "779f93ecc8da1827"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "730c389d6dc95bd5"
+      "source": "16dc3e205ac66a9a",
+      "output": "aceed10f1c2d85f2"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -59529,8 +59553,8 @@
       "output": "dd8b94677ca16b58"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "eaabcc4992ddf578"
+      "source": "c1ba112d4c26807b",
+      "output": "4a2f706f65d1d9fd"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -60289,8 +60313,8 @@
       "output": "c91cd1329c21bcba"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "a4205c66f297c87b"
+      "source": "05f7b247c85aebc5",
+      "output": "79d2097d588784ff"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -62723,6 +62747,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "f48f34e89c4b5180"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "6b1680cb9e342c72"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "5b48cf0beb3a92c3"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "4c008fa5314ca1f5"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -66171,12 +66207,12 @@
       "output": "8a53ca780b0fa869"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "4d57656fcda8c731"
+      "source": "0d3dc0434a963775",
+      "output": "4335f99a952e13e7"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "de1a310bb5221e88"
+      "source": "7291099a32824732",
+      "output": "364607149dc2dc8b"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -66215,8 +66251,8 @@
       "output": "39df52d249a64fe9"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "e50c32abe6d9d3f0"
+      "source": "d4f774008c4df031",
+      "output": "7c955dade98c1c3d"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -66227,8 +66263,8 @@
       "output": "175bbd6c647a5608"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "4b8bdc9dcb98b6ed"
+      "source": "16dc3e205ac66a9a",
+      "output": "f3765996d5fa3b42"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -81243,8 +81279,8 @@
       "output": "c75eea90b8507858"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "0eb07646bbd3b31f"
+      "source": "c1ba112d4c26807b",
+      "output": "3bdb70e7a1f8d07c"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -82003,8 +82039,8 @@
       "output": "88560c761053502e"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "14909794fc404294"
+      "source": "05f7b247c85aebc5",
+      "output": "a5fd464eab9af3d1"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -84437,6 +84473,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "51c5d91d4b1b8e41"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "46ae86ab0d7d96e4"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "9e6419c854465a72"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "721b6de2653cbb89"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -87885,12 +87933,12 @@
       "output": "5d271f2cb8dd3f68"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "03eed02b6844be95"
+      "source": "0d3dc0434a963775",
+      "output": "65f0cea7be8556cc"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "7c1245df481de629"
+      "source": "7291099a32824732",
+      "output": "1681343e52bb290a"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -87929,8 +87977,8 @@
       "output": "de9f5d2dd16fa56b"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "197cf601a5f294d6"
+      "source": "d4f774008c4df031",
+      "output": "57f44e322f19e559"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -87941,8 +87989,8 @@
       "output": "f31b7db9231ecf6b"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "e16be55405ea32e4"
+      "source": "16dc3e205ac66a9a",
+      "output": "a9aee3793a8a6471"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -102957,8 +103005,8 @@
       "output": "4fa5104e5711e50b"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "5b2c3d0c7d36a54c"
+      "source": "c1ba112d4c26807b",
+      "output": "b6bebda70d93eef7"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -103717,8 +103765,8 @@
       "output": "9d6a2c1f0a232845"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "01dec0fd228fe7bd"
+      "source": "05f7b247c85aebc5",
+      "output": "becec746347337a9"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -106151,6 +106199,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "d3f78245f7970857"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "af79944291889082"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "a95c99df7e8ec130"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "8f3ca56b5eb4e4e5"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -109599,12 +109659,12 @@
       "output": "4fd1b6ad99b10e3c"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "82779e58d7b5bf41"
+      "source": "0d3dc0434a963775",
+      "output": "5b95d82fd84934a6"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "23b42f9218d6db73"
+      "source": "7291099a32824732",
+      "output": "053d6ee63bf90387"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -109643,8 +109703,8 @@
       "output": "3d20fe14a655d709"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "ca04e16bbd4b323c"
+      "source": "d4f774008c4df031",
+      "output": "fe8abb55dc4cfc5b"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -109655,8 +109715,8 @@
       "output": "e0e15beca55ef56b"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "0ca5069dc237419b"
+      "source": "16dc3e205ac66a9a",
+      "output": "6d667839101f1468"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -124671,8 +124731,8 @@
       "output": "5a8aae91b5789c7f"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "d7eeeb1d1df4e1c9"
+      "source": "c1ba112d4c26807b",
+      "output": "4b5035f3937f4814"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -125431,8 +125491,8 @@
       "output": "bdec4b45962326d1"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "e0601831f9b84181"
+      "source": "05f7b247c85aebc5",
+      "output": "9f9daf600da7d367"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -127865,6 +127925,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "0df8acbe189a68e7"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "c65c1bf3d264a987"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "fc2fbbd138103a8a"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "266e4df17d3f7779"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -131313,12 +131385,12 @@
       "output": "c1780ba426f95479"
     },
     "admin.modelDialog.errors.inputPriceNumber": {
-      "source": "92a5ab677fe6d8cc",
-      "output": "894900a3ebbb02c3"
+      "source": "0d3dc0434a963775",
+      "output": "5925846a40943886"
     },
     "admin.modelDialog.errors.outputPriceNumber": {
-      "source": "ce92a5035d1ae67d",
-      "output": "72680385804fb417"
+      "source": "7291099a32824732",
+      "output": "3566e07f6a843130"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
       "source": "6461efe1632b25fc",
@@ -131357,8 +131429,8 @@
       "output": "499ee302f6884f27"
     },
     "admin.modelDialog.fields.inputPrice": {
-      "source": "f3b254c654d6a813",
-      "output": "4a44357ee8f4c1fa"
+      "source": "d4f774008c4df031",
+      "output": "8d6c7454098f020e"
     },
     "admin.modelDialog.fields.maxOutput": {
       "source": "8ed03f9e631beb99",
@@ -131369,8 +131441,8 @@
       "output": "f58911f8e22dea01"
     },
     "admin.modelDialog.fields.outputPrice": {
-      "source": "a77cc35b25222be5",
-      "output": "7c278d244b60cd47"
+      "source": "16dc3e205ac66a9a",
+      "output": "68ba1dcd31acd9f5"
     },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
@@ -146385,8 +146457,8 @@
       "output": "fcc63dd19c3fdec8"
     },
     "settings.keys.ai.budgetMicroUsdPerRun.label": {
-      "source": "0861d974e8c99933",
-      "output": "b159d076d00838e7"
+      "source": "c1ba112d4c26807b",
+      "output": "280eeeeaa2eea782"
     },
     "settings.keys.ai.compactionKeepRecentMessages.help": {
       "source": "88f9b2d26287157b",
@@ -147145,8 +147217,8 @@
       "output": "59e67ce1a0619110"
     },
     "settings.keys.workflows.budgetMicroUsdPerRun.label": {
-      "source": "e5b673b1ae0e1637",
-      "output": "3e728b36d0563a1d"
+      "source": "05f7b247c85aebc5",
+      "output": "1e1462fa80dd5180"
     },
     "settings.keys.workflows.enabled.help": {
       "source": "8008c676576c5a1a",
@@ -149579,6 +149651,18 @@
     "ui.layout.skipToContent": {
       "source": "0223fd4834ed4884",
       "output": "79b81dfc024738f4"
+    },
+    "ui.moneyInput.invalid": {
+      "source": "1728a84b75d5f5bc",
+      "output": "8e5f36eea4fc5c2d"
+    },
+    "ui.moneyInput.keepsLastValid": {
+      "source": "93a6be35e8fd9706",
+      "output": "16355c08c6c6cac9"
+    },
+    "ui.moneyInput.outOfRange": {
+      "source": "51b8e75b4ec18581",
+      "output": "6f6abd867225b1ba"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",

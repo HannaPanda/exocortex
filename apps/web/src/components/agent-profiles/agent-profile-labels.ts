@@ -21,14 +21,6 @@ export function useAgentProfileWording() {
   };
 }
 
-/** Millionths of a dollar from a field a person typed dollars into. */
-export function microUsdOf(text: string): number | null {
-  const normalized = text.trim().replace(',', '.');
-  if (normalized.length === 0) return null;
-  const value = Number(normalized);
-  return Number.isFinite(value) && value >= 0 ? Math.round(value * 1_000_000) : null;
-}
-
 /** A whole number from a field, or null when it is empty or not one. */
 export function wholeNumberOf(text: string): number | null {
   const value = Number(text.trim());

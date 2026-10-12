@@ -59,5 +59,10 @@
     "invalid": "Essa não é uma duração que possa ser salva com precisão.",
     "outOfRange": "Permitido: de {min} a {max}.",
     "keepsLastValid": "O último valor válido será mantido."
+  },
+  "moneyInput": {
+    "invalid": "Este não é um valor válido em dólares americanos. São permitidas no máximo seis casas decimais, por exemplo 2,50.",
+    "outOfRange": "Permitido: de {min} a {max}.",
+    "keepsLastValid": "O último valor válido será mantido."
   }
 }

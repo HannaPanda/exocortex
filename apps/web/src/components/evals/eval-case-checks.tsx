@@ -17,6 +17,8 @@ import {
 } from '@exocortex/ui';
 
 import { DurationTextInput } from '@/components/duration-input';
+import { MoneyTextInput } from '@/components/money-input';
+import { BUDGET_MAX_MICRO_USD } from '@/lib/money';
 
 import {
   assertionOf,
@@ -238,7 +240,20 @@ function CheckFields({
     case 'max_failed_tool_calls':
       return field('max', t('max'), { numeric: true });
     case 'max_cost':
-      return field('maxUsd', t('maxUsd'));
+      return (
+        <div className="flex min-w-24 flex-1 flex-col gap-1">
+          <Label htmlFor={`${prefix}-maxMicroUsd`} className="text-xs">
+            {t('maxUsd')}
+          </Label>
+          <MoneyTextInput
+            id={`${prefix}-maxMicroUsd`}
+            value={check.maxMicroUsd}
+            min={0}
+            max={BUDGET_MAX_MICRO_USD}
+            onChange={(maxMicroUsd) => onChange({ maxMicroUsd })}
+          />
+        </div>
+      );
     case 'max_duration':
       return (
         <div className="flex min-w-24 flex-1 flex-col gap-1">

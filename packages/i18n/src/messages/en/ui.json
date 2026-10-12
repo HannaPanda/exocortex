@@ -59,5 +59,10 @@
     "invalid": "This duration cannot be saved accurately.",
     "outOfRange": "Allowed: {min} to {max}.",
     "keepsLastValid": "The last valid value will be saved."
+  },
+  "moneyInput": {
+    "invalid": "That’s not a valid US dollar amount. Up to six decimal places are allowed, for example 2.50.",
+    "outOfRange": "Allowed: {min} to {max}.",
+    "keepsLastValid": "The last valid value is saved."
   }
 }

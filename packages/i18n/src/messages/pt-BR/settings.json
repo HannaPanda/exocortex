@@ -52,7 +52,7 @@
         "help": "Após esse tempo, a execução termina por completo, mesmo se ainda estiver chamando ferramentas. Não pode ser menor que o limite de tempo por resposta do modelo."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Limite de custo por requisição (µUSD)",
+        "label": "Limite de custo por solicitação (USD)",
         "help": "A execução é interrompida assim que esse limite de custo é atingido."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "Tempo total máximo permitido para uma execução, incluindo períodos de espera. Depois disso, ela é encerrada por expiração. O padrão é de sete dias."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Orçamento por execução (milionésimos de dólar)",
+        "label": "Orçamento por execução (USD)",
         "help": "O valor máximo que uma execução pode gastar com IA, incluindo todos os agentes iniciados por ela. Um workflow pode definir um orçamento menor, mas nunca maior. Quando ele se esgota, a execução não inicia mais nenhum passo."
       }
     },

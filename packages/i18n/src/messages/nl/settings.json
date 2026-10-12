@@ -52,7 +52,7 @@
         "help": "Na deze tijd stopt een run in zijn geheel, zelfs als deze nog tools aanroept. Kan nooit korter zijn dan de tijdslimiet per modelantwoord."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Kostenlimiet per verzoek (µUSD)",
+        "label": "Kostenlimiet per verzoek (USD)",
         "help": "Een run stopt zodra deze kostenlimiet is bereikt."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "Zolang mag een uitvoering in totaal duren, inclusief wachttijden. Daarna wordt deze als verlopen beëindigd. Standaard is zeven dagen."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Budget per uitvoering (miljoenste dollar)",
+        "label": "Budget per run (USD)",
         "help": "Zoveel mag een uitvoering aan AI uitgeven, inclusief alle agenten die deze start. Een workflow kan een kleiner budget instellen, nooit een groter. Is het opgebruikt, dan start de uitvoering geen volgende stap meer."
       }
     },

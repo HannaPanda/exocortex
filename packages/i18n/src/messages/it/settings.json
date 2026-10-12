@@ -52,7 +52,7 @@
         "help": "Trascorso questo tempo, l’esecuzione termina complessivamente, anche se sta ancora richiamando strumenti. Non può mai essere inferiore al tempo limite per risposta del modello."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Limite di costo per richiesta (µUSD)",
+        "label": "Limite di spesa per richiesta (USD)",
         "help": "Un’esecuzione si interrompe non appena viene raggiunto questo limite di costo."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "La durata complessiva massima di un’esecuzione, tempi di attesa inclusi. Dopodiché viene terminata come scaduta. L’impostazione predefinita è di sette giorni."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Budget per esecuzione (milionesimi di dollaro)",
+        "label": "Budget per esecuzione (USD)",
         "help": "Quanto può spendere al massimo un’esecuzione per l’IA, compresi tutti gli agenti avviati. Un workflow può definire un budget inferiore, mai superiore. Una volta esaurito, l’esecuzione non avvia alcun passaggio successivo."
       }
     },

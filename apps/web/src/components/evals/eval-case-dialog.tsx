@@ -36,9 +36,11 @@ import {
 } from '@exocortex/ui';
 
 import { DurationTextInput } from '@/components/duration-input';
+import { MoneyTextInput } from '@/components/money-input';
 import { useAgentProfiles } from '@/lib/api/agent-profile-queries';
 import { useCreateEvalCase, useUpdateEvalCase } from '@/lib/api/eval-queries';
 import { useSearch } from '@/lib/api/search-queries';
+import { BUDGET_MAX_MICRO_USD } from '@/lib/money';
 
 import { useAgentProfileWording } from '../agent-profiles/agent-profile-labels';
 
@@ -378,13 +380,18 @@ function HoldFields({
             </SelectContent>
           </Select>
         </div>
-        <LimitField
-          id="eval-case-budget"
-          label={t('budgetLabel')}
-          value={draft.budgetUsd}
-          placeholder={t('limitPlaceholder')}
-          onChange={(value) => set('budgetUsd', value)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="eval-case-budget">{t('budgetLabel')}</Label>
+          <MoneyTextInput
+            id="eval-case-budget"
+            value={draft.budgetMicroUsd}
+            min={0}
+            max={BUDGET_MAX_MICRO_USD}
+            allowEmpty
+            placeholder={t('limitPlaceholder')}
+            onChange={(value) => set('budgetMicroUsd', value)}
+          />
+        </div>
         <LimitField
           id="eval-case-iterations"
           label={t('iterationsLabel')}

@@ -59,5 +59,10 @@
     "invalid": "Cette durée ne peut pas être enregistrée avec précision.",
     "outOfRange": "Valeur autorisée : de {min} à {max}.",
     "keepsLastValid": "La dernière valeur valide sera conservée."
+  },
+  "moneyInput": {
+    "invalid": "Ce n’est pas un montant en dollars américains. Six décimales au maximum sont autorisées, par exemple 2,50.",
+    "outOfRange": "Valeur autorisée : de {min} à {max}.",
+    "keepsLastValid": "La dernière valeur valide est conservée."
   }
 }

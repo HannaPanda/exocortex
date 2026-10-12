@@ -11,7 +11,18 @@ describe('caseRequestOf (issue #146)', () => {
     expect(caseRequestOf({ ...base, replayMode: 'fixture', pages: [] })).toEqual({
       problem: 'pages',
     });
-    expect(caseRequestOf({ ...base, budgetUsd: 'viel' })).toEqual({ problem: 'limits' });
+    // The money field hands over `invalid` while it refuses what was typed.
+    expect(caseRequestOf({ ...base, budgetMicroUsd: 'invalid' })).toEqual({ problem: 'limits' });
+  });
+
+  it('sends a budget as the micro-dollars the field holds, and zero as zero (issue #167)', () => {
+    const built = (budgetMicroUsd: string) => {
+      const result = caseRequestOf({ ...base, budgetMicroUsd });
+      return 'request' in result ? result.request.budgetMicroUsd : result.problem;
+    };
+    expect(built('2000000')).toBe(2_000_000);
+    expect(built('0')).toBe(0);
+    expect(built('')).toBeNull();
   });
 
   it('splits the checks into invariants and criteria', () => {
@@ -70,7 +81,7 @@ describe('assertionOf', () => {
       max: 8,
     });
     expect(
-      assertionOf({ ...emptyCheck('invariant', 0), kind: 'max_cost', maxUsd: '0,05' }),
+      assertionOf({ ...emptyCheck('invariant', 0), kind: 'max_cost', maxMicroUsd: '50000' }),
     ).toEqual({
       id: 'i1',
       kind: 'max_cost',

@@ -10,7 +10,9 @@ import {
   type ToolDomain,
 } from '@exocortex/contracts';
 
-import { microUsdOf, wholeNumberOf } from '../agent-profiles/agent-profile-labels';
+import { microUsdOfDraft } from '@/lib/money';
+
+import { wholeNumberOf } from '../agent-profiles/agent-profile-labels';
 
 /**
  * The eval case form as a draft of strings (issue #146), and the one
@@ -52,7 +54,8 @@ export interface CheckDraft {
   page: string;
   min: string;
   max: string;
-  maxUsd: string;
+  /** Micro-dollars as text; the field shows and reads dollars (`MoneyTextInput`). */
+  maxMicroUsd: string;
   maxSeconds: string;
 }
 
@@ -77,7 +80,8 @@ export interface CaseDraft {
   agentProfileId: string | null;
   allTools: boolean;
   toolDomains: ToolDomain[];
-  budgetUsd: string;
+  /** Micro-dollars as text; the field shows and reads dollars (`MoneyTextInput`). */
+  budgetMicroUsd: string;
   maxToolIterations: string;
   maxRunSeconds: string;
   expectedOutcome: string;
@@ -104,7 +108,7 @@ export function emptyCheck(role: CheckRole, index: number): CheckDraft {
     page: '',
     min: '',
     max: '',
-    maxUsd: '',
+    maxMicroUsd: '',
     maxSeconds: '',
   };
 }
@@ -135,7 +139,7 @@ function checkDraftOf(assertion: EvalAssertion, role: CheckRole): CheckDraft {
   if ('page' in assertion) draft.page = assertion.page;
   if ('min' in assertion) draft.min = text(assertion.min);
   if ('max' in assertion) draft.max = text(assertion.max);
-  if ('maxMicroUsd' in assertion) draft.maxUsd = String(assertion.maxMicroUsd / 1_000_000);
+  if ('maxMicroUsd' in assertion) draft.maxMicroUsd = String(assertion.maxMicroUsd);
   if ('maxSeconds' in assertion) draft.maxSeconds = text(assertion.maxSeconds);
   return draft;
 }
@@ -153,7 +157,7 @@ export const NEW_CASE: CaseDraft = {
   agentProfileId: null,
   allTools: true,
   toolDomains: ['pages'],
-  budgetUsd: '',
+  budgetMicroUsd: '',
   maxToolIterations: '',
   maxRunSeconds: '',
   expectedOutcome: '',
@@ -175,7 +179,7 @@ export function caseDraftOf(evalCase: EvalCase | null): CaseDraft {
     agentProfileId: evalCase.agentProfileId,
     allTools: evalCase.toolDomains === null,
     toolDomains: evalCase.toolDomains ?? NEW_CASE.toolDomains,
-    budgetUsd: evalCase.budgetMicroUsd === null ? '' : String(evalCase.budgetMicroUsd / 1_000_000),
+    budgetMicroUsd: evalCase.budgetMicroUsd === null ? '' : String(evalCase.budgetMicroUsd),
     maxToolIterations: text(evalCase.maxToolIterations),
     maxRunSeconds: text(evalCase.maxRunSeconds),
     expectedOutcome: evalCase.expectedOutcome ?? '',
@@ -211,7 +215,7 @@ function checkFields(draft: CheckDraft): Record<string, unknown> {
     case 'max_failed_tool_calls':
       return { max: count(draft.max) };
     case 'max_cost':
-      return { maxMicroUsd: microUsdOf(draft.maxUsd) };
+      return { maxMicroUsd: microUsdOfDraft(draft.maxMicroUsd) };
     case 'max_duration':
       return { maxSeconds: count(draft.maxSeconds) };
     case 'no_changes':
@@ -264,7 +268,7 @@ function limitsComplete(draft: CaseDraft): boolean {
   return (
     (iterations.length === 0 || wholeNumberOf(iterations) !== null) &&
     (seconds.length === 0 || wholeNumberOf(seconds) !== null) &&
-    (draft.budgetUsd.trim().length === 0 || microUsdOf(draft.budgetUsd) !== null)
+    microUsdOfDraft(draft.budgetMicroUsd) !== undefined
   );
 }
 
@@ -312,7 +316,7 @@ export function caseRequestOf(
       fixture,
       agentProfileId: draft.agentProfileId,
       toolDomains: draft.allTools ? null : draft.toolDomains,
-      budgetMicroUsd: microUsdOf(draft.budgetUsd),
+      budgetMicroUsd: microUsdOfDraft(draft.budgetMicroUsd) ?? null,
       maxToolIterations: wholeNumberOf(iterations),
       maxRunSeconds: wholeNumberOf(seconds),
       invariants,

@@ -25,6 +25,7 @@ import {
 } from '@exocortex/ui';
 
 import { DurationInput, useDurationWords } from '@/components/duration-input';
+import { MoneyInput } from '@/components/money-input';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import {
   amountInUnit,
@@ -36,6 +37,7 @@ import {
   preferredByteUnit,
 } from '@/lib/byte-size';
 import { durationBaseOfSettingKey, isHourOfDaySettingKey } from '@/lib/duration';
+import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
 
 /**
  * The vocabulary of the settings forms, shared by both of them.
@@ -116,16 +118,19 @@ export function useSettingMessages(): {
 } {
   const t = useTranslations('settings.row');
   const duration = useDurationWords();
+  const format = useFormatter();
   return React.useMemo(() => {
     // A byte setting names its bounds in the unit each reads best in
     // (`1 KiB bis 50 MiB`), never as 52428800 (issue #174), and a duration in
-    // its own (`1 Minute bis 30 Tage`, never 60 to 2592000, issue #169).
+    // its own (`1 Minute bis 30 Tage`, never 60 to 2592000, issue #169), and
+    // money in dollars (`0,001 $ bis 50,00 $`, never 1000 to 50000000, #167).
     const bytes = (value: number): string => {
       const { amount, unit } = describeBytes(value);
       return t('byteAmount', { amount, unit: t(`byteUnits.${unit}`) });
     };
     const inUnits = (key: SettingKey): ((value: number) => string) | null => {
       if (isByteSettingKey(key)) return bytes;
+      if (isMoneySettingKey(key)) return (value: number) => formatMicroUsd(format, value);
       const base = durationBaseOfSettingKey(key);
       return base === null ? null : (value: number) => duration(value, base);
     };
@@ -148,7 +153,7 @@ export function useSettingMessages(): {
           : t('invalidWithRangeAmounts', { min: words(range.min), max: words(range.max) });
       },
     };
-  }, [t, duration]);
+  }, [t, duration, format]);
 }
 
 /**
@@ -434,8 +439,8 @@ function HourSettingField({
 }
 
 /**
- * A numeric setting: an amount with a unit for bytes and durations, a time for
- * an hour of the day, a plain number otherwise.
+ * A numeric setting: an amount with a unit for bytes and durations, dollars
+ * for money, a time for an hour of the day, a plain number otherwise.
  */
 function NumberSettingField({
   settingKey,
@@ -458,6 +463,22 @@ function NumberSettingField({
         onChange={onChange}
         described={described}
         id={id}
+      />
+    );
+  }
+  if (isMoneySettingKey(settingKey)) {
+    const bounds = SETTING_NUMBER_RANGES[settingKey];
+    return (
+      <MoneyInput
+        id={id}
+        name={settingKey}
+        value={value}
+        onChange={(next) => {
+          if (next !== null) onChange(next);
+        }}
+        {...(bounds === undefined ? {} : { min: bounds.min, max: bounds.max })}
+        keepsLastValid
+        {...described}
       />
     );
   }

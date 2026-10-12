@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -37,6 +37,7 @@ import {
 import { useCreateAiModel, useUpdateAiModel } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { microUsdFromText, usdInputText } from '@/lib/money';
 
 const REASONING_ORDER: readonly AiReasoningLevel[] = [
   'none',
@@ -70,8 +71,9 @@ interface ModelFormState {
   supportsVision: boolean;
   supportsTools: boolean;
   reasoningLevels: AiReasoningLevel[];
-  inputMicroUsdPerMTok: string;
-  outputMicroUsdPerMTok: string;
+  /** Dollars per million tokens, as typed; stored as micro-dollars (issue #167). */
+  inputUsdPerMTok: string;
+  outputUsdPerMTok: string;
   visionCompanionSlug: string;
   enabled: boolean;
   sortOrder: string;
@@ -109,8 +111,8 @@ function emptyForm(): ModelFormState {
     supportsVision: false,
     supportsTools: false,
     reasoningLevels: ['none'],
-    inputMicroUsdPerMTok: '',
-    outputMicroUsdPerMTok: '',
+    inputUsdPerMTok: '',
+    outputUsdPerMTok: '',
     visionCompanionSlug: NO_COMPANION,
     enabled: true,
     sortOrder: '100',
@@ -118,7 +120,7 @@ function emptyForm(): ModelFormState {
   };
 }
 
-function formFromModel(model: AiModel): ModelFormState {
+function formFromModel(model: AiModel, locale: string): ModelFormState {
   return {
     slug: model.slug,
     displayName: model.displayName,
@@ -128,8 +130,8 @@ function formFromModel(model: AiModel): ModelFormState {
     supportsVision: model.supportsVision,
     supportsTools: model.supportsTools,
     reasoningLevels: model.reasoningLevels.length > 0 ? [...model.reasoningLevels] : ['none'],
-    inputMicroUsdPerMTok: String(model.inputMicroUsdPerMTok),
-    outputMicroUsdPerMTok: String(model.outputMicroUsdPerMTok),
+    inputUsdPerMTok: usdInputText(model.inputMicroUsdPerMTok, locale),
+    outputUsdPerMTok: usdInputText(model.outputMicroUsdPerMTok, locale),
     visionCompanionSlug: model.visionCompanionSlug ?? NO_COMPANION,
     enabled: model.enabled,
     sortOrder: String(model.sortOrder),
@@ -184,8 +186,9 @@ interface ModelDialogFormProps {
 
 function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) {
   const isEdit = model !== undefined;
+  const locale = useLocale();
   const [form, setForm] = React.useState<ModelFormState>(() =>
-    model !== undefined ? formFromModel(model) : emptyForm(),
+    model !== undefined ? formFromModel(model, locale) : emptyForm(),
   );
   const [fieldErrors, setFieldErrors] = React.useState<FieldErrorKey[]>([]);
   const t = useTranslations('admin.modelDialog');
@@ -206,12 +209,16 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
     if (!Number.isFinite(contextWindow) || contextWindow <= 0) {
       errors.push('contextWindowPositive');
     }
-    const inputPrice = Number(form.inputMicroUsdPerMTok);
-    const outputPrice = Number(form.outputMicroUsdPerMTok);
-    if (!Number.isFinite(inputPrice) || inputPrice < 0) {
+    // An empty price is a free model, as it always was; anything else has to
+    // be an exact dollar amount, never rounded on its way to micro-dollars.
+    const priceOf = (text: string): number | null =>
+      text.trim().length === 0 ? 0 : microUsdFromText(text);
+    const inputPrice = priceOf(form.inputUsdPerMTok);
+    const outputPrice = priceOf(form.outputUsdPerMTok);
+    if (inputPrice === null) {
       errors.push('inputPriceNumber');
     }
-    if (!Number.isFinite(outputPrice) || outputPrice < 0) {
+    if (outputPrice === null) {
       errors.push('outputPriceNumber');
     }
     if (form.reasoningLevels.length === 0) {
@@ -222,7 +229,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
       errors.push('providerRoutingInvalid');
     }
 
-    if (errors.length > 0) {
+    if (errors.length > 0 || inputPrice === null || outputPrice === null) {
       setFieldErrors(errors);
       return;
     }
@@ -398,10 +405,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             <Label htmlFor="model-input-price">{t('fields.inputPrice')}</Label>
             <Input
               id="model-input-price"
-              type="number"
-              value={form.inputMicroUsdPerMTok}
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              value={form.inputUsdPerMTok}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, inputMicroUsdPerMTok: event.target.value }))
+                setForm((prev) => ({ ...prev, inputUsdPerMTok: event.target.value }))
               }
             />
           </div>
@@ -409,10 +418,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
             <Label htmlFor="model-output-price">{t('fields.outputPrice')}</Label>
             <Input
               id="model-output-price"
-              type="number"
-              value={form.outputMicroUsdPerMTok}
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              value={form.outputUsdPerMTok}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, outputMicroUsdPerMTok: event.target.value }))
+                setForm((prev) => ({ ...prev, outputUsdPerMTok: event.target.value }))
               }
             />
           </div>

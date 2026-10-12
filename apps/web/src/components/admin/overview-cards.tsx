@@ -3,6 +3,8 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { type AdminOverviewResponse } from '@exocortex/contracts';
 import { Readout, SectionRule } from '@exocortex/ui';
 
+import { formatMicroUsd } from '@/lib/money';
+
 /**
  * What this deployment holds, what it did in the last day, and what is set up.
  *
@@ -41,9 +43,6 @@ export function OverviewCards({ overview }: { overview: AdminOverviewResponse })
   const t = useTranslations('admin.overview');
   const format = useFormatter();
   const formatNumber = (value: number): string => format.number(value);
-  // `aiCostLast24hMicroUsd` is micro-USD; convert to USD before formatting.
-  const formatMicroUsd = (microUsd: number): string =>
-    format.number(microUsd / 1_000_000, { style: 'currency', currency: 'USD' });
   return (
     // `gap-10` between groups against `gap-4` inside them, the same rhythm the
     // workspace overview uses: the space is what groups a section here, since
@@ -58,7 +57,7 @@ export function OverviewCards({ overview }: { overview: AdminOverviewResponse })
         />
         <Readout
           label={t('aiCost')}
-          value={formatMicroUsd(overview.aiCostLast24hMicroUsd)}
+          value={formatMicroUsd(format, overview.aiCostLast24hMicroUsd)}
           tone="live"
           data-testid="admin-metric-ai-cost"
         />

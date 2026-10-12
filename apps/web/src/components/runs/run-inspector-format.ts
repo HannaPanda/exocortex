@@ -3,17 +3,14 @@
 import { useFormatter } from 'next-intl';
 import * as React from 'react';
 
+import { formatMicroUsd } from '@/lib/money';
+
 /** Numbers, money and durations the way the reader's language writes them. */
 export function useRunFormat() {
   const format = useFormatter();
   return React.useMemo(() => {
     const count = (value: number): string => format.number(value);
-    const money = (microUsd: number): string =>
-      format.number(microUsd / 1_000_000, {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 4,
-      });
+    const money = (microUsd: number): string => formatMicroUsd(format, microUsd);
     /** `840 ms` below a second, `1,8 s` above, `3:42 min` above a minute. */
     const duration = (ms: number): string => {
       if (ms < 1000) return `${format.number(Math.round(ms))} ms`;

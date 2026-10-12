@@ -52,7 +52,7 @@
         "help": "Una ejecución finaliza por completo transcurrido este tiempo, incluso si todavía está llamando a herramientas. Nunca puede ser inferior al tiempo límite por respuesta del modelo."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Límite de coste por solicitud (µUSD)",
+        "label": "Límite de coste por solicitud (USD)",
         "help": "Una ejecución se detiene en cuanto se alcanza este límite de coste."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "El tiempo total que puede durar una ejecución, incluidos los tiempos de espera. Después, finalizará como expirada. El valor predeterminado son siete días."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Presupuesto por ejecución (millonésimas de dólar)",
+        "label": "Presupuesto por ejecución (USD)",
         "help": "La cantidad que puede gastar una ejecución en IA, incluidos todos los agentes que inicie. Un flujo de trabajo puede establecer un presupuesto menor, nunca mayor. Una vez agotado, la ejecución no iniciará ningún paso más."
       }
     },

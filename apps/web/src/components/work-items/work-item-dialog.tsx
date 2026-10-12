@@ -35,7 +35,9 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { MoneyInput } from '@/components/money-input';
 import { useCreateWorkItem, useDelegateWork, useUpdateWorkItem } from '@/lib/api/work-item-queries';
+import { BUDGET_MAX_MICRO_USD } from '@/lib/money';
 
 import { WorkItemAssigneeSelect } from './work-item-assignee-select';
 import { useWorkItemWording } from './work-item-labels';
@@ -56,7 +58,10 @@ interface Draft {
   assignee: WorkItemAssigneeInput | null;
   criteria: string;
   dueDate: string | null;
-  budgetUsd: string;
+  /** In micro-dollars, `null` for none; the field shows and reads dollars. */
+  budgetMicroUsd: number | null;
+  /** False while the budget field holds an amount it cannot save. */
+  budgetValid: boolean;
   /** For a new part of a larger item held by the built-in AI: start it right away. */
   start: boolean;
 }
@@ -78,7 +83,8 @@ function draftOf(item: WorkItemDetail | null): Draft {
       assignee: null,
       criteria: '',
       dueDate: null,
-      budgetUsd: '',
+      budgetMicroUsd: null,
+      budgetValid: true,
       start: true,
     };
   }
@@ -89,7 +95,8 @@ function draftOf(item: WorkItemDetail | null): Draft {
     assignee: assigneeInputOf(item),
     criteria: item.acceptanceCriteria.map((criterion) => criterion.text).join('\n'),
     dueDate: item.dueAt?.slice(0, 10) ?? null,
-    budgetUsd: item.budgetMicroUsd === null ? '' : String(item.budgetMicroUsd / 1_000_000),
+    budgetMicroUsd: item.budgetMicroUsd,
+    budgetValid: true,
     start: false,
   };
 }
@@ -105,11 +112,9 @@ function criteriaOf(text: string, previous: readonly WorkItemCriterion[]): WorkI
     }));
 }
 
-function budgetOf(text: string): number | null {
-  const normalized = text.trim().replace(',', '.');
-  if (normalized.length === 0) return null;
-  const value = Number(normalized);
-  return Number.isFinite(value) && value >= 0 ? Math.round(value * 1_000_000) : null;
+/** A title, a goal, and no budget field still holding an amount it refuses. */
+function isSavable(draft: Draft): boolean {
+  return draft.title.trim().length > 0 && draft.goal.trim().length > 0 && draft.budgetValid;
 }
 
 export function WorkItemDialog({
@@ -156,7 +161,7 @@ export function WorkItemDialog({
 
   const pending = create.isPending || update.isPending || delegate.isPending;
   const error = create.error ?? update.error ?? delegate.error;
-  const valid = draft.title.trim().length > 0 && draft.goal.trim().length > 0;
+  const valid = isSavable(draft);
 
   const submit = async (): Promise<void> => {
     const common = {
@@ -166,7 +171,7 @@ export function WorkItemDialog({
       assignee: draft.assignee,
       acceptanceCriteria: criteriaOf(draft.criteria, item?.acceptanceCriteria ?? []),
       dueAt: draft.dueDate === null ? null : `${draft.dueDate}T00:00:00.000Z`,
-      budgetMicroUsd: budgetOf(draft.budgetUsd),
+      budgetMicroUsd: draft.budgetMicroUsd,
     };
     if (delegating && draft.assignee !== null) {
       const budget = common.budgetMicroUsd;
@@ -287,12 +292,15 @@ export function WorkItemDialog({
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="work-item-budget">{t('budgetLabel')}</Label>
-                <Input
+                <MoneyInput
                   id="work-item-budget"
-                  inputMode="decimal"
-                  value={draft.budgetUsd}
+                  value={draft.budgetMicroUsd}
+                  min={0}
+                  max={BUDGET_MAX_MICRO_USD}
+                  allowEmpty
                   placeholder={delegating ? t('childBudgetPlaceholder') : t('budgetPlaceholder')}
-                  onChange={(event) => set('budgetUsd', event.target.value)}
+                  onChange={(value) => set('budgetMicroUsd', value)}
+                  onValidityChange={(valid) => set('budgetValid', valid)}
                 />
               </div>
             </div>

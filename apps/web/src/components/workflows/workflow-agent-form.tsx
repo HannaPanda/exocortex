@@ -23,7 +23,7 @@ import { Button, Checkbox, Input, Label, Readout, Textarea } from '@exocortex/ui
 import { useRunFormat } from '../runs/run-inspector-format';
 
 import { upstreamOf } from './workflow-draft';
-import { ChoiceField, Field, NumberField } from './workflow-fields';
+import { ChoiceField, Field, MoneyField } from './workflow-fields';
 import { useWorkflowWording } from './workflow-labels';
 import { WorkflowPagePicker } from './workflow-page-picker';
 
@@ -139,13 +139,11 @@ export function AgentNodeForm({
         onChange={(value) => onChange({ ...node, writeMode: value === NO_MODE ? null : value })}
       />
 
-      <NumberField
+      <MoneyField
         id={id('budget')}
         label={t('budget')}
         hint={t('budgetHint')}
         value={node.budgetMicroUsd}
-        scale={1_000_000}
-        min={0}
         placeholder={t('budgetPlaceholder')}
         testId="workflow-agent-budget"
         onChange={(budgetMicroUsd) => onChange({ ...node, budgetMicroUsd })}

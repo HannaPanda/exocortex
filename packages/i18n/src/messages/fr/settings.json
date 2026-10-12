@@ -52,7 +52,7 @@
         "help": "Une exécution s’arrête complètement après cette durée, même si elle appelle encore des outils. Ne peut jamais être inférieure au délai d’attente par réponse du modèle."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Limite de coût par requête (µUSD)",
+        "label": "Limite de coût par requête (USD)",
         "help": "Une exécution s’arrête dès que cette limite de coût est atteinte."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "Durée totale maximale d’une exécution, temps d’attente inclus. Au-delà, elle est interrompue pour délai dépassé. La valeur par défaut est de sept jours."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Budget par exécution (millionièmes de dollar)",
+        "label": "Budget par exécution (USD)",
         "help": "Montant maximal qu’une exécution peut dépenser pour l’IA, en incluant tous les agents qu’elle lance. Un workflow peut définir un budget inférieur, jamais supérieur. Une fois le budget épuisé, l’exécution ne lance plus aucune nouvelle étape."
       }
     },

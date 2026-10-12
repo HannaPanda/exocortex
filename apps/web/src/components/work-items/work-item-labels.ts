@@ -11,6 +11,8 @@ import {
   type WorkItemStatus,
 } from '@exocortex/contracts';
 
+import { formatMicroUsd } from '@/lib/money';
+
 /**
  * The words the work item screens share (issue #138).
  *
@@ -67,12 +69,7 @@ export function useWorkItemWording() {
       format.dateTime(new Date(iso), { day: '2-digit', month: '2-digit', year: 'numeric' });
 
     /** Millionths of a dollar, as a person reads money. */
-    const money = (microUsd: number): string =>
-      format.number(microUsd / 1_000_000, {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 4,
-      });
+    const money = (microUsd: number): string => formatMicroUsd(format, microUsd);
 
     /** The lines a delegation writes (issue #144), apart so the switch below stays readable. */
     const delegationEvent = (value: WorkItemEvent): string | null => {

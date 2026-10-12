@@ -6,18 +6,7 @@ import { type AiModelEndpoint } from '@exocortex/contracts';
 import { Badge, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useAiModelEndpoints } from '@/lib/api/admin-queries';
-
-type Formatter = ReturnType<typeof useFormatter>;
-
-/** Micro-USD per million tokens as a dollar amount with two decimals. */
-function formatPrice(format: Formatter, microUsd: number): string {
-  return format.number(microUsd / 1_000_000, {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+import { formatMicroUsd } from '@/lib/money';
 
 /** The input an endpoint can really take: its window, or its own tighter prompt cap. */
 function usableInputTokens(endpoint: AiModelEndpoint): number {
@@ -107,8 +96,8 @@ export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
                       : t('tokens', { count: endpoint.maxOutputTokens })}
                   </td>
                   <td className="py-1 pr-4">
-                    {formatPrice(format, endpoint.inputMicroUsdPerMTok)} /{' '}
-                    {formatPrice(format, endpoint.outputMicroUsdPerMTok)}
+                    {formatMicroUsd(format, endpoint.inputMicroUsdPerMTok, 'price')} /{' '}
+                    {formatMicroUsd(format, endpoint.outputMicroUsdPerMTok, 'price')}
                   </td>
                   <td className="flex flex-wrap gap-1 py-1">
                     {endpoint.supportsTools ? (

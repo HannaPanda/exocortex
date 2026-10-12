@@ -52,7 +52,7 @@
         "help": "Nach dieser Zeit endet ein Lauf insgesamt, auch wenn er noch Werkzeuge aufruft. Kann nie kürzer sein als das Zeitlimit pro Modellantwort."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Kostenlimit pro Anfrage (µUSD)",
+        "label": "Kostenlimit pro Anfrage (USD)",
         "help": "Ein Lauf stoppt, sobald dieses Kostenlimit erreicht ist."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "So lange darf ein Lauf insgesamt dauern, Wartezeiten eingeschlossen. Danach wird er als abgelaufen beendet. Standard sind sieben Tage."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Budget pro Lauf (Millionstel Dollar)",
+        "label": "Budget pro Lauf (USD)",
         "help": "So viel darf ein Lauf für KI ausgeben, alle Agenten eingeschlossen, die er startet. Ein Workflow kann ein kleineres Budget festlegen, nie ein größeres. Ist es aufgebraucht, startet der Lauf keinen weiteren Schritt."
       }
     },

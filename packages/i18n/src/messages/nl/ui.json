@@ -59,5 +59,10 @@
     "invalid": "Dit is geen tijdsduur die nauwkeurig kan worden opgeslagen.",
     "outOfRange": "Toegestaan: {min} tot {max}.",
     "keepsLastValid": "De laatst geldige waarde wordt bewaard."
+  },
+  "moneyInput": {
+    "invalid": "Dit is geen geldig bedrag in US-dollar. Maximaal zes decimalen toegestaan, bijvoorbeeld 2,50.",
+    "outOfRange": "Toegestaan: {min} tot {max}.",
+    "keepsLastValid": "De laatst geldige waarde wordt opgeslagen."
   }
 }

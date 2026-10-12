@@ -52,7 +52,7 @@
         "help": "Po tym czasie uruchomienie kończy się całkowicie, nawet jeśli wciąż wywołuje narzędzia. Nie może być krótszy niż limit czasu na odpowiedź modelu."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Limit kosztu na zapytanie (µUSD)",
+        "label": "Limit kosztów na zapytanie (USD)",
         "help": "Uruchomienie zatrzymuje się po osiągnięciu tego limitu kosztów."
       },
       "toolsEnabled": {
@@ -404,7 +404,7 @@
         "help": "Tyle może trwać przebieg łącznie z czasem oczekiwania. Po upływie tego czasu zostaje zakończony jako przedawniony. Wartość domyślna to siedem dni."
       },
       "budgetMicroUsdPerRun": {
-        "label": "Budżet na przebieg (milionowe części dolara)",
+        "label": "Budżet na uruchomienie (USD)",
         "help": "Tyle przebieg może wydać na AI, wliczając wszystkich uruchamianych przez siebie agentów. Workflow może określić mniejszy budżet, ale nigdy większy. Po jego wyczerpaniu przebieg nie uruchomi kolejnego kroku."
       }
     },

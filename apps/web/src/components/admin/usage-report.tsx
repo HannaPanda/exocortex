@@ -28,6 +28,7 @@ import {
 } from '@exocortex/ui';
 
 import { useAdminAiUsage } from '@/lib/api/admin-queries';
+import { formatMicroUsd } from '@/lib/money';
 
 type Formatter = ReturnType<typeof useFormatter>;
 type Translator = ReturnType<typeof useTranslations<'admin.usage'>>;
@@ -54,16 +55,6 @@ const STACKED_STATUSES = [
   { status: 'timed_out', className: 'bg-warning' },
   { status: 'cancelled', className: 'bg-muted-foreground' },
 ] as const satisfies readonly { status: AiRunStatus; className: string }[];
-
-/** Micro-USD as a dollar amount; up to four decimals, because most runs cost cents. */
-function formatMicroUsd(format: Formatter, microUsd: number): string {
-  return format.number(microUsd / 1_000_000, {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  });
-}
 
 function formatDuration(format: Formatter, ms: number | null): string {
   if (ms === null) return '–';

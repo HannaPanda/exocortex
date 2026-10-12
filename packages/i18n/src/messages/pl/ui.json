@@ -59,5 +59,10 @@
     "invalid": "Nie jest to czas trwania, który można dokładnie zapisać.",
     "outOfRange": "Dozwolony zakres: od {min} do {max}.",
     "keepsLastValid": "Zostanie zachowana ostatnia prawidłowa wartość."
+  },
+  "moneyInput": {
+    "invalid": "To nie jest kwota w dolarach amerykańskich. Dozwolone jest maksymalnie sześć miejsc po przecinku, na przykład 2,50.",
+    "outOfRange": "Dozwolony zakres: od {min} do {max}.",
+    "keepsLastValid": "Zapisana zostanie ostatnia prawidłowa wartość."
   }
 }

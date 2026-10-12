@@ -29,6 +29,7 @@ import {
 import { useAddAiModelsFromCatalog, useAiModelCatalog } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { formatMicroUsd } from '@/lib/money';
 
 /**
  * How many matches are rendered at once. The provider offers several hundred
@@ -36,18 +37,6 @@ import { messageForCode } from '@/lib/api/error-messages';
  * them makes every keystroke in the search field expensive.
  */
 const VISIBLE_LIMIT = 60;
-
-type Formatter = ReturnType<typeof useFormatter>;
-
-/** Micro-USD per million tokens as a dollar amount with two decimals. */
-function formatPrice(format: Formatter, microUsd: number): string {
-  return format.number(microUsd / 1_000_000, {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 function matches(entry: AiModelCatalogEntry, needle: string): boolean {
   if (needle.length === 0) return true;
@@ -97,8 +86,8 @@ function CatalogRow({
         <span className="text-xs text-muted-foreground">
           {t('facts', {
             context: entry.contextWindowTokens,
-            input: formatPrice(format, entry.inputMicroUsdPerMTok),
-            output: formatPrice(format, entry.outputMicroUsdPerMTok),
+            input: formatMicroUsd(format, entry.inputMicroUsdPerMTok, 'price'),
+            output: formatMicroUsd(format, entry.outputMicroUsdPerMTok, 'price'),
           })}
         </span>
       </Label>

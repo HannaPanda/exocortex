@@ -43,11 +43,13 @@ import {
 } from '@exocortex/ui';
 
 import { DurationInput } from '@/components/duration-input';
+import { MoneyInput } from '@/components/money-input';
 import { useCreateAgentProfile, useUpdateAgentProfile } from '@/lib/api/agent-profile-queries';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { useSearch } from '@/lib/api/search-queries';
+import { BUDGET_MAX_MICRO_USD } from '@/lib/money';
 
-import { microUsdOf, useAgentProfileWording, wholeNumberOf } from './agent-profile-labels';
+import { useAgentProfileWording, wholeNumberOf } from './agent-profile-labels';
 
 /**
  * Writing an agent profile (issue #143, ADR-071).
@@ -74,8 +76,12 @@ interface Draft {
   toolDomains: ToolDomain[];
   writeMode: AiWriteMode;
   approvalPolicy: AgentApprovalPolicy;
-  budgetRunUsd: string;
-  budgetTaskUsd: string;
+  /** In micro-dollars, `null` for none; the fields show and read dollars. */
+  budgetMicroUsdPerRun: number | null;
+  budgetMicroUsdPerTask: number | null;
+  /** False while a budget field holds an amount it cannot save. */
+  budgetRunValid: boolean;
+  budgetTaskValid: boolean;
   maxToolIterations: string;
   /** In seconds, `null` for none; the field converts from the unit it shows. */
   maxRunSeconds: number | null;
@@ -83,10 +89,6 @@ interface Draft {
   maxRunSecondsValid: boolean;
   confineToWorkspace: boolean;
   isDefault: boolean;
-}
-
-function usd(microUsd: number | null): string {
-  return microUsd === null ? '' : String(microUsd / 1_000_000);
 }
 
 /** What a new profile starts as: careful, and with no limits of its own yet. */
@@ -102,8 +104,10 @@ const NEW_DRAFT: Draft = {
   toolDomains: ['pages'],
   writeMode: 'propose',
   approvalPolicy: 'none',
-  budgetRunUsd: '',
-  budgetTaskUsd: '',
+  budgetMicroUsdPerRun: null,
+  budgetMicroUsdPerTask: null,
+  budgetRunValid: true,
+  budgetTaskValid: true,
   maxToolIterations: '',
   maxRunSeconds: null,
   maxRunSecondsValid: true,
@@ -124,8 +128,8 @@ function draftOf(profile: AgentProfile | null): Draft {
       profile.providerRouting === null ? '' : JSON.stringify(profile.providerRouting, null, 2),
     allTools: profile.toolDomains === null,
     toolDomains: profile.toolDomains ?? NEW_DRAFT.toolDomains,
-    budgetRunUsd: usd(profile.budgetMicroUsdPerRun),
-    budgetTaskUsd: usd(profile.budgetMicroUsdPerTask),
+    budgetRunValid: true,
+    budgetTaskValid: true,
     maxToolIterations: profile.maxToolIterations?.toString() ?? '',
     maxRunSecondsValid: true,
   };
@@ -175,7 +179,12 @@ export function AgentProfileDialog({
   const routing = routingOf(draft.routing);
   const pending = create.isPending || update.isPending;
   const error = create.error ?? update.error;
-  const valid = draft.name.trim().length > 0 && routing !== undefined && draft.maxRunSecondsValid;
+  const valid =
+    draft.name.trim().length > 0 &&
+    routing !== undefined &&
+    draft.maxRunSecondsValid &&
+    draft.budgetRunValid &&
+    draft.budgetTaskValid;
 
   const submit = async (): Promise<void> => {
     if (routing === undefined) return;
@@ -190,8 +199,8 @@ export function AgentProfileDialog({
       toolDomains: draft.allTools ? null : draft.toolDomains,
       writeMode: draft.writeMode,
       approvalPolicy: draft.approvalPolicy,
-      budgetMicroUsdPerRun: microUsdOf(draft.budgetRunUsd),
-      budgetMicroUsdPerTask: microUsdOf(draft.budgetTaskUsd),
+      budgetMicroUsdPerRun: draft.budgetMicroUsdPerRun,
+      budgetMicroUsdPerTask: draft.budgetMicroUsdPerTask,
       maxToolIterations: wholeNumberOf(draft.maxToolIterations),
       maxRunSeconds: draft.maxRunSeconds,
       confineToWorkspace: draft.confineToWorkspace,
@@ -456,20 +465,32 @@ function PolicyFields({ draft, set }: FieldProps) {
             </SelectContent>
           </Select>
         </div>
-        <NumberField
-          id="agent-profile-budget-run"
-          label={t('budgetRunLabel')}
-          value={draft.budgetRunUsd}
-          placeholder={t('budgetPlaceholder')}
-          onChange={(value) => set('budgetRunUsd', value)}
-        />
-        <NumberField
-          id="agent-profile-budget-task"
-          label={t('budgetTaskLabel')}
-          value={draft.budgetTaskUsd}
-          placeholder={t('budgetPlaceholder')}
-          onChange={(value) => set('budgetTaskUsd', value)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="agent-profile-budget-run">{t('budgetRunLabel')}</Label>
+          <MoneyInput
+            id="agent-profile-budget-run"
+            value={draft.budgetMicroUsdPerRun}
+            min={0}
+            max={BUDGET_MAX_MICRO_USD}
+            allowEmpty
+            placeholder={t('budgetPlaceholder')}
+            onChange={(value) => set('budgetMicroUsdPerRun', value)}
+            onValidityChange={(valid) => set('budgetRunValid', valid)}
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="agent-profile-budget-task">{t('budgetTaskLabel')}</Label>
+          <MoneyInput
+            id="agent-profile-budget-task"
+            value={draft.budgetMicroUsdPerTask}
+            min={0}
+            max={BUDGET_MAX_MICRO_USD}
+            allowEmpty
+            placeholder={t('budgetPlaceholder')}
+            onChange={(value) => set('budgetMicroUsdPerTask', value)}
+            onValidityChange={(valid) => set('budgetTaskValid', valid)}
+          />
+        </div>
         <NumberField
           id="agent-profile-iterations"
           label={t('iterationsLabel')}

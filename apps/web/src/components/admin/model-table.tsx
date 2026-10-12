@@ -42,22 +42,11 @@ import {
 } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { formatMicroUsd } from '@/lib/money';
 
 import { ModelCatalogDialog } from './model-catalog-dialog';
 import { ModelDialog } from './model-dialog';
 import { ModelEndpoints } from './model-endpoints';
-
-type Formatter = ReturnType<typeof useFormatter>;
-
-/** Micro-USD per million tokens as a dollar amount with two decimals. */
-function formatPrice(format: Formatter, microUsd: number): string {
-  return format.number(microUsd / 1_000_000, {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 interface SyncSummary {
   updated: number;
@@ -226,8 +215,8 @@ export function ModelTable() {
                 </TableCell>
                 <TableCell label={t('columns.price')}>
                   {t('price', {
-                    input: formatPrice(format, model.inputMicroUsdPerMTok),
-                    output: formatPrice(format, model.outputMicroUsdPerMTok),
+                    input: formatMicroUsd(format, model.inputMicroUsdPerMTok, 'price'),
+                    output: formatMicroUsd(format, model.outputMicroUsdPerMTok, 'price'),
                   })}
                 </TableCell>
                 <TableCell label={t('columns.enabled')}>

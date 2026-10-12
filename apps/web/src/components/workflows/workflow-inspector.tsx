@@ -20,7 +20,7 @@ import { useRunFormat } from '../runs/run-inspector-format';
 
 import { AgentNodeForm } from './workflow-agent-form';
 import { connect, removeEdges, replaceNode } from './workflow-draft';
-import { ChoiceField, Field, NumberField } from './workflow-fields';
+import { ChoiceField, Field, MoneyField, NumberField } from './workflow-fields';
 import { NODE_ICONS, useWorkflowWording } from './workflow-labels';
 import {
   ApprovalForm,
@@ -429,12 +429,10 @@ export function WorkflowInspector({
             })}
             onChange={(value) => setLimit('maxLifetimeSeconds', value)}
           />
-          <NumberField
+          <MoneyField
             id="workflow-limit-budget"
             label={t('budget')}
             value={limits.budgetMicroUsd}
-            scale={1_000_000}
-            min={0}
             placeholder={t('inherit')}
             hint={t('effective', { value: format.money(envelope.limits.budgetMicroUsd) })}
             testId="workflow-limit-budget"

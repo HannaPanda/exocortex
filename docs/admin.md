@@ -593,7 +593,14 @@ A page nobody has marked never reaches a model.
    bounds in units (`1 Minute bis 30 Tage`); a key ending in `Hour` is an
    hour of the day, picked from 24 whole hours. Keys ending in `Days` stay
    plain numbers, because a day is already the unit a retention period is
-   thought in.
+   thought in. Money follows it too (issue #167): a key containing
+   `MicroUsd` is stored in millionths of a dollar and edited in dollars
+   (`components/money-input.tsx`, `lib/money.ts`), shown as `2,00` in the
+   reader's language, read exactly with a comma or a point, and refused
+   rather than rounded when it is finer than a micro-dollar. Every other
+   money field in the browser (profiles, work items, evals, workflows, model
+   prices) uses the same input and the same `formatMicroUsd`, so no screen
+   asks a person for micro-dollars; the API and MCP keep them.
 4. Add the row to the table above.
 
 No migration is needed: the `setting` table is key/value.

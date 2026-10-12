@@ -59,5 +59,10 @@
     "invalid": "Das ist keine Dauer, die sich genau speichern lässt.",
     "outOfRange": "Zulässig: {min} bis {max}.",
     "keepsLastValid": "Gespeichert wird der zuletzt gültige Stand."
+  },
+  "moneyInput": {
+    "invalid": "Das ist kein Betrag in US-Dollar. Erlaubt sind höchstens sechs Nachkommastellen, zum Beispiel 2,50.",
+    "outOfRange": "Zulässig: {min} bis {max}.",
+    "keepsLastValid": "Gespeichert wird der zuletzt gültige Stand."
   }
 }
