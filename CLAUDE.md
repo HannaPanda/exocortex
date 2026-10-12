@@ -812,6 +812,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   from the environment and a missing one fails closed. A turn the preset
   refused before answering goes to OpenRouter only when
   `ai.subscriptionFallback` is on, never after a fragment has arrived.
+- ADR-084: the knowledge map is a read model and a room of its own. One
+  route answers every page and four kinds of line (reference, similarity
+  nobody linked, entity mention, tree) and stores nothing; the similarity
+  index lives in the API's memory and recomputes one row per re-embedded
+  page. `ai.run.tool_call` carries the page a call is about as `subject`, so
+  reads light up as well as writes. `/arbeitsbereich/:x/karte` is drawn
+  without the page tree, and the Map-Is-A-Room Rule in `DESIGN.md` is the one
+  bounded exception to Motion-Is-State.
 
 Full list: `docs/adr/`.
 

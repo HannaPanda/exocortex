@@ -61,6 +61,12 @@ What is deliberately still missing is listed under
   with typed properties and table, board, gallery and calendar views, inline
   or full-page
 - entities, their candidates and page links, in their own workspace-wide screen
+- a knowledge map: every page of a workspace as a glowing point in a 3D room,
+  joined by references, similar content nobody linked, entity mentions and the
+  page tree, with the assistant beside it. What a run or an external agent
+  reads, writes, creates or removes lights up while it happens; a search flies
+  the camera to its hits, and a timeline replays how the workspace grew
+  (`/arbeitsbereich/:x/karte`, `exo_knowledge_map`, ADR-084)
 - overview pages whose text is composed from the digests of their children
   (ADR-028)
 - an agent memory in its own workspace, with distilled facts above its session
