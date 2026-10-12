@@ -3,8 +3,8 @@ import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
-  CanvasTexture,
   Color,
+  DataTexture,
   DodecahedronGeometry,
   type Group,
   IcosahedronGeometry,
@@ -84,21 +84,24 @@ interface Spark {
   last: number;
 }
 
-/** A soft round mote, drawn once: without it a point sprite is a square. */
-function moteTexture(): CanvasTexture | null {
-  if (typeof document === 'undefined') return null;
-  const canvas = document.createElement('canvas');
-  canvas.width = 32;
-  canvas.height = 32;
-  const context = canvas.getContext('2d');
-  if (context === null) return null;
-  const glow = context.createRadialGradient(16, 16, 0, 16, 16, 16);
-  glow.addColorStop(0, 'rgba(255,255,255,1)');
-  glow.addColorStop(0.4, 'rgba(255,255,255,0.45)');
-  glow.addColorStop(1, 'rgba(255,255,255,0)');
-  context.fillStyle = glow;
-  context.fillRect(0, 0, 32, 32);
-  return new CanvasTexture(canvas);
+/**
+ * A soft round mote, computed once: without it a point sprite is a square.
+ * White with a falling alpha, as numbers rather than a CSS colour, so the
+ * material's own colour (the pulse token) is the only hue it ever shows.
+ */
+function moteTexture(): DataTexture {
+  const size = 32;
+  const pixels = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const distance = Math.hypot(x + 0.5 - size / 2, y + 0.5 - size / 2) / (size / 2);
+      const alpha = Math.max(0, 1 - distance) ** 2;
+      pixels.set([255, 255, 255, Math.round(alpha * 255)], (y * size + x) * 4);
+    }
+  }
+  const texture = new DataTexture(pixels, size, size);
+  texture.needsUpdate = true;
+  return texture;
 }
 
 /**
@@ -513,7 +516,7 @@ export class MapEngine {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
     for (const spark of this.sparks.splice(0)) this.disposeSpark(spark);
-    this.mote?.dispose();
+    this.mote.dispose();
     for (const visual of this.visuals.values()) this.disposeVisual(visual);
     this.visuals.clear();
     for (const geometry of Object.values(this.geometries)) geometry.dispose();
