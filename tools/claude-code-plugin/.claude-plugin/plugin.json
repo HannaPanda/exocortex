@@ -2,7 +2,7 @@
   "name": "exocortex",
   "displayName": "eXocortex",
   "description": "Verbindet Claude Code mit deinem eXocortex: der MCP-Server als Werkzeugkasten und das Gedächtnis, das jede Sitzung mitschreibt und beim nächsten Mal wieder einspielt.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "HannaPanda",
     "url": "https://github.com/HannaPanda"
@@ -31,6 +31,12 @@
       "title": "Sitzungen als Erinnerung ablegen",
       "description": "Legt am Ende jeder Sitzung eine verdichtete Notiz im Memory-Arbeitsbereich ab und spielt sie beim nächsten Start in diesem Verzeichnis wieder ein. Aus bedeutet: nur der MCP-Server, kein Mitschrieb.",
       "default": true
+    },
+    "debug": {
+      "type": "boolean",
+      "title": "Diagnoseprotokoll schreiben",
+      "description": "Schreibt für jede Sitzung ein paar Zeilen nach ~/.claude/exocortex-memory/debug.log: welcher Schritt erreicht wurde, Statuscodes, Zeichenanzahlen. Nie Tokens, Pfade oder Gesprächsinhalte. Nur einschalten, wenn das Gedächtnis nicht funktioniert.",
+      "default": false
     }
   }
 }

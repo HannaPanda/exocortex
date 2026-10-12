@@ -14,9 +14,29 @@ Nicht mehr. Der Prüfbericht unten ist die Antwort, du fasst ihn zusammen.
 node "${CLAUDE_PLUGIN_ROOT}/skills/einrichten/pruefen.mjs"
 ```
 
-Das Skript prüft drei Dinge und endet mit `Ergebnis:`. Es gibt das Token nie
-aus, nur die ersten und letzten Zeichen. Gib du es auch nicht aus, selbst wenn
-du es aus einer Datei lesen könntest.
+Das Skript prüft die Kette Glied für Glied (Konfiguration, Hooks, MCP,
+Gedächtnis-API) und endet mit `Ergebnis:`. Es gibt das Token nie aus, nur die
+ersten und letzten Zeichen. Gib du es auch nicht aus, selbst wenn du es aus
+einer Datei lesen könntest.
+
+Ein Token aus der Plugin-Konfiguration sieht das Skript nicht: das bekommen nur
+Hooks und MCP-Server. Dann sagt der Abschnitt **Hooks**, was die Hooks bei ihrem
+letzten echten Lauf erlebt haben, und das ist die maßgebliche Auskunft.
+
+**Die Werkzeuge prüfst du selbst**, unabhängig vom Skript: ruf einmal
+`exo_list_workspaces` auf. Antwortet es, steht der MCP-Server. Das ist eine
+eigene Prüfung, weil MCP und Gedächtnis getrennt kaputt sein können.
+
+Wenn jemand ausdrücklich einen vollständigen Test will und das Skript das Token
+lesen kann (Quelle ist nicht die Plugin-Konfiguration):
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/einrichten/pruefen.mjs" --ende-zu-ende
+```
+
+Das schickt eine markierte Testsitzung unter dem Projekt `exocortex-selbsttest`,
+wartet bis zu zwei Minuten auf die Verarbeitung, prüft den Abruf und archiviert
+die Testnotiz wieder. Es kostet einen Modellaufruf, also nur auf Nachfrage.
 
 ## 2. Antworten
 
@@ -29,11 +49,17 @@ Installation. Sag diese drei Schritte, in dieser Reihenfolge:
 1. In eXocortex unter **Einstellungen, Verbindungen** ein Token anlegen, Recht
    **Lesen und schreiben**. Es wird genau einmal angezeigt.
 2. Hier `/plugin` aufrufen, **eXocortex** auswählen, **Konfigurieren**.
-3. Adresse (die aus der Browser-Zeile, ohne Pfad) und Token eintragen, dann
-   `/exocortex:einrichten` noch einmal.
+3. Adresse (die aus der Browser-Zeile, ohne Pfad) und Token eintragen, Claude
+   Code neu starten, dann `/exocortex:einrichten` noch einmal.
 
-**Sonst:** das Skript nennt die Ursache im Klartext, gib sie weiter und nenne
-den einen Schritt, der sie behebt. Rate nichts dazu.
+**Hat noch kein Hook-Lauf stattgefunden:** Claude Code mit `/exit` beenden, neu
+starten und `/exocortex:einrichten` noch einmal. Erst dann gibt es etwas zu
+berichten.
+
+**Sonst:** das Skript nennt das Glied der Kette, an dem es hängt, im Klartext.
+Gib genau das weiter und nenne den einen Schritt, der es behebt. Rate nichts
+dazu. Für mehr Einzelheiten gibt es das Diagnoseprotokoll (Plugin-Option
+**Diagnoseprotokoll schreiben**, oder `EXOCORTEX_MEMORY_DEBUG=1`), siehe README.
 
 ## Wenn jemand die Werte lieber in einer Datei hätte
 
