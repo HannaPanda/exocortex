@@ -285,6 +285,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-geld"
+        title="Geldbetrag"
+        source="apps/web/src/components/money-input.tsx"
+        note="Eine Einstellung, deren Schlüssel MicroUsd enthält, wird in US-Dollar gezeigt und eingegeben; gespeichert bleiben Millionstel Dollar. 2000000 erscheint als 2,00, die Grenzen als Beträge. Komma und Punkt gelten beide als Dezimaltrenner, und ein Betrag mit mehr als sechs Nachkommastellen wird abgelehnt statt gerundet. Dasselbe Feld steht in Profil, Auftrag, Eval und Workflow."
+        stageClassName="p-6 sm:p-6"
+      >
+        <MoneyRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-schmal"
         title="Auf dem Telefon"
         source="apps/web/src/components/settings/setting-row.tsx"
@@ -307,6 +317,24 @@ function ByteRowExample() {
           value={bytes}
           onChange={(value) => {
             if (typeof value === 'number') setBytes(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MoneyRowExample() {
+  const [budget, setBudget] = React.useState(2_000_000);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="workflows.budgetMicroUsdPerRun"
+          value={budget}
+          onChange={(value) => {
+            if (typeof value === 'number') setBudget(value);
           }}
           models={[]}
         />

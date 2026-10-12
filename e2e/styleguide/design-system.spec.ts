@@ -207,4 +207,25 @@ test.describe('design system decisions', () => {
     const hour = page.getByTestId('setting-row-notifications.digestHour');
     await expect(hour.getByRole('combobox')).toHaveText('07:00');
   });
+
+  test('edits money in dollars and keeps the micro-dollars exact (#167)', async ({ page }) => {
+    await page.goto('/design-system#einstellungszeile-geld');
+    const row = page.getByTestId('setting-row-workflows.budgetMicroUsdPerRun');
+    const amount = row.getByRole('textbox');
+    // 2000000 micro-dollars, shown as two dollars in German.
+    await expect(amount).toHaveValue('2,00');
+    await expect(row.getByText(/Zulässig: 0,001\s\$ bis 100,00\s\$\./)).toBeVisible();
+
+    // A comma and a point are both decimals.
+    await amount.fill('0,05');
+    await expect(amount).toHaveAttribute('aria-invalid', 'false');
+    await amount.fill('2.50');
+    await expect(amount).toHaveAttribute('aria-invalid', 'false');
+
+    // Finer than a micro-dollar, and past the bound: both refused, never rounded.
+    await amount.fill('0,0000001');
+    await expect(row.getByText(/kein Betrag in US-Dollar/)).toBeVisible();
+    await amount.fill('1000');
+    await expect(row.getByText(/bis 100,00\s\$\. Gespeichert/)).toBeVisible();
+  });
 });
