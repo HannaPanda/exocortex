@@ -40,7 +40,11 @@ Stream events are typed: `start`, `delta`, `usage`, `done`, `error`.
   `createPresetProvider` builds it. `withFallback` hands a turn the preset
   refused before answering (402, 408, 429, 5xx, no answer) to the model's
   OpenRouter equivalent, and only when `ai.subscriptionFallback` is on. A
-  configured compaction model always stays on OpenRouter.
+  configured compaction model always stays on OpenRouter. The jobs that call
+  a model by a setting (memory capture and consolidation, overview pages,
+  automations, the API's checkpoint summary) get a provider wrapped in
+  `routeByModel`, which asks the registry row per request, so pointing
+  `ai.defaultModelSlug` at a preset's model reaches them too.
 
 ## Embeddings
 

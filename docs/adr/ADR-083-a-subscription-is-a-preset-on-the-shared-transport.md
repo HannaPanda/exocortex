@@ -40,7 +40,9 @@ parser, and a fix to tool-call reassembly would have landed in one of them.
   in the Brain page of #187, not in code.
 - **The registry row chooses.** `AiModel.provider` already said which provider
   serves a model; a row naming a preset (`cline`) sends its runs through that
-  preset, everything else through OpenRouter. The admin sync and the endpoint
+  preset, everything else through OpenRouter. The same holds for a job that
+  takes its model from a setting: the boot provider is wrapped in
+  `routeByModel`, which reads the row per request. The admin sync and the endpoint
   refresh only describe OpenRouter's rows, because a preset's slug is missing
   from OpenRouter's list by nature.
 - **The key is the deployment's, and a missing key fails closed.** It comes

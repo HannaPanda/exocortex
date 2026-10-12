@@ -2,6 +2,7 @@ import { type ProviderRouting } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { ChatCompletionsProvider } from './chat-completions-provider';
+import { withFallback } from './fallback-provider';
 import {
   type ImageGenerator,
   MockImageGenerator,
@@ -64,6 +65,28 @@ export function createPresetProvider(input: {
     baseUrl: preset.baseUrl,
     logger: input.logger,
     appUrl: input.appUrl,
+  });
+}
+
+/**
+ * A preset's provider as a deployment runs it: on its own key, and handing a
+ * refused turn to `fallback` (the same model on OpenRouter) only when
+ * `fallbackEnabled` says the deployment switched `ai.subscriptionFallback` on.
+ */
+export async function createPresetProviderWithFallback(input: {
+  presetId: ProviderPresetId;
+  apiKey: string;
+  fallback: AiProvider;
+  fallbackEnabled: () => Promise<boolean>;
+  logger: Logger;
+  appUrl: string;
+}): Promise<AiProvider> {
+  const primary = createPresetProvider(input);
+  if (!(await input.fallbackEnabled())) return primary;
+  const equivalents = PROVIDER_PRESETS[input.presetId].openRouterEquivalents;
+  return withFallback(primary, input.fallback, {
+    logger: input.logger,
+    modelFor: (model) => (model === undefined ? null : (equivalents[model] ?? null)),
   });
 }
 

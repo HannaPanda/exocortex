@@ -7,6 +7,7 @@ export * from './fallback-provider';
 export * from './image-generator';
 export * from './memory-distill';
 export * from './mock-provider';
+export * from './model-routed-provider';
 export * from './openrouter-catalog';
 export * from './openrouter-provider';
 export * from './pdf-info';

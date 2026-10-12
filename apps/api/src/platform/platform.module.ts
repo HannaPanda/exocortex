@@ -1,6 +1,11 @@
 import { Global, Inject, Injectable, Module, type OnApplicationShutdown } from '@nestjs/common';
 
-import { type AiProvider, createAiProvider, createProviderRoutingResolver } from '@exocortex/ai';
+import {
+  type AiProvider,
+  createAiProvider,
+  createProviderRoutingResolver,
+  routeByModel,
+} from '@exocortex/ai';
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
@@ -91,8 +96,8 @@ export class PlatformLifecycle implements OnApplicationShutdown {
         logger: Logger,
         prisma: PrismaClient,
         settings: SettingsService,
-      ): AiProvider =>
-        createAiProvider({
+      ): AiProvider => {
+        const base = createAiProvider({
           providerId: env.AI_PROVIDER,
           logger,
           appUrl: env.APP_URL,
@@ -113,7 +118,20 @@ export class PlatformLifecycle implements OnApplicationShutdown {
                 })
               )?.providerRouting ?? null,
           }),
-        }),
+        });
+        // A checkpoint summary names its model by a setting, which may be a
+        // preset's (issue #187): the registry row decides who serves it.
+        return routeByModel({
+          base,
+          providerOf: async (slug) =>
+            (await prisma.aiModel.findUnique({ where: { slug }, select: { provider: true } }))
+              ?.provider ?? null,
+          presetKeys: { cline: env.CLINE_API_KEY ?? '' },
+          fallbackEnabled: async () => (await settings.get())['ai.subscriptionFallback'],
+          logger,
+          appUrl: env.APP_URL,
+        });
+      },
     },
     {
       provide: MAILER,

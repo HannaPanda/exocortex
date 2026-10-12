@@ -3,16 +3,15 @@ import {
   createAiProvider,
   createEmbeddingClient,
   createEmbeddingProvider,
-  createPresetProvider,
+  createPresetProviderWithFallback,
   createProviderRoutingResolver,
   type DocumentTextExtractor,
   type ImageGenerator,
   isProviderPresetId,
   type PdfDocumentInfoReader,
-  PROVIDER_PRESETS,
   type ProviderPresetId,
+  routeByModel,
   type VisionPreprocessor,
-  withFallback,
 } from '@exocortex/ai';
 import { parseCredentialKey } from '@exocortex/auth';
 import { type WorkerEnv } from '@exocortex/config';
@@ -66,7 +65,8 @@ export interface WorkerRuntime {
    * The deployment's provider, built once at boot.
    *
    * Right for everything the deployment pays for itself: memory capture,
-   * consolidation, compaction. An AI run asks `providerFor` instead, because
+   * consolidation, compaction. It asks the model registry per request, so a
+   * slug registered for a subscription preset reaches that preset (issue #187). An AI run asks `providerFor` instead, because
    * the workspace may be paying with its own key (ADR-023).
    */
   provider: AiProvider;
@@ -190,37 +190,48 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       (await prisma.aiModel.findUnique({ where: { slug }, select: { providerRouting: true } }))
         ?.providerRouting ?? null,
   });
-  const provider = providerWithKey(env, logger, env.OPENROUTER_API_KEY ?? '', providerRoutingFor);
+  const deploymentOpenRouter = providerWithKey(
+    env,
+    logger,
+    env.OPENROUTER_API_KEY ?? '',
+    providerRoutingFor,
+  );
+  // A checked subscription endpoint (issue #187, ADR-083), paid for by the
+  // deployment's key for it. It falls back to the OpenRouter provider of the
+  // same workspace only when the deployment switched that on.
+  const presetKeys: Record<ProviderPresetId, string> = { cline: env.CLINE_API_KEY ?? '' };
+  const fallbackEnabled = async (): Promise<boolean> =>
+    (await readSettings())['ai.subscriptionFallback'];
+  // The background jobs name a model by a setting, which may be a preset's;
+  // the registry row decides who serves it, as it does for a run.
+  const provider = routeByModel({
+    base: deploymentOpenRouter,
+    providerOf: async (slug) =>
+      (await prisma.aiModel.findUnique({ where: { slug }, select: { provider: true } }))
+        ?.provider ?? null,
+    presetKeys,
+    fallbackEnabled,
+    logger,
+    appUrl: env.APP_URL,
+  });
 
   const aiKeyFor: AiKeyResolver = createAiKeyResolver({ prisma, env, logger });
   const openRouterFor = async (
     workspaceId: string,
   ): Promise<{ provider: AiProvider; key: ResolvedAiKey }> => {
     const key = await aiKeyFor(workspaceId);
-    if (!key.usedOwnKey) return { provider, key };
+    if (!key.usedOwnKey) return { provider: deploymentOpenRouter, key };
     return { provider: providerWithKey(env, logger, key.apiKey, providerRoutingFor), key };
   };
-  // A checked subscription endpoint (issue #187, ADR-083), paid for by the
-  // deployment's key for it. It falls back to the OpenRouter provider of the
-  // same workspace only when the deployment switched that on.
-  const presetKeys: Record<ProviderPresetId, string> = { cline: env.CLINE_API_KEY ?? '' };
-  const presetProvider = async (
-    presetId: ProviderPresetId,
-    fallback: AiProvider,
-  ): Promise<AiProvider> => {
-    const primary = createPresetProvider({
+  const presetProvider = (presetId: ProviderPresetId, fallback: AiProvider): Promise<AiProvider> =>
+    createPresetProviderWithFallback({
       presetId,
       apiKey: presetKeys[presetId],
+      fallback,
+      fallbackEnabled,
       logger,
       appUrl: env.APP_URL,
     });
-    if (!(await readSettings())['ai.subscriptionFallback']) return primary;
-    const equivalents = PROVIDER_PRESETS[presetId].openRouterEquivalents;
-    return withFallback(primary, fallback, {
-      logger,
-      modelFor: (model) => (model === undefined ? null : (equivalents[model] ?? null)),
-    });
-  };
   const providerFor = async (
     workspaceId: string,
     providerId?: string,
