@@ -804,6 +804,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   has to write gets a directory outside the repository, never a
   `ReadWritePaths` back into it; `deploy.sh` reads both properties from the
   running units and fails when one has loosened.
+- ADR-083: a subscription is a preset on the shared transport. One
+  `ChatCompletionsProvider` holds the OpenAI-shaped wire format and a
+  `ChatCompletionsDialect` what differs (envelope, usage request, OpenRouter's
+  routing object); OpenRouter is one dialect, Cline Pass a preset with a fixed
+  address in `provider-presets.ts`. `AiModel.provider` chooses, the key comes
+  from the environment and a missing one fails closed. A turn the preset
+  refused before answering goes to OpenRouter only when
+  `ai.subscriptionFallback` is on, never after a fragment has arrived.
 
 Full list: `docs/adr/`.
 

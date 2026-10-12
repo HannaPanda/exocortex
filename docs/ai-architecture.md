@@ -26,10 +26,21 @@ Stream events are typed: `start`, `delta`, `usage`, `done`, `error`.
 
 - `MockAiProvider` — deterministic, streams word by word, echoes the question and
   reports usage. It is the default (`AI_PROVIDER=mock`).
-- `OpenRouterProvider` — request shaping, SSE parsing and usage mapping are
-  implemented; the adapter refuses to run without `OPENROUTER_API_KEY` so it can
-  never silently start making paid calls. `OPENROUTER_DEFAULT_MODEL` is the main
-  driver (currently `z-ai/glm-5.2`, text-only, no vision).
+- `ChatCompletionsProvider` — the one OpenAI-shaped transport: request
+  shaping, SSE parsing, tool-call reassembly and usage mapping, including the
+  time to the first fragment (`AiUsage.firstTokenMs`). What differs between
+  endpoints is a `ChatCompletionsDialect` (ADR-083). Every instance refuses to
+  run without its key, so it can never silently start making paid calls.
+- `OpenRouterProvider` — the transport with `OPENROUTER_DIALECT` (the routing
+  object of ADR-032/ADR-063, `usage.include`). `OPENROUTER_DEFAULT_MODEL` is
+  the main driver (currently `z-ai/glm-5.2`, text-only, no vision).
+- Subscription presets (`provider-presets.ts`, issue #187) — checked endpoints
+  on a fixed address, today `cline` (Cline Pass, key `CLINE_API_KEY`). A model
+  whose registry row names a preset in `provider` runs through it;
+  `createPresetProvider` builds it. `withFallback` hands a turn the preset
+  refused before answering (402, 408, 429, 5xx, no answer) to the model's
+  OpenRouter equivalent, and only when `ai.subscriptionFallback` is on. A
+  configured compaction model always stays on OpenRouter.
 
 ## Embeddings
 

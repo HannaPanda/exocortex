@@ -145,6 +145,11 @@ What is deliberately still missing is listed under
   whose window can take it (ADR-032), and among those OpenRouter sorts by
   throughput, latency or price, skips or insists on providers, as one
   deployment-wide setting that each model can override key by key (ADR-063)
+- subscription plans as checked presets on the same Chat Completions
+  transport: a model registered with provider `cline` runs on Cline Pass, and
+  a turn the plan refuses goes to OpenRouter only when the deployment allows
+  it; the run inspector names the provider, the time to the first token and
+  the writing speed of every turn (ADR-083)
 - a `/chats` area that finds a conversation again: full-text search over the
   messages, a reading view of the transcript, continuing it in the panel, and
   saving it as an ordinary page
@@ -290,20 +295,20 @@ What is deliberately still missing is listed under
 
 ## Stack
 
-| Layer    | Choice                                                                                          |
-| -------- | ----------------------------------------------------------------------------------------------- |
-| Runtime  | Node.js 24 LTS, pnpm 11, Turborepo 2                                                            |
-| Frontend | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui on Base UI, Lucide, TanStack Query |
-| Editor   | Tiptap 3, ProseMirror, Yjs, Hocuspocus, `y-indexeddb`                                           |
-| API      | NestJS 12 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                           |
-| Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                           |
-| Jobs     | BullMQ 6 on Redis 8                                                                             |
-| Storage  | S3-compatible (MinIO locally)                                                                   |
-| Auth     | Better Auth 1.7 with the Prisma adapter                                                         |
-| AI       | provider-neutral contracts, OpenRouter, a mock provider for offline work                        |
-| Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                           |
-| Tracing  | OpenTelemetry SDK over OTLP/HTTP, optional and off by default                                   |
-| Tests    | Vitest 5, Playwright 1.63                                                                       |
+| Layer    | Choice                                                                                                                               |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Runtime  | Node.js 24 LTS, pnpm 11, Turborepo 2                                                                                                 |
+| Frontend | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui on Base UI, Lucide, TanStack Query                                      |
+| Editor   | Tiptap 3, ProseMirror, Yjs, Hocuspocus, `y-indexeddb`                                                                                |
+| API      | NestJS 12 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                                                                |
+| Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                                                                |
+| Jobs     | BullMQ 6 on Redis 8                                                                                                                  |
+| Storage  | S3-compatible (MinIO locally)                                                                                                        |
+| Auth     | Better Auth 1.7 with the Prisma adapter                                                                                              |
+| AI       | provider-neutral contracts, one Chat Completions transport for OpenRouter and subscription presets, a mock provider for offline work |
+| Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                                                                |
+| Tracing  | OpenTelemetry SDK over OTLP/HTTP, optional and off by default                                                                        |
+| Tests    | Vitest 5, Playwright 1.63                                                                                                            |
 
 ## Quick start
 
@@ -373,7 +378,7 @@ apps/collaboration    Hocuspocus server, binary Yjs persistence, ticket verifica
 apps/worker           BullMQ worker: materialization, indexing, AI runs, maintenance
 apps/mcp              stdio JSON-RPC MCP server for external clients
 
-packages/ai           provider-neutral AI contracts, OpenRouter, mock provider, runner contracts
+packages/ai           provider-neutral AI contracts, Chat Completions transport (OpenRouter, presets), mock provider, runner contracts
 packages/auth         Better Auth, policies, session verification, collaboration tickets
 packages/calendar     iCalendar parsing and serialization, recurrence, reminders
 packages/config       runtime-validated environment schemas

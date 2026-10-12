@@ -51,16 +51,16 @@ OpenTelemetry Collector speak the same protocol.
 
 One trace covers a request and everything it causes, across processes.
 
-| Span                     | Opened in                                     | Says                                           |
-| ------------------------ | --------------------------------------------- | ---------------------------------------------- |
-| `GET /api/documents/:id` | `apps/api/src/common/tracing.ts`              | route, status code, correlation id             |
-| `queue.enqueue <queue>`  | `QueueRegistry.enqueue`                       | which queue, which job id                      |
-| `job <queue>`            | `createTypedWorker`                           | attempt, **queue wait time**, job duration     |
-| `outbox.dispatch <type>` | `apps/worker/.../maintenance-tasks/outbox.ts` | which event type the sweep spent its time on   |
-| `ai.run`                 | `apps/worker/src/processors/ai-run.ts`        | model, tool iterations, tokens, cost           |
-| `ai.turn`                | `.../ai-run/execution.ts`                     | turn index, finish reason, tokens of that turn |
-| `ai.tool <name>`         | `apps/worker/src/tool-runner.ts`              | tool name, whether it failed or was refused    |
-| `ai.provider.request`    | `packages/ai/src/openrouter-provider.ts`      | HTTP status, streaming or not, time to headers |
+| Span                     | Opened in                                      | Says                                           |
+| ------------------------ | ---------------------------------------------- | ---------------------------------------------- |
+| `GET /api/documents/:id` | `apps/api/src/common/tracing.ts`               | route, status code, correlation id             |
+| `queue.enqueue <queue>`  | `QueueRegistry.enqueue`                        | which queue, which job id                      |
+| `job <queue>`            | `createTypedWorker`                            | attempt, **queue wait time**, job duration     |
+| `outbox.dispatch <type>` | `apps/worker/.../maintenance-tasks/outbox.ts`  | which event type the sweep spent its time on   |
+| `ai.run`                 | `apps/worker/src/processors/ai-run.ts`         | model, tool iterations, tokens, cost           |
+| `ai.turn`                | `.../ai-run/execution.ts`                      | turn index, finish reason, tokens of that turn |
+| `ai.tool <name>`         | `apps/worker/src/tool-runner.ts`               | tool name, whether it failed or was refused    |
+| `ai.provider.request`    | `packages/ai/src/chat-completions-provider.ts` | HTTP status, streaming or not, time to headers |
 
 `messaging.bullmq.wait_time_ms` on the job span is what separates "the queue was
 busy" from "the work was slow": it is the time between enqueue and pickup, while
