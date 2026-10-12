@@ -8,6 +8,15 @@
         "value": "inter",
         "createdAt": "2026-09-20T19:33:52.595Z",
         "reason": "Decided, not defaulted: DESIGN.md section 3 chose Inter Variable, self-hosted, because the system-font stack reflowed the same line differently on every OS. The 2026-09-20 design brief ruled out a new typeface for this pass in so many words. The offline page only repeats the application's own stack."
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "apps/web/src/components/knowledge-map/map-overlays.tsx"
+        ],
+        "createdAt": "2026-10-12T20:24:49.254Z",
+        "reason": "Claude: the legend swatch for similarity lines is drawn as an arc (top border on a rounded-top span) to mirror the curved lines on the canvas; not a card accent"
       }
     ]
   }
