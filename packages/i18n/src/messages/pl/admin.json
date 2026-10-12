@@ -97,6 +97,11 @@
     "xhigh": "bardzo wysoki",
     "max": "maksymalny"
   },
+  "modelProviders": {
+    "openrouter": "OpenRouter",
+    "cline": "Cline (subskrypcja)",
+    "mock": "Dostawca testowy (offline)"
+  },
   "catalog": {
     "title": "Modele z katalogu OpenRouter",
     "description": "Wystarczy wybrać: okno kontekstu, ceny, analiza obrazu, narzędzia i poziomy wnioskowania pochodzą z katalogu. W przypadku aliasu („latest”) liczą się wartości celu, a zapisywana jest najbardziej ostrożna wartość spośród jego dostawców.",
@@ -133,6 +138,8 @@
     },
     "fields": {
       "slug": "Slug",
+      "provider": "Dostawca",
+      "providerHelp": "Kto odpowiada na zapytania do tego modelu. Dostawca subskrypcyjny wymaga swojego klucza na serwerze oraz sluga, który sam rozpoznaje, na przykład cline-pass/deepseek-v4.1-flash w przypadku Cline.",
       "displayName": "Nazwa wyświetlana",
       "description": "Opis",
       "contextWindow": "Okno kontekstu (tokeny)",

@@ -81,6 +81,12 @@ export const aiSchema = z.object({
    */
   OPENROUTER_VISION_MODEL: z.string().trim().optional(),
   /**
+   * Key for the Cline preset (issue #187). Only a model registered with
+   * `provider: cline` uses it, and such a model fails closed while it is
+   * unset. The address it is sent to is fixed in `provider-presets.ts`.
+   */
+  CLINE_API_KEY: z.string().trim().optional(),
+  /**
    * Base URL of a docling-serve instance, e.g. `http://127.0.0.1:5010`. Unset
    * means the Docling extractor is never built, so `ai.pdfExtractor: 'docling'`
    * degrades to "not configured" instead of failing at request time.

@@ -961,6 +961,16 @@
     },
     "where": "Administration, Settings, AI group, and per model in Administration, AI models, when editing."
   },
+  "abo-anbieter": {
+    "title": "Use a subscription instead of per-token billing",
+    "summary": "A model can run through a verified subscription instead of OpenRouter, for example DeepSeek V4.1 Flash via Cline Pass. Once the subscription is exhausted, OpenRouter takes over, but only if you have allowed it.",
+    "details": {
+      "p1": "Some providers sell a fixed monthly subscription with a quota that supports significantly more requests than the same amount would on OpenRouter. Such a subscription is registered here as its own provider: the AI model then lists the subscription provider instead of OpenRouter, and every request to this model goes there, using the key stored on the server.",
+      "p2": "Only providers whose terms permit custom automations and whose address is permanently configured are included. If the key is missing, the run fails rather than quietly charging another account.",
+      "p3": "If the subscription rejects a request before the response has started (quota exhausted, too many requests, provider outage), the same request can be sent to the corresponding model on OpenRouter. This is turned off until you enable it in the settings. The run view shows which provider answered a step and how long it took until the first character."
+    },
+    "where": "Administration, AI models, under the Provider field when creating or editing; fallback to OpenRouter in Administration, Settings, AI group."
+  },
   "kosten": {
     "title": "What AI cost",
     "summary": "Every run is logged with model, tokens, and cost, broken down by workspace and time period. This turns \"what is this actually costing me\" into a page rather than a guess.",

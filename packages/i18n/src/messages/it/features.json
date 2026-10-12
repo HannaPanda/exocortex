@@ -961,6 +961,16 @@
     },
     "where": "Amministrazione, Impostazioni, gruppo IA, e per ciascun modello in Amministrazione, Modelli IA, durante la modifica."
   },
+  "abo-anbieter": {
+    "title": "Usare un abbonamento invece della fatturazione per token",
+    "summary": "Un modello può funzionare tramite un abbonamento verificato invece che tramite OpenRouter, ad esempio DeepSeek V4.1 Flash tramite Cline Pass. Se l’abbonamento è esaurito, subentra OpenRouter, ma solo se lo hai consentito.",
+    "details": {
+      "p1": "Alcuni fornitori vendono un abbonamento mensile fisso con una quota che copre molte più richieste rispetto allo stesso importo su OpenRouter. Un tale abbonamento viene registrato qui come fornitore a sé stante: nel modello IA compare quindi il fornitore dell’abbonamento invece di OpenRouter, e ogni richiesta a questo modello viene indirizzata lì, utilizzando la chiave salvata sul server.",
+      "p2": "Vengono inclusi solo fornitori le cui condizioni consentono le proprie automazioni e il cui indirizzo è configurato in modo fisso. Se manca la chiave, l’esecuzione fallisce invece di addebitare silenziosamente un altro account.",
+      "p3": "Se l’abbonamento rifiuta una richiesta prima che la risposta sia iniziata (quota esaurita, troppe richieste, disservizio del fornitore), la stessa richiesta può essere inoltrata al modello corrispondente su OpenRouter. Questa opzione è disattivata finché non la attivi nelle impostazioni. Quale fornitore ha risposto a un passaggio e quanto tempo è trascorso fino al primo carattere viene mostrato nella vista dell’esecuzione."
+    },
+    "where": "Amministrazione, Modelli IA, durante la creazione o la modifica nel campo Fornitore; il fallback su OpenRouter in Amministrazione, Impostazioni, gruppo IA."
+  },
   "kosten": {
     "title": "Quanto è costata l’IA",
     "summary": "Ogni esecuzione viene registrata con modello, token e costi, suddivisa per area di lavoro e periodo. Così «quanto mi costa in realtà?» diventa una pagina precisa e non una stima.",

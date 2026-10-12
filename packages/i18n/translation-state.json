@@ -1088,6 +1088,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "562273d2d64e876c"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "472590ae974d4c1f"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "15ac01621af59b73"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "c084a26c920da63f"
@@ -1119,6 +1127,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "1509f561f2416598"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "5483d8eb03196f08"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "445c46f66b8a0393"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -10800,6 +10820,30 @@
       "source": "c41c979e7195476c",
       "output": "2a6a258f2c5ff197"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "f7d4c6c44d2de233"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "6741f796f92ef462"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "0fdc2a1c7faf93f0"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "189d3d5dc2434859"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "3e09bc8e5cc3ecff"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "7ffa8296e72d25b9"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "8da03b37bd27f0f4"
@@ -15404,6 +15448,14 @@
       "source": "7e3fac046b10d873",
       "output": "c9aa5d2192be4db8"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "5de7e8c1bb343b01"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "c9f7d13c088319b5"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "b8192353a3982b4f"
@@ -15411,6 +15463,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "6e2c82a5fd72da75"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -16295,6 +16351,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "3fee5c367b82bd26"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "a2d180a63c6aab5a"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "b6f882c0817ded04"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -22814,6 +22878,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "5aa1adb44c918985"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "e746643f4479d116"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "bc7d5c21852ae05d"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "7174d17887f89eeb"
@@ -22845,6 +22917,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "13e51a210f45ed1b"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "a7dc4c398bc8bb81"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "f7bcd684f9ed002c"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -32526,6 +32610,30 @@
       "source": "c41c979e7195476c",
       "output": "d49d34f33982f9bf"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "20eee150a8dd0b93"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "1f371d97fc345a0c"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "a1e93a9bec23f2b9"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "f0b8154a9588a10e"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "2dfaeb511d2f3288"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "59697f25498d0bdd"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "871acf01fd9b7f58"
@@ -37130,6 +37238,14 @@
       "source": "7e3fac046b10d873",
       "output": "c9aa5d2192be4db8"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "80d0404cacd101ad"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "ccd9542d4b79a85d"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "b9fa18b34e15afee"
@@ -37137,6 +37253,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "e59845808f703477"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "7c433889d5e75daa"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -38021,6 +38141,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "f2151f39d020434c"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "4c29e6c2c861e3cd"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "b16fb158c5ef8c0a"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -44540,6 +44668,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "aceed10f1c2d85f2"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "08e6d9c4d8fa3de2"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "ba13cf44e4268110"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "820b859974faf3a3"
@@ -44571,6 +44707,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "71dc74873e23107d"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "9b89baede9637e5b"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "44155f9491cd48b5"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -54252,6 +54400,30 @@
       "source": "c41c979e7195476c",
       "output": "69e045befdcba265"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "fd7613cb4a7e9606"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "952f7406b5006faa"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "15ad7ba964ddffa3"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "7ef01144f1d6c3ac"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "04851bc9084f9477"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "a9cade5dcdf31e3c"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "c1584b181831ab29"
@@ -58856,6 +59028,14 @@
       "source": "7e3fac046b10d873",
       "output": "008cf97e2244d8ef"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "6ec23b7da5189d86"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "60488287cc1eaa38"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "e29cee5e51849ec8"
@@ -58863,6 +59043,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "0fa1e64712e25c2e"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -59747,6 +59931,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "f461cb9cd2291a28"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "9d98399dd53ec09a"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "dc39d9990678a7db"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -66266,6 +66458,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "f3765996d5fa3b42"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "472590ae974d4c1f"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "507455c447d7d02a"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "0ced8c699234acb7"
@@ -66297,6 +66497,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "c5997e85ae513c07"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "d5194246d3f1cd38"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "8f3d1ab88c325f1d"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -75978,6 +76190,30 @@
       "source": "c41c979e7195476c",
       "output": "fb617146d019eb05"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "b287010f6a1acecb"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "0b42124abcaa4f15"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "5150501ddc4b6cee"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "02d7864a9e349233"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "60343b24a0fc734e"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "e0c421b2af54eb1a"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "7d1bb35a7560293f"
@@ -80582,6 +80818,14 @@
       "source": "7e3fac046b10d873",
       "output": "aa9c21f053367ede"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "9e66d99beea32ff9"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "df2eef9056cbcb2c"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "e60fde18960e9b85"
@@ -80589,6 +80833,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "23d2729be4fd348e"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "55f3d47bec973546"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -81473,6 +81721,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "9e4a033af305fb44"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "785922f2fad277d9"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "9ea3cc85e949c160"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -87992,6 +88248,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "a9aee3793a8a6471"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "472590ae974d4c1f"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "b7cfeb4c9d44bc6d"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "ec8a70b79f2e9784"
@@ -88023,6 +88287,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "3caa6d88a258af55"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "9b89baede9637e5b"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "80300b805811f0ce"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -97704,6 +97980,30 @@
       "source": "c41c979e7195476c",
       "output": "5513cf37c136ae81"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "cd6dea58e4524d0b"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "589675bd2bf4e387"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "109a01f375e71eb9"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "32cbcd36477ee03c"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "058a5273c541f33d"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "b2a6eebedae1f212"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "8c819c8d935184c1"
@@ -102308,6 +102608,14 @@
       "source": "7e3fac046b10d873",
       "output": "33139b72652e28d4"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "7fbcf51588a14f71"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "4f1f4ea24a52afd0"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "df844489bea1aa70"
@@ -102315,6 +102623,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "cfcf69bc05fbb7c3"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -103199,6 +103511,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "492a9d4d86aa83ed"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "9eaa348986e3abbe"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "8924af5127915b83"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -109718,6 +110038,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "6d667839101f1468"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "917e6aa3eaba26e1"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "8eaf122b4cf7d235"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "3c1c47202b42ffb2"
@@ -109749,6 +110077,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "b6a0c0c469c5b62d"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "cbe9159c6dec4042"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "1206aef0f4300acb"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -119430,6 +119770,30 @@
       "source": "c41c979e7195476c",
       "output": "e65d5ad5ed8f8248"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "0a8068ddb7265539"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "c70b6e92089c99bc"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "75f86214f81d03a4"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "170f5f9996c45cbf"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "44120027f7a376db"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "398e4f2b33d13d49"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "6da1b6faee6dd5b6"
@@ -124034,6 +124398,14 @@
       "source": "7e3fac046b10d873",
       "output": "271d25fac3f7cb42"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "9710f6140033c3ea"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "bb87788aff6b0503"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "bc2f2e276334308c"
@@ -124041,6 +124413,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "318b5b1a184c52f6"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "fa84c41f7f27273d"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -124925,6 +125301,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "8b7be118bd2a48fe"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "72da1204a1974813"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "298b362cbb912ff7"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",
@@ -131444,6 +131828,14 @@
       "source": "16dc3e205ac66a9a",
       "output": "68ba1dcd31acd9f5"
     },
+    "admin.modelDialog.fields.provider": {
+      "source": "9080a78b3e99c70f",
+      "output": "07f24ce4889ab7fd"
+    },
+    "admin.modelDialog.fields.providerHelp": {
+      "source": "4fb72b4d0cd35d92",
+      "output": "56a34b41738c2cfc"
+    },
     "admin.modelDialog.fields.providerRouting": {
       "source": "4242a82b1257a46f",
       "output": "885dedeeec079fe7"
@@ -131475,6 +131867,18 @@
     "admin.modelDialog.save": {
       "source": "f6b2ff39f540eb81",
       "output": "aef7cd5b2081351d"
+    },
+    "admin.modelProviders.cline": {
+      "source": "dc66a7a7e85ff70b",
+      "output": "8653fb1dc27d0abe"
+    },
+    "admin.modelProviders.mock": {
+      "source": "0a8d2290d51f5473",
+      "output": "a612b75fcc8a3593"
+    },
+    "admin.modelProviders.openrouter": {
+      "source": "eb70c3bc14fa7ae1",
+      "output": "eb70c3bc14fa7ae1"
     },
     "admin.models.actionsFor": {
       "source": "f03a177cc1774f2e",
@@ -141156,6 +141560,30 @@
       "source": "c41c979e7195476c",
       "output": "ec5a616cdd10a132"
     },
+    "features.abo-anbieter.details.p1": {
+      "source": "9bc250def1191055",
+      "output": "720a679ffe0fefb0"
+    },
+    "features.abo-anbieter.details.p2": {
+      "source": "88801a1fdc859576",
+      "output": "1453c25cf936bfe8"
+    },
+    "features.abo-anbieter.details.p3": {
+      "source": "412e7e48bdb1a091",
+      "output": "3a5081293be286ed"
+    },
+    "features.abo-anbieter.summary": {
+      "source": "e9ce9476d248424c",
+      "output": "b8fdde19c6754764"
+    },
+    "features.abo-anbieter.title": {
+      "source": "427504ad972cd12c",
+      "output": "d63653051cf2fd70"
+    },
+    "features.abo-anbieter.where": {
+      "source": "6577ddb540b48e81",
+      "output": "ff291e6cb86b8f87"
+    },
     "features.aenderungsvorschlaege.details.p1": {
       "source": "c33fd3a2981d5343",
       "output": "6c9498ec342cd00a"
@@ -145760,6 +146188,14 @@
       "source": "7e3fac046b10d873",
       "output": "5794009f792e2c8e"
     },
+    "runInspector.timeline.turnFirstToken": {
+      "source": "edb0a2e2f8cf7784",
+      "output": "ac8644326b865ac2"
+    },
+    "runInspector.timeline.turnProvider": {
+      "source": "6d3ae76722b2875b",
+      "output": "8638238d65476f3b"
+    },
     "runInspector.timeline.turnReasoned": {
       "source": "ade62b2fff4105bb",
       "output": "d4e797f132232a3b"
@@ -145767,6 +146203,10 @@
     "runInspector.timeline.turnServedBy": {
       "source": "125f9e4c7aeadc25",
       "output": "0cd0cc276afc4177"
+    },
+    "runInspector.timeline.turnSpeed": {
+      "source": "c96254f17e1075f2",
+      "output": "7c433889d5e75daa"
     },
     "runInspector.timeline.turnTokens": {
       "source": "8b267162e4764a4f",
@@ -146651,6 +147091,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "5da79538fd38aa66"
+    },
+    "settings.keys.ai.subscriptionFallback.help": {
+      "source": "fbc7444b2d9f073e",
+      "output": "06468099b345eb48"
+    },
+    "settings.keys.ai.subscriptionFallback.label": {
+      "source": "f40d4eb0dd020f0c",
+      "output": "761c390770a34f1b"
     },
     "settings.keys.ai.systemPrompt.help": {
       "source": "d6f84c0b02c86757",

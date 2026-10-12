@@ -129,6 +129,13 @@ export const settingsSchema = z.object({
    */
   'ai.providerRouting': providerRoutingSchema.default({}),
   /**
+   * Whether a turn a subscription provider refuses before answering (quota,
+   * rate limit, upstream fault) may go to OpenRouter instead (issue #187).
+   * Off by default: falling back spends money on a different account, and
+   * that is a decision somebody makes, never one a refusal makes for them.
+   */
+  'ai.subscriptionFallback': z.boolean().default(false),
+  /**
    * Days after which a finished run's prompt and answer text are emptied
    * (issue #10). The metric columns survive it, so the usage history stays
    * complete for as long as the rows do; what goes is the two fat columns,
@@ -861,6 +868,9 @@ export const SETTING_SCOPES = {
   // Which providers may serve a request is a decision about the account that
   // pays and the data it sends, and it is made once per deployment.
   'ai.providerRouting': 'deployment',
+  // Falling back pays the deployment's OpenRouter account, so it is the
+  // deployment's decision.
+  'ai.subscriptionFallback': 'deployment',
   // Data retention is a promise the deployment makes, not a preference.
   'ai.runPayloadRetentionDays': 'deployment',
   'ai.pdfExtractionEnabled': 'workspace',

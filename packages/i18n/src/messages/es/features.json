@@ -961,6 +961,16 @@
     },
     "where": "administración, Ajustes, grupo IA, y para cada modelo en administración, Modelos de IA, al editar."
   },
+  "abo-anbieter": {
+    "title": "Usar una suscripción en lugar de facturación por token",
+    "summary": "Un modelo puede ejecutarse a través de una suscripción verificada en lugar de OpenRouter, por ejemplo, DeepSeek V4.1 Flash a través de Cline Pass. Si la suscripción se agota, OpenRouter toma el relevo, pero solo si lo has permitido.",
+    "details": {
+      "p1": "Algunos proveedores ofrecen una suscripción mensual fija con una cuota que cubre muchas más solicitudes que el mismo importe en OpenRouter. Dicha suscripción se registra aquí como un proveedor propio: en el modelo de IA aparece entonces el proveedor de la suscripción en lugar de OpenRouter, y cada solicitud a este modelo se envía allí con la clave guardada en el servidor.",
+      "p2": "Solo se admiten proveedores cuyos términos permitan automatizaciones propias y cuya dirección esté registrada de forma fija. Si falta la clave, la ejecución falla en lugar de realizar cargos silenciosamente en otra cuenta.",
+      "p3": "Si la suscripción rechaza una solicitud antes de que comience la respuesta (cuota agotada, demasiadas solicitudes, fallo del proveedor), la misma solicitud puede enviarse al modelo correspondiente en OpenRouter. Esto está desactivado hasta que lo actives en los ajustes. En la vista de ejecución se indica qué proveedor ha respondido a un paso y cuánto tardó en llegar el primer carácter."
+    },
+    "where": "Administración, Modelos de IA, al crear o editar el campo Proveedor; el recurso alternativo a OpenRouter en Administración, Ajustes, grupo IA."
+  },
   "kosten": {
     "title": "Cuánto ha costado la IA",
     "summary": "Cada ejecución se registra con su modelo, tokens y costes, desglosados por espacio de trabajo y periodo. De este modo, saber «cuánto me está costando esto en realidad» es solo consultar una página y no una estimación.",

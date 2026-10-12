@@ -115,6 +115,10 @@
         "label": "Routing dei provider su OpenRouter",
         "help": "Si applica a ogni richiesta a OpenRouter, in formato JSON come il campo «provider»: ad esempio sort con throughput, latency o price, ignore e only con i nomi dei provider. Se vuoto, OpenRouter sceglie liberamente. I singoli modelli sovrascrivono questi valori nell’amministrazione dei modelli."
       },
+      "subscriptionFallback": {
+        "label": "Passa a OpenRouter se l’abbonamento è esaurito",
+        "help": "Se un provider in abbonamento come Cline rifiuta una richiesta prima che la risposta sia iniziata (quota esaurita, troppe richieste, disservizio), questa viene inviata allo stesso modello su OpenRouter. Questo comporterà un costo sull’account OpenRouter. Se disattivata, l’esecuzione fallirà."
+      },
       "runPayloadRetentionDays": {
         "label": "Conserva i testi dell’IA (giorni)",
         "help": "Nelle esecuzioni dell’IA meno recenti, domanda e risposta vengono rimosse, mentre i numeri per la vista di utilizzo rimangono invariati. 0 significa: non eliminare mai. Le cronologie delle chat non vengono toccate."

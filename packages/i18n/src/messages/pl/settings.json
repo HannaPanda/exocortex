@@ -115,6 +115,10 @@
         "label": "Routing dostawców w OpenRouter",
         "help": "Dotyczy każdego zapytania do OpenRouter, jako JSON w formacie pola „provider”: na przykład sort z throughput, latency lub price, ignore oraz only z nazwami dostawców. Pozostawienie pustego pola pozwala OpenRouter wybrać dowolnie. Poszczególne modele mogą nadpisywać te wartości w administracji modeli."
       },
+      "subscriptionFallback": {
+        "label": "Przełączanie na OpenRouter po wyczerpaniu subskrypcji",
+        "help": "Jeśli dostawca subskrypcji, taki jak Cline, odrzuci zapytanie przed rozpoczęciem odpowiedzi (wyczerpany limit, zbyt wiele zapytań, awaria), trafi ono do tego samego modelu w OpenRouter. Wiąże się to z opłatami na koncie OpenRouter. Gdy opcja jest wyłączona, uruchomienie zakończy się błędem."
+      },
       "runPayloadRetentionDays": {
         "label": "Przechowywanie tekstów SI (dni)",
         "help": "W przypadku starszych uruchomień SI pytanie i odpowiedź są usuwane, a wartości liczbowe w widoku użycia pozostają. 0 oznacza: nigdy nie usuwaj. Nie wpływa to na historię czatów."

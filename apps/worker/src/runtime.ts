@@ -3,11 +3,16 @@ import {
   createAiProvider,
   createEmbeddingClient,
   createEmbeddingProvider,
+  createPresetProvider,
   createProviderRoutingResolver,
   type DocumentTextExtractor,
   type ImageGenerator,
+  isProviderPresetId,
   type PdfDocumentInfoReader,
+  PROVIDER_PRESETS,
+  type ProviderPresetId,
   type VisionPreprocessor,
+  withFallback,
 } from '@exocortex/ai';
 import { parseCredentialKey } from '@exocortex/auth';
 import { type WorkerEnv } from '@exocortex/config';
@@ -72,7 +77,10 @@ export interface WorkerRuntime {
    * object around a fetch client, which is cheap enough to do per run and the
    * only way a workspace's own key can reach the call at all.
    */
-  providerFor: (workspaceId: string) => Promise<{ provider: AiProvider; key: ResolvedAiKey }>;
+  providerFor: (
+    workspaceId: string,
+    providerId?: string,
+  ) => Promise<{ provider: AiProvider; key: ResolvedAiKey; openRouter: AiProvider }>;
   storage: ObjectStorage;
   search: HybridSearchAdapter;
   /**
@@ -185,12 +193,47 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const provider = providerWithKey(env, logger, env.OPENROUTER_API_KEY ?? '', providerRoutingFor);
 
   const aiKeyFor: AiKeyResolver = createAiKeyResolver({ prisma, env, logger });
-  const providerFor = async (
+  const openRouterFor = async (
     workspaceId: string,
   ): Promise<{ provider: AiProvider; key: ResolvedAiKey }> => {
     const key = await aiKeyFor(workspaceId);
     if (!key.usedOwnKey) return { provider, key };
     return { provider: providerWithKey(env, logger, key.apiKey, providerRoutingFor), key };
+  };
+  // A checked subscription endpoint (issue #187, ADR-083), paid for by the
+  // deployment's key for it. It falls back to the OpenRouter provider of the
+  // same workspace only when the deployment switched that on.
+  const presetKeys: Record<ProviderPresetId, string> = { cline: env.CLINE_API_KEY ?? '' };
+  const presetProvider = async (
+    presetId: ProviderPresetId,
+    fallback: AiProvider,
+  ): Promise<AiProvider> => {
+    const primary = createPresetProvider({
+      presetId,
+      apiKey: presetKeys[presetId],
+      logger,
+      appUrl: env.APP_URL,
+    });
+    if (!(await readSettings())['ai.subscriptionFallback']) return primary;
+    const equivalents = PROVIDER_PRESETS[presetId].openRouterEquivalents;
+    return withFallback(primary, fallback, {
+      logger,
+      modelFor: (model) => (model === undefined ? null : (equivalents[model] ?? null)),
+    });
+  };
+  const providerFor = async (
+    workspaceId: string,
+    providerId?: string,
+  ): Promise<{ provider: AiProvider; key: ResolvedAiKey; openRouter: AiProvider }> => {
+    const openRouter = await openRouterFor(workspaceId);
+    if (providerId === undefined || !isProviderPresetId(providerId)) {
+      return { ...openRouter, openRouter: openRouter.provider };
+    }
+    return {
+      provider: await presetProvider(providerId, openRouter.provider),
+      key: openRouter.key,
+      openRouter: openRouter.provider,
+    };
   };
 
   const { keywordSearch, search } = createSearch(env, logger, prisma, readSettings);

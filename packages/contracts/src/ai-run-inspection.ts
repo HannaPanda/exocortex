@@ -114,6 +114,14 @@ export const aiRunTurnEventDataSchema = z.object({
   model: z.string(),
   /** The upstream provider that served the turn, when the gateway said. */
   servedBy: z.string().nullable(),
+  /**
+   * The eXocortex provider that answered (`openrouter`, `cline`), which
+   * differs from the run's when a subscription fell back (issue #187). Absent
+   * on turns recorded before it was kept.
+   */
+  provider: z.string().nullable().optional(),
+  /** Milliseconds to the first fragment of the answer; absent when not streamed or not measured. */
+  firstTokenMs: count.nullable().optional(),
   /** How many providers the route plan allowed; null when the model had no endpoint snapshot. */
   eligibleProviders: count.nullable(),
   finishReason: z.string(),

@@ -961,6 +961,16 @@
     },
     "where": "Beheer, Instellingen, groep AI, en per model in Beheer, AI-modellen, tijdens het bewerken."
   },
+  "abo-anbieter": {
+    "title": "Een abonnement gebruiken in plaats van afrekenen per token",
+    "summary": "Een model kan via een geverifieerd abonnement lopen in plaats van via OpenRouter, bijvoorbeeld DeepSeek V4.1 Flash via Cline Pass. Is het abonnement opgebruikt, dan neemt OpenRouter het over, maar alleen als je dat hebt toegestaan.",
+    "details": {
+      "p1": "Sommige providers verkopen een vast maandabonnement met een bundel die aanzienlijk meer verzoeken aankan dan hetzelfde bedrag bij OpenRouter. Zo’n abonnement wordt hier als eigen provider geregistreerd: bij het AI-model staat dan in plaats van OpenRouter de abonnementsprovider, en elk verzoek aan dit model gaat daarheen, met de sleutel die op de server is opgeslagen.",
+      "p2": "Alleen providers waarvan de voorwaarden eigen automatiseringen toestaan en waarvan het adres vast is ingesteld, worden opgenomen. Ontbreekt de sleutel, dan mislukt de run in plaats van stilletjes een ander account te belasten.",
+      "p3": "Weigert het abonnement een verzoek voordat het antwoord is begonnen (bundel op, te veel verzoeken, storing bij de provider), dan kan hetzelfde verzoek naar het bijbehorende model bij OpenRouter gaan. Dit staat uit totdat je het in de instellingen inschakelt. Welke provider een stap heeft beantwoord en hoelang het duurde tot het eerste teken, staat in de run-weergave."
+    },
+    "where": "Beheer, AI-modellen, bij het aanmaken of bewerken het veld Provider; de terugval op OpenRouter in Beheer, Instellingen, groep AI."
+  },
   "kosten": {
     "title": "Wat de AI heeft gekost",
     "summary": "Elke run wordt geregistreerd met model, tokens en kosten, uitgesplitst per werkruimte en periode. Daarmee is \"wat kost me dit eigenlijk\" een pagina en geen schatting.",

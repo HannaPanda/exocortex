@@ -115,6 +115,10 @@
         "label": "Provider routing on OpenRouter",
         "help": "Applies to every request to OpenRouter, as JSON in the format of the “provider” field: for example sort with throughput, latency or price, ignore and only with provider names. Leaving it empty lets OpenRouter choose freely. Individual models override these values in model administration."
       },
+      "subscriptionFallback": {
+        "label": "Fall back to OpenRouter when subscription is depleted",
+        "help": "If a subscription provider like Cline rejects a request before the response has started (quota depleted, rate limit exceeded, outage), it is routed to the same model on OpenRouter. This will incur costs on the OpenRouter account. When disabled, the run fails instead."
+      },
       "runPayloadRetentionDays": {
         "label": "Retain AI text (days)",
         "help": "For older AI runs, the question and answer are cleared, while the numbers for the usage view remain. 0 means: never clean up. Chat histories remain unaffected."

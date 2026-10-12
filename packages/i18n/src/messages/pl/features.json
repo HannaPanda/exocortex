@@ -961,6 +961,16 @@
     },
     "where": "administracja, Ustawienia, grupa AI, a dla każdego modelu w: administracja, Modele AI, podczas edycji."
   },
+  "abo-anbieter": {
+    "title": "Korzystanie z subskrypcji zamiast rozliczania za tokeny",
+    "summary": "Model może działać w ramach zweryfikowanej subskrypcji zamiast przez OpenRouter, na przykład DeepSeek V4.1 Flash przez Cline Pass. Gdy subskrypcja się wyczerpie, OpenRouter przejmuje zadanie, ale tylko wtedy, gdy na to zezwolisz.",
+    "details": {
+      "p1": "Niektórzy dostawcy oferują stałą miesięczną subskrypcję z limitem, który pozwala na znacznie więcej zapytań niż ta sama kwota w OpenRouter. Taka subskrypcja jest tutaj rejestrowana jako osobny dostawca: w modelu SI zamiast OpenRouter widnieje wtedy dostawca subskrypcyjny, a każde zapytanie do tego modelu trafia tam, przy użyciu klucza zapisanego na serwerze.",
+      "p2": "Uwzględniani są tylko dostawcy, których warunki pozwalają na własne automatyzacje i których adres jest wpisany na stałe. Jeśli brakuje klucza, uruchomienie kończy się niepowodzeniem, zamiast po cichu obciążać inne konto.",
+      "p3": "Jeśli subskrypcja odrzuci zapytanie przed rozpoczęciem odpowiedzi (wyczerpany limit, zbyt wiele zapytań, awaria u dostawcy), to samo zapytanie może trafić do odpowiedniego modelu w OpenRouter. Jest to wyłączone, dopóki nie włączysz tego w ustawieniach. To, który dostawca odpowiedział na dany krok i ile czasu minęło do pierwszego znaku, można sprawdzić w widoku uruchomienia."
+    },
+    "where": "Administracja, Modele SI, pole Dostawca podczas tworzenia lub edycji; powrót do OpenRouter w Administracja, Ustawienia, grupa SI."
+  },
   "kosten": {
     "title": "Koszty korzystania ze sztucznej inteligencji",
     "summary": "Każde uruchomienie jest rejestrowane z uwzględnieniem modelu, liczby tokenów i kosztów, w podziale na obszar roboczy i okres. Dzięki temu odpowiedź na pytanie „ile mnie to właściwie kosztuje” to jedna strona, a nie szacunki.",

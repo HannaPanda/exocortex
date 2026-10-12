@@ -4,7 +4,9 @@ import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  AI_MODEL_PROVIDERS,
   type AiModel,
+  type AiModelProvider,
   type AiReasoningLevel,
   type CreateAiModelRequest,
   type ProviderRoutingOverride,
@@ -64,6 +66,8 @@ const NO_COMPANION = '__none__';
 
 interface ModelFormState {
   slug: string;
+  /** Who serves the model (issue #187): OpenRouter or a checked subscription preset. */
+  provider: AiModelProvider;
   displayName: string;
   description: string;
   contextWindowTokens: string;
@@ -101,9 +105,19 @@ function parseProviderRouting(text: string): ProviderRoutingOverride | null | un
   return Object.keys(parsed.data).length === 0 ? null : parsed.data;
 }
 
+function isModelProvider(value: string): value is AiModelProvider {
+  return (AI_MODEL_PROVIDERS as readonly string[]).includes(value);
+}
+
+/** The offline mock is offered only to a row that already names it. */
+function providerOptions(current: AiModelProvider): readonly AiModelProvider[] {
+  return AI_MODEL_PROVIDERS.filter((entry) => entry !== 'mock' || entry === current);
+}
+
 function emptyForm(): ModelFormState {
   return {
     slug: '',
+    provider: 'openrouter',
     displayName: '',
     description: '',
     contextWindowTokens: '',
@@ -123,6 +137,7 @@ function emptyForm(): ModelFormState {
 function formFromModel(model: AiModel, locale: string): ModelFormState {
   return {
     slug: model.slug,
+    provider: isModelProvider(model.provider) ? model.provider : 'openrouter',
     displayName: model.displayName,
     description: model.description ?? '',
     contextWindowTokens: String(model.contextWindowTokens),
@@ -193,6 +208,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
   const [fieldErrors, setFieldErrors] = React.useState<FieldErrorKey[]>([]);
   const t = useTranslations('admin.modelDialog');
   const reasoningLabel = useTranslations('admin.reasoningLevels');
+  const providerLabel = useTranslations('admin.modelProviders');
   const createModel = useCreateAiModel();
   const updateModel = useUpdateAiModel();
 
@@ -240,6 +256,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
 
     const payload = {
       slug: form.slug.trim(),
+      provider: form.provider,
       displayName: form.displayName.trim(),
       description: form.description.trim().length > 0 ? form.description.trim() : null,
       contextWindowTokens: contextWindow,
@@ -314,6 +331,37 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
               }
             />
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="model-provider">{t('fields.provider')}</Label>
+          <Select
+            value={form.provider}
+            onValueChange={(next) =>
+              setForm((prev) => ({
+                ...prev,
+                provider: next !== null && isModelProvider(next) ? next : prev.provider,
+              }))
+            }
+          >
+            <SelectTrigger
+              id="model-provider"
+              className="w-full"
+              aria-describedby="model-provider-help"
+            >
+              <SelectValue>{() => providerLabel(form.provider)}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {providerOptions(form.provider).map((entry) => (
+                <SelectItem key={entry} value={entry}>
+                  {providerLabel(entry)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p id="model-provider-help" className="text-xs text-muted-foreground">
+            {t('fields.providerHelp')}
+          </p>
         </div>
 
         <div className="flex flex-col gap-1.5">

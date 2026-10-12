@@ -115,6 +115,10 @@
         "label": "Roteamento de provedores no OpenRouter",
         "help": "Aplica-se a cada solicitação ao OpenRouter, como JSON no formato do campo „provider”: por exemplo sort com throughput, latency ou price, ignore e only com nomes de provedores. Deixar em branco permite que o OpenRouter escolha livremente. Modelos individuais substituem esses valores na administração de modelos."
       },
+      "subscriptionFallback": {
+        "label": "Alternar para o OpenRouter quando a assinatura esgotar",
+        "help": "Se um provedor de assinatura como o Cline recusar uma solicitação antes do início da resposta (cota esgotada, excesso de solicitações, instabilidade), ela será enviada ao mesmo modelo no OpenRouter. Isso consumirá saldo da sua conta do OpenRouter. Se estiver desativado, a execução simplesmente falhará."
+      },
       "runPayloadRetentionDays": {
         "label": "Retenção de textos da IA (dias)",
         "help": "Em execuções mais antigas da IA, a pergunta e a resposta são apagadas, mantendo apenas os números para a visualização de uso. 0 significa: nunca limpar. Os históricos nos chats não são afetados."

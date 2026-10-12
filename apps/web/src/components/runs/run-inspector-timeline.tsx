@@ -20,6 +20,22 @@ interface EntryLine {
   tone: 'default' | 'muted' | 'problem';
 }
 
+/**
+ * Time to the first fragment and writing speed after it (issue #187): the two
+ * numbers that tell a slow provider apart from a long answer.
+ */
+function turnSpeed(entry: Entry<'turn'>, t: Translate, format: RunFormat): string[] {
+  const firstTokenMs = entry.firstTokenMs ?? null;
+  if (firstTokenMs === null) return [];
+  const facts = [t('turnFirstToken', { duration: format.duration(firstTokenMs) })];
+  const writingMs = entry.durationMs === null ? 0 : entry.durationMs - firstTokenMs;
+  if (entry.outputTokens !== null && entry.outputTokens > 0 && writingMs > 0) {
+    const perSecond = Math.round(entry.outputTokens / (writingMs / 1000));
+    facts.push(t('turnSpeed', { tokens: format.count(perSecond) }));
+  }
+  return facts;
+}
+
 function turnLine(entry: Entry<'turn'>, t: Translate, format: RunFormat): EntryLine {
   const tokens =
     entry.inputTokens === null || entry.outputTokens === null
@@ -30,11 +46,19 @@ function turnLine(entry: Entry<'turn'>, t: Translate, format: RunFormat): EntryL
             output: format.count(entry.outputTokens),
           }),
         ];
+  // Which eXocortex provider answered is only worth a word when it is not the
+  // usual one: a subscription, or the OpenRouter it fell back to (issue #187).
+  const provider =
+    entry.provider === null || entry.provider === undefined || entry.provider === 'openrouter'
+      ? []
+      : [t('turnProvider', { provider: entry.provider })];
   return {
     label: t('turn', { index: entry.index, model: entry.model }),
     facts: [
+      ...provider,
       ...(entry.servedBy === null ? [] : [t('turnServedBy', { provider: entry.servedBy })]),
       ...tokens,
+      ...turnSpeed(entry, t, format),
       ...(entry.costMicroUsd === null ? [] : [format.money(entry.costMicroUsd)]),
       ...(entry.reasoned ? [t('turnReasoned')] : []),
       ...(entry.toolCalls === 0 ? [] : [t('turnTools', { count: entry.toolCalls })]),

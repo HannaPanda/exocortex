@@ -97,6 +97,11 @@
     "xhigh": "très élevé",
     "max": "maximal"
   },
+  "modelProviders": {
+    "openrouter": "OpenRouter",
+    "cline": "Cline (abonnement)",
+    "mock": "Fournisseur de test (hors ligne)"
+  },
   "catalog": {
     "title": "Modèles du catalogue OpenRouter",
     "description": "Il suffit de choisir : fenêtre de contexte, prix, compréhension d’images, outils et niveaux de raisonnement proviennent du catalogue. Pour un alias (« latest »), les valeurs de la cible font foi, et la valeur la plus prudente de ses fournisseurs est enregistrée.",
@@ -133,6 +138,8 @@
     },
     "fields": {
       "slug": "Slug",
+      "provider": "Fournisseur",
+      "providerHelp": "Qui répond aux requêtes adressées à ce modèle. Un fournisseur sur abonnement a besoin de sa clé sur le serveur et d’un slug qu’il reconnaît, comme cline-pass/deepseek-v4.1-flash pour Cline.",
       "displayName": "Nom d’affichage",
       "description": "Description",
       "contextWindow": "Fenêtre de contexte (tokens)",

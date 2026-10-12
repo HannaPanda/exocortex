@@ -961,6 +961,16 @@
     },
     "where": "Verwaltung, Einstellungen, Gruppe KI, und je Modell in Verwaltung, KI-Modelle, beim Bearbeiten."
   },
+  "abo-anbieter": {
+    "title": "Ein Abo statt Abrechnung pro Token nutzen",
+    "summary": "Ein Modell kann über ein geprüftes Abo laufen statt über OpenRouter, zum Beispiel DeepSeek V4.1 Flash über Cline Pass. Ist das Abo aufgebraucht, übernimmt OpenRouter, aber nur, wenn du das erlaubt hast.",
+    "details": {
+      "p1": "Manche Anbieter verkaufen ein festes Monatsabo mit einem Kontingent, das deutlich mehr Anfragen trägt als derselbe Betrag bei OpenRouter. Ein solches Abo wird hier als eigener Anbieter eingetragen: Im KI-Modell steht dann statt OpenRouter der Abo-Anbieter, und jede Anfrage an dieses Modell geht dorthin, mit dem Schlüssel, der auf dem Server hinterlegt ist.",
+      "p2": "Aufgenommen werden nur Anbieter, deren Bedingungen eigene Automationen erlauben und deren Adresse fest eingetragen ist. Fehlt der Schlüssel, schlägt der Lauf fehl, statt still ein anderes Konto zu belasten.",
+      "p3": "Lehnt das Abo eine Anfrage ab, bevor die Antwort begonnen hat (Kontingent leer, zu viele Anfragen, Störung beim Anbieter), kann dieselbe Anfrage an das entsprechende Modell bei OpenRouter gehen. Das ist ausgeschaltet, bis du es in den Einstellungen einschaltest. Welcher Anbieter einen Schritt beantwortet hat und wie lange es bis zum ersten Zeichen dauerte, steht in der Lauf-Ansicht."
+    },
+    "where": "Verwaltung, KI-Modelle, beim Anlegen oder Bearbeiten das Feld Anbieter; den Rückgriff auf OpenRouter in Verwaltung, Einstellungen, Gruppe KI."
+  },
   "kosten": {
     "title": "Was die KI gekostet hat",
     "summary": "Jeder Lauf wird mit Modell, Token und Kosten verbucht, aufgeschlüsselt nach Arbeitsbereich und Zeitraum. Damit ist \"was kostet mich das eigentlich\" eine Seite und keine Schätzung.",

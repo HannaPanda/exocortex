@@ -961,6 +961,16 @@
     },
     "where": "Administração, Configurações, grupo IA, e para cada modelo em Administração, Modelos de IA, ao editar."
   },
+  "abo-anbieter": {
+    "title": "Usar uma assinatura em vez de cobrança por token",
+    "summary": "Um modelo pode rodar por meio de uma assinatura verificada em vez do OpenRouter, por exemplo, o DeepSeek V4.1 Flash via Cline Pass. Se a assinatura se esgotar, o OpenRouter assume, mas apenas se você tiver permitido isso.",
+    "details": {
+      "p1": "Alguns provedores vendem uma assinatura mensal fixa com uma cota que comporta significativamente mais requisições do que o mesmo valor no OpenRouter. Essa assinatura é cadastrada aqui como um provedor próprio: no modelo de IA, em vez do OpenRouter, consta o provedor da assinatura, e cada requisição para esse modelo vai para lá, usando a chave armazenada no servidor.",
+      "p2": "Apenas são aceitos provedores cujos termos permitam automações próprias e cujo endereço esteja fixado no sistema. Se a chave estiver ausente, a execução falha, em vez de cobrar silenciosamente outra conta.",
+      "p3": "Se a assinatura recusar uma requisição antes do início da resposta (cota esgotada, requisições em excesso, instabilidade no provedor), a mesma requisição pode ser enviada ao modelo correspondente no OpenRouter. Isso fica desativado até que você ative nas configurações. Qual provedor respondeu a uma etapa e quanto tempo levou até o primeiro caractere constam na visualização da execução."
+    },
+    "where": "Administração, Modelos de IA, no campo Provedor ao criar ou editar; a alternativa de fallback para o OpenRouter em Administração, Configurações, grupo IA."
+  },
   "kosten": {
     "title": "Quanto custou a IA",
     "summary": "Cada execução é registrada com modelo, tokens e custos, detalhados por espaço de trabalho e período. Assim, a pergunta “quanto isso está me custando de verdade?” vira uma página de dados, não uma estimativa.",

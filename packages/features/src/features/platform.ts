@@ -152,6 +152,14 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     settings: ['ai.providerRouting'],
   }),
   defineFeature({
+    id: 'abo-anbieter',
+    area: 'verwaltung',
+    since: '2026-10-12',
+    references: ['#187', 'ADR-083'],
+    ui: { path: '/admin/ki-modelle' },
+    settings: ['ai.subscriptionFallback'],
+  }),
+  defineFeature({
     id: 'eigene-schluessel',
     area: 'verwaltung',
     since: '2026-09-12',

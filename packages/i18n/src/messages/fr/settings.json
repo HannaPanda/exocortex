@@ -115,6 +115,10 @@
         "label": "Routage des fournisseurs chez OpenRouter",
         "help": "S’applique à chaque requête vers OpenRouter, au format JSON du champ « provider » : par exemple sort avec throughput, latency ou price, ignore et only avec des noms de fournisseurs. Laisser vide permet à OpenRouter de choisir librement. Les modèles individuels peuvent remplacer ces valeurs dans l’administration des modèles."
       },
+      "subscriptionFallback": {
+        "label": "Basculer sur OpenRouter en cas d’abonnement épuisé",
+        "help": "Si un fournisseur sur abonnement comme Cline refuse une requête avant le début de la réponse (quota épuisé, trop de requêtes, panne), elle est transmise au même modèle sur OpenRouter. Cela engendre alors des frais sur le compte OpenRouter. Si cette option est désactivée, l’exécution échoue à la place."
+      },
       "runPayloadRetentionDays": {
         "label": "Conserver les textes de l’IA (jours)",
         "help": "Pour les exécutions de l’IA plus anciennes, la question et la réponse sont vidées, les chiffres de l’affichage d’utilisation restent conservés. 0 signifie : ne jamais nettoyer. L’historique des chats n’est pas affecté."

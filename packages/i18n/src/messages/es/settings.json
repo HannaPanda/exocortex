@@ -115,6 +115,10 @@
         "label": "Enrutamiento de proveedores en OpenRouter",
         "help": "Se aplica a cada solicitud a OpenRouter, como JSON en el formato del campo «provider»: por ejemplo, sort con throughput, latency o price, e ignore y only con nombres de proveedores. Si se deja vacío, OpenRouter elige libremente. Los modelos individuales pueden sobrescribir estos valores en la administración de modelos."
       },
+      "subscriptionFallback": {
+        "label": "Recurrir a OpenRouter si se agota la suscripción",
+        "help": "Si un proveedor de suscripción como Cline rechaza una solicitud antes de que comience la respuesta (cuota agotada, demasiadas solicitudes, fallo técnico), se enviará al mismo modelo en OpenRouter. Esto implicará un coste en la cuenta de OpenRouter. Si se desactiva, la ejecución fallará en su lugar."
+      },
       "runPayloadRetentionDays": {
         "label": "Conservar textos de IA (días)",
         "help": "En las ejecuciones de IA más antiguas, la pregunta y la respuesta se borran, pero se mantienen las cifras para la vista de uso. 0 significa: no limpiar nunca. Los historiales de chat no se ven afectados."

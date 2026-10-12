@@ -60,8 +60,17 @@ export interface AiRunDependencies {
    * Resolved per run rather than injected once, because a workspace may have
    * brought its own provider key. A workspace without one gets the
    * deployment's provider, which is the object that used to be passed here.
+   *
+   * `providerId` is the run's `provider` column (issue #187): a checked
+   * subscription preset such as `cline` answers through its own endpoint,
+   * anything else through OpenRouter. `openRouter` is the OpenRouter provider
+   * the same key pays for, which a configured compaction model needs because
+   * its slug is an OpenRouter slug; absent means `provider` is that one.
    */
-  providerFor: (workspaceId: string) => Promise<{ provider: AiProvider; key: ResolvedAiKey }>;
+  providerFor: (
+    workspaceId: string,
+    providerId?: string,
+  ) => Promise<{ provider: AiProvider; key: ResolvedAiKey; openRouter?: AiProvider }>;
   bus: RedisEventBus;
   storage: ObjectStorage;
   settings: (workspaceId?: string) => Promise<Settings>;
@@ -434,7 +443,15 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // Whose key pays for this run, and therefore which provider makes the
     // call. Resolved before anything is asked of the provider, so the vision
     // companion below is paid for by the same key as the answer itself.
-    const { provider, key } = await dependencies.providerFor(run.workspaceId);
+    const { provider, key, openRouter } = await dependencies.providerFor(
+      run.workspaceId,
+      run.provider,
+    );
+    // A summary is written by the conversation's own model unless a
+    // compaction model is configured, and that one is an OpenRouter slug: a
+    // subscription endpoint would bill it outside the plan, or refuse it.
+    const summaryProvider =
+      settings['ai.compactionModelSlug'] === null ? provider : (openRouter ?? provider);
 
     // The agent profile this run works under, if it is an attempt at work
     // that has one (issue #143): its role, its limits, its tools, and routing
@@ -484,7 +501,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
     const { base, rest, floorInputTokens, promptSections } = await buildRunMessages({
       prisma,
-      provider,
+      // Only a compaction asks the provider anything while the prompt is built.
+      provider: summaryProvider,
       bus,
       run,
       settings,
@@ -607,7 +625,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             logger,
             base,
             imageContext,
-            provider,
+            // The routing input's provider writes compaction summaries, nothing else.
+            provider: summaryProvider,
             timeline,
             toolsEnabled: tools.enabled,
             requiresReasoningEffort,

@@ -389,8 +389,14 @@ export class AiModelsService {
     const liveById = await this.fetchLiveModels();
 
     const scopeSlugs = request.slugs.length > 0 ? request.slugs : null;
+    // Only OpenRouter's rows are OpenRouter's to describe: a subscription
+    // preset's slug (issue #187) is missing from this list by nature, and
+    // reading that as "gone" would switch the model off.
     const registryRows = await this.prisma.aiModel.findMany({
-      where: scopeSlugs === null ? {} : { slug: { in: scopeSlugs } },
+      where: {
+        provider: 'openrouter',
+        ...(scopeSlugs === null ? {} : { slug: { in: scopeSlugs } }),
+      },
     });
 
     const { updated, disabled, unchanged } = await this.refreshRegistryRows(registryRows, liveById);

@@ -97,6 +97,11 @@
     "xhigh": "zeer hoog",
     "max": "maximaal"
   },
+  "modelProviders": {
+    "openrouter": "OpenRouter",
+    "cline": "Cline (abonnement)",
+    "mock": "Testprovider (offline)"
+  },
   "catalog": {
     "title": "Modellen uit de OpenRouter-catalogus",
     "description": "Selecteren is voldoende: contextvenster, prijzen, beeldherkenning, tools en redeneerniveaus komen uit de catalogus. Bij een alias („latest”) gelden de waarden van het doel en wordt de meest voorzichtige waarde van de aanbieders opgeslagen.",
@@ -133,6 +138,8 @@
     },
     "fields": {
       "slug": "Slug",
+      "provider": "Provider",
+      "providerHelp": "Wie de verzoeken aan dit model beantwoordt. Een abonnementsprovider heeft zijn sleutel op de server nodig en een slug die hij zelf kent, bij Cline bijvoorbeeld cline-pass/deepseek-v4.1-flash.",
       "displayName": "Weergavenaam",
       "description": "Beschrijving",
       "contextWindow": "Contextvenster (tokens)",

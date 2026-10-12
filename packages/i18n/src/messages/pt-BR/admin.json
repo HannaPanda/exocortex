@@ -97,6 +97,11 @@
     "xhigh": "muito alto",
     "max": "máximo"
   },
+  "modelProviders": {
+    "openrouter": "OpenRouter",
+    "cline": "Cline (assinatura)",
+    "mock": "Provedor de teste (offline)"
+  },
   "catalog": {
     "title": "Modelos do catálogo do OpenRouter",
     "description": "Basta selecionar: janela de contexto, preços, compreensão de imagem, ferramentas e níveis de raciocínio vêm do catálogo. No caso de um alias (“latest”), valem os valores do destino, e é salvo o valor mais conservador dos seus provedores.",
@@ -133,6 +138,8 @@
     },
     "fields": {
       "slug": "Slug",
+      "provider": "Provedor",
+      "providerHelp": "Quem responde às requisições para este modelo. Um provedor por assinatura precisa da chave dele no servidor e de um slug que ele próprio reconheça, como cline-pass/deepseek-v4.1-flash no caso do Cline.",
       "displayName": "Nome de exibição",
       "description": "Descrição",
       "contextWindow": "Janela de contexto (tokens)",

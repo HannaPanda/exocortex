@@ -115,6 +115,10 @@
         "label": "Anbieter-Routing bei OpenRouter",
         "help": "Gilt für jede Anfrage an OpenRouter, als JSON im Format des Felds „provider“: etwa sort mit throughput, latency oder price, ignore und only mit Anbieternamen. Leer lässt OpenRouter frei wählen. Einzelne Modelle überschreiben Werte daraus in der Modellverwaltung."
       },
+      "subscriptionFallback": {
+        "label": "Bei leerem Abo auf OpenRouter ausweichen",
+        "help": "Lehnt ein Abo-Anbieter wie Cline eine Anfrage ab, bevor die Antwort begonnen hat (Kontingent leer, zu viele Anfragen, Störung), geht sie an dasselbe Modell bei OpenRouter. Das kostet dann Geld auf dem OpenRouter-Konto. Ausgeschaltet schlägt der Lauf stattdessen fehl."
+      },
       "runPayloadRetentionDays": {
         "label": "KI-Texte aufbewahren (Tage)",
         "help": "Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Chats bleiben davon unberührt."

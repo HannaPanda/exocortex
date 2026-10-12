@@ -97,6 +97,11 @@
     "xhigh": "sehr hoch",
     "max": "maximal"
   },
+  "modelProviders": {
+    "openrouter": "OpenRouter",
+    "cline": "Cline (Abo)",
+    "mock": "Testanbieter (offline)"
+  },
   "catalog": {
     "title": "Modelle aus dem OpenRouter-Katalog",
     "description": "Auswählen genügt: Kontextfenster, Preise, Bildverständnis, Werkzeuge und Denkstufen kommen aus dem Katalog. Bei einem Alias („latest“) zählen die Werte des Ziels, und gespeichert wird der vorsichtigste Wert seiner Anbieter.",
@@ -133,6 +138,8 @@
     },
     "fields": {
       "slug": "Slug",
+      "provider": "Anbieter",
+      "providerHelp": "Wer die Anfragen an dieses Modell beantwortet. Ein Abo-Anbieter braucht seinen Schlüssel auf dem Server und einen Slug, den er selbst kennt, bei Cline etwa cline-pass/deepseek-v4.1-flash.",
       "displayName": "Anzeigename",
       "description": "Beschreibung",
       "contextWindow": "Kontextfenster (Tokens)",

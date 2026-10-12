@@ -961,6 +961,16 @@
     },
     "where": "Administration, Paramètres, groupe IA, et pour chaque modèle dans Administration, Modèles d’IA, lors de la modification."
   },
+  "abo-anbieter": {
+    "title": "Utiliser un abonnement plutôt qu’une facturation au jeton",
+    "summary": "Un modèle peut passer par un abonnement vérifié au lieu d’OpenRouter, par exemple DeepSeek V4.1 Flash via Cline Pass. Si l’abonnement est épuisé, OpenRouter prend le relais, mais seulement si tu l’as autorisé.",
+    "details": {
+      "p1": "Certains fournisseurs proposent un abonnement mensuel fixe avec un quota qui couvre bien plus de requêtes que le même montant chez OpenRouter. Un tel abonnement est enregistré ici en tant que fournisseur distinct : pour le modèle d’IA, le fournisseur d’abonnement apparaît alors à la place d’OpenRouter, et chaque requête adressée à ce modèle est envoyée là-bas avec la clé enregistrée sur le serveur.",
+      "p2": "Seuls sont acceptés les fournisseurs dont les conditions permettent tes propres automatisations et dont l’adresse est explicitement configurée. Si la clé est manquante, l’exécution échoue au lieu de débiter silencieusement un autre compte.",
+      "p3": "Si l’abonnement rejette une requête avant que la réponse ne démarre (quota épuisé, trop de requêtes, panne du fournisseur), la même requête peut être redirigée vers le modèle correspondant chez OpenRouter. Cette option est désactivée tant que tu ne l’actives pas dans les paramètres. La vue de l’exécution indique quel fournisseur a traité chaque étape et le délai d’affichage du premier caractère."
+    },
+    "where": "Administration, Modèles d’IA, champ Fournisseur lors de la création ou modification ; le recours à OpenRouter dans Administration, Paramètres, groupe IA."
+  },
   "kosten": {
     "title": "Ce que l’IA a coûté",
     "summary": "Chaque exécution est enregistrée avec son modèle, ses jetons et son coût, ventilée par espace de travail et par période. Ainsi, « combien cela me coûte-t-il vraiment » devient une page et non une estimation.",

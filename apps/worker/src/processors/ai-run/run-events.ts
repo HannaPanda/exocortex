@@ -24,6 +24,8 @@ export function turnEvent(input: {
       index: input.index,
       model: turn.usage?.model ?? input.runModel,
       servedBy: turn.usage?.servedBy ?? null,
+      provider: turn.usage?.provider ?? null,
+      firstTokenMs: turn.usage?.firstTokenMs ?? null,
       eligibleProviders: input.eligibleProviders,
       finishReason: turn.finishReason,
       inputTokens: turn.usage?.inputTokens ?? null,
