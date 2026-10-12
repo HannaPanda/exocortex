@@ -133,7 +133,9 @@ export class AiService {
         documentId: input.request.documentId ?? null,
         createdById: input.userId,
         status: 'PENDING',
-        provider: this.provider.id,
+        // The registry row names who serves the model (issue #187); only a
+        // provider's own fixed model has no row and falls back to it.
+        provider: resolvedModel?.provider ?? this.provider.id,
         model: modelSlug,
         messages: input.request.messages as unknown as Prisma.InputJsonValue,
         reasoningLevel: REASONING_LEVEL_TO_PRISMA[clampedReasoningLevel],

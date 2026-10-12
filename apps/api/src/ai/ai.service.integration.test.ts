@@ -189,3 +189,30 @@ describe('AiService.getRun', () => {
     await expect(service.getRun(runId, outsiderId, {})).rejects.toBeInstanceOf(AuthorizationError);
   });
 });
+
+describe('AiService.createRun', () => {
+  it('records the provider the registry row names, not the deployment default (issue #187)', async () => {
+    const slug = `cline-pass/test-${Date.now().toString(36)}`;
+    const model = await prisma.aiModel.create({
+      data: {
+        slug,
+        provider: 'cline',
+        displayName: 'Test über Cline',
+        contextWindowTokens: 128_000,
+        inputMicroUsdPerMTok: 0,
+        outputMicroUsdPerMTok: 0,
+      },
+    });
+    try {
+      const run = await service.createRun({
+        userId: ownerId,
+        correlationId: 'test-provider-from-row',
+        request: { workspaceId, model: slug, messages: [{ role: 'user', content: 'Hallo' }] },
+      });
+      expect(run.provider).toBe('cline');
+    } finally {
+      await prisma.aiRun.deleteMany({ where: { model: slug } });
+      await prisma.aiModel.delete({ where: { id: model.id } });
+    }
+  });
+});
