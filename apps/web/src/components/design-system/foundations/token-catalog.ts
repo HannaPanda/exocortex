@@ -51,6 +51,7 @@ export const TOKEN_GROUPS: readonly TokenGroup[] = [
       'Die Rampe von unten nach oben. Die Seite ist die hellste große Fläche, die Hülle liegt darunter. Popover ist die eine gewollte Ausnahme.',
     tokens: {
       '--sunken': 'Vertiefung: Code, Messwerte, in die Seite geschnitten',
+      '--map-space': 'Der Raum hinter der Wissenskarte, damit Punkte leuchten können',
       '--surface': 'Hülle: Kopfzeile, Seitenleiste, Kontextbereich',
       '--popover': 'Schwebend: Menüs, Dialoge, Befehlspalette',
       '--background': 'Die Seite, #344955',

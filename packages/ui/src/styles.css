@@ -33,6 +33,7 @@
   /* The deepest step of the ramp: a well cut into the page rather than a layer
      raised above it. Code blocks and read-only readouts, not panels. */
   --color-sunken: var(--sunken);
+  --color-map-space: var(--map-space);
 
   --color-overlay: var(--overlay);
 

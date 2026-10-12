@@ -13,6 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Slider,
   Switch,
   Tabs,
   TabsContent,
@@ -314,6 +315,18 @@ export function FormsSection() {
               <Switch id="ds-sw-disabled" disabled defaultChecked />
               <Label htmlFor="ds-sw-disabled">Vom Admin gesperrt</Label>
             </div>
+          </DsState>
+          {/* The slider (issue #189): one thumb per value, an accessible name
+              through thumbLabel because a timeline has no visible label of
+              its own. Canonical use: the knowledge map's timeline. */}
+          <DsState label="Regler">
+            <Slider defaultValue={60} thumbLabel="Zeitpunkt" className="w-48" />
+          </DsState>
+          <DsState label="Regler mit Bereich">
+            <Slider defaultValue={[20, 70]} thumbLabel="Grenze" className="w-48" />
+          </DsState>
+          <DsState label="Regler deaktiviert">
+            <Slider defaultValue={40} disabled thumbLabel="Zeitpunkt" className="w-48" />
           </DsState>
         </DsStates>
       </DsExample>

@@ -99,6 +99,12 @@
      than raised above. Also the plate behind the app icon. */
   --sunken: oklch(0.27 0.029 234);
 
+  /* The room behind the knowledge map (issue #189): the slate ramp continued
+     two steps below `sunken`, so points of light have something dark enough
+     to glow against. Only the map's canvas sits on it; the panels around the
+     map stay on the ordinary housing. */
+  --map-space: oklch(0.19 0.022 234);
+
   /* Scrim behind modal surfaces. Far below the ramp and carrying the same slate
      hue, so the dimmed page reads as pushed back rather than as covered by a
      black sheet. */

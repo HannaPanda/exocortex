@@ -3,6 +3,7 @@ name: eXocortex
 description: Self-hostable collaborative workspace and external brain. A slate sheet, light ink, one amber signal.
 colors:
   overlay: 'oklch(0.160 0.020 234 / 0.78)'
+  map-space: 'oklch(0.190 0.022 234)'
   sunken: 'oklch(0.270 0.029 234)'
   surface: 'oklch(0.320 0.031 234)'
   popover: 'oklch(0.355 0.032 234)'
@@ -294,14 +295,15 @@ buys the answer to the question a presence strip is asked first.
 Six steps, all at hue 234 and chroma <= 0.034, with the page near the top rather
 than at the bottom:
 
-| Token        |     L | Role                                           |
-| ------------ | ----: | ---------------------------------------------- |
-| `sunken`     | 0.270 | wells: code blocks, readouts cut into the page |
-| `surface`    | 0.320 | the housing: sidebar, header, context panel    |
-| `popover`    | 0.355 | floating: menus, dialogs, the command palette  |
-| `background` | 0.393 | the page. `#344955`                            |
-| `card`       | 0.437 | a block raised off the page                    |
-| `border`     | 0.510 | separation                                     |
+| Token        |     L | Role                                            |
+| ------------ | ----: | ----------------------------------------------- |
+| `map-space`  | 0.190 | the room behind the knowledge map, nothing else |
+| `sunken`     | 0.270 | wells: code blocks, readouts cut into the page  |
+| `surface`    | 0.320 | the housing: sidebar, header, context panel     |
+| `popover`    | 0.355 | floating: menus, dialogs, the command palette   |
+| `background` | 0.393 | the page. `#344955`                             |
+| `card`       | 0.437 | a block raised off the page                     |
+| `border`     | 0.510 | separation                                      |
 
 The foreground is `#E7E9EB` at 7.7:1 on the page and 6.4:1 on a card.
 
@@ -484,6 +486,21 @@ opens into a task.
 **The One-Pixel-Press Rule.** Buttons drop one pixel on `:active`. That is the
 entire press vocabulary. A control that does not move under the pointer feels
 like a picture of a control.
+
+**The Map-Is-A-Room Rule.** The knowledge map (`/arbeitsbereich/:x/karte`,
+issue #189) is the one surface allowed to move without a state change: the
+room turns slowly while nobody touches it, light travels along the lines, and
+the points glow on `map-space`, the slate ramp continued below `sunken`
+(foreground on it measures about 15:1). It is the exception because the map is
+watched rather than worked in, and because a still picture of 800 points does
+not show which ones belong together. The rest of this file still holds inside
+it: amber means a run is touching that page right now and fades over a few
+seconds, a new page arrives in `success`, a removed one leaves in
+`destructive`, every one of those states is also named in text, and the room
+has a calm switch. Under `prefers-reduced-motion` the room stands still, no
+light travels and the camera jumps instead of flying, and nothing else is
+lost. The movement never leaves the canvas: the panels around the map behave
+like every other panel.
 
 **The Signal-Fires-Then-Fades Rule.** When amber marks an event rather than a
 place (the save heartbeat), it brightens instantly and decays over
