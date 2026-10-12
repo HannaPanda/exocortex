@@ -119,18 +119,31 @@ export interface Pulse {
   at: number;
 }
 
+/** How long a pulse takes to come up, eased out cubically. */
+export const PULSE_FADE_IN_MS = 170;
+/** How long it takes to die down at the end, eased in and out along a sine. */
+export const PULSE_FADE_OUT_MS = 880;
+
+/** Whether a pulse has run its course; a fresh one at strength 0 has not. */
+export function pulseOver(pulse: Pulse, now: number): boolean {
+  return now - pulse.at >= PULSE_MS[pulse.kind];
+}
+
 /**
- * How bright a pulse still is, from 1 when it fired to 0 when it is over. An
- * exponential ease-out like the product's one curve: it is bright at once and
- * decays long, so it reads as an event that happened rather than a state.
+ * How bright a pulse is, from 0 to 1. It comes up quickly but not at once,
+ * holds while its name can be read, and glimmers out softly: an instant
+ * switch to full read as a flicker, a long decay as a page still busy. The
+ * curves were picked side by side against the alternatives.
  */
 export function pulseStrength(pulse: Pulse, now: number): number {
   const elapsed = now - pulse.at;
-  if (elapsed < 0) return 1;
   const duration = PULSE_MS[pulse.kind];
-  if (elapsed >= duration) return 0;
-  // The fade is the product's ease-out, so the remaining light is its mirror.
-  return Math.pow(1 - elapsed / duration, 3);
+  if (elapsed <= 0 || elapsed >= duration) return 0;
+  if (elapsed < PULSE_FADE_IN_MS) return 1 - Math.pow(1 - elapsed / PULSE_FADE_IN_MS, 3);
+  const fadeStart = duration - PULSE_FADE_OUT_MS;
+  if (elapsed <= fadeStart) return 1;
+  // 1 minus easeInOutSine of the fade's progress.
+  return (Math.cos((Math.PI * (elapsed - fadeStart)) / PULSE_FADE_OUT_MS) + 1) / 2;
 }
 
 /**
@@ -139,7 +152,7 @@ export function pulseStrength(pulse: Pulse, now: number): number {
  * dim the amber that says it was just changed.
  */
 export function supersedes(next: Pulse, current: Pulse | undefined, now: number): boolean {
-  if (current === undefined || pulseStrength(current, now) === 0) return true;
+  if (current === undefined || pulseOver(current, now)) return true;
   const rank: Record<PulseKind, number> = { read: 0, created: 1, write: 2, removed: 3 };
   return rank[next.kind] >= rank[current.kind];
 }

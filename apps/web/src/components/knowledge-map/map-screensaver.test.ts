@@ -4,6 +4,7 @@ import { type KnowledgeMapEdgeKind, type KnowledgeMapNode } from '@exocortex/con
 
 import { type MapGraph } from './map-model';
 import {
+  dwellTarget,
   type Neighbourhood,
   neighbourhoodOf,
   newWalker,
@@ -119,5 +120,23 @@ describe('nextDelay', () => {
     const [least, most] = WALKER_TEMPO.wanderer;
     expect(nextDelay('wanderer', () => 0)).toBe(least);
     expect(nextDelay('wanderer', () => 1)).toBe(most);
+  });
+});
+
+describe('dwellTarget', () => {
+  const around = neighbourhoodOf(graph);
+
+  it('picks a connected page, never the lone one or the current one', () => {
+    const picked = new Set(
+      [0, 0.2, 0.4, 0.6, 0.8, 0.99].map((value) => dwellTarget(around, 'root', () => value)),
+    );
+    expect(picked.has('lone')).toBe(false);
+    expect(picked.has('root')).toBe(false);
+    expect(picked.size).toBeGreaterThan(1);
+  });
+
+  it('answers nothing when there is no other page', () => {
+    const single = neighbourhoodOf({ nodes: graph.nodes.slice(0, 1), links: [] });
+    expect(dwellTarget(single, 'root', () => 0.5)).toBeNull();
   });
 });

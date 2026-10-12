@@ -139,7 +139,7 @@ export function KnowledgeMapScreen({ workspaceId }: { workspaceId: string }) {
     [engine, selected, tour],
   );
   const feed = useMapLive({ workspaceId, onPulse, onFollow, follow });
-  useMapScreensaver({ active: screensaver, graph, onPulse });
+  useMapScreensaver({ active: screensaver, graph, onPulse, onDwell: setSelected });
 
   const onResults = React.useCallback(
     (asked: string, hitIds: string[]): boolean => {

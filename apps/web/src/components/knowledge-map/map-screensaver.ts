@@ -66,12 +66,36 @@ const READS_BEFORE_WRITE = 3;
 
 /** How long each style waits between two steps, in milliseconds, as [least, most]. */
 export const WALKER_TEMPO: Record<WalkerStyle, readonly [number, number]> = {
-  researcher: [700, 1_800],
-  associative: [1_200, 2_600],
-  librarian: [500, 1_200],
-  editor: [1_400, 3_000],
-  wanderer: [2_500, 5_000],
+  researcher: [1_400, 3_600],
+  associative: [2_400, 5_200],
+  librarian: [1_000, 2_400],
+  editor: [2_800, 6_000],
+  wanderer: [5_000, 10_000],
 };
+
+/** How long the screensaver waits before it picks the next page to dwell on, as [least, most]. */
+export const DWELL_MS: readonly [number, number] = [60_000, 300_000];
+
+/**
+ * The page the screensaver dwells on next, as if somebody had clicked it: one
+ * with lines, so the neighbourhood that stays lit around it is worth seeing,
+ * and never the one it is on now. Null when there is nothing else to pick.
+ */
+export function dwellTarget(
+  around: Neighbourhood,
+  current: string | null,
+  random: () => number,
+): string | null {
+  const connected = around.ids.filter(
+    (id) =>
+      id !== current &&
+      (around.children.has(id) ||
+        around.parent.has(id) ||
+        Object.values(around.byKind).some((lines) => lines.has(id))),
+  );
+  const pool = connected.length > 0 ? connected : around.ids.filter((id) => id !== current);
+  return pool.length === 0 ? null : (pool[Math.floor(random() * pool.length)] ?? null);
+}
 
 export function neighbourhoodOf(graph: MapGraph): Neighbourhood {
   const byKind: Record<KnowledgeMapEdgeKind, Map<string, string[]>> = {

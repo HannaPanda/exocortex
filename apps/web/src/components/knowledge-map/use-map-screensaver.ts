@@ -4,6 +4,8 @@ import * as React from 'react';
 
 import { type MapGraph, type PulseKind } from './map-model';
 import {
+  DWELL_MS,
+  dwellTarget,
   neighbourhoodOf,
   newWalker,
   nextDelay,
@@ -24,21 +26,49 @@ const CROWDED = 120;
  * and nothing is sent to the server, written to the live feed or remembered.
  * The walkers keep their place when the map is refetched underneath them, and
  * start somewhere new when their page is gone.
+ *
+ * Every one to five minutes it also dwells on a page, as if somebody had
+ * clicked it: `onDwell` selects it, so the rest dims and the camera flies over.
  */
 export function useMapScreensaver({
   active,
   graph,
   onPulse,
+  onDwell,
 }: {
   active: boolean;
   graph: MapGraph | null;
   onPulse: (documentId: string, kind: PulseKind) => void;
+  onDwell: (documentId: string) => void;
 }): void {
   const around = React.useMemo(() => (graph === null ? null : neighbourhoodOf(graph)), [graph]);
-  const latest = React.useRef({ around, onPulse });
+  const latest = React.useRef({ around, onPulse, onDwell });
   React.useEffect(() => {
-    latest.current = { around, onPulse };
-  }, [around, onPulse]);
+    latest.current = { around, onPulse, onDwell };
+  }, [around, onPulse, onDwell]);
+
+  React.useEffect(() => {
+    if (!active) return;
+    let dwelling: string | null = null;
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = (): void => {
+      const [least, most] = DWELL_MS;
+      timer = setTimeout(
+        () => {
+          const { around: current, onDwell: dwell } = latest.current;
+          const next = current === null ? null : dwellTarget(current, dwelling, Math.random);
+          if (next !== null) {
+            dwelling = next;
+            dwell(next);
+          }
+          schedule();
+        },
+        least + Math.random() * (most - least),
+      );
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, [active]);
 
   React.useEffect(() => {
     if (!active) return;

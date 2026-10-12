@@ -38,6 +38,7 @@ import {
   neighboursOf,
   type Pulse,
   type PulseKind,
+  pulseOver,
   pulseStrength,
   sharedPull,
   supersedes,
@@ -72,9 +73,12 @@ const SCREENSAVER_TURNING_SPEED = 0.6;
  * Light on purpose, a flicker around the star rather than an explosion, and
  * capped, because a screensaver lights a point every few hundred milliseconds.
  */
-const SPARK_MOTES = 14;
-const SPARK_MS = 1_500;
-const SPARK_SPEED: readonly [number, number] = [6, 20];
+const SPARK_MOTES = 16;
+const SPARK_MS = 1_900;
+/** World units per second at the start; seen from the whole map, not only up close. */
+const SPARK_SPEED: readonly [number, number] = [22, 60];
+/** A mote's size in world units, about a third of a small star. */
+const SPARK_SIZE = 6;
 const SPARK_LIMIT = 40;
 
 interface Spark {
@@ -638,7 +642,7 @@ export class MapEngine {
     geometry.setAttribute('position', new BufferAttribute(positions, 3));
     const material = new PointsMaterial({
       color: this.pulseColour(kind),
-      size: 2.4,
+      size: SPARK_SIZE,
       map: this.mote,
       transparent: true,
       opacity: 0.85,
@@ -719,7 +723,7 @@ export class MapEngine {
   private paint(node: MapNode, visual: NodeVisual, now: number): void {
     const pulse = this.pulses.get(node.id);
     const strength = pulse === undefined ? 0 : pulseStrength(pulse, now);
-    if (pulse !== undefined && strength === 0) this.pulses.delete(node.id);
+    if (pulse !== undefined && pulseOver(pulse, now)) this.pulses.delete(node.id);
 
     this.scratch.copy(this.baseColour(node));
     if (pulse !== undefined && strength > 0) {

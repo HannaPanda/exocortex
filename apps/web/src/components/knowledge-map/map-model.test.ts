@@ -80,9 +80,13 @@ describe('mergeGraph', () => {
 
 describe('pulses', () => {
   it('starts at full strength and is gone after its duration', () => {
-    expect(pulseStrength({ kind: 'read', at: 1000 }, 1000)).toBe(1);
-    expect(pulseStrength({ kind: 'read', at: 1000 }, 2000)).toBeGreaterThan(0);
-    expect(pulseStrength({ kind: 'read', at: 1000 }, 1000 + 3900)).toBe(0);
+    const read = { kind: 'read', at: 1000 } as const;
+    expect(pulseStrength(read, 1000)).toBe(0);
+    expect(pulseStrength(read, 1000 + 85)).toBeCloseTo(0.875);
+    expect(pulseStrength(read, 1000 + 170)).toBe(1);
+    expect(pulseStrength(read, 1000 + 3900 - 880)).toBe(1);
+    expect(pulseStrength(read, 1000 + 3900 - 440)).toBeCloseTo(0.5);
+    expect(pulseStrength(read, 1000 + 3900)).toBe(0);
   });
 
   it('lets a write outrank a read, and anything replace a pulse that is over', () => {
