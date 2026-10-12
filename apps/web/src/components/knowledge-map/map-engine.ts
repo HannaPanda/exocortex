@@ -215,14 +215,21 @@ export class MapEngine {
     const charge = this.graph.d3Force('charge');
     if (isChargeForce(charge)) charge.strength(-55);
 
+    // The room is the scene's background, not the renderer's clear colour:
+    // the bloom pass composites over a cleared target and lifts a clear colour
+    // into the slate of the page (measured: #09151c came out as #36566a),
+    // while a scene background is drawn as geometry and stays what it is.
+    this.graph.scene().background = palette.space.clone();
+
     // The glow: everything bright enough bleeds light into the dark room.
-    // Light enough to stay legible on a laptop GPU; the labels are kept out
-    // of the pass by not being tone mapped and staying below the threshold.
+    // Moderate on purpose. At full strength every point turned white and the
+    // branch colours were gone; the threshold keeps the lines and the labels
+    // out of it, so only the points and the pulses glow.
     const bloom = new UnrealBloomPass(
       new Vector2(element.clientWidth, element.clientHeight),
-      options.reducedMotion ? 0.7 : 1.05,
-      0.55,
-      0.18,
+      options.reducedMotion ? 0.45 : 0.7,
+      0.4,
+      0.32,
     );
     this.graph.postProcessingComposer().addPass(bloom);
 
