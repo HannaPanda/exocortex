@@ -39,7 +39,7 @@ import {
 import { toolCallEvent, turnEvent } from './run-events';
 import { abortFailure, type AbortReason, budgetFailure, runTimeoutFailure } from './run-failures';
 import { type RunTimeline } from './timeline';
-import { REASONING_LEVEL_TO_LOWER, toolCallTarget, toWireToolCalls } from './wire';
+import { REASONING_LEVEL_TO_LOWER, toolCallSubject, toolCallTarget, toWireToolCalls } from './wire';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 type RunTimeouts = ReturnType<typeof deriveAiRunTimeouts>;
@@ -505,11 +505,7 @@ class RunExecution {
     const { logger, run, maxOutputTokens, budgetMicroUsd } = this.input;
     const truncatedToolCall = turn.toolCalls.length > 0;
     for (const call of turn.toolCalls) {
-      await this.publishToolCall(
-        call.name,
-        'failed',
-        toolCallTarget(call.name, call.argumentsJson),
-      );
+      await this.publishToolCall(call, 'failed', toolCallTarget(call.name, call.argumentsJson));
     }
 
     this.truncationRetries += 1;
@@ -643,7 +639,7 @@ class RunExecution {
       // event below: the arguments (and therefore the target) never
       // change between the two.
       const target = toolCallTarget(call.name, call.argumentsJson);
-      await this.publishToolCall(call.name, 'started', target);
+      await this.publishToolCall(call, 'started', target);
       const at = new Date();
       const started = performance.now();
       const skipped = this.paused;
@@ -684,7 +680,7 @@ class RunExecution {
       });
 
       await this.publishToolCall(
-        call.name,
+        call,
         result.refused ? 'refused' : result.isError ? 'failed' : 'succeeded',
         target,
       );
@@ -713,11 +709,7 @@ class RunExecution {
           skipped: false,
         }),
       );
-      await this.publishToolCall(
-        call.name,
-        'failed',
-        toolCallTarget(call.name, call.argumentsJson),
-      );
+      await this.publishToolCall(call, 'failed', toolCallTarget(call.name, call.argumentsJson));
       this.input.logger.warn('Discarding a tool call the provider did not deliver completely', {
         runId: this.input.run.id,
         toolName: call.name,
@@ -726,11 +718,12 @@ class RunExecution {
   }
 
   private async publishToolCall(
-    toolName: string,
+    call: AiToolCall,
     status: 'started' | 'succeeded' | 'failed' | 'refused',
     target: string | null,
   ): Promise<void> {
     const { bus, run, payload } = this.input;
+    const toolName = call.name;
     await bus.publish({
       type: 'ai.run.tool_call',
       workspaceId: run.workspaceId,
@@ -742,6 +735,7 @@ class RunExecution {
         toolName: toolName.length > 0 ? toolName : 'unbekannt',
         status,
         target,
+        subject: toolCallSubject(call.name, call.argumentsJson),
       },
     });
   }

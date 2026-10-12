@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { toolCallTarget } from './ai-run';
+import { toolCallSubject } from './ai-run/wire';
 
 /**
  * The compact argument extract that goes onto `ai.run.tool_call` (issue #6).
@@ -62,5 +63,46 @@ describe('toolCallTarget', () => {
 
   it('reports nothing when the arguments do not satisfy the tool schema', () => {
     expect(toolCallTarget('exo_page_write', JSON.stringify({ markdown: 'ohne Ziel' }))).toBeNull();
+  });
+});
+
+/**
+ * The page a call is about, for the knowledge map (issue #189): a read lights
+ * a page up as much as a write does, so the subject names both, and it keeps
+ * the target's rule of carrying an identifier and nothing else.
+ */
+describe('toolCallSubject', () => {
+  it('names the page a read-only tool reads', () => {
+    expect(toolCallSubject('exo_page_read', JSON.stringify({ documentId: 'doc123456789' }))).toBe(
+      'document:doc123456789',
+    );
+  });
+
+  it('names the page a write touches, like the target', () => {
+    expect(
+      toolCallSubject(
+        'exo_page_write',
+        JSON.stringify({ documentId: 'doc123456789', markdown: 'hunter2', mode: 'append' }),
+      ),
+    ).toBe('document:doc123456789');
+  });
+
+  it('reports nothing for a call that is about no page', () => {
+    expect(
+      toolCallSubject('exo_search', JSON.stringify({ workspaceId: 'ws1234567890', q: 'gaming' })),
+    ).toBeNull();
+  });
+
+  it('refuses an argument that is not shaped like an id', () => {
+    expect(
+      toolCallSubject('exo_page_read', JSON.stringify({ documentId: 'Passwort ist hunter2' })),
+    ).toBeNull();
+  });
+
+  it('reports nothing for an unknown tool or broken arguments', () => {
+    expect(
+      toolCallSubject('exo_not_a_tool', JSON.stringify({ documentId: 'doc123456789' })),
+    ).toBeNull();
+    expect(toolCallSubject('exo_page_read', '{"documentId":"doc1')).toBeNull();
   });
 });

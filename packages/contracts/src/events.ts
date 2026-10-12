@@ -210,6 +210,12 @@ export const aiRunToolCallPayloadSchema = z.object({
    * parsed) (issue #6).
    */
   target: z.string().nullable().default(null),
+  /**
+   * The page the call is about, read or written, as `document:<id>`: the
+   * target when it names a page, otherwise the call's `documentId` argument.
+   * What the knowledge map lights up while a run works (issue #189).
+   */
+  subject: z.string().nullable().default(null),
 });
 
 /**
