@@ -110,7 +110,10 @@ export const updateWorkspaceRequestSchema = z
      */
     isMemory: z.boolean().optional(),
   })
-  .refine((value) => value.name !== undefined || value.slug !== undefined, {
-    message: 'At least one field must be provided',
-  });
+  .refine(
+    (value) => value.name !== undefined || value.slug !== undefined || value.isMemory !== undefined,
+    {
+      message: 'At least one field must be provided',
+    },
+  );
 export type UpdateWorkspaceRequest = z.infer<typeof updateWorkspaceRequestSchema>;

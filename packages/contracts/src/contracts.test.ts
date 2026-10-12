@@ -210,6 +210,8 @@ describe('workspace update contract', () => {
     expect(() => updateWorkspaceRequestSchema.parse({})).toThrow();
     expect(updateWorkspaceRequestSchema.parse({ name: 'Neuer Name' }).name).toBe('Neuer Name');
     expect(updateWorkspaceRequestSchema.parse({ slug: 'neuer-slug' }).slug).toBe('neuer-slug');
+    expect(updateWorkspaceRequestSchema.parse({ isMemory: true }).isMemory).toBe(true);
+    expect(updateWorkspaceRequestSchema.parse({ isMemory: false }).isMemory).toBe(false);
   });
 
   it('rejects a slug that is not lowercase kebab-case', () => {
