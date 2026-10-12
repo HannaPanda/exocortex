@@ -146,8 +146,8 @@ function endInput(box, overrides = {}) {
   };
 }
 
-describe('SessionEnd', () => {
-  it('returns at once and leaves the capture to a detached process', async () => {
+void describe('SessionEnd', () => {
+  void it('returns at once and leaves the capture to a detached process', async () => {
     // The fake never answers, so a hook that waited for the upload would sit
     // here for its whole timeout. Claude Code kills it after 1.5 s.
     const fake = await api({ hang: ['POST /api/memory/capture'] });
@@ -165,7 +165,7 @@ describe('SessionEnd', () => {
     assert.equal(readState(box).sessionEnd.stage, 'dispatched');
   });
 
-  it('sends the full payload, without tool traffic, and follows the job to its note', async () => {
+  void it('sends the full payload, without tool traffic, and follows the job to its note', async () => {
     const fake = await api({ pollsUntilDone: 2 });
     const box = sandbox();
     await runHook('session-end.mjs', endInput(box), environment(box, pluginEnv(fake.url)));
@@ -194,7 +194,7 @@ describe('SessionEnd', () => {
     );
   });
 
-  it('captures on /clear as on /exit', async () => {
+  void it('captures on /clear as on /exit', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook(
@@ -207,7 +207,7 @@ describe('SessionEnd', () => {
     assert.equal(entry.outcome, 'written');
   });
 
-  it('sends nothing on logout', async () => {
+  void it('sends nothing on logout', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook(
@@ -220,7 +220,7 @@ describe('SessionEnd', () => {
     assert.equal(fake.requests.length, 0);
   });
 
-  it('records a transcript with no conversation in it, and sends nothing', async () => {
+  void it('records a transcript with no conversation in it, and sends nothing', async () => {
     const fake = await api();
     const box = sandbox();
     const onlyTools = transcriptFile(
@@ -238,7 +238,7 @@ describe('SessionEnd', () => {
     assert.equal(fake.requests.length, 0);
   });
 
-  it('records an unreadable transcript', async () => {
+  void it('records an unreadable transcript', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook(
@@ -250,7 +250,7 @@ describe('SessionEnd', () => {
     assert.equal(entry.transcriptReadable, false);
   });
 
-  it('records the reason when the server turns a short session away', async () => {
+  void it('records the reason when the server turns a short session away', async () => {
     const fake = await api({
       captureAnswer: { accepted: false, jobId: null, reason: 'transcript_too_short' },
     });
@@ -261,7 +261,7 @@ describe('SessionEnd', () => {
   });
 
   for (const status of [401, 403, 500]) {
-    it(`records HTTP ${String(status)} from the capture`, async () => {
+    void it(`records HTTP ${String(status)} from the capture`, async () => {
       const fake = await api({ status: { 'POST /api/memory/capture': status } });
       const box = sandbox();
       await runHook('session-end.mjs', endInput(box), environment(box, pluginEnv(fake.url)));
@@ -271,7 +271,7 @@ describe('SessionEnd', () => {
     });
   }
 
-  it('records a model that found nothing as a processed session, not a failure', async () => {
+  void it('records a model that found nothing as a processed session, not a failure', async () => {
     const fake = await api({ outcome: { outcome: 'nothing_to_remember', documentId: null } });
     const box = sandbox();
     await runHook('session-end.mjs', endInput(box), environment(box, pluginEnv(fake.url)));
@@ -279,7 +279,7 @@ describe('SessionEnd', () => {
     assert.equal(entry.outcome, 'nothing_to_remember');
   });
 
-  it('says a server without the status route is older, not broken', async () => {
+  void it('says a server without the status route is older, not broken', async () => {
     const fake = await api({ status: { 'GET /api/memory/capture/:id': 404 } });
     const box = sandbox();
     await runHook('session-end.mjs', endInput(box), environment(box, pluginEnv(fake.url)));
@@ -287,8 +287,8 @@ describe('SessionEnd', () => {
   });
 });
 
-describe('where the configuration comes from', () => {
-  it('reports a plugin that handed over the address but no token', async () => {
+void describe('where the configuration comes from', () => {
+  void it('reports a plugin that handed over the address but no token', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook('session-end.mjs', endInput(box), environment(box, pluginEnv(fake.url, null)));
@@ -304,7 +304,7 @@ describe('where the configuration comes from', () => {
     });
   });
 
-  it('runs without any plugin environment at all', async () => {
+  void it('runs without any plugin environment at all', async () => {
     const box = sandbox();
     const result = await runHook('session-start.mjs', { cwd: '/x' }, environment(box));
     assert.equal(result.code, 0);
@@ -342,7 +342,7 @@ describe('where the configuration comes from', () => {
     ],
   ];
   for (const [source, prepare] of sources) {
-    it(`finds the credential in ${String(source)}`, async () => {
+    void it(`finds the credential in ${String(source)}`, async () => {
       const fake = await api();
       const box = sandbox();
       const extra = prepare(fake.url, box);
@@ -354,7 +354,7 @@ describe('where the configuration comes from', () => {
     });
   }
 
-  it('stays silent when the plugin option switches the memory off', async () => {
+  void it('stays silent when the plugin option switches the memory off', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook(
@@ -367,8 +367,8 @@ describe('where the configuration comes from', () => {
   });
 });
 
-describe('SessionStart', () => {
-  it('injects what was recalled and notices the last note among it', async () => {
+void describe('SessionStart', () => {
+  void it('injects what was recalled and notices the last note among it', async () => {
     const fake = await api({ recallHits: [{ documentId: 'doc-12345' }] });
     const box = sandbox();
     mkdirSync(box.state, { recursive: true });
@@ -393,7 +393,7 @@ describe('SessionStart', () => {
     assert.equal(entry.source, 'startup');
   });
 
-  it('prints nothing and records the status when the token is refused', async () => {
+  void it('prints nothing and records the status when the token is refused', async () => {
     const fake = await api({ status: { 'GET /api/memory/recall': 403 } });
     const box = sandbox();
     const result = await runHook(
@@ -409,7 +409,7 @@ describe('SessionStart', () => {
     );
   });
 
-  it('gives up on a hanging server inside its own timeout', async () => {
+  void it('gives up on a hanging server inside its own timeout', async () => {
     const fake = await api({ hang: ['GET /api/memory/recall'] });
     const box = sandbox();
     const result = await runHook(
@@ -423,8 +423,8 @@ describe('SessionStart', () => {
   });
 });
 
-describe('diagnostics', () => {
-  it('writes no debug log unless asked', async () => {
+void describe('diagnostics', () => {
+  void it('writes no debug log unless asked', async () => {
     const fake = await api();
     const box = sandbox();
     await runHook('session-start.mjs', { cwd: '/x' }, environment(box, pluginEnv(fake.url)));
@@ -435,7 +435,7 @@ describe('diagnostics', () => {
     ['EXOCORTEX_MEMORY_DEBUG=1', { EXOCORTEX_MEMORY_DEBUG: '1' }],
     ['the plugin option', { CLAUDE_PLUGIN_OPTION_DEBUG: 'true' }],
   ]) {
-    it(`writes a debug log with ${String(label)}, and nothing secret in it or in the state`, async () => {
+    void it(`writes a debug log with ${String(label)}, and nothing secret in it or in the state`, async () => {
       const fake = await api();
       const box = sandbox();
       const env = environment(box, { ...pluginEnv(fake.url), ...extra });
@@ -454,7 +454,7 @@ describe('diagnostics', () => {
     });
   }
 
-  it('keeps only allowlisted fields and blanks anything shaped like a credential', () => {
+  void it('keeps only allowlisted fields and blanks anything shaped like a credential', () => {
     const clean = sanitize({
       stage: 'capture_failed',
       rejectedReason: `token ${VALID_TOKEN} and Bearer abc.def`,
@@ -468,7 +468,7 @@ describe('diagnostics', () => {
     assert.ok(redact('x'.repeat(500)).length <= 121);
   });
 
-  it('rotates the debug log instead of letting it grow', async () => {
+  void it('rotates the debug log instead of letting it grow', async () => {
     const box = sandbox();
     mkdirSync(box.state, { recursive: true });
     writeFileSync(join(box.state, 'debug.log'), 'x'.repeat(MAX_DEBUG_LOG_BYTES + 10));
