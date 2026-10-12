@@ -112,6 +112,24 @@ describe('memory capture processor', () => {
     expect(written).toEqual([]);
   });
 
+  it('treats an empty answer as a failed distillation, never as nothing to remember', async () => {
+    // A reasoning model that spent its whole budget thinking answers with no
+    // text and finish_reason `length` (issue #188).
+    const { written, provider, apiClientFor } = harness('');
+    const process = createMemoryCaptureProcessor({
+      provider,
+      apiClientFor,
+      settings: async () => settingsWith([]),
+      defaultModel: 'test/model',
+    });
+
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'distill_failed',
+      documentId: null,
+    });
+    expect(written).toEqual([]);
+  });
+
   it('survives a provider that fails, because a hook has long since exited', async () => {
     const { written, provider, apiClientFor } = harness(new Error('provider down'));
     const process = createMemoryCaptureProcessor({

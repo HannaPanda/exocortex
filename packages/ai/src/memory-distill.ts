@@ -59,8 +59,27 @@ export const MEMORY_CHECKPOINT_PROMPT = [
 /** Cap for the transcript handed to the model, from the end (the recent part matters). */
 export const MAX_DISTILL_TRANSCRIPT_CHARS = 60_000;
 
-/** Cap for the distilled note. A memory that needs more than this is not distilled. */
-export const MAX_DISTILL_NOTE_TOKENS = 900;
+/**
+ * Output budget for the distiller. Not the length of the note: the prompt
+ * bounds that at a title and eight bullet points.
+ *
+ * A reasoning model thinks out of the same budget before it writes a word.
+ * At 900, DeepSeek V4.1 Flash spent all of it reasoning about a long session
+ * and returned an empty answer with `finish_reason: length`, which was then
+ * read as "nothing worth remembering" (issue #188): a third of all captures
+ * over two weeks, and every long one. Measured on the same session, it
+ * reasons for about 1,000 tokens and then writes the note.
+ */
+export const MAX_DISTILL_NOTE_TOKENS = 4_000;
+
+/**
+ * True when the model said nothing at all. That is a failed call, never the
+ * answer `NICHTS`: the two must not share a code path, or a model that ran
+ * out of budget is indistinguishable from one that judged the session empty.
+ */
+export function distillAnswerMissing(answer: string): boolean {
+  return answer.trim().length === 0;
+}
 
 /** A distilled note: the page title and the bullet points under it. */
 export interface DistilledNote {

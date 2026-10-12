@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import {
   type AiProvider,
+  distillAnswerMissing,
   MAX_DISTILL_NOTE_TOKENS,
   MAX_DISTILL_TRANSCRIPT_CHARS,
   MEMORY_CHECKPOINT_PROMPT,
@@ -299,6 +300,15 @@ export class MemoryCheckpointService {
       timeoutMs: CHECKPOINT_TIMEOUT_MS,
     });
 
+    // An empty answer is a model that ran out of budget or failed, not one that
+    // found nothing to keep. A checkpoint may never report the second when it
+    // means the first: the caller compacts its history away on our word.
+    if (distillAnswerMissing(result.text)) {
+      throw new AppError(
+        'memory_unavailable',
+        `The model returned no text (finish reason: ${result.finishReason}); nothing was secured`,
+      );
+    }
     return parseMemoryNote(result.text);
   }
 }

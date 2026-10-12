@@ -1,5 +1,6 @@
 import {
   type AiProvider,
+  distillAnswerMissing,
   MAX_DISTILL_NOTE_TOKENS,
   MAX_DISTILL_TRANSCRIPT_CHARS,
   MEMORY_DISTILL_PROMPT,
@@ -98,6 +99,15 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
         timeoutMs: DISTILL_TIMEOUT_MS,
       });
       answer = result.text;
+      if (distillAnswerMissing(answer)) {
+        logger.warn('Memory capture got no text from the model', {
+          project: payload.projectKey,
+          model,
+          finishReason: result.finishReason,
+          transcriptChars: payload.transcript.length,
+        });
+        return { outcome: 'distill_failed', documentId: null };
+      }
     } catch (error) {
       logger.warn('Memory capture failed to distil the session', {
         project: payload.projectKey,
