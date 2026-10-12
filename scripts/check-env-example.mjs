@@ -59,6 +59,13 @@ const NOT_CONFIGURATION = new Set([
   // (deploy/systemd/exocortex-sandbox.socket, issue #183); nobody writes them.
   'LISTEN_FDS',
   'LISTEN_PID',
+  // Claude Code's own: where it keeps its configuration when not in
+  // `~/.claude`. The plugin's hooks follow it with their state file.
+  'CLAUDE_CONFIG_DIR',
+  // The hand-over from the SessionEnd hook to the detached capture process it
+  // starts (`tools/claude-code-plugin/hooks`, issue #188). Set by one process
+  // for the next, never by a person.
+  'EXOCORTEX_HOOK_INPUT',
 ]);
 
 /**
