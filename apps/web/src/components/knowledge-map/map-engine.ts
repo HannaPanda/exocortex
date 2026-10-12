@@ -50,7 +50,7 @@ type MapForceGraphConstructor = new (
 const MapForceGraph = ForceGraph3D as unknown as MapForceGraphConstructor;
 
 /** How many of the best connected points always carry a label. */
-const ALWAYS_LABELLED = 18;
+const ALWAYS_LABELLED = 12;
 /** How long the room waits after the last touch before it starts turning again. */
 const IDLE_BEFORE_TURNING_MS = 15_000;
 
@@ -510,7 +510,7 @@ export class MapEngine {
       lit ||
       (this.highlighted === null ? this.labelled.has(node.id) : this.highlighted.has(node.id));
     if (wantsLabel && visual.label === null) {
-      visual.label = makeLabel(node.title, this.palette.foreground);
+      visual.label = makeLabel(node.title, this.palette.muted);
       visual.label.name = node.title;
       visual.group.add(visual.label);
     }

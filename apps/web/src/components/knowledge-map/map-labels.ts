@@ -7,7 +7,7 @@ import { cssOf } from './map-colors';
  * than in the room: a label sized in world units was unreadable from afar and
  * filled the screen, glowing, once the camera flew up to its point.
  */
-const LABEL_HEIGHT = 0.026;
+const LABEL_HEIGHT = 0.018;
 /** Titles longer than this are cut, since a label names a point rather than describing it. */
 const MAX_LABEL_CHARS = 38;
 
@@ -46,6 +46,8 @@ export function makeLabel(text: string, colour: Color): Sprite {
     toneMapped: false,
     sizeAttenuation: false,
     depthTest: false,
+    // Just under full strength, so text stays below most of the glow.
+    opacity: 0.88,
   });
   const sprite = new Sprite(material);
   sprite.scale.set((LABEL_HEIGHT * canvas.width) / canvas.height, LABEL_HEIGHT, 1);
