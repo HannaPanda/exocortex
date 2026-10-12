@@ -21,7 +21,20 @@ import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
+import { record } from './diagnostics.mjs';
+
 /** @typedef {{ apiUrl: string, token: string, disabled: boolean }} HookConfig */
+
+/**
+ * Where a configuration was found, as a code for the diagnostics (which must
+ * never carry the values) and as words for the setup check.
+ */
+export const SOURCE_LABELS = {
+  env: 'Umgebungsvariablen EXOCORTEX_API_URL und EXOCORTEX_API_TOKEN',
+  plugin: 'Konfiguration des Plugins (/plugin, eXocortex, Konfigurieren)',
+  file: '~/.claude/exocortex-memory.json',
+  mcp_entry: 'MCP-Server-Eintrag exocortex in ~/.claude.json',
+};
 
 function readJsonFile(path) {
   try {
@@ -41,9 +54,9 @@ function readJsonFile(path) {
  * setup went wrong: "no configuration found" and "found it in a file you forgot
  * about" look identical from the outside.
  *
- * @returns {{ config: HookConfig, source: string } | null}
+ * @returns {{ config: HookConfig, source: keyof typeof SOURCE_LABELS } | null}
  */
-function locate() {
+export function locate() {
   const home = homedir();
 
   const fromEnv = {
@@ -53,7 +66,7 @@ function locate() {
   if (fromEnv.apiUrl && fromEnv.token) {
     return {
       config: { apiUrl: trimUrl(fromEnv.apiUrl), token: fromEnv.token, disabled: false },
-      source: 'Umgebungsvariablen EXOCORTEX_API_URL und EXOCORTEX_API_TOKEN',
+      source: 'env',
     };
   }
 
@@ -64,7 +77,7 @@ function locate() {
   if (fromPlugin.apiUrl && fromPlugin.token) {
     return {
       config: { apiUrl: trimUrl(fromPlugin.apiUrl), token: fromPlugin.token, disabled: false },
-      source: 'Konfiguration des Plugins (/plugin, eXocortex, Konfigurieren)',
+      source: 'plugin',
     };
   }
 
@@ -76,7 +89,7 @@ function locate() {
         token: String(ownFile.token),
         disabled: ownFile.disabled === true,
       },
-      source: '~/.claude/exocortex-memory.json',
+      source: 'file',
     };
   }
 
@@ -89,7 +102,7 @@ function locate() {
         token: String(serverEnv.EXOCORTEX_API_TOKEN),
         disabled: false,
       },
-      source: 'MCP-Server-Eintrag exocortex in ~/.claude.json',
+      source: 'mcp_entry',
     };
   }
 
@@ -97,12 +110,34 @@ function locate() {
 }
 
 /** True when something switched the memory off before any source was read. */
-function switchedOff() {
+export function switchedOff() {
   if (process.env.EXOCORTEX_MEMORY_DISABLED === '1') return true;
   // The plugin's own off switch, for somebody who wants the MCP server the
   // plugin brings but not the note at the end of every session. `false` is what
   // Claude Code writes for a boolean option that was answered with no.
   return process.env.CLAUDE_PLUGIN_OPTION_MEMORY === 'false';
+}
+
+/**
+ * The configuration a hook runs with, or `null` after recording why there is
+ * none: switched off, or nothing found. The record names which variables were
+ * present, never their values (issue #188).
+ *
+ * @returns {{ config: HookConfig, base: Record<string, unknown> } | null}
+ */
+export function configForHook(event) {
+  const off = switchedOff();
+  const located = off ? null : locate();
+  const base = { env: environmentPresence(), configSource: located?.source ?? null };
+  if (off || located?.config.disabled === true) {
+    record(event, { ...base, memory: 'off', stage: 'disabled' });
+    return null;
+  }
+  if (located === null) {
+    record(event, { ...base, memory: 'on', stage: 'no_config' });
+    return null;
+  }
+  return { config: located.config, base: { ...base, memory: 'on' } };
 }
 
 /**
@@ -129,10 +164,27 @@ export function describeConfig() {
   const located = locate();
   return {
     found: located !== null,
-    source: located?.source ?? null,
+    source: located === null ? null : SOURCE_LABELS[located.source],
     apiUrl: located?.config.apiUrl ?? null,
     memoryOff: switchedOff() || located?.config.disabled === true,
     tokenPreview: located === null ? null : maskToken(located.config.token),
+  };
+}
+
+/**
+ * Which of the variables a hook could be configured by are set, as booleans.
+ *
+ * Never the values. This is what tells "Claude Code did not hand the plugin's
+ * token to the hook" (issue #188) apart from "nothing was configured at all".
+ */
+export function environmentPresence() {
+  const present = (name) => typeof process.env[name] === 'string' && process.env[name].length > 0;
+  return {
+    pluginRoot: present('CLAUDE_PLUGIN_ROOT'),
+    pluginOptionUrl: present('CLAUDE_PLUGIN_OPTION_API_URL'),
+    pluginOptionToken: present('CLAUDE_PLUGIN_OPTION_API_TOKEN'),
+    envUrl: present('EXOCORTEX_API_URL'),
+    envToken: present('EXOCORTEX_API_TOKEN'),
   };
 }
 
@@ -160,15 +212,18 @@ export async function readHookInput() {
 }
 
 /**
- * One HTTP call with a hard timeout.
+ * One HTTP call with a hard timeout, and what became of it.
  *
- * Every failure comes back as `null` rather than as an exception: a hook runs
+ * Every failure comes back as a value rather than as an exception: a hook runs
  * inside somebody's editing session, and a memory that could not be written or
- * read is never worth interrupting that session for.
+ * read is never worth interrupting that session for. The failure is named by
+ * class only (`timeout`, `network`, `http`, `invalid_json`), because an error
+ * message can quote a URL, and the diagnostics must not.
  *
- * @returns {Promise<unknown>}
+ * @returns {Promise<{ ok: boolean, status: number, data: unknown,
+ *   error: 'timeout' | 'network' | 'http' | 'invalid_json' | null }>}
  */
-export async function callApi(config, { method, path, body, timeoutMs }) {
+export async function requestApi(config, { method, path, body, timeoutMs }) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -181,11 +236,22 @@ export async function callApi(config, { method, path, body, timeoutMs }) {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       signal: controller.signal,
     });
-    if (!response.ok) return null;
-    return await response.json();
-  } catch {
-    return null;
+    if (!response.ok) return { ok: false, status: response.status, data: null, error: 'http' };
+    try {
+      return { ok: true, status: response.status, data: await response.json(), error: null };
+    } catch {
+      return { ok: false, status: response.status, data: null, error: 'invalid_json' };
+    }
+  } catch (error) {
+    const timedOut = controller.signal.aborted || error?.name === 'AbortError';
+    return { ok: false, status: 0, data: null, error: timedOut ? 'timeout' : 'network' };
   } finally {
     clearTimeout(timer);
   }
+}
+
+/** `requestApi` for callers that only want the answer, or `null`. */
+export async function callApi(config, request) {
+  const result = await requestApi(config, request);
+  return result.ok ? result.data : null;
 }

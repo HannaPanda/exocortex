@@ -11,10 +11,13 @@
  * question.
  *
  * And it never fails loudly. Every error path ends in "print nothing, exit 0".
- * A session that starts without its memory is a session that starts.
+ * A session that starts without its memory is a session that starts. What
+ * happened is written to the state file instead (`diagnostics.mjs`), which is
+ * where `/exocortex:einrichten` reads it back (issue #188).
  */
 
-import { callApi, readConfig, readHookInput } from './config.mjs';
+import { callApi, configForHook, readHookInput, requestApi } from './config.mjs';
+import { projectId, readState, record } from './diagnostics.mjs';
 
 /** Ceiling for the injected block. Roughly a page of text. */
 const MAX_CHARS = 4_000;
@@ -22,11 +25,21 @@ const MAX_CHARS = 4_000;
 const TIMEOUT_MS = 5_000;
 
 async function main() {
-  const config = readConfig();
-  if (config === null || config.disabled) return;
+  const startedAt = Date.now();
+  const hook = configForHook('sessionStart');
+  if (hook === null) return;
+  const { config } = hook;
 
   const input = await readHookInput();
   const project = typeof input.cwd === 'string' && input.cwd.length > 0 ? input.cwd : process.cwd();
+  const observed = {
+    ...hook.base,
+    // startup, resume, clear or compact: a start hook that only ever reports
+    // `clear` has never seen a fresh session, which is worth knowing.
+    source: typeof input.source === 'string' ? input.source : null,
+    hasCwd: typeof input.cwd === 'string',
+    project: projectId(project),
+  };
 
   const query = new URLSearchParams({
     project,
@@ -37,17 +50,36 @@ async function main() {
     includeKnowledge: 'true',
   });
 
-  const recalled = await callApi(config, {
+  const answer = await requestApi(config, {
     method: 'GET',
     path: `/api/memory/recall?${query.toString()}`,
     timeoutMs: TIMEOUT_MS,
   });
-
-  if (recalled === null) return;
+  if (!answer.ok || answer.data === null || typeof answer.data !== 'object') {
+    record('sessionStart', {
+      ...observed,
+      stage: 'recall_failed',
+      status: answer.status,
+      error: answer.error ?? 'invalid_json',
+      durationMs: Date.now() - startedAt,
+    });
+    return;
+  }
+  const recalled = answer.data;
   const hits = Array.isArray(recalled.hits) ? recalled.hits : [];
   // Unread mail from other agents (issue #51). It rides along in the recall,
   // so a session with post but no matching notes is still worth injecting.
   const messages = Array.isArray(recalled.messages) ? recalled.messages : [];
+
+  record('sessionStart', {
+    ...observed,
+    stage: hits.length === 0 && messages.length === 0 ? 'recalled_nothing' : 'recalled',
+    status: answer.status,
+    hits: hits.length,
+    messages: messages.length,
+    lastNoteRecalled: lastNoteAmong(hits),
+    durationMs: Date.now() - startedAt,
+  });
   if (hits.length === 0 && messages.length === 0) return;
 
   const context = [
@@ -70,6 +102,17 @@ async function main() {
   );
 
   await acknowledge(config, messages);
+}
+
+/**
+ * Whether the note the last end hook saw written is among these hits: the last
+ * link of the chain, from "a session ended" to "the next one got it back".
+ * `null` when there is no such note to look for.
+ */
+function lastNoteAmong(hits) {
+  const documentId = readState().sessionEnd?.documentId;
+  if (typeof documentId !== 'string') return null;
+  return hits.some((hit) => hit?.documentId === documentId);
 }
 
 /**

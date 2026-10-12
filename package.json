@@ -22,6 +22,7 @@
     "test:unit": "turbo run test:unit",
     "test:integration": "bash scripts/test-integration.sh",
     "test:gates": "vitest run",
+    "test:plugin": "node --test --test-concurrency=4 tools/claude-code-plugin/test/hooks.test.mjs",
     "test:e2e": "pnpm --filter @exocortex/e2e test:e2e",
     "test:styleguide": "bash scripts/test-styleguide.sh",
     "test:styleguide:update": "bash scripts/test-styleguide.sh --update-snapshots",

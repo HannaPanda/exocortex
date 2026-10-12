@@ -211,6 +211,12 @@ else
   info "Tests without infrastructure (--full-tests adds the rest) …"
   pnpm test:unit || fail "Unit tests failed"
 
+  # The Claude Code plugin is no workspace: plain Node without dependencies,
+  # because it is copied onto other people's machines. Its hooks are tested
+  # the way Claude Code runs them, as processes against a fake API (issue #188).
+  info "Claude Code plugin hooks …"
+  pnpm test:plugin || fail "Plugin hook tests failed"
+
   if [ "$FULL_TESTS" -eq 1 ]; then
     info "Integration tests on a throwaway Postgres and Redis …"
     pnpm test:integration || fail "Integration tests failed"
