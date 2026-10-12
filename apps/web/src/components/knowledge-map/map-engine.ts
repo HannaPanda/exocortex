@@ -60,12 +60,34 @@ const REDUCED_MOTION_BLOOM = 0.65;
 /** How long the room waits after the last touch before it starts turning again. */
 const IDLE_BEFORE_TURNING_MS = 15_000;
 
+/**
+ * How far apart two connected points settle. Wide enough that a big branch is
+ * a region rather than a knot: packed tighter, a hundred halos overlapped into
+ * one white blot and its colour was gone.
+ */
 const LINK_DISTANCE: Record<KnowledgeMapEdgeKind, number> = {
-  tree: 26,
-  link: 38,
-  entity: 44,
-  similar: 52,
+  tree: 40,
+  link: 55,
+  entity: 60,
+  similar: 75,
 };
+/** How hard a line pulls its two points together. */
+function linkStrength(link: MapLink): number {
+  if (link.kind === 'similar') return 0.15 + link.weight * 0.25;
+  // The tree pulls even while it is hidden, and a parent with a hundred
+  // children pulled them into a ball; looser, it still keeps the branch together.
+  if (link.kind === 'tree') return 0.35;
+  return 0.6;
+}
+
+/** How hard every point pushes the others away. */
+const CHARGE = -130;
+/**
+ * How much a similarity line bows. A one-pixel line cannot be told apart by
+ * colour alone (white and pastel looked the same), so the line nobody drew
+ * also has a different shape: references are straight, similarities curved.
+ */
+const SIMILAR_CURVATURE = 0.3;
 
 /** The part of d3's link force the map tunes. The library types it as an open record. */
 interface LinkForce {
@@ -173,10 +195,10 @@ export class MapEngine {
     const material = (colour: Color, opacity: number): LineBasicMaterial =>
       new LineBasicMaterial({ color: colour, transparent: true, opacity, depthWrite: false });
     const kinds: Record<KnowledgeMapEdgeKind, [Color, number]> = {
-      link: [palette.foreground, 0.42],
-      similar: [palette.similar, 0.26],
-      entity: [palette.entity, 0.32],
-      tree: [palette.muted, 0.14],
+      link: [palette.foreground, 0.5],
+      similar: [palette.similar, 0.45],
+      entity: [palette.entity, 0.4],
+      tree: [palette.muted, 0.32],
     };
     this.linkMaterials = Object.fromEntries(
       Object.entries(kinds).map(([kind, [colour, opacity]]) => [
@@ -200,6 +222,7 @@ export class MapEngine {
       .nodeVisibility((node) => existsAt(node, this.moment))
       .linkVisibility((link) => this.linkVisible(link))
       .linkMaterial((link) => this.linkMaterials[link.kind][this.linkState(link)])
+      .linkCurvature((link) => (link.kind === 'similar' ? SIMILAR_CURVATURE : 0))
       .linkDirectionalParticles((link) => this.particlesOf(link))
       .linkDirectionalParticleSpeed((link) => 0.0025 + link.weight * 0.003)
       .linkDirectionalParticleWidth((link) => (link.kind === 'link' ? 1.1 : 0.8))
@@ -223,12 +246,10 @@ export class MapEngine {
 
     const link = this.graph.d3Force('link');
     if (isLinkForce(link)) {
-      link
-        .distance((entry) => LINK_DISTANCE[entry.kind])
-        .strength((entry) => (entry.kind === 'similar' ? 0.15 + entry.weight * 0.25 : 0.6));
+      link.distance((entry) => LINK_DISTANCE[entry.kind]).strength(linkStrength);
     }
     const charge = this.graph.d3Force('charge');
-    if (isChargeForce(charge)) charge.strength(-55);
+    if (isChargeForce(charge)) charge.strength(CHARGE);
 
     // The room is the scene's background, not the renderer's clear colour:
     // the bloom pass composites over a cleared target and lifts a clear colour

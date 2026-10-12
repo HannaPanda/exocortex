@@ -45,7 +45,7 @@ export interface MapPalette {
   entity: Color;
   /** What a search found, while the tour visits it. */
   found: Color;
-  /** The similarity lines: the content colour as it is, quieter than the points. */
+  /** The similarity lines: the purple made vivid, since the pastel token read as white on a thin line. */
   similar: Color;
   /** The branch tokens as they are; `pointColours` turns them into light. */
   branchTokens: Color[];
@@ -132,7 +132,7 @@ export function readMapPalette(): MapPalette {
     entity: asPoint(resolve('--warning')),
     entityToken: resolve('--warning'),
     found: resolve('--primary-text'),
-    similar: resolve('--content-purple'),
+    similar: asPoint(resolve('--content-purple'), 2.2, 0.62),
     branchTokens: BRANCH_TOKENS.map((token) => resolve(token)),
   };
 }

@@ -114,8 +114,10 @@ export function MapLegend({
             <span
               aria-hidden
               className={cn(
-                'h-0.5 w-4 rounded-full',
-                KIND_SWATCH[kind],
+                // A similarity line is curved on the canvas, so its swatch is an arc.
+                kind === 'similar'
+                  ? 'mt-1 h-1.5 w-4 rounded-t-full border-t-2 border-content-purple'
+                  : cn('h-0.5 w-4 rounded-full', KIND_SWATCH[kind]),
                 !shown.has(kind) && 'opacity-30',
               )}
             />
