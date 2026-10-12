@@ -6,9 +6,11 @@ import {
   MockImageGenerator,
   OpenRouterImageGenerator,
 } from './image-generator';
+import { ChatCompletionsProvider } from './chat-completions-provider';
 import { MockAiProvider } from './mock-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { type AiProvider } from './provider';
+import { PROVIDER_PRESETS, type ProviderPresetId } from './provider-presets';
 import { VisionPreprocessor } from './vision-preprocessor';
 
 export type AiProviderId = 'mock' | 'openrouter';
@@ -41,6 +43,28 @@ export function createAiProvider(options: CreateProviderOptions): AiProvider {
     });
   }
   return new MockAiProvider();
+}
+
+/**
+ * The provider for one checked preset (issue #187), on its fixed address.
+ *
+ * An empty key builds a provider that refuses every call, the same gate as
+ * OpenRouter's: a model registered for a preset whose key is missing fails
+ * closed rather than reaching for somebody else's account.
+ */
+export function createPresetProvider(input: {
+  presetId: ProviderPresetId;
+  apiKey: string;
+  logger: Logger;
+  appUrl: string;
+}): AiProvider {
+  const preset = PROVIDER_PRESETS[input.presetId];
+  return new ChatCompletionsProvider(preset.dialect, {
+    apiKey: input.apiKey,
+    baseUrl: preset.baseUrl,
+    logger: input.logger,
+    appUrl: input.appUrl,
+  });
 }
 
 export interface CreateVisionPreprocessorOptions {

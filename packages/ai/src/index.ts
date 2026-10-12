@@ -1,7 +1,9 @@
 export * from './agent-runners';
 export * from './anydoc';
+export * from './chat-completions-provider';
 export * from './docling';
 export * from './embedding-provider';
+export * from './fallback-provider';
 export * from './image-generator';
 export * from './memory-distill';
 export * from './mock-provider';
@@ -10,6 +12,7 @@ export * from './openrouter-provider';
 export * from './pdf-info';
 export * from './pdf-text';
 export * from './provider';
+export * from './provider-presets';
 export * from './provider-routing';
 export * from './registry';
 export * from './route-planner';

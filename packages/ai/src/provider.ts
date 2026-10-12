@@ -115,7 +115,12 @@ export type AiStreamEvent =
   | { type: 'tool_calls'; toolCalls: readonly AiToolCall[] }
   | { type: 'usage'; usage: AiUsage }
   | { type: 'done'; text: string; finishReason: AiGenerateResult['finishReason'] }
-  | { type: 'error'; code: string; message: string };
+  /**
+   * `status` is the upstream's HTTP status when it refused before answering,
+   * which is what decides whether another provider may take the turn
+   * (`withFallback`). Absent for a failure that is not an HTTP refusal.
+   */
+  | { type: 'error'; code: string; message: string; status?: number };
 
 export interface AiProvider {
   readonly id: string;
@@ -126,11 +131,14 @@ export interface AiProvider {
 
 export class AiProviderError extends Error {
   public readonly code: string;
+  /** The upstream's HTTP status, when the failure was one. See the `error` stream event. */
+  public readonly status: number | null;
 
-  constructor(code: string, message: string, options?: { cause?: unknown }) {
+  constructor(code: string, message: string, options?: { cause?: unknown; status?: number }) {
     super(message, options);
     this.name = 'AiProviderError';
     this.code = code;
+    this.status = options?.status ?? null;
   }
 }
 

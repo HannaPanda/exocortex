@@ -78,6 +78,12 @@ export const aiUsageSchema = z.object({
   /** Provider cost in the smallest currency unit, when reported. */
   providerCostMicroUsd: z.number().int().nonnegative().nullable(),
   durationMs: z.number().int().nonnegative(),
+  /**
+   * Milliseconds from the request to the first fragment of the answer,
+   * thinking included (issue #187). Only a streamed answer has one; absent on
+   * everything recorded before it was measured.
+   */
+  firstTokenMs: z.number().int().nonnegative().nullable().optional(),
 });
 export type AiUsage = z.infer<typeof aiUsageSchema>;
 

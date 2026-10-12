@@ -53,8 +53,18 @@ export const aiModelListResponseSchema = z.object({
 });
 export type AiModelListResponse = z.infer<typeof aiModelListResponseSchema>;
 
+/**
+ * What a registry row's `provider` may name (issue #187): OpenRouter, the
+ * offline mock, and every checked subscription preset in
+ * `packages/ai/src/provider-presets.ts`. A test there keeps the two in step.
+ */
+export const AI_MODEL_PROVIDERS = ['openrouter', 'cline', 'mock'] as const;
+export const aiModelProviderSchema = z.enum(AI_MODEL_PROVIDERS);
+export type AiModelProvider = z.infer<typeof aiModelProviderSchema>;
+
 export const createAiModelRequestSchema = aiModelSchema
   .omit({ id: true, syncedAt: true, aliasTargetSlug: true })
+  .extend({ provider: aiModelProviderSchema })
   .partial({
     provider: true,
     description: true,

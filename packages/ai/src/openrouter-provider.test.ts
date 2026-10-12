@@ -220,6 +220,8 @@ describe('OpenRouterProvider.stream', () => {
       type: 'error',
       code: 'ai_provider_unavailable',
       message: 'OpenRouter responded with 502',
+      // The status is what lets a fallback tell "not now" from "wrong" (issue #187).
+      status: 502,
     });
   });
 });
