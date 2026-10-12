@@ -80,17 +80,21 @@ export function HostListSettingField({
   }
 
   /**
-   * Adds every host in a piece of text, in the server's spelling. An entry
-   * that could never match stays in the input to be corrected, rather than
-   * entering a list where it would allow nothing; one already allowed by an
-   * equal entry is left out and named.
+   * Adds every host in a piece of text, in the server's spelling. A Unicode
+   * host is added in the ASCII form a URL carries, which is the same host
+   * and the only spelling that matches. An entry that could never match
+   * stays in the input to be corrected, rather than entering a list where it
+   * would allow nothing; one already allowed by an equal entry is left out
+   * and named.
    */
   function add(text: string): void {
     const next = [...entries];
     const refused: string[] = [];
     const present: string[] = [];
     for (const candidate of entriesOfPastedHosts(text)) {
-      const host = normalizedHost(candidate) ?? candidate;
+      const normalized = normalizedHost(candidate) ?? candidate;
+      const [alone] = hostProblems([normalized]);
+      const host = alone?.kind === 'idn' ? alone.ascii : normalized;
       const problem = hostProblems([...next, host]).at(-1) ?? null;
       if (hostNeverMatches(problem)) refused.push(candidate);
       else if (problem?.kind === 'duplicate') present.push(host);
