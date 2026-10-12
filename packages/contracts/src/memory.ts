@@ -343,3 +343,52 @@ export const memoryCaptureResponseSchema = z.object({
   reason: z.string().nullable(),
 });
 export type MemoryCaptureResponse = z.infer<typeof memoryCaptureResponseSchema>;
+
+/**
+ * How a capture job ended (issue #188). Accepting a transcript is not writing
+ * a note: the distillation runs later in the worker and can still decide there
+ * is nothing worth keeping, or fail. The job returns one of these, so a hook
+ * or a setup check can tell the two apart instead of reading a 2xx as success.
+ */
+export const memoryCaptureOutcomeSchema = z.enum([
+  /** A note was written; `documentId` names it. */
+  'written',
+  /** The model read the session and found nothing worth remembering. */
+  'nothing_to_remember',
+  /** `ai.enabled` or `memory.enabled` was off by the time the job ran. */
+  'feature_disabled',
+  /** The worker has no `SERVICE_TOKEN_SECRET`, so it cannot write as anybody. */
+  'service_token_missing',
+  /** The model call failed or timed out. */
+  'distill_failed',
+  /** The model answered, but writing the note through the API failed. */
+  'write_failed',
+]);
+export type MemoryCaptureOutcome = z.infer<typeof memoryCaptureOutcomeSchema>;
+
+/** What the capture job stores as its BullMQ return value. */
+export const memoryCaptureJobResultSchema = z.object({
+  outcome: memoryCaptureOutcomeSchema,
+  documentId: idSchema.nullable(),
+});
+export type MemoryCaptureJobResult = z.infer<typeof memoryCaptureJobResultSchema>;
+
+/**
+ * Where one capture stands, for the job id `capture` handed out.
+ *
+ * `not_found` covers three things on purpose: a job that never existed, one
+ * that belongs to somebody else, and one that aged out of the queue (a
+ * finished job is kept for an hour). Telling them apart would answer, for a
+ * foreign id, whether it exists.
+ */
+export const memoryCaptureStatusResponseSchema = z.object({
+  jobId: z.string(),
+  state: z.enum(['queued', 'running', 'completed', 'failed', 'not_found']),
+  /** Set once the job completed. */
+  outcome: memoryCaptureOutcomeSchema.nullable(),
+  /** The note, when `outcome` is `written`. */
+  documentId: idSchema.nullable(),
+  /** For `failed`: the worker's error message, in English. */
+  reason: z.string().nullable(),
+});
+export type MemoryCaptureStatusResponse = z.infer<typeof memoryCaptureStatusResponseSchema>;

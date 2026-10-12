@@ -80,7 +80,11 @@ describe('memory capture processor', () => {
       defaultModel: 'test/model',
     });
 
-    await process(job());
+    // The outcome is what `GET /api/memory/capture/:jobId` reports (issue #188).
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'written',
+      documentId: 'doc-12345',
+    });
 
     expect(written).toHaveLength(1);
     expect(written[0]).toMatchObject({
@@ -101,7 +105,10 @@ describe('memory capture processor', () => {
       defaultModel: 'test/model',
     });
 
-    await process(job());
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'nothing_to_remember',
+      documentId: null,
+    });
     expect(written).toEqual([]);
   });
 
@@ -114,7 +121,10 @@ describe('memory capture processor', () => {
       defaultModel: 'test/model',
     });
 
-    await expect(process(job())).resolves.toBeUndefined();
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'distill_failed',
+      documentId: null,
+    });
     expect(written).toEqual([]);
   });
 
@@ -127,9 +137,48 @@ describe('memory capture processor', () => {
       defaultModel: 'test/model',
     });
 
-    await process(job());
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'feature_disabled',
+      documentId: null,
+    });
     // Not even the model call: the switch is off, so nothing is paid for.
     expect(prompts).toEqual([]);
+  });
+
+  it('says why it wrote nothing when it cannot act as anybody', async () => {
+    const { prompts, provider } = harness('TITEL: X\n\n- y');
+    const process = createMemoryCaptureProcessor({
+      provider,
+      apiClientFor: null,
+      settings: async () => settingsWith([]),
+      defaultModel: 'test/model',
+    });
+
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'service_token_missing',
+      documentId: null,
+    });
+    expect(prompts).toEqual([]);
+  });
+
+  it('reports a note the API refused to store as a failed write', async () => {
+    const { provider } = harness('TITEL: X\n\n- y');
+    const process = createMemoryCaptureProcessor({
+      provider,
+      apiClientFor: () =>
+        ({
+          request: async () => {
+            throw new Error('403');
+          },
+        }) as unknown as ExocortexApiClient,
+      settings: async () => settingsWith([]),
+      defaultModel: 'test/model',
+    });
+
+    await expect(process(job())).resolves.toEqual({
+      outcome: 'write_failed',
+      documentId: null,
+    });
   });
 
   it('hands the project and the client to the model as context', async () => {

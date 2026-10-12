@@ -8,6 +8,7 @@ import {
   transcriptTail,
 } from '@exocortex/ai';
 import {
+  type MemoryCaptureJobResult,
   memoryRememberResponseSchema,
   type QUEUE_NAMES,
   type Settings,
@@ -42,6 +43,10 @@ export interface MemoryCaptureDependencies {
  * user, so an automatically written memory passes exactly the permission checks
  * a hand-typed page does (ADR-014).
  *
+ * Every ending is returned as an outcome and kept as the job's return value,
+ * which is what `GET /api/memory/capture/:jobId` reads (issue #188): the
+ * request that queued the job answered long before anything here was decided.
+ *
  * Nothing here throws for a foreseeable outcome. The caller is a hook inside
  * somebody's editor that has long since exited; a failed capture is a memory
  * that was not written, not an incident, and a retry would only pay for the
@@ -51,18 +56,18 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
   return async ({
     payload,
     logger,
-  }: JobContext<typeof QUEUE_NAMES.memoryCapture>): Promise<void> => {
+  }: JobContext<typeof QUEUE_NAMES.memoryCapture>): Promise<MemoryCaptureJobResult> => {
     const settings = await dependencies.settings(payload.workspaceId);
 
     if (!settings['ai.enabled'] || !settings['memory.enabled']) {
       logger.info('Memory capture skipped: the feature is switched off', {
         project: payload.projectKey,
       });
-      return;
+      return { outcome: 'feature_disabled', documentId: null };
     }
     if (dependencies.apiClientFor === null) {
       logger.warn('Memory capture is unavailable: SERVICE_TOKEN_SECRET is not configured');
-      return;
+      return { outcome: 'service_token_missing', documentId: null };
     }
 
     const model =
@@ -99,7 +104,7 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
         model,
         reason: error instanceof Error ? error.message : String(error),
       });
-      return;
+      return { outcome: 'distill_failed', documentId: null };
     }
 
     const note = parseMemoryNote(answer);
@@ -108,7 +113,7 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
         project: payload.projectKey,
         client: payload.client,
       });
-      return;
+      return { outcome: 'nothing_to_remember', documentId: null };
     }
 
     try {
@@ -140,11 +145,13 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
         transcriptChars: payload.transcript.length,
         noteChars: note.body.length,
       });
+      return { outcome: 'written', documentId: written.documentId };
     } catch (error) {
       logger.warn('Memory capture could not write the note', {
         project: payload.projectKey,
         reason: error instanceof Error ? error.message : String(error),
       });
+      return { outcome: 'write_failed', documentId: null };
     }
   };
 }

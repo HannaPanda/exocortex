@@ -19,6 +19,8 @@ import {
   memoryCaptureRequestSchema,
   type MemoryCaptureResponse,
   memoryCaptureResponseSchema,
+  type MemoryCaptureStatusResponse,
+  memoryCaptureStatusResponseSchema,
   type MemoryCheckpointRequest,
   memoryCheckpointRequestSchema,
   type MemoryCheckpointResponse,
@@ -112,6 +114,20 @@ export class MemoryController {
       request: body,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * What became of one capture (issue #188). `capture` answers as soon as the
+   * job is queued, so its 200 says nothing about whether a note was written;
+   * this is the half that does, for the setup check and a hook in debug mode.
+   */
+  @Get('capture/:jobId')
+  @ApiOkResponse({ schema: openApiResponseSchema(memoryCaptureStatusResponseSchema) })
+  async captureStatus(
+    @CurrentSession() session: VerifiedSession,
+    @Param('jobId') jobId: string,
+  ): Promise<MemoryCaptureStatusResponse> {
+    return this.memory.captureStatus(session.userId, jobId);
   }
 
   /**

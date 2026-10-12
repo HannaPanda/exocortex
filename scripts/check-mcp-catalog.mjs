@@ -281,6 +281,11 @@ const EXEMPT = [
       'The SessionEnd hook posts a whole transcript here to be condensed (ADR-019). `remember` is the deliberate half and is a tool; capture is machinery.',
   },
   {
+    route: 'GET /api/memory/capture/:x',
+    reason:
+      "What became of one capture (issue #188): queued, running, a note written or why not. Read by the plugin's setup check and its hooks, which only ever hold the job id `capture` handed them. Machinery like `capture` itself; an agent asking what it remembers asks `recall`.",
+  },
+  {
     route: 'POST /api/memory/checkpoint',
     reason:
       "The step before an agent compacts its own conversation away (issue #92). Machinery for the same reason `capture` is: it belongs to a client's compaction lifecycle, it is called by a memory provider rather than by anybody's judgement, and the deliberate half of it is `remember`, which is a tool.",

@@ -4,6 +4,7 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   type MemoryCaptureRequest,
   type MemoryCaptureResponse,
+  type MemoryCaptureStatusResponse,
   type MemoryHit,
   type MemoryRecallEntity,
   type MemoryRecallFact,
@@ -31,6 +32,7 @@ import { SettingsService } from '../platform/settings.service';
 import { SearchService } from '../search/search.service';
 
 import { renderMessages, unreadMessagesForRecall } from './agent-messages.service';
+import { readCaptureStatus } from './memory-capture-status';
 import { normaliseProject, projectLabel } from './memory-project';
 import { memoryWorkspaceFor } from './memory-workspace';
 
@@ -442,6 +444,11 @@ export class MemoryService {
     });
 
     return { accepted: true, jobId: jobId === '' ? null : jobId, reason: null };
+  }
+
+  /** Where one queued capture stands (issue #188); see `readCaptureStatus`. */
+  async captureStatus(userId: string, jobId: string): Promise<MemoryCaptureStatusResponse> {
+    return readCaptureStatus(this.queues, userId, jobId);
   }
 
   private requireMemoryWorkspace(enabled: boolean, workspaceId: string | null): string {

@@ -222,6 +222,15 @@ of throwing, so a retry could only ever repeat an infrastructure problem and pay
 twice. A failed capture is a memory that was not written, not an incident: the
 hook that triggered it exited when the session did.
 
+Every ending is still reported, as the job's return value
+(`memoryCaptureJobResultSchema`: `outcome` and `documentId`): `written`,
+`nothing_to_remember`, `feature_disabled`, `service_token_missing`,
+`distill_failed` or `write_failed`. `GET /api/memory/capture/:jobId` reads it
+back for the job's owner while BullMQ keeps the finished job (an hour), because
+`capture` answered with a 200 long before the job decided anything and an
+accepted upload is not a written note (issue #188). This is the only queue
+whose handler returns something; `JobHandler` allows it for all of them.
+
 Two filters keep the memory from filling with noise, which is what makes recall
 worse over time. `memory.captureMinChars` throws away the shortest sessions in
 the API, before a model is ever paid; and the prompt allows the model to answer

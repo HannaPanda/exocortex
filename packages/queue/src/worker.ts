@@ -22,9 +22,15 @@ export interface JobContext<TName extends QueueName, TStep extends string = stri
   reportProgress: (progress: number, step: TStep) => Promise<void>;
 }
 
+/**
+ * A handler may return a value; BullMQ keeps it as the job's `returnvalue`
+ * for as long as the finished job is retained. Most return nothing. Memory
+ * capture returns its outcome, because the request that queued it answered
+ * long before the job decided anything (issue #188).
+ */
 export type JobHandler<TName extends QueueName, TStep extends string = string> = (
   context: JobContext<TName, TStep>,
-) => Promise<void>;
+) => Promise<unknown>;
 
 export interface CreateWorkerOptions<TName extends QueueName, TStep extends string = string> {
   name: TName;
@@ -143,11 +149,9 @@ export function createTypedWorker<TName extends QueueName, TStep extends string 
       // pushed back several times reports the extensions as waiting. That is
       // bounded by the debounce cap and beats the alternative of a number that
       // means nothing at all.
-      await withSpan(
+      const result = await withSpan(
         `job ${options.name}`,
-        async () => {
-          await options.handler({ payload, job, logger, reportProgress });
-        },
+        async () => options.handler({ payload, job, logger, reportProgress }),
         {
           kind: 'consumer',
           correlationId: payload.correlationId,
@@ -170,6 +174,7 @@ export function createTypedWorker<TName extends QueueName, TStep extends string 
       const durationMs = Date.now() - startedAt;
       logger.info('Job completed', { durationMs });
       await options.onCompleted?.(payload, job, durationMs);
+      return result;
     },
     workerOptions,
   );
