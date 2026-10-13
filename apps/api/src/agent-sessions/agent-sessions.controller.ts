@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
   type AgentSessionDetailResponse,
   agentSessionDetailResponseSchema,
+  type AgentSessionListQuery,
+  agentSessionListQuerySchema,
   type AgentSessionListResponse,
   agentSessionListResponseSchema,
   type AgentSessionRevertResponse,
@@ -44,9 +46,19 @@ export class AgentSessionsController {
   }
 
   @Get()
+  @ApiQuery({ name: 'q', required: false, type: String })
+  @ApiQuery({ name: 'transport', required: false, enum: ['stdio', 'http'] })
+  @ApiQuery({ name: 'withWrites', required: false, enum: ['true', 'false'] })
+  @ApiQuery({ name: 'sort', required: false, enum: ['lastSeenAt', 'startedAt'] })
+  @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiOkResponse({ schema: openApiResponseSchema(agentSessionListResponseSchema) })
-  async list(@CurrentSession() session: VerifiedSession): Promise<AgentSessionListResponse> {
-    return this.sessions.list(session.userId);
+  async list(
+    @CurrentSession() session: VerifiedSession,
+    @Query(zodPipe(agentSessionListQuerySchema)) query: AgentSessionListQuery,
+  ): Promise<AgentSessionListResponse> {
+    return this.sessions.list(session.userId, query);
   }
 
   @Get(':id')

@@ -62,7 +62,22 @@
     "detailDescription": "What this session touched, newest first.",
     "confirmTitle": "Revert session?",
     "confirmDescription": "{count, plural, one {One page will be} other {# pages will be}} restored to the state before this session. The current state of each page is backed up first, so this step can itself be undone.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "filters": {
+      "searchLabel": "Search sessions",
+      "searchPlaceholder": "Client, session, or account …",
+      "transport": "Connection",
+      "allTransports": "All",
+      "writes": "Writes",
+      "writeOptions": {
+        "all": "Any",
+        "with": "With writes",
+        "without": "Read-only"
+      },
+      "reset": "Reset filters"
+    },
+    "noMatchTitle": "No matching sessions",
+    "noMatchDescription": "No results match these filters. Change your search or reset the filters."
   },
   "agentSessionDetail": {
     "loading": "Loading session…",
@@ -242,7 +257,30 @@
     "invitations": "Invitations",
     "deleteTitle": "Delete account",
     "deleteDescription": "{email} will be permanently removed. This cannot be undone. If you only want to block access, deactivate the account instead.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "filters": {
+      "searchLabel": "Search users",
+      "searchPlaceholder": "Name or email …",
+      "role": "Role",
+      "allRoles": "All",
+      "status": "Status",
+      "statusOptions": {
+        "all": "All",
+        "active": "Active",
+        "disabled": "Disabled"
+      },
+      "activity": "Sign-in",
+      "activityOptions": {
+        "all": "Any",
+        "recent": "In the last 30 days",
+        "stale": "Longer ago",
+        "none": "None active"
+      },
+      "reset": "Reset filters"
+    },
+    "emptyTitle": "No accounts yet",
+    "noMatchTitle": "No matching accounts",
+    "noMatchDescription": "No results match these filters. Change your search or reset the filters."
   },
   "usage": {
     "rangeLabel": "Time range",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "No errors in this period",
     "noErrorsDescription": "No run failed and none timed out."
+  },
+  "list": {
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending",
+    "range": "{from}–{to} of {total, number}",
+    "pagerLabel": "List pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page, number} of {pages, number}"
   }
 }

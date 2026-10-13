@@ -3,11 +3,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   type AgentSession,
   type AgentSessionDetailResponse,
+  type AgentSessionListQuery,
   type AgentSessionListResponse,
   type AgentWrite,
   type RegisterAgentSessionRequest,
 } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { type Prisma, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
@@ -15,9 +16,6 @@ import { LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
 import { AgentSessionRevertService } from './agent-session-revert.service';
-
-/** How many sessions a list answers with. Older ones age out anyway. */
-const MAX_SESSIONS = 100;
 
 /** How many journal rows one session's detail view carries. */
 const MAX_WRITES = 500;
@@ -32,6 +30,28 @@ const SESSION_SELECT = {
   lastSeenAt: true,
   user: { select: { name: true } },
 } as const;
+
+/** The list filters as one predicate; `ownerId` confines it to one account. */
+export function sessionListWhere(
+  query: Pick<AgentSessionListQuery, 'q' | 'transport' | 'withWrites'>,
+  ownerId: string | null,
+): Prisma.AgentSessionWhereInput {
+  const and: Prisma.AgentSessionWhereInput[] = [];
+  if (ownerId !== null) and.push({ userId: ownerId });
+  if (query.q !== undefined && query.q !== '') {
+    and.push({
+      OR: [
+        { clientLabel: { contains: query.q, mode: 'insensitive' } },
+        { externalId: { contains: query.q, mode: 'insensitive' } },
+        { user: { name: { contains: query.q, mode: 'insensitive' } } },
+      ],
+    });
+  }
+  if (query.transport !== undefined) and.push({ transport: query.transport });
+  if (query.withWrites === true) and.push({ writes: { some: {} } });
+  if (query.withWrites === false) and.push({ writes: { none: {} } });
+  return and.length === 0 ? {} : { AND: and };
+}
 
 /**
  * What one agent connection did (issue #49, ADR-022).
@@ -96,17 +116,27 @@ export class AgentSessionsService {
     return session;
   }
 
-  async list(userId: string): Promise<AgentSessionListResponse> {
+  /**
+   * The caller's sessions, or everybody's for an admin, filtered and paged on
+   * the server (issue #176). The owner scope is the first condition and every
+   * filter is added beside it, so a search can never reach past it.
+   */
+  async list(userId: string, query: AgentSessionListQuery): Promise<AgentSessionListResponse> {
     const scopeToOwner = !(await this.isGlobalAdmin(userId));
-    const rows = await this.prisma.agentSession.findMany({
-      where: scopeToOwner ? { userId } : {},
-      orderBy: { lastSeenAt: 'desc' },
-      take: MAX_SESSIONS,
-      select: SESSION_SELECT,
-    });
+    const where = sessionListWhere(query, scopeToOwner ? userId : null);
+    const [total, rows] = await Promise.all([
+      this.prisma.agentSession.count({ where }),
+      this.prisma.agentSession.findMany({
+        where,
+        orderBy: [{ [query.sort]: query.order }, { id: 'asc' }],
+        skip: query.offset,
+        take: query.limit,
+        select: SESSION_SELECT,
+      }),
+    ]);
 
     const summaries = await this.summarize(rows.map((row) => row.id));
-    return { sessions: rows.map((row) => toSession(row, summaries.get(row.id))) };
+    return { sessions: rows.map((row) => toSession(row, summaries.get(row.id))), total };
   }
 
   async detail(sessionId: string, userId: string): Promise<AgentSessionDetailResponse> {

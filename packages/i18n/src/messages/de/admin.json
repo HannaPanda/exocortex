@@ -62,7 +62,22 @@
     "detailDescription": "Was diese Sitzung angefasst hat, neueste zuerst.",
     "confirmTitle": "Sitzung zurücknehmen?",
     "confirmDescription": "{count, plural, one {Eine Seite wird} other {# Seiten werden}} auf den Stand vor dieser Sitzung zurückgesetzt. Der aktuelle Stand jeder Seite wird vorher gesichert, der Schritt ist also selbst umkehrbar.",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "filters": {
+      "searchLabel": "Sitzungen suchen",
+      "searchPlaceholder": "Client, Sitzung oder Konto …",
+      "transport": "Verbindung",
+      "allTransports": "Alle",
+      "writes": "Schreibvorgänge",
+      "writeOptions": {
+        "all": "Egal",
+        "with": "Mit Schreibvorgängen",
+        "without": "Nur gelesen"
+      },
+      "reset": "Filter zurücksetzen"
+    },
+    "noMatchTitle": "Keine Sitzung passt",
+    "noMatchDescription": "Mit diesen Filtern gibt es keinen Treffer. Ändere die Suche oder setze die Filter zurück."
   },
   "agentSessionDetail": {
     "loading": "Sitzung wird geladen …",
@@ -242,7 +257,30 @@
     "invitations": "Einladungen",
     "deleteTitle": "Konto löschen",
     "deleteDescription": "{email} wird endgültig entfernt. Das lässt sich nicht zurücknehmen. Wenn du nur den Zugang sperren willst, deaktiviere das Konto stattdessen.",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "filters": {
+      "searchLabel": "Nutzer suchen",
+      "searchPlaceholder": "Name oder E-Mail …",
+      "role": "Rolle",
+      "allRoles": "Alle",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Alle",
+        "active": "Aktiv",
+        "disabled": "Deaktiviert"
+      },
+      "activity": "Anmeldung",
+      "activityOptions": {
+        "all": "Egal",
+        "recent": "In den letzten 30 Tagen",
+        "stale": "Länger her",
+        "none": "Keine laufende"
+      },
+      "reset": "Filter zurücksetzen"
+    },
+    "emptyTitle": "Noch keine Konten",
+    "noMatchTitle": "Kein Konto passt",
+    "noMatchDescription": "Mit diesen Filtern gibt es keinen Treffer. Ändere die Suche oder setze die Filter zurück."
   },
   "usage": {
     "rangeLabel": "Zeitraum",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "Keine Fehler in diesem Zeitraum",
     "noErrorsDescription": "Kein Lauf ist gescheitert und keiner lief in eine Zeitüberschreitung."
+  },
+  "list": {
+    "sortAscending": "Aufsteigend sortieren",
+    "sortDescending": "Absteigend sortieren",
+    "range": "{from}–{to} von {total, number}",
+    "pagerLabel": "Seiten der Liste",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pageOf": "Seite {page, number} von {pages, number}"
   }
 }

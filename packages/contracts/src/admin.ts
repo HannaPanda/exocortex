@@ -29,7 +29,58 @@ export const adminUserSchema = z.object({
 });
 export type AdminUser = z.infer<typeof adminUserSchema>;
 
-export const adminUserListResponseSchema = z.object({ users: z.array(adminUserSchema) });
+/**
+ * Searching, filtering, sorting and paging the account list (issue #176).
+ *
+ * Every parameter is optional and the defaults give the list it always gave,
+ * oldest account first, so a caller that sends nothing keeps working. Paging is
+ * by offset because the list is sorted by more than one column and a person
+ * jumps between pages; `total` is the count after filtering, before paging.
+ */
+export const adminUserSortSchema = z.enum([
+  'name',
+  'email',
+  'createdAt',
+  'lastSessionAt',
+  'workspaceCount',
+]);
+export type AdminUserSort = z.infer<typeof adminUserSortSchema>;
+
+export const adminUserStatusFilterSchema = z.enum(['active', 'disabled']);
+export type AdminUserStatusFilter = z.infer<typeof adminUserStatusFilterSchema>;
+
+/**
+ * What the sessions table says about activity, and nothing more: a session row
+ * is created at sign-in and removed when it expires, so "none" means no live
+ * sign-in, not "never signed in".
+ */
+export const adminUserActivityFilterSchema = z.enum(['recent', 'stale', 'none']);
+export type AdminUserActivityFilter = z.infer<typeof adminUserActivityFilterSchema>;
+
+/** How far back "recent" reaches. */
+export const ADMIN_USER_RECENT_DAYS = 30;
+
+export const sortOrderSchema = z.enum(['asc', 'desc']);
+export type SortOrder = z.infer<typeof sortOrderSchema>;
+
+export const adminUserListQuerySchema = z.object({
+  /** Matched against name and email, case-insensitively, anywhere in the text. */
+  q: z.string().trim().max(200).optional(),
+  role: userRoleSchema.optional(),
+  status: adminUserStatusFilterSchema.optional(),
+  activity: adminUserActivityFilterSchema.optional(),
+  sort: adminUserSortSchema.default('createdAt'),
+  order: sortOrderSchema.default('asc'),
+  limit: z.coerce.number().int().min(1).max(500).default(500),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+export type AdminUserListQuery = z.infer<typeof adminUserListQuerySchema>;
+
+export const adminUserListResponseSchema = z.object({
+  users: z.array(adminUserSchema),
+  /** Matching accounts before paging, so a caller can tell how many pages there are. */
+  total: z.number().int().nonnegative(),
+});
 export type AdminUserListResponse = z.infer<typeof adminUserListResponseSchema>;
 
 export const updateUserRoleRequestSchema = z.object({ role: userRoleSchema });

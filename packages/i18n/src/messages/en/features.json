@@ -330,7 +330,7 @@
     "title": "What an agent changed in a session",
     "summary": "Write operations by an agent are bundled into a session and recorded in the journal, each with the snapshot from before the change. This lets you review what a run touched and selectively roll back individual pages.",
     "details": {
-      "p1": "When connecting, an agent registers a session identifier and passes it along with every call. Everything written in that session is tied together: \"these eight pages were touched by Claude Code this morning\" is one question with one answer, instead of eight separate entries in eight page histories.",
+      "p1": "When connecting, an agent registers a session ID and passes it along with every subsequent call. Everything written during this session is linked to it: “these eight pages were touched by Claude Code early today” is one question with one answer, instead of eight individual entries in eight page histories. You can search the list under Administration, Agents by client, session, or account, and filter it to sessions that actually wrote.",
       "p2": "Each entry shows the page, timestamp, tool, and the snapshot from before the change. It does not show what was written: the journal references the previous version instead of copying content, so it does not become a second, unprotected repository for your texts.",
       "p3": "Rollbacks are done per page, using the standard snapshot restore. There is deliberately no \"undo entire session\" button: where someone continued writing after the agent, the result would be a partial revert that looks as if it were complete."
     },
@@ -937,7 +937,7 @@
     "title": "Accounts and roles",
     "summary": "User administration lists all accounts, grants administration privileges to someone, disables an account, or deletes it. A disabled account immediately loses all credentials, instead of being rechecked on every request.",
     "details": {
-      "p1": "The list displays all accounts with name, email, role, and status. From here, you invite someone, grant administration rights, revoke them again, deactivate an account, or delete it permanently.",
+      "p1": "The list displays all accounts with name, email, role, and status. From here you can invite someone, grant or revoke administration privileges, deactivate an account, or delete it permanently. As the list grows, you can search by name or email, filter by role, status, and last login, and sort by any column except role. Your selection is reflected in the address bar, so a filtered view can be refreshed and shared.",
       "p2": "Deactivating revokes all sessions and tokens immediately, instead of checking with each request whether the account is still allowed. That is a crucial difference: a check that someone forgets to write leaves a loophole, whereas revoked access does not.",
       "p3": "Deleting is a further step intended for when someone should really disappear. If you only want to keep someone out, deactivating is the right choice because attribution on pages is preserved. Both can also be done via the tools."
     },

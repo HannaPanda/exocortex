@@ -330,7 +330,7 @@
     "title": "Ce qu’un agent a modifié au cours d’une session",
     "summary": "Les écritures effectuées par un agent sont regroupées au sein d’une session et consignées dans le journal, chacune accompagnée de l’instantané précédant la modification. Cela permet de consulter ce qu’une exécution a touché et d’annuler les changements page par page.",
     "details": {
-      "p1": "Lors de sa connexion, un agent déclare un identifiant de session qu’il transmet ensuite à chaque appel. Tout ce qui est écrit au cours de cette session y est rattaché : « quelles sont les huit pages touchées par Claude Code ce matin ? » devient une question avec une réponse unique, au lieu de huit entrées dispersées dans huit historiques de pages.",
+      "p1": "Lors de sa connexion, un agent déclare un identifiant de session qu’il transmet ensuite à chaque appel. Tout ce qui est écrit au cours de cette session y est rattaché : « Claude Code a touché à ces huit pages ce matin » devient une seule question avec une seule réponse, au lieu de huit entrées distinctes dans huit historiques de pages. Dans la liste sous Administration, Agents, tu peux faire des recherches par client, session ou compte, et filtrer pour n’afficher que les sessions ayant réellement écrit.",
       "p2": "Chaque entrée indique la page, l’horodatage, l’outil utilisé et l’instantané antérieur à la modification. Elle n’affiche pas ce qui a été écrit : le journal pointe vers l’état précédent plutôt que de copier le contenu, évitant ainsi de devenir un second dépôt non protégé de tes textes.",
       "p3": "L’annulation se fait par page, via la restauration classique d’un instantané. Il n’existe délibérément aucun bouton pour « annuler toute la session » : si quelqu’un a continué d’écrire après l’agent, le résultat serait un retour en arrière partiel donnant l’illusion d’être complet."
     },
@@ -937,7 +937,7 @@
     "title": "Comptes et rôles",
     "summary": "La gestion des utilisateurs liste tous les comptes, accorde le rôle d’administration, désactive un compte ou le supprime. Un compte désactivé perd immédiatement tous ses identifiants d’accès, au lieu d’être revérifié à chaque requête.",
     "details": {
-      "p1": "La liste affiche tous les comptes avec nom, e-mail, rôle et état. D’ici, tu invites quelqu’un, accordes le rôle d’administration, retires ce droit, désactives un compte ou le supprimes définitivement.",
+      "p1": "La liste affiche tous les comptes avec leur nom, e-mail, rôle et état. C’est d’ici que tu invites quelqu’un, accordes le rôle d’administration, retires ce droit, désactives un compte ou le supprimes définitivement. Quand la liste s’allonge, tu peux chercher par nom ou e-mail, filtrer par rôle, état et dernière connexion, et trier selon chaque colonne sauf le rôle. La sélection est conservée dans l’adresse : une vue filtrée peut donc être rechargée et partagée.",
       "p2": "Désactiver un compte révoque immédiatement toutes ses sessions et tous ses jetons, au lieu de vérifier à chaque requête s’il y a encore droit. C’est une différence de taille : une vérification qu’on oublie d’écrire laisse une faille, un accès révoqué non.",
       "p3": "Supprimer est l’étape suivante, pensée pour faire vraiment disparaître quelqu’un. Si tu veux seulement empêcher une personne d’entrer, désactiver est le bon choix, car les attributions d’auteur sur les pages sont conservées. Les deux actions sont aussi possibles via les outils."
     },

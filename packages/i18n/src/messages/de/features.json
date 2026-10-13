@@ -330,7 +330,7 @@
     "title": "Was ein Agent in einer Sitzung geändert hat",
     "summary": "Schreibvorgänge eines Agenten werden zu einer Sitzung gebündelt und im Journal festgehalten, jeweils mit dem Schnappschuss von vor der Änderung. Damit lässt sich nachlesen, was ein Lauf angefasst hat, und einzelne Seiten gezielt zurückrollen.",
     "details": {
-      "p1": "Ein Agent meldet beim Verbinden eine Sitzungskennung an und trägt sie danach bei jedem Aufruf mit. Alles, was in dieser Sitzung geschrieben wird, hängt damit zusammen: \"diese acht Seiten hat Claude Code heute früh angefasst\" ist eine Frage mit einer Antwort, statt acht einzelner Einträge in acht Seitenverläufen.",
+      "p1": "Ein Agent meldet beim Verbinden eine Sitzungskennung an und trägt sie danach bei jedem Aufruf mit. Alles, was in dieser Sitzung geschrieben wird, hängt damit zusammen: \"diese acht Seiten hat Claude Code heute früh angefasst\" ist eine Frage mit einer Antwort, statt acht einzelner Einträge in acht Seitenverläufen. Die Liste unter Verwaltung, Agenten durchsuchst du nach Client, Sitzung oder Konto und filterst sie auf Sitzungen, die tatsächlich geschrieben haben.",
       "p2": "Jeder Eintrag zeigt Seite, Zeitpunkt, Werkzeug und den Schnappschuss von vor der Änderung. Er zeigt nicht, was geschrieben wurde: das Journal verweist auf den Stand davor, statt Inhalt zu kopieren, damit es nicht zu einer zweiten, ungeschützten Ablage deiner Texte wird.",
       "p3": "Zurückgerollt wird pro Seite, über das gewöhnliche Wiederherstellen eines Schnappschusses. Einen Knopf \"ganze Sitzung zurücknehmen\" gibt es bewusst nicht: wo jemand nach dem Agenten weitergeschrieben hat, wäre das Ergebnis ein halber Rückbau, der so aussieht, als wäre er vollständig."
     },
@@ -937,7 +937,7 @@
     "title": "Konten und Rollen",
     "summary": "Die Nutzerverwaltung listet alle Konten, macht jemanden zur Verwaltung, deaktiviert ein Konto oder löscht es. Ein deaktiviertes Konto verliert sofort alle Zugangsdaten, statt bei jeder Anfrage neu geprüft zu werden.",
     "details": {
-      "p1": "Die Liste zeigt alle Konten mit Namen, E-Mail, Rolle und Zustand. Von hier aus lädst du jemanden ein, machst jemanden zur Verwaltung, nimmst dieses Recht wieder weg, deaktivierst ein Konto oder löschst es endgültig.",
+      "p1": "Die Liste zeigt alle Konten mit Namen, E-Mail, Rolle und Zustand. Von hier aus lädst du jemanden ein, machst jemanden zur Verwaltung, nimmst dieses Recht wieder weg, deaktivierst ein Konto oder löschst es endgültig. Wächst die Liste, suchst du nach Name oder E-Mail, filterst nach Rolle, Status und letzter Anmeldung und sortierst nach jeder Spalte außer der Rolle. Die Auswahl steht in der Adresse, ein gefilterter Blick lässt sich also neu laden und weitergeben.",
       "p2": "Deaktivieren entzieht sofort alle Sitzungen und Token, statt bei jeder Anfrage nachzusehen, ob das Konto noch darf. Das ist ein Unterschied, der zählt: eine Prüfung, die jemand zu schreiben vergisst, hinterlässt ein Loch, ein entzogener Zugang nicht.",
       "p3": "Löschen ist der weitergehende Schritt und dafür gedacht, dass jemand wirklich verschwinden soll. Willst du nur, dass jemand nicht mehr hereinkommt, ist Deaktivieren das Richtige, weil die Urheberangaben an den Seiten erhalten bleiben. Beides geht auch über die Werkzeuge."
     },

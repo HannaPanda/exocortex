@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
+import { agentSessionListQuerySchema } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import {
   type ProseMirrorDocument,
@@ -335,12 +336,42 @@ describe('reading sessions', () => {
       await write(second, 'c');
     });
 
-    const listed = await sessions.list(agentUserId);
+    const listed = await sessions.list(agentUserId, agentSessionListQuerySchema.parse({}));
     const session = listed.sessions.find((entry) => entry.externalId === 'sess-count');
 
     expect(session?.writeCount).toBe(3);
     expect(session?.documentCount).toBe(2);
     expect(session?.revertable).toBe(true);
     expect(session?.clientLabel).toBe('claude-code 1.0');
+  });
+});
+
+describe('listing sessions (issue #176)', () => {
+  const list = (userId: string, input: Record<string, unknown>) =>
+    sessions.list(userId, agentSessionListQuerySchema.parse(input));
+
+  it('searches, filters by writes and pages, inside the owner scope', async () => {
+    const page = await createPage('Liste');
+    await asAgent('sess-list-writer', agentUserId, () => write(page, 'x'));
+    await prisma.agentSession.create({
+      data: { externalId: 'sess-list-reader', userId: agentUserId, clientLabel: 'Nur-Leser 1.0' },
+    });
+    await prisma.agentSession.create({
+      data: { externalId: 'sess-list-foreign', userId: humanUserId, clientLabel: 'Nur-Leser 1.0' },
+    });
+
+    const readers = await list(agentUserId, { q: 'nur-leser' });
+    expect(readers.sessions.map((entry) => entry.externalId)).toEqual(['sess-list-reader']);
+    expect(readers.total).toBe(1);
+
+    const writers = await list(agentUserId, { q: 'sess-list', withWrites: 'true' });
+    expect(writers.sessions.map((entry) => entry.externalId)).toEqual(['sess-list-writer']);
+    const idle = await list(agentUserId, { q: 'sess-list', withWrites: 'false' });
+    expect(idle.sessions.map((entry) => entry.externalId)).toEqual(['sess-list-reader']);
+
+    const all = await list(agentUserId, {});
+    const paged = await list(agentUserId, { limit: 1, offset: 1 });
+    expect(paged.total).toBe(all.total);
+    expect(paged.sessions.map((entry) => entry.id)).toEqual([all.sessions[1]?.id]);
   });
 });

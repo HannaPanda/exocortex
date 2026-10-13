@@ -3,6 +3,8 @@ import { z } from 'zod';
 import {
   agentSessionDetailResponseSchema,
   agentSessionListResponseSchema,
+  agentSessionSortSchema,
+  agentSessionTransportSchema,
   idSchema,
 } from '@exocortex/contracts';
 
@@ -25,21 +27,43 @@ export const agentSessionListTool: AnyToolDefinition = defineTool({
   name: 'exo_agent_session_list',
   description:
     'Listet die eigenen Agenten-Sitzungen mit Umfang und Zeitraum: welcher Client, ' +
-    'wie viele Schreibvorgänge, wie viele Seiten. Als Administrator alle Sitzungen der Installation.',
-  inputSchema: z.object({}),
+    'wie viele Schreibvorgänge, wie viele Seiten. Als Administrator alle Sitzungen der Installation. ' +
+    'Suche in Client, Sitzungskennung und Kontoname, Filter nach Transport und danach, ob die ' +
+    'Sitzung geschrieben hat; Blättern über limit/offset, total nennt alle Treffer.',
+  inputSchema: z.object({
+    q: z.string().max(200).optional().describe('Teil von Client, Sitzungskennung oder Kontoname'),
+    transport: agentSessionTransportSchema.optional(),
+    withWrites: z
+      .boolean()
+      .optional()
+      .describe('true: nur Sitzungen mit Schreibvorgängen, false: nur reine Lesesitzungen'),
+    sort: agentSessionSortSchema.optional(),
+    order: z.enum(['asc', 'desc']).optional(),
+    limit: z.number().int().min(1).max(200).optional(),
+    offset: z.number().int().min(0).optional(),
+  }),
   surfaces: ['mcp', 'ai'],
   domain: 'memory',
   mutating: false,
-  async execute(client) {
+  async execute(client, input) {
     const result = await client.request({
       method: 'GET',
       path: '/api/agent-sessions',
+      query: {
+        q: input.q,
+        transport: input.transport,
+        withWrites: input.withWrites,
+        sort: input.sort,
+        order: input.order,
+        limit: input.limit,
+        offset: input.offset,
+      },
       responseSchema: agentSessionListResponseSchema,
     });
     if (result.sessions.length === 0) {
-      return { text: 'Keine Agenten-Sitzungen aufgezeichnet.', data: result };
+      return { text: 'Keine Agenten-Sitzungen gefunden.', data: result };
     }
-    const text = renderMarkdownTable(
+    const table = renderMarkdownTable(
       ['id', 'Client', 'Zuletzt', 'Schreibvorgänge', 'Seiten'],
       result.sessions.map((session) => [
         session.id,
@@ -49,6 +73,7 @@ export const agentSessionListTool: AnyToolDefinition = defineTool({
         String(session.documentCount),
       ]),
     );
+    const text = `${String(result.sessions.length)} von ${String(result.total)} Sitzungen:\n\n${table}`;
     return { text, data: result };
   },
 });

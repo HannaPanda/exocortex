@@ -1,14 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import {
+  ADMIN_USER_RECENT_DAYS,
   type AdminOverviewResponse,
   type AdminUser,
+  type AdminUserListQuery,
   type AdminUserListResponse,
+  type AdminUserSort,
   type SettingsResponse,
+  type SortOrder,
   type UpdateSettingsRequest,
   type UserRole,
 } from '@exocortex/contracts';
-import { type PrismaClient, type UserRole as UserRolePrisma } from '@exocortex/database';
+import {
+  type Prisma,
+  type PrismaClient,
+  type UserRole as UserRolePrisma,
+} from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
@@ -84,6 +92,52 @@ const USER_WITH_COUNTS_INCLUDE = {
   },
   sessions: { orderBy: { createdAt: 'desc' as const }, take: 1, select: { createdAt: true } },
 };
+
+/** The filters of the account list as one Prisma predicate. `now` is passed so a test can pin it. */
+export function userListWhere(
+  query: Pick<AdminUserListQuery, 'q' | 'role' | 'status' | 'activity'>,
+  now: Date,
+): Prisma.UserWhereInput {
+  const and: Prisma.UserWhereInput[] = [];
+  if (query.q !== undefined && query.q !== '') {
+    and.push({
+      OR: [
+        { name: { contains: query.q, mode: 'insensitive' } },
+        { email: { contains: query.q, mode: 'insensitive' } },
+      ],
+    });
+  }
+  if (query.role !== undefined) and.push({ role: USER_ROLE_TO_PRISMA[query.role] });
+  if (query.status === 'active') and.push({ disabledAt: null });
+  if (query.status === 'disabled') and.push({ disabledAt: { not: null } });
+  if (query.activity !== undefined) {
+    const since = new Date(now.getTime() - ADMIN_USER_RECENT_DAYS * TWENTY_FOUR_HOURS_MS);
+    if (query.activity === 'recent') {
+      and.push({ sessions: { some: { createdAt: { gte: since } } } });
+    } else if (query.activity === 'stale') {
+      and.push({ sessions: { some: {} } }, { sessions: { none: { createdAt: { gte: since } } } });
+    } else {
+      and.push({ sessions: { none: {} } });
+    }
+  }
+  return and.length === 0 ? {} : { AND: and };
+}
+
+function userListOrderBy(
+  sort: Exclude<AdminUserSort, 'lastSessionAt'>,
+  order: SortOrder,
+): Prisma.UserOrderByWithRelationInput {
+  switch (sort) {
+    case 'name':
+      return { name: order };
+    case 'email':
+      return { email: order };
+    case 'workspaceCount':
+      return { memberships: { _count: order } };
+    case 'createdAt':
+      return { createdAt: order };
+  }
+}
 
 /**
  * Deployment-wide administration: the overview dashboard, user role
@@ -163,12 +217,70 @@ export class AdminService {
     return { settings, invalidKeys: await this.settingsService.invalidKeys() };
   }
 
-  async listUsers(): Promise<AdminUserListResponse> {
+  /**
+   * The account list, filtered, sorted and paged on the server (issue #176).
+   *
+   * Every order ends on the id, so two accounts created in the same
+   * millisecond cannot swap places between two pages. "Last active" is the one
+   * column Prisma cannot order by, since it is the newest row of a relation:
+   * it is ranked here from one grouped query over the matching accounts, with
+   * the accounts that have no session last in both directions.
+   */
+  async listUsers(query: AdminUserListQuery): Promise<AdminUserListResponse> {
+    const where = userListWhere(query, new Date());
+    const total = await this.prisma.user.count({ where });
+
+    if (query.sort === 'lastSessionAt') {
+      const pageIds = await this.userIdsByLastSession(where, query);
+      const rows = await this.prisma.user.findMany({
+        where: { id: { in: pageIds } },
+        include: USER_WITH_COUNTS_INCLUDE,
+      });
+      const byId = new Map(rows.map((row) => [row.id, row]));
+      const users = pageIds.flatMap((id) => {
+        const row = byId.get(id);
+        return row === undefined ? [] : [toAdminUser(row)];
+      });
+      return { users, total };
+    }
+
     const users = await this.prisma.user.findMany({
-      orderBy: { createdAt: 'asc' },
+      where,
+      orderBy: [userListOrderBy(query.sort, query.order), { id: 'asc' }],
+      skip: query.offset,
+      take: query.limit,
       include: USER_WITH_COUNTS_INCLUDE,
     });
-    return { users: users.map(toAdminUser) };
+    return { users: users.map(toAdminUser), total };
+  }
+
+  private async userIdsByLastSession(
+    where: Prisma.UserWhereInput,
+    query: AdminUserListQuery,
+  ): Promise<string[]> {
+    const ids = (await this.prisma.user.findMany({ where, select: { id: true } })).map(
+      (row) => row.id,
+    );
+    const latest = await this.prisma.session.groupBy({
+      by: ['userId'],
+      where: { userId: { in: ids } },
+      _max: { createdAt: true },
+    });
+    const lastSeen = new Map(
+      latest.map((row) => [row.userId, row._max.createdAt?.getTime() ?? null]),
+    );
+    const direction = query.order === 'asc' ? 1 : -1;
+    return ids
+      .toSorted((a, b) => {
+        const left = lastSeen.get(a) ?? null;
+        const right = lastSeen.get(b) ?? null;
+        if (left === null || right === null) {
+          if (left === right) return a.localeCompare(b);
+          return left === null ? 1 : -1;
+        }
+        return left === right ? a.localeCompare(b) : (left - right) * direction;
+      })
+      .slice(query.offset, query.offset + query.limit);
   }
 
   /**

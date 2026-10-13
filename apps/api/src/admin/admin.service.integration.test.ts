@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { loadDotEnv } from '@exocortex/config';
+import { adminUserListQuerySchema } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
@@ -225,11 +226,98 @@ describe('deleting an account', () => {
   });
 
   it('reports authored content in the list, which is what hides the button', async () => {
-    const { users } = await service.listUsers();
+    const { users } = await service.listUsers(adminUserListQuerySchema.parse({}));
     const author = users.find((user) => user.id === authorId);
     const victim = users.find((user) => user.id === victimId);
 
     expect(author?.hasAuthoredContent).toBe(true);
     expect(victim?.hasAuthoredContent).toBe(false);
+  });
+});
+
+describe('listing accounts (issue #176)', () => {
+  const tag = `lst${Date.now().toString(36)}`;
+  const day = 24 * 60 * 60 * 1000;
+  const ids: Record<'anna' | 'bert' | 'cora' | 'dora', string> = {
+    anna: '',
+    bert: '',
+    cora: '',
+    dora: '',
+  };
+  const list = (input: Record<string, unknown>) =>
+    service.listUsers(adminUserListQuerySchema.parse({ q: tag, ...input }));
+
+  beforeAll(async () => {
+    for (const name of ['anna', 'bert', 'cora', 'dora'] as const) {
+      const user = await prisma.user.create({
+        data: {
+          email: `${tag}-${name}@exocortex.test`,
+          name: `${name} ${tag}`,
+          role: name === 'dora' ? 'ADMIN' : 'USER',
+          disabledAt: name === 'cora' ? new Date() : null,
+        },
+      });
+      ids[name] = user.id;
+    }
+    // anna signed in yesterday, bert two months ago, cora and dora not at all.
+    await prisma.session.createMany({
+      data: [
+        {
+          userId: ids.anna,
+          token: `${tag}-a`,
+          createdAt: new Date(Date.now() - day),
+          expiresAt: new Date(Date.now() + day),
+        },
+        {
+          userId: ids.bert,
+          token: `${tag}-b`,
+          createdAt: new Date(Date.now() - 60 * day),
+          expiresAt: new Date(Date.now() + day),
+        },
+      ],
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.user.deleteMany({ where: { id: { in: Object.values(ids) } } });
+  });
+
+  it('searches name and email case-insensitively and counts the matches', async () => {
+    const result = await list({ q: `BERT ${tag.toUpperCase()}` });
+    expect(result.users.map((user) => user.id)).toEqual([ids.bert]);
+    expect(result.total).toBe(1);
+    expect((await list({})).total).toBe(4);
+  });
+
+  it('filters by role, status and activity', async () => {
+    expect((await list({ role: 'admin' })).users.map((user) => user.id)).toEqual([ids.dora]);
+    expect((await list({ status: 'disabled' })).users.map((user) => user.id)).toEqual([ids.cora]);
+    expect((await list({ status: 'active' })).total).toBe(3);
+    expect((await list({ activity: 'recent' })).users.map((user) => user.id)).toEqual([ids.anna]);
+    expect((await list({ activity: 'stale' })).users.map((user) => user.id)).toEqual([ids.bert]);
+    expect((await list({ activity: 'none', sort: 'name' })).users.map((user) => user.id)).toEqual([
+      ids.cora,
+      ids.dora,
+    ]);
+  });
+
+  it('pages a stable order, and the total stays the unpaged count', async () => {
+    const first = await list({ sort: 'name', order: 'desc', limit: 3, offset: 0 });
+    const second = await list({ sort: 'name', order: 'desc', limit: 3, offset: 3 });
+    expect(first.users.map((user) => user.id)).toEqual([ids.dora, ids.cora, ids.bert]);
+    expect(second.users.map((user) => user.id)).toEqual([ids.anna]);
+    expect(second.total).toBe(4);
+  });
+
+  it('sorts by last activity with the accounts that have none last, both ways', async () => {
+    const desc = (await list({ sort: 'lastSessionAt', order: 'desc' })).users.map((u) => u.id);
+    const asc = (await list({ sort: 'lastSessionAt', order: 'asc' })).users.map((u) => u.id);
+    expect(desc.slice(0, 2)).toEqual([ids.anna, ids.bert]);
+    expect(asc.slice(0, 2)).toEqual([ids.bert, ids.anna]);
+    expect(new Set(desc.slice(2))).toEqual(new Set([ids.cora, ids.dora]));
+
+    const paged = await list({ sort: 'lastSessionAt', order: 'desc', limit: 1, offset: 1 });
+    expect(paged.users.map((user) => user.id)).toEqual([ids.bert]);
+    expect(paged.total).toBe(4);
   });
 });

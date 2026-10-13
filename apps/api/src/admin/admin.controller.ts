@@ -6,6 +6,8 @@ import {
   type AdminOverviewResponse,
   adminOverviewResponseSchema,
   type AdminUser,
+  type AdminUserListQuery,
+  adminUserListQuerySchema,
   type AdminUserListResponse,
   adminUserListResponseSchema,
   adminUserSchema,
@@ -86,9 +88,19 @@ export class AdminController {
   }
 
   @Get('users')
+  @ApiQuery({ name: 'q', required: false, type: String })
+  @ApiQuery({ name: 'role', required: false, enum: ['user', 'admin'] })
+  @ApiQuery({ name: 'status', required: false, enum: ['active', 'disabled'] })
+  @ApiQuery({ name: 'activity', required: false, enum: ['recent', 'stale', 'none'] })
+  @ApiQuery({ name: 'sort', required: false, type: String })
+  @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiOkResponse({ schema: openApiResponseSchema(adminUserListResponseSchema) })
-  async listUsers(): Promise<AdminUserListResponse> {
-    return this.admin.listUsers();
+  async listUsers(
+    @Query(zodPipe(adminUserListQuerySchema)) query: AdminUserListQuery,
+  ): Promise<AdminUserListResponse> {
+    return this.admin.listUsers(query);
   }
 
   @Patch('users/:userId')

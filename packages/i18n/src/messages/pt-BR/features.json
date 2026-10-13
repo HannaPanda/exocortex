@@ -330,7 +330,7 @@
     "title": "O que um agente alterou em uma sessão",
     "summary": "As operações de escrita de um agente são agrupadas em uma sessão e registradas no diário, cada uma com o snapshot de antes da alteração. Com isso, é possível conferir o que uma execução tocou e reverter páginas individuais de forma direcionada.",
     "details": {
-      "p1": "Ao se conectar, um agente registra um identificador de sessão e o envia a cada chamada posterior. Tudo o que for escrito nessa sessão fica vinculado a isso: “essas oito páginas foram alteradas pelo Claude Code hoje cedo” é uma pergunta com uma resposta só, em vez de oito entradas isoladas em oito históricos de páginas.",
+      "p1": "Ao se conectar, um agente registra um identificador de sessão e o envia a cada chamada posterior. Tudo o que for escrito nessa sessão fica vinculado a ele: “estas oito páginas foram alteradas pelo Claude Code hoje cedo” vira uma pergunta com uma resposta direta, em vez de oito entradas avulsas em oito históricos de páginas. Na lista em Administração, Agentes, você pode buscar por cliente, sessão ou conta e filtrar por sessões que de fato escreveram algo.",
       "p2": "Cada entrada mostra a página, o horário, a ferramenta e o snapshot de antes da alteração. Ela não mostra o que foi escrito: o diário faz referência à versão anterior em vez de copiar o conteúdo, para não virar um segundo repositório desprotegido dos seus textos.",
       "p3": "A reversão é feita por página, por meio da restauração comum de um snapshot. Um botão para “desfazer a sessão inteira” não existe de propósito: nos casos em que alguém continuou escrevendo depois do agente, o resultado seria uma reversão parcial com aparência de completa."
     },
@@ -937,7 +937,7 @@
     "title": "Contas e funções",
     "summary": "O gerenciamento de usuários lista todas as contas, atribui papel de administração a alguém, desativa uma conta ou a exclui. Uma conta desativada perde imediatamente todas as credenciais de acesso, em vez de ser verificada novamente a cada requisição.",
     "details": {
-      "p1": "A lista mostra todas as contas com nome, e-mail, função e status. A partir daqui, você convida pessoas, concede privilégios de administração, remove essa permissão, desativa uma conta ou a exclui em definitivo.",
+      "p1": "A lista mostra todas as contas com nome, e-mail, função e estado. A partir daqui, você pode convidar pessoas, conceder ou remover permissões de administração, desativar uma conta ou excluí-la em definitivo. Conforme a lista cresce, você pode buscar por nome ou e-mail, filtrar por função, status e último login, além de ordenar por qualquer coluna, exceto a função. A seleção fica na barra de endereços; assim, uma visualização filtrada pode ser recarregada e compartilhada.",
       "p2": "A desativação revoga imediatamente todas as sessões e tokens, em vez de verificar a cada requisição se a conta ainda tem permissão. Essa é uma diferença crucial: uma verificação que alguém esquece de programar deixa uma brecha; um acesso revogado, não.",
       "p3": "A exclusão é o passo seguinte e serve para quando alguém realmente precisa sumir. Se você só quer impedir o acesso de alguém, desativar é a escolha certa, pois a autoria nas páginas continua preservada. Ambas as ações também funcionam por meio das ferramentas."
     },

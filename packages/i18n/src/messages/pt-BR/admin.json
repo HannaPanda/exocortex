@@ -62,7 +62,22 @@
     "detailDescription": "O que esta sessão alterou, mais recentes primeiro.",
     "confirmTitle": "Reverter sessão?",
     "confirmDescription": "{count, plural, one {Uma página será revertida} many {# páginas serão revertidas} other {# páginas serão revertidas}} para o estado anterior a esta sessão. O estado atual de cada página será salvo antes, portanto a ação em si é reversível.",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "filters": {
+      "searchLabel": "Buscar sessões",
+      "searchPlaceholder": "Cliente, sessão ou conta…",
+      "transport": "Conexão",
+      "allTransports": "Todas",
+      "writes": "Gravações",
+      "writeOptions": {
+        "all": "Tanto faz",
+        "with": "Com gravações",
+        "without": "Apenas leitura"
+      },
+      "reset": "Redefinir filtros"
+    },
+    "noMatchTitle": "Nenhuma sessão encontrada",
+    "noMatchDescription": "Não há resultados com esses filtros. Altere a busca ou redefina os filtros."
   },
   "agentSessionDetail": {
     "loading": "Carregando sessão…",
@@ -242,7 +257,30 @@
     "invitations": "Convites",
     "deleteTitle": "Excluir conta",
     "deleteDescription": "{email} será removido permanentemente. Isso não pode ser desfeito. Se você só quiser bloquear o acesso, desative a conta.",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "filters": {
+      "searchLabel": "Buscar usuários",
+      "searchPlaceholder": "Nome ou e-mail…",
+      "role": "Função",
+      "allRoles": "Todas",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Todos",
+        "active": "Ativo",
+        "disabled": "Desativado"
+      },
+      "activity": "Login",
+      "activityOptions": {
+        "all": "Tanto faz",
+        "recent": "Nos últimos 30 dias",
+        "stale": "Há mais tempo",
+        "none": "Nenhum ativo"
+      },
+      "reset": "Redefinir filtros"
+    },
+    "emptyTitle": "Ainda não há contas",
+    "noMatchTitle": "Nenhuma conta encontrada",
+    "noMatchDescription": "Não há resultados com esses filtros. Altere a busca ou redefina os filtros."
   },
   "usage": {
     "rangeLabel": "Período",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "Nenhum erro neste período",
     "noErrorsDescription": "Nenhuma execução falhou e nenhuma atingiu o tempo limite."
+  },
+  "list": {
+    "sortAscending": "Ordenar de forma crescente",
+    "sortDescending": "Ordenar de forma decrescente",
+    "range": "{from}–{to} de {total, number}",
+    "pagerLabel": "Páginas da lista",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "pageOf": "Página {page, number} de {pages, number}"
   }
 }

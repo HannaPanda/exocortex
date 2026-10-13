@@ -60,8 +60,21 @@ rate limits; what matters here is the shape of the routes:
 | `POST /api/admin/invitations/:id/resend`                          | global admin              | new token, old link dies                                 |
 | `DELETE /api/admin/invitations/:id`                               | global admin              | withdraw                                                 |
 | `GET`/`POST`/`DELETE` `/api/workspaces/:workspaceId/invitations…` | workspace `OWNER`/`ADMIN` | the same, bounded to that workspace, never a global role |
+| `GET /api/admin/users`                                            | global admin              | searched, filtered, sorted and paged; see below          |
 | `PATCH /api/admin/users/:userId/status`                           | global admin              | `{"disabled":true}` switches the account off             |
 | `DELETE /api/admin/users/:userId`                                 | global admin              | only if the account authored nothing                     |
+
+The account list takes `q` (name or email, case-insensitive), `role`,
+`status` (`active`, `disabled`), `activity` (`recent`: a session created in the
+last 30 days, `stale`: only older ones, `none`: no live session), `sort`
+(`name`, `email`, `createdAt`, `lastSessionAt`, `workspaceCount`), `order`,
+`limit` and `offset`, and answers `{ users, total }` with `total` counted
+before paging (issue #176). Without parameters it is the old list, oldest
+first. `GET /api/agent-sessions` takes the same paging plus `q`, `transport`
+and `withWrites`, newest first; it no longer stops at a hundred sessions
+without saying so. Both screens keep these values in the address, through
+`apps/web/src/components/admin/list-controls.tsx`, which is where the next
+growing admin list gets its search, column sorting and pager from.
 
 Three things about this that are easy to get wrong later:
 

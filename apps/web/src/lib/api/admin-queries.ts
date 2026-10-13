@@ -1,15 +1,22 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 
 import {
   type AddAiModelsFromCatalogRequest,
   type AddAiModelsFromCatalogResponse,
   type AdminOverviewResponse,
   type AdminUser,
+  type AdminUserListQuery,
   type AdminUserListResponse,
-  type AgentSession,
   type AgentSessionDetailResponse,
+  type AgentSessionListQuery,
   type AgentSessionListResponse,
   type AgentSessionRevertResponse,
   type AiModel,
@@ -128,13 +135,28 @@ export function useUpdateAdminSettings() {
 // Users
 // ---------------------------------------------------------------------------
 
-export function useAdminUsers(): UseQueryResult<AdminUser[]> {
+/** Leaves out what is undefined, so the server's defaults apply to it. */
+function listQueryString(query: Readonly<Record<string, string | number | undefined>>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== '') params.set(key, String(value));
+  }
+  const text = params.toString();
+  return text === '' ? '' : `?${text}`;
+}
+
+/**
+ * One page of the account list (issue #176). The previous page stays on
+ * screen while the next one loads, so typing in the search field does not
+ * blank the table on every keystroke.
+ */
+export function useAdminUsers(
+  query: Partial<AdminUserListQuery>,
+): UseQueryResult<AdminUserListResponse> {
   return useQuery({
-    queryKey: adminQueryKeys.users,
-    queryFn: async () => {
-      const response = await apiRequest<AdminUserListResponse>('/api/admin/users');
-      return response.users;
-    },
+    queryKey: [...adminQueryKeys.users, query],
+    queryFn: () => apiRequest<AdminUserListResponse>(`/api/admin/users${listQueryString(query)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -350,13 +372,19 @@ export function useDisconnectApp() {
 // Agent sessions (issue #49): what an agent touched, and taking it back
 // ---------------------------------------------------------------------------
 
-export function useAgentSessions(): UseQueryResult<AgentSession[]> {
+/** The query as it travels: `withWrites` is a string in the address. */
+type AgentSessionListParams = Partial<Omit<AgentSessionListQuery, 'withWrites'>> & {
+  withWrites?: 'true' | 'false';
+};
+
+export function useAgentSessions(
+  query: AgentSessionListParams,
+): UseQueryResult<AgentSessionListResponse> {
   return useQuery({
-    queryKey: adminQueryKeys.agentSessions,
-    queryFn: async () => {
-      const response = await apiRequest<AgentSessionListResponse>('/api/agent-sessions');
-      return response.sessions;
-    },
+    queryKey: [...adminQueryKeys.agentSessions, 'list', query],
+    queryFn: () =>
+      apiRequest<AgentSessionListResponse>(`/api/agent-sessions${listQueryString(query)}`),
+    placeholderData: keepPreviousData,
   });
 }
 

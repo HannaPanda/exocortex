@@ -62,7 +62,22 @@
     "detailDescription": "Wat deze sessie heeft bewerkt, nieuwste eerst.",
     "confirmTitle": "Sessie terugdraaien?",
     "confirmDescription": "{count, plural, one {Eén pagina wordt} other {# pagina’s worden}} teruggezet naar de staat van vóór deze sessie. De huidige staat van elke pagina wordt vooraf opgeslagen, dus de stap is zelf omkeerbaar.",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "filters": {
+      "searchLabel": "Sessies zoeken",
+      "searchPlaceholder": "Client, sessie of account …",
+      "transport": "Verbinding",
+      "allTransports": "Alle",
+      "writes": "Schrijfacties",
+      "writeOptions": {
+        "all": "Maakt niet uit",
+        "with": "Met schrijfacties",
+        "without": "Alleen-lezen"
+      },
+      "reset": "Filters resetten"
+    },
+    "noMatchTitle": "Geen passende sessies",
+    "noMatchDescription": "Met deze filters zijn er geen resultaten. Pas je zoekopdracht aan of reset de filters."
   },
   "agentSessionDetail": {
     "loading": "Sessie wordt geladen …",
@@ -242,7 +257,30 @@
     "invitations": "Uitnodigingen",
     "deleteTitle": "Account verwijderen",
     "deleteDescription": "{email} wordt definitief verwijderd. Dit kan niet ongedaan worden gemaakt. Als je alleen de toegang wilt blokkeren, deactiveer het account dan in plaats daarvan.",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "filters": {
+      "searchLabel": "Gebruikers zoeken",
+      "searchPlaceholder": "Naam of e-mailadres …",
+      "role": "Rol",
+      "allRoles": "Alle",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Alle",
+        "active": "Actief",
+        "disabled": "Gedeactiveerd"
+      },
+      "activity": "Inloggen",
+      "activityOptions": {
+        "all": "Maakt niet uit",
+        "recent": "In de afgelopen 30 dagen",
+        "stale": "Langer geleden",
+        "none": "Geen actieve"
+      },
+      "reset": "Filters resetten"
+    },
+    "emptyTitle": "Nog geen accounts",
+    "noMatchTitle": "Geen passend account",
+    "noMatchDescription": "Met deze filters zijn er geen resultaten. Pas je zoekopdracht aan of reset de filters."
   },
   "usage": {
     "rangeLabel": "Periode",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "Geen fouten in deze periode",
     "noErrorsDescription": "Geen run is mislukt en geen enkele kreeg een time-out."
+  },
+  "list": {
+    "sortAscending": "Oplopend sorteren",
+    "sortDescending": "Aplopend sorteren",
+    "range": "{from}–{to} van {total, number}",
+    "pagerLabel": "Pagina’s van de lijst",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "pageOf": "Pagina {page, number} van {pages, number}"
   }
 }

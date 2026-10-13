@@ -62,7 +62,22 @@
     "detailDescription": "Zmiany wprowadzone w tej sesji, od najnowszych.",
     "confirmTitle": "Cofnąć sesję?",
     "confirmDescription": "{count, plural, one {Jedna strona zostanie przywrócona} few {# strony zostaną przywrócone} many {# stron zostanie przywróconych} other {# strony zostanie przywróconych}} do stanu sprzed tej sesji. Aktualny stan każdej strony zostanie wcześniej zapisany, więc ten krok można odwrócić.",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "filters": {
+      "searchLabel": "Szukaj sesji",
+      "searchPlaceholder": "Klient, sesja lub konto…",
+      "transport": "Połączenie",
+      "allTransports": "Wszystkie",
+      "writes": "Zapisy",
+      "writeOptions": {
+        "all": "Wszystko jedno",
+        "with": "Z zapisami",
+        "without": "Tylko odczyt"
+      },
+      "reset": "Zresetuj filtry"
+    },
+    "noMatchTitle": "Brak pasujących sesji",
+    "noMatchDescription": "Brak wyników dla tych filtrów. Zmień wyszukiwanie lub zresetuj filtry."
   },
   "agentSessionDetail": {
     "loading": "Ładowanie sesji…",
@@ -242,7 +257,30 @@
     "invitations": "Zaproszenia",
     "deleteTitle": "Usuń konto",
     "deleteDescription": "Konto {email} zostanie trwale usunięte. Tej operacji nie można cofnąć. Jeśli chcesz tylko zablokować dostęp, dezaktywuj konto.",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "filters": {
+      "searchLabel": "Szukaj użytkowników",
+      "searchPlaceholder": "Imię, nazwisko lub e-mail…",
+      "role": "Rola",
+      "allRoles": "Wszystkie",
+      "status": "Status",
+      "statusOptions": {
+        "all": "Wszystkie",
+        "active": "Aktywny",
+        "disabled": "Dezaktywowany"
+      },
+      "activity": "Logowanie",
+      "activityOptions": {
+        "all": "Wszystko jedno",
+        "recent": "W ciągu ostatnich 30 dni",
+        "stale": "Dawniej",
+        "none": "Brak bieżących"
+      },
+      "reset": "Zresetuj filtry"
+    },
+    "emptyTitle": "Brak kont",
+    "noMatchTitle": "Brak pasujących kont",
+    "noMatchDescription": "Brak wyników dla tych filtrów. Zmień wyszukiwanie lub zresetuj filtry."
   },
   "usage": {
     "rangeLabel": "Okres",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "Brak błędów w tym okresie",
     "noErrorsDescription": "Żadne uruchomienie nie zakończyło się niepowodzeniem ani przekroczeniem limitu czasu."
+  },
+  "list": {
+    "sortAscending": "Sortuj rosnąco",
+    "sortDescending": "Sortuj malejąco",
+    "range": "{from}–{to} z {total, number}",
+    "pagerLabel": "Strony listy",
+    "previous": "Wstecz",
+    "next": "Dalej",
+    "pageOf": "Strona {page, number} z {pages, number}"
   }
 }

@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
 import {
+  adminUserActivityFilterSchema,
   adminUserListResponseSchema,
   adminUserSchema,
+  adminUserSortSchema,
+  adminUserStatusFilterSchema,
   deleteUserResponseSchema,
   idSchema,
   type Invitation,
@@ -229,24 +232,52 @@ export const userListTool: AnyToolDefinition = defineTool({
   name: 'exo_user_list',
   description:
     'Listet die Konten dieser Installation mit globaler Rolle, Anzahl Arbeitsbereiche und ob das ' +
-    'Konto deaktiviert ist. Braucht globale Administratorrechte.',
-  inputSchema: z.object({}),
+    'Konto deaktiviert ist. Suche in Name und E-Mail, Filter nach Rolle, Status und Aktivität, ' +
+    'Sortierung und Blättern über limit/offset; total nennt alle Treffer. ' +
+    'Braucht globale Administratorrechte.',
+  inputSchema: z.object({
+    q: z.string().max(200).optional().describe('Teil von Name oder E-Mail'),
+    role: z.enum(['user', 'admin']).optional(),
+    status: adminUserStatusFilterSchema.optional(),
+    activity: adminUserActivityFilterSchema
+      .optional()
+      .describe(
+        'recent: Anmeldung in den letzten 30 Tagen, stale: nur ältere, none: keine laufende Anmeldung',
+      ),
+    sort: adminUserSortSchema.optional(),
+    order: z.enum(['asc', 'desc']).optional(),
+    limit: z.number().int().min(1).max(500).optional(),
+    offset: z.number().int().min(0).optional(),
+  }),
   surfaces: ['mcp', 'ai'],
   domain: 'admin',
   mutating: false,
-  async execute(client) {
+  async execute(client, input) {
     const result = await client.request({
       method: 'GET',
       path: '/api/admin/users',
+      query: {
+        q: input.q,
+        role: input.role,
+        status: input.status,
+        activity: input.activity,
+        sort: input.sort,
+        order: input.order,
+        limit: input.limit,
+        offset: input.offset,
+      },
       responseSchema: adminUserListResponseSchema,
     });
-    const text = result.users
-      .map((user, index) => {
-        const state = user.disabledAt === null ? 'aktiv' : 'deaktiviert';
-        return `${index + 1}. ${user.name} <${user.email}> [${user.role}, ${state}] ${user.workspaceCount} Arbeitsbereiche (id: ${user.id})`;
-      })
-      .join('\n');
-    return { text, data: result };
+    if (result.users.length === 0) {
+      return { text: `Keine Konten gefunden (insgesamt ${String(result.total)}).`, data: result };
+    }
+    const start = input.offset ?? 0;
+    const lines = result.users.map((user, index) => {
+      const state = user.disabledAt === null ? 'aktiv' : 'deaktiviert';
+      return `${start + index + 1}. ${user.name} <${user.email}> [${user.role}, ${state}] ${user.workspaceCount} Arbeitsbereiche (id: ${user.id})`;
+    });
+    const header = `${String(result.users.length)} von ${String(result.total)} Konten:`;
+    return { text: [header, ...lines].join('\n'), data: result };
   },
 });
 

@@ -62,7 +62,22 @@
     "detailDescription": "Cosa ha modificato questa sessione, le più recenti per prime.",
     "confirmTitle": "Ripristinare la sessione?",
     "confirmDescription": "{count, plural, one {Una pagina verrà ripristinata} many {# di pagine verranno ripristinate} other {# pagine verranno ripristinate}} allo stato precedente a questa sessione. Lo stato attuale di ogni pagina viene prima salvato, quindi l’operazione stessa è reversibile.",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "filters": {
+      "searchLabel": "Cerca sessioni",
+      "searchPlaceholder": "Client, sessione o account…",
+      "transport": "Connessione",
+      "allTransports": "Tutte",
+      "writes": "Operazioni di scrittura",
+      "writeOptions": {
+        "all": "Indifferente",
+        "with": "Con operazioni di scrittura",
+        "without": "Sola lettura"
+      },
+      "reset": "Reimposta filtri"
+    },
+    "noMatchTitle": "Nessuna sessione corrispondente",
+    "noMatchDescription": "Nessun risultato con questi filtri. Modifica la ricerca o reimposta i filtri."
   },
   "agentSessionDetail": {
     "loading": "Caricamento della sessione in corso…",
@@ -242,7 +257,30 @@
     "invitations": "Inviti",
     "deleteTitle": "Elimina account",
     "deleteDescription": "{email} verrà rimosso definitivamente. L’operazione non può essere annullata. Se vuoi solo bloccare l’accesso, disattiva invece l’account.",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "filters": {
+      "searchLabel": "Cerca utenti",
+      "searchPlaceholder": "Nome o e-mail…",
+      "role": "Ruolo",
+      "allRoles": "Tutti",
+      "status": "Stato",
+      "statusOptions": {
+        "all": "Tutti",
+        "active": "Attivo",
+        "disabled": "Disattivato"
+      },
+      "activity": "Accesso",
+      "activityOptions": {
+        "all": "Indifferente",
+        "recent": "Negli ultimi 30 giorni",
+        "stale": "Meno recente",
+        "none": "Nessuno attivo"
+      },
+      "reset": "Reimposta filtri"
+    },
+    "emptyTitle": "Ancora nessun account",
+    "noMatchTitle": "Nessun account corrispondente",
+    "noMatchDescription": "Nessun risultato con questi filtri. Modifica la ricerca o reimposta i filtri."
   },
   "usage": {
     "rangeLabel": "Periodo",
@@ -316,5 +354,14 @@
     },
     "noErrorsTitle": "Nessun errore in questo periodo",
     "noErrorsDescription": "Nessuna esecuzione è fallita e nessuna è andata in timeout."
+  },
+  "list": {
+    "sortAscending": "Ordinamento crescente",
+    "sortDescending": "Ordinamento decrescente",
+    "range": "{from}–{to} di {total, number}",
+    "pagerLabel": "Pagine dell’elenco",
+    "previous": "Indietro",
+    "next": "Avanti",
+    "pageOf": "Pagina {page, number} di {pages, number}"
   }
 }

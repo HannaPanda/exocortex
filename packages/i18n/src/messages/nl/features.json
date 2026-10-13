@@ -330,7 +330,7 @@
     "title": "Wat een agent in een sessie heeft gewijzigd",
     "summary": "Schrijfacties van een agent worden gebundeld in een sessie en vastgelegd in het journaal, telkens met de momentopname van vóór de wijziging. Daarmee kun je nagaan wat er tijdens een sessie is aangepast en afzonderlijke pagina’s gericht terugdraaien.",
     "details": {
-      "p1": "Een agent meldt bij het verbinden een sessie-id aan en geeft die daarna bij elke oproep mee. Alles wat in die sessie wordt geschreven, hoort bij elkaar: \"deze acht pagina’s heeft Claude Code vanochtend aangepast\" is één vraag met één antwoord, in plaats van acht losse vermeldingen in acht paginageschiedenissen.",
+      "p1": "Een agent meldt bij het verbinden een sessie-ID aan en geeft deze daarna bij elke aanroep mee. Alles wat in deze sessie wordt geschreven, hangt daarmee samen: „deze acht pagina’s heeft Claude Code vanmorgen bewerkt” is één vraag met één antwoord, in plaats van acht afzonderlijke vermeldingen in acht paginageschiedenissen. De lijst onder Beheer, Agenten doorzoek je op client, sessie of account en je filtert op sessies die daadwerkelijk iets hebben geschreven.",
       "p2": "Elke vermelding toont de pagina, het tijdstip, het gereedschap en de momentopname van vóór de wijziging. Het toont niet wat er geschreven is: het journaal verwijst naar de vorige versie in plaats van de inhoud te kopiëren, zodat het geen tweede, onbeveiligde opslagplaats van je teksten wordt.",
       "p3": "Terugdraaien gebeurt per pagina, via het gewone herstellen van een momentopname. Er is bewust geen knop \"hele sessie terugdraaien\": wanneer iemand na de agent heeft doorgewerkt, zou dat leiden tot een halfbakken herstel dat eruitziet alsof het compleet is."
     },
@@ -937,7 +937,7 @@
     "title": "Accounts en rollen",
     "summary": "Het gebruikersbeheer toont alle accounts, maakt iemand beheerder, deactiveert een account of verwijdert het. Een gedeactiveerd account verliest direct alle inloggegevens, in plaats van bij elk verzoek opnieuw te worden gecontroleerd.",
     "details": {
-      "p1": "De lijst toont alle accounts met naam, e-mailadres, rol en status. Van hieruit nodig je iemand uit, maak je iemand beheerder, trek je dat recht weer in, deactiveer je een account of verwijder je het definitief.",
+      "p1": "De lijst toont alle accounts met naam, e-mailadres, rol en status. Vanaf hier nodig je iemand uit, maak je iemand beheerder, trek je dit recht weer in, deactiveer je een account of verwijder je het definitief. Als de lijst groeit, zoek je op naam of e-mailadres, filter je op rol, status en laatste aanmelding en sorteer je op elke kolom behalve de rol. De selectie staat in de URL, dus een gefilterde weergave kun je eenvoudig vernieuwen en delen.",
       "p2": "Deactiveren trekt onmiddellijk alle sessies en tokens in, in plaats van bij elk verzoek te controleren of het account nog toegang heeft. Dat is een wezenlijk verschil: een controle die iemand vergeet te programmeren laat een lek achter, ingetrokken toegang niet.",
       "p3": "Verwijderen is een meer ingrijpende stap, bedoeld voor wanneer iemand echt moet verdwijnen. Wil je alleen dat iemand niet meer binnenkomt, dan is deactiveren de juiste keuze, omdat de auteursgegevens bij de pagina’s bewaard blijven. Beide acties zijn ook mogelijk via de tools."
     },

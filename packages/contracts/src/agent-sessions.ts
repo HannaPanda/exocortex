@@ -53,7 +53,40 @@ export const agentSessionSchema = z.object({
 });
 export type AgentSession = z.infer<typeof agentSessionSchema>;
 
-export const agentSessionListResponseSchema = z.object({ sessions: z.array(agentSessionSchema) });
+/**
+ * Searching, filtering, sorting and paging the session list (issue #176).
+ *
+ * Without parameters the list is what it was: the newest sessions first, but
+ * no longer cut at a hundred with nothing saying so; `total` tells how many
+ * there are and `offset` reaches the rest.
+ */
+export const agentSessionSortSchema = z.enum(['lastSeenAt', 'startedAt']);
+export type AgentSessionSort = z.infer<typeof agentSessionSortSchema>;
+
+export const agentSessionListQuerySchema = z.object({
+  /** Matched against the client label, the external id and the account's name. */
+  q: z.string().trim().max(200).optional(),
+  transport: agentSessionTransportSchema.optional(),
+  /**
+   * `true` keeps only sessions that journalled at least one write. Most
+   * connections only read, and those rows have nothing to inspect or revert.
+   */
+  withWrites: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
+  sort: agentSessionSortSchema.default('lastSeenAt'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+export type AgentSessionListQuery = z.infer<typeof agentSessionListQuerySchema>;
+
+export const agentSessionListResponseSchema = z.object({
+  sessions: z.array(agentSessionSchema),
+  /** Matching sessions before paging. */
+  total: z.number().int().nonnegative(),
+});
 export type AgentSessionListResponse = z.infer<typeof agentSessionListResponseSchema>;
 
 export const agentWriteSchema = z.object({

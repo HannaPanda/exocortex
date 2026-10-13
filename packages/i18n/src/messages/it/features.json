@@ -330,7 +330,7 @@
     "title": "Cosa ha modificato un agente in una sessione",
     "summary": "Le operazioni di scrittura di un agente vengono raggruppate in una sessione e registrate nel giornale di bordo, ciascuna con l’istantanea precedente alla modifica. In questo modo è possibile verificare cosa è stato toccato da un’esecuzione e annullare le modifiche su singole pagine in modo mirato.",
     "details": {
-      "p1": "Al momento della connessione, un agente registra un identificatore di sessione e lo trasmette a ogni chiamata successiva. Tutto ciò che viene scritto in quella sessione risulta collegato: «queste otto pagine sono state modificate da Claude Code stamattina» diventa una domanda con un’unica risposta, anziché otto voci separate nella cronologia di otto pagine diverse.",
+      "p1": "Al momento della connessione, un agente registra un identificativo di sessione e lo trasmette a ogni chiamata successiva. Tutto ciò che viene scritto in quella sessione è collegato: «queste otto pagine sono state modificate da Claude Code stamattina» diventa una domanda con una sola risposta, invece di otto singole voci nella cronologia di otto pagine diverse. Puoi cercare nell’elenco sotto Amministrazione, Agenti per client, sessione o account e filtrarlo in base alle sessioni che hanno effettivamente apportato modifiche.",
       "p2": "Ogni voce mostra pagina, data e ora, strumento e l’istantanea precedente alla modifica. Non mostra ciò che è stato scritto: il giornale fa riferimento alla versione precedente anziché copiare i contenuti, per evitare di diventare un secondo archivio non protetto dei tuoi testi.",
       "p3": "Il rollback si esegue per singola pagina, tramite il consueto ripristino di un’istantanea. Non esiste volutamente un pulsante «annulla l’intera sessione»: se qualcuno ha continuato a scrivere dopo l’agente, il risultato sarebbe un ripristino parziale che sembra completo pur non essendolo."
     },
@@ -937,7 +937,7 @@
     "title": "Account e ruoli",
     "summary": "La gestione utenti elenca tutti gli account, assegna il ruolo di amministrazione, disattiva o elimina un account. Un account disattivato perde immediatamente tutte le credenziali, anziché essere riverificato a ogni richiesta.",
     "details": {
-      "p1": "L’elenco mostra tutti gli account con nome, e-mail, ruolo e stato. Da qui inviti qualcuno, assegni o revochi il ruolo di amministrazione, disattivi un account o lo elimini definitivamente.",
+      "p1": "L’elenco mostra tutti gli account con nome, e-mail, ruolo e stato. Da qui puoi invitare qualcuno, assegnare il ruolo di amministrazione, revocarlo, disattivare un account o eliminarlo definitivamente. Se l’elenco cresce, puoi cercare per nome o e-mail, filtrare per ruolo, stato e ultimo accesso e ordinare per qualsiasi colonna tranne il ruolo. I filtri selezionati sono inclusi nell’indirizzo URL, così puoi ricaricare o condividere la vista filtrata.",
       "p2": "La disattivazione revoca immediatamente tutte le sessioni e i token, anziché controllare a ogni richiesta se l’account è ancora autorizzato. È una differenza fondamentale: un controllo che ci si dimentica di implementare lascia una falla, un accesso revocato no.",
       "p3": "L’eliminazione è il passo successivo ed è pensata per quando qualcuno deve sparire davvero. Se vuoi solo impedire a qualcuno di accedere di nuovo, la disattivazione è la scelta giusta, perché le attribuzioni dell’autore sulle pagine rimangono intatte. Entrambe le operazioni sono possibili anche tramite gli strumenti."
     },

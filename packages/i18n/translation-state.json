@@ -800,6 +800,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "41c31f8e076315e5"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "a52ace420f2175d0"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "10afa98480f2d06c"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "8cb650539ec84aa5"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "94e672043e5f52a0"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "639a40e82b9a96f0"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "2b505597daa736f1"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "d47a692c487c412a"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "72bb90897ab1eadc"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "fdd0a77c1e77ac7b"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "28b3aeda5f4adb5c"
@@ -811,6 +847,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "d41bc68b4f87c2d6"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "7da10c143661080f"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "2732406e3be52c5b"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -995,6 +1039,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "78a6757f74bd7b37"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "1ff57a29d7c9d11b"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "358e7bd1cd248bbe"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "47cd22b7dc076a21"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "a57b08a480b822a0"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "1a48a10b869bb307"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "ec3c9c77806c5b64"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "8993b788afbe1634"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -1664,6 +1736,66 @@
       "source": "89fc217b35a43e58",
       "output": "75081b593d15cf6e"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "84a7e27178d91639"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "5bbbe53187ad8e90"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "2b505597daa736f1"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "c58d8038ec755c32"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "9448d613d372605e"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "b721fb7da41655cb"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "a52ace420f2175d0"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "10afa98480f2d06c"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "14736a2eb9f4159f"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "e4bb77af4bc57267"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "4cb4bdd7f8c53e2b"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "92340695899bd2d8"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "a52ace420f2175d0"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "75081b593d15cf6e"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "004fbfc0d7b9e656"
@@ -1687,6 +1819,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "a53ec7ac2a7b8fb1"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "7da10c143661080f"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "47c062d35d2cf2b8"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -11005,8 +11145,8 @@
       "output": "b161b0c1ca7f27a8"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "03d5a0c7f9f49a99"
+      "source": "e49f68a3c9ba43f0",
+      "output": "0921d64f05b6bcf1"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -12505,8 +12645,8 @@
       "output": "c92cafbb5e56aa89"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "377f5a9f793a9c91"
+      "source": "109536ff3a1dc668",
+      "output": "94f0d93143b44f8f"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -23314,6 +23454,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "dc9bbdae16bc5d11"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "aff4d19d6ee43b20"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "19bedfb5b4f36cd6"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "9d0a5cff083d8f26"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "e293dc6045fc222a"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "a7f534961a9cafe5"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "792f808c97648c8b"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "6212b3f828845aa6"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "6e3c2c930b472294"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "d24561c765dad49d"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "648dc7a98bc6d33a"
@@ -23325,6 +23501,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "b9612a5f9e8ad483"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "91bbfc1e45f18e20"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "783b3192ee4a1767"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -23509,6 +23693,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "cc3d5d243cbe736d"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "49683b71c6acf522"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "b25312fc1344276a"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "1cf5ba4f43b16cfe"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "e4ce7c09d51e3b88"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "61a7cd0fbb32ebc3"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "565e23f2408d47ea"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "ff52427f51497f63"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -24178,6 +24390,66 @@
       "source": "89fc217b35a43e58",
       "output": "e252efe6974743f6"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "1655d2eb3813ffc5"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "ba4b93f605c8301b"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "792f808c97648c8b"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "e5f5ac1bf984b34a"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "e4a6f04230bd7406"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "1a6cded055292693"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "bd02b9a7d71dac67"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "19bedfb5b4f36cd6"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "5d3c208ec507027d"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "d8f52fa5b1dc002b"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "98e5acddb6c46a24"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "69d17ca1683468f0"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "bd02b9a7d71dac67"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "987d904d7afee232"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "eb9e333fff5b3daa"
@@ -24201,6 +24473,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "633d7ba5f7760df2"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "91bbfc1e45f18e20"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "4298e2b8ae74fb4b"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -33519,8 +33799,8 @@
       "output": "4f0ca9d0ca9bcb3f"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "42f1aa6c3724dd31"
+      "source": "e49f68a3c9ba43f0",
+      "output": "d42a76f475f69eb1"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -35019,8 +35299,8 @@
       "output": "05a8f5e9589d7262"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "f47025a82f8f9d48"
+      "source": "109536ff3a1dc668",
+      "output": "5710d2fc30757dac"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -45828,6 +46108,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "668fb62678fef4e9"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "42623b97b4815a8a"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "442c7f653be7caae"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "64ed6bbc5627c745"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "ac5c0ec276575ee5"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "61d695041034c12d"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "3ce7a48962e9688d"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "d92a75564c3d6e93"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "2af697456ab21797"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "8f3766386a7cb66e"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "346b862771a123ff"
@@ -45839,6 +46155,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "c94ad9f79fd5403d"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "f8a536718a01fa69"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "be4ff9c89b13ae68"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -46023,6 +46347,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "29a1d440605f540b"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "df2df3bc713a7906"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "372d44af81eb4369"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "7d904ae60917dbb4"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "30b0e9a45aba4d16"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "53ba2403f63837d8"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "ba09100e03ab620c"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "7a1829aaef6b00c1"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -46692,6 +47044,66 @@
       "source": "89fc217b35a43e58",
       "output": "da60ff35b212a8aa"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "11b9ad47986424c1"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "61d695041034c12d"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "3ce7a48962e9688d"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "b1e6c8c8ee5bf580"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "fe6e94517b78b00a"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "697db2e5ddaa2e5a"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "2ff59981438804b8"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "442c7f653be7caae"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "a1fc967c55879693"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "b700ff9363166fc7"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "1e6b42ae2bfd4f9e"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "dee377cfd8cddfb8"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "ad26287ab66ba05c"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "2ff59981438804b8"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "da60ff35b212a8aa"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "bd7aaa7393c47f00"
@@ -46715,6 +47127,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "fb9a1e85a1536223"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "f8a536718a01fa69"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "9f01f9faa29d6215"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -56033,8 +56453,8 @@
       "output": "61e90c5bc385f9d5"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "dba3b1ca23df2bbd"
+      "source": "e49f68a3c9ba43f0",
+      "output": "6dc91afdf5c711e8"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -57533,8 +57953,8 @@
       "output": "9bcaa9fdbfb582e0"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "5173bd4a09553d19"
+      "source": "109536ff3a1dc668",
+      "output": "112e9bed24209d37"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -68342,6 +68762,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "9c3a06c92f149124"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "8497975606d65f20"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "3c2e36e0ceffc64e"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "af95ef971c0f85dc"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "da015930b9e09633"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "5d9316922f3ff5b4"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "ac7940da23a37112"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "d9719f237cd4c05b"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "fb863b0b30216107"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "c6f2c16f62edd199"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "fd370aca5b869cfd"
@@ -68353,6 +68809,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "6891cef6b24e75e9"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "202b18dc84ace36f"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "88ecf7a7d93e687e"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -68537,6 +69001,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "fac0ebe1b9310db1"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "29ddfd8a86434dc2"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "747c0115dcdb65d5"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "0a656e59a07ab6f7"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "80426885bb7468ff"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "0936d103b3e779d4"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "4246bb78074bec12"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "eefb1124cee04c84"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -69206,6 +69698,66 @@
       "source": "89fc217b35a43e58",
       "output": "8157ad5d94fe8260"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "77b2d9e1d5e38372"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "872ec016c0becf4b"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "ac7940da23a37112"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "dee7661ac55b9720"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "0c3b1e3747528f14"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "9f4493456ec9c815"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "7f65ef4af637ae9b"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "3c2e36e0ceffc64e"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "7a972bbc14808919"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "680aa7e694a0c8fd"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "8ab9ca3e370c02fa"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "5d788017bfe473fd"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "39df52d249a64fe9"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "7f65ef4af637ae9b"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "8157ad5d94fe8260"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "74beb21f4069494f"
@@ -69229,6 +69781,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "b414034b660c819c"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "202b18dc84ace36f"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "84deceac8e489630"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -78547,8 +79107,8 @@
       "output": "7f4bfb342c461338"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "691949204034108e"
+      "source": "e49f68a3c9ba43f0",
+      "output": "9e2e43bf720bf3f7"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -80047,8 +80607,8 @@
       "output": "f93641468e8acf17"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "de1264ba9f9c1da6"
+      "source": "109536ff3a1dc668",
+      "output": "f0edb4541adaddb2"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -90856,6 +91416,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "cb40ffcb93a3b685"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "3801a35c51822839"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "bf32ad2f1e214241"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "9e0fb6990f29934d"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "6a435e581b9cb849"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "e7484c44e2a5a052"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "57c2c43a6359ca19"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "4a6a0d63219b3e38"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "19a63fe132eaa62a"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "606ecec6cd21afd5"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "ee52172c117d7803"
@@ -90867,6 +91463,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "dbfebe3f7ccc5bda"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "5897066a5391baad"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "8165d3af53162821"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -91051,6 +91655,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "489af76dabd6e938"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "b2a8da6b5b31bf2f"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "8be43955b38d67c7"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "d33582d61f533ba0"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "0ec22d744602c1e2"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "e14606560498c789"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "abb69ce51d71a21d"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "ea3e623b19069e1b"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -91720,6 +92352,66 @@
       "source": "89fc217b35a43e58",
       "output": "f80f74c8fa333311"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "e64a76cec8eb2b9f"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "902a4c2ada7bc751"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "57c2c43a6359ca19"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "3d371bd5320e7519"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "cdff817a4c72d9c8"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "629e406c0def4610"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "3801a35c51822839"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "bf32ad2f1e214241"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "fb9f51fe92502d1a"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "71d200e618a357b1"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "e4411da6d2ff7b8f"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "de9f5d2dd16fa56b"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "3801a35c51822839"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "f80f74c8fa333311"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "e655fdd096479231"
@@ -91743,6 +92435,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "3eec843b4c0c903f"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "5897066a5391baad"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "6457a6565f87195a"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -101061,8 +101761,8 @@
       "output": "6eac3ab4bb5c6dd7"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "3888b1758b9906fb"
+      "source": "e49f68a3c9ba43f0",
+      "output": "dc7994536ba6d928"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -102561,8 +103261,8 @@
       "output": "7066767e5425a0e6"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "923febf00eb542d7"
+      "source": "109536ff3a1dc668",
+      "output": "d6df361e52d2e500"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -113370,6 +114070,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "460ab43cff78f121"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "11366eeda2682659"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "5d9530f4fdb4cba5"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "5c445ec24f9d352e"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "4fd919697e47e44c"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "277c8be329eeb482"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "6fa8b4d1e313ff50"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "18ee20b1dc9913ad"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "35acaeb2491fca0f"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "e25ccf30f1ec390d"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "25eabedd8b7a97a3"
@@ -113381,6 +114117,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "d2ae38a0113cf36d"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "61db30b34a4c1c08"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "75f45fc63db98b63"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -113565,6 +114309,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "5542c7bedf5a67bf"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "e432e4c6ed676bf8"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "37b039644bee8bcb"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "8133cd58d8a89ddb"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "dee484d448fc2201"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "82617117a4244806"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "2bfb01c9cbd96504"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "e6a29b0822301090"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -114234,6 +115006,66 @@
       "source": "89fc217b35a43e58",
       "output": "705ec497232bea3e"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "664498829fbb6346"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "c32468a8c4a8f38b"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "6fa8b4d1e313ff50"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "65723c015e1040f3"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "7249b4467fb75bbf"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "0796dec90af48a1c"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "11366eeda2682659"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "5d9530f4fdb4cba5"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "699286d2a2ac4c95"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "3ab2effdeddb4b4a"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "c7a8d0fb3e672602"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "3d20fe14a655d709"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "11366eeda2682659"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "705ec497232bea3e"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "2d2aa1a12dd1f508"
@@ -114257,6 +115089,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "8be8a0930b168722"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "61db30b34a4c1c08"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "76fc9050e2eedb54"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -123575,8 +124415,8 @@
       "output": "b72401354f27adf1"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "93c536963fa9acef"
+      "source": "e49f68a3c9ba43f0",
+      "output": "6ad24cd038d36e6a"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -125075,8 +125915,8 @@
       "output": "581a8e8ea34b87db"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "44fd80d763de37c4"
+      "source": "109536ff3a1dc668",
+      "output": "a3f4db0f46b7570d"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",
@@ -135884,6 +136724,42 @@
       "source": "c6ef5ee7e3cfac03",
       "output": "a40dbb3218299c51"
     },
+    "admin.agentSessions.filters.allTransports": {
+      "source": "3801a35c51822839",
+      "output": "aff4d19d6ee43b20"
+    },
+    "admin.agentSessions.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "45651654259d1f97"
+    },
+    "admin.agentSessions.filters.searchLabel": {
+      "source": "acd7b3ecfb8e91a1",
+      "output": "95fbd25f28526ac7"
+    },
+    "admin.agentSessions.filters.searchPlaceholder": {
+      "source": "30f5ba84552fe52e",
+      "output": "d13ec9580427331f"
+    },
+    "admin.agentSessions.filters.transport": {
+      "source": "036781f17340ce47",
+      "output": "91fa246e0e1e1fe8"
+    },
+    "admin.agentSessions.filters.writeOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "b43dc13c1e997d00"
+    },
+    "admin.agentSessions.filters.writeOptions.with": {
+      "source": "ed45f84ab59e634a",
+      "output": "34a7686c0a95161f"
+    },
+    "admin.agentSessions.filters.writeOptions.without": {
+      "source": "4210dc3193d813b7",
+      "output": "c601f021c18c2a7f"
+    },
+    "admin.agentSessions.filters.writes": {
+      "source": "5bfa83e306356c37",
+      "output": "3425d10a2eb3ba74"
+    },
     "admin.agentSessions.intro": {
       "source": "30ba3b7a9f291b4c",
       "output": "7dc4e6d8d1d17037"
@@ -135895,6 +136771,14 @@
     "admin.agentSessions.loading": {
       "source": "11070b70b455d0fd",
       "output": "d621028c5f0911d7"
+    },
+    "admin.agentSessions.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "2c2e37004e8936b9"
+    },
+    "admin.agentSessions.noMatchTitle": {
+      "source": "333af5237ea7e76c",
+      "output": "de5bc08ce4a67a26"
     },
     "admin.agentSessions.period": {
       "source": "155ecda4d82d1a84",
@@ -136079,6 +136963,34 @@
     "admin.guard.unavailableTitle": {
       "source": "c7424de111f7bbad",
       "output": "e27f0a56b08f4559"
+    },
+    "admin.list.next": {
+      "source": "1e14bdf34c3bdead",
+      "output": "2fe966afd7f9dd46"
+    },
+    "admin.list.pageOf": {
+      "source": "316f91160b7b6a97",
+      "output": "b25312fc1344276a"
+    },
+    "admin.list.pagerLabel": {
+      "source": "04c4e88e9a40a965",
+      "output": "bb9e759c7a938d28"
+    },
+    "admin.list.previous": {
+      "source": "548611ce58f71a17",
+      "output": "e4ce7c09d51e3b88"
+    },
+    "admin.list.range": {
+      "source": "63a084bba4d49c57",
+      "output": "61a7cd0fbb32ebc3"
+    },
+    "admin.list.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "a04ff56b9154373b"
+    },
+    "admin.list.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "febc9a4a7bd01386"
     },
     "admin.modelDialog.cancel": {
       "source": "f7ff1178af202f6f",
@@ -136748,6 +137660,66 @@
       "source": "89fc217b35a43e58",
       "output": "f47dfde9cb6fd44e"
     },
+    "admin.users.emptyTitle": {
+      "source": "5bd7a8ea2dd7e7bd",
+      "output": "695b6073237f8453"
+    },
+    "admin.users.filters.activity": {
+      "source": "32ddf6ae0bab461e",
+      "output": "9d6322c1f4d9d3f3"
+    },
+    "admin.users.filters.activityOptions.all": {
+      "source": "5fdf88c053ef8b82",
+      "output": "b43dc13c1e997d00"
+    },
+    "admin.users.filters.activityOptions.none": {
+      "source": "7e2d798eaef2b8a5",
+      "output": "433428e96235c84d"
+    },
+    "admin.users.filters.activityOptions.recent": {
+      "source": "5e31f8b88cff8c09",
+      "output": "9714bf087a104892"
+    },
+    "admin.users.filters.activityOptions.stale": {
+      "source": "912a1faf0d0e3f06",
+      "output": "4f64898b1c52aa9a"
+    },
+    "admin.users.filters.allRoles": {
+      "source": "3801a35c51822839",
+      "output": "aff4d19d6ee43b20"
+    },
+    "admin.users.filters.reset": {
+      "source": "5b59510b692f04e6",
+      "output": "45651654259d1f97"
+    },
+    "admin.users.filters.role": {
+      "source": "0038a9cf86613cec",
+      "output": "e93e2b1e7736d280"
+    },
+    "admin.users.filters.searchLabel": {
+      "source": "15d2a26c00ce991f",
+      "output": "86c737cfd6e8b536"
+    },
+    "admin.users.filters.searchPlaceholder": {
+      "source": "88a0df503d24c0e8",
+      "output": "c8e78d58141a690b"
+    },
+    "admin.users.filters.status": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "admin.users.filters.statusOptions.active": {
+      "source": "8163454f378f0814",
+      "output": "499ee302f6884f27"
+    },
+    "admin.users.filters.statusOptions.all": {
+      "source": "3801a35c51822839",
+      "output": "bd02b9a7d71dac67"
+    },
+    "admin.users.filters.statusOptions.disabled": {
+      "source": "89fc217b35a43e58",
+      "output": "f47dfde9cb6fd44e"
+    },
     "admin.users.hasContent": {
       "source": "8bb7488777149766",
       "output": "bb8381a09cec1787"
@@ -136771,6 +137743,14 @@
     "admin.users.loading": {
       "source": "6a017a2e1d18b291",
       "output": "cb2631bcc4957902"
+    },
+    "admin.users.noMatchDescription": {
+      "source": "668cb3b519a3e3ce",
+      "output": "2c2e37004e8936b9"
+    },
+    "admin.users.noMatchTitle": {
+      "source": "3fb74e8d2b5a1d09",
+      "output": "2475fe5cd0142d2a"
     },
     "admin.users.roleOf": {
       "source": "4478fe0697ade6b5",
@@ -146089,8 +147069,8 @@
       "output": "6f87b5ef5b59c0dc"
     },
     "features.agenten-journal.details.p1": {
-      "source": "bef2461afe6e70c2",
-      "output": "77ca9f59a3d2b808"
+      "source": "e49f68a3c9ba43f0",
+      "output": "ede26de2223d9799"
     },
     "features.agenten-journal.details.p2": {
       "source": "47a7823d338412be",
@@ -147589,8 +148569,8 @@
       "output": "2d4b56508092df2b"
     },
     "features.nutzerverwaltung.details.p1": {
-      "source": "994b7cd100307b9f",
-      "output": "4291602118bb2867"
+      "source": "109536ff3a1dc668",
+      "output": "a981e51e70c14a7f"
     },
     "features.nutzerverwaltung.details.p2": {
       "source": "fbc17795333f6569",

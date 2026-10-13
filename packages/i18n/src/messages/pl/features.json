@@ -330,7 +330,7 @@
     "title": "Co zmienił agent podczas sesji",
     "summary": "Operacje zapisu wykonywane przez agenta są łączone w sesję i rejestrowane w dzienniku, każda z migawką sprzed zmiany. Pozwala to sprawdzić, co zostało zmodyfikowane w danym przebiegu, i precyzyjnie przywrócić wybrane strony.",
     "details": {
-      "p1": "Agent podczas łączenia zgłasza identyfikator sesji i przekazuje go przy każdym kolejnym wywołaniu. Wszystko, co zostanie zapisane w tej sesji, jest ze sobą powiązane: „oto osiem stron zmodyfikowanych dziś rano przez Claude Code” to jedno pytanie z jedną odpowiedzią, zamiast ośmiu osobnych wpisów w historii ośmiu stron.",
+      "p1": "Agent zgłasza identyfikator sesji podczas nawiązywania połączenia i przekazuje go przy każdym kolejnym wywołaniu. Wszystko, co zostanie zapisane w tej sesji, jest z nią powiązane: „te osiem stron zmodyfikował Claude Code dziś rano” to jedno pytanie z jedną odpowiedzią, zamiast ośmiu osobnych wpisów w historiach ośmiu stron. Listę w sekcji Administracja, Agenci przeszukasz według klienta, sesji lub konta i przefiltrujesz do sesji, w których faktycznie coś zapisano.",
       "p2": "Każdy wpis pokazuje stronę, czas, narzędzie oraz migawkę sprzed zmiany. Nie zawiera samego zapisanego tekstu: dziennik odsyła do stanu wcześniejszego zamiast kopiować treść, aby nie stać się drugim, niechronionym miejscem przechowywania twoich tekstów.",
       "p3": "Cofanie zmian odbywa się dla każdej strony osobno, przez standardowe przywrócenie migawki. Świadomie nie dodano przycisku „cofnij całą sesję”: jeśli po agencie ktoś kontynuował edycję, wynikiem byłoby częściowe wycofanie, które tylko sprawia wrażenie pełnego."
     },
@@ -937,7 +937,7 @@
     "title": "Konta i role",
     "summary": "Zarządzanie użytkownikami wyświetla listę wszystkich kont, nadaje uprawnienia administracji, dezaktywuje konto lub je usuwa. Dezaktywowane konto natychmiast traci wszystkie dane dostępowe, zamiast być sprawdzane na nowo przy każdym żądaniu.",
     "details": {
-      "p1": "Lista pokazuje wszystkie konta z nazwą, adresem e-mail, rolą i stanem. Z tego miejsca możesz kogoś zaprosić, nadać uprawnienia administracji, odebrać je, dezaktywować konto lub trwale je usunąć.",
+      "p1": "Lista pokazuje wszystkie konta wraz z nazwą, adresem e-mail, rolą i stanem. Z tego miejsca zaprosisz kogoś, nadasz uprawnienia administracji, cofniesz je, dezaktywujesz konto lub trwale je usuniesz. Gdy lista rośnie, możesz wyszukiwać według nazwy lub adresu e-mail, filtrować według roli, statusu i ostatniego logowania oraz sortować według każdej kolumny z wyjątkiem roli. Wybór znajduje się w adresie URL, więc przefiltrowany widok można odświeżyć i udostępnić dalej.",
       "p2": "Dezaktywacja natychmiast unieważnia wszystkie sesje i tokeny, zamiast sprawdzać przy każdym żądaniu, czy konto ma jeszcze dostęp. To różnica, która ma znaczenie: sprawdzenie, o którego napisaniu ktoś zapomni, zostawia lukę, a odebrany dostęp nie.",
       "p3": "Usunięcie to krok dalej, przeznaczony do sytuacji, gdy ktoś ma naprawdę zniknąć. Jeśli chcesz tylko, aby ktoś przestał mieć dostęp, właściwa jest dezaktywacja, ponieważ informacje o autorstwie stron zostają zachowane. Obie czynności można też wykonać za pomocą narzędzi."
     },

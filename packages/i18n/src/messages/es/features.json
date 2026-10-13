@@ -330,7 +330,7 @@
     "title": "Qué ha cambiado un agente en una sesión",
     "summary": "Las escrituras de un agente se agrupan en una sesión y se registran en el diario, cada una con la instantánea previa al cambio. Así se puede consultar qué ha tocado una ejecución y revertir páginas concretas de forma selectiva.",
     "details": {
-      "p1": "Al conectarse, un agente registra un identificador de sesión y lo incluye después en cada llamada. Todo lo que escribe en esa sesión queda vinculado: «estas ocho páginas las ha tocado Claude Code esta mañana» pasa a ser una sola pregunta con una sola respuesta, en lugar de ocho entradas dispersas en ocho historiales de página.",
+      "p1": "Un agente registra un identificador de sesión al conectarse y lo incluye a partir de entonces en cada llamada. Todo lo que se escribe en esa sesión queda vinculado: «estas ocho páginas las ha tocado Claude Code esta mañana» es una sola pregunta con una sola respuesta, en lugar de ocho entradas individuales en el historial de ocho páginas. La lista en Administración, Agentes se puede buscar por cliente, sesión o cuenta, y filtrar por sesiones en las que realmente se haya escrito.",
       "p2": "Cada entrada muestra la página, la fecha y hora, la herramienta y la instantánea previa al cambio. No muestra lo que se ha escrito: el diario remite a la versión anterior en lugar de copiar contenido, evitando convertirse en un segundo almacén desprotegido para tus textos.",
       "p3": "La reversión se hace página por página, mediante la restauración habitual de una instantánea. No existe un botón de «deshacer toda la sesión» por diseño: si alguien ha seguido escribiendo después del agente, el resultado sería una marcha atrás a medias con apariencia de haber sido completa."
     },
@@ -937,7 +937,7 @@
     "title": "Cuentas y roles",
     "summary": "La gestión de usuarios lista todas las cuentas, permite asignar el rol de administración, deshabilitar una cuenta o eliminarla. Una cuenta deshabilitada pierde de inmediato todas sus credenciales, en lugar de comprobarlas de nuevo en cada petición.",
     "details": {
-      "p1": "La lista muestra todas las cuentas con su nombre, correo electrónico, rol y estado. Desde aquí puedes invitar a alguien, asignarle el rol de administración, retirarle ese permiso, desactivar una cuenta o eliminarla definitivamente.",
+      "p1": "La lista muestra todas las cuentas con su nombre, correo electrónico, rol y estado. Desde aquí puedes invitar a alguien, asignarle el rol de administración, retirarle ese permiso, desactivar una cuenta o eliminarla definitivamente. Si la lista crece, puedes buscar por nombre o correo, filtrar por rol, estado y último inicio de sesión, y ordenar por cualquier columna excepto por el rol. La selección se refleja en la dirección URL, por lo que una vista filtrada se puede recargar y compartir.",
       "p2": "Desactivar revoca al instante todas las sesiones y tokens, en lugar de comprobar en cada solicitud si la cuenta aún tiene permisos. Es una diferencia fundamental: una comprobación que alguien olvide programar deja una brecha; un acceso revocado, no.",
       "p3": "Eliminar es un paso más drástico, pensado para cuando alguien deba desaparecer por completo. Si solo quieres impedir que alguien vuelva a entrar, desactivar es lo adecuado, ya que se conservan los datos de autoría en las páginas. Ambas acciones también pueden realizarse mediante las herramientas."
     },
