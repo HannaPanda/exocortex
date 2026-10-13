@@ -293,12 +293,21 @@ async function readJson(url: string, signal?: AbortSignal): Promise<unknown> {
   return response.json();
 }
 
-/** The provider's current model list, keyed by slug. */
+/**
+ * The provider's current model list, keyed by slug.
+ *
+ * Without `output` the list is what `/models` answers by default, the models
+ * that write text. Embedding and image models are only listed when asked for
+ * by their output modality (issue #171).
+ */
 export async function fetchOpenRouterModels(
   baseUrl: string,
   signal?: AbortSignal,
+  output?: 'embeddings' | 'image',
 ): Promise<Map<string, OpenRouterModel>> {
-  const parsed = openRouterModelListSchema.safeParse(await readJson(`${baseUrl}/models`, signal));
+  const url =
+    output === undefined ? `${baseUrl}/models` : `${baseUrl}/models?output_modalities=${output}`;
+  const parsed = openRouterModelListSchema.safeParse(await readJson(url, signal));
   if (!parsed.success) {
     throw new OpenRouterCatalogError('The model list did not match the expected shape');
   }

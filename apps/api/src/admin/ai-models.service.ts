@@ -14,6 +14,7 @@ import {
   type AddAiModelsFromCatalogResponse,
   type AiModel,
   type AiModelCatalogEntry,
+  type AiModelCatalogOutput,
   type AiModelCatalogResponse,
   type AiModelEndpointListResponse,
   type AiModelListResponse,
@@ -316,9 +317,13 @@ export class AiModelsService {
    *
    * Not cached on the server: the browser holds the answer for as long as the
    * dialog is open, and a stale price here would be copied into a row.
+   *
+   * `output` other than `text` lists the embedding or image models a setting
+   * names by slug (issue #171). They never become registry rows, so their
+   * `registered` is whatever the registry happens to say, usually false.
    */
-  async catalog(): Promise<AiModelCatalogResponse> {
-    const liveById = await this.fetchLiveModels();
+  async catalog(output: AiModelCatalogOutput = 'text'): Promise<AiModelCatalogResponse> {
+    const liveById = await this.fetchLiveModels(output === 'text' ? undefined : output);
     const registered = new Set(
       (await this.prisma.aiModel.findMany({ select: { slug: true } })).map((row) => row.slug),
     );
@@ -457,9 +462,11 @@ export class AiModelsService {
   }
 
   /** The provider's current model list, keyed by slug. */
-  private async fetchLiveModels(): Promise<Map<string, OpenRouterModel>> {
+  private async fetchLiveModels(
+    output?: 'embeddings' | 'image',
+  ): Promise<Map<string, OpenRouterModel>> {
     try {
-      return await fetchOpenRouterModels(this.env.OPENROUTER_BASE_URL);
+      return await fetchOpenRouterModels(this.env.OPENROUTER_BASE_URL, undefined, output);
     } catch (error) {
       throw new AppError(
         'ai_provider_unavailable',

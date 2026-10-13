@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -9,6 +9,8 @@ import {
   type AddAiModelsFromCatalogResponse,
   addAiModelsFromCatalogResponseSchema,
   type AiModel,
+  type AiModelCatalogQuery,
+  aiModelCatalogQuerySchema,
   type AiModelCatalogResponse,
   aiModelCatalogResponseSchema,
   type AiModelEndpointListResponse,
@@ -48,11 +50,17 @@ export class AdminAiModelsController {
     return this.aiModels.list();
   }
 
-  /** The provider's current offer. Read-only, and the only route that leaves the deployment. */
+  /**
+   * The provider's current offer. Read-only, and the only route that leaves the
+   * deployment. `output` picks chat, embedding or image models (issue #171).
+   */
   @Get('catalog')
+  @ApiQuery({ name: 'output', required: false, enum: ['text', 'embeddings', 'image'] })
   @ApiOkResponse({ schema: openApiResponseSchema(aiModelCatalogResponseSchema) })
-  async catalog(): Promise<AiModelCatalogResponse> {
-    return this.aiModels.catalog();
+  async catalog(
+    @Query(zodPipe(aiModelCatalogQuerySchema)) query: AiModelCatalogQuery,
+  ): Promise<AiModelCatalogResponse> {
+    return this.aiModels.catalog(query.output);
   }
 
   @Post('catalog')

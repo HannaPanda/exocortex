@@ -148,6 +148,44 @@ export const aiModelCatalogEntrySchema = z.object({
 });
 export type AiModelCatalogEntry = z.infer<typeof aiModelCatalogEntrySchema>;
 
+/**
+ * What a catalogue model produces (issue #171). `text` is the chat models the
+ * registry holds; `embeddings` and `image` are the raw OpenRouter slugs that
+ * `search.embeddingModelSlug` and `ai.imageModelSlug` name, which the registry
+ * never sees.
+ */
+export const aiModelCatalogOutputSchema = z.enum(['text', 'embeddings', 'image']);
+export type AiModelCatalogOutput = z.infer<typeof aiModelCatalogOutputSchema>;
+
+export const aiModelCatalogQuerySchema = z.object({
+  output: aiModelCatalogOutputSchema.default('text'),
+});
+export type AiModelCatalogQuery = z.infer<typeof aiModelCatalogQuerySchema>;
+
+/**
+ * Embedding models that answer a request for 1536 dimensions with exactly
+ * 1536, which is what `document_embedding.embedding` holds (issue #171).
+ *
+ * The catalogue does not report an output length, so this list is the
+ * measurement: every OpenRouter embedding model was asked once with
+ * `dimensions: 1536`, the way the provider adapter asks, on 2026-10-13. Left
+ * out are the ones that refuse the parameter (`text-embedding-ada-002`,
+ * natively 1536 but not on request), cap it lower or answer with another
+ * length, and the `:batch` variants, which `/embeddings` does not serve. A
+ * model added here has to have been measured the same way.
+ */
+export const EMBEDDING_MODELS_FITTING_COLUMN: readonly string[] = [
+  'google/gemini-embedding-001',
+  'google/gemini-embedding-2',
+  'google/gemini-embedding-2-preview',
+  'nvidia/llama-nemotron-embed-vl-1b-v2:free',
+  'openai/text-embedding-3-large',
+  'openai/text-embedding-3-small',
+  'perplexity/pplx-embed-v1-4b',
+  'qwen/qwen3-embedding-4b',
+  'qwen/qwen3-embedding-8b',
+];
+
 export const aiModelCatalogResponseSchema = z.object({
   entries: z.array(aiModelCatalogEntrySchema),
   /** When the provider list behind this answer was fetched. */

@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   deriveReasoningLevels,
+  fetchOpenRouterModels,
   mapEndpoint,
   mapModelFields,
   modelFieldsFromEndpoints,
@@ -151,5 +152,46 @@ describe('mapModelFields', () => {
     expect(fields.contextWindowTokens).toBe(8192);
     expect(fields.reasoningLevels).toEqual(['none']);
     expect(fields.supportsVision).toBe(false);
+  });
+});
+
+describe('fetchOpenRouterModels', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function stubFetch(): string[] {
+    const urls: string[] = [];
+    vi.stubGlobal('fetch', async (url: string) => {
+      urls.push(url);
+      return new Response(
+        JSON.stringify({
+          data: [
+            { id: 'openai/text-embedding-3-small', pricing: { prompt: '0', completion: '0' } },
+          ],
+        }),
+      );
+    });
+    return urls;
+  }
+
+  it('asks for the text models by default', async () => {
+    const urls = stubFetch();
+    await fetchOpenRouterModels('https://example.test/api/v1');
+    expect(urls).toEqual(['https://example.test/api/v1/models']);
+  });
+
+  // `/models` lists no embedding model unless asked by modality (issue #171).
+  it('asks for embedding or image models by their output modality', async () => {
+    const urls = stubFetch();
+    const models = await fetchOpenRouterModels(
+      'https://example.test/api/v1',
+      undefined,
+      'embeddings',
+    );
+    await fetchOpenRouterModels('https://example.test/api/v1', undefined, 'image');
+    expect(urls).toEqual([
+      'https://example.test/api/v1/models?output_modalities=embeddings',
+      'https://example.test/api/v1/models?output_modalities=image',
+    ]);
+    expect([...models.keys()]).toEqual(['openai/text-embedding-3-small']);
   });
 });
