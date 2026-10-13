@@ -443,5 +443,14 @@
     "failed": "Changes by {name} not applied",
     "someAgent": "an agent",
     "somePerson": "someone"
+  },
+  "pageOutline": {
+    "label": "Outline",
+    "open": "Open outline",
+    "openAt": "Open outline, you are at “{section}”",
+    "pin": "Pin outline next to the page",
+    "unpin": "Unpin outline",
+    "untitled": "Untitled heading",
+    "collapsed": "{count, plural, =0 {collapsed} one {collapsed, # heading inside} other {collapsed, # headings inside}}"
   }
 }

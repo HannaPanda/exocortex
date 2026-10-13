@@ -8680,6 +8680,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "309a719b26196b41"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "eabbf3abaf8d98ab"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "cc23c77425f4e4e7"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "a595fe4ba6afe88a"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "f5da50edac77b891"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "1f628600de85f211"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "028193a5a66d6e73"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
@@ -12987,6 +13015,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "3fb879a887527ddd"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "b4993f424422d629"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "d32133b3739034c8"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "dc4a04954a7de35a"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "c69b112cd02bef1c"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "e42a0d0a48758513"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "600f9ff60240c7b7"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -19520,6 +19572,10 @@
       "source": "60000365d8b346e7",
       "output": "b2e42610bdaeec8c"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "a811eec0cfb75a75"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "9430b1911debeb19"
@@ -19527,6 +19583,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "3f4b40578bf02e24"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "0d1815f5ab925740"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "ea340903fcbf8dff"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "dba233096f7e38e4"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -31334,6 +31402,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "4c2c6330ec5b1c96"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "cd99483a6458457d"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "a8d673faede8e64e"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "51a7e9df0d814e27"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "5448911ee1f40787"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "d3da08c9aeae7f32"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "6ea16f6c6c929bdd"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -35641,6 +35737,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "d7c60458ec05c9da"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "016769f25b052759"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "cea02fb65fa3a311"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "8ecda476124a03cc"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "6b919d213fae90a7"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "b96a2329d24906de"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "fd0519d49d9f2d62"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -42174,6 +42294,10 @@
       "source": "60000365d8b346e7",
       "output": "1d89239fbe752036"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "e07ae93a0213c824"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "27841c5e60790d88"
@@ -42181,6 +42305,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "484d84b9166e9eb5"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "d46391fcd22143f8"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "6f79214dd95e6769"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "f73c83871b4fa3e0"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -53988,6 +54124,34 @@
       "source": "9651a3ba44f1362a",
       "output": "fa8627e032d2b3c7"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "d74c32417db457c0"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "fa8ed0bdabdd6bcb"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "bce25ae2fbdeeaf7"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "070c78f6ecd34784"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "4482a0a6da3c52d9"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "8749b29e6984bcae"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "6908df1edfd5cbd8"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
@@ -58295,6 +58459,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "1e7a81b4c33bfeac"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "bce0093ff8727927"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "17dbd07d04fb5047"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "104b66dd187973e8"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "b7ae22a70876c702"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "9bd1b720c53e361b"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "deefa02178178080"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -64828,6 +65016,10 @@
       "source": "60000365d8b346e7",
       "output": "7d2e2fd10b14f841"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "658535bb99addd26"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "067743b82c12134b"
@@ -64835,6 +65027,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "aa6c1b6acc1f9a44"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "559ff69ec88dcfc1"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "3f1cbee25a50ebbc"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "99884cfd4e7acc14"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -76642,6 +76846,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "5afc0bc3613a2ee3"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "bec99a784067d613"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "039eafd33cc93671"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "279232139b802c95"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "7c380a854bfc0cc6"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "cce8323609ec6bc9"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "4d70f869b42ee4c1"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
@@ -80949,6 +81181,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "e4e82f8a65d556af"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "38ae089c34ff8d83"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "b5d093dc2033e1bb"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "9b125ee9afd8ba88"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "e0f4536c9ac6f288"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "ea1a0bb0323b506e"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "f9110469f325c0ef"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -87482,6 +87738,10 @@
       "source": "60000365d8b346e7",
       "output": "ea9ce9faf0cce521"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "301cf9b5f2c714a5"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "9030037489ab3b7a"
@@ -87489,6 +87749,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "abb9bddfe4a581ee"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "470d881cf671c26c"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "665a391f706b2ae9"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "ba7c8192f3ddb64f"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -99296,6 +99568,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "bc8aa3f7b5952659"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "6c20ea442bdde6a2"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "47c0238a944f9938"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "12aff7cd930e5a8c"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "673e20b56e44ae42"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "26f55e6ff5afcf3c"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "76c6c5f8e3781c05"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
@@ -103603,6 +103903,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "2c2f56c6dc6557e4"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "f0c1adfa2ea55a3b"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "257a341711fb9466"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "061fc2b66c97e7be"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "4ff6a3eafd8ba854"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "737d46ebf1b0dab1"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "ef681dfac50b67bf"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -110136,6 +110460,10 @@
       "source": "60000365d8b346e7",
       "output": "36d265f527334289"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "658535bb99addd26"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "d2207532ef1b4086"
@@ -110143,6 +110471,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "0606fd080dc6840f"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "2af30c32cca70a30"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "7e01090480afac98"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "2100e2f6733df6cd"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -121950,6 +122290,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "45c72d564d839581"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "2324aa02566f1259"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "5d960e3187733931"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "8ffc2e9196c28dcf"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "8adf53d6ae4cd3da"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "f2cb9215a6409565"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "14c5e03e8c73f447"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
@@ -126257,6 +126625,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "280387c5774d1ce7"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "15f816c218f659eb"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "0b5a1b446a976588"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "7879edfd9bf8281a"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "fee49818ac439a3a"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "ef994859f8c06ea0"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "82cfb91836694a31"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -132790,6 +133182,10 @@
       "source": "60000365d8b346e7",
       "output": "64b9cc5d79d4114f"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "e546f8b10b30ba90"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "a15e508455dca9e4"
@@ -132797,6 +133193,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "e2a4dfe14ef84459"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "987bb4a1f9b8ef8b"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "c2b3f7fb9f7c8692"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "22a580119ea9c962"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",
@@ -144604,6 +145012,34 @@
       "source": "9651a3ba44f1362a",
       "output": "9651a3ba44f1362a"
     },
+    "editor.pageOutline.collapsed": {
+      "source": "a149c9b0c966c72a",
+      "output": "715de344a7dfa2cc"
+    },
+    "editor.pageOutline.label": {
+      "source": "ff58baf3fbd6e86b",
+      "output": "178a431119b23e1e"
+    },
+    "editor.pageOutline.open": {
+      "source": "f1f714abfb3e6c8a",
+      "output": "e33efe3de660daf6"
+    },
+    "editor.pageOutline.openAt": {
+      "source": "3791e2a59b5043cc",
+      "output": "e4b818178f0fb2aa"
+    },
+    "editor.pageOutline.pin": {
+      "source": "09d336799ca2049d",
+      "output": "2b3b6fdeb93137af"
+    },
+    "editor.pageOutline.unpin": {
+      "source": "79acb831213e5812",
+      "output": "b46bbc08b7ad73d3"
+    },
+    "editor.pageOutline.untitled": {
+      "source": "e2d2decc11f59717",
+      "output": "41d9dc3bffda75dd"
+    },
     "editor.prompt.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -148911,6 +149347,30 @@
     "features.seitenbaum.where": {
       "source": "a2a8bd2fb953d727",
       "output": "05535acd5025850a"
+    },
+    "features.seitengliederung.details.p1": {
+      "source": "78db2add37de2b0c",
+      "output": "3d363ee3158ffa59"
+    },
+    "features.seitengliederung.details.p2": {
+      "source": "c6e93b8a38692685",
+      "output": "4cbe00ae979a0f97"
+    },
+    "features.seitengliederung.details.p3": {
+      "source": "eedaa90f94e2210c",
+      "output": "6c8726278daa56c9"
+    },
+    "features.seitengliederung.summary": {
+      "source": "7756ff9e1d15fc78",
+      "output": "a89f028fbfa70260"
+    },
+    "features.seitengliederung.title": {
+      "source": "d12e6490573b1dcb",
+      "output": "eb56cc3139cc31f8"
+    },
+    "features.seitengliederung.where": {
+      "source": "20b570789eadbb2b",
+      "output": "c3441fd8d8d45ac0"
     },
     "features.seitenkontext.details.p1": {
       "source": "2aa848e4e00d7ad6",
@@ -155444,6 +155904,10 @@
       "source": "60000365d8b346e7",
       "output": "2dfbef87d0f629a0"
     },
+    "shell.paletteCommands.page.headingLevel": {
+      "source": "54d14ed4864e4bad",
+      "output": "da65edc5a925cad3"
+    },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "27841c5e60790d88"
@@ -155451,6 +155915,18 @@
     "shell.paletteCommands.page.importMarkdownKeywords": {
       "source": "bdc09c99bfd4b894",
       "output": "08b532a92baaf0f8"
+    },
+    "shell.paletteCommands.page.jumpToSection": {
+      "source": "3821a13aacc9015e",
+      "output": "cbd8b1d632083641"
+    },
+    "shell.paletteCommands.page.jumpToSectionKeywords": {
+      "source": "c374bbdb8e59c9ab",
+      "output": "9bfb28e168b36b03"
+    },
+    "shell.paletteCommands.page.jumpToSectionPlaceholder": {
+      "source": "fe989bb32dbd7dd6",
+      "output": "622d6418f68a8535"
     },
     "shell.paletteCommands.page.layout": {
       "source": "eae1e6374329c714",

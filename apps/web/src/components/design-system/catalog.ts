@@ -55,6 +55,7 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
       { id: 'markierte-bloecke', title: 'Markierte Blöcke' },
       { id: 'einstellungszeile', title: 'Einstellungszeile' },
       { id: 'seitenbaum', title: 'Seitenbaum' },
+      { id: 'seitengliederung', title: 'Seitengliederung' },
       { id: 'suchtreffer', title: 'Suchtreffer' },
       { id: 'praesenz', title: 'Präsenz' },
       { id: 'ki-fortschritt', title: 'KI-Lauf in Arbeit' },

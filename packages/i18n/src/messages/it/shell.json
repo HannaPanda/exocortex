@@ -410,7 +410,11 @@
       "archive": "Sposta pagina nel cestino",
       "archiveKeywords": "elimina cancella archivia cestino rimuovi",
       "current": "attuale",
-      "untitled": "Senza titolo"
+      "untitled": "Senza titolo",
+      "jumpToSection": "Vai alla sezione",
+      "jumpToSectionPlaceholder": "Quale sezione?",
+      "jumpToSectionKeywords": "struttura sommario indice intestazione sezione vai capitolo toc",
+      "headingLevel": "Livello {level}"
     },
     "database": {
       "newRow": "Nuova riga",

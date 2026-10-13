@@ -410,7 +410,11 @@
       "archive": "Seite in den Papierkorb legen",
       "archiveKeywords": "löschen archivieren papierkorb entfernen",
       "current": "aktuell",
-      "untitled": "Ohne Titel"
+      "untitled": "Ohne Titel",
+      "jumpToSection": "Zu Abschnitt springen",
+      "jumpToSectionPlaceholder": "Welcher Abschnitt?",
+      "jumpToSectionKeywords": "gliederung inhaltsverzeichnis inhalt überschrift abschnitt springen kapitel toc",
+      "headingLevel": "Ebene {level}"
     },
     "database": {
       "newRow": "Neue Zeile",

@@ -45,6 +45,7 @@ import {
   ShellLayout,
   TableLayout,
 } from './layouts/layouts';
+import { PageOutlinePattern } from './patterns/outline';
 import { ConfirmationPattern, MarkedBlocksPattern, StatesPattern } from './patterns/patterns';
 import {
   PageTreePattern,
@@ -222,6 +223,7 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <MarkedBlocksPattern />
           <SettingRowPattern />
           <PageTreePattern />
+          <PageOutlinePattern />
           <SearchResultsPattern />
           <PresencePattern />
           <RunProgressPattern />

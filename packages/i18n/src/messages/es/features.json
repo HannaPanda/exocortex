@@ -71,6 +71,16 @@
     },
     "where": "Haz clic en una imagen dentro de una página."
   },
+  "seitengliederung": {
+    "title": "Esquema de páginas largas",
+    "summary": "En una página larga con varios encabezados, aparece una escala estrecha en el borde derecho, con una línea por cada encabezado. Al hacer clic en ella, se abre el esquema; al hacer clic en un encabezado, saltas hasta allí, y la sección que estás leyendo queda resaltada.",
+    "details": {
+      "p1": "La escala muestra la estructura de la página: las líneas más largas corresponden a los niveles superiores. La línea de color ámbar indica la sección en la que te encuentras y se desplaza al hacer scroll. Las páginas cortas no tienen esquema, ya que se leen de un tirón.",
+      "p2": "Una sección plegada aparece una sola vez en el esquema, junto con el número de encabezados que contiene. Saltar hasta ella no la despliega: que una sección esté plegada forma parte de la página, y navegar no cambia nada en la página.",
+      "p3": "Si hay suficiente espacio junto a la página, puedes fijar el esquema con la chincheta superior; así permanecerá abierto hasta que lo desclaves. En el móvil, la escala se convierte en un pequeño botón abajo a la derecha que desaparece al escribir. También puedes usarlo sin ratón a través de la paleta de comandos: «Saltar a sección»."
+    },
+    "where": "En una página larga, haz clic en la escala del borde derecho, o usa Strg + K y «Saltar a sección»."
+  },
   "seiten-editor": {
     "title": "Escribir páginas, entre dos a la vez",
     "summary": "Cada página es un editor de bloques que varias personas pueden editar simultáneamente. El texto se guarda continuamente, incluso si la conexión se interrumpe un momento, y después se sincroniza de nuevo por sí solo.",

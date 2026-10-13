@@ -71,6 +71,16 @@
     },
     "where": "Auf ein Bild in einer Seite klicken."
   },
+  "seitengliederung": {
+    "title": "Gliederung langer Seiten",
+    "summary": "Auf einer langen Seite mit mehreren Überschriften steht am rechten Rand eine schmale Skala, ein Strich je Überschrift. Ein Klick darauf öffnet die Gliederung, ein Klick auf eine Überschrift springt dorthin, und der Abschnitt, den du gerade liest, ist markiert.",
+    "details": {
+      "p1": "Die Skala zeigt die Struktur der Seite, längere Striche für höhere Ebenen. Der amberfarbene Strich ist der Abschnitt, in dem du gerade bist, und wandert beim Scrollen mit. Kurze Seiten bekommen keine Gliederung, die liest man ohnehin am Stück.",
+      "p2": "Ein eingeklappter Abschnitt steht einmal in der Gliederung, mit der Zahl der Überschriften darin. Ein Sprung dorthin klappt ihn nicht auf: ob ein Abschnitt eingeklappt ist, gehört zur Seite, und Navigieren ändert an der Seite nichts.",
+      "p3": "Ist neben der Seite genug Platz, lässt sich die Gliederung mit der Nadel oben anpinnen; dann bleibt sie offen stehen, bis du sie wieder löst. Auf dem Handy wird aus der Skala ein kleiner Knopf unten rechts, der beim Schreiben verschwindet. Über die Befehlspalette geht es auch ohne Maus: „Zu Abschnitt springen“."
+    },
+    "where": "Auf einer langen Seite die Skala am rechten Rand anklicken, oder Strg + K und „Zu Abschnitt springen“."
+  },
   "seiten-editor": {
     "title": "Seiten schreiben, zu zweit gleichzeitig",
     "summary": "Jede Seite ist ein Blockeditor, den mehrere Leute gleichzeitig bearbeiten können. Der Text wird laufend gespeichert, auch wenn die Verbindung kurz weg ist, und läuft danach von selbst wieder zusammen.",

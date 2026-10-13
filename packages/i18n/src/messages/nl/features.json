@@ -71,6 +71,16 @@
     },
     "where": "Op een afbeelding in een pagina klikken."
   },
+  "seitengliederung": {
+    "title": "Overzicht van lange pagina’s",
+    "summary": "Op een lange pagina met meerdere koppen staat aan de rechterrand een smalle schaalverdeling, met één streepje per kop. Een klik hierop opent het overzicht, een klik op een kop springt erheen, en de sectie die je op dat moment leest is gemarkeerd.",
+    "details": {
+      "p1": "De schaalverdeling toont de structuur van de pagina, met langere streepjes voor hogere niveaus. Het amberkleurige streepje geeft de sectie aan waarin je je bevindt en beweegt mee tijdens het scrollen. Korte pagina’s krijgen geen overzicht; die lees je immers toch in één keer.",
+      "p2": "Een ingeklapte sectie staat eenmaal in het overzicht, met het aantal koppen erin. Ernaartoe springen klapt de sectie niet uit: of een sectie ingeklapt is, hoort bij de pagina, en navigeren verandert niets aan de pagina.",
+      "p3": "Is er naast de pagina genoeg ruimte, dan kun je het overzicht vastpinnen met de speld bovenaan; dan blijft het geopend tot je het weer losmaakt. Op de mobiele telefoon verandert de schaalverdeling in een kleine knop rechtsonder, die tijdens het typen verdwijnt. Via het opdrachtpalet kan het ook zonder muis: „Naar sectie springen”."
+    },
+    "where": "Op een lange pagina op de schaalverdeling aan de rechterrand klikken, of Strg + K en „Naar sectie springen”."
+  },
   "seiten-editor": {
     "title": "Pagina’s schrijven, tegelijkertijd met twee personen",
     "summary": "Elke pagina is een blokiseditor waarin meerdere mensen tegelijkertijd kunnen werken. De tekst wordt doorlopend opgeslagen, ook als de verbinding even wegvalt, en synchroniseert daarna vanzelf weer.",

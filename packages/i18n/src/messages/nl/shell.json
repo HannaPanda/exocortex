@@ -410,7 +410,11 @@
       "archive": "Pagina naar de prullenbak verplaatsen",
       "archiveKeywords": "verwijderen archiveren prullenbak weghalen",
       "current": "huidig",
-      "untitled": "Naamloos"
+      "untitled": "Naamloos",
+      "jumpToSection": "Naar sectie springen",
+      "jumpToSectionPlaceholder": "Welke sectie?",
+      "jumpToSectionKeywords": "overzicht inhoudsopgave inhoud kop sectie springen hoofdstuk toc",
+      "headingLevel": "Niveau {level}"
     },
     "database": {
       "newRow": "Nieuwe rij",

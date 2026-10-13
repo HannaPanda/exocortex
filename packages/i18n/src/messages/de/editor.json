@@ -443,5 +443,14 @@
     "failed": "Änderung von {name} nicht übernommen",
     "someAgent": "einem Agenten",
     "somePerson": "jemandem"
+  },
+  "pageOutline": {
+    "label": "Gliederung",
+    "open": "Gliederung öffnen",
+    "openAt": "Gliederung öffnen, du bist bei „{section}“",
+    "pin": "Gliederung neben der Seite anpinnen",
+    "unpin": "Gliederung lösen",
+    "untitled": "Überschrift ohne Text",
+    "collapsed": "{count, plural, =0 {eingeklappt} one {eingeklappt, # Überschrift darin} other {eingeklappt, # Überschriften darin}}"
   }
 }

@@ -71,6 +71,16 @@
     },
     "where": "Clicar em uma imagem dentro de uma página."
   },
+  "seitengliederung": {
+    "title": "Estrutura de páginas longas",
+    "summary": "Em uma página longa com vários títulos, uma escala estreita aparece na borda direita, com um traço para cada título. Clicar nela abre a estrutura, clicar em um título leva direto até ele, e a seção que você está lendo no momento fica destacada.",
+    "details": {
+      "p1": "A escala mostra a estrutura da página, com traços mais longos para níveis superiores. O traço âmbar indica a seção onde você está agora e acompanha a rolagem. Páginas curtas não têm estrutura, pois costumam ser lidas de uma vez só.",
+      "p2": "Uma seção recolhida aparece uma vez na estrutura, acompanhada da contagem de títulos contidos nela. Pular para ela não a expande: o recolhimento de uma seção faz parte da página, e navegar por ela não altera a página.",
+      "p3": "Se houver espaço suficiente ao lado da página, você pode fixar a estrutura com o alfinete no topo; ela continuará aberta até ser desfixada. No celular, a escala vira um botão pequeno no canto inferior direito, que desaparece ao escrever. Pela paleta de comandos também funciona sem mouse: „Ir para a seção“."
+    },
+    "where": "Em uma página longa, clique na escala na borda direita ou pressione Strg + K e digite „Ir para a seção“."
+  },
   "seiten-editor": {
     "title": "Escrever páginas em colaboração simultânea",
     "summary": "Cada página é um editor em blocos que várias pessoas podem editar ao mesmo tempo. O texto é salvo continuamente, mesmo se a conexão cair por instantes, e sincroniza automaticamente depois.",

@@ -71,6 +71,16 @@
     },
     "where": "Cliquer sur une image dans une page."
   },
+  "seitengliederung": {
+    "title": "Plan des pages longues",
+    "summary": "Sur une page longue comportant plusieurs titres, une fine graduation apparaît sur le bord droit, avec un trait par titre. Un clic dessus ouvre le plan, un clic sur un titre y amène directement, et la section que tu lis est mise en évidence.",
+    "details": {
+      "p1": "La graduation montre la structure de la page, avec des traits plus longs pour les niveaux supérieurs. Le trait ambré indique la section dans laquelle tu te trouves et se déplace au fil du défilement. Les pages courtes n’ont pas de plan, elles se lisent d’une traite.",
+      "p2": "Une section repliée apparaît une seule fois dans le plan, accompagnée du nombre de titres qu’elle contient. Y accéder ne la déplie pas : l’état replié d’une section fait partie intégrante de la page, et naviguer ne modifie rien à la page.",
+      "p3": "S’il y a assez d’espace à côté de la page, tu peux épingler le plan à l’aide de l’épingle en haut ; il reste alors ouvert jusqu’à ce que tu le détaches. Sur mobile, la graduation devient un petit bouton en bas à droite, qui s’efface lors de la saisie. Tu peux aussi t’en passer avec la palette de commandes : « Aller à la section »."
+    },
+    "where": "Sur une page longue, cliquer sur la graduation sur le bord droit, ou faire Ctrl + K et « Aller à la section »."
+  },
   "seiten-editor": {
     "title": "Rédiger des pages, à deux en simultané",
     "summary": "Chaque page est un éditeur de blocs que plusieurs personnes peuvent modifier en même temps. Le texte est enregistré en continu, même en cas de brève coupure de connexion, puis synchronisé automatiquement par la suite.",

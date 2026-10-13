@@ -47,6 +47,14 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     shortcuts: ['+ und - zoomen, 0 passt das Bild ein, Pfeiltasten verschieben, Escape schließt'],
   }),
   defineFeature({
+    id: 'seitengliederung',
+    area: 'seiten',
+    since: '2026-10-13',
+    references: ['#194'],
+    ui: {},
+    shortcuts: ['Pfeiltasten wandern durch die Gliederung, Enter springt, Escape schließt'],
+  }),
+  defineFeature({
     id: 'seiten-layout',
     area: 'seiten',
     since: '2026-08-05',

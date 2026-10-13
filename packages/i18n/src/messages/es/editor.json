@@ -443,5 +443,14 @@
     "failed": "No se aplicó la modificación de {name}",
     "someAgent": "un agente",
     "somePerson": "alguien"
+  },
+  "pageOutline": {
+    "label": "Esquema",
+    "open": "Abrir esquema",
+    "openAt": "Abrir esquema, estás en «{section}»",
+    "pin": "Fijar esquema junto a la página",
+    "unpin": "Desfijar esquema",
+    "untitled": "Encabezado sin texto",
+    "collapsed": "{count, plural, =0 {plegado} one {plegado, # encabezado dentro} many {plegado, # encabezados dentro} other {plegado, # encabezados dentro}}"
   }
 }

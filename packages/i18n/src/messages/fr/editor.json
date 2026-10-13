@@ -443,5 +443,14 @@
     "failed": "Modification de {name} non appliquée",
     "someAgent": "un agent",
     "somePerson": "quelqu’un"
+  },
+  "pageOutline": {
+    "label": "Plan",
+    "open": "Ouvrir le plan",
+    "openAt": "Ouvrir le plan, tu es à « {section} »",
+    "pin": "Épingler le plan à côté de la page",
+    "unpin": "Détacher le plan",
+    "untitled": "Titre sans texte",
+    "collapsed": "{count, plural, =0 {replié} one {replié, # titre dedans} many {replié, # de titres dedans} other {replié, # titres dedans}}"
   }
 }

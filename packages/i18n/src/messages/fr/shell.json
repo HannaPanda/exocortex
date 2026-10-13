@@ -410,7 +410,11 @@
       "archive": "Mettre la page à la corbeille",
       "archiveKeywords": "supprimer archiver corbeille retirer",
       "current": "actuelle",
-      "untitled": "Sans titre"
+      "untitled": "Sans titre",
+      "jumpToSection": "Aller à la section",
+      "jumpToSectionPlaceholder": "Quelle section ?",
+      "jumpToSectionKeywords": "plan sommaire table des matières titre section aller sauter chapitre toc",
+      "headingLevel": "Niveau {level}"
     },
     "database": {
       "newRow": "Nouvelle ligne",

@@ -71,6 +71,16 @@
     },
     "where": "Kliknij obraz na stronie."
   },
+  "seitengliederung": {
+    "title": "Spis treści długich stron",
+    "summary": "Na długiej stronie z wieloma nagłówkami przy prawej krawędzi pojawia się wąska podziałka – po jednej kresce na nagłówek. Kliknięcie w nią otwiera spis treści, kliknięcie nagłówka przenosi do niego, a aktualnie czytana sekcja jest zaznaczona.",
+    "details": {
+      "p1": "Podziałka pokazuje strukturę strony – dłuższe kreski oznaczają wyższe poziomy nagłówków. Bursztynowa kreska wskazuje sekcję, w której aktualnie się znajdujesz, i przesuwa się wraz z przewijaniem. Krótkie strony nie mają spisu treści, bo czyta się je w całości od razu.",
+      "p2": "Zwinięta sekcja pojawia się w spisie treści raz, z liczbą zawartych w niej nagłówków. Przejście do niej nie powoduje jej rozwinięcia: to, czy sekcja jest zwinięta, jest częścią strony, a nawigacja nie zmienia zawartości strony.",
+      "p3": "Gdy obok strony jest dość miejsca, spis treści można przypiąć pinezką u góry; pozostanie wtedy otwarty, dopóki go nie odepniesz. Na telefonie podziałka zamienia się w mały przycisk w prawym dolnym rogu, który znika podczas pisania. Z palety poleceń można nawigować także bez myszy: „Przejdź do sekcji”."
+    },
+    "where": "Na długiej stronie kliknij podziałkę przy prawej krawędzi albo naciśnij Strg + K i wybierz „Przejdź do sekcji”."
+  },
   "seiten-editor": {
     "title": "Pisanie stron wspólnie w tym samym czasie",
     "summary": "Każda strona jest edytorem blokowym, nad którym może jednocześnie pracować kilka osób. Tekst jest zapisywany na bieżąco, nawet przy chwilowej utracie połączenia, a po jego przywróceniu zmiany samoczynnie się synchronizują.",

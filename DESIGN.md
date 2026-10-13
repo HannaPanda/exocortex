@@ -726,6 +726,36 @@ in the page tree draws a `signal-line` rule down its parent's chevron column, so
 a branch reads as a branch several levels deep, where indentation alone stops
 being countable.
 
+### The page outline
+
+A long page (four headings or more, and at least one and a half screens) gets
+a scale in its right margin: one stroke per heading, its length the heading's
+level, in `signal-line`, and the stroke of the section being read in
+`primary` (issue #194). It is the tree guide turned into a gauge, so it needed
+no new token and no new shape. The whole scale is one control. Its strokes are
+2px tall, which no pointer hits reliably, and thirty tab stops in the margin
+would be thirty reasons to give up on the keyboard.
+
+The scale opens the list in a popover beside it. The current section carries
+the page tree's selected treatment (`accent-strong`, full ink, weight 500), so
+"you are here" looks the same in both places. Rows are indented by level and
+break after two lines; the full title is in the tooltip and in the accessible
+name. A collapsed section is listed once, with the number of headings it
+holds, and a jump to it lands on its heading without unfolding it. Whether a
+section is folded is stored in the document, and navigation never writes.
+
+Where the room right of the text holds it, the list can be pinned and stays
+open there. Where the margin cannot even hold the scale (a phone, or a narrow
+window with a panel open), it becomes a compact button floating at the bottom
+edge, and that button steps aside while the editor has focus.
+
+**The Outline-Is-Chrome Rule.** The outline is drawn into the document area
+beside the scroll container, never into the editor and never over the text:
+pinned only where there is room, and otherwise collapsed to the margin. It
+reads the document and writes nothing, so a jump changes the scroll position
+and nothing else: not the selection, not the focus inside the editor, not the
+history.
+
 ### The logo
 
 Two components, and which one you reach for is a rule rather than a preference.

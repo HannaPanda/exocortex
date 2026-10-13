@@ -410,7 +410,11 @@
       "archive": "Move page to trash",
       "archiveKeywords": "delete archive trash remove",
       "current": "current",
-      "untitled": "Untitled"
+      "untitled": "Untitled",
+      "jumpToSection": "Jump to section",
+      "jumpToSectionPlaceholder": "Which section?",
+      "jumpToSectionKeywords": "outline table of contents contents heading section jump chapter toc",
+      "headingLevel": "Level {level}"
     },
     "database": {
       "newRow": "New row",

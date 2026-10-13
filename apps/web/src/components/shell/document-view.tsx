@@ -201,44 +201,49 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           </div>
         </div>
       ) : (
-        <div className="exocortex-page-scroll group/page min-h-0 flex-1 overflow-y-auto">
-          {cover}
-          {/* Width comes from `Document.layout`; the padding comes from the
+        // The document area: the scroll container, and beside it the room the
+        // page outline floats in (`data-outline-host`, issue #194). Beside and
+        // not inside, so the outline stays where it is while the page scrolls.
+        <div className="relative flex min-h-0 flex-1 flex-col" data-outline-host="">
+          <div className="exocortex-page-scroll group/page min-h-0 flex-1 overflow-y-auto">
+            {cover}
+            {/* Width comes from `Document.layout`; the padding comes from the
               `.exocortex-page` rule in globals.css, because on a page with an
               editor it also has to hold the interaction gutter the block handle
               and the heading toggles sit in (issue #88). */}
-          <div
-            className={cn('exocortex-page pb-8', cover === null ? 'pt-8' : 'pt-5')}
-            data-layout={detail.layout}
-            data-gutter="editor"
-          >
-            {pageHead}
+            <div
+              className={cn('exocortex-page pb-8', cover === null ? 'pt-8' : 'pt-5')}
+              data-layout={detail.layout}
+              data-gutter="editor"
+            >
+              {pageHead}
 
-            {/* Between the title and the body: the overview is about the page's
+              {/* Between the title and the body: the overview is about the page's
                 sub-pages, and a reader looking for one of them should not have
                 to scroll past a body that may be empty (ADR-028). Renders
                 nothing unless the page is marked as an overview. */}
-            <PageOverview workspaceId={workspaceId} documentId={documentId} readOnly={readOnly} />
+              <PageOverview workspaceId={workspaceId} documentId={documentId} readOnly={readOnly} />
 
-            {user === undefined || user === null ? (
-              <LoadingState label={t('checkingSession')} />
-            ) : (
-              <CollaborativeEditor
-                workspaceId={workspaceId}
-                documentId={documentId}
-                documentTitle={detail.title}
-                currentUser={{ id: user.id, name: user.name }}
-                access={archived ? 'read' : detail.access}
-                /* The breadcrumb block renders the ancestor path. The editor package
+              {user === undefined || user === null ? (
+                <LoadingState label={t('checkingSession')} />
+              ) : (
+                <CollaborativeEditor
+                  workspaceId={workspaceId}
+                  documentId={documentId}
+                  documentTitle={detail.title}
+                  currentUser={{ id: user.id, name: user.name }}
+                  access={archived ? 'read' : detail.access}
+                  /* The breadcrumb block renders the ancestor path. The editor package
                    has no access to the page hierarchy, so the path it already
                    loaded is handed over as data. */
-                breadcrumb={detail.breadcrumb.map((entry) => ({
-                  id: entry.id,
-                  title: entry.title,
-                  href: `/arbeitsbereich/${workspaceId}/seite/${entry.id}`,
-                }))}
-              />
-            )}
+                  breadcrumb={detail.breadcrumb.map((entry) => ({
+                    id: entry.id,
+                    title: entry.title,
+                    href: `/arbeitsbereich/${workspaceId}/seite/${entry.id}`,
+                  }))}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

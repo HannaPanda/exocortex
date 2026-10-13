@@ -64,6 +64,7 @@ import {
   type PageLinkSelection,
 } from '@/components/editor/page-link-context';
 import { PageLinkNodeView } from '@/components/editor/page-link-node-view';
+import { PageOutline } from '@/components/editor/page-outline/page-outline';
 import { SelectionToolbar } from '@/components/editor/selection-toolbar';
 import {
   createSlashExtension,
@@ -728,6 +729,9 @@ function EditorChrome({
       <WikiLinkMarkers editor={editor} workspaceId={workspaceId} />
       {/* Renders nothing: it marks what an agent just changed, and who (#112). */}
       <AgentEditMarkers editor={editor} provider={provider} />
+      {/* Draws into the document area beside the scroll container, not here,
+          and only on a long page (issue #194). */}
+      <PageOutline editor={editor} />
       {prompt.element}
       {linkNavigation.element}
     </>

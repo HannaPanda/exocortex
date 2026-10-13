@@ -410,7 +410,11 @@
       "archive": "Mover página para a lixeira",
       "archiveKeywords": "excluir arquivar lixeira remover",
       "current": "atual",
-      "untitled": "Sem título"
+      "untitled": "Sem título",
+      "jumpToSection": "Pular para seção",
+      "jumpToSectionPlaceholder": "Qual seção?",
+      "jumpToSectionKeywords": "estrutura sumário índice conteúdo cabeçalho seção pular capítulo toc",
+      "headingLevel": "Nível {level}"
     },
     "database": {
       "newRow": "Nova linha",

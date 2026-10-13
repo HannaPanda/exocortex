@@ -410,7 +410,11 @@
       "archive": "Mover página a la papelera",
       "archiveKeywords": "eliminar borrar archivar papelera quitar",
       "current": "actual",
-      "untitled": "Sin título"
+      "untitled": "Sin título",
+      "jumpToSection": "Ir a la sección",
+      "jumpToSectionPlaceholder": "¿Qué sección?",
+      "jumpToSectionKeywords": "esquema índice contenido encabezado sección ir capítulo toc",
+      "headingLevel": "Nivel {level}"
     },
     "database": {
       "newRow": "Nueva fila",

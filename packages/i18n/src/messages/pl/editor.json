@@ -443,5 +443,14 @@
     "failed": "Nie zastosowano zmiany od: {name}",
     "someAgent": "agenta",
     "somePerson": "kogoś"
+  },
+  "pageOutline": {
+    "label": "Spis treści",
+    "open": "Otwórz spis treści",
+    "openAt": "Otwórz spis treści, jesteś w sekcji „{section}”",
+    "pin": "Przypnij spis treści obok strony",
+    "unpin": "Odepnij spis treści",
+    "untitled": "Nagłówek bez tekstu",
+    "collapsed": "{count, plural, =0 {zwinięte} one {zwinięte, # nagłówek wewnątrz} few {zwinięte, # nagłówki wewnątrz} many {zwinięte, # nagłówków wewnątrz} other {zwinięte, # nagłówka wewnątrz}}"
   }
 }

@@ -410,7 +410,11 @@
       "archive": "Przenieś stronę do kosza",
       "archiveKeywords": "usuń archiwizuj kosz skasuj",
       "current": "bieżąca",
-      "untitled": "Bez tytułu"
+      "untitled": "Bez tytułu",
+      "jumpToSection": "Przejdź do sekcji",
+      "jumpToSectionPlaceholder": "Do której sekcji?",
+      "jumpToSectionKeywords": "konspekt spis treści treść nagłówek sekcja przejdź rozdział toc",
+      "headingLevel": "Poziom {level}"
     },
     "database": {
       "newRow": "Nowy wiersz",

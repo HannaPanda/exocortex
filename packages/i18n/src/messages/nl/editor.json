@@ -443,5 +443,14 @@
     "failed": "Wijziging van {name} niet toegepast",
     "someAgent": "een agent",
     "somePerson": "iemand"
+  },
+  "pageOutline": {
+    "label": "Overzicht",
+    "open": "Overzicht openen",
+    "openAt": "Overzicht openen, je bent bij „{section}”",
+    "pin": "Overzicht naast de pagina vastzetten",
+    "unpin": "Overzicht losmaken",
+    "untitled": "Kop zonder tekst",
+    "collapsed": "{count, plural, =0 {ingeklapt} one {ingeklapt, # kop erin} other {ingeklapt, # koppen erin}}"
   }
 }

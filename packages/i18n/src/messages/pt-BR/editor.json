@@ -443,5 +443,14 @@
     "failed": "Alteração de {name} não aplicada",
     "someAgent": "um agente",
     "somePerson": "alguém"
+  },
+  "pageOutline": {
+    "label": "Sumário",
+    "open": "Abrir sumário",
+    "openAt": "Abrir sumário, você está em “{section}”",
+    "pin": "Fixar sumário ao lado da página",
+    "unpin": "Desafixar sumário",
+    "untitled": "Título sem texto",
+    "collapsed": "{count, plural, =0 {recolhido} one {recolhido, # título dentro} many {recolhido, # títulos dentro} other {recolhido, # títulos dentro}}"
   }
 }

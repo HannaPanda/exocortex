@@ -33,6 +33,7 @@ export * from './migrations';
 export * from './page-edit';
 export * from './page-link';
 export * from './page-link-identity';
+export * from './page-outline';
 export * from './plain-text';
 export * from './plain-text-adapter';
 export * from './project-state';

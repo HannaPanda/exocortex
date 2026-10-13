@@ -443,5 +443,14 @@
     "failed": "Modifica da parte di {name} non applicata",
     "someAgent": "un agente",
     "somePerson": "qualcuno"
+  },
+  "pageOutline": {
+    "label": "Struttura",
+    "open": "Apri struttura",
+    "openAt": "Apri struttura, ti trovi in «{section}»",
+    "pin": "Fissa la struttura accanto alla pagina",
+    "unpin": "Sblocca la struttura",
+    "untitled": "Intestazione senza testo",
+    "collapsed": "{count, plural, =0 {compresso} one {compresso, # intestazione all’interno} many {compresso, # intestazioni all’interno} other {compresso, # intestazioni all’interno}}"
   }
 }

@@ -34,6 +34,10 @@ What is deliberately still missing is listed under
   remote cursors, offline editing and resynchronization
 - a marker on the blocks an agent just changed, naming the agent, stronger when
   it lands where you are typing (ADR-065)
+- a floating outline on long pages: a scale of the headings in the right
+  margin with the current section marked, a list to jump from, pinnable
+  beside the text where it fits, and "Zu Abschnitt springen" in the palette;
+  it never unfolds a collapsed section or touches the document (issue #194)
 - binary Yjs persistence in PostgreSQL that survives a full server restart
 - comments with inline markers, an activity panel with snapshots and restore,
   and a references panel backed by a derived link index
