@@ -121,26 +121,36 @@ function hit(
   };
 }
 
-export const FIXTURE_HITS: SavedQueryHit[] = [
-  hit(
-    'dshit1',
-    'Kapitel 2: Methoden',
-    ['Projekte', 'Dissertation'],
-    'Die <mark>Messreihe</mark> wurde an drei Tagen wiederholt, jeweils zur selben Uhrzeit.',
-    { updatedAt: ago(120) },
-  ),
-  hit(
-    'dshit2',
-    'Laborbuch März',
-    ['Notizen'],
-    'Zweite <mark>Messreihe</mark> verworfen: Temperatur im Raum zu hoch.',
-    { icon: 'lucide:flask-conical', iconColor: 'green', updatedAt: ago(26 * 60) },
-  ),
-  hit('dshit3', 'Geräteliste', [], 'Waage, Thermometer, zwei Stative.', {
-    type: 'COLLECTION',
-    archivedAt: STAMP,
-  }),
-];
+/**
+ * Built when a component mounts, not when the module loads: the hits are
+ * shown as "vor 2 Stunden", and a timestamp fixed at server start drifts from
+ * the one the browser renders against until the two disagree and React
+ * throws the server's page away (error #418). Mount it once with
+ * `React.useState(fixtureHits)` so the server and the hydrating browser
+ * measure from the same moment.
+ */
+export function fixtureHits(): SavedQueryHit[] {
+  return [
+    hit(
+      'dshit1',
+      'Kapitel 2: Methoden',
+      ['Projekte', 'Dissertation'],
+      'Die <mark>Messreihe</mark> wurde an drei Tagen wiederholt, jeweils zur selben Uhrzeit.',
+      { updatedAt: ago(120) },
+    ),
+    hit(
+      'dshit2',
+      'Laborbuch März',
+      ['Notizen'],
+      'Zweite <mark>Messreihe</mark> verworfen: Temperatur im Raum zu hoch.',
+      { icon: 'lucide:flask-conical', iconColor: 'green', updatedAt: ago(26 * 60) },
+    ),
+    hit('dshit3', 'Geräteliste', [], 'Waage, Thermometer, zwei Stative.', {
+      type: 'COLLECTION',
+      archivedAt: STAMP,
+    }),
+  ];
+}
 
 export const FIXTURE_OVERVIEW: AdminOverviewResponse = {
   userCount: 7,

@@ -38,10 +38,10 @@ import { SettingRow } from '@/components/settings/setting-row';
 import { PresenceStack } from '@/components/shell/presence-avatars';
 
 import {
-  FIXTURE_HITS,
   FIXTURE_OVERVIEW,
   FIXTURE_PRESENCE,
   FIXTURE_SETTING_GROUPS,
+  fixtureHits,
 } from '../fixtures';
 import { FixtureTree, OPEN_BRANCH } from '../patterns/rows';
 import { DsExample, DsSection } from '../showcase';
@@ -351,7 +351,8 @@ export function AdminLayout() {
 
 export function SearchLayout() {
   const [query, setQuery] = React.useState('Messreihe');
-  const hits = query.trim().length === 0 ? [] : FIXTURE_HITS;
+  const [fixture] = React.useState(fixtureHits);
+  const hits = query.trim().length === 0 ? [] : fixture;
   return (
     <DsSection
       id="suche-layout"

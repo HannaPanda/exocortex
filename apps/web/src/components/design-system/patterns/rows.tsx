@@ -31,10 +31,10 @@ import { useTreeKeyboard } from '@/components/shell/use-tree-keyboard';
 import {
   FIXTURE_ACTIVE_ID,
   FIXTURE_CROWD,
-  FIXTURE_HITS,
   FIXTURE_PRESENCE,
   FIXTURE_TREE,
   FIXTURE_WORKSPACE_ID,
+  fixtureHits,
 } from '../fixtures';
 import { DsNarrowFrame } from '../narrow/narrow-frame';
 import { NARROW_PROBE_TITLES } from '../narrow/probes';
@@ -410,6 +410,7 @@ const DISPLAY_LIST: SavedQueryDisplay = {
 };
 
 export function SearchResultsPattern() {
+  const [hits] = React.useState(fixtureHits);
   return (
     <DsSection
       id="suchtreffer"
@@ -422,21 +423,17 @@ export function SearchResultsPattern() {
         source="apps/web/src/components/search/saved-query-results.tsx"
         note="Dieselbe Komponente dient Suche, intelligenter Ansicht und Abfrageblock. Treffer im Papierkorb sagen es mit einem Badge."
       >
-        <SavedQueryResults hits={FIXTURE_HITS} display={DISPLAY_LIST} truncated={false} />
+        <SavedQueryResults hits={hits} display={DISPLAY_LIST} truncated={false} />
       </DsExample>
       <DsExample id="suchtreffer-karten" title="Karten">
         <SavedQueryResults
-          hits={FIXTURE_HITS}
+          hits={hits}
           display={{ ...DISPLAY_LIST, layout: 'CARDS' }}
           truncated={false}
         />
       </DsExample>
       <DsExample id="suchtreffer-tabelle" title="Tabelle">
-        <SavedQueryResults
-          hits={FIXTURE_HITS}
-          display={{ ...DISPLAY_LIST, layout: 'TABLE' }}
-          truncated
-        />
+        <SavedQueryResults hits={hits} display={{ ...DISPLAY_LIST, layout: 'TABLE' }} truncated />
       </DsExample>
     </DsSection>
   );
