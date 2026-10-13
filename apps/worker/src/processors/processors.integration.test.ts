@@ -3746,6 +3746,18 @@ describe('conversation-backed tool loop', () => {
     );
     expect(finalAssistantMessage).toBeDefined();
     expect(finalAssistantMessage?.content).toBe(run.resultText);
+
+    // Issue #193: every message the next prompt carries is counted, tool
+    // results included (the user line above was inserted without the
+    // counter), and the meter holds the provider's count of the last prompt.
+    const conversation = await prisma.aiConversation.findUniqueOrThrow({
+      where: { id: conversationId },
+    });
+    const carried = messages
+      .filter((message) => message.role !== 'USER')
+      .reduce((sum, message) => sum + message.estimatedTokens, 0);
+    expect(conversation.estimatedTokens).toBe(carried);
+    expect(conversation.measuredInputTokens).toBeGreaterThan(0);
   }, 60_000);
 
   it('ends the run after a blocking human checkpoint instead of asking the model again (issue #140)', async () => {

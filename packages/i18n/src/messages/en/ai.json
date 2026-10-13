@@ -114,8 +114,12 @@
   "meter": {
     "label": "Context usage",
     "percent": "{percent, number}%",
-    "estimated": "Estimated {used, number} tokens used.",
-    "estimatedOf": "Estimated {used, number} of {total, number} tokens used.",
+    "unknown": "?%",
+    "measured": "Last sent: {used, number} tokens, counted by provider.",
+    "measuredOf": "Last sent: {used, number} of {total, number} tokens, counted by provider.",
+    "estimated": "Estimated {used, number} tokens, history only. System prompt and tools will be added with the first answer.",
+    "estimatedOf": "Estimated {used, number} of {total, number} tokens, history only. System prompt and tools will be added with the first answer.",
+    "windowUnknown": "The context window of this model is unknown.",
     "compactionHint": "Starting around 70%, older history is automatically summarized."
   },
   "models": {

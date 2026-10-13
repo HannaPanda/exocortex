@@ -114,8 +114,12 @@
   "meter": {
     "label": "Contextgebruik",
     "percent": "{percent, number} %",
-    "estimated": "Geschat {used, number} tokens in gebruik.",
-    "estimatedOf": "Geschat {used, number} van {total, number} tokens in gebruik.",
+    "unknown": "? %",
+    "measured": "Laatst verzonden: {used, number} tokens, geteld door de provider.",
+    "measuredOf": "Laatst verzonden: {used, number} van {total, number} tokens, geteld door de provider.",
+    "estimated": "Geschat {used, number} tokens, alleen de geschiedenis. Systeemprompt en tools komen er bij het eerste antwoord bij.",
+    "estimatedOf": "Geschat {used, number} van {total, number} tokens, alleen de geschiedenis. Systeemprompt en tools komen er bij het eerste antwoord bij.",
+    "windowUnknown": "Het contextvenster van dit model is niet bekend.",
     "compactionHint": "Vanaf ongeveer 70 % wordt eerdere geschiedenis automatisch samengevat."
   },
   "models": {

@@ -114,8 +114,12 @@
   "meter": {
     "label": "Kontextauslastung",
     "percent": "{percent, number} %",
-    "estimated": "Geschätzt {used, number} Tokens belegt.",
-    "estimatedOf": "Geschätzt {used, number} von {total, number} Tokens belegt.",
+    "unknown": "? %",
+    "measured": "Zuletzt gesendet: {used, number} Tokens, vom Anbieter gezählt.",
+    "measuredOf": "Zuletzt gesendet: {used, number} von {total, number} Tokens, vom Anbieter gezählt.",
+    "estimated": "Geschätzt {used, number} Tokens, nur der Verlauf. Systemprompt und Werkzeuge kommen bei der ersten Antwort dazu.",
+    "estimatedOf": "Geschätzt {used, number} von {total, number} Tokens, nur der Verlauf. Systemprompt und Werkzeuge kommen bei der ersten Antwort dazu.",
+    "windowUnknown": "Das Kontextfenster dieses Modells ist nicht bekannt.",
     "compactionHint": "Ab etwa 70 % wird älterer Verlauf automatisch zusammengefasst."
   },
   "models": {

@@ -28,15 +28,45 @@ export const aiConversationSchema = z.object({
   modelSlug: z.string().nullable(),
   reasoningLevel: aiReasoningLevelSchema,
   visionCompanionSlug: z.string().nullable(),
+  /** Running estimate of the active messages alone; see `contextTokens` for what the meter shows. */
   estimatedTokens: z.number().int().nonnegative(),
-  /** Share of the selected model's context window the active prompt occupies. */
-  contextUsagePercent: z.number().int().min(0).max(100),
+  /**
+   * The prompt size the context meter shows (issue #193): the input tokens the
+   * provider reported for the newest turn when `contextTokensMeasured`, the
+   * message estimate otherwise (before the first turn, after `/clear` or a
+   * compaction), which leaves out the system prompt and the tool schemas.
+   */
+  contextTokens: z.number().int().nonnegative(),
+  contextTokensMeasured: z.boolean(),
+  /** The selected model's context window, or the default model's; null when neither is known. */
+  contextWindowTokens: z.number().int().positive().nullable(),
+  /**
+   * `contextTokens` as a share of `contextWindowTokens`, to one decimal
+   * (`contextUsagePercentOf`). Null when the window is unknown, which is not
+   * the same as empty.
+   */
+  contextUsagePercent: z.number().min(0).max(100).nullable(),
   messageCount: z.number().int().nonnegative(),
   lastMessageAt: isoDateTimeSchema,
   createdAt: isoDateTimeSchema,
   archivedAt: isoDateTimeSchema.nullable(),
 });
 export type AiConversation = z.infer<typeof aiConversationSchema>;
+
+/**
+ * Share of a context window, to one decimal, clamped to 0..100.
+ *
+ * One function for the API and the browser, so a meter recomputed after a
+ * model switch says the same as the server would. A prompt that holds
+ * anything never reads 0: it reads at least 0.1, because 0 means empty.
+ * Null when the window is unknown.
+ */
+export function contextUsagePercentOf(tokens: number, windowTokens: number | null): number | null {
+  if (windowTokens === null || !(windowTokens > 0)) return null;
+  if (tokens <= 0) return 0;
+  const percent = Math.round((tokens / windowTokens) * 1000) / 10;
+  return Math.min(100, Math.max(0.1, percent));
+}
 
 export const aiConversationMessageSchema = z.object({
   id: idSchema,

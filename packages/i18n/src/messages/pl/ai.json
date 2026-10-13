@@ -114,8 +114,12 @@
   "meter": {
     "label": "Użycie kontekstu",
     "percent": "{percent, number} %",
-    "estimated": "Szacunkowo zajęto {used, number} tokenów.",
-    "estimatedOf": "Szacunkowo zajęto {used, number} z {total, number} tokenów.",
+    "unknown": "?%",
+    "measured": "Ostatnio wysłano: {used, number} tokenów, zliczone przez dostawcę.",
+    "measuredOf": "Ostatnio wysłano: {used, number} z {total, number} tokenów, zliczone przez dostawcę.",
+    "estimated": "Szacunkowo {used, number} tokenów, tylko historia. Prompt systemowy i narzędzia zostaną doliczone przy pierwszej odpowiedzi.",
+    "estimatedOf": "Szacunkowo {used, number} z {total, number} tokenów, tylko historia. Prompt systemowy i narzędzia zostaną doliczone przy pierwszej odpowiedzi.",
+    "windowUnknown": "Okno kontekstu tego modelu nie jest znane.",
     "compactionHint": "Od około 70 % wcześniejsza historia jest automatycznie podsumowywana."
   },
   "models": {

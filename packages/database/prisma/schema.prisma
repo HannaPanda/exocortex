@@ -1851,9 +1851,14 @@ model AiConversation {
   /// User override of the model's admin-configured vision companion.
   /// `null` means "use the admin default", the literal string 'off' disables it.
   visionCompanionSlug String?
-  /// Running estimate of the tokens the active messages occupy. Drives
-  /// auto-compaction against the selected model's context window.
+  /// Running estimate of the tokens the active messages occupy. Only a
+  /// fallback for the context meter before a turn has been measured;
+  /// compaction counts the messages itself.
   estimatedTokens     Int              @default(0)
+  /// Input tokens the provider reported for the newest turn: the whole prompt
+  /// as sent, system prompt and tool schemas included (issue #193). NULL until
+  /// a turn is measured, and again after `/clear` or a compaction.
+  measuredInputTokens Int?
   lastMessageAt       DateTime         @default(now())
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt

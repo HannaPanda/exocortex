@@ -114,8 +114,12 @@
   "meter": {
     "label": "Utilisation du contexte",
     "percent": "{percent, number} %",
-    "estimated": "Environ {used, number} tokens occupés.",
-    "estimatedOf": "Environ {used, number} sur {total, number} tokens occupés.",
+    "unknown": "? %",
+    "measured": "Dernier envoi : {used, number} tokens, comptés par le fournisseur.",
+    "measuredOf": "Dernier envoi : {used, number} sur {total, number} tokens, comptés par le fournisseur.",
+    "estimated": "Environ {used, number} tokens, historique uniquement. Le prompt système et les outils s’y ajouteront lors de la première réponse.",
+    "estimatedOf": "Environ {used, number} sur {total, number} tokens, historique uniquement. Le prompt système et les outils s’y ajouteront lors de la première réponse.",
+    "windowUnknown": "La fenêtre de contexte de ce modèle n’est pas connue.",
     "compactionHint": "À partir d’environ 70 %, l’historique plus ancien est automatiquement résumé."
   },
   "models": {

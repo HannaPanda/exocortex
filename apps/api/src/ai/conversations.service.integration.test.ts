@@ -746,6 +746,11 @@ describe('ConversationsService.postMessage', () => {
         where: { conversationId },
         data: { status: 'COMPLETED', finishedAt: new Date() },
       });
+      // What the worker would have recorded for the run's last turn.
+      await prisma.aiConversation.update({
+        where: { id: conversationId },
+        data: { measuredInputTokens: 180_000 },
+      });
 
       const response = await service.postMessage({
         conversationId,
@@ -764,6 +769,7 @@ describe('ConversationsService.postMessage', () => {
         where: { id: conversationId },
       });
       expect(conversation.estimatedTokens).toBe(0);
+      expect(conversation.measuredInputTokens).toBeNull();
     });
   });
 

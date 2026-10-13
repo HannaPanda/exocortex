@@ -98,9 +98,11 @@ export function AiPanelModelBar({
       )}
       {conversation !== null ? (
         <ContextMeter
-          estimatedTokens={conversation.estimatedTokens}
-          contextUsagePercent={conversation.contextUsagePercent}
-          contextWindowTokens={choice.selectedModel?.contextWindowTokens ?? null}
+          contextTokens={conversation.contextTokens}
+          contextTokensMeasured={conversation.contextTokensMeasured}
+          contextWindowTokens={
+            choice.selectedModel?.contextWindowTokens ?? conversation.contextWindowTokens
+          }
         />
       ) : null}
     </div>

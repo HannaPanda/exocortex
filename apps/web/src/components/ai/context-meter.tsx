@@ -2,33 +2,42 @@
 
 import { useTranslations } from 'next-intl';
 
+import { contextUsagePercentOf } from '@exocortex/contracts';
 import { cn, Progress, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 export interface ContextMeterProps {
-  estimatedTokens: number;
-  contextUsagePercent: number;
-  /** The selected model's context window, for the "N von M Tokens" tooltip line. */
+  /** The conversation's `contextTokens`: measured by the provider, or estimated. */
+  contextTokens: number;
+  contextTokensMeasured: boolean;
+  /** The selected model's context window; null when it is not known. */
   contextWindowTokens: number | null;
 }
 
 /**
  * Compact context-usage indicator for the conversation control row.
  *
- * The percentage is an estimate (exact token counting happens inside the
- * provider call, not client-side), so the word "Geschätzt" must appear in the
- * tooltip rather than presenting the number as exact.
+ * The share is computed here with the same function the API uses, against
+ * the model selected right now, so switching models moves the meter at once.
+ * The tooltip says which number it is: the prompt the provider counted for
+ * the newest turn, or an estimate of the messages alone before any turn was
+ * measured (issue #193). An unknown window reads "?", never 0 %.
  */
 export function ContextMeter({
-  estimatedTokens,
-  contextUsagePercent,
+  contextTokens,
+  contextTokensMeasured,
   contextWindowTokens,
 }: ContextMeterProps) {
   const t = useTranslations('ai.meter');
-  const warm = contextUsagePercent >= 70;
-  const tokenLine =
-    contextWindowTokens === null
-      ? t('estimated', { used: estimatedTokens })
-      : t('estimatedOf', { used: estimatedTokens, total: contextWindowTokens });
+  const percent = contextUsagePercentOf(contextTokens, contextWindowTokens);
+  const warm = percent !== null && percent >= 70;
+  const values = { used: contextTokens, total: contextWindowTokens ?? 0 };
+  const tokenLine = contextTokensMeasured
+    ? contextWindowTokens === null
+      ? t('measured', values)
+      : t('measuredOf', values)
+    : contextWindowTokens === null
+      ? t('estimated', values)
+      : t('estimatedOf', values);
 
   return (
     <Tooltip>
@@ -36,18 +45,24 @@ export function ContextMeter({
         render={
           <div className="flex min-w-0 items-center gap-1.5" data-testid="ai-context-meter">
             <Progress
-              value={contextUsagePercent}
+              value={percent ?? 0}
               label={t('label')}
               className={cn('h-1.5 w-16', warm && '[&>div]:bg-warning')}
             />
             <span className={cn('text-xs', warm ? 'text-foreground' : 'text-muted-foreground')}>
-              {t('percent', { percent: contextUsagePercent })}
+              {percent === null ? t('unknown') : t('percent', { percent })}
             </span>
           </div>
         }
       />
       <TooltipContent>
         {tokenLine}
+        {contextWindowTokens === null ? (
+          <>
+            <br />
+            {t('windowUnknown')}
+          </>
+        ) : null}
         <br />
         {t('compactionHint')}
       </TooltipContent>

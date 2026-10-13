@@ -169,7 +169,9 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     }),
     input.prisma.aiConversation.update({
       where: { id: input.conversationId },
-      data: { estimatedTokens: messageTokensAfter },
+      // The last measured prompt described the transcript just superseded;
+      // the next turn measures the compacted one.
+      data: { estimatedTokens: messageTokensAfter, measuredInputTokens: null },
     }),
   ]);
 

@@ -114,8 +114,12 @@
   "meter": {
     "label": "Utilizzo del contesto",
     "percent": "{percent, number} %",
-    "estimated": "Circa {used, number} token occupati.",
-    "estimatedOf": "Circa {used, number} di {total, number} token occupati.",
+    "unknown": "?%",
+    "measured": "Ultimo invio: {used, number} token, conteggiati dal provider.",
+    "measuredOf": "Ultimo invio: {used, number} su {total, number} token, conteggiati dal provider.",
+    "estimated": "Circa {used, number} token, solo la cronologia. Il prompt di sistema e gli strumenti si aggiungeranno con la prima risposta.",
+    "estimatedOf": "Circa {used, number} su {total, number} token, solo la cronologia. Il prompt di sistema e gli strumenti si aggiungeranno con la prima risposta.",
+    "windowUnknown": "La finestra di contesto di questo modello non è nota.",
     "compactionHint": "A partire da circa il 70 %, la cronologia precedente viene riassunta automaticamente."
   },
   "models": {

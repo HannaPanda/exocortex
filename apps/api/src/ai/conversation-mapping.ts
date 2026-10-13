@@ -3,6 +3,7 @@ import {
   type AiConversation,
   type AiConversationMessage,
   type AiConversationRole,
+  contextUsagePercentOf,
 } from '@exocortex/contracts';
 import {
   type AiConversationRole as AiConversationRolePrisma,
@@ -39,6 +40,7 @@ export const CONVERSATION_SELECT = {
   reasoningLevel: true,
   visionCompanionSlug: true,
   estimatedTokens: true,
+  measuredInputTokens: true,
   lastMessageAt: true,
   createdAt: true,
   archivedAt: true,
@@ -58,6 +60,7 @@ export interface ConversationRow {
   reasoningLevel: AiReasoningLevelPrisma;
   visionCompanionSlug: string | null;
   estimatedTokens: number;
+  measuredInputTokens: number | null;
   lastMessageAt: Date;
   createdAt: Date;
   archivedAt: Date | null;
@@ -121,15 +124,10 @@ export function conversationToContract(
   fallbackContextWindowTokens: number | null,
   preview: string,
 ): AiConversation {
-  const contextWindowTokens =
-    conversation.model?.contextWindowTokens ?? fallbackContextWindowTokens;
-  const contextUsagePercent =
-    contextWindowTokens === null || contextWindowTokens === 0
-      ? 0
-      : Math.min(
-          100,
-          Math.max(0, Math.round((conversation.estimatedTokens / contextWindowTokens) * 100)),
-        );
+  const windowTokens = conversation.model?.contextWindowTokens ?? fallbackContextWindowTokens;
+  const contextWindowTokens = windowTokens !== null && windowTokens > 0 ? windowTokens : null;
+  const contextTokensMeasured = conversation.measuredInputTokens !== null;
+  const contextTokens = conversation.measuredInputTokens ?? conversation.estimatedTokens;
 
   return {
     id: conversation.id,
@@ -144,7 +142,10 @@ export function conversationToContract(
     reasoningLevel: REASONING_LEVEL_TO_CONTRACT[conversation.reasoningLevel],
     visionCompanionSlug: conversation.visionCompanionSlug,
     estimatedTokens: conversation.estimatedTokens,
-    contextUsagePercent,
+    contextTokens,
+    contextTokensMeasured,
+    contextWindowTokens,
+    contextUsagePercent: contextUsagePercentOf(contextTokens, contextWindowTokens),
     messageCount: conversation._count.messages,
     lastMessageAt: conversation.lastMessageAt.toISOString(),
     createdAt: conversation.createdAt.toISOString(),
@@ -210,7 +211,7 @@ export async function memberWorkspaceIds(prisma: PrismaClient, userId: string): 
 /**
  * The context window a conversation without an explicit model is measured
  * against. Null when no default model can be resolved at all, which the
- * contract reports as 0 % rather than as an error: a broken registry must not
+ * contract reports as an unknown share rather than as an error: a broken registry must not
  * make a transcript unreadable.
  */
 export async function resolveFallbackContextWindow(

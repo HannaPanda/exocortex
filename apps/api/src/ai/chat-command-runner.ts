@@ -83,7 +83,7 @@ const clear: ChatCommandHandler = async (context) => {
   });
   await prisma.aiConversation.update({
     where: { id: conversation.id },
-    data: { estimatedTokens: 0 },
+    data: { estimatedTokens: 0, measuredInputTokens: null },
   });
   return answer(context, 'clear', context.t('clear.done'));
 };

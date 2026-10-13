@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  type AiConversation,
   type AiConversationDetailResponse,
   aiConversationDetailResponseSchema,
   aiConversationListResponseSchema,
@@ -156,7 +157,7 @@ export const chatReadTool: AnyToolDefinition = defineTool({
     });
     const header =
       `**${result.conversation.title}** · ${String(result.conversation.messageCount)} Nachrichten · ` +
-      `zuletzt ${result.conversation.lastMessageAt}`;
+      `zuletzt ${result.conversation.lastMessageAt} · ${contextLine(result.conversation)}`;
     const body = result.messages
       .slice(0, MAX_TRANSCRIPT_MESSAGES)
       .map((message) => {
@@ -172,6 +173,22 @@ export const chatReadTool: AnyToolDefinition = defineTool({
     return { text: `${header}\n\n${body}${cut}${lastRunLine(result.lastRun)}`, data: result };
   },
 });
+
+/**
+ * The context meter the browser shows, in words: how full the window is and
+ * whether the number was counted by the provider or only estimated.
+ */
+function contextLine(conversation: AiConversation): string {
+  const tokens = String(conversation.contextTokens);
+  const how = conversation.contextTokensMeasured ? 'gemessen' : 'geschätzt, nur Verlauf';
+  if (conversation.contextUsagePercent === null || conversation.contextWindowTokens === null) {
+    return `Kontext ${tokens} Tokens (${how}), Fenster unbekannt`;
+  }
+  return (
+    `Kontext ${String(conversation.contextUsagePercent)} % ` +
+    `(${tokens} von ${String(conversation.contextWindowTokens)} Tokens, ${how})`
+  );
+}
 
 /**
  * How the newest run ended, when it ended without an answer. A failed run

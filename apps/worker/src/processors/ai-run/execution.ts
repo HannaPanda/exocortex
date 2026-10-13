@@ -25,6 +25,7 @@ import { toolLoopDiagnosis } from '../../tool-ledger';
 
 import { requestRouting } from './agent-profile';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
+import { persistCountedMessage, recordMeasuredInput } from './conversation-tally';
 import { emptyTurnFailure, incompleteTurnDiagnosis, isEmptyTurn } from './empty-turn';
 import { type RunExecutionInput, type RunOutcome } from './execution-types';
 import {
@@ -328,6 +329,7 @@ class RunExecution {
       'ai.turn',
       async (span) => {
         const turn = await this.streamOneTurn(this.providerMessages);
+        await recordMeasuredInput(this.input, turn.usage);
         this.input.timeline.record(
           turnEvent({
             index,
@@ -592,15 +594,13 @@ class RunExecution {
     // The transcript keeps the whole assistant turn including anything
     // carried over from a continued answer; the wire message repeats only
     // this turn's text, because the earlier part is already in the context.
-    await prisma.aiConversationMessage.create({
-      data: {
-        conversationId: run.conversationId!,
-        role: 'ASSISTANT',
-        content: this.text,
-        toolCalls: wireToolCalls as unknown as Prisma.InputJsonValue,
-        runId: run.id,
-        estimatedTokens: estimateMessageTokens({ role: 'assistant', content: this.text }),
-      },
+    await persistCountedMessage(prisma, {
+      conversationId: run.conversationId!,
+      role: 'ASSISTANT',
+      content: this.text,
+      toolCalls: wireToolCalls as unknown as Prisma.InputJsonValue,
+      runId: run.id,
+      estimatedTokens: estimateMessageTokens({ role: 'assistant', content: this.text }),
     });
     this.carriedText = '';
 
@@ -667,16 +667,14 @@ class RunExecution {
         { at, durationMs: skipped ? 0 : performance.now() - started },
       );
 
-      await prisma.aiConversationMessage.create({
-        data: {
-          conversationId: run.conversationId!,
-          role: 'TOOL',
-          content: result.text,
-          toolCallId: call.id,
-          toolName: call.name,
-          runId: run.id,
-          estimatedTokens: estimateMessageTokens({ role: 'tool', content: result.text }),
-        },
+      await persistCountedMessage(prisma, {
+        conversationId: run.conversationId!,
+        role: 'TOOL',
+        content: result.text,
+        toolCallId: call.id,
+        toolName: call.name,
+        runId: run.id,
+        estimatedTokens: estimateMessageTokens({ role: 'tool', content: result.text }),
       });
 
       await this.publishToolCall(
