@@ -62,6 +62,7 @@ export function TimeZonePicker({
   value,
   onChange,
   className,
+  'aria-label': ariaLabel,
   'aria-describedby': describedBy,
   'aria-invalid': invalid = false,
   'data-testid': testId,
@@ -70,6 +71,8 @@ export function TimeZonePicker({
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  /** Only where no `<Label htmlFor={id}>` names the field. */
+  'aria-label'?: string;
   'aria-describedby'?: string;
   'aria-invalid'?: boolean;
   'data-testid'?: string;
@@ -109,6 +112,7 @@ export function TimeZonePicker({
         placeholder="Europe/Berlin"
         autoComplete="off"
         spellCheck={false}
+        aria-label={ariaLabel}
         aria-describedby={describedBy}
         aria-invalid={invalid || unknown}
         className={className}
@@ -134,6 +138,7 @@ export function TimeZonePicker({
           placeholder={unknown ? value : t('placeholder')}
           autoComplete="off"
           spellCheck={false}
+          aria-label={ariaLabel}
           aria-describedby={describedByAll}
           aria-invalid={invalid || unknown}
         />

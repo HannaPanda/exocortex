@@ -186,14 +186,27 @@ export function TimeZonePickerExample() {
     >
       <DsStates>
         <DsState label="Mit Wert">
-          <TimeZonePicker id="ds-zone-value" value={zone} onChange={setZone} className="w-72" />
+          <TimeZonePicker
+            id="ds-zone-value"
+            aria-label="Zeitzone"
+            value={zone}
+            onChange={setZone}
+            className="w-72"
+          />
         </DsState>
         <DsState label="Leer">
-          <TimeZonePicker id="ds-zone-empty" value={empty} onChange={setEmpty} className="w-72" />
+          <TimeZonePicker
+            id="ds-zone-empty"
+            aria-label="Zeitzone, leer"
+            value={empty}
+            onChange={setEmpty}
+            className="w-72"
+          />
         </DsState>
         <DsState label="Unbekannt gespeichert">
           <TimeZonePicker
             id="ds-zone-unknown"
+            aria-label="Zeitzone, unbekannt gespeichert"
             value={unknown}
             onChange={setUnknown}
             className="w-72"

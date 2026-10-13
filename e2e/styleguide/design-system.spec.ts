@@ -72,6 +72,22 @@ test.describe('design system', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
+  test('finds a time zone by typing and keeps an unknown one marked', async ({ page }) => {
+    await page.goto('/design-system#feld-zeitzone');
+    const empty = page.getByRole('combobox', { name: 'Zeitzone, leer' });
+    await empty.fill('new york');
+    await expect(page.getByRole('option', { name: /America\/New_York/ })).toBeVisible();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await expect(empty).toHaveValue('America/New_York');
+
+    const unknown = page.getByRole('combobox', { name: 'Zeitzone, unbekannt gespeichert' });
+    await expect(unknown).toHaveAttribute('aria-invalid', 'true');
+    await expect(
+      page.getByText('„Mars/Olympus“ ist keine bekannte Zeitzone', { exact: false }),
+    ).toBeVisible();
+  });
+
   test('walks the sample page tree with the arrow keys', async ({ page }) => {
     await page.goto('/design-system#seitenbaum');
     const tree = page.getByRole('tree', { name: 'Beispielseiten' });
