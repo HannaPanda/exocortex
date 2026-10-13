@@ -45,13 +45,10 @@ async function exportMarkdown(page: Page, id: string): Promise<string> {
 
 /** Distance of a heading from the top of the page's scroll container. */
 async function headingOffset(page: Page, text: string): Promise<number> {
-  return page.evaluate((needle) => {
-    const scroller = document.querySelector('.exocortex-page-scroll') as HTMLElement;
-    const heading = [...scroller.querySelectorAll('h2, h3')].find((element) =>
-      element.textContent.includes(needle),
-    ) as HTMLElement;
-    return heading.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
-  }, text);
+  const heading = await page.locator('.ProseMirror :is(h2, h3)', { hasText: text }).boundingBox();
+  const scroller = await page.locator('.exocortex-page-scroll').boundingBox();
+  if (heading === null || scroller === null) throw new Error(`"${text}" is not laid out`);
+  return heading.y - scroller.y;
 }
 
 /**
@@ -110,14 +107,10 @@ test.describe('page outline', () => {
     await page.keyboard.press('Escape');
 
     // Scrolling by hand moves the current section along.
-    await page.evaluate((needle) => {
-      const scroller = document.querySelector('.exocortex-page-scroll') as HTMLElement;
-      const heading = [...scroller.querySelectorAll('h2')].find((element) =>
-        element.textContent.includes(needle),
-      ) as HTMLElement;
-      scroller.scrollTop +=
-        heading.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 40;
-    }, `Datenmodell ${marker}`);
+    // Upwards, with the wheel over the text, the way a reader would.
+    await page.locator('.ProseMirror').hover();
+    await page.mouse.wheel(0, (await headingOffset(page, `Datenmodell ${marker}`)) - 40);
+    await expect.poll(() => headingOffset(page, `Datenmodell ${marker}`)).toBeLessThan(80);
     await rail.click();
     await expect(popover.locator('[aria-current="location"]')).toContainText(
       `Datenmodell ${marker}`,
