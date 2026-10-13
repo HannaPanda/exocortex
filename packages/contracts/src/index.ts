@@ -18,6 +18,7 @@ export * from './changesets';
 export * from './clips';
 export * from './collaboration';
 export * from './comments';
+export * from './container-image';
 export * from './context';
 export * from './database-formula';
 export * from './database-relations';

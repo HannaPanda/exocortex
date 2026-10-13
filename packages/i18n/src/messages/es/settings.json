@@ -527,6 +527,18 @@
       }
     },
     "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido.",
+    "containerImage": {
+      "copy": "Copiar nombre de la imagen",
+      "unlock": "Cambiar…",
+      "lock": "Bloquear",
+      "warning": "La imagen ya debe estar presente en este equipo: eXocortex no descarga imágenes y, si falta alguna, fallará cada compilación. Los PDF ya generados no notarán el cambio y seguirán como están; si quieres tenerlos con la nueva imagen, vuelve a generarlos con «regenerar».",
+      "invalid": "Este no es un nombre válido para una imagen de contenedor. Se permiten letras, números y . _ / : @ -, empezando por una letra o un número, sin espacios. Se seguirá guardando el último nombre válido.",
+      "isDefault": "Este es el valor predeterminado.",
+      "default": "El valor predeterminado es {image}.",
+      "reset": "Restablecer al valor predeterminado",
+      "stored": "Guardado hasta ahora: {image}.",
+      "revert": "Deshacer"
+    },
     "hostList": {
       "listLabel": "Hosts permitidos",
       "entryLabel": "Host {position, number}",

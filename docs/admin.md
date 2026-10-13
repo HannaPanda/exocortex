@@ -547,6 +547,20 @@ ADR-024):
 Neither is reachable from a workspace's own settings. Everything else about
 automations is, including the run log: `docs/automations.md`.
 
+## Container images: locked until unlocked
+
+`render.image` and `projects.image` name the image a PDF or project build runs
+in (ADR-026, ADR-027). The admin form shows them locked, with a copy button
+and the default beside them (issue #175); changing one is a deliberate
+"Ändern" that warns that the image has to be on the machine already, because
+the sandbox broker never pulls (ADR-081), and that finished PDFs do not notice
+the change. The default is read from `settingsSchema`, never restated in the
+form. Both settings are refused when they do not match
+`CONTAINER_IMAGE_REFERENCE` (`packages/contracts/src/container-image.ts`),
+which is the same pattern the broker checks before `docker run`: a name it
+would refuse on every build is refused at the save instead. The pattern is
+syntax only and says nothing about whether the image exists.
+
 ## Workflows: the switch and the four ceilings
 
 Workflow runs (issue #161, ADR-076) have their own group. `workflows.enabled`

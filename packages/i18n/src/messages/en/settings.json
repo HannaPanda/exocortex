@@ -527,6 +527,18 @@
       }
     },
     "jsonInvalid": "This is not a valid value. The last valid state will be saved.",
+    "containerImage": {
+      "copy": "Copy image name",
+      "unlock": "Change…",
+      "lock": "Lock",
+      "warning": "The image must already exist on this machine: eXocortex does not download images, and a missing one will make every build fail. Already built PDFs won’t notice the change and will stay as they are; to get them with the new image, rebuild them once with “regenerate”.",
+      "invalid": "A container image cannot be named like this. Letters, digits, and . _ / : @ - are allowed, starting with a letter or digit, with no spaces. The last valid name remains saved.",
+      "isDefault": "This is the default.",
+      "default": "Default is {image}.",
+      "reset": "Reset to default",
+      "stored": "Previously saved: {image}.",
+      "revert": "Revert"
+    },
     "hostList": {
       "listLabel": "Allowed hosts",
       "entryLabel": "Host {position, number}",

@@ -305,6 +305,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-abbild"
+        title="Container-Abbild"
+        source="apps/web/src/components/settings/container-image-field.tsx"
+        note="Die Abbilder für PDF- und Projekt-Bauten: gesperrt zum Lesen und Kopieren, Ändern ist ein bewusster Klick mit Warnung. Der Standard kommt aus dem Schema, mit dem auch die API auflöst, und ist einen Klick entfernt; ein geänderter Entwurf nennt den gespeicherten Namen und lässt sich zurücknehmen. Ein Name, den der Container-Broker ablehnen würde, erreicht den Entwurf nicht."
+        stageClassName="p-6 sm:p-6"
+      >
+        <ContainerImageRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-schmal"
         title="Auf dem Telefon"
         source="apps/web/src/components/settings/setting-row.tsx"
@@ -347,6 +357,26 @@ function HostListRowExample() {
           stored={stored}
           onChange={(value) => {
             if (typeof value === 'string') setHosts(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ContainerImageRowExample() {
+  const stored = 'exocortex-render:latest';
+  const [image, setImage] = React.useState(stored);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="projects.image"
+          value={image}
+          stored={stored}
+          onChange={(value) => {
+            if (typeof value === 'string') setImage(value);
           }}
           models={[]}
         />

@@ -527,6 +527,18 @@
       }
     },
     "jsonInvalid": "Das ist so kein gültiger Wert. Gespeichert wird der zuletzt gültige Stand.",
+    "containerImage": {
+      "copy": "Namen des Abbilds kopieren",
+      "unlock": "Ändern …",
+      "lock": "Sperren",
+      "warning": "Das Abbild muss auf diesem Rechner schon vorhanden sein: eXocortex lädt keine Abbilder herunter, ein fehlendes lässt jeden Bau scheitern. Bereits gebaute PDFs bemerken den Wechsel nicht und bleiben, wie sie sind; wer sie mit dem neuen Abbild haben will, baut sie einmal mit „neu erzeugen“.",
+      "invalid": "So kann kein Container-Abbild heißen. Erlaubt sind Buchstaben, Ziffern und . _ / : @ -, am Anfang ein Buchstabe oder eine Ziffer, ohne Leerzeichen. Gespeichert wird weiter der letzte gültige Name.",
+      "isDefault": "Das ist der Standard.",
+      "default": "Standard ist {image}.",
+      "reset": "Auf Standard zurücksetzen",
+      "stored": "Bisher gespeichert: {image}.",
+      "revert": "Rückgängig"
+    },
     "hostList": {
       "listLabel": "Erlaubte Hosts",
       "entryLabel": "Host {position, number}",

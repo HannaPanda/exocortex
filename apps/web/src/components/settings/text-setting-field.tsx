@@ -1,8 +1,9 @@
 'use client';
 
-import type { SettingKey, Settings } from '@exocortex/contracts';
+import { isContainerImageSettingKey, type SettingKey, type Settings } from '@exocortex/contracts';
 import { Input, Textarea } from '@exocortex/ui';
 
+import { ContainerImageSettingField } from '@/components/settings/container-image-field';
 import { HostListSettingField } from '@/components/settings/host-list-field';
 import { TimeZonePicker } from '@/components/time-zone-picker';
 import { isHostListSettingKey } from '@/lib/webhook-hosts';
@@ -13,7 +14,10 @@ const TIME_ZONE_SETTING_KEYS: ReadonlySet<SettingKey> = new Set([
   'notifications.digestTimeZone',
 ]);
 
-/** A string setting: a host list, a time zone, the system prompt, or one line of text. */
+/**
+ * A string setting: a host list, a time zone, a container image, the system
+ * prompt, or one line of text.
+ */
 export function TextSettingField({
   settingKey,
   value,
@@ -32,6 +36,18 @@ export function TextSettingField({
   if (isHostListSettingKey(settingKey)) {
     return (
       <HostListSettingField
+        settingKey={settingKey}
+        value={value}
+        stored={stored}
+        onChange={onChange}
+        described={described}
+        id={id}
+      />
+    );
+  }
+  if (isContainerImageSettingKey(settingKey)) {
+    return (
+      <ContainerImageSettingField
         settingKey={settingKey}
         value={value}
         stored={stored}

@@ -6,6 +6,7 @@ import {
   aiMutationPolicySchema,
   aiWriteModeSchema,
 } from './ai-trust';
+import { isContainerImageReference } from './container-image';
 import { providerRoutingSchema } from './provider-routing';
 import { isUsableTimeZone } from './zoned-time';
 
@@ -716,7 +717,12 @@ export const settingsSchema = z.object({
    * here. Changing it changes what every template can rely on, so a build's
    * input hash cannot see it -- that is what `force` on a render request is for.
    */
-  'render.image': z.string().min(1).max(300).default('pandoc/extra:latest'),
+  'render.image': z
+    .string()
+    .min(1)
+    .max(300)
+    .refine(isContainerImageReference, { message: 'Kein gültiger Name für ein Container-Abbild' })
+    .default('pandoc/extra:latest'),
   /**
    * Seconds one build may take before it is killed.
    *
@@ -753,7 +759,12 @@ export const settingsSchema = z.object({
    * on this machine is a fact about the machine. A build's input hash cannot
    * see it, which is what `force` on a build request is for.
    */
-  'projects.image': z.string().min(1).max(300).default('pandoc/extra:latest'),
+  'projects.image': z
+    .string()
+    .min(1)
+    .max(300)
+    .refine(isContainerImageReference, { message: 'Kein gültiger Name für ein Container-Abbild' })
+    .default('pandoc/extra:latest'),
   /**
    * Seconds one build may take before it is killed.
    *

@@ -527,6 +527,18 @@
       }
     },
     "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen.",
+    "containerImage": {
+      "copy": "Image-naam kopiëren",
+      "unlock": "Wijzigen …",
+      "lock": "Vergrendelen",
+      "warning": "De image moet al aanwezig zijn op deze computer: eXocortex downloadt geen images, en als er een ontbreekt, mislukt elke build. Reeds gemaakte pdf’s merken de wijziging niet en blijven zoals ze zijn; wie ze met de nieuwe image wil hebben, bouwt ze opnieuw met „opnieuw genereren”.",
+      "invalid": "Dit is geen geldige naam voor een container-image. Toegestaan zijn letters, cijfers en . _ / : @ -, beginnend met een letter of cijfer, zonder spaties. De laatst geldige naam blijft opgeslagen.",
+      "isDefault": "Dit is de standaard.",
+      "default": "Standaard is {image}.",
+      "reset": "Herstellen naar standaard",
+      "stored": "Eerder opgeslagen: {image}.",
+      "revert": "Ongedaan maken"
+    },
     "hostList": {
       "listLabel": "Toegestane hosts",
       "entryLabel": "Host {position, number}",

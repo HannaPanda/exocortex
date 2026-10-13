@@ -17536,6 +17536,46 @@
       "source": "bba5cbd143244da0",
       "output": "72bb90897ab1eadc"
     },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "fa14e71a70996785"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "0cada136a7c12db7"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "16b14026d3602d96"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "eef5474fd4c584fe"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "db44b8db4f05d720"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "bc5b45ae7b60692a"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "0026c505347863ae"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "105e75a6bad4eabd"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "a6b4705c688314f0"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "a64f7b85955cffbb"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "c0db00661fc3181b"
@@ -40009,6 +40049,46 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "6e3c2c930b472294"
+    },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "8d3836c9b4f33094"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "62433e17422a79bf"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "0fb82c48820c92f9"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "c530c545c99cf135"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "096dc9d4b0204272"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "72ba865e65f4674f"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "29fa864fd744397e"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "8bb14319e8564a24"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "3e1a188c8ed4ac6e"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "89585db5337fee59"
     },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
@@ -62484,6 +62564,46 @@
       "source": "bba5cbd143244da0",
       "output": "2af697456ab21797"
     },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "9b99d465b71a0676"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "2510628349064e43"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "eae8eac9f7af461e"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "ff08c897f34e8e17"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "017ac627d562761a"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "8c46ea55ba1532c6"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "46ad3916f6a09798"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "6fad538d3258e0dd"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "389920f6c37a1c0e"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "e6cd98deb4ba1e5e"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "9738c22d6f8dfcc1"
@@ -84957,6 +85077,46 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "fb863b0b30216107"
+    },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "fe25a4fc7bcfd705"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "6d119a523e21354e"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "9aa7a76abdfff793"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "905a3aca2ad5b136"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "921bf2a8ebec42c9"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "a4da5c7275e7f561"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "18c9d912a21072dd"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "e801f645dc9ab3ee"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "19354b172fb90d0e"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "d42b0333b970eab2"
     },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
@@ -107432,6 +107592,46 @@
       "source": "bba5cbd143244da0",
       "output": "f856e33b9e467362"
     },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "20b81741ecec6f73"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "2cda23eac86a9474"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "69dc7faaf9f42a59"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "bd32b85b269f3a9b"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "d462f0ddfde724ee"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "76d8254b34e07a23"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "7548a6bd52d43eae"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "18f977b77b72c77f"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "eb01a8fe86c0d780"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "4e285ca86ad41c9f"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "09c4eb041fedab78"
@@ -129906,6 +130106,46 @@
       "source": "bba5cbd143244da0",
       "output": "93bc3c3938729df9"
     },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "9f18e77ce01ead89"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "60da9ce9d2e16cfd"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "bb72a5edc2061c10"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "5bc15b29143646e7"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "2263e7ebdc40e033"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "243b4648cf887037"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "9234a0683653a982"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "13504141b4d15c80"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "a101f73bfc387300"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "5c8f537b666d2e89"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "a353dd2f15425ea0"
@@ -152379,6 +152619,46 @@
     "settings.row.choices.writeMode.read_only": {
       "source": "bba5cbd143244da0",
       "output": "b0034ac3db6c5d61"
+    },
+    "settings.row.containerImage.copy": {
+      "source": "d35522a5671ba331",
+      "output": "0892e920fd44d3ff"
+    },
+    "settings.row.containerImage.default": {
+      "source": "8cd54578e4eeaec4",
+      "output": "9ec3cfe4c47f20a8"
+    },
+    "settings.row.containerImage.invalid": {
+      "source": "43428430f9c3f122",
+      "output": "47196e3efdf831b3"
+    },
+    "settings.row.containerImage.isDefault": {
+      "source": "2af35c209968cca0",
+      "output": "2c678d15ead2851c"
+    },
+    "settings.row.containerImage.lock": {
+      "source": "862ff26521013360",
+      "output": "096dc9d4b0204272"
+    },
+    "settings.row.containerImage.reset": {
+      "source": "8d3bbffdffcfdd0c",
+      "output": "ae9f4b2807bc344b"
+    },
+    "settings.row.containerImage.revert": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "786b4822284896ad"
+    },
+    "settings.row.containerImage.stored": {
+      "source": "98a318e121f01674",
+      "output": "11807541a325a823"
+    },
+    "settings.row.containerImage.unlock": {
+      "source": "f070658991d3f13d",
+      "output": "89e078ca4a6330eb"
+    },
+    "settings.row.containerImage.warning": {
+      "source": "423690f0be964f04",
+      "output": "4fb241a676f59e05"
     },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
