@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Modelo para imagens",
-        "help": "Um modelo capaz de gerar imagens, como google/gemini-2.5-flash-image. Sem uma entrada, a geração de imagens permanece desativada, mesmo que a opção acima esteja ativada."
+        "help": "Um modelo capaz de gerar imagens, por exemplo google/gemini-2.5-flash-image. Sem uma seleção, a geração de imagens fica desativada, mesmo que a opção acima esteja ligada."
       },
       "webResearchEnabled": {
         "label": "Pesquisar na web",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Banco de dados das entidades",
-        "help": "O ID do banco de dados cujas linhas são as entidades. Ele fica na barra de endereços após /seite/. Sem uma entrada, não haverá nomes para buscar. Um por instalação: uma entidade é algo do mundo real e não deve ser reinventada em cada espaço de trabalho."
+        "help": "O banco de dados cujas linhas são as entidades. Sem uma seleção, não há nomes para pesquisar. Um por instalação: uma entidade é algo no mundo e não deve ser reinventada em cada espaço de trabalho."
       },
       "minAliasLength": {
         "label": "Tamanho mínimo de alias (caracteres)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Modelo para vetores",
-        "help": "Deve fornecer 1536 dimensões, que é a largura da coluna. openai/text-embedding-3-small faz isso nativamente, openai/text-embedding-3-large reduz para esse tamanho se solicitado. Um modelo com comprimento diferente é recusado em vez de ser salvo incorretamente."
+        "help": "São oferecidos apenas modelos comprovadamente de 1536 dimensões, que é a largura da coluna. Um modelo com comprimento diferente seria rejeitado em vez de salvo incorretamente."
       },
       "semanticWeightPercent": {
         "label": "Peso do significado (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automático",
     "rangeHint": "Permitido: {min, number} a {max, number}.",
     "invalid": "Este valor não é válido.",
     "invalidWithRange": "Não salvo. Permitido: {min, number} a {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Já consta mais acima. Repetir não causa erros, mas não faz diferença.",
         "covered": "Já permitido por {host}, pois subdomínios estão incluídos."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Buscar modelo por nome ou identificador",
+      "loading": "Carregando a lista…",
+      "empty": "Nenhum modelo correspondente encontrado.",
+      "disabled": "desativado",
+      "notListed": "fora da lista",
+      "missing": "“{slug}” não é oferecido aqui: desativado, removido ou incompatível. O valor permanece salvo até você escolher outro modelo.",
+      "inherit": {
+        "automatic": "Automático",
+        "chat": "Igual ao chat",
+        "defaultModel": "Modelo padrão",
+        "compaction": "Igual ao de resumos",
+        "capture": "Igual ao de condensação",
+        "off": "Sem geração de imagens"
+      },
+      "inheritDetail": {
+        "automatic": "O modelo padrão definido pela instalação",
+        "chat": "O mesmo modelo atualmente em uso no chat",
+        "defaultModel": "Herda o modelo padrão",
+        "compaction": "Herda o modelo de resumos, ou o modelo padrão se não houver",
+        "capture": "Herda o modelo de condensação de sessões",
+        "off": "Sem um modelo, a geração de imagens permanece desativada"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Buscar banco de dados por título ou espaço de trabalho",
+      "none": "Nenhum banco de dados",
+      "noneDetail": "Sem um banco de dados, ninguém busca por nomes",
+      "untitled": "Banco de dados sem título",
+      "notListed": "não encontrado em nenhum dos seus espaços de trabalho",
+      "missing": "O banco de dados salvo “{id}” não aparece em nenhum espaço de trabalho do qual você participa: excluído, arquivado ou sem permissão de acesso. O valor permanece salvo até você escolher outro.",
+      "open": "Abrir “{title}”",
+      "columnsMissing": "Este banco de dados não tem os campos lidos pela busca de nomes: {columns}. “Tipo” é uma seleção, “Sinônimos” é um texto. Sem ambos, a busca não encontrará nomes."
     }
   },
   "groupNav": {

@@ -26,6 +26,8 @@ import {
 
 import { DurationInput, useDurationWords } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
+import { EntityDatabaseField } from '@/components/settings/entity-database-field';
+import { ModelSettingField } from '@/components/settings/model-setting-field';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import { TextSettingField } from '@/components/settings/text-setting-field';
 import {
@@ -39,6 +41,7 @@ import {
 } from '@/lib/byte-size';
 import { durationBaseOfSettingKey, isHourOfDaySettingKey } from '@/lib/duration';
 import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
+import { type ModelCatalogs, modelFieldHasList, modelFieldOf } from '@/lib/setting-references';
 
 /**
  * The vocabulary of the settings forms, shared by both of them.
@@ -49,9 +52,6 @@ import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
  * second copy that drifts. The words themselves live in the `settings`
  * catalogue, read through `setting-copy.ts`.
  */
-
-/** Sentinel for "no model chosen"; distinct from every real slug. */
-const AUTO_VALUE = '__automatic__';
 
 /**
  * Choices for settings whose schema is a `z.enum`. Only listed keys render as a
@@ -528,11 +528,68 @@ function NumberSettingField({
   );
 }
 
+/**
+ * The control of a setting that names something by id, a model or the entity
+ * database (issue #171), or `null` for every other setting and for a model
+ * field that has no list to offer here.
+ */
+function referenceControl({
+  settingKey,
+  value,
+  onChange,
+  models,
+  catalogs,
+  described,
+  id,
+}: {
+  settingKey: SettingKey;
+  value: Settings[SettingKey];
+  onChange: (value: Settings[SettingKey]) => void;
+  models: AiModel[];
+  catalogs: ModelCatalogs | undefined;
+  described: { 'aria-describedby': string; 'aria-invalid': boolean };
+  id: string;
+}): React.ReactNode {
+  if (typeof value !== 'string' && value !== null) return null;
+  if (settingKey === 'entities.databaseId') {
+    return (
+      <EntityDatabaseField
+        settingKey={settingKey}
+        value={value}
+        onChange={onChange}
+        described={described}
+        id={id}
+      />
+    );
+  }
+  const field = modelFieldOf(settingKey);
+  if (field === undefined || !modelFieldHasList(field, catalogs)) return null;
+  return (
+    <ModelSettingField
+      settingKey={settingKey}
+      field={field}
+      value={value}
+      onChange={onChange}
+      models={models}
+      catalogs={catalogs}
+      described={described}
+      id={id}
+    />
+  );
+}
+
 export interface SettingRowProps {
   settingKey: SettingKey;
   value: Settings[SettingKey];
   onChange: (value: Settings[SettingKey]) => void;
   models: AiModel[];
+  /**
+   * The provider's embedding and image models, for the two settings that name
+   * an OpenRouter slug (issue #171). Absent where the form may not read the
+   * catalogue: the vector model then lists the measured slugs alone, and the
+   * image model stays a text field.
+   */
+  catalogs?: ModelCatalogs;
   /** Set when the last save attempt refused this value. */
   error?: string;
   /**
@@ -543,15 +600,17 @@ export interface SettingRowProps {
 }
 
 /**
- * One form row. The control is derived from the *runtime* value type (plus the
- * `*ModelSlug` naming convention), not from a hardcoded per-key list, so a
- * setting added later to `settingsSchema` renders here automatically.
+ * One form row. The control is derived from the *runtime* value type (plus
+ * the model settings `model-setting-field.tsx` lists), not from a hardcoded
+ * per-key list, so a setting added later to `settingsSchema` renders here
+ * automatically.
  */
 export function SettingRow({
   settingKey,
   value,
   onChange,
   models,
+  catalogs,
   error,
   stored,
 }: SettingRowProps) {
@@ -586,8 +645,20 @@ export function SettingRow({
     'aria-invalid': error !== undefined,
   };
 
+  const reference = referenceControl({
+    settingKey,
+    value,
+    onChange,
+    models,
+    catalogs,
+    described,
+    id,
+  });
+
   let control: React.ReactNode;
-  if (choices !== undefined) {
+  if (reference !== null) {
+    control = reference;
+  } else if (choices !== undefined) {
     control = (
       <Select value={typeof value === 'string' ? value : ''} onValueChange={onChange}>
         <SelectTrigger id={id} className="w-full" {...described}>
@@ -626,27 +697,6 @@ export function SettingRow({
         described={described}
         id={id}
       />
-    );
-  } else if (settingKey.endsWith('ModelSlug')) {
-    control = (
-      <Select
-        value={value ?? AUTO_VALUE}
-        onValueChange={(next) => onChange(next === AUTO_VALUE ? null : next)}
-      >
-        <SelectTrigger id={id} className="w-full" {...described}>
-          <SelectValue>
-            {() => models.find((model) => model.slug === value)?.displayName ?? t('automatic')}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={AUTO_VALUE}>{t('automatic')}</SelectItem>
-          {models.map((model) => (
-            <SelectItem key={model.slug} value={model.slug}>
-              {model.displayName}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     );
   } else {
     control = (

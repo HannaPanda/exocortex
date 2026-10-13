@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Modèle pour les images",
-        "help": "Un modèle capable de générer des images, par exemple google/gemini-2.5-flash-image. Sans saisie, la génération d’images reste désactivée, même si l’option ci-dessus est activée."
+        "help": "Un modèle capable de générer des images, par exemple google/gemini-2.5-flash-image. Sans sélection, la génération d’images reste désactivée, même si l’option ci-dessus est activée."
       },
       "webResearchEnabled": {
         "label": "Faire des recherches sur le Web",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Base de données des entités",
-        "help": "L’identifiant de la base de données dont les lignes représentent les entités. Il figure dans la barre d’adresse après /seite/. Sans saisie, il n’y a aucun nom à rechercher. Une seule par installation : une entité est un élément du monde réel et ne doit pas être réinventée dans chaque espace de travail."
+        "help": "La base de données dont les lignes représentent les entités. Sans sélection, il n’y a aucun nom à rechercher. Une seule par installation : une entité est une chose dans le monde réel et ne doit pas être réinventée dans chaque espace de travail."
       },
       "minAliasLength": {
         "label": "Alias le plus court (caractères)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Modèle pour les vecteurs",
-        "help": "Doit fournir 1536 dimensions, telle est la largeur de la colonne. openai/text-embedding-3-small le fait par défaut, openai/text-embedding-3-large peut être tronqué à cette taille sur demande. Tout modèle ayant une autre longueur est rejeté plutôt que mal enregistré."
+        "help": "Seuls les modèles fournissant exactement 1536 dimensions sont proposés, ce qui correspond à la taille de la colonne. Un modèle d’une autre dimension serait rejeté au lieu d’être enregistré de façon erronée."
       },
       "semanticWeightPercent": {
         "label": "Poids du sens (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatique",
     "rangeHint": "Valeurs acceptées : de {min, number} à {max, number}.",
     "invalid": "Cette valeur n’est pas valide.",
     "invalidWithRange": "Non enregistré. Valeurs acceptées : de {min, number} à {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Déjà présent plus haut. Les doublons ne posent pas problème, mais sont inutiles.",
         "covered": "Déjà autorisé par {host}, car les sous-domaines sont inclus."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Chercher un modèle, par nom ou identifiant",
+      "loading": "Chargement de la liste…",
+      "empty": "Aucun modèle correspondant trouvé.",
+      "disabled": "désactivé",
+      "notListed": "pas dans la liste",
+      "missing": "« {slug} » n’est pas proposé ici : désactivé, supprimé ou incompatible. La valeur reste enregistrée jusqu’à ce que tu choisisses un autre modèle.",
+      "inherit": {
+        "automatic": "Automatique",
+        "chat": "Comme dans le chat",
+        "defaultModel": "Modèle par défaut",
+        "compaction": "Comme pour les résumés",
+        "capture": "Comme pour la condensation",
+        "off": "Aucune génération d’images"
+      },
+      "inheritDetail": {
+        "automatic": "Le modèle défini par l’installation",
+        "chat": "Le même modèle que celui actuellement utilisé pour le chat",
+        "defaultModel": "Hérite du modèle par défaut",
+        "compaction": "Hérite du modèle pour les résumés, sinon du modèle par défaut",
+        "capture": "Hérite du modèle pour la condensation des sessions",
+        "off": "Sans modèle, la génération d’images reste désactivée"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Chercher une base de données, par titre ou espace de travail",
+      "none": "Aucune base de données",
+      "noneDetail": "Sans base de données, personne ne recherche de noms",
+      "untitled": "Base de données sans titre",
+      "notListed": "introuvable dans tes espaces de travail",
+      "missing": "La base de données enregistrée « {id} » n’est visible dans aucun espace de travail dont tu es membre : supprimée, archivée ou non partagée. La valeur reste enregistrée jusqu’à ce que tu en choisisses une autre.",
+      "open": "Ouvrir « {title} »",
+      "columnsMissing": "Il manque à cette base de données les éléments requis par la recherche de noms : {columns}. « Type » est une sélection, « Alias » est un texte. Sans ces deux éléments, la recherche ne trouvera aucun nom."
     }
   },
   "groupNav": {

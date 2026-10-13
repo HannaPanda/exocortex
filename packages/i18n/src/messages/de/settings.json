@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Modell für Bilder",
-        "help": "Ein Modell, das Bilder ausgeben kann, zum Beispiel google/gemini-2.5-flash-image. Ohne Eintrag bleibt die Bilderzeugung aus, auch wenn der Schalter darüber an ist."
+        "help": "Ein Modell, das Bilder ausgeben kann, zum Beispiel google/gemini-2.5-flash-image. Ohne Auswahl bleibt die Bilderzeugung aus, auch wenn der Schalter darüber an ist."
       },
       "webResearchEnabled": {
         "label": "Im Web recherchieren",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Datenbank der Entitäten",
-        "help": "Die Id der Datenbank, deren Zeilen die Entitäten sind. Sie steht in der Adresszeile hinter /seite/. Ohne Eintrag gibt es keine Namen, nach denen gesucht werden könnte. Eine je Installation: eine Entität ist ein Ding in der Welt und soll nicht in jedem Arbeitsbereich neu erfunden werden."
+        "help": "Die Datenbank, deren Zeilen die Entitäten sind. Ohne Auswahl gibt es keine Namen, nach denen gesucht werden könnte. Eine je Installation: eine Entität ist ein Ding in der Welt und soll nicht in jedem Arbeitsbereich neu erfunden werden."
       },
       "minAliasLength": {
         "label": "Kürzester Aliasname (Zeichen)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Modell für Vektoren",
-        "help": "Muss 1536 Dimensionen liefern, so breit ist die Spalte. openai/text-embedding-3-small tut das von sich aus, openai/text-embedding-3-large kürzt auf Wunsch darauf. Ein Modell mit anderer Länge wird abgelehnt statt falsch gespeichert."
+        "help": "Angeboten werden nur Modelle, die nachweislich 1536 Dimensionen liefern, so breit ist die Spalte. Ein Modell mit anderer Länge würde abgelehnt statt falsch gespeichert."
       },
       "semanticWeightPercent": {
         "label": "Gewicht der Bedeutung (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatisch",
     "rangeHint": "Zulässig: {min, number} bis {max, number}.",
     "invalid": "Dieser Wert ist nicht gültig.",
     "invalidWithRange": "Nicht gespeichert. Zulässig: {min, number} bis {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Steht schon weiter oben. Doppelt schadet nicht, nützt aber auch nichts.",
         "covered": "Ist durch {host} schon erlaubt, weil Unterbereiche mitzählen."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Modell suchen, nach Name oder Kennung",
+      "loading": "Die Liste wird geladen …",
+      "empty": "Kein passendes Modell gefunden.",
+      "disabled": "ausgeschaltet",
+      "notListed": "nicht in der Liste",
+      "missing": "„{slug}“ wird hier nicht angeboten: ausgeschaltet, entfernt oder nicht passend. Der Wert bleibt gespeichert, bis du ein anderes Modell wählst.",
+      "inherit": {
+        "automatic": "Automatisch",
+        "chat": "Wie im Chat",
+        "defaultModel": "Standardmodell",
+        "compaction": "Wie bei Zusammenfassungen",
+        "capture": "Wie beim Verdichten",
+        "off": "Keine Bilderzeugung"
+      },
+      "inheritDetail": {
+        "automatic": "Das Modell, das die Installation vorgibt",
+        "chat": "Dasselbe Modell, mit dem der Chat gerade läuft",
+        "defaultModel": "Erbt das Standardmodell",
+        "compaction": "Erbt das Modell für Zusammenfassungen, sonst das Standardmodell",
+        "capture": "Erbt das Modell fürs Verdichten von Sitzungen",
+        "off": "Ohne Modell bleibt die Bilderzeugung aus"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Datenbank suchen, nach Titel oder Arbeitsbereich",
+      "none": "Keine Datenbank",
+      "noneDetail": "Ohne Datenbank sucht niemand nach Namen",
+      "untitled": "Unbenannte Datenbank",
+      "notListed": "in keinem deiner Arbeitsbereiche gefunden",
+      "missing": "Die gespeicherte Datenbank „{id}“ ist in keinem Arbeitsbereich zu sehen, in dem du Mitglied bist: gelöscht, archiviert oder nicht freigegeben. Der Wert bleibt gespeichert, bis du eine andere wählst.",
+      "open": "„{title}“ öffnen",
+      "columnsMissing": "Dieser Datenbank fehlt, was die Namenssuche liest: {columns}. „Typ“ ist eine Auswahl, „Aliasse“ ein Text. Ohne beide findet die Suche keine Namen."
     }
   },
   "groupNav": {

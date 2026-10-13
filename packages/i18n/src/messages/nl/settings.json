@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Model voor afbeeldingen",
-        "help": "Een model dat afbeeldingen kan uitvoeren, bijvoorbeeld google/gemini-2.5-flash-image. Zonder invoer blijft het genereren van afbeeldingen uitgeschakeld, ook als de schakelaar erboven aanstaat."
+        "help": "Een model dat afbeeldingen kan genereren, bijvoorbeeld google/gemini-2.5-flash-image. Zonder selectie blijft het genereren van afbeeldingen uitgeschakeld, zelfs als de schakelaar erboven aanstaat."
       },
       "webResearchEnabled": {
         "label": "Op het web zoeken",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Database van de entiteiten",
-        "help": "De id van de database waarvan de rijen de entiteiten zijn. Deze staat in de adresbalk achter /seite/. Zonder invoer zijn er geen namen om naar te zoeken. Eén per installatie: een entiteit is iets in de echte wereld en moet niet in elke werkruimte opnieuw worden uitgevonden."
+        "help": "De database waarvan de rijen de entiteiten zijn. Zonder selectie zijn er geen namen om op te zoeken. Eén per installatie: een entiteit is een ding in de wereld en hoeft niet in elke werkruimte opnieuw te worden uitgevonden."
       },
       "minAliasLength": {
         "label": "Kortste aliasnaam (tekens)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Model voor vectoren",
-        "help": "Moet 1536 dimensies opleveren, zo breed is de kolom. openai/text-embedding-3-small doet dat uit zichzelf, openai/text-embedding-3-large kan desgewenst worden ingekort tot dit aantal. Een model met een andere lengte wordt geweigerd in plaats van foutief opgeslagen."
+        "help": "Alleen modellen die aantoonbaar 1536 dimensies leveren worden aangeboden; zo breed is de kolom. Een model met een andere lengte wordt geweigerd in plaats van onjuist opgeslagen."
       },
       "semanticWeightPercent": {
         "label": "Gewicht van de betekenis (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatisch",
     "rangeHint": "Toegestaan: {min, number} tot {max, number}.",
     "invalid": "Deze waarde is niet geldig.",
     "invalidWithRange": "Niet opgeslagen. Toegestaan: {min, number} tot {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Staat al eerder in de lijst. Dubbeling schaadt niet, maar heeft ook geen nut.",
         "covered": "Is al toegestaan via {host}, omdat subdomeinen meetellen."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Model zoeken op naam of ID",
+      "loading": "Lijst wordt geladen…",
+      "empty": "Geen passend model gevonden.",
+      "disabled": "uitgeschakeld",
+      "notListed": "niet in de lijst",
+      "missing": "„{slug}” wordt hier niet aangeboden: uitgeschakeld, verwijderd of niet passend. De waarde blijft bewaard totdat je een ander model kiest.",
+      "inherit": {
+        "automatic": "Automatisch",
+        "chat": "Hetzelfde als in chat",
+        "defaultModel": "Standaardmodel",
+        "compaction": "Hetzelfde als bij samenvattingen",
+        "capture": "Hetzelfde als bij comprimeren",
+        "off": "Geen beeldgeneratie"
+      },
+      "inheritDetail": {
+        "automatic": "Het model dat door de installatie wordt voorgeschreven",
+        "chat": "Hetzelfde model waarmee de chat momenteel draait",
+        "defaultModel": "Erft het standaardmodel",
+        "compaction": "Erft het model voor samenvattingen, anders het standaardmodel",
+        "capture": "Erft het model voor het comprimeren van sessies",
+        "off": "Zonder model blijft beeldgeneratie uitgeschakeld"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Database zoeken op titel of werkruimte",
+      "none": "Geen database",
+      "noneDetail": "Zonder database zoekt niemand naar namen",
+      "untitled": "Naamloze database",
+      "notListed": "in geen van je werkruimtes gevonden",
+      "missing": "De opgeslagen database „{id}” is in geen enkele werkruimte te zien waarvan je lid bent: verwijderd, gearchiveerd of niet gedeeld. De waarde blijft bewaard totdat je een andere kiest.",
+      "open": "„{title}” openen",
+      "columnsMissing": "In deze database ontbreekt wat de zoekfunctie naar namen leest: {columns}. „Type” is een selectieveld, „Aliassen” is tekst. Zonder beide vindt de zoekfunctie geen namen."
     }
   },
   "groupNav": {

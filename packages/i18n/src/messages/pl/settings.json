@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Model do generowania obrazów",
-        "help": "Model potrafiący generować obrazy, na przykład google/gemini-2.5-flash-image. Bez podania wartości generowanie obrazów pozostaje wyłączone, nawet jeśli przełącznik powyżej jest włączony."
+        "help": "Model generujący obrazy, na przykład google/gemini-2.5-flash-image. Bez wyboru generowanie obrazów pozostaje wyłączone, nawet jeśli powyższy przełącznik jest włączony."
       },
       "webResearchEnabled": {
         "label": "Wyszukiwanie w internecie",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Baza danych encji",
-        "help": "ID bazy danych, której wierszami są encje. Znajduje się w pasku adresu po /strona/. Przy braku wpisu nie ma nazw, których można by szukać. Jedna na instalację: encja to rzecz w świecie rzeczywistym i nie powinna być wymyślana na nowo w każdym obszarze roboczym."
+        "help": "Baza danych, której wiersze stanowią encje. Bez wyboru nie ma nazw, według których można by wyszukiwać. Jedna na instalację: encja to rzecz w świecie rzeczywistym i nie powinna być tworzona na nowo w każdym obszarze roboczym."
       },
       "minAliasLength": {
         "label": "Najkrótszy alias (znaki)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Model wektorowy",
-        "help": "Musi dostarczać 1536 wymiarów – taka jest szerokość kolumny. Model openai/text-embedding-3-small robi to domyślnie, a openai/text-embedding-3-large może zostać do tego skrócony na żądanie. Model o innej długości zostanie odrzucony zamiast błędnie zapisany."
+        "help": "Dostępne są tylko modele, które rzeczywiście zwracają 1536 wymiarów – taka jest szerokość kolumny. Model o innej długości zostanie odrzucony, aby uniknąć błędnego zapisu."
       },
       "semanticWeightPercent": {
         "label": "Waga znaczenia (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatycznie",
     "rangeHint": "Dopuszczalne: od {min, number} do {max, number}.",
     "invalid": "Ta wartość jest nieprawidłowa.",
     "invalidWithRange": "Nie zapisano. Dopuszczalne: od {min, number} do {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Znajduje się już wyżej na liście. Duplikat nie szkodzi, ale też nic nie zmienia.",
         "covered": "Jest już dozwolony przez {host}, ponieważ poddomeny są uwzględniane automatycznie."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Szukaj modelu według nazwy lub identyfikatora",
+      "loading": "Wczytywanie listy…",
+      "empty": "Nie znaleziono pasującego modelu.",
+      "disabled": "wyłączone",
+      "notListed": "spoza listy",
+      "missing": "Model „{slug}” nie jest tu dostępny: został wyłączony, usunięty lub nie pasuje. Wartość pozostaje zapisana, dopóki nie wybierzesz innego modelu.",
+      "inherit": {
+        "automatic": "Automatycznie",
+        "chat": "Tak jak na czacie",
+        "defaultModel": "Model domyślny",
+        "compaction": "Tak jak przy podsumowaniach",
+        "capture": "Tak jak przy zagęszczaniu",
+        "off": "Bez generowania obrazów"
+      },
+      "inheritDetail": {
+        "automatic": "Model określony domyślnie przez instalację",
+        "chat": "Ten sam model, na którym aktualnie działa czat",
+        "defaultModel": "Dziedziczy model domyślny",
+        "compaction": "Dziedziczy model do podsumowań, a w razie jego braku – model domyślny",
+        "capture": "Dziedziczy model do zagęszczania sesji",
+        "off": "Bez modelu generowanie obrazów pozostaje wyłączone"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Szukaj bazy danych według tytułu lub obszaru roboczego",
+      "none": "Brak bazy danych",
+      "noneDetail": "Bez bazy danych nikt nie szuka nazw",
+      "untitled": "Baza danych bez nazwy",
+      "notListed": "nie znaleziono w żadnym z twoich obszarów roboczych",
+      "missing": "Zapisana baza danych „{id}” nie jest widoczna w żadnym obszarze roboczym, do którego należysz: została usunięta, zarchiwizowana lub nieudostępniona. Wartość pozostaje zapisana, dopóki nie wybierzesz innej.",
+      "open": "Otwórz „{title}”",
+      "columnsMissing": "W tej bazie danych brakuje elementów wymaganych do wyszukiwania nazw: {columns}. „Typ” to pole wyboru, a „Aliasy” to tekst. Bez obu wyszukiwanie nie znajdzie żadnych nazw."
     }
   },
   "groupNav": {

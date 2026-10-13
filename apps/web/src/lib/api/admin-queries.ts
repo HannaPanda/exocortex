@@ -13,6 +13,7 @@ import {
   type AgentSessionListResponse,
   type AgentSessionRevertResponse,
   type AiModel,
+  type AiModelCatalogOutput,
   type AiModelCatalogResponse,
   type AiModelEndpointListResponse,
   type AiModelListResponse,
@@ -224,16 +225,21 @@ export function useDeleteAiModel() {
 }
 
 /**
- * The provider's current offer, for the "add from the catalogue" dialog.
+ * The provider's current offer, for the "add from the catalogue" dialog, and
+ * with `output` for the embedding and image model pickers (issue #171).
  *
- * Only fetched while the dialog is open (it is a network round trip to
+ * Only fetched while something needs it (it is a network round trip to
  * OpenRouter), and held for five minutes: prices and context windows do not
  * move within one sitting.
  */
-export function useAiModelCatalog(enabled: boolean): UseQueryResult<AiModelCatalogResponse> {
+export function useAiModelCatalog(
+  enabled: boolean,
+  output: AiModelCatalogOutput = 'text',
+): UseQueryResult<AiModelCatalogResponse> {
   return useQuery({
-    queryKey: adminQueryKeys.aiModelCatalog,
-    queryFn: () => apiRequest<AiModelCatalogResponse>('/api/admin/ai-models/catalog'),
+    queryKey: [...adminQueryKeys.aiModelCatalog, output],
+    queryFn: () =>
+      apiRequest<AiModelCatalogResponse>(`/api/admin/ai-models/catalog?output=${output}`),
     enabled,
     staleTime: 5 * 60 * 1000,
   });

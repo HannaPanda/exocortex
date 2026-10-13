@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Model for images",
-        "help": "A model capable of generating images, for example google/gemini-2.5-flash-image. Without an entry, image generation remains off even if the switch above is on."
+        "help": "A model capable of outputting images, for example google/gemini-2.5-flash-image. Without a selection, image generation stays off, even if the switch above is on."
       },
       "webResearchEnabled": {
         "label": "Research the web",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Entity database",
-        "help": "The ID of the database whose rows are the entities. It is in the address bar after /page/. Without an entry, there are no names to search for. One per installation: an entity is a thing in the world and shouldn’t be reinvented in every workspace."
+        "help": "The database whose rows are the entities. Without a selection, there are no names to search for. One per installation: an entity is a thing in the world and should not be reinvented in every workspace."
       },
       "minAliasLength": {
         "label": "Shortest alias name (characters)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Model for vectors",
-        "help": "Must provide 1536 dimensions; that is the width of the column. openai/text-embedding-3-small does this natively, and openai/text-embedding-3-large can truncate to it on request. A model with a different length is rejected instead of being saved incorrectly."
+        "help": "Only models known to produce 1536 dimensions are offered, which is the width of the column. A model with a different length would be rejected rather than stored incorrectly."
       },
       "semanticWeightPercent": {
         "label": "Semantic weight (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatic",
     "rangeHint": "Allowed: {min, number} to {max, number}.",
     "invalid": "This value is invalid.",
     "invalidWithRange": "Not saved. Allowed: {min, number} to {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Already listed above. Duplicates do no harm, but provide no benefit either.",
         "covered": "Already allowed by {host}, because subdomains are included."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Search models, by name or identifier",
+      "loading": "Loading list …",
+      "empty": "No matching model found.",
+      "disabled": "disabled",
+      "notListed": "not in the list",
+      "missing": "“{slug}” is not offered here: disabled, removed, or incompatible. The value remains saved until you pick another model.",
+      "inherit": {
+        "automatic": "Automatic",
+        "chat": "Same as chat",
+        "defaultModel": "Default model",
+        "compaction": "Same as summaries",
+        "capture": "Same as compacting",
+        "off": "No image generation"
+      },
+      "inheritDetail": {
+        "automatic": "The model specified by the installation",
+        "chat": "The same model the chat is currently using",
+        "defaultModel": "Inherits the default model",
+        "compaction": "Inherits the model for summaries, otherwise the default model",
+        "capture": "Inherits the model for compacting sessions",
+        "off": "Without a model, image generation stays off"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Search databases, by title or workspace",
+      "none": "No database",
+      "noneDetail": "Without a database, nothing searches for names",
+      "untitled": "Untitled database",
+      "notListed": "not found in any of your workspaces",
+      "missing": "The saved database “{id}” cannot be seen in any workspace where you are a member: deleted, archived, or not shared. The value remains saved until you pick another one.",
+      "open": "Open “{title}”",
+      "columnsMissing": "This database is missing what name search reads: {columns}. “Type” is a select column, “Aliases” is text. Without both, search will not find any names."
     }
   },
   "groupNav": {

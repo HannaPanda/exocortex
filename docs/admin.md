@@ -285,11 +285,11 @@ is readable as "an engine said no" rather than "nothing exists".
 Semantic search is off until somebody turns it on, because switching it on
 turns every indexed page into a paid embedding call.
 
-| Setting                        | Meaning                                                                                                                                                                                                                                                                                                   |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `search.semanticEnabled`       | Adds vector similarity beside full-text, fused by rank. Off: the search box and `recall` behave exactly as before. On: newly indexed pages are embedded as they are written, and `backfill-embeddings` works through the ones that already exist.                                                         |
-| `search.embeddingModelSlug`    | An OpenRouter slug that returns 1536 dimensions. `openai/text-embedding-3-small` (the default) does natively; `openai/text-embedding-3-large` shortens to it on request. Anything else is refused rather than stored wrong. Changing it makes the old vectors invisible and the backfill writes new ones. |
-| `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally.                                                                                                                                                                        |
+| Setting                        | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search.semanticEnabled`       | Adds vector similarity beside full-text, fused by rank. Off: the search box and `recall` behave exactly as before. On: newly indexed pages are embedded as they are written, and `backfill-embeddings` works through the ones that already exist.                                                                                                                                                                                                                |
+| `search.embeddingModelSlug`    | An OpenRouter slug that returns 1536 dimensions when asked for them. The picker offers only `EMBEDDING_MODELS_FITTING_COLUMN` (`packages/contracts/src/ai-models.ts`), every OpenRouter embedding model measured once on 2026-10-13; `text-embedding-ada-002` is not among them, because it refuses the `dimensions` parameter. Anything else is refused rather than stored wrong. Changing it makes the old vectors invisible and the backfill writes new ones. |
+| `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally.                                                                                                                                                                                                                                                                                                                               |
 
 Cost, so it is not a surprise: `text-embedding-3-small` is about two cents per
 million tokens, one vector per page of up to 24k characters, and a page whose
@@ -312,6 +312,9 @@ pnpm --filter @exocortex/database db:seed:ai-models
 
 # What the provider offers right now, marked with what the registry has.
 GET  /api/admin/ai-models/catalog
+# The embedding or image models the settings pickers list (issue #171).
+GET  /api/admin/ai-models/catalog?output=embeddings
+GET  /api/admin/ai-models/catalog?output=image
 
 # Register picked slugs with everything the provider knows about them.
 POST /api/admin/ai-models/catalog     # {"slugs":["z-ai/glm-5.2"],"enabled":true}
@@ -588,8 +591,14 @@ A page nobody has marked never reaches a model.
    that compares unequal to itself would make the form claim an edit nobody
    made, and warn about losing it on every navigation.
    The row's control follows from the value and the key's name
-   (`components/settings/setting-row.tsx`): a key ending in `ModelSlug` gets
-   the model picker, and a number whose key ends in `Bytes` gets an amount
+   (`components/settings/setting-row.tsx`): a setting that names a model is
+   listed by key in `MODEL_FIELDS` (`lib/setting-references.ts`, issue #171)
+   with the list it picks from and what its empty value means, and gets a
+   searchable picker: registry rows for the chat models, the embedding models
+   in `EMBEDDING_MODELS_FITTING_COLUMN` for the vector model, the provider's
+   image models for the cover model. `entities.databaseId` picks from the
+   databases in the reader's workspaces. A stored value no list offers stays
+   selected and is named as missing, never replaced. A number whose key ends in `Bytes` gets an amount
    with a unit (B, KB, MB, GB, KiB, MiB, GiB, issue #174). The value stays
    bytes on the wire; the field picks the largest unit that shows it exactly
    and refuses an amount that is no whole number of bytes, so a byte setting

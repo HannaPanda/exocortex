@@ -157,7 +157,7 @@
       },
       "imageModelSlug": {
         "label": "Modello per le immagini",
-        "help": "Un modello in grado di generare immagini, ad esempio google/gemini-2.5-flash-image. Senza questo valore la generazione di immagini resta disattivata, anche se l’opzione sopra è attiva."
+        "help": "Un modello in grado di generare immagini, ad esempio google/gemini-2.5-flash-image. Senza una selezione, la generazione di immagini rimane disattivata, anche se l’interruttore sopra è attivo."
       },
       "webResearchEnabled": {
         "label": "Cerca sul Web",
@@ -249,7 +249,7 @@
       },
       "databaseId": {
         "label": "Database delle entità",
-        "help": "L’ID del database le cui righe rappresentano le entità. Si trova nella barra degli indirizzi dopo /seite/. Senza indicazione non ci sono nomi da cercare. Uno per installazione: un’entità è una cosa nel mondo e non deve essere reinventata in ogni area di lavoro."
+        "help": "Il database le cui righe sono le entità. Senza una selezione non ci sono nomi da cercare. Uno per installazione: un’entità è una cosa nel mondo e non dovrebbe essere reinventata in ogni area di lavoro."
       },
       "minAliasLength": {
         "label": "Alias più breve (caratteri)",
@@ -279,7 +279,7 @@
       },
       "embeddingModelSlug": {
         "label": "Modello per vettori",
-        "help": "Deve fornire 1536 dimensioni, pari alla larghezza della colonna. openai/text-embedding-3-small lo fa in modo predefinito, openai/text-embedding-3-large può ridurle su richiesta. Un modello con una lunghezza diversa viene rifiutato invece di essere salvato in modo errato."
+        "help": "Vengono offerti solo modelli che forniscono dimostrabilmente 1536 dimensioni, pari alla larghezza della colonna. Un modello con una lunghezza diversa verrebbe rifiutato anziché memorizzato in modo errato."
       },
       "semanticWeightPercent": {
         "label": "Peso del significato (%)",
@@ -492,7 +492,6 @@
     }
   },
   "row": {
-    "automatic": "Automatico",
     "rangeHint": "Consentito: da {min, number} a {max, number}.",
     "invalid": "Questo valore non è valido.",
     "invalidWithRange": "Non salvato. Consentito: da {min, number} a {max, number}.",
@@ -547,6 +546,40 @@
         "duplicate": "Già presente più in alto. I duplicati non creano problemi, ma non servono a nulla.",
         "covered": "Già consentito da {host}, poiché i sottodomini sono inclusi."
       }
+    },
+    "modelPicker": {
+      "placeholder": "Cerca modello, per nome o identificatore",
+      "loading": "Caricamento dell’elenco…",
+      "empty": "Nessun modello corrispondente trovato.",
+      "disabled": "disattivato",
+      "notListed": "non nell’elenco",
+      "missing": "«{slug}» non è disponibile qui: disattivato, rimosso o non idoneo. Il valore rimane salvato finché non scegli un altro modello.",
+      "inherit": {
+        "automatic": "Automatico",
+        "chat": "Come nella chat",
+        "defaultModel": "Modello predefinito",
+        "compaction": "Come per i riepiloghi",
+        "capture": "Come per la compressione",
+        "off": "Nessuna generazione di immagini"
+      },
+      "inheritDetail": {
+        "automatic": "Il modello specificato dall’installazione",
+        "chat": "Lo stesso modello attualmente in uso nella chat",
+        "defaultModel": "Eredita il modello predefinito",
+        "compaction": "Eredita il modello per i riepiloghi, altrimenti il modello predefinito",
+        "capture": "Eredita il modello per la compressione delle sessioni",
+        "off": "Senza un modello la generazione di immagini rimane disattivata"
+      }
+    },
+    "entityDatabase": {
+      "placeholder": "Cerca database, per titolo o area di lavoro",
+      "none": "Nessun database",
+      "noneDetail": "Senza un database nessuno cerca nomi",
+      "untitled": "Database senza titolo",
+      "notListed": "non trovato in nessuna delle tue aree di lavoro",
+      "missing": "Il database salvato «{id}» non è visibile in nessuna area di lavoro di cui fai parte: eliminato, archiviato o non condiviso. Il valore rimane salvato finché non ne scegli un altro.",
+      "open": "Apri «{title}»",
+      "columnsMissing": "A questo database manca ciò che legge la ricerca dei nomi: {columns}. «Tipo» è una selezione, «Alias» è un testo. Senza entrambi la ricerca non trova nomi."
     }
   },
   "groupNav": {

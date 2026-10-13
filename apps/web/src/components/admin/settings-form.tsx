@@ -20,6 +20,7 @@ import {
   TabsContent,
 } from '@exocortex/ui';
 
+import { useAdminModelCatalogs } from '@/components/settings/model-setting-field';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import {
@@ -86,6 +87,7 @@ export function SettingsForm({ requestedGroup = null }: { requestedGroup?: strin
   // groups never loses an edit and one save covers all of them.
   // `?gruppe=` opens a group and moves it on when the address changes.
   const [group, setGroup] = useRequestedState<string | null>(requestedGroup, null);
+  const catalogs = useAdminModelCatalogs(group);
 
   // Initialise the draft once the query resolves. Setting state directly
   // during render (guarded so it only fires once) is the pattern React
@@ -268,6 +270,7 @@ export function SettingsForm({ requestedGroup = null }: { requestedGroup?: strin
                     value={currentDraft[key]}
                     onChange={(value) => updateField(key, value)}
                     models={modelsQuery.data?.models ?? []}
+                    catalogs={catalogs}
                     error={fieldErrors[key]}
                     stored={original[key]}
                   />
