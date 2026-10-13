@@ -58,6 +58,7 @@ const DESKTOP_SECTIONS = [
   'markierte-bloecke',
   'einstellungszeile',
   'seitenbaum',
+  'seitengliederung',
   'huelle',
 ] as const;
 
