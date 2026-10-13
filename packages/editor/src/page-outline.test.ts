@@ -12,7 +12,7 @@ type Block =
   | { callout: readonly Block[] }
   | { columns: readonly (readonly Block[])[] };
 
-function toNode(block: Block): ProseMirrorDocument['content'][number] {
+function toNode(block: Block): NonNullable<ProseMirrorDocument['content']>[number] {
   if ('heading' in block) {
     const text = block.text ?? block.id;
     return {
