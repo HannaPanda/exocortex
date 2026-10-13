@@ -332,7 +332,7 @@
     "details": {
       "p1": "Agent zgłasza identyfikator sesji podczas nawiązywania połączenia i przekazuje go przy każdym kolejnym wywołaniu. Wszystko, co zostanie zapisane w tej sesji, jest z nią powiązane: „te osiem stron zmodyfikował Claude Code dziś rano” to jedno pytanie z jedną odpowiedzią, zamiast ośmiu osobnych wpisów w historiach ośmiu stron. Listę w sekcji Administracja, Agenci przeszukasz według klienta, sesji lub konta i przefiltrujesz do sesji, w których faktycznie coś zapisano.",
       "p2": "Każdy wpis pokazuje stronę, czas, narzędzie oraz migawkę sprzed zmiany. Nie zawiera samego zapisanego tekstu: dziennik odsyła do stanu wcześniejszego zamiast kopiować treść, aby nie stać się drugim, niechronionym miejscem przechowywania twoich tekstów.",
-      "p3": "Cofanie zmian odbywa się dla każdej strony osobno, przez standardowe przywrócenie migawki. Świadomie nie dodano przycisku „cofnij całą sesję”: jeśli po agencie ktoś kontynuował edycję, wynikiem byłoby częściowe wycofanie, które tylko sprawia wrażenie pełnego."
+      "p3": "Całą sesję możesz tam cofnąć za pomocą „Cofnij”: każda strona zostaje przywrócona do swojej migawki sprzed sesji, a bieżący stan jest wcześniej zapisywany, więc ten krok można odwrócić. Strona, na której od tego czasu ktoś inny kontynuował pisanie, pozostaje nienaruszona i jest wymieniona wraz z powodem, aby częściowe wycofanie zmian nigdy nie wyglądało na kompletne. Poszczególne strony możesz wycofywać jak zwykle za pomocą ich migawek. Agenci mogą wyświetlać listę sesji, ale nie mogą ich samodzielnie cofać."
     },
     "where": "Administracja, sekcja Agenci."
   },

@@ -332,7 +332,7 @@
     "details": {
       "p1": "When connecting, an agent registers a session ID and passes it along with every subsequent call. Everything written during this session is linked to it: “these eight pages were touched by Claude Code early today” is one question with one answer, instead of eight individual entries in eight page histories. You can search the list under Administration, Agents by client, session, or account, and filter it to sessions that actually wrote.",
       "p2": "Each entry shows the page, timestamp, tool, and the snapshot from before the change. It does not show what was written: the journal references the previous version instead of copying content, so it does not become a second, unprotected repository for your texts.",
-      "p3": "Rollbacks are done per page, using the standard snapshot restore. There is deliberately no \"undo entire session\" button: where someone continued writing after the agent, the result would be a partial revert that looks as if it were complete."
+      "p3": "You can revert an entire session there with \"Revert\": every page is restored to its snapshot from before the session, and the current state is backed up beforehand, so the step itself is reversible. Any page that someone else has edited since then remains untouched and is listed along with the reason, so an incomplete revert never looks like a full one. You roll back individual pages as usual via their snapshots. Agents can list sessions, but cannot revert them themselves."
     },
     "where": "Administration, Agents section."
   },

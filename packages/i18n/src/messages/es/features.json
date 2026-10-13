@@ -332,7 +332,7 @@
     "details": {
       "p1": "Un agente registra un identificador de sesión al conectarse y lo incluye a partir de entonces en cada llamada. Todo lo que se escribe en esa sesión queda vinculado: «estas ocho páginas las ha tocado Claude Code esta mañana» es una sola pregunta con una sola respuesta, en lugar de ocho entradas individuales en el historial de ocho páginas. La lista en Administración, Agentes se puede buscar por cliente, sesión o cuenta, y filtrar por sesiones en las que realmente se haya escrito.",
       "p2": "Cada entrada muestra la página, la fecha y hora, la herramienta y la instantánea previa al cambio. No muestra lo que se ha escrito: el diario remite a la versión anterior en lugar de copiar contenido, evitando convertirse en un segundo almacén desprotegido para tus textos.",
-      "p3": "La reversión se hace página por página, mediante la restauración habitual de una instantánea. No existe un botón de «deshacer toda la sesión» por diseño: si alguien ha seguido escribiendo después del agente, el resultado sería una marcha atrás a medias con apariencia de haber sido completa."
+      "p3": "Puedes revertir una sesión entera allí con «Deshacer»: cada página se restablece a su instantánea previa a la sesión, y el estado actual se guarda antes, por lo que el paso en sí es reversible. Las páginas en las que otra persona haya seguido escribiendo desde entonces no se tocan y se indican con el motivo correspondiente, para que una reversión parcial nunca parezca completa. Para revertir páginas individuales, hazlo como de costumbre a través de sus instantáneas. Los agentes pueden listar sesiones, pero no revertirlas por sí mismos."
     },
     "where": "Administración, sección Agentes."
   },

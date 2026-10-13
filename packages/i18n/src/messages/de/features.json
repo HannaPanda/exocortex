@@ -332,7 +332,7 @@
     "details": {
       "p1": "Ein Agent meldet beim Verbinden eine Sitzungskennung an und trägt sie danach bei jedem Aufruf mit. Alles, was in dieser Sitzung geschrieben wird, hängt damit zusammen: \"diese acht Seiten hat Claude Code heute früh angefasst\" ist eine Frage mit einer Antwort, statt acht einzelner Einträge in acht Seitenverläufen. Die Liste unter Verwaltung, Agenten durchsuchst du nach Client, Sitzung oder Konto und filterst sie auf Sitzungen, die tatsächlich geschrieben haben.",
       "p2": "Jeder Eintrag zeigt Seite, Zeitpunkt, Werkzeug und den Schnappschuss von vor der Änderung. Er zeigt nicht, was geschrieben wurde: das Journal verweist auf den Stand davor, statt Inhalt zu kopieren, damit es nicht zu einer zweiten, ungeschützten Ablage deiner Texte wird.",
-      "p3": "Zurückgerollt wird pro Seite, über das gewöhnliche Wiederherstellen eines Schnappschusses. Einen Knopf \"ganze Sitzung zurücknehmen\" gibt es bewusst nicht: wo jemand nach dem Agenten weitergeschrieben hat, wäre das Ergebnis ein halber Rückbau, der so aussieht, als wäre er vollständig."
+      "p3": "Eine ganze Sitzung nimmst du dort mit \"Zurücknehmen\" zurück: jede Seite wird auf ihren Schnappschuss von vor der Sitzung gesetzt, und der aktuelle Stand wird vorher gesichert, der Schritt ist also selbst umkehrbar. Eine Seite, an der seither jemand anderes weitergeschrieben hat, bleibt unberührt und wird mit dem Grund genannt, damit ein halber Rückbau nie wie ein vollständiger aussieht. Einzelne Seiten rollst du wie gewohnt über ihre Schnappschüsse zurück. Agenten können Sitzungen auflisten, aber nicht selbst zurücknehmen."
     },
     "where": "Verwaltung, Bereich Agenten."
   },
