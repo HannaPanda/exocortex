@@ -53,8 +53,19 @@ describe('vapidAuthorizationHeader', () => {
   });
 
   it('binds the token to the push service origin and not to the endpoint path', () => {
-    const one = vapidAuthorizationHeader(keys, 'https://updates.push.services.mozilla.com/wpush/a');
-    const two = vapidAuthorizationHeader(keys, 'https://updates.push.services.mozilla.com/wpush/b');
+    // One clock for both: two calls on the wall clock can straddle a second
+    // and differ in `exp` alone, which failed a deploy on 2026-10-13.
+    const now = new Date('2026-09-20T10:00:00Z');
+    const one = vapidAuthorizationHeader(
+      keys,
+      'https://updates.push.services.mozilla.com/wpush/a',
+      now,
+    );
+    const two = vapidAuthorizationHeader(
+      keys,
+      'https://updates.push.services.mozilla.com/wpush/b',
+      now,
+    );
 
     expect(claims(parse(one).token).aud).toBe('https://updates.push.services.mozilla.com');
     expect(claims(parse(one).token)).toEqual(claims(parse(two).token));
