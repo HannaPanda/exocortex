@@ -1,0 +1,14 @@
+[Unit]
+Description=Check the CI on master every half hour (issue #192)
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Timer]
+# A run takes about a quarter of an hour, so a red build is heard about
+# within roughly 45 minutes of its push.
+OnCalendar=*:07/30
+Persistent=true
+RandomizedDelaySec=120
+Unit=exocortex-ci-watch.service
+
+[Install]
+WantedBy=timers.target

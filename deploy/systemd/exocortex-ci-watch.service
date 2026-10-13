@@ -1,0 +1,28 @@
+[Unit]
+Description=Ask GitHub whether the CI on master is red, and say so over Telegram
+Documentation=file:///var/www/exocortex/deploy/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=johanna
+Group=johanna
+# gh reads its token from ~/.config/gh, hermes its channel from ~/.hermes.
+Environment=HOME=/home/johanna
+WorkingDirectory=/var/www/exocortex
+ExecStart=/var/www/exocortex/deploy/ci-status.sh --alert
+# 1 is the answer "red", already delivered; 2 is "GitHub could not be asked",
+# which the next run retries. Neither is a broken unit.
+SuccessExitStatus=1 2
+TimeoutStartSec=2min
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-ci-watch
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true

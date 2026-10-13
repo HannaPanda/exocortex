@@ -20,6 +20,11 @@
 #
 # What it refuses to do: deploy a dirty tree, deploy past a red gate, or write
 # the deploy marker after a rollout that did not come back healthy.
+#
+# What it checks and what only the CI checks: by default the build here skips
+# the integration tests and the styleguide gate, which the CI runs on every
+# push (`build.sh --full-tests`). Step 1 shows the CI's last verdict on master
+# and warns when it is red, but does not stop (issue #192).
 
 set -euo pipefail
 
@@ -33,7 +38,7 @@ for arg in "$@"; do
     --skip-checks|--full-tests) BUILD_ARGS+=("$arg") ;;
     --dry-run) DRY_RUN=1 ;;
     -h|--help)
-      sed -n '2,22p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,28p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *)
@@ -125,6 +130,24 @@ if git remote get-url origin >/dev/null 2>&1; then
     warn "Could not reach origin. Rolling out the local HEAD without checking it against the remote."
   fi
 fi
+
+# The CI runs what this deploy does not: `build.sh --full-tests`, so the
+# integration tests and the styleguide gate. Its verdict is shown here because
+# for three weeks it was shown nowhere (issue #192). A warning, not a refusal:
+# an escape hatch for emergencies would become the habit, and
+# `exocortex-ci-watch.timer` reports a red master over Telegram anyway.
+# The `|| CI_STATUS=$?` is what keeps `set -e` from ending the deploy on "red".
+CI_STATUS=0
+CI_REPORT="$(bash deploy/ci-status.sh 2>&1)" || CI_STATUS=$?
+case $CI_STATUS in
+  0) ok "$(head -n 1 <<< "$CI_REPORT")" ;;
+  1)
+    warn "$(head -n 1 <<< "$CI_REPORT")"
+    tail -n +2 <<< "$CI_REPORT" | while IFS= read -r line; do warn "$line"; done
+    warn "This deploy runs build.sh without --full-tests and will not see that. Look at the run before going on."
+    ;;
+  *) warn "CI result unknown: $(head -n 1 <<< "$CI_REPORT")" ;;
+esac
 
 if [ -f "$MARKER" ]; then
   PREVIOUS="$(tr -d '[:space:]' < "$MARKER")"

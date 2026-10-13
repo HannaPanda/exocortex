@@ -102,6 +102,7 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 | `systemd/exocortex-backup-verify.{service,timer}`  | `/etc/systemd/system/` — the weekly restore test                        |
 | `systemd/exocortex-backup-alert@.service`          | `/etc/systemd/system/` — `OnFailure` for the three above                |
 | `systemd/exocortex-infisical-sync.{service,timer}` | `/etc/systemd/system/` — pulls secrets into `.env`                      |
+| `systemd/exocortex-ci-watch.{service,timer}`       | `/etc/systemd/system/` — Telegram when the CI on master turns red       |
 | `systemd/automation-stack-backup.{service,timer}`  | `/etc/systemd/system/` — the rest of the host, see Backups              |
 | `render-image/Dockerfile`                          | built by hand into the image `render.image` names                       |
 | `fail2ban/filter.d/exocortex-auth.conf`            | `/etc/fail2ban/filter.d/exocortex-auth.conf`                            |
@@ -620,6 +621,33 @@ again rather than trusting a green tick from somewhere else.
 A run takes around a quarter of an hour, and a private repository pays for its
 minutes, so the workflow cancels an older run on the same ref when a new push
 lands.
+
+### What is checked here and what only in the CI
+
+| Check                                             | `deploy.sh` here         | CI on every push |
+| ------------------------------------------------- | ------------------------ | ---------------- |
+| hard gates, build, lint, format, typecheck, units | yes                      | yes              |
+| integration tests (`pnpm test:integration`)       | only with `--full-tests` | yes              |
+| styleguide gate (screenshots, axe, keyboard)      | only with `--full-tests` | yes              |
+| a checkout that has never seen this host          | no                       | yes              |
+
+So the CI judges things the deploy does not, and for three weeks in
+September and October nobody read its verdict: master was red, the screenshot
+baselines were stale, and a real visual regression would have gone through
+unseen (issue #192). Two things now carry the verdict to a person:
+
+- **`deploy.sh` shows it.** Step 1 runs `deploy/ci-status.sh`, which reads the
+  newest finished (not cancelled) `build.yml` run on master. Green is one line;
+  red is a warning with the lines `build.sh` marked `✗` and the run's link. It
+  warns and goes on, on purpose: a switch for emergencies would become the
+  habit.
+- **`exocortex-ci-watch.timer` says it without a deploy.** Every half hour it
+  runs `deploy/ci-status.sh --alert` as `johanna` (gh's token, hermes's
+  channel). It speaks only on a change: once per newly red run, once when
+  master is green again. The last judged run sits in
+  `~/.local/state/exocortex/ci-watch.last`; a message hermes could not deliver
+  is retried on the next tick. `journalctl -u exocortex-ci-watch` shows every
+  answer.
 
 ## Operations
 
