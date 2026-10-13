@@ -822,6 +822,12 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   without the page tree, and the Map-Is-A-Room Rule in `DESIGN.md` is the one
   bounded exception to Motion-Is-State. A point is a star, and how it glows
   is the viewer's: `User.knowledgeMapAppearance`, tuned on the map itself.
+- ADR-085: a copy of a page without shared history is refused, never merged.
+  The collaboration server rejects in `beforeSync` any update holding a root
+  list item with neither `origin` nor `rightOrigin` while the stored type has
+  ever held an item, because only a document that never saw this one writes
+  that; the browser then deletes its `y-indexeddb` store and reloads. The
+  stored state always wins.
 
 Full list: `docs/adr/`.
 

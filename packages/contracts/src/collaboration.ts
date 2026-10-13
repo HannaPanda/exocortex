@@ -247,3 +247,13 @@ export type CollaborationProjectApplyResponse = z.infer<
 export function collaborationProjectApplyPath(projectId: string): string {
   return `/internal/projects/${projectId}/apply`;
 }
+
+/**
+ * Why the collaboration server closed a document's connection when the client
+ * offered a copy that shares no history with the stored one (ADR-085).
+ *
+ * Hocuspocus sends a per-document close as reason text with code 1000, so the
+ * reason is the only thing the browser can recognize it by. On this reason the
+ * client throws its offline copy away and loads the page again from the server.
+ */
+export const COLLABORATION_FOREIGN_HISTORY_REASON = 'exocortex:foreign_history';

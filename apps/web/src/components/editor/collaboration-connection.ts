@@ -6,6 +6,8 @@ import * as React from 'react';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 
+import { COLLABORATION_FOREIGN_HISTORY_REASON } from '@exocortex/contracts';
+
 import {
   type DocumentSessionState,
   presenceColor,
@@ -167,6 +169,31 @@ function attachSaveIndicator(
     }, SETTLE_DELAY_MS);
   });
   return () => clearTimeout(settle);
+}
+
+/**
+ * What to do when the server refuses this tab's copy of the page.
+ *
+ * The refusal means the copy shares no history with the stored page (ADR-085):
+ * merged, the page would carry its content twice. The offline store is what
+ * brought it, so it is deleted before the connection is built again from an
+ * empty document. Unsynced offline edits in that copy go with it; they belong
+ * to a version of the page the server no longer has. Runs once per connection.
+ */
+function offlineCopyDiscarder(
+  persistence: IndexeddbPersistence,
+  disposed: () => boolean,
+  rebuild: () => void,
+): () => void {
+  let discarding = false;
+  return () => {
+    if (discarding || disposed()) return;
+    discarding = true;
+    record('offline.discard', { reason: 'foreign_history' });
+    void persistence.clearData().finally(() => {
+      if (!disposed()) rebuild();
+    });
+  };
 }
 
 /** The three objects one open document is made of. */
@@ -396,6 +423,7 @@ export function useCollaborationConnection({
         if (Y.encodeStateVector(ydoc).length > 1) markReady();
       });
 
+      const discardOfflineCopy = offlineCopyDiscarder(persistence, () => disposed, retry);
       const nextTicket = ticketSource(documentId, ticket.ticket);
 
       /**
@@ -449,7 +477,10 @@ export function useCollaborationConnection({
         document: ydoc,
         token: nextTicket,
         onOpen: () => record('socket.open'),
-        onClose: ({ event }) => record('socket.close', { code: event.code, reason: event.reason }),
+        onClose: ({ event }) => {
+          record('socket.close', { code: event.code, reason: event.reason });
+          if (event.reason === COLLABORATION_FOREIGN_HISTORY_REASON) discardOfflineCopy();
+        },
         onStatus: ({ status }) => {
           record('status', { status });
           socketStatus =

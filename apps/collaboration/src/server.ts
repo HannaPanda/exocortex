@@ -13,10 +13,15 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { ForeignHistoryError, foreignRootTypes } from './foreign-history';
 import { createInternalContentHandler } from './internal-content';
 import { createInternalProjectHandler } from './internal-projects';
 import { DocumentPersistence } from './persistence';
 import { type AuthorizationRevocations, createAuthorizationRevocations } from './revocations';
+
+/** The y-protocols sync message types that carry content. */
+const SYNC_STEP_2 = 1;
+const SYNC_UPDATE = 2;
 
 /** Context attached to every authenticated collaboration connection. */
 export interface CollaborationContext {
@@ -188,6 +193,23 @@ export function createCollaborationServer(
         workspaceId: context.workspaceId,
         access: effectiveAccess,
       } satisfies CollaborationContext;
+    },
+
+    /**
+     * Refuses a copy of the page that shares no history with the stored one
+     * before Yjs can merge it in and double the page (ADR-085). Only sync step
+     * 2 and updates carry content; step 1 is a state vector.
+     */
+    async beforeSync({ type, payload, document, documentName, context }) {
+      if (type !== SYNC_STEP_2 && type !== SYNC_UPDATE) return;
+      const roots = foreignRootTypes(document, payload);
+      if (roots.length === 0) return;
+      logger.warn('Refused an update without shared history', {
+        documentId: documentName,
+        userId: context.userId,
+        roots: roots.join(','),
+      });
+      throw new ForeignHistoryError(roots);
     },
 
     extensions: [

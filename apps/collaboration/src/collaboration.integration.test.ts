@@ -10,6 +10,7 @@ import * as Y from 'yjs';
 import { issueCollaborationTicket, issueServiceToken } from '@exocortex/auth';
 import { loadCollaborationEnv } from '@exocortex/config';
 import {
+  COLLABORATION_FOREIGN_HISTORY_REASON,
   collaborationApplyPath,
   type CollaborationApplyRequest,
   type CollaborationEditNotice,
@@ -451,6 +452,49 @@ describe('collaboration server', () => {
 
     provider.destroy();
     ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+
+  // ADR-085: what a browser's offline copy did to a page on 2026-10-13.
+  it('refuses a copy of the page that shares no history with the stored one', async () => {
+    const server = startServer();
+    await server.listen();
+
+    const page = await createPage('Fremde Historie');
+    await prisma.documentContent.update({
+      where: { documentId: page },
+      data: { yjsState: Buffer.from(markdownToYjsState('# Titel\n\nGespeichert.').yjsState) },
+    });
+
+    // Built on its own, the way the API built a page before 2026-09-15.
+    const stale = new Y.Doc();
+    Y.applyUpdate(stale, markdownToYjsState('# Titel\n\nVeraltete Kopie.').yjsState);
+    let closeReason: string | null = null;
+    const provider = new HocuspocusProvider({
+      url: `ws://127.0.0.1:${TEST_PORT}`,
+      name: page,
+      token: ticketFor(page, 'write'),
+      document: stale,
+      onClose: ({ event }) => {
+        closeReason = event.reason;
+      },
+      ...({ WebSocketPolyfill: WebSocket } satisfies Pick<
+        HocuspocusProviderWebsocketConfiguration,
+        'WebSocketPolyfill'
+      >),
+    });
+
+    await waitFor(() => closeReason !== null);
+    expect(closeReason).toBe(COLLABORATION_FOREIGN_HISTORY_REASON);
+
+    // More than one debounce window: nothing of the stale copy may be stored.
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    const stored = await storedText(page);
+    expect(stored).toContain('Gespeichert.');
+    expect(stored).not.toContain('Veraltete Kopie.');
+
+    provider.destroy();
+    stale.destroy();
     await server.destroy();
   }, 60_000);
 });
