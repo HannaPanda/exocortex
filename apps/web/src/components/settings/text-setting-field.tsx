@@ -4,9 +4,16 @@ import type { SettingKey, Settings } from '@exocortex/contracts';
 import { Input, Textarea } from '@exocortex/ui';
 
 import { HostListSettingField } from '@/components/settings/host-list-field';
+import { TimeZonePicker } from '@/components/time-zone-picker';
 import { isHostListSettingKey } from '@/lib/webhook-hosts';
 
-/** A string setting: a host list, the system prompt, or one line of text. */
+/** The string settings that hold an IANA zone (issue #172). */
+const TIME_ZONE_SETTING_KEYS: ReadonlySet<SettingKey> = new Set([
+  'calendar.timeZone',
+  'notifications.digestTimeZone',
+]);
+
+/** A string setting: a host list, a time zone, the system prompt, or one line of text. */
 export function TextSettingField({
   settingKey,
   value,
@@ -31,6 +38,18 @@ export function TextSettingField({
         onChange={onChange}
         described={described}
         id={id}
+      />
+    );
+  }
+  if (TIME_ZONE_SETTING_KEYS.has(settingKey)) {
+    return (
+      <TimeZonePicker
+        id={id}
+        value={value}
+        onChange={onChange}
+        aria-describedby={described['aria-describedby']}
+        aria-invalid={described['aria-invalid']}
+        className="max-w-80"
       />
     );
   }

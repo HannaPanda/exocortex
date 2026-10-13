@@ -12,6 +12,7 @@ export * from './components/ui/button';
 export * from './components/ui/calendar';
 export * from './components/ui/card';
 export * from './components/ui/checkbox';
+export * from './components/ui/combobox';
 export * from './components/ui/command-palette';
 export * from './components/ui/context-menu';
 export * from './components/ui/dialog';

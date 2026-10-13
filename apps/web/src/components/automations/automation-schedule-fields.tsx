@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
+import { TimeZonePicker } from '@/components/time-zone-picker';
+
 import { SCHEDULE_KIND_ORDER, useAutomationWording, WEEKDAY_INDEXES } from './automation-labels';
 
 /**
@@ -24,10 +26,8 @@ import { SCHEDULE_KIND_ORDER, useAutomationWording, WEEKDAY_INDEXES } from './au
  * different fields is the one part of writing a rule that needs room, and the
  * dialog was already at the length where a reader stops finding things.
  *
- * The zone is a plain text field with the browser's own zone prefilled. A
- * searchable picker over four hundred IANA names would be a component to
- * maintain for a value almost nobody changes, and the API refuses a name the
- * runtime does not know, so a typo is caught rather than stored.
+ * The zone is `TimeZonePicker` with the browser's own zone prefilled (issue
+ * #172); the API still refuses a name the runtime does not know.
  */
 export interface ScheduleDraft {
   scheduleKind: AutomationScheduleKind;
@@ -158,15 +158,17 @@ export function AutomationScheduleFields({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="automation-schedule-zone">{t('zone')}</Label>
-        <Input
+        <TimeZonePicker
           id="automation-schedule-zone"
           data-testid="automation-schedule-zone"
           value={draft.scheduleTimeZone}
-          onChange={(event) => onChange({ scheduleTimeZone: event.target.value })}
-          placeholder="Europe/Berlin"
-          className="max-w-60"
+          onChange={(scheduleTimeZone) => onChange({ scheduleTimeZone })}
+          aria-describedby="automation-schedule-zone-hint"
+          className="max-w-80"
         />
-        <p className="text-xs text-muted-foreground">{t('zoneHint')}</p>
+        <p id="automation-schedule-zone-hint" className="text-xs text-muted-foreground">
+          {t('zoneHint')}
+        </p>
       </div>
     </div>
   );

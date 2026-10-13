@@ -64,5 +64,12 @@
     "invalid": "Questo non è un importo valido in dollari statunitensi. Sono consentite al massimo sei cifre decimali, ad esempio 2,50.",
     "outOfRange": "Valori consentiti: da {min} a {max}.",
     "keepsLastValid": "Viene mantenuto l’ultimo valore valido."
+  },
+  "timeZonePicker": {
+    "placeholder": "Cerca fuso orario, ad es. Roma",
+    "empty": "Nessun fuso orario trovato. La ricerca include città, identificatore, nome e fuso orario relativo.",
+    "thisDevice": "questo dispositivo",
+    "alias": "{id}, altra grafia di {zone}",
+    "unknown": "«{id}» non è un fuso orario noto. Rimarrà salvato finché non ne sceglierai uno dall’elenco."
   }
 }

@@ -64,5 +64,12 @@
     "invalid": "That’s not a valid US dollar amount. Up to six decimal places are allowed, for example 2.50.",
     "outOfRange": "Allowed: {min} to {max}.",
     "keepsLastValid": "The last valid value is saved."
+  },
+  "timeZonePicker": {
+    "placeholder": "Search time zone, such as Berlin",
+    "empty": "No time zone found. Searches match location, identifier, name, and offset.",
+    "thisDevice": "this device",
+    "alias": "{id}, alias of {zone}",
+    "unknown": "“{id}” is not a known time zone. It will stay saved until you pick one from the list."
   }
 }

@@ -4,6 +4,8 @@ import * as React from 'react';
 
 import { DatePicker, DateTimePicker, Input, Label } from '@exocortex/ui';
 
+import { TimeZonePicker } from '@/components/time-zone-picker';
+
 import { FIXTURE_DATE, FIXTURE_DATE_TIME } from '../fixtures';
 import { DsExample, DsState, DsStates } from '../showcase';
 
@@ -159,6 +161,42 @@ export function DatePickerExample() {
             variant="ghost"
             size="sm"
             aria-label="Zelle Datum"
+          />
+        </DsState>
+      </DsStates>
+    </DsExample>
+  );
+}
+
+/**
+ * `Combobox` through its one product use, `TimeZonePicker` (issue #172). The
+ * closed field shows only the stored id, so the screenshot does not move with
+ * the season or the machine's zone; the offsets live in the open list.
+ */
+export function TimeZonePickerExample() {
+  const [zone, setZone] = React.useState('Europe/Berlin');
+  const [empty, setEmpty] = React.useState('');
+  const [unknown, setUnknown] = React.useState('Mars/Olympus');
+  return (
+    <DsExample
+      id="feld-zeitzone"
+      title="Zeitzone"
+      source="apps/web/src/components/time-zone-picker.tsx"
+      note="Combobox aus packages/ui/src/components/ui/combobox.tsx: tippen filtert nach Ort, Kennung, Name und Versatz, Pfeile wandern, Enter wählt. Die Zone des Geräts steht oben. Eine unbekannte gespeicherte Kennung wird markiert und bleibt stehen, bis jemand eine andere wählt."
+    >
+      <DsStates>
+        <DsState label="Mit Wert">
+          <TimeZonePicker id="ds-zone-value" value={zone} onChange={setZone} className="w-72" />
+        </DsState>
+        <DsState label="Leer">
+          <TimeZonePicker id="ds-zone-empty" value={empty} onChange={setEmpty} className="w-72" />
+        </DsState>
+        <DsState label="Unbekannt gespeichert">
+          <TimeZonePicker
+            id="ds-zone-unknown"
+            value={unknown}
+            onChange={setUnknown}
+            className="w-72"
           />
         </DsState>
       </DsStates>

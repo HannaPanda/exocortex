@@ -64,5 +64,12 @@
     "invalid": "Dit is geen geldig bedrag in US-dollar. Maximaal zes decimalen toegestaan, bijvoorbeeld 2,50.",
     "outOfRange": "Toegestaan: {min} tot {max}.",
     "keepsLastValid": "De laatst geldige waarde wordt opgeslagen."
+  },
+  "timeZonePicker": {
+    "placeholder": "Tijdzone zoeken, bijv. Berlijn",
+    "empty": "Geen tijdzone gevonden. Er wordt gezocht op plaats, id, naam en tijdsverschil.",
+    "thisDevice": "dit apparaat",
+    "alias": "{id}, andere schrijfwijze van {zone}",
+    "unknown": "„{id}” is geen bekende tijdzone. Deze blijft opgeslagen totdat je er een uit de lijst kiest."
   }
 }

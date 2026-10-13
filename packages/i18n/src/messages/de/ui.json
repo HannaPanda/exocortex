@@ -64,5 +64,12 @@
     "invalid": "Das ist kein Betrag in US-Dollar. Erlaubt sind höchstens sechs Nachkommastellen, zum Beispiel 2,50.",
     "outOfRange": "Zulässig: {min} bis {max}.",
     "keepsLastValid": "Gespeichert wird der zuletzt gültige Stand."
+  },
+  "timeZonePicker": {
+    "placeholder": "Zeitzone suchen, etwa Berlin",
+    "empty": "Keine Zeitzone gefunden. Gesucht wird nach Ort, Kennung, Name und Versatz.",
+    "thisDevice": "dieses Gerät",
+    "alias": "{id}, andere Schreibweise von {zone}",
+    "unknown": "„{id}“ ist keine bekannte Zeitzone. Sie bleibt gespeichert, bis du eine aus der Liste wählst."
   }
 }

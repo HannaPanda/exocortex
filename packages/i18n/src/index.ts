@@ -13,6 +13,15 @@ export {
 export { type LocaleSources, matchLocale, negotiateLocale, resolveLocale } from './negotiate.js';
 export { DEFAULT_TIME_ZONE, TIME_ZONE_COOKIE, validTimeZone } from './time-zone.js';
 export {
+  canonicalTimeZone,
+  findTimeZoneOption,
+  matchesTimeZoneQuery,
+  supportedTimeZones,
+  timeZoneOption,
+  timeZoneOptions,
+  type TimeZoneOption,
+} from './time-zone-options.js';
+export {
   DEFAULT_LOCALE,
   isLocale,
   type Locale,

@@ -64,5 +64,12 @@
     "invalid": "To nie jest kwota w dolarach amerykańskich. Dozwolone jest maksymalnie sześć miejsc po przecinku, na przykład 2,50.",
     "outOfRange": "Dozwolony zakres: od {min} do {max}.",
     "keepsLastValid": "Zapisana zostanie ostatnia prawidłowa wartość."
+  },
+  "timeZonePicker": {
+    "placeholder": "Szukaj strefy czasowej, np. Berlin",
+    "empty": "Nie znaleziono strefy czasowej. Wyszukiwanie obejmuje miejscowość, identyfikator, nazwę i przesunięcie.",
+    "thisDevice": "to urządzenie",
+    "alias": "{id}, inna pisownia strefy {zone}",
+    "unknown": "„{id}” nie jest znaną strefą czasową. Pozostanie zapisana, dopóki nie wybierzesz strefy z listy."
   }
 }

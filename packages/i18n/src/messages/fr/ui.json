@@ -64,5 +64,12 @@
     "invalid": "Ce n’est pas un montant en dollars américains. Six décimales au maximum sont autorisées, par exemple 2,50.",
     "outOfRange": "Valeur autorisée : de {min} à {max}.",
     "keepsLastValid": "La dernière valeur valide est conservée."
+  },
+  "timeZonePicker": {
+    "placeholder": "Chercher un fuseau horaire, par exemple Paris",
+    "empty": "Aucun fuseau horaire trouvé. Recherche par lieu, identifiant, nom et décalage.",
+    "thisDevice": "cet appareil",
+    "alias": "{id}, autre graphie de {zone}",
+    "unknown": "« {id} » n’est pas un fuseau horaire connu. Il reste enregistré jusqu’à ce que tu en choisisses un dans la liste."
   }
 }
