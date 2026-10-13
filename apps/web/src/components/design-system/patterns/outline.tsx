@@ -99,7 +99,7 @@ export function PageOutlinePattern() {
             </nav>
           </DsState>
           <DsState label="Angepinnt">
-            <nav aria-label="Gliederung, angepinnt (Beispiel)" className="flex w-48 flex-col gap-1">
+            <nav aria-label="Gliederung, angepinnt (Beispiel)" className="flex w-56 flex-col gap-1">
               <OutlineHeader
                 count={rows.length}
                 pinned={pinned}

@@ -121,7 +121,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
         aria-label={t('label')}
         data-testid="page-outline-pinned"
         style={edge}
-        className="pointer-events-auto absolute top-6 flex max-h-[calc(100%-3rem)] w-48 flex-col gap-1"
+        className="pointer-events-auto absolute top-6 flex max-h-[calc(100%-3rem)] w-56 flex-col gap-1"
       >
         {header}
         <div ref={pinnedListRef} className="min-h-0 overflow-y-auto">
