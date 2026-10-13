@@ -8,9 +8,9 @@ import {
   findTimeZoneOption,
   matchesTimeZoneQuery,
   supportedTimeZones,
+  type TimeZoneOption,
   timeZoneOption,
   timeZoneOptions,
-  type TimeZoneOption,
 } from '@exocortex/i18n';
 import {
   Combobox,

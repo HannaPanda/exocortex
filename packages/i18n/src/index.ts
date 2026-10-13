@@ -17,9 +17,9 @@ export {
   findTimeZoneOption,
   matchesTimeZoneQuery,
   supportedTimeZones,
+  type TimeZoneOption,
   timeZoneOption,
   timeZoneOptions,
-  type TimeZoneOption,
 } from './time-zone-options.js';
 export {
   DEFAULT_LOCALE,
