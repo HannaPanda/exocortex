@@ -101,12 +101,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   };
   const edge = { right: `${String(scrollbarWidth + OUTLINE_GAP / 2)}px` };
   const header = (
-    <OutlineHeader
-      count={rows.length}
-      pinned={placement === 'pinned'}
-      canPin={canPin}
-      onPinnedChange={setPinned}
-    />
+    <OutlineHeader pinned={placement === 'pinned'} canPin={canPin} onPinnedChange={setPinned} />
   );
   const triggerLabel =
     activeRow === null

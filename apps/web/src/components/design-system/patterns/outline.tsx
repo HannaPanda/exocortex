@@ -85,12 +85,7 @@ export function PageOutlinePattern() {
               aria-label="Gliederung (Beispiel)"
               className="flex w-72 flex-col gap-1 rounded-lg border border-border-strong bg-popover p-1.5 shadow-md"
             >
-              <OutlineHeader
-                count={rows.length}
-                pinned={false}
-                canPin
-                onPinnedChange={() => undefined}
-              />
+              <OutlineHeader pinned={false} canPin onPinnedChange={() => undefined} />
               <OutlineList
                 rows={rows}
                 activeIndex={active}
@@ -100,12 +95,7 @@ export function PageOutlinePattern() {
           </DsState>
           <DsState label="Angepinnt">
             <nav aria-label="Gliederung, angepinnt (Beispiel)" className="flex w-56 flex-col gap-1">
-              <OutlineHeader
-                count={rows.length}
-                pinned={pinned}
-                canPin
-                onPinnedChange={setPinned}
-              />
+              <OutlineHeader pinned={pinned} canPin onPinnedChange={setPinned} />
               <OutlineList
                 rows={rows}
                 activeIndex={active}

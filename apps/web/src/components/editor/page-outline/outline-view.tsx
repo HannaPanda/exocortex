@@ -102,14 +102,16 @@ export function OutlineRail({
   );
 }
 
-/** The label above the list, with the pin control where pinning is possible. */
+/**
+ * The label above the list, with the pin control where pinning is possible.
+ * No count: the list beneath says how long it is, and in the pinned column
+ * the number cost the label its last letters.
+ */
 export function OutlineHeader({
-  count,
   pinned,
   canPin,
   onPinnedChange,
 }: {
-  count: number;
   pinned: boolean;
   canPin: boolean;
   onPinnedChange: (pinned: boolean) => void;
@@ -119,7 +121,6 @@ export function OutlineHeader({
     <SectionRule
       as="h2"
       className="min-h-7 px-2"
-      trailing={count}
       action={
         canPin || pinned ? (
           <Button
