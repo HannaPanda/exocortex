@@ -81,6 +81,7 @@ export function TimeZonePicker({
   const locale = useLocale();
   const [listed] = React.useState(() => supportedTimeZones().length > 0);
   const [own] = React.useState(browserZone);
+  const selectOnClick = React.useRef(false);
 
   const options = React.useMemo(() => {
     if (!listed) return [];
@@ -141,6 +142,16 @@ export function TimeZonePicker({
           aria-label={ariaLabel}
           aria-describedby={describedByAll}
           aria-invalid={invalid || unknown}
+          // The first click into a filled field selects its id, so typing
+          // searches instead of appending to `Europe/Berlin`.
+          onFocus={() => {
+            selectOnClick.current = true;
+          }}
+          onClick={(event) => {
+            if (!selectOnClick.current) return;
+            selectOnClick.current = false;
+            event.currentTarget.select();
+          }}
         />
         <ComboboxContent>
           <ComboboxEmpty>{t('empty')}</ComboboxEmpty>
@@ -169,7 +180,7 @@ export function TimeZonePicker({
         </ComboboxContent>
       </Combobox>
       {unknown ? (
-        <p id={unknownId} className="mt-1.5 text-xs text-destructive">
+        <p id={unknownId} className="mt-1.5 text-xs text-destructive-text">
           {t('unknown', { id: value })}
         </p>
       ) : null}

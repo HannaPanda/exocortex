@@ -71,5 +71,8 @@
     "thisDevice": "this device",
     "alias": "{id}, alias of {zone}",
     "unknown": "“{id}” is not a known time zone. It will stay saved until you pick one from the list."
+  },
+  "combobox": {
+    "toggle": "Show suggestions"
   }
 }

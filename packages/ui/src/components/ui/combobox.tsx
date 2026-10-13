@@ -3,6 +3,7 @@
 import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import * as React from 'react';
+import { useTranslations } from 'use-intl';
 
 import { cn } from '../../lib/utils';
 
@@ -27,6 +28,7 @@ function ComboboxInput({
   disabled = false,
   ...props
 }: React.ComponentProps<typeof ComboboxPrimitive.Input>) {
+  const t = useTranslations('ui.combobox');
   return (
     <div data-slot="combobox-field" className={cn('relative w-full', className)}>
       <ComboboxPrimitive.Input
@@ -41,6 +43,7 @@ function ComboboxInput({
       />
       <ComboboxPrimitive.Trigger
         data-slot="combobox-trigger"
+        aria-label={t('toggle')}
         disabled={disabled}
         className={cn(
           'absolute inset-y-0 right-0 flex w-9 items-center justify-center rounded-r-md text-muted-foreground outline-none',

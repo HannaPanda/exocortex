@@ -81,6 +81,14 @@ test.describe('design system', () => {
     await page.keyboard.press('Enter');
     await expect(empty).toHaveValue('America/New_York');
 
+    // A click into a filled field selects it, so typing searches afresh.
+    const filled = page.getByRole('combobox', { name: 'Zeitzone', exact: true });
+    await filled.click();
+    await page.keyboard.type('mitteleur');
+    await expect(filled).toHaveValue('mitteleur');
+    await expect(page.getByRole('option', { name: /Europe\/Paris/ })).toBeVisible();
+    await page.keyboard.press('Escape');
+
     const unknown = page.getByRole('combobox', { name: 'Zeitzone, unbekannt gespeichert' });
     await expect(unknown).toHaveAttribute('aria-invalid', 'true');
     await expect(

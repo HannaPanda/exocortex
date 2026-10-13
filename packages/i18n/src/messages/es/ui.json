@@ -71,5 +71,8 @@
     "thisDevice": "este dispositivo",
     "alias": "{id}, otra forma de escribir {zone}",
     "unknown": "«{id}» no es una zona horaria conocida. Se mantendrá guardada hasta que elijas una de la lista."
+  },
+  "combobox": {
+    "toggle": "Mostrar sugerencias"
   }
 }

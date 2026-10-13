@@ -71,5 +71,8 @@
     "thisDevice": "dit apparaat",
     "alias": "{id}, andere schrijfwijze van {zone}",
     "unknown": "„{id}” is geen bekende tijdzone. Deze blijft opgeslagen totdat je er een uit de lijst kiest."
+  },
+  "combobox": {
+    "toggle": "Suggesties tonen"
   }
 }

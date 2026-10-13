@@ -19716,6 +19716,10 @@
       "source": "d34c0efb6e98448a",
       "output": "4759498ac2a719c6"
     },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "a80b6a6cb8e22ab7"
+    },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
       "output": "fd987506b30b55ac"
@@ -42025,6 +42029,10 @@
     "shell.workspaceSwitcher.submit": {
       "source": "d34c0efb6e98448a",
       "output": "3fe5ff266fc3ceac"
+    },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "e5da4872378fbcaa"
     },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
@@ -64336,6 +64344,10 @@
       "source": "d34c0efb6e98448a",
       "output": "969418f4d5aea880"
     },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "bd2f1d7a26dbdc21"
+    },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
       "output": "a66f995ebcd06399"
@@ -86645,6 +86657,10 @@
     "shell.workspaceSwitcher.submit": {
       "source": "d34c0efb6e98448a",
       "output": "9bf626657ea30339"
+    },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "9b81b72a405ac2fa"
     },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
@@ -108956,6 +108972,10 @@
       "source": "d34c0efb6e98448a",
       "output": "20094fdb4eefdb03"
     },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "24df454f12f2e6d6"
+    },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
       "output": "322b9d70b50390f9"
@@ -131266,6 +131286,10 @@
       "source": "d34c0efb6e98448a",
       "output": "01e375aaaf064eac"
     },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "1a56b58f2c96852b"
+    },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",
       "output": "29e296d404681469"
@@ -153575,6 +153599,10 @@
     "shell.workspaceSwitcher.submit": {
       "source": "d34c0efb6e98448a",
       "output": "49ba5d18d8c4c23f"
+    },
+    "ui.combobox.toggle": {
+      "source": "d56a4f035564993c",
+      "output": "72c1e7487411d5c3"
     },
     "ui.commandPalette.description": {
       "source": "af76a2fa6311357e",

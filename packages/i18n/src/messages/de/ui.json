@@ -71,5 +71,8 @@
     "thisDevice": "dieses Gerät",
     "alias": "{id}, andere Schreibweise von {zone}",
     "unknown": "„{id}“ ist keine bekannte Zeitzone. Sie bleibt gespeichert, bis du eine aus der Liste wählst."
+  },
+  "combobox": {
+    "toggle": "Vorschläge zeigen"
   }
 }

@@ -71,5 +71,8 @@
     "thisDevice": "cet appareil",
     "alias": "{id}, autre graphie de {zone}",
     "unknown": "« {id} » n’est pas un fuseau horaire connu. Il reste enregistré jusqu’à ce que tu en choisisses un dans la liste."
+  },
+  "combobox": {
+    "toggle": "Afficher les suggestions"
   }
 }

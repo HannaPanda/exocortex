@@ -71,5 +71,8 @@
     "thisDevice": "to urządzenie",
     "alias": "{id}, inna pisownia strefy {zone}",
     "unknown": "„{id}” nie jest znaną strefą czasową. Pozostanie zapisana, dopóki nie wybierzesz strefy z listy."
+  },
+  "combobox": {
+    "toggle": "Pokaż podpowiedzi"
   }
 }

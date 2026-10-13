@@ -71,5 +71,8 @@
     "thisDevice": "questo dispositivo",
     "alias": "{id}, altra grafia di {zone}",
     "unknown": "«{id}» non è un fuso orario noto. Rimarrà salvato finché non ne sceglierai uno dall’elenco."
+  },
+  "combobox": {
+    "toggle": "Mostra suggerimenti"
   }
 }
