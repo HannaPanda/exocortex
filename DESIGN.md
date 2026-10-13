@@ -515,7 +515,12 @@ difference between them is a fact: their speed is in world units (a near
 neighbour hears first), the line's weight is its lane, a used point sends
 along its lines one after another (references first, the tree last), a read
 flows in and a write flows out, and a line between recently edited pages is
-busier than one in the archive.
+busier than one in the archive. Only the texture of a mote's signal is
+noise: each is a little larger or smaller than the next and draws a short
+fading trail, and at its own random moment, about one tenth of the time, its
+signal flickers, it trembles within its own glow or, rarely, it glitches (a
+lagging ghost, a cyan and magenta split taken from its own colour, a broken
+trail) for 50 to 150 ms. Never in step, never a rhythm, never a meaning.
 
 **The Signal-Fires-Then-Fades Rule.** When amber marks an event rather than a
 place (the save heartbeat), it brightens instantly and decays over
