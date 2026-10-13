@@ -108,8 +108,8 @@ export function activeTickIndex(ticks: readonly RailTick[], active: number | nul
 /** How the outline is offered, decided by the room beside the text column. */
 export type OutlinePlacement = 'pinned' | 'rail' | 'compact';
 
-/** Width of the pinned outline, in pixels (14rem): the header and its pin need it. */
-export const PINNED_WIDTH = 224;
+/** Width of the pinned outline, in pixels (15rem): the header, its rule and its pin need it. */
+export const PINNED_WIDTH = 240;
 /** The lane the collapsed scale needs beside the text, in pixels (2.5rem). */
 export const RAIL_LANE = 40;
 /** Air kept between the text column and anything beside it, in pixels. */
