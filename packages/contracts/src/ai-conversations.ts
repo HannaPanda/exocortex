@@ -69,6 +69,13 @@ export type AiConversationListResponse = z.infer<typeof aiConversationListRespon
 export const aiConversationDetailResponseSchema = z.object({
   conversation: aiConversationSchema,
   messages: z.array(aiConversationMessageSchema),
+  /**
+   * The conversation's newest run, whatever became of it; `null` before the
+   * first one. A failed run writes nothing into the transcript, so without
+   * this a reader who comes back later finds the work of the run and no word
+   * on why it stopped (2026-10-13).
+   */
+  lastRun: aiRunSchema.nullable(),
 });
 export type AiConversationDetailResponse = z.infer<typeof aiConversationDetailResponseSchema>;
 

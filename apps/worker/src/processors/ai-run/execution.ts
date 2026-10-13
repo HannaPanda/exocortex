@@ -1,6 +1,6 @@
 import {
   AI_NO_ELIGIBLE_PROVIDER,
-  type AiProvider,
+  AI_STREAM_INTERRUPTED,
   type AiRoutingRequirements,
   type AiToolCall,
   couldCompactionHelp,
@@ -8,29 +8,27 @@ import {
   estimateMessageTokens,
   planRoute,
   type RoutePlan,
-  type RoutingEndpoint,
 } from '@exocortex/ai';
 import {
   AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
   type AiRunDiagnosis,
+  type AiRunIncompleteTurnArgs,
   type AiRunPhase,
   type AiUsage,
-  type deriveAiRunTimeouts,
-  type ProviderRoutingOverride,
-  type QUEUE_NAMES,
 } from '@exocortex/contracts';
-import { type AiRun, type Prisma, type PrismaClient } from '@exocortex/database';
+import { type Prisma } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
-import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { runTimeoutDiagnosis } from '../../run-timeout';
 import { toolLoopDiagnosis } from '../../tool-ledger';
-import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
 import { requestRouting } from './agent-profile';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
+import { emptyTurnFailure, incompleteTurnDiagnosis, isEmptyTurn } from './empty-turn';
+import { type RunExecutionInput, type RunOutcome } from './execution-types';
 import {
+  MAX_EMPTY_TURN_RETRIES,
   MAX_TRUNCATION_RETRIES,
   PAUSED_CALL_TEXT,
   TRUNCATION_CONTINUE_PROMPT,
@@ -38,60 +36,7 @@ import {
 } from './loop-messages';
 import { toolCallEvent, turnEvent } from './run-events';
 import { abortFailure, type AbortReason, budgetFailure, runTimeoutFailure } from './run-failures';
-import { type RunTimeline } from './timeline';
 import { REASONING_LEVEL_TO_LOWER, toolCallSubject, toolCallTarget, toWireToolCalls } from './wire';
-
-type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
-type RunTimeouts = ReturnType<typeof deriveAiRunTimeouts>;
-
-/** Everything the turn loop needs to decide who may serve a request (ADR-032). */
-export interface RunRoutingInput {
-  endpoints: readonly RoutingEndpoint[];
-  /** The model an alias resolves to, for noticing that it moved. `null` for an ordinary model. */
-  aliasTargetSlug: string | null;
-  usableSharePercent: number;
-  requiresTools: boolean;
-  requiresReasoningEffort: boolean;
-  /** The smallest this prompt could be made; decides whether compacting is worth trying. */
-  floorInputTokens: number;
-  /** Compacts to the given budget and returns the rebuilt prompt. `null` when this run cannot compact. */
-  compact: ((budgetInputTokens: number) => Promise<AiMessage[]>) | null;
-  /** Called when the provider answered as a different model than the alias last resolved to. */
-  onAliasDrift: ((actualModel: string) => void) | null;
-  /** The agent profile's routing keys (issue #143), sent with every request. */
-  preferences: ProviderRoutingOverride | null;
-}
-
-export interface RunExecutionInput {
-  prisma: PrismaClient;
-  provider: AiProvider;
-  bus: RedisEventBus;
-  run: AiRun;
-  payload: AiJob['payload'];
-  logger: AiJob['logger'];
-  timeouts: RunTimeouts;
-  runner: ToolRunner | null;
-  /** Where each turn and tool call is recorded for the run inspector (issue #145). */
-  timeline: RunTimeline;
-  toolsEnabled: boolean;
-  maxOutputTokens: number;
-  maxToolIterations: number;
-  budgetMicroUsd: number;
-  messages: AiMessage[];
-  routing: RunRoutingInput;
-}
-
-/** What the run produced, whether or not it got as far as an answer. */
-export interface RunOutcome {
-  text: string;
-  usage: AiUsage | null;
-  failure: RunFailure | null;
-  toolIterations: number;
-  /** Calls made, where `toolIterations` counts the rounds they arrived in. */
-  toolCalls: number;
-  /** What the run was offered and what that weighed (issue #121); `null` without tools. */
-  toolContext: ToolContext | null;
-}
 
 /**
  * Runs the conversation with the provider until it produces an answer, fails,
@@ -134,6 +79,8 @@ class RunExecution {
   private toolIterations = 0;
   private spentMicroUsd = 0;
   private truncationRetries = 0;
+  /** Turns that came back with nothing and were asked for again. */
+  private emptyTurnRetries = 0;
   private sequence = 0;
   /** Why `runController` aborted; disambiguates the `catch` below (`null` until it fires). */
   private abortReason: AbortReason = null;
@@ -223,8 +170,19 @@ class RunExecution {
         }
       }
 
+      if (isEmptyTurn(turn, this.carriedText)) {
+        if (await this.retryEmptyTurn(turn)) continue;
+        return;
+      }
+
       if (turn.failure !== null) {
-        this.failure = turn.failure;
+        this.failure =
+          turn.failure.code === AI_STREAM_INTERRUPTED
+            ? {
+                ...turn.failure,
+                diagnosis: incompleteTurnDiagnosis(this.incompleteTurnFacts(true)),
+              }
+            : turn.failure;
         if (turn.text.length > 0) this.text = this.carriedText + turn.text;
         return;
       }
@@ -548,6 +506,48 @@ class RunExecution {
     ];
     if (!truncatedToolCall) this.carriedText += turn.text;
     return true;
+  }
+
+  /**
+   * Asks again for a turn that came back empty, and says whether to go on.
+   * Safe to repeat: nothing of it was executed or shown, so the same prompt
+   * goes out unchanged. Not silent: the panel gets a `retrying` phase, and the
+   * run, once the retries are spent, a failure that says what happened.
+   */
+  private async retryEmptyTurn(turn: TurnResult): Promise<boolean> {
+    const { logger, run, budgetMicroUsd } = this.input;
+    const interrupted = turn.failure !== null;
+    this.emptyTurnRetries += 1;
+    logger.warn('A turn came back without text or tool calls', {
+      runId: run.id,
+      model: run.model,
+      interrupted,
+      sawReasoning: this.turnSawReasoning,
+      attempt: this.emptyTurnRetries,
+    });
+    if (this.emptyTurnRetries > MAX_EMPTY_TURN_RETRIES) {
+      this.failure = emptyTurnFailure(this.incompleteTurnFacts(interrupted));
+      return false;
+    }
+    if (this.spentMicroUsd >= budgetMicroUsd) {
+      this.failure = budgetFailure(budgetMicroUsd);
+      return false;
+    }
+    await this.publishPhase('retrying');
+    return true;
+  }
+
+  private incompleteTurnFacts(interrupted: boolean): AiRunIncompleteTurnArgs {
+    const { run } = this.input;
+    return {
+      interrupted,
+      model: run.model,
+      effort: REASONING_LEVEL_TO_LOWER[run.reasoningLevel],
+      attempts: Math.max(1, this.emptyTurnRetries),
+      turnChars: this.turnChars,
+      sawReasoning: this.turnSawReasoning,
+      toolIterations: this.toolIterations,
+    };
   }
 
   /** Runs the turn's tool calls; `false` when the run must stop afterwards. */

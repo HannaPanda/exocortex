@@ -49,9 +49,32 @@ export const aiRunTimeoutArgsSchema = z.object({
 });
 export type AiRunTimeoutArgs = z.infer<typeof aiRunTimeoutArgsSchema>;
 
+/**
+ * `ai_stream_interrupted` / `ai_empty_answer`: a turn ended without an answer
+ * and without a tool call. Either the provider closed the stream before it
+ * said the answer was finished, or it said so with nothing in it. Before this
+ * existed both looked like a completed run with an empty bubble.
+ */
+export const aiRunIncompleteTurnArgsSchema = z.object({
+  /** `true` when no finish reason arrived, `false` when the provider finished with nothing. */
+  interrupted: z.boolean(),
+  model: z.string(),
+  effort: aiReasoningLevelSchema,
+  /** How often the same turn was asked for; an empty turn is retried before the run gives up. */
+  attempts: z.number().int().positive(),
+  /** Characters of the answer that had streamed before the last attempt broke off. */
+  turnChars: z.number().int().nonnegative(),
+  /** Whether the provider had said it was thinking in the last attempt. */
+  sawReasoning: z.boolean(),
+  /** Tool rounds the run got through before the turn that broke. */
+  toolIterations: z.number().int().nonnegative(),
+});
+export type AiRunIncompleteTurnArgs = z.infer<typeof aiRunIncompleteTurnArgsSchema>;
+
 export const aiRunDiagnosisSchema = z.discriminatedUnion('key', [
   z.object({ key: z.literal('toolLoop'), args: aiRunToolLoopArgsSchema }),
   z.object({ key: z.literal('runTimeout'), args: aiRunTimeoutArgsSchema }),
+  z.object({ key: z.literal('incompleteTurn'), args: aiRunIncompleteTurnArgsSchema }),
 ]);
 export type AiRunDiagnosis = z.infer<typeof aiRunDiagnosisSchema>;
 export type AiRunDiagnosisKey = AiRunDiagnosis['key'];

@@ -48,7 +48,8 @@
       "started": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} wordt uitgevoerd …",
       "succeeded": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … klaar",
       "failed": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … mislukt",
-      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … geweigerd, omdat deze run externe inhoud heeft gelezen"
+      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … geweigerd, omdat deze run externe inhoud heeft gelezen",
+      "retried": "Antwoord van de provider kwam leeg of afgebroken terug, de ronde wordt opnieuw aangevraagd …"
     },
     "target": {
       "document": "Pagina {id}",
@@ -59,7 +60,8 @@
       "reasoning": "AI denkt na",
       "compacting": "Oudere geschiedenis wordt samengevat",
       "writing": "Antwoord wordt geschreven",
-      "generating": "Antwoord wordt gegenereerd"
+      "generating": "Antwoord wordt gegenereerd",
+      "retrying": "Ronde wordt opnieuw aangevraagd"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "De AI heeft te veel tool-aanroepen gebruikt.",
       "ai_tool_call_invalid": "Een tool-aanroep kwam onvolledig binnen en is niet uitgevoerd.",
       "ai_budget_exceeded": "Het antwoord zou de kostenlimiet van deze uitvoering hebben overschreden.",
-      "ai_timeout": "De AI deed er te lang over."
+      "ai_timeout": "De AI deed er te lang over.",
+      "ai_stream_interrupted": "De provider heeft de verbinding verbroken voordat het antwoord klaar was. Typ „verder”, dan gaat de volgende run daar verder.",
+      "ai_empty_answer": "Het model heeft een leeg antwoord gegeven. Typ „verder”, dan gaat de volgende run daar verder."
     }
   },
   "context": {

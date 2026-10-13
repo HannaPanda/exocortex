@@ -36,7 +36,8 @@ import {
   evalToolDomains,
   resolveEvalHold,
 } from './ai-run/eval-hold';
-import { executeRun, type RunRoutingInput } from './ai-run/execution';
+import { executeRun } from './ai-run/execution';
+import { type RunRoutingInput } from './ai-run/execution-types';
 import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
 import {
   buildRunMessages,

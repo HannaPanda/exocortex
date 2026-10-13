@@ -2824,9 +2824,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "7f19043a4131ed2f"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "bbe81c239c3b6bc4"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "c37599e9b41bb664"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "242dc09b1b690741"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -2860,6 +2868,10 @@
       "source": "99371d344281c9b4",
       "output": "647a7cc29a67cfd1"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "f2398def324f6ea7"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "37989802b03ed591"
@@ -2891,6 +2903,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "1b53771700ad2758"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "4a8d1489766a12c2"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -5599,6 +5615,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "69c404591e99d86f"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "528d68ab0918be06"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "641d7652fa831c82"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "48ff69d3749da06a"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "6198f5aa0691ce92"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "883f8d4f6b360cb2"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "09fe1133c1c95cd6"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "dd71e710541bb865"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -25238,9 +25282,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "c72c773dfdefbab0"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "0931a32fe383bad4"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "5be8d0258c91df7a"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "17951a688052846d"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -25274,6 +25326,10 @@
       "source": "99371d344281c9b4",
       "output": "82d80ddab31136e5"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "d37179ee84fd9257"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "6ea029a4d9f2a2cc"
@@ -25305,6 +25361,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "58098f5ee7a4c717"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "37482c366c97611b"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -28013,6 +28073,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "34ffd63c48729a30"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "7ef454fe59c25e1b"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "66265c91e5bb1e54"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "0c17df73a2a6f8f4"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "c34e0739ce9d763d"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "288be96bcc7f316c"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "16a77d2e35e8d69f"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "2647d51e066dd3b6"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -47652,9 +47740,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "a4d33242cd3f6bbf"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "7a8437fa1b77937c"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "fa47c10e1a5e4cfd"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "5599d9fb06161cec"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -47688,6 +47784,10 @@
       "source": "99371d344281c9b4",
       "output": "a8e24972934242cd"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "7b5339e0e68c044c"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "7a047f53615eded6"
@@ -47719,6 +47819,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "4bca42f856819337"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "68f09ec0f8d94a16"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -50427,6 +50531,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "2470a94a94069cd0"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "1306b62223184da7"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "17ce768a2ee96c37"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "608bd23eb7ab858c"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "4b9a86ca9ebd8bc1"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "641d18602d6eb276"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "a9e54aa52a74be60"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "17a41b59d1dc5ca5"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -70066,9 +70198,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "df31b2884d65c120"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "6a94b374a2736498"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "442678021f6de967"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "d8d2e938545b1fb0"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -70102,6 +70242,10 @@
       "source": "99371d344281c9b4",
       "output": "4efc6ac310c3f218"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "478e967e8c1c7437"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "dffb11740c7e5b9c"
@@ -70133,6 +70277,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "d1445f7aecb3ca98"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "aa8d415afda6385a"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -72841,6 +72989,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "368802fd88e77d11"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "da4336abac4f0a58"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "bf6d79da56a3e5ce"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "cb6b1c6260ef1f81"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "ab68fb990e6f80ea"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "8ce4d787ddd58978"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "85cfdcb44a9829c2"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "a34c9be299698591"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -92480,9 +92656,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "916f5a52ae62d908"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "222242c8edfeb238"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "7af80b78021f48fb"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "f488794e7bf47c32"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -92516,6 +92700,10 @@
       "source": "99371d344281c9b4",
       "output": "b90854b499b8ba40"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "d481bfeb58f2e281"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "a9011d81df5fcafe"
@@ -92547,6 +92735,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "e03c0901fdd45657"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "bda99e56ba8c06ba"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -95255,6 +95447,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "aaef668843d6c94b"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "be7c543d6e33cccf"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "c5b6b40e711c6b6b"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "82ecff082951b438"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "98083d40eaafbd62"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "be97eb235bba14fb"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "bb4535f3b0ce83df"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "365f39b8c5a4a207"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -114894,9 +115114,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "b42823fbf69ed168"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "103d31476b900554"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "c3d6eec8fd8adac8"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "2cb7ad788f6c2522"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -114930,6 +115158,10 @@
       "source": "99371d344281c9b4",
       "output": "4e386cda791c2863"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "9fbc1c58219b3775"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "4cfeec4c3a6adf0c"
@@ -114961,6 +115193,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "eb98045f8fedd5ab"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "0b0cba23347db4b9"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -117669,6 +117905,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "692f128ba7db5472"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "e62244b668e3b328"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "f0ffc2993c56fbf8"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "b8a1c896aedaef28"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "ad199e734a63e19f"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "c309bd781fb2edea"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "ea86c2aaf3d2d967"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "367f33b340e5e3b9"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",
@@ -137308,9 +137572,17 @@
       "source": "e1bd313c2d008ed1",
       "output": "46ff7fd514393a73"
     },
+    "ai.run.errors.ai_empty_answer": {
+      "source": "b8c46595104d47d7",
+      "output": "3570a767050fdbbe"
+    },
     "ai.run.errors.ai_response_truncated": {
       "source": "9f5de393a626f9e4",
       "output": "87bf8bb18d489948"
+    },
+    "ai.run.errors.ai_stream_interrupted": {
+      "source": "b25c3b09cda60ff6",
+      "output": "fd2143e2f97a2699"
     },
     "ai.run.errors.ai_timeout": {
       "source": "6db15f2d7d9f365d",
@@ -137344,6 +137616,10 @@
       "source": "99371d344281c9b4",
       "output": "d4d874ca634f86d1"
     },
+    "ai.run.phase.retrying": {
+      "source": "eeccb3c09451e9dd",
+      "output": "d1fc5175856fc449"
+    },
     "ai.run.phase.tool": {
       "source": "59ab0df7a31c995d",
       "output": "1650f673989d5ad5"
@@ -137375,6 +137651,10 @@
     "ai.run.toolLine.refused": {
       "source": "1a2221451d6643dc",
       "output": "bcbc944a84dbdee8"
+    },
+    "ai.run.toolLine.retried": {
+      "source": "bad9aa45df389879",
+      "output": "39c4a3b555fde1b1"
     },
     "ai.run.toolLine.started": {
       "source": "5562a5d1b2622715",
@@ -140083,6 +140363,34 @@
     "database.views.tabsLabel": {
       "source": "4ed4ed7757b5e0d4",
       "output": "6e1d44603f867d2c"
+    },
+    "diagnostics.incompleteTurn.attempts": {
+      "source": "7075590937ef17d7",
+      "output": "f104ae5091299a71"
+    },
+    "diagnostics.incompleteTurn.empty": {
+      "source": "f3dfeb1907cf0aab",
+      "output": "0c338ed92db0579f"
+    },
+    "diagnostics.incompleteTurn.hint": {
+      "source": "5d1a8350055ba5f3",
+      "output": "89c07c32e52cc025"
+    },
+    "diagnostics.incompleteTurn.interrupted": {
+      "source": "f6426c31f4476098",
+      "output": "9cb044af133a9751"
+    },
+    "diagnostics.incompleteTurn.nothing": {
+      "source": "0fac3a6ee29e4380",
+      "output": "6d2e8e7794e9c02a"
+    },
+    "diagnostics.incompleteTurn.received": {
+      "source": "b08ddb7648113f4a",
+      "output": "0ede2e6670273eb7"
+    },
+    "diagnostics.incompleteTurn.thoughtOnly": {
+      "source": "2c8cc3611e1fb814",
+      "output": "35d268b43af94a69"
     },
     "diagnostics.runTimeout.effort.high": {
       "source": "fc240afbc771dd72",

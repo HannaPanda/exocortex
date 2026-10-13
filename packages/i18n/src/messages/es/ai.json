@@ -48,7 +48,8 @@
       "started": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} en ejecución …",
       "succeeded": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … completada",
       "failed": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … fallida",
-      "refused": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … rechazada porque esta ejecución leyó contenido externo"
+      "refused": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … rechazada porque esta ejecución leyó contenido externo",
+      "retried": "La respuesta del proveedor llegó vacía o cancelada, se está solicitando el turno de nuevo…"
     },
     "target": {
       "document": "Página {id}",
@@ -59,7 +60,8 @@
       "reasoning": "La IA está pensando",
       "compacting": "Resumiendo el historial anterior",
       "writing": "Escribiendo respuesta",
-      "generating": "Generando respuesta"
+      "generating": "Generando respuesta",
+      "retrying": "Solicitando el turno de nuevo"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "La IA ha necesitado demasiadas llamadas a herramientas.",
       "ai_tool_call_invalid": "Una llamada a herramienta llegó incompleta y no se ejecutó.",
       "ai_budget_exceeded": "La respuesta habría superado el límite de coste de esta ejecución.",
-      "ai_timeout": "La IA ha tardado demasiado tiempo."
+      "ai_timeout": "La IA ha tardado demasiado tiempo.",
+      "ai_stream_interrupted": "El proveedor interrumpió la conexión antes de terminar la respuesta. Escribe «continúa» y la siguiente ejecución seguirá desde ahí.",
+      "ai_empty_answer": "El modelo devolvió una respuesta vacía. Escribe «continúa» y la siguiente ejecución seguirá desde ahí."
     }
   },
   "context": {

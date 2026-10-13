@@ -31,5 +31,14 @@
       "xhigh": "muy alto",
       "max": "máximo"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "El proveedor cerró la conexión antes de que la respuesta estuviera lista: no llegó ninguna señal de finalización, por lo que no hay una respuesta completa.",
+    "empty": "El modelo marcó la respuesta como completada, pero no proporcionó texto ni ninguna llamada a herramientas.",
+    "received": "De la respuesta {chars, plural, one {había llegado un carácter} many {habían llegado # caracteres} other {habían llegado # caracteres}}, y luego se interrumpió.",
+    "thoughtOnly": "Antes de eso, el modelo solo estuvo razonando; no llegó nada de texto.",
+    "nothing": "No llegó absolutamente nada, ni siquiera razonamiento.",
+    "attempts": "{attempts, plural, one {El turno se ejecutó una vez.} many {El turno se solicitó # veces, cada vez con el mismo resultado.} other {El turno se solicitó # veces, cada vez con el mismo resultado.}}",
+    "hint": "Lo que la ejecución haya hecho hasta ese momento (llamadas a herramientas, cambios en páginas) está guardado. Escribe «continúa» y la siguiente ejecución retomará desde ahí. Si ocurre a menudo con este modelo, prueba con otro modelo o con un nivel de pensamiento más bajo."
   }
 }

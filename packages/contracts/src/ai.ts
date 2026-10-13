@@ -23,9 +23,11 @@ export type AiRunStatus = z.infer<typeof aiRunStatusSchema>;
  * provider adapter and never become deltas, and compaction only reports
  * itself once it is over (`ai.conversation.compacted`). `generating` ends
  * either of them again, so a client never has to guess when a named silence
- * stopped.
+ * stopped. `retrying` says the provider's last answer broke off empty and the
+ * same turn is being asked for again; a client keeps it as a line of its own,
+ * because it is something that happened rather than something going on.
  */
-export const aiRunPhaseSchema = z.enum(['reasoning', 'compacting', 'generating']);
+export const aiRunPhaseSchema = z.enum(['reasoning', 'compacting', 'generating', 'retrying']);
 export type AiRunPhase = z.infer<typeof aiRunPhaseSchema>;
 
 /** Widened from `['system', 'user', 'assistant']` to support the tool loop. */

@@ -157,8 +157,9 @@ export class ConversationsController {
   async detail(
     @CurrentSession() session: VerifiedSession,
     @Param('conversationId') conversationId: string,
+    @Req() request: FastifyRequest,
   ): Promise<AiConversationDetailResponse> {
-    return this.conversations.get(conversationId, session.userId);
+    return this.conversations.get(conversationId, session.userId, request.headers);
   }
 
   @Patch(':conversationId')

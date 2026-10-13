@@ -5,6 +5,7 @@ import * as React from 'react';
 import {
   advanceAiRunSequence,
   type AiConversationMessage,
+  type AiRun,
   type AiRunPhase,
   type AiRunStatus,
   INITIAL_AI_RUN_SEQUENCE_STATE,
@@ -22,8 +23,13 @@ import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider'
 export interface ToolActivityEntry {
   key: string;
   toolName: string;
-  /** `refused` means the trust boundary declined the call; nothing ran (issue #56). */
-  status: 'started' | 'succeeded' | 'failed' | 'refused';
+  /**
+   * `refused` means the trust boundary declined the call; nothing ran (issue #56).
+   * `retried` is no tool at all: the provider's answer came back empty and the
+   * worker asked for the same turn again. It stands in this list because it is
+   * one more thing the run did, and the reader wants it in order with the rest.
+   */
+  status: 'started' | 'succeeded' | 'failed' | 'refused' | 'retried';
   /** Compact identifier of what the call touched, e.g. `document:<id>`. */
   target: string | null;
 }
@@ -41,6 +47,8 @@ const EXPLAINED_RUN_ERRORS = [
   'ai_tool_call_invalid',
   'ai_budget_exceeded',
   'ai_timeout',
+  'ai_stream_interrupted',
+  'ai_empty_answer',
 ] as const;
 type ExplainedRunError = (typeof EXPLAINED_RUN_ERRORS)[number];
 
@@ -53,6 +61,44 @@ interface RunDiagnosisFields {
   errorDetail: string | null;
   errorDetailKey: string | null;
   errorDetailArgs: unknown;
+}
+
+/**
+ * The sentence for a run that ended without an answer: its own diagnosis
+ * when it has one (issue #118), rendered from its key in the viewer's
+ * language and from the stored German only for a key this build does not
+ * know (issue #98); the canned sentence for its code otherwise.
+ */
+export function runFailureText(
+  t: (key: `errors.${ExplainedRunError}` | 'failed') => string,
+  tDiagnostics: Parameters<typeof aiRunDiagnosisText>[0],
+  errorCode: string | null,
+  diagnosis: RunDiagnosisFields,
+): string {
+  const detail = aiRunDiagnosisText(tDiagnostics, diagnosis);
+  return detail ?? (isExplainedRunError(errorCode) ? t(`errors.${errorCode}`) : t('failed'));
+}
+
+/** A retried turn becomes a line of its own, in order with the tool calls around it. */
+function withRetryLine(current: ToolActivityEntry[], phase: AiRunPhase): ToolActivityEntry[] {
+  if (phase !== 'retrying') return current;
+  const key = `retry:${String(current.length)}`;
+  return [...current, { key, toolName: '', status: 'retried', target: null }];
+}
+
+/**
+ * How the conversation's newest run ended, when it ended without an answer,
+ * read from the server rather than remembered by this tab: a failure the
+ * socket reported is gone after a reload, and one that happened while nobody
+ * was watching was never reported here at all. `null` while something
+ * fresher (a run in flight, this tab's own error) stands in its place.
+ */
+export function useLastRunFailure(lastRun: AiRun | null, superseded: boolean): string | null {
+  const t = useTranslations('ai.run');
+  const tDiagnostics = useTranslations('diagnostics');
+  if (superseded || lastRun === null) return null;
+  if (lastRun.status !== 'failed' && lastRun.status !== 'timed_out') return null;
+  return runFailureText(t, tDiagnostics, lastRun.errorCode, lastRun);
 }
 
 const NO_DIAGNOSIS: RunDiagnosisFields = {
@@ -174,11 +220,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       // The run's own diagnosis wins over the canned sentence when it has one
       // (issue #118): "zu viele Werkzeugaufrufe" is the fact the reader
       // already had, and what the run did with those calls is the part that
-      // says what to try instead. Rendered from its key in the viewer's
-      // language, the stored German only for a key this build does not know
-      // (issue #98).
-      const detail = aiRunDiagnosisText(tDiagnostics, diagnosis);
-      setError(detail ?? (isExplainedRunError(errorCode) ? t(`errors.${errorCode}`) : t('failed')));
+      // says what to try instead.
+      setError(runFailureText(t, tDiagnostics, errorCode, diagnosis));
     },
     [activeConversationId, queryClient, t, tDiagnostics],
   );
@@ -237,6 +280,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     if (event.payload.runId !== activeRunId) return;
     setRunPhase(event.payload.phase);
     setLastActivityAt(Date.now());
+    setToolActivity((current) => withRetryLine(current, event.payload.phase));
   });
 
   useRealtimeEvent('ai.run.tool_call', (event) => {

@@ -3,6 +3,7 @@ import { Readable } from 'node:stream';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import {
+  AI_STREAM_INTERRUPTED,
   type AiGenerateRequest,
   type AiGenerateResult,
   type AiProvider,
@@ -2842,6 +2843,8 @@ interface ScriptedTurn {
   toolCalls?: readonly AiToolCall[];
   /** Reasoning fragments emitted before the answer, as a thinking model does. */
   reasoningChunks?: number;
+  /** Ends the stream without a finish reason, the way a dropped connection does. */
+  interrupted?: boolean;
 }
 
 /** Replays a fixed list of turns; the last entry answers every further turn. */
@@ -2880,6 +2883,10 @@ class ScriptedAiProvider implements AiProvider {
       yield { type: 'reasoning', charCount: 40 };
     }
     if (turn.text.length > 0) yield { type: 'delta', text: turn.text, sequence: 1 };
+    if (turn.interrupted === true) {
+      yield { type: 'error', code: AI_STREAM_INTERRUPTED, message: 'stream broke off' };
+      return;
+    }
     if (turn.toolCalls !== undefined) yield { type: 'tool_calls', toolCalls: turn.toolCalls };
     yield { type: 'done', text: turn.text, finishReason: turn.finishReason };
   }
@@ -3259,6 +3266,106 @@ describe('ai runs', () => {
     const secondTurnMessages = provider.requests[1]?.messages ?? [];
     expect(secondTurnMessages.at(-2)).toEqual({ role: 'assistant', content: 'Teil eins ' });
     expect(secondTurnMessages.at(-1)?.content).toContain('abgeschnitten');
+  }, 60_000);
+
+  it('asks again for a turn the provider broke off empty and then answers', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([
+      { text: '', finishReason: 'stop', reasoningChunks: 3, interrupted: true },
+      { text: 'Jetzt vollständig.', finishReason: 'stop' },
+    ]);
+
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(provider),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      queues,
+      modelRegistry: async () => null,
+    });
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-empty-turn-1', runId, workspaceId, userId })
+        .context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.resultText).toBe('Jetzt vollständig.');
+    expect(provider.requests).toHaveLength(2);
+    // The same prompt again: nothing of the empty turn went into the context.
+    expect(provider.requests[1]?.messages).toEqual(provider.requests[0]?.messages);
+  }, 60_000);
+
+  it('fails with a diagnosis instead of completing empty when the turn breaks off twice', async () => {
+    // 2026-10-13: Cline Pass closed the stream after a few seconds of
+    // thinking, and the run was recorded as completed with an empty answer.
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([
+      { text: '', finishReason: 'stop', reasoningChunks: 2, interrupted: true },
+    ]);
+
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(provider),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      queues,
+      modelRegistry: async () => null,
+    });
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-empty-turn-2', runId, workspaceId, userId })
+        .context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_stream_interrupted');
+    expect(run.errorDetailKey).toBe('incompleteTurn');
+    expect(run.errorDetailArgs).toMatchObject({
+      interrupted: true,
+      attempts: 2,
+      sawReasoning: true,
+    });
+    expect(run.errorDetail).toContain('weiter');
+    expect(provider.requests).toHaveLength(2);
+  }, 60_000);
+
+  it('fails with ai_empty_answer when the model finishes twice with nothing', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([{ text: '', finishReason: 'stop' }]);
+
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(provider),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      queues,
+      modelRegistry: async () => null,
+    });
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-empty-turn-3', runId, workspaceId, userId })
+        .context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_empty_answer');
+    expect(run.errorDetailArgs).toMatchObject({ interrupted: false, attempts: 2 });
   }, 60_000);
 
   it('fails with ai_response_truncated when a tool call is cut off mid-arguments', async () => {

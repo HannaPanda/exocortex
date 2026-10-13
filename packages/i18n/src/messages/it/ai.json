@@ -48,7 +48,8 @@
       "started": "Esecuzione dello strumento {tool}{hasTarget, select, yes { ({target})} other {}} in corso…",
       "succeeded": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … completato",
       "failed": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … non riuscito",
-      "refused": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … rifiutato perché questa esecuzione ha letto contenuti esterni"
+      "refused": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … rifiutato perché questa esecuzione ha letto contenuti esterni",
+      "retried": "La risposta del provider è tornata vuota o interrotta, nuovo tentativo per questo turno in corso…"
     },
     "target": {
       "document": "Pagina {id}",
@@ -59,7 +60,8 @@
       "reasoning": "L’IA sta riflettendo",
       "compacting": "Sintesi della cronologia precedente",
       "writing": "Scrittura della risposta",
-      "generating": "Generazione della risposta"
+      "generating": "Generazione della risposta",
+      "retrying": "Nuovo tentativo per questo turno in corso"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "L’IA ha utilizzato troppe chiamate agli strumenti.",
       "ai_tool_call_invalid": "Una chiamata a uno strumento è arrivata incompleta e non è stata eseguita.",
       "ai_budget_exceeded": "La risposta avrebbe superato il limite di costo per questa esecuzione.",
-      "ai_timeout": "L’IA ha impiegato troppo tempo."
+      "ai_timeout": "L’IA ha impiegato troppo tempo.",
+      "ai_stream_interrupted": "Il provider ha interrotto la connessione prima che la risposta fosse completa. Scrivi «continua» e l’esecuzione successiva riprenderà da lì.",
+      "ai_empty_answer": "Il modello ha restituito una risposta vuota. Scrivi «continua» e l’esecuzione successiva riprenderà da lì."
     }
   },
   "context": {

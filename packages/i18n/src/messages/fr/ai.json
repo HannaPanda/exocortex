@@ -48,7 +48,8 @@
       "started": "Outil {tool}{hasTarget, select, yes { ({target})} other {}} en cours d’exécution…",
       "succeeded": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… terminé",
       "failed": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… échec",
-      "refused": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… refusé car cette exécution a lu du contenu externe"
+      "refused": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… refusé car cette exécution a lu du contenu externe",
+      "retried": "La réponse du fournisseur est revenue vide ou interrompue, nouvelle tentative pour ce tour…"
     },
     "target": {
       "document": "Page {id}",
@@ -59,7 +60,8 @@
       "reasoning": "L’IA réfléchit",
       "compacting": "Synthèse de l’historique plus ancien",
       "writing": "Rédaction de la réponse",
-      "generating": "Génération de la réponse"
+      "generating": "Génération de la réponse",
+      "retrying": "Nouvelle tentative pour ce tour"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "L’IA a effectué trop d’appels d’outils.",
       "ai_tool_call_invalid": "Un appel d’outil est arrivé incomplet et n’a pas été exécuté.",
       "ai_budget_exceeded": "La réponse aurait dépassé la limite de coût de cette exécution.",
-      "ai_timeout": "L’IA a mis trop de temps."
+      "ai_timeout": "L’IA a mis trop de temps.",
+      "ai_stream_interrupted": "Le fournisseur a interrompu la connexion avant la fin de la réponse. Écris « continuer » pour reprendre l’exécution à cet endroit.",
+      "ai_empty_answer": "Le modèle a renvoyé une réponse vide. Écris « continuer » pour reprendre l’exécution à cet endroit."
     }
   },
   "context": {

@@ -9,6 +9,15 @@
  */
 export const MAX_TRUNCATION_RETRIES = 3;
 
+/**
+ * How often one run asks again for a turn that came back with nothing: no
+ * text, no tool call, often not even a finish reason. Asking again is safe,
+ * because nothing of such a turn was executed or shown; once is enough to get
+ * past a dropped connection, and a provider that does it twice in a row is
+ * not going to be talked out of it.
+ */
+export const MAX_EMPTY_TURN_RETRIES = 1;
+
 /** Sent after a text answer was cut off, to pick it up without repeating anything. */
 export const TRUNCATION_CONTINUE_PROMPT =
   'Deine vorige Antwort wurde am Ausgabelimit abgeschnitten. Setze genau an der Abbruchstelle fort: ' +

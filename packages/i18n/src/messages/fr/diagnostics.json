@@ -31,5 +31,14 @@
       "xhigh": "très élevé",
       "max": "maximal"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "Le fournisseur a interrompu la connexion avant que la réponse ne soit terminée : aucun signal de fin n’a été reçu, donc aucune réponse complète non plus.",
+    "empty": "Le modèle a signalé que la réponse était terminée, mais n’a renvoyé ni texte ni appel d’outil.",
+    "received": "De la réponse, {chars, plural, one {un caractère est arrivé} many {# de caractères sont arrivés} other {# caractères sont arrivés}}, puis elle s’est interrompue.",
+    "thoughtOnly": "Avant cela, le modèle a seulement réfléchi ; aucun texte n’est arrivé.",
+    "nothing": "Rien n’est arrivé du tout, pas même de réflexion.",
+    "attempts": "{attempts, plural, one {Le tour a tourné une fois.} many {Le tour a été demandé # de fois, à chaque fois avec le même résultat.} other {Le tour a été demandé # fois, à chaque fois avec le même résultat.}}",
+    "hint": "Ce que l’exécution a fait jusque-là (appels d’outils, modifications de pages) est enregistré. Écris « continuer », et la prochaine exécution reprendra à cet endroit. Si cela arrive souvent avec ce modèle, essaye un autre modèle ou un niveau de réflexion plus bas."
   }
 }

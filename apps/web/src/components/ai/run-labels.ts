@@ -19,6 +19,7 @@ export type RunLabelKey =
   | 'phase.tool'
   | 'phase.reasoning'
   | 'phase.compacting'
+  | 'phase.retrying'
   | 'phase.writing'
   | 'phase.generating';
 
@@ -73,6 +74,7 @@ export function currentPhaseLabel(
   }
   if (phase === 'reasoning') return { key: 'phase.reasoning' };
   if (phase === 'compacting') return { key: 'phase.compacting' };
+  if (phase === 'retrying') return { key: 'phase.retrying' };
   return { key: streamText.length > 0 ? 'phase.writing' : 'phase.generating' };
 }
 

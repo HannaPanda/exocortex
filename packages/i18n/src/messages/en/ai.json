@@ -48,7 +48,8 @@
       "started": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} running …",
       "succeeded": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … done",
       "failed": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … failed",
-      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … refused because this run read external content"
+      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … refused because this run read external content",
+      "retried": "The provider’s response was empty or interrupted, retrying turn …"
     },
     "target": {
       "document": "Page {id}",
@@ -59,7 +60,8 @@
       "reasoning": "AI is thinking",
       "compacting": "Summarizing older history",
       "writing": "Writing response",
-      "generating": "Generating response"
+      "generating": "Generating response",
+      "retrying": "Retrying turn"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "The AI used too many tool calls.",
       "ai_tool_call_invalid": "A tool call arrived incomplete and was not executed.",
       "ai_budget_exceeded": "The response would have exceeded the cost limit for this run.",
-      "ai_timeout": "The AI took too long."
+      "ai_timeout": "The AI took too long.",
+      "ai_stream_interrupted": "The provider closed the connection before the answer finished. Write “continue” and the next run will pick up from there.",
+      "ai_empty_answer": "The model returned an empty answer. Write “continue” and the next run will pick up from there."
     }
   },
   "context": {

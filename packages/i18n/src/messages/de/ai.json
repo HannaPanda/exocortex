@@ -48,7 +48,8 @@
       "started": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} wird ausgeführt …",
       "succeeded": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … fertig",
       "failed": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … fehlgeschlagen",
-      "refused": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … abgelehnt, weil dieser Lauf Fremdinhalte gelesen hat"
+      "refused": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … abgelehnt, weil dieser Lauf Fremdinhalte gelesen hat",
+      "retried": "Antwort des Anbieters kam leer oder abgebrochen zurück, die Runde wird noch einmal angefragt …"
     },
     "target": {
       "document": "Seite {id}",
@@ -59,7 +60,8 @@
       "reasoning": "KI denkt nach",
       "compacting": "Älterer Verlauf wird zusammengefasst",
       "writing": "Antwort wird geschrieben",
-      "generating": "Antwort wird erzeugt"
+      "generating": "Antwort wird erzeugt",
+      "retrying": "Runde wird noch einmal angefragt"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "Die KI hat zu viele Werkzeugaufrufe gebraucht.",
       "ai_tool_call_invalid": "Ein Werkzeugaufruf kam unvollständig an und wurde nicht ausgeführt.",
       "ai_budget_exceeded": "Die Antwort hätte das Kostenlimit dieses Laufs überschritten.",
-      "ai_timeout": "Die KI hat zu lange gebraucht."
+      "ai_timeout": "Die KI hat zu lange gebraucht.",
+      "ai_stream_interrupted": "Der Anbieter hat die Verbindung abgebrochen, bevor die Antwort fertig war. Schreib „weiter“, dann setzt der nächste Lauf dort an.",
+      "ai_empty_answer": "Das Modell hat eine leere Antwort geliefert. Schreib „weiter“, dann setzt der nächste Lauf dort an."
     }
   },
   "context": {

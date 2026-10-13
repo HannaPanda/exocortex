@@ -85,6 +85,14 @@ const assistantToolCallsSchema = z.array(
  */
 export const AI_NO_ELIGIBLE_PROVIDER = 'ai_no_eligible_provider';
 
+/**
+ * The stream ended before the upstream said the answer was finished: no
+ * `finish_reason` ever arrived. A subscription endpoint that drops the
+ * connection mid-thought does exactly this, and taking the silence for a
+ * clean `stop` turned it into a completed run with an empty answer.
+ */
+export const AI_STREAM_INTERRUPTED = 'ai_stream_interrupted';
+
 /** Whether a failed response is OpenRouter refusing the allowlist rather than failing. */
 function isRoutingRefusal(
   dialect: ChatCompletionsDialect,
@@ -379,6 +387,7 @@ export class ChatCompletionsProvider implements AiProvider {
       usage: null,
       firstTokenAt: null,
       finishReason: 'stop',
+      finished: false,
       /**
        * Tool calls arrive as fragments: the first chunk for an index carries
        * `id` and `function.name`, later chunks append to `function.arguments`.
@@ -389,6 +398,24 @@ export class ChatCompletionsProvider implements AiProvider {
 
     for await (const chunk of this.readStreamChunks(response.body, request.correlationId)) {
       yield* this.consumeChunk(chunk, state, request, startedAt);
+    }
+
+    if (!state.finished) {
+      // Whatever arrived is a fragment: half-assembled tool calls must not be
+      // executed, and the text is passed on only as what was received.
+      this.options.logger.warn(`${this.dialect.label} stream ended without a finish reason`, {
+        correlationId: request.correlationId,
+        textChars: state.text.length,
+        partialToolCalls: state.partialToolCalls.size,
+        usageReported: state.usage !== null,
+      });
+      if (state.usage !== null) yield { type: 'usage', usage: state.usage };
+      yield {
+        type: 'error',
+        code: AI_STREAM_INTERRUPTED,
+        message: `${this.dialect.label} closed the stream before the answer was finished`,
+      };
+      return;
     }
 
     let toolCalls: AiToolCall[] = [];
@@ -477,8 +504,10 @@ export class ChatCompletionsProvider implements AiProvider {
     if (delta?.tool_calls !== undefined) {
       mergeToolCallDeltas(state.partialToolCalls, delta.tool_calls);
     }
-    if (choice?.finish_reason !== undefined) {
+    // Intermediate chunks carry `finish_reason: null`; only a string ends the answer.
+    if (typeof choice?.finish_reason === 'string') {
       state.finishReason = mapFinishReason(choice.finish_reason);
+      state.finished = true;
     }
     if (chunk.usage !== undefined) {
       state.usage = this.mapUsage(
@@ -562,7 +591,7 @@ interface CompletionStreamChunk {
       reasoning?: string;
       tool_calls?: CompletionToolCallDelta[];
     };
-    finish_reason?: string;
+    finish_reason?: string | null;
   }[];
 }
 
@@ -581,6 +610,8 @@ interface StreamState {
   /** `Date.now()` when the first content, reasoning or tool-call fragment arrived. */
   firstTokenAt: number | null;
   finishReason: AiGenerateResult['finishReason'];
+  /** Whether the upstream named a finish reason at all; see `AI_STREAM_INTERRUPTED`. */
+  finished: boolean;
   partialToolCalls: Map<number, PartialToolCall>;
 }
 

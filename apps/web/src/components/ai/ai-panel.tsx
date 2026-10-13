@@ -29,7 +29,7 @@ import {
 import { RunActivity } from './run-activity';
 import { currentPhaseLabel, useRunLabels } from './run-labels';
 import { SourcePicker } from './source-picker';
-import { useAiRunTracker } from './use-ai-run-tracker';
+import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
 import { useConversationSettings } from './use-conversation-settings';
 import { usePinnedSources } from './use-pinned-sources';
 
@@ -90,6 +90,10 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   });
   const { pendingPageContextEnabled, clearPendingPageContext } = settings;
   const messages = conversationQuery.data?.messages ?? [];
+  const lastRunFailure = useLastRunFailure(
+    conversationQuery.data?.lastRun ?? null,
+    activeRunId !== null || error !== null,
+  );
   const streamingMessage = buildStreamingMessage({
     streamText,
     activeRunId,
@@ -249,7 +253,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         streamingMessage={streamingMessage}
         streaming={activeRunId !== null}
         notice={notice}
-        error={error}
+        error={error ?? lastRunFailure}
         conversationId={activeConversationId}
       />
 

@@ -31,5 +31,14 @@
       "xhigh": "very high",
       "max": "maximum"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "The provider closed the connection before the response was finished: no completion signal arrived, so there is no completed response either.",
+    "empty": "The model reported the response as finished, but delivered neither text nor a tool call.",
+    "received": "{chars, plural, one {One character} other {# characters}} of the response had arrived, then it cut off.",
+    "thoughtOnly": "Before that, the model only thought; no text arrived.",
+    "nothing": "Nothing arrived at all, not even thinking.",
+    "attempts": "{attempts, plural, one {The turn ran once.} other {The turn was requested # times, each time with the same result.}}",
+    "hint": "What the run did up to that point (tool calls, changes to pages) is saved. Type “continue”, and the next run will pick up from there. If this happens often with this model, trying a different model or a lower thinking level helps."
   }
 }

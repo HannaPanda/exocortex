@@ -48,7 +48,8 @@
       "started": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} em execução …",
       "succeeded": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … concluída",
       "failed": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … falhou",
-      "refused": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … recusada porque esta execução leu conteúdo externo"
+      "refused": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … recusada porque esta execução leu conteúdo externo",
+      "retried": "A resposta do provedor veio vazia ou foi interrompida, solicitando a rodada novamente…"
     },
     "target": {
       "document": "Página {id}",
@@ -59,7 +60,8 @@
       "reasoning": "IA pensando",
       "compacting": "Resumindo histórico anterior",
       "writing": "Escrevendo resposta",
-      "generating": "Gerando resposta"
+      "generating": "Gerando resposta",
+      "retrying": "Solicitando a rodada novamente"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "A IA fez chamadas de ferramenta demais.",
       "ai_tool_call_invalid": "Uma chamada de ferramenta chegou incompleta e não foi executada.",
       "ai_budget_exceeded": "A resposta teria excedido o limite de custo desta execução.",
-      "ai_timeout": "A IA demorou tempo demais."
+      "ai_timeout": "A IA demorou tempo demais.",
+      "ai_stream_interrupted": "O provedor interrompeu a conexão antes que a resposta terminasse. Digite “continuar” para que a próxima execução retome de onde parou.",
+      "ai_empty_answer": "O modelo retornou uma resposta vazia. Digite “continuar” para que a próxima execução retome de onde parou."
     }
   },
   "context": {

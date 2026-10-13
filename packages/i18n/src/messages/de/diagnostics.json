@@ -31,5 +31,14 @@
       "xhigh": "sehr hoch",
       "max": "maximal"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "Der Anbieter hat die Verbindung beendet, bevor die Antwort fertig war: es kam kein Abschlusssignal, also auch keine fertige Antwort.",
+    "empty": "Das Modell hat die Antwort als fertig gemeldet, aber weder Text noch einen Werkzeugaufruf geliefert.",
+    "received": "Von der Antwort {chars, plural, one {war ein Zeichen} other {waren # Zeichen}} angekommen, dann brach sie ab.",
+    "thoughtOnly": "Davor hat das Modell nur nachgedacht, Text kam keiner an.",
+    "nothing": "Es kam gar nichts an, auch kein Nachdenken.",
+    "attempts": "{attempts, plural, one {Die Runde lief einmal.} other {Die Runde wurde # Mal angefragt, jedes Mal mit demselben Ergebnis.}}",
+    "hint": "Was der Lauf bis dahin getan hat (Werkzeugaufrufe, Änderungen an Seiten), ist gespeichert. Schreib „weiter“, dann setzt der nächste Lauf dort an. Passiert das öfter mit diesem Modell, hilft ein anderes Modell oder eine niedrigere Denkstufe."
   }
 }

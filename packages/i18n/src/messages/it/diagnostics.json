@@ -31,5 +31,14 @@
       "xhigh": "molto alta",
       "max": "massima"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "Il provider ha interrotto la connessione prima che la risposta fosse completata: non è arrivato alcun segnale di completamento, quindi nessuna risposta pronta.",
+    "empty": "Il modello ha segnalato la risposta come completata, ma non ha fornito né testo né chiamate a strumenti.",
+    "received": "Della risposta {chars, plural, one {era arrivato un carattere} many {# caratteri} other {erano arrivati # caratteri}}, poi si è interrotta.",
+    "thoughtOnly": "Prima di allora il modello ha solo pensato, non è arrivato alcun testo.",
+    "nothing": "Non è arrivato nulla, nemmeno riflessioni.",
+    "attempts": "{attempts, plural, one {Il turno è stato eseguito una volta.} many {# volte} other {Il turno è stato richiesto # volte, ogni volta con lo stesso risultato.}}",
+    "hint": "Ciò che l’esecuzione ha fatto fino a quel momento (chiamate a strumenti, modifiche alle pagine) è salvato. Scrivi «continua» e l’esecuzione successiva ripartirà da lì. Se accade spesso con questo modello, prova a usarne un altro o a ridurre il livello di riflessione."
   }
 }

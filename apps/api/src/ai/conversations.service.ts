@@ -130,12 +130,22 @@ export class ConversationsService {
     private readonly settings: SettingsService,
   ) {}
 
-  async get(conversationId: string, userId: string): Promise<AiConversationDetailResponse> {
+  async get(
+    conversationId: string,
+    userId: string,
+    headers: ReaderLocaleHeaders = {},
+  ): Promise<AiConversationDetailResponse> {
     const conversation = await this.loadOwned(conversationId, userId);
-    const messages = await this.prisma.aiConversationMessage.findMany({
-      where: { conversationId: conversation.id },
-      orderBy: { createdAt: 'asc' },
-    });
+    const [messages, lastRun] = await Promise.all([
+      this.prisma.aiConversationMessage.findMany({
+        where: { conversationId: conversation.id },
+        orderBy: { createdAt: 'asc' },
+      }),
+      this.prisma.aiRun.findFirst({
+        where: { conversationId: conversation.id },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
     // The detail response already carries the transcript, so the preview costs
@@ -148,6 +158,10 @@ export class ConversationsService {
         firstUserMessage === null ? '' : previewOf(firstUserMessage.content),
       ),
       messages: messages.map((message) => conversationMessageToContract(message)),
+      lastRun:
+        lastRun === null
+          ? null
+          : mapAiRunRow(lastRun, await readerLocale(this.prisma, userId, headers)),
     };
   }
 

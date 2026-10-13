@@ -48,7 +48,8 @@
       "started": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} jest wykonywane…",
       "succeeded": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … ukończono",
       "failed": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … nie powiodło się",
-      "refused": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … odrzucono, ponieważ ten przebieg odczytał treści zewnętrzne"
+      "refused": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … odrzucono, ponieważ ten przebieg odczytał treści zewnętrzne",
+      "retried": "Odpowiedź dostawcy była pusta lub przerwana, ponawianie rundy…"
     },
     "target": {
       "document": "Strona {id}",
@@ -59,7 +60,8 @@
       "reasoning": "AI myśli",
       "compacting": "Podsumowywanie starszej historii",
       "writing": "Pisanie odpowiedzi",
-      "generating": "Generowanie odpowiedzi"
+      "generating": "Generowanie odpowiedzi",
+      "retrying": "Ponawianie rundy"
     },
     "elapsedSeconds": "{seconds} s",
     "elapsedMinutes": "{minutes} min {seconds} s",
@@ -77,7 +79,9 @@
       "ai_tool_limit_exceeded": "AI wykonała zbyt wiele wywołań narzędzi.",
       "ai_tool_call_invalid": "Wywołanie narzędzia dotarło niekompletne i nie zostało wykonane.",
       "ai_budget_exceeded": "Odpowiedź przekroczyłaby limit kosztów tego działania.",
-      "ai_timeout": "AI potrzebowała zbyt wiele czasu."
+      "ai_timeout": "AI potrzebowała zbyt wiele czasu.",
+      "ai_stream_interrupted": "Dostawca przerwał połączenie, zanim odpowiedź została ukończona. Wpisz „dalej”, aby kolejne uruchomienie podjęło pracę w tym miejscu.",
+      "ai_empty_answer": "Model zwrócił pustą odpowiedź. Wpisz „dalej”, aby kolejne uruchomienie podjęło pracę w tym miejscu."
     }
   },
   "context": {

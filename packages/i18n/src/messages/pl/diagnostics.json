@@ -31,5 +31,14 @@
       "xhigh": "bardzo wysoki",
       "max": "maksymalny"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "Dostawca zakończył połączenie, zanim odpowiedź była gotowa: nie nadeszła informacja o zakończeniu, a więc brak też ukończonej odpowiedzi.",
+    "empty": "Model zgłosił odpowiedź jako ukończoną, ale nie zwrócił ani tekstu, ani wywołania narzędzia.",
+    "received": "Z odpowiedzi {chars, plural, one {dotarł jeden znak} few {dotarły # znaki} many {dotarło # znaków} other {dotarło # znaku}}, po czym została przerwana.",
+    "thoughtOnly": "Wcześniej model tylko myślał, żaden tekst nie dotarł.",
+    "nothing": "Nie dotarło zupełnie nic, nawet proces myślenia.",
+    "attempts": "{attempts, plural, one {Tura została uruchomiona raz.} few {Tura była uruchamiana # razy, za każdym razem z tym samym wynikiem.} many {Tura była uruchamiana # razy, za każdym razem z tym samym wynikiem.} other {Tura była uruchamiana # raza, za każdym razem z tym samym wynikiem.}}",
+    "hint": "To, co wykonano do tego momentu (wywołania narzędzi, zmiany na stronach), jest zapisane. Napisz „dalej”, a kolejne uruchomienie podejmie pracę od tego miejsca. Jeśli zdarza się to częściej z tym modelem, pomoże inny model lub niższy poziom myślenia."
   }
 }

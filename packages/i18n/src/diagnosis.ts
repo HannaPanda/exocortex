@@ -1,5 +1,6 @@
 import {
   type AiRunDiagnosis,
+  type AiRunIncompleteTurnArgs,
   type AiRunTimeoutArgs,
   type AiRunToolLoopArgs,
   type AiRunToolTally,
@@ -35,9 +36,14 @@ export type DiagnosisTranslator = (
 const MAX_LISTED_TOOLS = 5;
 
 export function renderAiRunDiagnosis(t: DiagnosisTranslator, diagnosis: AiRunDiagnosis): string {
-  return diagnosis.key === 'toolLoop'
-    ? renderToolLoop(t, diagnosis.args)
-    : renderRunTimeout(t, diagnosis.args);
+  switch (diagnosis.key) {
+    case 'toolLoop':
+      return renderToolLoop(t, diagnosis.args);
+    case 'runTimeout':
+      return renderRunTimeout(t, diagnosis.args);
+    case 'incompleteTurn':
+      return renderIncompleteTurn(t, diagnosis.args);
+  }
 }
 
 /**
@@ -117,6 +123,27 @@ function renderRunTimeout(t: DiagnosisTranslator, args: AiRunTimeoutArgs): strin
   if (args.effort !== 'none' && args.turnChars === 0) lines.push(t('runTimeout.hintEffort'));
   else if (args.limit === 'run') lines.push(t('runTimeout.hintRun'));
   else lines.push(t('runTimeout.hintSmaller'));
+  return lines.join('\n');
+}
+
+/**
+ * Why a turn came back with nothing: whether the provider broke off or
+ * finished empty, what had arrived by then, and that the work so far is kept,
+ * which is what decides that "weiter" is the next thing to type.
+ */
+function renderIncompleteTurn(t: DiagnosisTranslator, args: AiRunIncompleteTurnArgs): string {
+  const effort = t(`runTimeout.effort.${args.effort}`);
+  const lines = [
+    args.interrupted ? t('incompleteTurn.interrupted') : t('incompleteTurn.empty'),
+    args.toolIterations === 0
+      ? t('runTimeout.ran', { model: args.model, effort })
+      : t('runTimeout.ranAfterRounds', { model: args.model, effort, rounds: args.toolIterations }),
+  ];
+  if (args.turnChars > 0) lines.push(t('incompleteTurn.received', { chars: args.turnChars }));
+  else if (args.sawReasoning) lines.push(t('incompleteTurn.thoughtOnly'));
+  else if (args.interrupted) lines.push(t('incompleteTurn.nothing'));
+  lines.push(t('incompleteTurn.attempts', { attempts: args.attempts }));
+  lines.push(t('incompleteTurn.hint'));
   return lines.join('\n');
 }
 

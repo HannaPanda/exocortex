@@ -54,6 +54,45 @@ describe('renderAiRunDiagnosis', () => {
       'Von der Antwort kam kein einziges Zeichen an: die ganze Zeit ist ins Nachdenken gegangen.',
     ]);
   });
+
+  it('says that the provider broke off, what had arrived, and that "weiter" picks it up', () => {
+    const text = renderAiRunDiagnosis(serverTranslator('de', 'diagnostics'), {
+      key: 'incompleteTurn',
+      args: {
+        interrupted: true,
+        model: 'cline-pass/deepseek-v4.1-flash',
+        effort: 'high',
+        attempts: 2,
+        turnChars: 0,
+        sawReasoning: true,
+        toolIterations: 25,
+      },
+    });
+    expect(text.split('\n')).toEqual([
+      expect.stringContaining('Der Anbieter hat die Verbindung beendet'),
+      'Gelaufen ist cline-pass/deepseek-v4.1-flash mit Denkstufe „hoch“ nach 25 Werkzeugrunden.',
+      'Davor hat das Modell nur nachgedacht, Text kam keiner an.',
+      'Die Runde wurde 2 Mal angefragt, jedes Mal mit demselben Ergebnis.',
+      expect.stringContaining('Schreib „weiter“'),
+    ]);
+  });
+
+  it('tells an empty finish apart from a broken stream', () => {
+    const text = renderAiRunDiagnosis(serverTranslator('de', 'diagnostics'), {
+      key: 'incompleteTurn',
+      args: {
+        interrupted: false,
+        model: 'm',
+        effort: 'none',
+        attempts: 2,
+        turnChars: 0,
+        sawReasoning: false,
+        toolIterations: 0,
+      },
+    });
+    expect(text).toContain('als fertig gemeldet');
+    expect(text).not.toContain('Es kam gar nichts an');
+  });
 });
 
 describe('aiRunDiagnosisText', () => {

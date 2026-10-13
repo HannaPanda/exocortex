@@ -186,6 +186,61 @@ describe('OpenRouterProvider.stream', () => {
     expect(events.at(-1)).toEqual({ type: 'done', text: 'vornach', finishReason: 'stop' });
   });
 
+  it('reports a stream that ends without a finish reason as interrupted', async () => {
+    // What Cline Pass did on 2026-10-13: a few seconds of thinking, then the
+    // connection closed. Taken for a clean `stop`, the run completed with an
+    // empty answer and nobody saw why.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        streamResponse([
+          { choices: [{ delta: { reasoning: 'Ich prüfe' }, finish_reason: null }] },
+          { choices: [{ delta: { reasoning: ' noch kurz.' }, finish_reason: null }] },
+        ]),
+      ),
+    );
+
+    const events = await collect(provider().stream(request));
+
+    expect(events.some((event) => event.type === 'done')).toBe(false);
+    expect(events.at(-1)).toEqual({
+      type: 'error',
+      code: 'ai_stream_interrupted',
+      message: 'OpenRouter closed the stream before the answer was finished',
+    });
+  });
+
+  it('never executes a tool call the interrupted stream left half-assembled', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        streamResponse([
+          {
+            choices: [
+              {
+                delta: {
+                  tool_calls: [
+                    {
+                      index: 0,
+                      id: 'call_1',
+                      function: { name: 'exo_page_write', arguments: '{"' },
+                    },
+                  ],
+                },
+                finish_reason: null,
+              },
+            ],
+          },
+        ]),
+      ),
+    );
+
+    const events = await collect(provider().stream(request));
+
+    expect(events.some((event) => event.type === 'tool_calls')).toBe(false);
+    expect(events.at(-1)).toMatchObject({ type: 'error', code: 'ai_stream_interrupted' });
+  });
+
   it('names the upstream provider that served the turn (issue #145)', async () => {
     vi.stubGlobal(
       'fetch',
@@ -239,7 +294,9 @@ describe('OpenRouterProvider provider routing', () => {
       'fetch',
       vi.fn((_url: string, init: RequestInit) => {
         sent = String(init.body);
-        return Promise.resolve(streamResponse([{ choices: [{ delta: { content: 'ok' } }] }]));
+        return Promise.resolve(
+          streamResponse([{ choices: [{ delta: { content: 'ok' }, finish_reason: 'stop' }] }]),
+        );
       }),
     );
     return { body: () => JSON.parse(sent) as Record<string, unknown> };

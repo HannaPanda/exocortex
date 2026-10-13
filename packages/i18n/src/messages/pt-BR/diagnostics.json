@@ -31,5 +31,14 @@
       "xhigh": "muito alto",
       "max": "máximo"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "O provedor encerrou a conexão antes que a resposta ficasse pronta: nenhum sinal de conclusão foi enviado, portanto não há resposta concluída.",
+    "empty": "O modelo indicou que a resposta estava pronta, mas não entregou texto nem chamadas de ferramentas.",
+    "received": "Da resposta, {chars, plural, one {um caractere tinha chegado} many {# caracteres tinham chegado} other {# caracteres tinham chegado}}, mas ela foi interrompida.",
+    "thoughtOnly": "Antes disso, o modelo apenas pensou; nenhum texto chegou.",
+    "nothing": "Não chegou absolutamente nada, nem mesmo pensamento.",
+    "attempts": "{attempts, plural, one {A rodada foi executada uma vez.} many {A rodada foi solicitada # vezes, sempre com o mesmo resultado.} other {A rodada foi solicitada # vezes, sempre com o mesmo resultado.}}",
+    "hint": "O que a execução fez até esse ponto (chamadas de ferramentas, alterações em páginas) está salvo. Escreva „continuar“ para que a próxima execução continue de onde parou. Se isso acontecer com frequência com este modelo, tente outro modelo ou um nível de pensamento menor."
   }
 }

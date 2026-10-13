@@ -31,5 +31,14 @@
       "xhigh": "zeer hoog",
       "max": "maximaal"
     }
+  },
+  "incompleteTurn": {
+    "interrupted": "De provider heeft de verbinding verbroken voordat het antwoord klaar was: er kwam geen afrondingssignaal binnen, en dus ook geen voltooid antwoord.",
+    "empty": "Het model meldde het antwoord als voltooid, maar leverde noch tekst, noch een tool-aanroep.",
+    "received": "Van het antwoord {chars, plural, one {was één teken} other {waren # tekens}} binnengekomen, daarna brak het af.",
+    "thoughtOnly": "Daarvoor heeft het model alleen nagedacht; er kwam geen tekst binnen.",
+    "nothing": "Er kwam helemaal niets binnen, ook geen denkproces.",
+    "attempts": "{attempts, plural, one {De beurt is één keer uitgevoerd.} other {De beurt is # keer aangevraagd, telkens met hetzelfde resultaat.}}",
+    "hint": "Wat de run tot dan toe heeft gedaan (tool-aanroepen, wijzigingen aan pagina’s), is opgeslagen. Typ „verder”, dan gaat de volgende run daarop door. Gebeurt dit vaker met dit model, probeer dan een ander model of een lager denkniveau."
   }
 }

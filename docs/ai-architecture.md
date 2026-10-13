@@ -441,6 +441,21 @@ same `exo_*` tool catalogue the external MCP server serves
   `MAX_TRUNCATION_RETRIES` (3) the run fails with `ai_response_truncated`.
   Without this a run could announce a write, get cut off mid-arguments, write
   nothing and still be stored as `COMPLETED`.
+- **An empty turn is never an answer either.** A stream that ends without a
+  `finish_reason` is reported by the Chat Completions adapter as the error
+  `ai_stream_interrupted` (half-assembled tool calls are dropped, not
+  executed); a turn that finishes with neither text nor a tool call is empty
+  too. The loop asks for the same turn once more (`MAX_EMPTY_TURN_RETRIES`,
+  `empty-turn.ts`) and publishes the phase `retrying`, which the panel keeps
+  as a line beside the tool calls. A second empty turn fails the run with
+  `ai_stream_interrupted` or `ai_empty_answer` and the diagnosis
+  `incompleteTurn`. Before this, a subscription endpoint that dropped the
+  connection mid-thought left a `COMPLETED` run with an empty answer
+  (2026-10-13).
+- **How the last run ended survives a reload.** A failed run writes nothing
+  into the transcript, so `GET /api/ai/conversations/:id` carries `lastRun`,
+  the conversation's newest run; the panel shows its diagnosis while no newer
+  run or error replaces it, and `exo_chat_read` appends it as a line.
 - **A tool call that never arrived completely fails loudly.** A call without an
   id or a name cannot be executed and would produce an assistant message the
   adapter has to drop on the next request; it is published as

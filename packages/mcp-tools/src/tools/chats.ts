@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  type AiConversationDetailResponse,
   aiConversationDetailResponseSchema,
   aiConversationListResponseSchema,
   aiConversationSearchResponseSchema,
@@ -168,9 +169,21 @@ export const chatReadTool: AnyToolDefinition = defineTool({
       result.messages.length > MAX_TRANSCRIPT_MESSAGES
         ? `\n\n_${String(result.messages.length - MAX_TRANSCRIPT_MESSAGES)} weitere Nachrichten nicht gezeigt._`
         : '';
-    return { text: `${header}\n\n${body}${cut}`, data: result };
+    return { text: `${header}\n\n${body}${cut}${lastRunLine(result.lastRun)}`, data: result };
   },
 });
+
+/**
+ * How the newest run ended, when it ended without an answer. A failed run
+ * leaves nothing in the transcript itself, so a reader of the messages alone
+ * would see the work stop and not learn why.
+ */
+function lastRunLine(run: AiConversationDetailResponse['lastRun']): string {
+  if (run === null || (run.status !== 'failed' && run.status !== 'timed_out')) return '';
+  const when = run.finishedAt ?? run.createdAt;
+  const detail = run.errorDetail === null ? '' : `\n${run.errorDetail}`;
+  return `\n\n**Letzter Lauf ${run.id}** endete ohne Antwort (${run.errorCode ?? run.status}, ${when}).${detail}`;
+}
 
 const SOURCE_KIND_LABEL: Record<string, string> = {
   PAGE: 'Seite',
