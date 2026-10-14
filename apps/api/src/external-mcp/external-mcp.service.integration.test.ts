@@ -378,7 +378,7 @@ describe('approving a tool', () => {
     expect(server.tools[0]?.problem).toBe('name_too_long');
   });
 
-  it('starts over when the address changes', async () => {
+  it('starts over when the address changes, trust included', async () => {
     const server = await checkedServer([tool('summary')]);
     await service.setToolAccess({
       workspaceId,
@@ -388,6 +388,14 @@ describe('approving a tool', () => {
       request: { access: 'write' },
       correlationId: 'test',
     });
+    const trusted = await service.update(
+      workspaceId,
+      server.id,
+      owner(),
+      { trusted: true },
+      'test',
+    );
+    expect(trusted.server.trusted).toBe(true);
 
     const { server: moved } = await service.update(
       workspaceId,
@@ -397,7 +405,74 @@ describe('approving a tool', () => {
       'test',
     );
     expect(moved.status).toBe('unchecked');
+    expect(moved.trusted).toBe(false);
     expect(moved.tools[0]).toMatchObject({ access: 'blocked', changedSinceApproval: false });
+  });
+
+  it('marks a server trusted only for a person at the browser', async () => {
+    const server = await createServer();
+    await expect(
+      service.update(
+        workspaceId,
+        server.id,
+        { ...owner(), viaBrowser: false },
+        { trusted: true },
+        'test',
+      ),
+    ).rejects.toMatchObject({ code: 'external_mcp_human_only' });
+  });
+
+  it('suggests, and applies several decisions at once, all or nothing', async () => {
+    const server = await checkedServer([
+      tool('list_meals'),
+      tool('log_meal'),
+      { ...tool('broken'), problem: 'schema_invalid' },
+    ]);
+    const byName = new Map(server.tools.map((entry) => [entry.name, entry]));
+    expect(byName.get('list_meals')?.suggestedAccess).toBe('read');
+    expect(byName.get('log_meal')?.suggestedAccess).toBe('write');
+
+    const changes = [
+      { toolId: byName.get('list_meals')!.id, access: 'read' as const },
+      { toolId: byName.get('log_meal')!.id, access: 'write' as const },
+    ];
+    await expect(
+      service.setToolsAccess({
+        workspaceId,
+        serverId: server.id,
+        caller: owner(),
+        request: { changes: [...changes, { toolId: byName.get('broken')!.id, access: 'read' }] },
+        correlationId: 'test',
+      }),
+    ).rejects.toMatchObject({ code: 'external_mcp_tool_unusable' });
+    expect(
+      await prisma.externalMcpTool.count({
+        where: { serverId: server.id, access: { not: 'BLOCKED' } },
+      }),
+    ).toBe(0);
+
+    await expect(
+      service.setToolsAccess({
+        workspaceId,
+        serverId: server.id,
+        caller: { ...owner(), viaBrowser: false },
+        request: { changes },
+        correlationId: 'test',
+      }),
+    ).rejects.toMatchObject({ code: 'external_mcp_human_only' });
+
+    const applied = await service.setToolsAccess({
+      workspaceId,
+      serverId: server.id,
+      caller: owner(),
+      request: { changes },
+      correlationId: 'test',
+    });
+    expect(applied.server.tools.map((entry) => [entry.name, entry.access])).toEqual([
+      ['broken', 'blocked'],
+      ['list_meals', 'read'],
+      ['log_meal', 'write'],
+    ]);
   });
 
   it('is held to the fingerprint by the database itself', async () => {

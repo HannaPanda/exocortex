@@ -742,9 +742,21 @@
     "removeDescription": "O servidor, o segredo dele e todas as aprovações de suas ferramentas serão excluídos. Se você o reconectar, todas as ferramentas estarão bloqueadas novamente.",
     "enabled": "Ativado para a IA",
     "enabledHint": "Quando desativado, tudo continua salvo, mas nenhuma de suas ferramentas será disponibilizada para a IA.",
+    "trusted": "As respostas são meus próprios dados",
+    "trustedHint": "Quando ativado, ler deste servidor não bloqueia mais a escrita na mesma execução, nem mesmo de volta para este servidor. As respostas continuam marcadas como dados, não como instrução. Apenas para servidores cujo conteúdo você mesmo insere. Se você alterar o endereço, a opção será desativada.",
     "tools": "Ferramentas",
     "toolCount": "{approved} de {total} aprovadas",
     "toolsHint": "Veja o que a ferramenta faz segundo o servidor e decida: leitura significa que ela apenas obtém dados. Escrita significa que ela altera algo, valendo para a IA como qualquer outra alteração.",
+    "suggest": {
+      "summary": "Sugestão com base no nome das ferramentas: {read} leitura, {write} escrita. {differ, plural, =0 {Tudo já está configurado assim.} one {# ferramenta está configurada de forma diferente.} many {# ferramentas estão configuradas de forma diferente.} other {# ferramentas estão configuradas de forma diferente.}}",
+      "review": "Revisar sugestões",
+      "title": "Aceitar sugestões?",
+      "description": "A sugestão é baseada no nome da ferramenta e nas informações do servidor. Na dúvida, ela é definida como escrita, pois uma ferramenta de leitura tratada como escrita apenas será bloqueada com mais frequência. Depois, você pode alterar cada ferramenta individualmente.",
+      "toRead": "Passará a ser leitura ({count})",
+      "toWrite": "Passará a ser escrita ({count})",
+      "changedLeftOut": "{count, plural, one {# ferramenta alterada permanece bloqueada até você analisá-la individualmente.} many {# ferramentas alteradas permanecem bloqueadas até você analisá-las individualmente.} other {# ferramentas alteradas permanecem bloqueadas até você analisá-las individualmente.}}",
+      "confirm": "{count, plural, one {Configurar # ferramenta} many {Configurar # ferramentas} other {Configurar # ferramentas}}"
+    },
     "noToolsYet": "Teste a conexão para ver aqui quais ferramentas o servidor oferece.",
     "noTools": "O servidor não oferece ferramentas.",
     "truncated": "O servidor oferece mais ferramentas do que as armazenadas aqui. O restante fica de fora.",
@@ -836,7 +848,8 @@
       "gone": "Não mais disponível",
       "goneHint": "O servidor não listou mais esta ferramenta na última verificação.",
       "changed": "Alterado",
-      "changedHint": "O servidor alterou a descrição ou os parâmetros desde que você fez a aprovação. Por isso, ela foi bloqueada novamente. Revise-a."
+      "changedHint": "O servidor alterou a descrição ou os parâmetros desde que você fez a aprovação. Por isso, ela foi bloqueada novamente. Revise-a.",
+      "suggested": "Sugestão: {access}"
     }
   }
 }

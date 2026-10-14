@@ -12157,16 +12157,16 @@
       "output": "8da66971c906c021"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "7ccb36c60d8b17b6"
+      "source": "0376c346e942803d",
+      "output": "113a380da6a45740"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "40b28a638d41436a"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "ecb54ab2df4af488"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "d351d7ff38fb297c"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -16980,6 +16980,38 @@
       "source": "c40a76b329dfcfae",
       "output": "881d23f6ba57497b"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "be54b83fa07fdd20"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "2c7355e2248d44b9"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "18b8775232e098b7"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "2b58dd60e483ec44"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "d623e433c1a66d14"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "38891a8ef83a8671"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "466e9c30d1abd797"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "5773977fdb2d76e0"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "18f2a0947f9d6523"
@@ -17064,6 +17096,10 @@
       "source": "979690288d190212",
       "output": "0c3b4809df14c2ae"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "ac4dbe11e4f36fc2"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "d7464d7d61b6ff19"
@@ -17083,6 +17119,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "f1b5253900274e61"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "6226784f4aa051ea"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "fe4df2e114068398"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -35331,16 +35375,16 @@
       "output": "bfb8780e25f6e0ab"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "d0cd61b62af297b0"
+      "source": "0376c346e942803d",
+      "output": "20ca28b6c6b11b00"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "5acd70eb3c7007e5"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "9960e33e880b055e"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "0215caeacc3cef1a"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -40154,6 +40198,38 @@
       "source": "c40a76b329dfcfae",
       "output": "a32526e66e82ae41"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "750d107ee3a18a2c"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "ccb7b40f8a80014a"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "482d84f683e83e39"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "cdaffacefb7513b2"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "e08c1e34d8d69d14"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "721665eaae521730"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "aa81e930e4c23e58"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "b2e69543276d2125"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "0fff1ccde9ea237a"
@@ -40238,6 +40314,10 @@
       "source": "979690288d190212",
       "output": "5bb9e2f0ab63a38f"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "295e1ecb5aa703cf"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "bec30dccfb79f253"
@@ -40257,6 +40337,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "31b742fd5996fa3c"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "18af301b9a1245f3"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "66c66cbfc8e73e5f"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -58505,16 +58593,16 @@
       "output": "8505c95abbff9a84"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "b4bc3ed68a9f2be3"
+      "source": "0376c346e942803d",
+      "output": "30eaa280d9bcc885"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "cd600ced02007f2c"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "fc174622e747654d"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "8e7274898342b86b"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -63328,6 +63416,38 @@
       "source": "c40a76b329dfcfae",
       "output": "1835672acc4d2e9b"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "0775ae80f80f096e"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "66cd8355438c63a5"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "c79bfa5a0f119dd3"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "c328707a83b4a679"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "3648abf0f77b69e0"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "7a8026a276c5fa5a"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "c53a308bf2d182c3"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "c6f8a72b31e01319"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "43645bfc3bda62f4"
@@ -63412,6 +63532,10 @@
       "source": "979690288d190212",
       "output": "6e85a3230de608e7"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "a8e73362f6e6a6b1"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "c5ff39c7ad65c4f5"
@@ -63431,6 +63555,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "dd9039d174f6fcc1"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "8fa89e2abc7b2c43"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "635be7181a37d5e0"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -81679,16 +81811,16 @@
       "output": "ed693858bf3c0063"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "6908e0c22566cca4"
+      "source": "0376c346e942803d",
+      "output": "03de3358169f7dbe"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "150b1de7da3ed6a2"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "7df04a732c3e1e5c"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "dacf9bedbe8fac4d"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -86502,6 +86634,38 @@
       "source": "c40a76b329dfcfae",
       "output": "7b71884d8d5021a3"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "85f61aaec3f12593"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "5d33f95909d4e442"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "fc6d613193912421"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "9b81b72a405ac2fa"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "2c3b6e872696f956"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "07c5cbdd50d06a0b"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "6e96f9a60d107e94"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "12ead6e8860bd86d"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "e3ddf6e22b5d88be"
@@ -86586,6 +86750,10 @@
       "source": "979690288d190212",
       "output": "589c344181f9816d"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "1526fae8a1fc4409"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "b9e72a15f9de22ef"
@@ -86605,6 +86773,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "725940f2feaf6819"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "477a66d1b8b0f914"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "ae09ee56e7da1f45"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -104853,16 +105029,16 @@
       "output": "bc34c8d671a7b2d3"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "a65671c7dc403d9e"
+      "source": "0376c346e942803d",
+      "output": "855197d4eb8ff95a"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "2ae550782936262b"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "966566400ee93caa"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "b72db0a02be54d30"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -109676,6 +109852,38 @@
       "source": "c40a76b329dfcfae",
       "output": "c075da44c262f8cd"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "3e7cf6016c0a56cc"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "c53e742131d221b8"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "8945d5447ed4c51b"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "160f04f68a2e6c35"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "84eb608c4ad2f64d"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "187ddbd7a085efe6"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "420aa3c1c5d61bca"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "ef5c8a7c82c71dc6"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "7e938baa443d52dc"
@@ -109760,6 +109968,10 @@
       "source": "979690288d190212",
       "output": "3c033eb4ae7dd2a5"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "e11dfcdf1da1fda3"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "efbe2713bebae2a9"
@@ -109779,6 +109991,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "9a8e80e39d169a21"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "f009257e48e93ea7"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "592a1745646d94ec"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -128027,16 +128247,16 @@
       "output": "9338740fa052231f"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "a537b25505375f73"
+      "source": "0376c346e942803d",
+      "output": "b41b6497ca1e405b"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "7b148c63dba9a2f3"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "592d7cdc45ae4305"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "a05145ade3a4a7da"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -132850,6 +133070,38 @@
       "source": "c40a76b329dfcfae",
       "output": "b9926da93888efaa"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "e4e258561a840872"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "779e860456569308"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "e4fc247d1b072eb5"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "57267c123370969c"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "42e1b5034f2e4893"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "0f864b7dbc1664e0"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "72ae22645564213a"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "c080aeaeb848bc6d"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "89372f7d064e94b2"
@@ -132934,6 +133186,10 @@
       "source": "979690288d190212",
       "output": "a8ca1c831d4323bb"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "b88fb72c9b51f62e"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "6990185667deff14"
@@ -132953,6 +133209,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "4f6dd0f315812d10"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "cbc3386ea48d9944"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "470757c8fa6bb2a9"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",
@@ -151201,16 +151465,16 @@
       "output": "5d013c2f126d0c00"
     },
     "features.externe-mcp-server.details.p2": {
-      "source": "d241012a36213cae",
-      "output": "993751d7cd6ef19b"
+      "source": "0376c346e942803d",
+      "output": "b316e9ce608c8086"
     },
     "features.externe-mcp-server.details.p3": {
       "source": "470bac160e71a162",
       "output": "47cab5a0e55f6666"
     },
     "features.externe-mcp-server.details.p4": {
-      "source": "aa47f5b551ee2407",
-      "output": "405db9d0eae68cb9"
+      "source": "35ea4b3e0eeb5c0b",
+      "output": "b5c0e980e2cfbe84"
     },
     "features.externe-mcp-server.summary": {
       "source": "35d10a4015a93888",
@@ -156024,6 +156288,38 @@
       "source": "c40a76b329dfcfae",
       "output": "d787e14c773887a3"
     },
+    "settings.externalMcp.suggest.changedLeftOut": {
+      "source": "812b1a443467b1ff",
+      "output": "3b4b4dc27fb49411"
+    },
+    "settings.externalMcp.suggest.confirm": {
+      "source": "e51039a1d91e80fe",
+      "output": "601dbca8512b9110"
+    },
+    "settings.externalMcp.suggest.description": {
+      "source": "5c1b535c274446c9",
+      "output": "46d0d58c1ad61c23"
+    },
+    "settings.externalMcp.suggest.review": {
+      "source": "a423ae1ebfcb742c",
+      "output": "0d87e742dcee3e21"
+    },
+    "settings.externalMcp.suggest.summary": {
+      "source": "376702509e504237",
+      "output": "128fb12fae6fd0a6"
+    },
+    "settings.externalMcp.suggest.title": {
+      "source": "897884cdc0ee561e",
+      "output": "09058c9599a14604"
+    },
+    "settings.externalMcp.suggest.toRead": {
+      "source": "612817dfd16c2e8c",
+      "output": "256d1da43e049440"
+    },
+    "settings.externalMcp.suggest.toWrite": {
+      "source": "eba88d672028f2e6",
+      "output": "c25e21c56ad4b278"
+    },
     "settings.externalMcp.tool.access.blocked": {
       "source": "45f96e916050cd8a",
       "output": "d552e8fe73224192"
@@ -156108,6 +156404,10 @@
       "source": "979690288d190212",
       "output": "e6038d9a6bf601aa"
     },
+    "settings.externalMcp.tool.suggested": {
+      "source": "4e75583ec31aadd2",
+      "output": "74f719d1ca9a323f"
+    },
     "settings.externalMcp.tool.unusable": {
       "source": "fd84337e3e5c3c82",
       "output": "d06ccb49703fc7e3"
@@ -156127,6 +156427,14 @@
     "settings.externalMcp.truncated": {
       "source": "68e897293635f711",
       "output": "2848b4fe63f3bd4b"
+    },
+    "settings.externalMcp.trusted": {
+      "source": "4a752490c4d20c21",
+      "output": "e1bc38673bd4554a"
+    },
+    "settings.externalMcp.trustedHint": {
+      "source": "afb37cfcd68324e7",
+      "output": "4fa1ecfa4e7a2df5"
     },
     "settings.form.discard": {
       "source": "594ca889c4421b84",

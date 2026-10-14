@@ -326,6 +326,13 @@ the run's user from the workspace stops the next call of a run that is already
 going; the run inspector names each call with its duration and, when it was
 refused or failed, a code such as `tool_revoked` or `timeout`.
 
+Two things make a server like a personal health app practical. "Vorschläge
+ansehen" proposes read or write for every tool from its name (unclear means
+write) and applies the list in one step after the owner has looked at it. And
+the switch "Antworten sind meine eigenen Daten" marks the server trusted: its
+answers stay fenced as data but no longer lock writes in the same run, so a run
+can look a food up and then log the meal. Changing the address clears it.
+
 ### Search settings (issue #34, AP4)
 
 Semantic search is off until somebody turns it on, because switching it on

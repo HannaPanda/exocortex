@@ -10,6 +10,7 @@ import {
   externalMcpToolHintsSchema,
   type ExternalMcpToolProblem,
   externalMcpToolProblemSchema,
+  suggestExternalMcpToolAccess,
 } from '@exocortex/contracts';
 import { type Prisma } from '@exocortex/database';
 
@@ -73,7 +74,8 @@ function objectOf(value: Prisma.JsonValue): Record<string, unknown> {
 }
 
 function toTool(serverKey: string, row: ExternalMcpToolRow): ExternalMcpTool {
-  const hints = externalMcpToolHintsSchema.safeParse(row.hints);
+  const parsed = externalMcpToolHintsSchema.safeParse(row.hints);
+  const hints = parsed.success ? parsed.data : {};
   return {
     id: row.id,
     name: row.name,
@@ -81,10 +83,11 @@ function toTool(serverKey: string, row: ExternalMcpToolRow): ExternalMcpTool {
     title: row.title,
     description: row.description,
     inputSchema: objectOf(row.inputSchema),
-    hints: hints.success ? hints.data : {},
+    hints,
     problem: problem(row.problem),
     available: row.available,
     access: ACCESS[row.access],
+    suggestedAccess: suggestExternalMcpToolAccess({ name: row.name, hints }),
     changedSinceApproval:
       row.access === 'BLOCKED' &&
       row.approvedFingerprint !== null &&
@@ -104,6 +107,7 @@ export function toExternalMcpServer(row: ExternalMcpServerRow): ExternalMcpServe
     transport: 'streamable_http',
     url: row.url,
     enabled: row.enabled,
+    trusted: row.trusted,
     authKind: AUTH_KIND[row.authKind],
     authHeaderName: row.authHeaderName,
     secretConfigured: row.secretCiphertext !== null,

@@ -24,6 +24,7 @@ import {
   type ExternalMcpServerResponse,
   redactSecret,
   type SetExternalMcpToolAccessRequest,
+  type SetExternalMcpToolsAccessRequest,
   type UpdateExternalMcpServerRequest,
 } from '@exocortex/contracts';
 import { Prisma, type PrismaClient, type PrismaTransactionClient } from '@exocortex/database';
@@ -204,7 +205,8 @@ export class ExternalMcpService {
       }
       const updated = await tx.externalMcpServer.update({
         where: { id: serverId },
-        data: urlChanged ? { ...data, status: 'UNCHECKED' } : data,
+        // Nor does the word that its answers are this person's own data.
+        data: urlChanged ? { ...data, status: 'UNCHECKED', trusted: false } : data,
         include: externalMcpServerInclude,
       });
       await this.audit(tx, {
@@ -329,44 +331,81 @@ export class ExternalMcpService {
     request: SetExternalMcpToolAccessRequest;
     correlationId: string;
   }): Promise<ExternalMcpServerResponse> {
-    const { workspaceId, serverId, toolId, caller, request, correlationId } = input;
+    return this.setToolsAccess({
+      ...input,
+      request: { changes: [{ toolId: input.toolId, access: input.request.access }] },
+    });
+  }
+
+  /**
+   * Several approvals in one transaction, each exactly the single one: bound
+   * to the fingerprint the tool has now, audited per tool. A tool that cannot
+   * be approved, or is not on this server, refuses the whole set, so a person
+   * never ends up with half of what they confirmed.
+   */
+  async setToolsAccess(input: {
+    workspaceId: string;
+    serverId: string;
+    caller: ExternalMcpCaller;
+    request: SetExternalMcpToolsAccessRequest;
+    correlationId: string;
+  }): Promise<ExternalMcpServerResponse> {
+    const { workspaceId, serverId, caller, request, correlationId } = input;
     await this.assertPersonOwner(workspaceId, caller);
     await this.loadRow(workspaceId, serverId);
-    const tool = await this.prisma.externalMcpTool.findFirst({ where: { id: toolId, serverId } });
-    if (tool === null) throw AppError.notFound('External MCP tool');
-
-    const blocking = request.access === 'blocked';
-    if (!blocking && (tool.problem !== null || !tool.available)) {
-      throw new AppError('external_mcp_tool_unusable', 'This tool cannot be approved', {
-        problem: tool.problem,
-        available: tool.available,
-      });
+    const ids = request.changes.map((change) => change.toolId);
+    const tools = new Map(
+      (await this.prisma.externalMcpTool.findMany({ where: { id: { in: ids }, serverId } })).map(
+        (tool) => [tool.id, tool],
+      ),
+    );
+    for (const change of request.changes) {
+      const tool = tools.get(change.toolId);
+      if (tool === undefined) throw AppError.notFound('External MCP tool');
+      if (change.access !== 'blocked' && (tool.problem !== null || !tool.available)) {
+        throw new AppError('external_mcp_tool_unusable', 'This tool cannot be approved', {
+          tool: tool.name,
+          problem: tool.problem,
+          available: tool.available,
+        });
+      }
     }
 
+    const now = new Date();
     const row = await this.prisma.$transaction(async (tx) => {
-      await tx.externalMcpTool.update({
-        where: { id: toolId },
-        data: blocking
-          ? { access: 'BLOCKED', approvedFingerprint: null, approvedById: null, approvedAt: null }
-          : {
-              access: ACCESS_ROW[request.access],
-              approvedFingerprint: tool.fingerprint,
-              approvedById: caller.actor.userId,
-              approvedAt: new Date(),
-            },
-      });
-      await this.audit(tx, {
-        workspaceId: workspaceId,
-        caller: caller,
-        action: 'external_mcp.tool.access',
-        targetId: serverId,
-        correlationId: correlationId,
-        metadata: {
-          tool: tool.name,
-          access: request.access,
-          fingerprint: tool.fingerprint,
-        },
-      });
+      for (const change of request.changes) {
+        const tool = tools.get(change.toolId)!;
+        await tx.externalMcpTool.update({
+          where: { id: tool.id },
+          data:
+            change.access === 'blocked'
+              ? {
+                  access: 'BLOCKED',
+                  approvedFingerprint: null,
+                  approvedById: null,
+                  approvedAt: null,
+                }
+              : {
+                  access: ACCESS_ROW[change.access],
+                  approvedFingerprint: tool.fingerprint,
+                  approvedById: caller.actor.userId,
+                  approvedAt: now,
+                },
+        });
+        await this.audit(tx, {
+          workspaceId: workspaceId,
+          caller: caller,
+          action: 'external_mcp.tool.access',
+          targetId: serverId,
+          correlationId: correlationId,
+          metadata: {
+            tool: tool.name,
+            access: change.access,
+            fingerprint: tool.fingerprint,
+            ...(request.changes.length > 1 ? { batch: request.changes.length } : {}),
+          },
+        });
+      }
       return tx.externalMcpServer.findUniqueOrThrow({
         where: { id: serverId },
         include: externalMcpServerInclude,
@@ -541,6 +580,7 @@ export class ExternalMcpService {
     if (request.name !== undefined) data.name = request.name;
     if (request.url !== undefined) data.url = request.url;
     if (request.enabled !== undefined) data.enabled = request.enabled;
+    if (request.trusted !== undefined) data.trusted = request.trusted;
     if (authKind === 'none') {
       Object.assign(data, this.secretColumns(workspaceId, current.key, null));
     } else if (request.secret !== undefined) {

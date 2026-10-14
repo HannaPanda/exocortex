@@ -13,6 +13,8 @@ import {
   externalMcpServerResponseSchema,
   type SetExternalMcpToolAccessRequest,
   setExternalMcpToolAccessRequestSchema,
+  type SetExternalMcpToolsAccessRequest,
+  setExternalMcpToolsAccessRequestSchema,
   type UpdateExternalMcpServerRequest,
   updateExternalMcpServerRequestSchema,
 } from '@exocortex/contracts';
@@ -126,6 +128,23 @@ export class ExternalMcpController {
     @Param('serverId') serverId: string,
   ): Promise<ExternalMcpServerResponse> {
     return this.servers.check(workspaceId, serverId, callerOf(session, request));
+  }
+
+  @Patch(':serverId/tools')
+  @ApiBody({ schema: openApiSchema(setExternalMcpToolsAccessRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(externalMcpServerResponseSchema) })
+  async setToolsAccess(
+    @CurrentSession() session: VerifiedSession,
+    @Req() request: AuthenticatedRequest,
+    @Param() params: { workspaceId: string; serverId: string },
+    @Body(zodPipe(setExternalMcpToolsAccessRequestSchema)) body: SetExternalMcpToolsAccessRequest,
+  ): Promise<ExternalMcpServerResponse> {
+    return this.servers.setToolsAccess({
+      ...params,
+      caller: callerOf(session, request),
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
   }
 
   @Patch(':serverId/tools/:toolId')

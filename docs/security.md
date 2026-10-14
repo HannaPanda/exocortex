@@ -384,7 +384,9 @@ somebody else's server (issue #196,
   decrypts in the API for one request; an error detail the server sends back
   has the secret replaced before it is stored.
 - **Tools.** Blocked until a person approves one as reading or writing; the
-  server's `readOnlyHint` and friends are shown, never used. The approval is
+  server's `readOnlyHint` and friends are shown, and feed only a suggestion
+  (`suggestExternalMcpToolAccess`, erring towards write) that a person has to
+  apply. The approval is
   bound to the tool's fingerprint by a check constraint, so a changed
   description or schema is a new tool that starts blocked. Descriptions,
   schemas and `instructions` are the server's text and are stored and shown
@@ -398,8 +400,10 @@ somebody else's server (issue #196,
   with the person's access class as `mutating`, and it is the only one: no
   API stands behind an external call to refuse it a second time. Every answer
   of the server, its error messages included, is fenced as `external-mcp`
-  and marks the run (ADR-030); a failure of ours is a closed code, never the
-  server's words.
+  and marks the run (ADR-030), unless an owner marked the server trusted at
+  the browser: then the answer is still fenced but does not lock writes, the
+  flag is read per call, and a changed address clears it. A failure of ours
+  is a closed code, never the server's words.
 
 ## The MCP endpoint and its OAuth server
 

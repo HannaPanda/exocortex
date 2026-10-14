@@ -742,9 +742,21 @@
     "removeDescription": "Le serveur, son secret et toutes les approbations de ses outils seront supprimés. Si tu le reconnectes, tous ses outils seront à nouveau bloqués.",
     "enabled": "Activé pour l’IA",
     "enabledHint": "Lorsqu’il est désactivé, tout reste enregistré, mais aucun de ses outils n’est proposé à l’IA.",
+    "trusted": "Les réponses sont mes propres données",
+    "trustedHint": "Une fois activé, la lecture depuis ce serveur ne bloque plus l’écriture au cours de la même exécution, y compris en réécriture vers ce serveur. Les réponses restent marquées comme données, pas comme instructions. À réserver aux serveurs dont tu saisis toi-même les contenus. Si tu modifies l’adresse, cette option se désactive.",
     "tools": "Outils",
     "toolCount": "{approved} sur {total} approuvés",
     "toolsHint": "Lis la description de l’outil fournie par le serveur et décide toi-même : la lecture signifie qu’il récupère seulement des données. L’écriture signifie qu’il modifie quelque chose, ce qui compte alors pour l’IA comme n’importe quelle autre modification.",
+    "suggest": {
+      "summary": "Suggestion basée sur le nom des outils : {read} en lecture, {write} en écriture. {differ, plural, =0 {Tout est déjà configuré ainsi.} one {# outil est configuré différemment.} many {# d’outils sont configurés différemment.} other {# outils sont configurés différemment.}}",
+      "review": "Voir les suggestions",
+      "title": "Appliquer les suggestions ?",
+      "description": "La suggestion se base sur le nom de l’outil et les informations fournies par le serveur. En cas de doute, l’écriture est privilégiée, car un outil de lecture classé en écriture sera simplement bloqué plus souvent. Tu pourras ensuite modifier chaque outil individuellement.",
+      "toRead": "Passera en lecture ({count})",
+      "toWrite": "Passera en écriture ({count})",
+      "changedLeftOut": "{count, plural, one {# outil modifié reste bloqué jusqu’à ce que tu l’examines individuellement.} many {# d’outils modifiés restent bloqués jusqu’à ce que tu les examines individuellement.} other {# outils modifiés restent bloqués jusqu’à ce que tu les examines individuellement.}}",
+      "confirm": "{count, plural, one {Configurer # outil} many {Configurer # d’outils} other {Configurer # outils}}"
+    },
     "noToolsYet": "Vérifie la connexion pour voir ici quels outils le serveur propose.",
     "noTools": "Le serveur ne propose aucun outil.",
     "truncated": "Le serveur propose plus d’outils qu’il n’est possible d’en enregistrer ici. Les autres sont ignorés.",
@@ -836,7 +848,8 @@
       "gone": "Plus proposé",
       "goneHint": "Le serveur n’a plus mentionné cet outil lors de la dernière vérification.",
       "changed": "Modifié",
-      "changedHint": "Le serveur a modifié la description ou les paramètres depuis ton approbation. L’outil est donc de nouveau bloqué. Examine-le à nouveau."
+      "changedHint": "Le serveur a modifié la description ou les paramètres depuis ton approbation. L’outil est donc de nouveau bloqué. Examine-le à nouveau.",
+      "suggested": "Suggestion : {access}"
     }
   }
 }

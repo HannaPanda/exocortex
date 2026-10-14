@@ -742,9 +742,21 @@
     "removeDescription": "Serwer, jego klucz tajny i wszystkie zatwierdzenia jego narzędzi zostaną usunięte. Jeśli podłączysz go ponownie, wszystkie narzędzia znów będą zablokowane.",
     "enabled": "Włączone dla SI",
     "enabledHint": "Po wyłączeniu wszystko pozostaje zapisane, ale SI nie otrzymuje żadnego z jego narzędzi.",
+    "trusted": "Odpowiedzi to moje własne dane",
+    "trustedHint": "Gdy włączone, odczyt z tego serwera nie blokuje już zapisu w tym samym przebiegu, również z powrotem na ten serwer. Odpowiedzi pozostają oznaczone jako dane, a nie instrukcje. Używaj tylko dla serwerów, których zawartość wprowadzasz osobiście. Jeśli zmienisz adres, przełącznik się wyłączy.",
     "tools": "Narzędzia",
     "toolCount": "Zatwierdzono {approved} z {total}",
     "toolsHint": "Przeczytaj, co według serwera robi narzędzie, i zdecyduj: Odczyt oznacza, że tylko pobiera dane. Zapis oznacza, że wprowadza zmiany – i jest traktowany przez SI jak każda inna modyfikacja.",
+    "suggest": {
+      "summary": "Sugestia na podstawie nazw narzędzi: {read} do odczytu, {write} do zapisu. {differ, plural, =0 {Wszystko jest już tak ustawione.} one {# narzędzie ma inne ustawienie.} few {# narzędzia mają inne ustawienia.} many {# narzędzi ma inne ustawienia.} other {# narzędzi ma inne ustawienia.}}",
+      "review": "Przejrzyj sugestie",
+      "title": "Zastosować sugestie?",
+      "description": "Sugestia wynika z nazwy narzędzia i informacji z serwera. W razie wątpliwości przyjmuje zapis, ponieważ narzędzie do odczytu oznaczone jako zapis jest jedynie częściej blokowane. Później możesz zmienić każde narzędzie z osobna.",
+      "toRead": "Będzie odczytem ({count})",
+      "toWrite": "Będzie zapisem ({count})",
+      "changedLeftOut": "{count, plural, one {# zmienione narzędzie pozostanie zablokowane, dopóki nie przejrzysz go z osobna.} few {# zmienione narzędzia pozostaną zablokowane, dopóki nie przejrzysz ich z osobna.} many {# zmienionych narzędzi pozostanie zablokowanych, dopóki nie przejrzysz ich z osobna.} other {# zmienionych narzędzi pozostanie zablokowanych, dopóki nie przejrzysz ich z osobna.}}",
+      "confirm": "{count, plural, one {Ustaw # narzędzie} few {Ustaw # narzędzia} many {Ustaw # narzędzi} other {Ustaw # narzędzi}}"
+    },
     "noToolsYet": "Sprawdź połączenie, aby zobaczyć tutaj narzędzia oferowane przez serwer.",
     "noTools": "Serwer nie oferuje żadnych narzędzi.",
     "truncated": "Serwer oferuje więcej narzędzi, niż można tutaj zapisać. Pozostałe zostaną pominięte.",
@@ -836,7 +848,8 @@
       "gone": "Już niedostępne",
       "goneHint": "Serwer nie zwrócił tego narzędzia podczas ostatniego sprawdzania.",
       "changed": "Zmieniono",
-      "changedHint": "Serwer zmienił opis lub parametry od czasu twojego zatwierdzenia. Z tego powodu narzędzie jest ponownie zablokowane. Przejrzyj je jeszcze raz."
+      "changedHint": "Serwer zmienił opis lub parametry od czasu twojego zatwierdzenia. Z tego powodu narzędzie jest ponownie zablokowane. Przejrzyj je jeszcze raz.",
+      "suggested": "Sugestia: {access}"
     }
   }
 }

@@ -840,7 +840,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   is offered its workspace's approved tools as `mcp_<key>__<tool>` (domain
   `external`, never in an eval replay); the access class is the `mutating`
   flag for `decideMutation`, every answer is fenced as `external-mcp`, and
-  each call re-reads the approval first.
+  each call re-reads the approval first. A server an owner marks `trusted`
+  still has its answers fenced, but they do not lock the run's writes; the
+  screen suggests read or write per tool and a person applies the list.
 
 Full list: `docs/adr/`.
 

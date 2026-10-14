@@ -155,6 +155,135 @@ export const externalMcpToolHintsSchema = z.object({
 });
 export type ExternalMcpToolHints = z.infer<typeof externalMcpToolHintsSchema>;
 
+/** Words in a tool name that say it changes something. Any of them wins. */
+const WRITING_WORDS: ReadonlySet<string> = new Set([
+  'add',
+  'append',
+  'apply',
+  'approve',
+  'archive',
+  'assign',
+  'book',
+  'cancel',
+  'change',
+  'check',
+  'clear',
+  'close',
+  'complete',
+  'create',
+  'delete',
+  'destroy',
+  'disable',
+  'drop',
+  'edit',
+  'enable',
+  'erase',
+  'exec',
+  'execute',
+  'generate',
+  'import',
+  'insert',
+  'invite',
+  'log',
+  'mark',
+  'merge',
+  'modify',
+  'move',
+  'patch',
+  'post',
+  'publish',
+  'purge',
+  'put',
+  'record',
+  'reject',
+  'remove',
+  'rename',
+  'reset',
+  'restore',
+  'run',
+  'save',
+  'schedule',
+  'send',
+  'set',
+  'start',
+  'stop',
+  'store',
+  'submit',
+  'sync',
+  'toggle',
+  'trigger',
+  'uncheck',
+  'update',
+  'upload',
+  'upsert',
+  'wipe',
+  'write',
+]);
+
+/** Words in a tool name that say it only looks. */
+const READING_WORDS: ReadonlySet<string> = new Set([
+  'analytics',
+  'briefing',
+  'compare',
+  'count',
+  'dashboard',
+  'describe',
+  'download',
+  'explain',
+  'export',
+  'fetch',
+  'find',
+  'get',
+  'guide',
+  'history',
+  'info',
+  'inspect',
+  'list',
+  'lookup',
+  'overview',
+  'preview',
+  'query',
+  'read',
+  'search',
+  'show',
+  'stats',
+  'status',
+  'summary',
+  'view',
+]);
+
+function nameWords(name: string): string[] {
+  return name
+    .replace(/([a-z0-9])([A-Z])/gu, '$1_$2')
+    .toLowerCase()
+    .split(/[^a-z0-9]+/u)
+    .filter((word) => word !== '');
+}
+
+/**
+ * What a tool probably is, so a person approving sixty tools confirms a list
+ * instead of judging each one (issue #196).
+ *
+ * A suggestion and never a decision: nothing is approved until a person
+ * applies it. It errs towards `write`, because a reading tool classed as
+ * writing is only refused more often, while a writing tool classed as reading
+ * escapes the write lock (ADR-030). So a single writing word in the name, or
+ * a server that says the tool writes, makes it `write`; it is `read` only when
+ * the server says so or the name says so, and anything unclear stays `write`.
+ * The description is not consulted: it is the server's prose, and the name is
+ * what the model calls.
+ */
+export function suggestExternalMcpToolAccess(tool: {
+  name: string;
+  hints: ExternalMcpToolHints;
+}): 'read' | 'write' {
+  if (tool.hints.readOnlyHint === false || tool.hints.destructiveHint === true) return 'write';
+  const words = nameWords(tool.name);
+  if (words.some((word) => WRITING_WORDS.has(word))) return 'write';
+  if (tool.hints.readOnlyHint === true) return 'read';
+  return words.some((word) => READING_WORDS.has(word)) ? 'read' : 'write';
+}
+
 export const externalMcpToolSchema = z.object({
   id: idSchema,
   name: z.string(),
@@ -170,6 +299,8 @@ export const externalMcpToolSchema = z.object({
   /** Listed by the server at the last successful check. */
   available: z.boolean(),
   access: externalMcpToolAccessSchema,
+  /** `suggestExternalMcpToolAccess`: what the screen offers to apply, never applied by itself. */
+  suggestedAccess: z.enum(['read', 'write']),
   /**
    * The tool was approved once and has changed since, so it fell back to
    * `blocked`. Said separately so the screen can explain why.
@@ -189,6 +320,12 @@ export const externalMcpServerSchema = z.object({
   transport: externalMcpTransportSchema,
   url: z.string(),
   enabled: z.boolean(),
+  /**
+   * A person declared the answers their own data: still fenced, but reading
+   * them does not lock the run's writes (ADR-030). Off again when the address
+   * changes.
+   */
+  trusted: z.boolean(),
   authKind: externalMcpAuthKindSchema,
   authHeaderName: z.string().nullable(),
   /** Whether a secret is stored. Never the secret. */
@@ -290,6 +427,7 @@ export const updateExternalMcpServerRequestSchema = z
     name: nameSchema.optional(),
     url: urlSchema.optional(),
     enabled: z.boolean().optional(),
+    trusted: z.boolean().optional(),
     authKind: externalMcpAuthKindSchema.optional(),
     authHeaderName: headerNameSchema.nullable().optional(),
     /** A new secret. `null` removes the stored one. */
@@ -302,6 +440,25 @@ export const setExternalMcpToolAccessRequestSchema = z.object({
   access: externalMcpToolAccessSchema,
 });
 export type SetExternalMcpToolAccessRequest = z.infer<typeof setExternalMcpToolAccessRequestSchema>;
+
+/**
+ * Several decisions at once, each the same as the single one: applying the
+ * suggestions after a person has looked at the list. One transaction, so a
+ * tool that cannot be approved refuses the whole set.
+ */
+export const setExternalMcpToolsAccessRequestSchema = z.object({
+  changes: z
+    .array(z.object({ toolId: idSchema, access: externalMcpToolAccessSchema }))
+    .min(1)
+    .max(EXTERNAL_MCP_LIMITS.toolsPerServer)
+    .refine(
+      (changes) => new Set(changes.map((change) => change.toolId)).size === changes.length,
+      'Each tool once',
+    ),
+});
+export type SetExternalMcpToolsAccessRequest = z.infer<
+  typeof setExternalMcpToolsAccessRequestSchema
+>;
 
 export const deleteExternalMcpServerResponseSchema = z.object({ deleted: z.literal(true) });
 export type DeleteExternalMcpServerResponse = z.infer<typeof deleteExternalMcpServerResponseSchema>;

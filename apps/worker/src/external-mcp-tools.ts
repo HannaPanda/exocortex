@@ -66,7 +66,13 @@ export const EXTERNAL_TOOL_REVOCATIONS = [
 export type ExternalToolRevocation = (typeof EXTERNAL_TOOL_REVOCATIONS)[number];
 
 export type ExternalCallOutcome =
-  | { kind: 'answered'; isError: boolean; text: string }
+  | {
+      kind: 'answered';
+      isError: boolean;
+      text: string;
+      /** The server is marked trusted at the moment of this call, not when the run started. */
+      trusted: boolean;
+    }
   | { kind: 'revoked'; code: ExternalToolRevocation }
   | { kind: 'failed'; code: McpClientErrorCode | 'credential_unreadable' };
 
@@ -302,7 +308,12 @@ export function createExternalToolLoader(input: {
             durationMs: Math.round(performance.now() - started),
             correlationId: options.correlationId,
           });
-          return { kind: 'answered', isError: result.isError, text: resultText(result) };
+          return {
+            kind: 'answered',
+            isError: result.isError,
+            text: resultText(result),
+            trusted: row.server.trusted,
+          };
         } catch (error) {
           const code = error instanceof McpClientError ? error.code : 'unreachable';
           logger.warn('External MCP tool call failed', {

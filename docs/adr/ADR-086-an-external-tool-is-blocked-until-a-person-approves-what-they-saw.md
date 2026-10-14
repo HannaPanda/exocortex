@@ -121,6 +121,33 @@ decision does not reopen it; web research stays as it is.
   `failureCode` when the call was refused or failed, for every tool of the
   loop, and the run inspector shows it beside the duration.
 
+## Trusted servers and suggested classes (2026-10-14)
+
+The first real use showed two costs of stage 3 that nobody should pay:
+
+- **Reading locked writing to the same server.** Asking the health app for
+  a food and then logging the meal is one task, but the first answer marked
+  the run and the log was refused. So a server carries `trusted`, a person's
+  word at the browser that its answers are their own data. The answer is
+  still fenced as data; it just does not mark the run. Whether a server is
+  trusted is read at the moment of each call, so withdrawing the word stops
+  the next one, and changing the address switches it off like it blocks every
+  tool. Foreign text from anywhere else still locks every write, the trusted
+  server's included.
+- **A refusal named the wrong way out.** `decideMutation` points at
+  `exo_changeset_propose`, which holds page writes and cannot change somebody
+  else's server. An external write tool is refused with its own text: say
+  what you would have written, so the person can confirm it in the next
+  message.
+- **Sixty tools judged one by one.** `suggestExternalMcpToolAccess` proposes
+  read or write from the tool name and the server's hints, erring towards
+  write: a single writing word, or a server saying it writes, makes it
+  `write`, and a name it cannot place is `write` too. It never decides: the
+  screen shows the list and `PATCH /mcp-servers/:id/tools` applies what the
+  person confirmed, all or nothing, one approval per tool with its
+  fingerprint as before. A tool changed since approval is left out of the
+  list, because that one is the warning the fingerprint exists for.
+
 ## Not decided here
 
 - **Private and local targets, and stdio.** The guard refuses every private

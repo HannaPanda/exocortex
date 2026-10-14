@@ -27,7 +27,10 @@ import { type ExternalToolBinding, type ExternalToolSource } from './external-mc
  * - **Every answer is foreign text.** It is fenced as `external-mcp` and marks
  *   the run (ADR-030), an error the server wrote included; only an error of
  *   ours (a timeout, a refusal) comes back unfenced, and it names a code, never
- *   the server's words.
+ *   the server's words. The one exception is a server a person marked trusted
+ *   (their own data, read at the moment of the call): its answer is still
+ *   fenced, but it does not mark the run, so reading from it does not lock
+ *   writing to it.
  * - **There is no API behind it.** An `exo_` call is checked twice, here and
  *   by the API through the run's signed token. An external call reaches
  *   somebody else's server directly, so this decision is the only one, and
@@ -125,6 +128,28 @@ const REVOKED_TEXT: Readonly<Record<string, string>> = {
     'Die Person, für die dieser Lauf arbeitet, ist nicht mehr Mitglied des Arbeitsbereichs.',
 };
 
+/**
+ * The refusal the model reads for an external write. `decideMutation` names
+ * `exo_changeset_propose` as the way out, which is right for a page and wrong
+ * here: a proposal holds page writes, and nothing can propose a change on
+ * somebody else's server. So the way out is the person, in the next message.
+ */
+function externalRefusalText(code: string, message: string): string {
+  if (code === 'mutations_disabled') return message;
+  const reason =
+    code === 'untrusted_context'
+      ? 'Dieser Lauf hat Fremdinhalte gelesen, und danach sind schreibende Werkzeuge gesperrt. ' +
+        'Das ist kein Fehler, sondern der Schutz davor, dass fremder Text Anweisungen erteilt.'
+      : 'Dieser Lauf darf nichts verändern, auch nicht auf einem externen Server.';
+  return (
+    `Dieser Aufruf wurde abgelehnt: ${reason} Ein Änderungsvorschlag (exo_changeset_propose) ` +
+    'kann auf einem externen Server nichts ändern, versuche es also nicht damit und rufe auch ' +
+    'kein anderes schreibendes Werkzeug auf. Nenne in deiner Antwort genau, was du eingetragen ' +
+    'hättest (Werkzeug und Werte), damit die Person es in ihrer nächsten Nachricht bestätigen ' +
+    'kann.'
+  );
+}
+
 function refusal(text: string, code: string): ExternalCallResult {
   return { text, isError: true, refused: true, failureCode: code };
 }
@@ -170,7 +195,7 @@ export async function runExternalToolCall(
       code: decision.code,
       correlationId,
     });
-    return refusal(decision.message, decision.code);
+    return refusal(externalRefusalText(decision.code, decision.message), decision.code);
   }
 
   const args = parseArguments(context.argumentsJson);
@@ -211,8 +236,9 @@ export async function runExternalToolCall(
     };
   }
 
-  // The server's words, error or not: fenced, and the run is marked.
-  context.noteUntrustedContent('external-mcp');
+  // The server's words, error or not: always fenced as data. The run is
+  // marked unless a person declared this server's answers their own data.
+  if (!outcome.trusted) context.noteUntrustedContent('external-mcp');
   return {
     text: fenceUntrustedContent({
       origin: 'external-mcp',
@@ -221,7 +247,7 @@ export async function runExternalToolCall(
     }),
     isError: outcome.isError,
     refused: false,
-    untrustedOrigin: 'external-mcp',
+    ...(outcome.trusted ? {} : { untrustedOrigin: 'external-mcp' as const }),
     resultTruncated: outcome.text.length > context.maxResultChars,
     ...(outcome.isError ? { failureCode: 'tool_error' } : {}),
   };

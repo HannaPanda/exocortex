@@ -43,6 +43,7 @@ import {
 } from '@/lib/api/external-mcp-queries';
 
 import { ExternalMcpServerForm } from './external-mcp-server-form';
+import { ExternalMcpSuggestions } from './external-mcp-suggestions';
 import { ExternalMcpToolRow } from './external-mcp-tool-row';
 
 /**
@@ -211,6 +212,7 @@ function ServerSection({
           onCheck={() => check.mutate(server.id)}
           onEdit={() => setEditing(true)}
           onToggle={(next) => update.mutate({ serverId: server.id, request: { enabled: next } })}
+          onTrust={(next) => update.mutate({ serverId: server.id, request: { trusted: next } })}
           togglePending={update.isPending}
         />
       )}
@@ -232,9 +234,8 @@ function ServerSection({
           </p>
         ) : (
           <>
-            <p className="max-w-measure pt-2 pb-1 text-xs text-muted-foreground">
-              {t('toolsHint')}
-            </p>
+            <p className="max-w-measure pt-2 text-xs text-muted-foreground">{t('toolsHint')}</p>
+            <ExternalMcpSuggestions workspaceId={workspaceId} server={server} />
             <ul className="flex flex-col">
               {server.tools.map((tool) => (
                 <ExternalMcpToolRow
@@ -339,6 +340,7 @@ function ServerActions({
   onCheck,
   onEdit,
   onToggle,
+  onTrust,
   togglePending,
 }: {
   workspaceId: string;
@@ -348,12 +350,14 @@ function ServerActions({
   onCheck: () => void;
   onEdit: () => void;
   onToggle: (next: boolean) => void;
+  onTrust: (next: boolean) => void;
   togglePending: boolean;
 }) {
   const t = useTranslations('settings.externalMcp');
   const remove = useRemoveExternalMcpServer(workspaceId);
   const [confirming, setConfirming] = React.useState(false);
   const switchId = `mcp-enabled-${server.id}`;
+  const trustId = `mcp-trusted-${server.id}`;
 
   return (
     <div className="flex flex-col gap-4">
@@ -388,6 +392,19 @@ function ServerActions({
         <div className="flex flex-col gap-0.5">
           <Label htmlFor={switchId}>{t('enabled')}</Label>
           <p className="max-w-measure text-xs text-muted-foreground">{t('enabledHint')}</p>
+        </div>
+      </div>
+      <div className="flex items-start gap-3">
+        <Switch
+          id={trustId}
+          checked={server.trusted}
+          disabled={togglePending}
+          onCheckedChange={onTrust}
+          data-testid="external-mcp-trusted"
+        />
+        <div className="flex flex-col gap-0.5">
+          <Label htmlFor={trustId}>{t('trusted')}</Label>
+          <p className="max-w-measure text-xs text-muted-foreground">{t('trustedHint')}</p>
         </div>
       </div>
 

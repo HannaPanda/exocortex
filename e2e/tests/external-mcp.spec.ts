@@ -52,6 +52,7 @@ function tool(overrides: Record<string, unknown>) {
     problem: null,
     available: true,
     access: 'blocked',
+    suggestedAccess: 'write',
     changedSinceApproval: false,
     approvedAt: null,
     firstSeenAt: NOW,
@@ -69,6 +70,7 @@ function fixtureServer(readAccess: string) {
     transport: 'streamable_http',
     url: 'https://health.example.org/mcp',
     enabled: true,
+    trusted: false,
     authKind: 'bearer',
     authHeaderName: null,
     secretConfigured: true,
@@ -92,6 +94,7 @@ function fixtureServer(readAccess: string) {
         description: 'Liefert die Gewichtsmessungen eines Zeitraums.',
         inputSchema: { type: 'object', properties: { from: { type: 'string' } } },
         hints: { readOnlyHint: true },
+        suggestedAccess: 'read',
         access: readAccess,
         approvedAt: readAccess === 'read' ? NOW : null,
       }),
@@ -179,4 +182,44 @@ test('jedes Werkzeug zeigt seinen Zustand und wird per Klick freigegeben', async
 
   await page.setViewportSize({ width: 390, height: 1600 });
   await page.screenshot({ path: testInfo.outputPath('narrow.png'), fullPage: true });
+});
+
+test('die Vorschläge lassen sich gesammelt übernehmen, geänderte bleiben außen vor', async ({
+  page,
+}) => {
+  let access = 'blocked';
+  const patched: { url: string; body: unknown }[] = [];
+  await page.route(`**/api/workspaces/${workspaceId}/mcp-servers**`, async (route: Route) => {
+    const request = route.request();
+    if (request.method() === 'PATCH') {
+      patched.push({ url: request.url(), body: request.postDataJSON() });
+      access = 'read';
+      await route.fulfill({ json: { server: fixtureServer(access) } });
+      return;
+    }
+    await route.fulfill({
+      json: { servers: [fixtureServer(access)], enabled: true, credentialsAvailable: true },
+    });
+  });
+
+  await openTab(page);
+  await expect(
+    page.getByTestId('mcp-tool-row').nth(0).getByTestId('mcp-tool-suggested'),
+  ).toBeVisible();
+  await page.getByTestId('external-mcp-suggestions-review').click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText('get_weight');
+  await expect(dialog).not.toContainText('log_meal');
+  await dialog.getByTestId('external-mcp-suggestions-apply').click();
+
+  await expect
+    .poll(() => patched)
+    .toEqual([
+      {
+        url: expect.stringMatching(/\/mcp-servers\/srv1\/tools$/u) as unknown as string,
+        body: { changes: [{ toolId: 't1', access: 'read' }] },
+      },
+    ]);
+  await expect(dialog).toBeHidden();
+  await expect(page.getByTestId('external-mcp-suggestions-review')).toBeHidden();
 });

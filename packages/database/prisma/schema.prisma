@@ -735,6 +735,10 @@ model ExternalMcpServer {
   url         String
   /// Off until a person switches it on; a disabled server offers nothing.
   enabled     Boolean              @default(false)
+  /// A person's word that this server's answers are their own data: still
+  /// fenced as data, but they do not lock a run's writes (ADR-030). Off by
+  /// default, and a changed address switches it off again.
+  trusted     Boolean              @default(false)
 
   authKind         ExternalMcpAuthKind @default(NONE)
   /// The header the secret is the whole value of, when `authKind` is HEADER.

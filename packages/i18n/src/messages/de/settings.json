@@ -742,9 +742,21 @@
     "removeDescription": "Der Server, sein Secret und alle Freigaben seiner Werkzeuge werden gelöscht. Bindest du ihn neu an, sind alle Werkzeuge wieder gesperrt.",
     "enabled": "Für die KI eingeschaltet",
     "enabledHint": "Ausgeschaltet bleibt alles gespeichert, aber die KI bekommt keines seiner Werkzeuge angeboten.",
+    "trusted": "Antworten sind meine eigenen Daten",
+    "trustedHint": "Eingeschaltet sperrt Lesen von diesem Server nicht mehr das Schreiben im selben Lauf, auch nicht zurück auf diesen Server. Die Antworten bleiben als Daten markiert, nicht als Anweisung. Nur für Server, deren Inhalte du selbst einträgst. Änderst du die Adresse, geht der Schalter aus.",
     "tools": "Werkzeuge",
     "toolCount": "{approved} von {total} freigegeben",
     "toolsHint": "Lies, was ein Werkzeug laut Server tut, und entscheide selbst: Lesen heißt, es holt nur Daten. Schreiben heißt, es ändert etwas, und gilt dann für die KI wie jede andere Änderung.",
+    "suggest": {
+      "summary": "Vorschlag nach Werkzeugnamen: {read} lesen, {write} schreiben. {differ, plural, =0 {Alles ist schon so eingestellt.} one {# Werkzeug ist anders eingestellt.} other {# Werkzeuge sind anders eingestellt.}}",
+      "review": "Vorschläge ansehen",
+      "title": "Vorschläge übernehmen?",
+      "description": "Der Vorschlag kommt aus dem Werkzeugnamen und den Angaben des Servers. Im Zweifel heißt er Schreiben, denn ein lesendes Werkzeug als Schreiben wird nur öfter gesperrt. Danach kannst du jedes Werkzeug einzeln ändern.",
+      "toRead": "Wird Lesen ({count})",
+      "toWrite": "Wird Schreiben ({count})",
+      "changedLeftOut": "{count, plural, one {# geändertes Werkzeug bleibt gesperrt, bis du es dir einzeln ansiehst.} other {# geänderte Werkzeuge bleiben gesperrt, bis du sie dir einzeln ansiehst.}}",
+      "confirm": "{count, plural, one {# Werkzeug einstellen} other {# Werkzeuge einstellen}}"
+    },
     "noToolsYet": "Prüf die Verbindung, dann siehst du hier, welche Werkzeuge der Server anbietet.",
     "noTools": "Der Server bietet keine Werkzeuge an.",
     "truncated": "Der Server bietet mehr Werkzeuge an, als hier gespeichert werden. Die übrigen bleiben außen vor.",
@@ -836,7 +848,8 @@
       "gone": "Nicht mehr angeboten",
       "goneHint": "Der Server hat dieses Werkzeug bei der letzten Prüfung nicht mehr genannt.",
       "changed": "Geändert",
-      "changedHint": "Der Server hat Beschreibung oder Parameter geändert, seit du es freigegeben hast. Deshalb ist es wieder gesperrt. Sieh es dir neu an."
+      "changedHint": "Der Server hat Beschreibung oder Parameter geändert, seit du es freigegeben hast. Deshalb ist es wieder gesperrt. Sieh es dir neu an.",
+      "suggested": "Vorschlag: {access}"
     }
   }
 }

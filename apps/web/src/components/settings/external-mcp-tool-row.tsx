@@ -102,6 +102,11 @@ export function ExternalMcpToolRow({
         ) : (
           <span>{t('noHints')}</span>
         )}
+        {approvable && !tool.changedSinceApproval && tool.access !== tool.suggestedAccess ? (
+          <span data-testid="mcp-tool-suggested">
+            {t('suggested', { access: t(`access.${tool.suggestedAccess}`) })}
+          </span>
+        ) : null}
         {tool.approvedAt !== null && tool.access !== 'blocked' ? (
           <span>
             {t('approvedAt', {

@@ -742,9 +742,21 @@
     "removeDescription": "De server, het bijbehorende geheim en alle goedkeuringen van de bijbehorende tools worden verwijderd. Koppel je de server opnieuw, dan zijn alle tools weer geblokkeerd.",
     "enabled": "Ingeschakeld voor de AI",
     "enabledHint": "Uitgeschakeld blijft alles bewaard, maar de AI krijgt geen van de bijbehorende tools aangeboden.",
+    "trusted": "Antwoorden zijn mijn eigen gegevens",
+    "trustedHint": "Ingeschakeld blokkeert lezen van deze server schrijven in dezelfde run niet meer, ook niet terug naar deze server. De antwoorden blijven gemarkeerd als gegevens, niet als instructie. Alleen voor servers waarvan je de inhoud zelf invoert. Als je het adres wijzigt, gaat de schakelaar uit.",
     "tools": "Tools",
     "toolCount": "{approved} van {total} goedgekeurd",
     "toolsHint": "Lees wat een tool volgens de server doet en beslis zelf: lezen betekent dat het alleen gegevens ophaalt. Schrijven betekent dat het iets wijzigt, en geldt dan voor de AI net als elke andere wijziging.",
+    "suggest": {
+      "summary": "Suggestie op basis van toolnamen: {read} lezen, {write} schrijven. {differ, plural, =0 {Alles is al zo ingesteld.} one {# tool is anders ingesteld.} other {# tools zijn anders ingesteld.}}",
+      "review": "Suggesties bekijken",
+      "title": "Suggesties overnemen?",
+      "description": "De suggestie is gebaseerd op de toolnaam en de gegevens van de server. Bij twijfel is het schrijven, want een leestool ingesteld als schrijven wordt alleen vaker geblokkeerd. Daarna kun je elke tool afzonderlijk wijzigen.",
+      "toRead": "Wordt lezen ({count})",
+      "toWrite": "Wordt schrijven ({count})",
+      "changedLeftOut": "{count, plural, one {# gewijzigde tool blijft geblokkeerd totdat je deze afzonderlijk bekijkt.} other {# gewijzigde tools blijven geblokkeerd totdat je ze afzonderlijk bekijkt.}}",
+      "confirm": "{count, plural, one {# tool instellen} other {# tools instellen}}"
+    },
     "noToolsYet": "Controleer de verbinding, dan zie je hier welke tools de server aanbiedt.",
     "noTools": "De server biedt geen tools aan.",
     "truncated": "De server biedt meer tools aan dan hier worden opgeslagen. De overige blijven buiten beschouwing.",
@@ -836,7 +848,8 @@
       "gone": "Niet meer aangeboden",
       "goneHint": "De server noemde deze tool niet meer bij de laatste controle.",
       "changed": "Gewijzigd",
-      "changedHint": "De server heeft de beschrijving of parameters gewijzigd sinds je deze hebt goedgekeurd. Daarom is hij weer geblokkeerd. Bekijk hem opnieuw."
+      "changedHint": "De server heeft de beschrijving of parameters gewijzigd sinds je deze hebt goedgekeurd. Daarom is hij weer geblokkeerd. Bekijk hem opnieuw.",
+      "suggested": "Suggestie: {access}"
     }
   }
 }

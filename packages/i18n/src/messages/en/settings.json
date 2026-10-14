@@ -742,9 +742,21 @@
     "removeDescription": "The server, its secret, and all approvals for its tools will be deleted. If you connect it again, all tools will be blocked again.",
     "enabled": "Enabled for AI",
     "enabledHint": "When turned off, everything stays saved, but the AI won’t be offered any of its tools.",
+    "trusted": "Responses are my own data",
+    "trustedHint": "When enabled, reading from this server no longer blocks writing in the same run, including writing back to this server. Responses remain marked as data, not as instructions. Only for servers whose contents you enter yourself. If you change the address, this toggle turns off.",
     "tools": "Tools",
     "toolCount": "{approved} of {total} approved",
     "toolsHint": "Read what the server says a tool does and decide for yourself: Reading means it only fetches data. Writing means it changes something, and is then treated for the AI like any other change.",
+    "suggest": {
+      "summary": "Suggestion based on tool names: {read} read, {write} write. {differ, plural, =0 {Everything is already set this way.} one {# tool is set differently.} other {# tools are set differently.}}",
+      "review": "Review suggestions",
+      "title": "Apply suggestions?",
+      "description": "The suggestion is based on the tool name and the server’s information. When in doubt, it defaults to write, since a read tool marked as write is only blocked more often. You can adjust each tool individually afterwards.",
+      "toRead": "Will become Read ({count})",
+      "toWrite": "Will become Write ({count})",
+      "changedLeftOut": "{count, plural, one {# modified tool remains blocked until you review it individually.} other {# modified tools remain blocked until you review them individually.}}",
+      "confirm": "{count, plural, one {Configure # tool} other {Configure # tools}}"
+    },
     "noToolsYet": "Check the connection, and you’ll see the tools offered by the server here.",
     "noTools": "The server offers no tools.",
     "truncated": "The server offers more tools than can be saved here. The rest are left out.",
@@ -836,7 +848,8 @@
       "gone": "No longer offered",
       "goneHint": "The server did not list this tool during the last check.",
       "changed": "Changed",
-      "changedHint": "The server changed the description or parameters since you approved it. That is why it is locked again. Review it again."
+      "changedHint": "The server changed the description or parameters since you approved it. That is why it is locked again. Review it again.",
+      "suggested": "Suggested: {access}"
     }
   }
 }

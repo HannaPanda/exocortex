@@ -9,6 +9,7 @@ import {
   type ExternalMcpServerListResponse,
   type ExternalMcpServerResponse,
   type ExternalMcpToolAccess,
+  type SetExternalMcpToolsAccessRequest,
   type UpdateExternalMcpServerRequest,
 } from '@exocortex/contracts';
 
@@ -97,6 +98,19 @@ export function useSetExternalMcpToolAccess(workspaceId: string) {
       apiRequest<ExternalMcpServerResponse>(
         `/api/workspaces/${workspaceId}/mcp-servers/${input.serverId}/tools/${input.toolId}`,
         { method: 'PATCH', body: { access: input.access } },
+      ),
+    onSuccess: (response) => store(response.server),
+  });
+}
+
+/** Several decisions at once: applying the suggestions a person looked at. */
+export function useSetExternalMcpToolsAccess(workspaceId: string) {
+  const store = useStoreServer(workspaceId);
+  return useMutation({
+    mutationFn: (input: { serverId: string; request: SetExternalMcpToolsAccessRequest }) =>
+      apiRequest<ExternalMcpServerResponse>(
+        `/api/workspaces/${workspaceId}/mcp-servers/${input.serverId}/tools`,
+        { method: 'PATCH', body: input.request },
       ),
     onSuccess: (response) => store(response.server),
   });

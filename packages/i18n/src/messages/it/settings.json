@@ -742,9 +742,21 @@
     "removeDescription": "Il server, il suo secret e tutte le approvazioni dei suoi strumenti verranno eliminati. Se lo colleghi di nuovo, tutti gli strumenti saranno di nuovo bloccati.",
     "enabled": "Attivato per l’IA",
     "enabledHint": "Se disattivato, tutto resta salvato, ma all’IA non viene proposto alcuno dei suoi strumenti.",
+    "trusted": "Le risposte sono i miei dati personali",
+    "trustedHint": "Se attivata, la lettura da questo server non bloccherà più la scrittura nella stessa esecuzione, nemmeno verso questo server. Le risposte rimarranno contrassegnate come dati, non come istruzioni. Da usare solo per server i cui contenuti sono inseriti da te. Se modifichi l’indirizzo, l’opzione verrà disattivata.",
     "tools": "Strumenti",
     "toolCount": "{approved} su {total} approvati",
     "toolsHint": "Leggi cosa fa uno strumento in base al server e decidi autonomamente: Lettura significa che recupera solo dati. Scrittura significa che apporta modifiche, e per l’IA vale come qualsiasi altra modifica.",
+    "suggest": {
+      "summary": "Suggerimento in base al nome dello strumento: {read} lettura, {write} scrittura. {differ, plural, =0 {È già tutto impostato così.} one {# strumento è impostato diversamente.} many {# strumenti sono impostati diversamente.} other {# strumenti sono impostati diversamente.}}",
+      "review": "Mostra suggerimenti",
+      "title": "Applicare i suggerimenti?",
+      "description": "Il suggerimento si basa sul nome dello strumento e sulle indicazioni del server. Nel dubbio viene impostato su Scrittura, poiché uno strumento di lettura configurato come scrittura verrà solo bloccato più spesso. Successivamente potrai modificare ogni strumento singolarmente.",
+      "toRead": "Diventa Lettura ({count})",
+      "toWrite": "Diventa Scrittura ({count})",
+      "changedLeftOut": "{count, plural, one {# strumento modificato rimane bloccato finché non lo controlli singolarmente.} many {# strumenti modificati rimangono bloccati finché non li controlli singolarmente.} other {# strumenti modificati rimangono bloccati finché non li controlli singolarmente.}}",
+      "confirm": "{count, plural, one {Imposta # strumento} many {Imposta # strumenti} other {Imposta # strumenti}}"
+    },
     "noToolsYet": "Verifica la connessione per visualizzare qui gli strumenti offerti dal server.",
     "noTools": "Il server non offre alcuno strumento.",
     "truncated": "Il server offre più strumenti di quanti ne possano essere salvati qui. I restanti vengono esclusi.",
@@ -836,7 +848,8 @@
       "gone": "Non più disponibile",
       "goneHint": "Il server non ha più elencato questo strumento durante l’ultima verifica.",
       "changed": "Modificato",
-      "changedHint": "Il server ha modificato la descrizione o i parametri dopo la tua approvazione, quindi è stato bloccato di nuovo. Controllalo di nuovo."
+      "changedHint": "Il server ha modificato la descrizione o i parametri dopo la tua approvazione, quindi è stato bloccato di nuovo. Controllalo di nuovo.",
+      "suggested": "Suggerimento: {access}"
     }
   }
 }
