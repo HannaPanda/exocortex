@@ -11,6 +11,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/chats'] },
   }),
   defineFeature({
+    id: 'gedankengang',
+    area: 'ki',
+    since: '2026-10-14',
+    references: ['#195', 'ADR-087'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'chat-archiv',
     area: 'ki',
     since: '2026-09-08',

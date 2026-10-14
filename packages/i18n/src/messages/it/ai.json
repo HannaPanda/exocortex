@@ -84,6 +84,13 @@
       "ai_empty_answer": "Il modello ha restituito una risposta vuota. Scrivi «continua» e l’esecuzione successiva riprenderà da lì."
     }
   },
+  "trace": {
+    "reasoningTitle": "Ragionamento",
+    "activityTitle": "Attività",
+    "live": "in corso",
+    "toolCount": "{count, plural, one {# strumento} many {# strumenti} other {# strumenti}}",
+    "notStored": "Il ragionamento non viene salvato e scomparirà dopo aver ricaricato."
+  },
   "context": {
     "selection": "Selezione ({count, plural, one {# blocco} many {# blocchi} other {# blocchi}})",
     "selectionRemove": "Non includere la selezione",

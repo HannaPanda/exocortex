@@ -109,7 +109,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages.length, streamText, commandNotice?.id, toolActivity.length, notice]);
+  }, [messages.length, streamText, commandNotice?.id, run.trace, notice]);
 
   const modelChoice = resolveModelChoice({
     registry: modelsQuery.data ?? null,
@@ -249,7 +249,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         showIntro={transcript.showIntro}
         messages={messages}
         commandNotice={commandNotice}
-        toolActivity={toolActivity}
+        trace={run.trace}
+        finishedTrace={run.finishedTrace}
         streamingMessage={streamingMessage}
         streaming={activeRunId !== null}
         notice={notice}

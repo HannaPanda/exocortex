@@ -625,6 +625,16 @@
     },
     "where": "Die Seite \"Chats\" in der Navigation."
   },
+  "gedankengang": {
+    "title": "Zusehen, wie die KI denkt",
+    "summary": "Während eine Antwort entsteht, siehst du über ihr, was das Modell dabei überlegt und welche Werkzeuge es aufruft, in der Reihenfolge, in der es passiert. Gezeigt wird nur, was das Modell wirklich liefert.",
+    "details": {
+      "p1": "Liefert das Modell seinen Gedankengang mit, erscheint er live über der Antwort, gefolgt von den Werkzeugaufrufen mit ihrem Stand: läuft, fertig, fehlgeschlagen oder abgelehnt. Kommt kein Gedankengang, heißt der Bereich „Aktivitäten“ und zeigt nur die Werkzeuge. Gibt es beides nicht, gibt es auch keinen Bereich.",
+      "p2": "Ist die Antwort fertig, klappt der Bereich zu und bleibt über der Antwort stehen, bis du die nächste Frage stellst. Mit einem Klick auf die Überschrift klappst du ihn wieder auf.",
+      "p3": "Den Gedankengang siehst nur du, nicht die anderen Mitglieder des Arbeitsbereichs. Er wird nirgends gespeichert und ist nach dem Neuladen weg. Was ein Lauf an Werkzeugen aufgerufen hat, bleibt dagegen in der Laufansicht nachlesbar. Wie viel das Modell nachdenkt, stellst du mit der Denkstufe neben der Modellwahl ein."
+    },
+    "where": "Im KI-Bereich über der Antwort, solange sie entsteht, danach zugeklappt darüber."
+  },
   "automation-fehlermeldung": {
     "title": "Post, wenn eine Automation nicht mehr läuft",
     "summary": "Schaltet sich eine deiner Automationen nach wiederholten Fehlern ab, bekommst du genau eine Mail. Scheitert ein geplanter Lauf, meldet sich eXocortex beim ersten Mal, nicht bei jedem weiteren.",

@@ -10,9 +10,9 @@ import { ErrorState, LoadingState } from '@exocortex/ui';
 import { ConversationCheckpoints } from '@/components/attention/conversation-checkpoints';
 
 import { ChatMessage } from './chat-message';
-import { toolActivityLine, useRunLabels } from './run-labels';
+import { type FinishedRunTrace, type RunTraceStep } from './run-trace';
+import { RunTraceView } from './run-trace-view';
 import { Transcript } from './transcript';
-import { type ToolActivityEntry } from './use-ai-run-tracker';
 
 /**
  * The scrolling half of the panel: the transcript, whatever the model is doing
@@ -26,7 +26,8 @@ export function AiTranscriptArea({
   showIntro,
   messages,
   commandNotice,
-  toolActivity,
+  trace,
+  finishedTrace,
   streamingMessage,
   streaming,
   notice,
@@ -40,7 +41,10 @@ export function AiTranscriptArea({
   showIntro: boolean;
   messages: AiConversationMessage[];
   commandNotice: AiConversationMessage | null;
-  toolActivity: ToolActivityEntry[];
+  /** The run in flight, thinking and tool calls in order (issue #195). */
+  trace: RunTraceStep[];
+  /** The run that ended last, shown folded beside the answer it led to. */
+  finishedTrace: FinishedRunTrace | null;
   streamingMessage: AiConversationMessage | null;
   streaming: boolean;
   notice: string | null;
@@ -49,7 +53,10 @@ export function AiTranscriptArea({
   conversationId: string | null;
 }) {
   const t = useTranslations('ai.transcript');
-  const runLabel = useRunLabels();
+  // A run that ended without an answer has no message to stand beside; its
+  // trace then stays where the live one was, above the error that explains it.
+  const finishedTraceAnswered =
+    finishedTrace !== null && messages.some((message) => message.runId === finishedTrace.runId);
   return (
     <div
       ref={scrollRef}
@@ -75,16 +82,13 @@ export function AiTranscriptArea({
             </div>
           ) : null}
 
-          <Transcript messages={messages} />
+          <Transcript messages={messages} finishedTrace={finishedTrace} />
           {streaming ? null : <ConversationCheckpoints conversationId={conversationId} />}
           {commandNotice !== null ? <ChatMessage message={commandNotice} /> : null}
 
-          {toolActivity.length > 0 ? (
-            <div className="space-y-0.5 text-xs text-muted-foreground">
-              {toolActivity.map((entry) => (
-                <p key={entry.key}>{runLabel(toolActivityLine(entry))}</p>
-              ))}
-            </div>
+          {streaming ? <RunTraceView steps={trace} live /> : null}
+          {!streaming && finishedTrace !== null && !finishedTraceAnswered ? (
+            <RunTraceView steps={finishedTrace.steps} live={false} />
           ) : null}
 
           {streamingMessage !== null ? (

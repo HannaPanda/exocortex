@@ -6,9 +6,17 @@ import * as React from 'react';
 import { type AiConversationMessage } from '@exocortex/contracts';
 
 import { ChatMessage } from './chat-message';
+import { type FinishedRunTrace } from './run-trace';
+import { RunTraceView } from './run-trace-view';
 
 export interface TranscriptProps {
   messages: readonly AiConversationMessage[];
+  /**
+   * The last run's thinking and tool calls (issue #195), drawn above the
+   * assistant message that run wrote. Never stored, so only ever the one run
+   * this tab watched.
+   */
+  finishedTrace?: FinishedRunTrace | null;
 }
 
 /**
@@ -26,7 +34,7 @@ export interface TranscriptProps {
  * summary, which is how it is told apart here: the first message below such a
  * boundary is that summary.
  */
-export function Transcript({ messages }: TranscriptProps) {
+export function Transcript({ messages, finishedTrace = null }: TranscriptProps) {
   return (
     <>
       {messages.map((message, index) => {
@@ -37,6 +45,11 @@ export function Transcript({ messages }: TranscriptProps) {
 
         return (
           <React.Fragment key={message.id}>
+            {finishedTrace !== null &&
+            message.role === 'assistant' &&
+            message.runId === finishedTrace.runId ? (
+              <RunTraceView steps={finishedTrace.steps} live={false} />
+            ) : null}
             <ChatMessage message={message} />
             {boundary ? <ContextBoundary summarized={next?.isSummary ?? false} /> : null}
           </React.Fragment>

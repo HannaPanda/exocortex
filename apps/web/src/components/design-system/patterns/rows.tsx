@@ -6,6 +6,8 @@ import type { DocumentTreeNode, SavedQueryDisplay } from '@exocortex/contracts';
 import { Button } from '@exocortex/ui';
 
 import { RunActivity } from '@/components/ai/run-activity';
+import { type RunTraceStep } from '@/components/ai/run-trace';
+import { RunTraceView } from '@/components/ai/run-trace-view';
 import { SavedQueryResults } from '@/components/search/saved-query-results';
 import {
   inputId,
@@ -541,6 +543,77 @@ export function RunProgressPattern() {
           </Button>
         ) : null}
       </DsExample>
+      <DsExample
+        id="ki-fortschritt-spur"
+        title="Gedankengang und Aktivitäten"
+        source="apps/web/src/components/ai/run-trace-view.tsx"
+        note="Nur was wirklich ankam: „Gedankengang“, wenn das Modell Reasoning streamt, sonst „Aktivitäten“, ohne beides gar nichts. Offen, solange der Lauf läuft, danach zugeklappt über der Antwort. Außerhalb der Live-Region, damit ein Screenreader das Denken nicht Wort für Wort vorliest."
+      >
+        <DsStates>
+          <DsState label="Läuft, mit Gedankengang">
+            <div className="w-[260px] rounded-md bg-surface p-3">
+              <RunTraceView steps={FIXTURE_TRACE_LIVE} live />
+            </div>
+          </DsState>
+          <DsState label="Fertig, zugeklappt">
+            <div className="w-[260px] rounded-md bg-surface p-3">
+              <RunTraceView steps={FIXTURE_TRACE_DONE} live={false} />
+            </div>
+          </DsState>
+          <DsState label="Nur Werkzeuge">
+            <div className="w-[260px] rounded-md bg-surface p-3">
+              <RunTraceView steps={FIXTURE_TRACE_TOOLS} live={false} />
+            </div>
+          </DsState>
+        </DsStates>
+      </DsExample>
     </DsSection>
   );
 }
+
+const FIXTURE_TRACE_DONE: readonly RunTraceStep[] = [
+  {
+    kind: 'reasoning',
+    key: 'r1',
+    turn: 1,
+    text: 'Gefragt ist, was in „Kapitel 2“ zur Gliederung steht. Ich lese die Seite, statt zu raten.',
+  },
+  {
+    kind: 'tool',
+    key: 't1',
+    entry: { key: 't1', toolName: 'exo_page_read', status: 'succeeded', target: 'document:k2' },
+  },
+  {
+    kind: 'tool',
+    key: 't2',
+    entry: { key: 't2', toolName: 'exo_web_fetch', status: 'refused', target: null },
+  },
+  {
+    kind: 'reasoning',
+    key: 'r2',
+    turn: 2,
+    text: 'Die Seite hat drei Abschnitte, der dritte ist leer. Das sage ich so.',
+  },
+];
+
+const FIXTURE_TRACE_LIVE: readonly RunTraceStep[] = [
+  ...FIXTURE_TRACE_DONE.slice(0, 2),
+  {
+    kind: 'tool',
+    key: 't3',
+    entry: { key: 't3', toolName: 'exo_search', status: 'started', target: null },
+  },
+];
+
+const FIXTURE_TRACE_TOOLS: readonly RunTraceStep[] = [
+  {
+    kind: 'tool',
+    key: 't1',
+    entry: { key: 't1', toolName: 'exo_search', status: 'succeeded', target: null },
+  },
+  {
+    kind: 'tool',
+    key: 't2',
+    entry: { key: 't2', toolName: 'exo_page_write', status: 'failed', target: 'document:k2' },
+  },
+];

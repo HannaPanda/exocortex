@@ -625,6 +625,16 @@
     },
     "where": "The \"Chats\" page in navigation."
   },
+  "gedankengang": {
+    "title": "Watch the AI think",
+    "summary": "While an answer is being generated, you can see above it what the model is thinking and which tools it is calling, in the order it happens. Only what the model actually provides is shown.",
+    "details": {
+      "p1": "If the model provides its reasoning, it appears live above the answer, followed by tool calls with their status: running, done, failed, or rejected. If no reasoning is provided, the section is called “Activities” and only shows the tools. If neither is available, there is no section at all.",
+      "p2": "Once the answer is ready, the section collapses and stays above the answer until you ask the next question. You can expand it again by clicking the heading.",
+      "p3": "Only you see the reasoning, not other members of the workspace. It isn’t saved anywhere and disappears after reloading. Which tools a run called, however, remains readable in the run view. You can adjust how much the model thinks with the thinking level next to the model selection."
+    },
+    "where": "In the AI section above the answer while it is being generated, then collapsed above it."
+  },
   "automation-fehlermeldung": {
     "title": "Mail when an automation stops running",
     "summary": "If one of your automations shuts down after repeated errors, you receive exactly one email. If a scheduled run fails, eXocortex notifies you on the first failure, not on every subsequent one.",

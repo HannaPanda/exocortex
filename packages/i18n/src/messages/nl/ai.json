@@ -84,6 +84,13 @@
       "ai_empty_answer": "Het model heeft een leeg antwoord gegeven. Typ „verder”, dan gaat de volgende run daar verder."
     }
   },
+  "trace": {
+    "reasoningTitle": "Redenering",
+    "activityTitle": "Activiteiten",
+    "live": "bezig",
+    "toolCount": "{count, plural, one {# tool} other {# tools}}",
+    "notStored": "De redenering wordt niet opgeslagen en is na het vernieuwen verdwenen."
+  },
   "context": {
     "selection": "Selectie ({count, plural, one {# blok} other {# blokken}})",
     "selectionRemove": "Selectie niet meesturen",

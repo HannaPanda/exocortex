@@ -84,6 +84,13 @@
       "ai_empty_answer": "The model returned an empty answer. Write “continue” and the next run will pick up from there."
     }
   },
+  "trace": {
+    "reasoningTitle": "Thought process",
+    "activityTitle": "Activity",
+    "live": "running",
+    "toolCount": "{count, plural, one {# tool} other {# tools}}",
+    "notStored": "The thought process is not saved and will be gone after reloading."
+  },
   "context": {
     "selection": "Selection ({count, plural, one {# block} other {# blocks}})",
     "selectionRemove": "Don’t include selection",

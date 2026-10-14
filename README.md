@@ -153,6 +153,9 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
+- the model's live thinking and its tool calls, in order, above the answer
+  that is being written: shown only when the model streams reasoning, only to
+  the person who asked, and stored nowhere (ADR-087)
 - provider routing as configuration: a request only goes to the providers
   whose window can take it (ADR-032), and among those OpenRouter sorts by
   throughput, latency or price, skips or insists on providers, as one

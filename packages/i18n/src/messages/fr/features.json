@@ -625,6 +625,16 @@
     },
     "where": "La page « Chats » dans la navigation."
   },
+  "gedankengang": {
+    "title": "Voir l’IA réfléchir",
+    "summary": "Pendant qu’une réponse se génère, tu vois au-dessus d’elle ce que le modèle pense et les outils qu’il appelle, dans l’ordre où cela se produit. Seul ce que le modèle fournit réellement est affiché.",
+    "details": {
+      "p1": "Si le modèle fournit son cheminement de pensée, il apparaît en direct au-dessus de la réponse, suivi des appels d’outils avec leur état : en cours, terminé, échoué ou refusé. Sans cheminement de pensée, la section s’appelle « Activités » et ne montre que les outils. S’il n’y a ni l’un ni l’autre, la section n’apparaît pas.",
+      "p2": "Une fois la réponse terminée, la section se replie et reste au-dessus de la réponse jusqu’à ce que tu poses la question suivante. En cliquant sur le titre, tu peux la déplier à nouveau.",
+      "p3": "Tu es la seule personne à voir ce cheminement de pensée, pas les autres membres de l’espace de travail. Il n’est enregistré nulle part et disparaît après un rechargement. En revanche, les outils appelés par une exécution restent consultables dans la vue de l’exécution. Tu règles le niveau de réflexion du modèle grâce au curseur de réflexion situé à côté du choix du modèle."
+    },
+    "where": "Dans la section IA au-dessus de la réponse pendant sa génération, puis repliée au-dessus une fois terminée."
+  },
   "automation-fehlermeldung": {
     "title": "Courriel lorsqu’une automatisation s’arrête",
     "summary": "Si l’une de tes automatisations se désactive après des erreurs répétées, tu reçois exactement un e-mail. Si une exécution planifiée échoue, eXocortex te prévient la première fois, pas à chaque tentative suivante.",

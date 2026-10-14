@@ -625,6 +625,16 @@
     },
     "where": "De pagina „Chats” in de navigatie."
   },
+  "gedankengang": {
+    "title": "Meekijken hoe de AI denkt",
+    "summary": "Terwijl een antwoord tot stand komt, zie je daarboven wat het model overweegt en welke tools het aanroept, in de volgorde waarin het gebeurt. Er wordt alleen getoond wat het model daadwerkelijk levert.",
+    "details": {
+      "p1": "Als het model zijn gedachtegang meestuurt, verschijnt deze live boven het antwoord, gevolgd door de tool-aanroepen met hun status: bezig, voltooid, mislukt of geweigerd. Komt er geen gedachtegang, dan heet het gedeelte „Activiteiten” en toont het alleen de tools. Is er van beide geen sprake, dan is er ook geen gedeelte.",
+      "p2": "Zodra het antwoord klaar is, klapt het gedeelte in en blijft het boven het antwoord staan tot je de volgende vraag stelt. Met een klik op de kop klap je het weer uit.",
+      "p3": "De gedachtegang zie je alleen zelf, niet de andere leden van de werkruimte. Deze wordt nergens opgeslagen en is na het vernieuwen verdwenen. Welke tools een run heeft aangeroepen, blijft daarentegen terug te lezen in de runweergave. Hoeveel het model nadenkt, stel je in met het denkniveau naast de modelkeuze."
+    },
+    "where": "In het AI-gedeelte boven het antwoord zolang het gegenereerd wordt, daarna ingeklapt daarboven."
+  },
   "automation-fehlermeldung": {
     "title": "Bericht als een automatisering niet meer draait",
     "summary": "Schakelt een van je automatiseringen zichzelf na herhaalde fouten uit, dan ontvang je precies één e-mail. Mislukt een geplande run, dan meldt eXocortex zich de eerste keer, niet bij elke volgende.",

@@ -625,6 +625,16 @@
     },
     "where": "Strona „Czaty” w nawigacji."
   },
+  "gedankengang": {
+    "title": "Podgląd procesu myślenia AI",
+    "summary": "Podczas generowania odpowiedzi widzisz nad nią, o czym myśli model i jakie narzędzia wywołuje – w kolejności, w jakiej to się odbywa. Wyświetlane jest tylko to, co model rzeczywiście przekazuje.",
+    "details": {
+      "p1": "Gdy model udostępnia swój proces myślowy, pojawia się on na żywo nad odpowiedzią, a po nim wywołania narzędzi wraz z ich statusem: w toku, zakończone, nieudane lub odrzucone. Jeśli proces myślowy nie jest dostępny, sekcja nazywa się „Aktywności” i pokazuje tylko narzędzia. W przypadku braku obu sekcja w ogóle się nie wyświetla.",
+      "p2": "Gdy odpowiedź jest gotowa, sekcja zwija się i pozostaje nad odpowiedzią do momentu zadania kolejnego pytania. Kliknięcie nagłówka pozwala rozwinąć ją ponownie.",
+      "p3": "Proces myślowy widzisz tylko ty – nie jest on widoczny dla innych członków obszaru roboczego. Nigdzie się go nie zapisuje i znika po odświeżeniu strony. To, jakie narzędzia zostały wywołane podczas danego uruchomienia, można natomiast sprawdzić w widoku uruchomień. Zakres namysłu modelu ustawia się za pomocą poziomu myślenia obok wyboru modelu."
+    },
+    "where": "W sekcji AI nad odpowiedzią podczas jej generowania, a później w postaci zwiniętej nad nią."
+  },
   "automation-fehlermeldung": {
     "title": "Wiadomość, gdy automatyzacja przestaje działać",
     "summary": "Jeśli jedna z twoich automatyzacji wyłączy się po powtarzających się błędach, otrzymasz dokładnie jedną wiadomość e-mail. Gdy zaplanowane uruchomienie się nie powiedzie, eXocortex zgłosi to za pierwszym razem, a nie przy każdym kolejnym.",

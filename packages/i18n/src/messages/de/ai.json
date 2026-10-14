@@ -84,6 +84,13 @@
       "ai_empty_answer": "Das Modell hat eine leere Antwort geliefert. Schreib „weiter“, dann setzt der nächste Lauf dort an."
     }
   },
+  "trace": {
+    "reasoningTitle": "Gedankengang",
+    "activityTitle": "Aktivitäten",
+    "live": "läuft",
+    "toolCount": "{count, plural, one {# Werkzeug} other {# Werkzeuge}}",
+    "notStored": "Der Gedankengang wird nicht gespeichert und ist nach dem Neuladen weg."
+  },
   "context": {
     "selection": "Auswahl ({count, plural, one {# Block} other {# Blöcke}})",
     "selectionRemove": "Auswahl nicht mitschicken",

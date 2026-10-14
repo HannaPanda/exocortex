@@ -84,6 +84,13 @@
       "ai_empty_answer": "Le modèle a renvoyé une réponse vide. Écris « continuer » pour reprendre l’exécution à cet endroit."
     }
   },
+  "trace": {
+    "reasoningTitle": "Raisonnement",
+    "activityTitle": "Activités",
+    "live": "en cours",
+    "toolCount": "{count, plural, one {# outil} many {# outils} other {# outils}}",
+    "notStored": "Le raisonnement n’est pas enregistré et disparaîtra après le rechargement."
+  },
   "context": {
     "selection": "Sélection ({count, plural, one {# bloc} many {# blocs} other {# blocs}})",
     "selectionRemove": "Ne pas inclure la sélection",

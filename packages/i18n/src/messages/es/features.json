@@ -625,6 +625,16 @@
     },
     "where": "La página «Chats» en la navegación."
   },
+  "gedankengang": {
+    "title": "Ver cómo piensa la IA",
+    "summary": "Mientras se genera una respuesta, ves encima de ella lo que piensa el modelo y qué herramientas invoca, en el orden en que ocurre. Solo se muestra lo que el modelo proporciona realmente.",
+    "details": {
+      "p1": "Si el modelo incluye su proceso de razonamiento, este aparece en directo sobre la respuesta, seguido de las llamadas a herramientas con su estado: en curso, completada, fallida o rechazada. Si no hay razonamiento, la sección se llama «Actividades» y solo muestra las herramientas. Si no hay ninguna de las dos cosas, no se muestra ninguna sección.",
+      "p2": "Cuando la respuesta termina, la sección se pliega y permanece encima de la respuesta hasta que hagas la siguiente pregunta. Haz clic en el encabezado para desplegarla de nuevo.",
+      "p3": "El proceso de razonamiento solo lo ves tú, no los demás miembros del espacio de trabajo. No se guarda en ningún sitio y desaparece al recargar. En cambio, las herramientas que invocó una ejecución se pueden consultar después en la vista de ejecución. Cuánto piensa el modelo se ajusta con el nivel de pensamiento situado junto a la selección de modelo."
+    },
+    "where": "En el área de IA, encima de la respuesta mientras se genera; después, plegado sobre ella."
+  },
   "automation-fehlermeldung": {
     "title": "Aviso si una automatización deja de funcionar",
     "summary": "Si una de tus automatizaciones se desactiva tras reiterados errores, recibes exactamente un correo. Si falla una ejecución programada, eXocortex te avisa la primera vez, no en cada una de las siguientes.",

@@ -3152,6 +3152,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "037c426c05970681"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "38da1505ca837328"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "c071cf5f5ed6f884"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "cccbdd4afaa6ba33"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "260f9f6f0261268e"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "3addd67a5c65a081"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "e6cafa3c7b091f1c"
@@ -12323,6 +12343,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "c87f3ef44657625a"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "b8154a871b2c67d5"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "087021656b59b3d1"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "73920d01bc01ddf9"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "5c183cb3689c5684"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "78405eeec13c9b8c"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "5c0a9a44bd564523"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -26450,6 +26494,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "d5f064af5325adc9"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "d134a8ecb32a6e6e"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "227421cc51da8cec"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "f5aaf560eb2276bc"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "5d04ad70d6882541"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "75e63ccf3f4f3018"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "1c8fcef341dd115d"
@@ -35621,6 +35685,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "f949cedcde97a224"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "1c0546269c632f15"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "68b5e4aa2e96a439"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "325cbca148abd368"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "70dd47a638895f8e"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "90c84d4c0fc63cb0"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "7b76bf2d558cbc84"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -49748,6 +49836,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "f4e81b7c1979874d"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "8fb8105dc43e2584"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "0ccef1dd7416f3c6"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "0fb97c1042b9fc2e"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "366bac1614d36466"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "6c88c928678520f9"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "d3e7d48efa5bf247"
@@ -58919,6 +59027,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "d17f27e157ad908e"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "00ed0aa7f805fbdf"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "865b8cf036b7ccf6"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "a1bb64ad1c3b031d"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "c9d866a51ea95782"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "311ed2f06fc54588"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "6d07affaeda80375"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -73046,6 +73178,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "d5fd599d30859ab6"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "387ad1fd422d2239"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "1254376799b05547"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "fabd62803dbae12b"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "89d0523dc0afb0be"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "3732cd6fcded346e"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "9593b971f4ac3f89"
@@ -82217,6 +82369,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "69aeb167904d7b5c"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "c776ec75dc7fa8f2"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "58e3d7121b8ce583"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "10a32cc4cb0c7e26"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "7d25c54b054fb516"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "e1105857f374a494"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "a36a1f03e640f8a6"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -96344,6 +96520,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "af43c47ec9984f2f"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "2d276b79aa600c04"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "56b65615507edc60"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "148216d56f53f387"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "b9f0693e9781df2f"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "3addd67a5c65a081"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "5002f17e56a76dde"
@@ -105515,6 +105711,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "d58eecae67b31a1f"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "b00a1c769faf8170"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "723ae8b90a9e1c8b"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "f37866b7209c37bb"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "4b4ab3b080b0aff1"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "640ea007c8201d11"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "d81af415aca6d468"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -119642,6 +119862,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "a9413e7ab24472d0"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "86af9bae4f85e520"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "71cb862f11120d8c"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "6d293cd26f950380"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "8b324379a505e2f6"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "23e73263ea677da3"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "91e07d6d1fa49a57"
@@ -128813,6 +129053,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "26f439337f9a9dd4"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "259025dc46322e82"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "c70d57ffb572a744"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "8f3f54beeef27704"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "819d4e754b66cb0d"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "708a33946347bc9c"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "274b96f64898cfba"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",
@@ -142940,6 +143204,26 @@
       "source": "e67ee93ae0b127cd",
       "output": "2ba6ee89dd169b4f"
     },
+    "ai.trace.activityTitle": {
+      "source": "6f49250343ee2cdd",
+      "output": "dff6624256ba2a95"
+    },
+    "ai.trace.live": {
+      "source": "870fa7cc61521952",
+      "output": "cd3d121df6f7cd51"
+    },
+    "ai.trace.notStored": {
+      "source": "da127545f6fc7245",
+      "output": "fd094dc6b442b1d1"
+    },
+    "ai.trace.reasoningTitle": {
+      "source": "0e84fcd57a327c5f",
+      "output": "5ba95f1417f737be"
+    },
+    "ai.trace.toolCount": {
+      "source": "9e90ee34d484df69",
+      "output": "0c7aef08911763e1"
+    },
     "ai.transcript.boundaryCleared": {
       "source": "b90c9ff6a1356a5f",
       "output": "3a32f3f8017e9ace"
@@ -152111,6 +152395,30 @@
     "features.gedaechtnis-postfach.where": {
       "source": "951c14f8607ff21c",
       "output": "c21b6a30a16e3092"
+    },
+    "features.gedankengang.details.p1": {
+      "source": "d1ba328c3a422e03",
+      "output": "35b33a7abcd24a13"
+    },
+    "features.gedankengang.details.p2": {
+      "source": "81facd635a34d291",
+      "output": "ec891ed3f94ef8b8"
+    },
+    "features.gedankengang.details.p3": {
+      "source": "9abf11a2860cba8e",
+      "output": "f375d4bb0c527da1"
+    },
+    "features.gedankengang.summary": {
+      "source": "56fb0f7774bbff7c",
+      "output": "870aa8f6bf482ba5"
+    },
+    "features.gedankengang.title": {
+      "source": "368bb90588417f2b",
+      "output": "c0cf8d89fcfb0ed7"
+    },
+    "features.gedankengang.where": {
+      "source": "d74f8324b773fbef",
+      "output": "98ee8b8a9f2055ea"
     },
     "features.gespeicherte-suchen.details.p1": {
       "source": "53af39a26f5134b9",

@@ -19,6 +19,14 @@ import { aiQueryKeys, useAiRun, useCancelAiRun } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
+import {
+  appendReasoning,
+  appendToolEvent,
+  type FinishedRunTrace,
+  type RunTraceStep,
+  toolEntries,
+} from './run-trace';
+
 /** One line of "what the model just did", as the panel renders it. */
 export interface ToolActivityEntry {
   key: string;
@@ -80,10 +88,9 @@ export function runFailureText(
 }
 
 /** A retried turn becomes a line of its own, in order with the tool calls around it. */
-function withRetryLine(current: ToolActivityEntry[], phase: AiRunPhase): ToolActivityEntry[] {
+function withRetryLine(current: RunTraceStep[], phase: AiRunPhase): RunTraceStep[] {
   if (phase !== 'retrying') return current;
-  const key = `retry:${String(current.length)}`;
-  return [...current, { key, toolName: '', status: 'retried', target: null }];
+  return appendToolEvent(current, -1, { toolName: '', status: 'retried', target: null });
 }
 
 /**
@@ -101,6 +108,47 @@ export function useLastRunFailure(lastRun: AiRun | null, superseded: boolean): s
   return runFailureText(t, tDiagnostics, lastRun.errorCode, lastRun);
 }
 
+/**
+ * The realtime events that make up a run's trace (issue #195): its phases,
+ * its thinking and its tool calls, folded into one ordered list.
+ */
+function useRunTraceEvents(
+  activeRunId: string | null,
+  setRunPhase: (phase: AiRunPhase) => void,
+  setTrace: React.Dispatch<React.SetStateAction<RunTraceStep[]>>,
+  markActivity: () => void,
+): void {
+  // The silence gets a name (issue #6, point 5): reasoning produces no deltas
+  // at all, and compaction used to report itself only once it was over.
+  useRealtimeEvent('ai.run.phase', (event) => {
+    if (event.payload.runId !== activeRunId) return;
+    setRunPhase(event.payload.phase);
+    markActivity();
+    setTrace((current) => withRetryLine(current, event.payload.phase));
+  });
+
+  // Only ever reaches the person who started the run (ADR-087), and is not
+  // stored anywhere: a reload or a dropped frame loses it, which is why gaps
+  // in its sequence are not repaired the way the answer's are.
+  useRealtimeEvent('ai.run.reasoning', (event) => {
+    if (event.payload.runId !== activeRunId) return;
+    setTrace((current) => appendReasoning(current, event.payload.turn, event.payload.delta));
+    markActivity();
+  });
+
+  useRealtimeEvent('ai.run.tool_call', (event) => {
+    if (event.payload.runId !== activeRunId) return;
+    setTrace((current) =>
+      appendToolEvent(current, event.payload.iteration, {
+        toolName: event.payload.toolName,
+        status: event.payload.status,
+        target: event.payload.target,
+      }),
+    );
+    markActivity();
+  });
+}
+
 const NO_DIAGNOSIS: RunDiagnosisFields = {
   errorDetail: null,
   errorDetailKey: null,
@@ -112,6 +160,10 @@ export interface AiRunTracker {
   activeRunId: string | null;
   streamText: string;
   toolActivity: ToolActivityEntry[];
+  /** What the run in flight did so far, thinking and tool calls in order (issue #195). */
+  trace: RunTraceStep[];
+  /** The trace of the run that ended last in this conversation, until the next one starts. */
+  finishedTrace: FinishedRunTrace | null;
   runPhase: AiRunPhase | null;
   elapsedMs: number;
   runQuiet: boolean;
@@ -142,7 +194,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
   const [streamText, setStreamText] = React.useState('');
-  const [toolActivity, setToolActivity] = React.useState<ToolActivityEntry[]>([]);
+  const [trace, setTrace] = React.useState<RunTraceStep[]>([]);
+  const [finishedTrace, setFinishedTrace] = React.useState<FinishedRunTrace | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   // A single slot, not a list: a command's answer replaces the previous one
@@ -174,7 +227,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     setTransientStateKey(activeConversationId);
     setActiveRunId(null);
     setStreamText('');
-    setToolActivity([]);
+    setTrace([]);
+    setFinishedTrace(null);
     setNotice(null);
     setError(null);
     setCommandNotice(null);
@@ -193,8 +247,11 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   const applyTerminalRunState = React.useCallback(
     (status: AiRunStatus, errorCode: string | null, diagnosis: RunDiagnosisFields): void => {
+      // The trace outlives the run, folded, beside the answer it led to: the
+      // thinking is not stored anywhere, so this is the last chance to read it.
+      if (activeRunId !== null) setFinishedTrace({ runId: activeRunId, steps: trace });
       setActiveRunId(null);
-      setToolActivity([]);
+      setTrace([]);
       setRunStartedAt(null);
       setLastActivityAt(null);
       setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
@@ -223,7 +280,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       // says what to try instead.
       setError(runFailureText(t, tDiagnostics, errorCode, diagnosis));
     },
-    [activeConversationId, queryClient, t, tDiagnostics],
+    [activeConversationId, activeRunId, trace, queryClient, t, tDiagnostics],
   );
 
   // Applies a terminal status the poll (or a focus/reconnect refetch)
@@ -274,28 +331,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     setLastActivityAt(Date.now());
   });
 
-  // The silence gets a name (issue #6, point 5): reasoning produces no deltas
-  // at all, and compaction used to report itself only once it was over.
-  useRealtimeEvent('ai.run.phase', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    setRunPhase(event.payload.phase);
-    setLastActivityAt(Date.now());
-    setToolActivity((current) => withRetryLine(current, event.payload.phase));
-  });
-
-  useRealtimeEvent('ai.run.tool_call', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    setToolActivity((current) => [
-      ...current,
-      {
-        key: `${event.payload.iteration}:${event.payload.toolName}:${event.payload.status}`,
-        toolName: event.payload.toolName,
-        status: event.payload.status,
-        target: event.payload.target,
-      },
-    ]);
-    setLastActivityAt(Date.now());
-  });
+  useRunTraceEvents(activeRunId, setRunPhase, setTrace, () => setLastActivityAt(Date.now()));
 
   useRealtimeEvent('ai.run.completed', (event) => {
     if (event.payload.runId !== activeRunId) return;
@@ -339,6 +375,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
           nowMs: now,
         });
   const runQuiet = isAiRunQuiet(elapsedMs);
+  const toolActivity = React.useMemo(() => toolEntries(trace), [trace]);
 
   // A gap in `ai.run.progress` means the locally stitched preview is missing
   // something, and no amount of further deltas repairs it. So the answer is
@@ -385,7 +422,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   /** Starts tracking a run the panel just created. */
   const beginRun = (runId: string): void => {
     setStreamText('');
-    setToolActivity([]);
+    setTrace([]);
+    setFinishedTrace(null);
     setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
     setRunPhase(null);
     const startedAt = Date.now();
@@ -398,6 +436,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     activeRunId,
     streamText,
     toolActivity,
+    trace,
+    finishedTrace,
     runPhase,
     elapsedMs,
     runQuiet,

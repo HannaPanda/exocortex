@@ -625,6 +625,16 @@
     },
     "where": "La pagina «Chat» nella navigazione."
   },
+  "gedankengang": {
+    "title": "Guarda come pensa l’IA",
+    "summary": "Mentre una risposta prende forma, vedi sopra di essa a cosa sta pensando il modello e quali strumenti chiama, nell’ordine in cui accade. Viene mostrato solo ciò che il modello fornisce effettivamente.",
+    "details": {
+      "p1": "Se il modello fornisce il proprio ragionamento, questo appare in tempo reale sopra la risposta, seguito dalle chiamate degli strumenti con il relativo stato: in corso, completato, non riuscito o rifiutato. Se non c’è alcun ragionamento, la sezione si chiama «Attività» e mostra solo gli strumenti. Se mancano entrambi, non appare alcuna sezione.",
+      "p2": "Una volta completata la risposta, la sezione si comprime e rimane sopra la risposta finché non poni la domanda successiva. Con un clic sul titolo puoi espanderla di nuovo.",
+      "p3": "Il ragionamento lo vedi solo tu, non gli altri membri dell’area di lavoro. Non viene salvato da nessuna parte e scompare dopo aver ricaricato. Gli strumenti chiamati durante un’esecuzione restano invece consultabili nella vista dell’esecuzione. Puoi regolare quanto a fondo pensa il modello con il livello di pensiero accanto alla selezione del modello."
+    },
+    "where": "Nell’area IA sopra la risposta mentre viene generata, poi compressa sopra di essa."
+  },
   "automation-fehlermeldung": {
     "title": "Messaggio quando un’automazione smette di funzionare",
     "summary": "Se una delle tue automazioni si disattiva dopo ripetuti errori, ricevi esattamente un’email. Se un’esecuzione pianificata fallisce, eXocortex te lo segnala la prima volta, non a ogni tentativo successivo.",

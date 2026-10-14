@@ -84,6 +84,13 @@
       "ai_empty_answer": "O modelo retornou uma resposta vazia. Digite “continuar” para que a próxima execução retome de onde parou."
     }
   },
+  "trace": {
+    "reasoningTitle": "Linha de raciocínio",
+    "activityTitle": "Atividades",
+    "live": "em execução",
+    "toolCount": "{count, plural, one {# ferramenta} many {# ferramentas} other {# ferramentas}}",
+    "notStored": "A linha de raciocínio não é salva e sumirá após recarregar."
+  },
   "context": {
     "selection": "Seleção ({count, plural, one {# bloco} many {# blocos} other {# blocos}})",
     "selectionRemove": "Não enviar seleção",

@@ -84,6 +84,13 @@
       "ai_empty_answer": "Model zwrócił pustą odpowiedź. Wpisz „dalej”, aby kolejne uruchomienie podjęło pracę w tym miejscu."
     }
   },
+  "trace": {
+    "reasoningTitle": "Tok myślenia",
+    "activityTitle": "Aktywności",
+    "live": "działa",
+    "toolCount": "{count, plural, one {# narzędzie} few {# narzędzia} many {# narzędzi} other {# narzędzia}}",
+    "notStored": "Tok myślenia nie jest zapisywany i zniknie po przeładowaniu strony."
+  },
   "context": {
     "selection": "Zaznaczenie ({count, plural, one {# blok} few {# bloki} many {# bloków} other {# bloku}})",
     "selectionRemove": "Nie dołączaj zaznaczenia",
