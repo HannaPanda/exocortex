@@ -32,8 +32,8 @@ interface RequestBudget {
   reasoning?: { effort: 'none' };
 }
 
-/** A description is a few paragraphs; 512 cut a detailed screenshot short. */
-const NO_REASONING: RequestBudget = { maxTokens: 1024, reasoning: { effort: 'none' } };
+/** A dense screenshot's description ran past 512 and then past 1024 tokens. */
+const NO_REASONING: RequestBudget = { maxTokens: 2048, reasoning: { effort: 'none' } };
 /** For a model whose reasoning is mandatory: its thinking comes out of this too. */
 const WITH_REASONING: RequestBudget = { maxTokens: 4096 };
 
