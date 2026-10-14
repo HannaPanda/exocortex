@@ -42,6 +42,15 @@ import { DsNarrowFrame } from '../narrow/narrow-frame';
 import { NARROW_PROBE_TITLES } from '../narrow/probes';
 import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 
+import {
+  ByteRowExample,
+  ContainerImageRowExample,
+  DurationRowExample,
+  HostListRowExample,
+  MoneyRowExample,
+  ZeroMeansRowExample,
+} from './setting-row-examples';
+
 /**
  * Patterns that are rows of something: a page in the tree, a setting, a search
  * hit, a person on the page, a run. Each is the product's own component fed
@@ -287,6 +296,16 @@ export function SettingRowPattern() {
       </DsExample>
 
       <DsExample
+        id="einstellungszeile-unbegrenzt"
+        title="Zahl mit „Unbegrenzt“"
+        source="apps/web/src/components/settings/zero-means-setting-field.tsx"
+        note="Wo eine gespeicherte 0 keine Menge ist, sondern „nie aufräumen“ oder „kein Verfall“, steht ein Schalter neben der Zahl (SETTING_ZERO_MEANS). Ist er an, ist die Zahl gesperrt und gespeichert wird 0; aus geschaltet kommt der Standardwert zurück, oder 30, wenn der Standard selbst 0 ist. Eintippen lässt sich nur 1 oder mehr, so schaltet ein geleertes Feld nie versehentlich auf unbegrenzt."
+        stageClassName="p-6 sm:p-6"
+      >
+        <ZeroMeansRowExample />
+      </DsExample>
+
+      <DsExample
         id="einstellungszeile-geld"
         title="Geldbetrag"
         source="apps/web/src/components/money-input.tsx"
@@ -326,111 +345,6 @@ export function SettingRowPattern() {
         <DsNarrowFrame probe="einstellungen" title={NARROW_PROBE_TITLES.einstellungen} />
       </DsExample>
     </DsSection>
-  );
-}
-
-function ByteRowExample() {
-  const [bytes, setBytes] = React.useState(10 * 1_024 * 1_024);
-  return (
-    <div className={SETTING_LIST_CLASS}>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="ai.pdfMaxBytes"
-          value={bytes}
-          onChange={(value) => {
-            if (typeof value === 'number') setBytes(value);
-          }}
-          models={[]}
-        />
-      </div>
-    </div>
-  );
-}
-
-function HostListRowExample() {
-  const stored = 'hooks.example.org, n8n.example.net';
-  const [hosts, setHosts] = React.useState(`${stored}, *.example.com, api.hooks.example.org`);
-  return (
-    <div className={SETTING_LIST_CLASS}>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="automations.webhookAllowedHosts"
-          value={hosts}
-          stored={stored}
-          onChange={(value) => {
-            if (typeof value === 'string') setHosts(value);
-          }}
-          models={[]}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ContainerImageRowExample() {
-  const stored = 'exocortex-render:latest';
-  const [image, setImage] = React.useState(stored);
-  return (
-    <div className={SETTING_LIST_CLASS}>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="projects.image"
-          value={image}
-          stored={stored}
-          onChange={(value) => {
-            if (typeof value === 'string') setImage(value);
-          }}
-          models={[]}
-        />
-      </div>
-    </div>
-  );
-}
-
-function MoneyRowExample() {
-  const [budget, setBudget] = React.useState(2_000_000);
-  return (
-    <div className={SETTING_LIST_CLASS}>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="workflows.budgetMicroUsdPerRun"
-          value={budget}
-          onChange={(value) => {
-            if (typeof value === 'number') setBudget(value);
-          }}
-          models={[]}
-        />
-      </div>
-    </div>
-  );
-}
-
-function DurationRowExample() {
-  const [lifetime, setLifetime] = React.useState(7 * 24 * 3_600);
-  const [hour, setHour] = React.useState(7);
-  return (
-    <div className={SETTING_LIST_CLASS}>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="workflows.maxLifetimeSeconds"
-          value={lifetime}
-          onChange={(value) => {
-            if (typeof value === 'number') setLifetime(value);
-          }}
-          models={[]}
-        />
-      </div>
-      <div className="max-sm:py-4">
-        <SettingRow
-          settingKey="notifications.digestHour"
-          value={hour}
-          onChange={(value) => {
-            if (typeof value === 'number') setHour(value);
-          }}
-          models={[]}
-        />
-      </div>
-    </div>
   );
 }
 

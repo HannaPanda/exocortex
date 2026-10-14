@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  limitedValueOf,
   resolveSettings,
   SETTING_CEILINGS,
   SETTING_KEYS,
   SETTING_NUMBER_RANGES,
   SETTING_SCOPES,
   SETTING_VALUE_RANKS,
+  SETTING_ZERO_MEANS,
   type SettingKey,
   settingsResponseSchema,
   settingsSchema,
@@ -118,6 +120,35 @@ describe('SETTING_NUMBER_RANGES', () => {
       expect(field.safeParse(range.min - 1).success).toBe(false);
       expect(field.safeParse(range.max + 1).success).toBe(false);
     }
+  });
+});
+
+describe('SETTING_ZERO_MEANS', () => {
+  it('lists the seven settings where 0 means no limit, each one accepting 0', () => {
+    expect(Object.keys(SETTING_ZERO_MEANS).sort()).toEqual(
+      [
+        'agents.journalRetentionDays',
+        'ai.runPayloadRetentionDays',
+        'automations.runRetentionDays',
+        'memory.factHalfLifeDays',
+        'memory.retentionDays',
+        'projects.buildRetentionDays',
+        'render.jobRetentionDays',
+      ].sort(),
+    );
+    for (const key of Object.keys(SETTING_ZERO_MEANS) as SettingKey[]) {
+      expect(SETTING_NUMBER_RANGES[key]?.min).toBe(0);
+    }
+    expect(SETTING_ZERO_MEANS['memory.factHalfLifeDays']).toBe('noDecay');
+    expect(SETTING_ZERO_MEANS['render.jobRetentionDays']).toBe('unlimited');
+  });
+
+  it('switches back to the default, or to 30 when the default is the 0 itself', () => {
+    expect(limitedValueOf('agents.journalRetentionDays')).toBe(90);
+    expect(limitedValueOf('memory.factHalfLifeDays')).toBe(90);
+    expect(limitedValueOf('render.jobRetentionDays')).toBe(30);
+    expect(limitedValueOf('ai.runPayloadRetentionDays')).toBe(30);
+    expect(limitedValueOf('memory.retentionDays')).toBe(30);
   });
 });
 

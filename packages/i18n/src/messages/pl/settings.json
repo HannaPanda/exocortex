@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Przechowywanie tekstów SI (dni)",
-        "help": "W przypadku starszych uruchomień SI pytanie i odpowiedź są usuwane, a wartości liczbowe w widoku użycia pozostają. 0 oznacza: nigdy nie usuwaj. Nie wpływa to na historię czatów."
+        "help": "W starszych uruchomieniach AI treść pytania i odpowiedzi zostaje wyczyszczona, a dane liczbowe na potrzeby statystyk użycia pozostają. Historia w czatach pozostaje nienaruszona."
       },
       "pdfExtractionEnabled": {
         "label": "Wyodrębnianie tekstu z plików PDF",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Przechowywanie notatek (dni)",
-        "help": "Starsze notatki z sesji są usuwane z obszaru roboczego pamięci. 0 oznacza: brak czyszczenia. Strony projektów zawsze pozostają nienaruszone, a inne obszary robocze nigdy nie są modyfikowane."
+        "help": "Starsze notatki z sesji są usuwane w pamięci obszaru roboczego. Strony projektowe zawsze pozostają bez zmian, a inne obszary robocze nigdy nie są modyfikowane."
       },
       "consolidationEnabled": {
         "label": "Konsolidacja wspomnień",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Okres półtrwania faktu (dni)",
-        "help": "Fakt, którego nikt już nie potwierdza, po upływie tego czasu traci połowę swojej wagi, potem kolejną połowę. Nie znika, po prostu cichnie. 0 wyłącza wygasanie."
+        "help": "Fakt, którego nikt już nie potwierdza, traci w tym okresie połowę swojej wagi, a potem kolejną połowę. Nie znika całkowicie, staje się po prostu mniej istotny."
       },
       "factConfidenceFloor": {
         "label": "Dolny próg pewności faktów (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Przechowywanie sesji agentów (dni)",
-        "help": "Przez ten czas w sekcji „Agenci” można sprawdzić, która sesja co zapisała, oraz cofnąć całą sesję za jednym razem. Po tym czasie znika tylko przypisanie; zapisane stany stron pozostają nienaruszone. 0 oznacza: bezterminowo."
+        "help": "Przez ten czas w sekcji „Agenci” można sprawdzić, która sesja co zapisała, i cofnąć całą sesję za jednym razem. Po tym czasie znika tylko samo powiązanie; zapisane wersje stron pozostają nienaruszone."
       },
       "largePageChars": {
         "label": "Strona uznawana za dużą od (znaki)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Przechowywanie dziennika uruchomień (dni)",
-        "help": "Przez ten czas pozostaje widoczne, co zrobiły automatyzacje. Same reguły pozostają nienaruszone. 0 oznacza: bezterminowo."
+        "help": "Przez ten czas widać, jakie działania podjęły automatyzacje. Same reguły pozostają nienaruszone."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Przechowywanie dziennika budowania (dni)",
-        "help": "Przez ten czas ukończone kompilacje wraz z protokołem pozostają widoczne. Wygenerowane pliki PDF pozostają jako załączniki. 0 oznacza: na zawsze."
+        "help": "Przez ten czas ukończone kompilacje wraz z dziennikiem pozostają widoczne. Wygenerowane pliki PDF pozostają jako załączniki."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Czas przechowywania dzienników budowania (dni)",
-        "help": "Przez ten czas ukończone kompilacje wraz z protokołem i listą błędów pozostają widoczne. Pliki PDF pozostają jako załączniki. 0 oznacza: na zawsze."
+        "help": "Przez ten czas ukończone kompilacje wraz z dziennikiem i listą błędów pozostają widoczne. Pliki PDF pozostają jako załączniki."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB to 1 000 000 bajtów, 1 MiB to 1 048 576 bajtów.",
+    "zeroMeans": {
+      "unlimited": "Bez limitu",
+      "noDecay": "Bez zanikania"
+    },
     "bytesInexact": "Wynik nie daje całkowitej liczby bajtów. Zapisano ostatni prawidłowy stan.",
     "choices": {
       "pdfExtractor": {

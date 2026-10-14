@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Conservar textos de IA (días)",
-        "help": "En las ejecuciones de IA más antiguas, la pregunta y la respuesta se borran, pero se mantienen las cifras para la vista de uso. 0 significa: no limpiar nunca. Los historiales de chat no se ven afectados."
+        "help": "En las ejecuciones de IA más antiguas, la pregunta y la respuesta se vacían, pero los números para la vista de uso se conservan. Los historiales de chat no se ven afectados."
       },
       "pdfExtractionEnabled": {
         "label": "Extraer texto de PDF",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Conservar notas (días)",
-        "help": "Las notas de sesión más antiguas se eliminan en el espacio de trabajo de la memoria. 0 significa: no limpiar nunca. Las páginas de proyectos siempre se conservan y los demás espacios de trabajo nunca se tocan."
+        "help": "Las notas de sesión más antiguas se eliminan en el espacio de trabajo de la memoria. Las páginas de proyecto siempre se conservan y los demás espacios de trabajo nunca se tocan."
       },
       "consolidationEnabled": {
         "label": "Consolidar recuerdos",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Vida media de un hecho (días)",
-        "help": "Un hecho que nadie vuelve a confirmar pierde en este intervalo la mitad de su peso, y luego otra mitad. No desaparece, pierde intensidad. 0 desactiva el deterioro."
+        "help": "Un hecho que nadie vuelve a confirmar pierde la mitad de su peso durante este intervalo, y luego otra mitad. No desaparece, se vuelve menos relevante."
       },
       "factConfidenceFloor": {
         "label": "Umbral mínimo para hechos (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Conservar sesiones de agentes (días)",
-        "help": "Durante este tiempo se puede consultar en la sección «Agentes» qué sesión escribió cada cosa y revertir una sesión completa. Después solo desaparece la asignación; las versiones guardadas de las páginas no se ven afectadas. 0 significa: para siempre."
+        "help": "Durante este tiempo se puede rastrear en la sección «Agentes» qué sesión escribió qué, y se puede revertir una sesión por completo. Después solo desaparece la asignación; las versiones guardadas de las páginas no se ven afectadas."
       },
       "largePageChars": {
         "label": "La página se considera grande a partir de (caracteres)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Conservar registro de ejecuciones (días)",
-        "help": "Durante este tiempo permanece visible lo que hicieron las automatizaciones. Las reglas no se ven afectadas. 0 significa: para siempre."
+        "help": "Durante este tiempo permanece visible lo que hicieron las automatizaciones. Las reglas en sí no se ven afectadas."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Conservar registro de compilaciones (días)",
-        "help": "Tiempo durante el que las compilaciones finalizadas y sus registros permanecen visibles. Los PDF generados se conservan como adjuntos. 0 significa: para siempre."
+        "help": "Durante este tiempo permanecen visibles las compilaciones completadas junto con su registro. Los PDF generados se conservan como adjuntos."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Conservar registros de compilación (días)",
-        "help": "Tiempo durante el que las compilaciones finalizadas, su registro y la lista de errores permanecen visibles. Los PDF se conservan como adjuntos. 0 significa: para siempre."
+        "help": "Durante este tiempo permanecen visibles las compilaciones completadas junto con su registro y la lista de errores. Los PDF se conservan como adjuntos."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB son 1.000.000 de bytes; 1 MiB son 1.048.576 bytes.",
+    "zeroMeans": {
+      "unlimited": "Ilimitado",
+      "noDecay": "Sin pérdida gradual"
+    },
     "bytesInexact": "No da como resultado un número entero de bytes. Se guardará el último valor válido.",
     "choices": {
       "pdfExtractor": {

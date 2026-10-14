@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Conserva i testi dell’IA (giorni)",
-        "help": "Nelle esecuzioni dell’IA meno recenti, domanda e risposta vengono rimosse, mentre i numeri per la vista di utilizzo rimangono invariati. 0 significa: non eliminare mai. Le cronologie delle chat non vengono toccate."
+        "help": "Per le esecuzioni IA più datate, domanda e risposta vengono svuotate, mentre i numeri per la visualizzazione dell’utilizzo rimangono. La cronologia delle chat non viene toccata."
       },
       "pdfExtractionEnabled": {
         "label": "Estrai testo dai PDF",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Conservazione delle note (giorni)",
-        "help": "Le note di sessione più vecchie vengono eliminate nell’area di lavoro della memoria. 0 significa: non eliminare mai. Le pagine di progetto rimangono sempre, le altre aree di lavoro non vengono mai toccate."
+        "help": "Le note di sessione più datate vengono eliminate nell’area di lavoro della memoria. Le pagine di progetto restano sempre, le altre aree di lavoro non vengono mai toccate."
       },
       "consolidationEnabled": {
         "label": "Consolidamento dei ricordi",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Tempo di dimezzamento di un fatto (giorni)",
-        "help": "Un fatto che nessuno conferma più perde la metà del suo peso in questo intervallo, poi di nuovo la metà. Non scompare, diventa più debole. 0 disattiva il decadimento."
+        "help": "Un fatto che nessuno conferma più perde la metà del suo peso durante questo arco di tempo, poi di nuovo la metà. Non scompare: diventa solo meno rilevante."
       },
       "factConfidenceFloor": {
         "label": "Soglia minima per i fatti (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Conserva le sessioni degli agenti (giorni)",
-        "help": "Per questo periodo rimane traccia nella sezione «Agenti» di quale sessione ha scritto cosa, ed è possibile annullare un’intera sessione in blocco. Successivamente scompare solo l’attribuzione; le versioni salvate delle pagine rimangono inalterate. 0 significa: per sempre."
+        "help": "Per questo periodo rimane tracciabile nella sezione «Agenti» quale sessione ha scritto cosa, ed è possibile annullare un’intera sessione in blocco. In seguito scompare solo l’attribuzione; le versioni salvate delle pagine non vengono toccate."
       },
       "largePageChars": {
         "label": "La pagina è considerata grande a partire da (caratteri)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Conserva il registro delle esecuzioni (giorni)",
-        "help": "Per quanto tempo rimane visibile ciò che le automazioni hanno fatto. Le regole stesse rimangono inalterate. 0 significa: per sempre."
+        "help": "Per questo periodo rimane visibile ciò che hanno fatto le automazioni. Le regole stesse non vengono toccate."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Conserva il registro di compilazione (giorni)",
-        "help": "Per quanto tempo le build completate e i loro log restano visibili. I PDF generati rimangono salvati come allegati. 0 significa: per sempre."
+        "help": "Per questo periodo rimangono visibili le compilazioni completate con i relativi registri. I PDF generati vengono conservati come allegati."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Conserva i log di compilazione (giorni)",
-        "help": "Per quanto tempo le compilazioni completate, i registri e gli elenchi di errori restano visibili. I PDF rimangono salvati come allegati. 0 significa: per sempre."
+        "help": "Per questo periodo rimangono visibili le compilazioni completate con i relativi registri ed elenchi di errori. I PDF vengono conservati come allegati."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB equivale a 1.000.000 di byte, 1 MiB equivale a 1.048.576 byte.",
+    "zeroMeans": {
+      "unlimited": "Illimitato",
+      "noDecay": "Nessun decadimento"
+    },
     "bytesInexact": "Questo non corrisponde a un numero intero di byte. Verrà mantenuto l’ultimo valore valido.",
     "choices": {
       "pdfExtractor": {

@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Conserver les textes de l’IA (jours)",
-        "help": "Pour les exécutions de l’IA plus anciennes, la question et la réponse sont vidées, les chiffres de l’affichage d’utilisation restent conservés. 0 signifie : ne jamais nettoyer. L’historique des chats n’est pas affecté."
+        "help": "Pour les exécutions d’IA plus anciennes, la question et la réponse sont vidées, mais les chiffres de la vue d’utilisation sont conservés. L’historique des discussions n’est pas affecté."
       },
       "pdfExtractionEnabled": {
         "label": "Extraire le texte des PDF",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Conservation des notes (jours)",
-        "help": "Les notes de session plus anciennes sont supprimées de l’espace de travail de la mémoire. 0 signifie : ne jamais nettoyer. Les pages de projet sont toujours conservées et les autres espaces de travail ne sont jamais modifiés."
+        "help": "Les notes de session plus anciennes sont supprimées dans l’espace de travail de mémoire. Les pages de projet sont toujours conservées et les autres espaces de travail ne sont jamais modifiés."
       },
       "consolidationEnabled": {
         "label": "Consolider les souvenirs",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Demi-vie d’un fait (jours)",
-        "help": "Un fait que plus personne ne confirme perd la moitié de son poids sur cette période, puis encore la moitié. Il ne disparaît pas, il s’estompe. 0 désactive la dépréciation."
+        "help": "Un fait que plus personne ne confirme perd la moitié de son poids sur cette période, puis encore la moitié. Il ne disparaît pas, il devient plus discret."
       },
       "factConfidenceFloor": {
         "label": "Seuil inférieur pour les faits (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Conserver les sessions d’agent (jours)",
-        "help": "Durée pendant laquelle la section « Agents » permet de savoir quelle session a écrit quoi, et pendant laquelle une session peut être annulée en bloc. Ensuite, seule l’association disparaît ; les états sauvegardés des pages restent inchangés. 0 signifie : pour toujours."
+        "help": "Durée pendant laquelle la section « Agents » permet de savoir quelle session a écrit quoi, et pendant laquelle une session peut être annulée d’un bloc. Ensuite, seule l’association disparaît ; les versions enregistrées des pages ne sont pas affectées."
       },
       "largePageChars": {
         "label": "Page considérée comme grande à partir de (caractères)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Conserver le journal d’exécution (jours)",
-        "help": "Durée pendant laquelle les actions effectuées par les automatisations restent visibles. Les règles elles-mêmes restent intactes. 0 signifie : pour toujours."
+        "help": "Durée pendant laquelle ce que les automatisations ont fait reste visible. Les règles elles-mêmes ne sont pas affectées."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Conserver le journal de compilation (jours)",
-        "help": "Durée pendant laquelle les compilations terminées et leur journal restent visibles. Les PDF générés restent conservés en pièces jointes. 0 signifie : pour toujours."
+        "help": "Durée pendant laquelle les compilations terminées ainsi que leur journal restent visibles. Les PDF générés sont conservés sous forme de pièces jointes."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Conservation des journaux de compilation (jours)",
-        "help": "Durée pendant laquelle les compilations terminées, leur journal et la liste des erreurs restent visibles. Les PDF restent conservés en pièces jointes. 0 signifie : pour toujours."
+        "help": "Durée pendant laquelle les compilations terminées ainsi que leur journal et leur liste d’erreurs restent visibles. Les PDF sont conservés sous forme de pièces jointes."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "Gio"
     },
     "byteUnitsExplained": "1 Mo équivaut à 1 000 000 octets, 1 Mio équivaut à 1 048 576 octets.",
+    "zeroMeans": {
+      "unlimited": "Illimité",
+      "noDecay": "Aucun déclin"
+    },
     "bytesInexact": "Cela ne donne pas un nombre entier d’octets. La dernière valeur valide est conservée.",
     "choices": {
       "pdfExtractor": {

@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "KI-Texte aufbewahren (Tage)",
-        "help": "Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Chats bleiben davon unberührt."
+        "help": "Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. Verläufe in Chats bleiben davon unberührt."
       },
       "pdfExtractionEnabled": {
         "label": "PDF-Text extrahieren",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Notizen aufbewahren (Tage)",
-        "help": "Ältere Sitzungsnotizen werden im Gedächtnis-Arbeitsbereich gelöscht. 0 bedeutet: nie aufräumen. Projektseiten bleiben immer stehen, andere Arbeitsbereiche werden nie angefasst."
+        "help": "Ältere Sitzungsnotizen werden im Gedächtnis-Arbeitsbereich gelöscht. Projektseiten bleiben immer stehen, andere Arbeitsbereiche werden nie angefasst."
       },
       "consolidationEnabled": {
         "label": "Erinnerungen verdichten",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Halbwertszeit eines Fakts (Tage)",
-        "help": "Ein Fakt, den niemand mehr bestätigt, verliert über diese Spanne die Hälfte seines Gewichts, dann wieder die Hälfte. Er verschwindet nicht, er wird leiser. 0 schaltet den Verfall ab."
+        "help": "Ein Fakt, den niemand mehr bestätigt, verliert über diese Spanne die Hälfte seines Gewichts, dann wieder die Hälfte. Er verschwindet nicht, er wird leiser."
       },
       "factConfidenceFloor": {
         "label": "Untere Schwelle für Fakten (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Agenten-Sitzungen aufbewahren (Tage)",
-        "help": "So lange bleibt im Bereich „Agenten“ nachvollziehbar, welche Sitzung was geschrieben hat, und so lange lässt sich eine Sitzung am Stück zurücknehmen. Danach verschwindet nur die Zuordnung; die gesicherten Stände der Seiten bleiben davon unberührt. 0 bedeutet: für immer."
+        "help": "So lange bleibt im Bereich „Agenten“ nachvollziehbar, welche Sitzung was geschrieben hat, und so lange lässt sich eine Sitzung am Stück zurücknehmen. Danach verschwindet nur die Zuordnung; die gesicherten Stände der Seiten bleiben davon unberührt."
       },
       "largePageChars": {
         "label": "Seite gilt ab (Zeichen) als groß",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Lauf-Protokoll aufbewahren (Tage)",
-        "help": "So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt. 0 bedeutet: für immer."
+        "help": "So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Bau-Protokoll aufbewahren (Tage)",
-        "help": "So lange bleiben abgeschlossene Bauten samt Protokoll sichtbar. Die erzeugten PDFs bleiben als Anhänge erhalten. 0 bedeutet: für immer."
+        "help": "So lange bleiben abgeschlossene Bauten samt Protokoll sichtbar. Die erzeugten PDFs bleiben als Anhänge erhalten."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Bau-Protokolle aufbewahren (Tage)",
-        "help": "So lange bleiben abgeschlossene Bauten samt Protokoll und Fehlerliste sichtbar. Die PDFs bleiben als Anhänge erhalten. 0 bedeutet: für immer."
+        "help": "So lange bleiben abgeschlossene Bauten samt Protokoll und Fehlerliste sichtbar. Die PDFs bleiben als Anhänge erhalten."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB sind 1.000.000 Byte, 1 MiB sind 1.048.576 Byte.",
+    "zeroMeans": {
+      "unlimited": "Unbegrenzt",
+      "noDecay": "Kein Verfall"
+    },
     "bytesInexact": "Das ergibt keine ganze Zahl von Bytes. Gespeichert wird der zuletzt gültige Stand.",
     "choices": {
       "pdfExtractor": {

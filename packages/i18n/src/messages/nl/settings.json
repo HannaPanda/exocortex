@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "AI-teksten bewaren (dagen)",
-        "help": "Bij oudere AI-runs worden vraag en antwoord gewist; de cijfers voor het gebruiksoverzicht blijven behouden. 0 betekent: nooit opruimen. Geschiedenis in chats blijft onaangetast."
+        "help": "Bij oudere AI-runs worden vraag en antwoord gewist; de cijfers voor het gebruiksoverzicht blijven bewaard. Chatgeschiedenissen blijven onaangeroerd."
       },
       "pdfExtractionEnabled": {
         "label": "PDF-tekst extraheren",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Notities bewaren (dagen)",
-        "help": "Oudere sessienotities worden in de geheugen-werkruimte verwijderd. 0 betekent: nooit opschonen. Projectpagina’s blijven altijd bewaard, andere werkruimtes worden nooit aangeraakt."
+        "help": "Oudere sessienotities worden in de geheugen-werkruimte verwijderd. Projectpagina’s blijven altijd bewaard; andere werkruimtes worden nooit aangeraakt."
       },
       "consolidationEnabled": {
         "label": "Herinneringen verdichten",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Halfwaardetijd van een feit (dagen)",
-        "help": "Een feit dat niemand meer bevestigt, verliest over deze periode de helft van zijn gewicht, daarna weer de helft. Het verdwijnt niet, het wordt stiller. 0 schakelt het verval uit."
+        "help": "Een feit dat niemand meer bevestigt, verliest over deze periode de helft van zijn gewicht, en daarna weer de helft. Het verdwijnt niet, het wordt stiller."
       },
       "factConfidenceFloor": {
         "label": "Ondergrens voor feiten (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Agent-sessies bewaren (dagen)",
-        "help": "Zo lang blijft onder „Agents” traceerbaar welke sessie wat heeft geschreven, en zo lang kan een sessie in één keer worden teruggedraaid. Daarna verdwijnt alleen de koppeling; de opgeslagen versies van de pagina’s blijven onaangeroerd. 0 betekent: voor altijd."
+        "help": "Zo lang blijft onder „Agenten” te herleiden welke sessie wat heeft geschreven, en zo lang kan een sessie in één keer worden teruggedraaid. Daarna verdwijnt alleen de toewijzing; de opgeslagen versies van de pagina’s blijven onaangeroerd."
       },
       "largePageChars": {
         "label": "Pagina geldt vanaf (tekens) als groot",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Uitvoeringslogboek bewaren (dagen)",
-        "help": "Zo lang blijft zichtbaar wat de automatiseringen hebben gedaan. De regels zelf blijven onaangeroerd. 0 betekent: voor altijd."
+        "help": "Zo lang blijft zichtbaar wat de automatiseringen hebben gedaan. De regels zelf blijven onaangeroerd."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Build-logboek bewaren (dagen)",
-        "help": "Zo lang blijven voltooide builds inclusief logboek zichtbaar. De gegenereerde pdf’s blijven behouden als bijlagen. 0 betekent: voor altijd."
+        "help": "Zo lang blijven voltooide builds inclusief logboek zichtbaar. De gegenereerde pdf’s blijven als bijlagen bewaard."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Buildlogboeken bewaren (dagen)",
-        "help": "Zo lang blijven voltooide builds inclusief logboek en foutenlijst zichtbaar. De pdf’s blijven behouden als bijlagen. 0 betekent: voor altijd."
+        "help": "Zo lang blijven voltooide builds inclusief logboek en foutenlijst zichtbaar. De pdf’s blijven als bijlagen bewaard."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB is 1.000.000 byte, 1 MiB is 1.048.576 byte.",
+    "zeroMeans": {
+      "unlimited": "Onbeperkt",
+      "noDecay": "Geen verval"
+    },
     "bytesInexact": "Dit levert geen geheel aantal bytes op. De laatst geldige waarde wordt opgeslagen.",
     "choices": {
       "pdfExtractor": {

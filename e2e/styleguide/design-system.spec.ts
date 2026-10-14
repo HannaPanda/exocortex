@@ -252,4 +252,31 @@ test.describe('design system decisions', () => {
     await amount.fill('1000');
     await expect(row.getByText(/bis 100,00\s\$\. Gespeichert/)).toBeVisible();
   });
+
+  test('says "unlimited" with a switch instead of a 0 (#202)', async ({ page }) => {
+    await page.goto('/design-system#einstellungszeile-unbegrenzt');
+    const row = page.getByTestId('setting-row-agents.journalRetentionDays');
+    const days = row.getByRole('spinbutton');
+    const unlimited = row.getByRole('switch', { name: 'Unbegrenzt' });
+    await expect(days).toHaveValue('90');
+    await expect(unlimited).not.toBeChecked();
+    await expect(row.getByText('Zulässig: 1 bis 3.650.')).toBeVisible();
+
+    // Clearing the number to type a new one never switches the limit off.
+    await days.fill('');
+    await expect(unlimited).not.toBeChecked();
+    await days.fill('14');
+
+    await unlimited.click();
+    await expect(unlimited).toBeChecked();
+    await expect(days).toBeDisabled();
+    await expect(days).toHaveValue('');
+
+    // Stored 0 by default: switching it off brings back 30, not the 0.
+    const payloads = page.getByTestId('setting-row-ai.runPayloadRetentionDays');
+    await expect(payloads.getByRole('switch')).toBeChecked();
+    await payloads.getByRole('switch').click();
+    await expect(payloads.getByRole('spinbutton')).toHaveValue('30');
+    await expect(payloads.getByRole('spinbutton')).toBeEnabled();
+  });
 });

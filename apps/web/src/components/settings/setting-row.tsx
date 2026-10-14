@@ -7,7 +7,9 @@ import {
   type AiModel,
   SETTING_KEYS,
   SETTING_NUMBER_RANGES,
+  SETTING_ZERO_MEANS,
   type SettingKey,
+  type SettingNumberRange,
   type Settings,
 } from '@exocortex/contracts';
 import {
@@ -31,6 +33,7 @@ import { HourSettingField } from '@/components/settings/hour-setting-field';
 import { ModelSettingField } from '@/components/settings/model-setting-field';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import { TextSettingField } from '@/components/settings/text-setting-field';
+import { ZeroMeansSettingField } from '@/components/settings/zero-means-setting-field';
 import {
   amountInUnit,
   BYTE_UNITS,
@@ -116,6 +119,17 @@ export function inputId(key: SettingKey): string {
  * `rangeHint` is the help text's tail under a numeric field; `invalidMessage`
  * is what to say about a value the schema refused.
  */
+/**
+ * The bounds a person can type. A setting whose 0 means "no limit" takes its 0
+ * through the switch beside the number (issue #202), so the typed range starts
+ * at 1 and the help text does not offer the 0 as a count.
+ */
+function typedRange(key: SettingKey): SettingNumberRange | undefined {
+  const range = SETTING_NUMBER_RANGES[key];
+  if (range === undefined || SETTING_ZERO_MEANS[key] === undefined) return range;
+  return { min: Math.max(range.min, 1), max: range.max };
+}
+
 export function useSettingMessages(): {
   rangeHint: (key: SettingKey) => string | null;
   invalidMessage: (key: SettingKey) => string;
@@ -145,7 +159,7 @@ export function useSettingMessages(): {
     };
     return {
       rangeHint: (key: SettingKey) => {
-        const range = SETTING_NUMBER_RANGES[key];
+        const range = typedRange(key);
         // An hour of the day is picked from a list that holds nothing else.
         if (range === undefined || isHourOfDaySettingKey(key)) return null;
         const words = inUnits(key);
@@ -154,7 +168,7 @@ export function useSettingMessages(): {
           : t('rangeHintAmounts', { min: words(range.min), max: words(range.max) });
       },
       invalidMessage: (key: SettingKey) => {
-        const range = SETTING_NUMBER_RANGES[key];
+        const range = typedRange(key);
         if (range === undefined) return t('invalid');
         const words = inUnits(key);
         return words === null
@@ -325,8 +339,8 @@ function ByteSettingField({
 
 /**
  * A numeric setting: an amount with a unit for bytes and durations, dollars
- * for money, a percentage for a share, a time for an hour of the day, a plain
- * number otherwise.
+ * for money, a percentage for a share, a number and a switch where 0 means no
+ * limit, a time for an hour of the day, a plain number otherwise.
  */
 function NumberSettingField({
   settingKey,
@@ -371,6 +385,17 @@ function NumberSettingField({
   if (isFractionSettingKey(settingKey)) {
     return (
       <FractionSettingField
+        settingKey={settingKey}
+        value={value}
+        onChange={onChange}
+        described={described}
+        id={id}
+      />
+    );
+  }
+  if (SETTING_ZERO_MEANS[settingKey] !== undefined) {
+    return (
+      <ZeroMeansSettingField
         settingKey={settingKey}
         value={value}
         onChange={onChange}

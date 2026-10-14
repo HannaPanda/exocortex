@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Retain AI text (days)",
-        "help": "For older AI runs, the question and answer are cleared, while the numbers for the usage view remain. 0 means: never clean up. Chat histories remain unaffected."
+        "help": "For older AI runs, the question and answer are cleared, while the numbers for the usage view remain. Chat histories remain unaffected."
       },
       "pdfExtractionEnabled": {
         "label": "Extract PDF text",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Retain notes (days)",
-        "help": "Older session notes are deleted in the memory workspace. 0 means: never clean up. Project pages always remain, and other workspaces are never touched."
+        "help": "Older session notes are deleted in the memory workspace. Project pages are always kept, other workspaces are never touched."
       },
       "consolidationEnabled": {
         "label": "Consolidate memories",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Fact half-life (days)",
-        "help": "A fact that nobody confirms anymore loses half its weight over this period, then half again. It doesn’t disappear; it fades. 0 disables decay."
+        "help": "A fact that no one confirms anymore loses half its weight over this span, then half again. It does not disappear, it gets quieter."
       },
       "factConfidenceFloor": {
         "label": "Lower threshold for facts (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Retain agent sessions (days)",
-        "help": "How long it remains traceable in the “Agents” section which session wrote what, and how long a session can be reverted in one go. Afterwards, only the association disappears; the saved states of the pages remain unaffected. 0 means: forever."
+        "help": "For this long, it remains traceable in the “Agents” area which session wrote what, and a session can be reverted all at once. Afterwards, only the attribution disappears; the saved versions of the pages remain unaffected."
       },
       "largePageChars": {
         "label": "Page considered large starting at (characters)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Retain run log (days)",
-        "help": "How long what the automations did remains visible. The rules themselves remain unaffected. 0 means: forever."
+        "help": "For this long, what automations did remains visible. The rules themselves remain unaffected."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Retain build log (days)",
-        "help": "How long finished builds and their logs remain visible. Generated PDFs are kept as attachments. 0 means: forever."
+        "help": "For this long, completed builds remain visible along with their log. The generated PDFs are preserved as attachments."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Keep build logs (days)",
-        "help": "How long finished builds, their logs, and error lists remain visible. PDFs are kept as attachments. 0 means: forever."
+        "help": "For this long, completed builds remain visible along with their log and error list. The PDFs are preserved as attachments."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB is 1,000,000 bytes, 1 MiB is 1,048,576 bytes.",
+    "zeroMeans": {
+      "unlimited": "Unlimited",
+      "noDecay": "No decay"
+    },
     "bytesInexact": "This does not result in a whole number of bytes. The last valid state is saved.",
     "choices": {
       "pdfExtractor": {

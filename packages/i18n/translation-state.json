@@ -17289,8 +17289,8 @@
       "output": "828b5bc7bd0eebc6"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "33a75bc8e7c46b2e"
+      "source": "2e898f326a4ea225",
+      "output": "b35ff161724d584e"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -17521,8 +17521,8 @@
       "output": "a7fc4cb707e0748a"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "699611dc38007e3e"
+      "source": "bdd45d5a308d9cdf",
+      "output": "6459bfbc5e950feb"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -17641,8 +17641,8 @@
       "output": "c9aaa7804b1f3791"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "36ee1afe39cf0ade"
+      "source": "def495038f1f0a06",
+      "output": "8c390d521b267d38"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -17841,8 +17841,8 @@
       "output": "b18a83de7be8631d"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "d88e0d0ca271ced3"
+      "source": "334dd19e82cf3202",
+      "output": "0344353815add5ca"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -17897,8 +17897,8 @@
       "output": "b6ec1ee390801caa"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "c5ed7727d8b8d973"
+      "source": "6ee9882cb9c99548",
+      "output": "5096244ececbc2b3"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -17977,8 +17977,8 @@
       "output": "6c63d2637b0f3e2b"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "69b7a9edd86c51cb"
+      "source": "d21a9178cab254c4",
+      "output": "5fe885e1665108cb"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -18049,8 +18049,8 @@
       "output": "11a9cd3676e519f3"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "7a8765d073746e54"
+      "source": "d1c5112cdef709df",
+      "output": "8bb654c13c4c6701"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -18643,6 +18643,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "25483a75ae25169d"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "121a81a8da719d97"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "11dde17d6c3e2098"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -40847,8 +40855,8 @@
       "output": "4092d94e95649387"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "38cd50b5e2f811aa"
+      "source": "2e898f326a4ea225",
+      "output": "d73be9a3140f110a"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -41079,8 +41087,8 @@
       "output": "51a57ed796dd5644"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "adcd5717133641a6"
+      "source": "bdd45d5a308d9cdf",
+      "output": "b25fed60b0c107da"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -41199,8 +41207,8 @@
       "output": "1880b286dffbe28d"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "9dd4dae601e46ec1"
+      "source": "def495038f1f0a06",
+      "output": "433082153b30ced4"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -41399,8 +41407,8 @@
       "output": "97b19454a67c3b90"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "6615976cd9640484"
+      "source": "334dd19e82cf3202",
+      "output": "f0732b96c2bd79b4"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -41455,8 +41463,8 @@
       "output": "50b4afec11ccf8a9"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "310f5b7acbcb3648"
+      "source": "6ee9882cb9c99548",
+      "output": "1dd7bd9bd959de0d"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -41535,8 +41543,8 @@
       "output": "479d20bdf3722493"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "f93928dc36140293"
+      "source": "d21a9178cab254c4",
+      "output": "a34bf165056342bc"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -41607,8 +41615,8 @@
       "output": "1d7709129c4cfb25"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "7bea3696447a875c"
+      "source": "d1c5112cdef709df",
+      "output": "a21d1f3d5199169e"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -42201,6 +42209,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "6f6abd867225b1ba"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "d9161a5f2899ff77"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "bb1dcbb24f2c1e91"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -64405,8 +64421,8 @@
       "output": "4835b030abd9142a"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "c666bdfb64a543b5"
+      "source": "2e898f326a4ea225",
+      "output": "cbc9357e55e45cb7"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -64637,8 +64653,8 @@
       "output": "3829cdcb740f51fe"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "38d6aad047379bb2"
+      "source": "bdd45d5a308d9cdf",
+      "output": "0895d6b32012bde7"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -64757,8 +64773,8 @@
       "output": "4e196b0859888d41"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "f51f4977a44d2c39"
+      "source": "def495038f1f0a06",
+      "output": "80d616241d0beb3e"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -64957,8 +64973,8 @@
       "output": "a4105e1596544982"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "3fe297128a242c4e"
+      "source": "334dd19e82cf3202",
+      "output": "141752c50a95067f"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -65013,8 +65029,8 @@
       "output": "7c2c00423d0c3818"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "379f4099b25d9c54"
+      "source": "6ee9882cb9c99548",
+      "output": "5626e9758750bd62"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -65093,8 +65109,8 @@
       "output": "365a8e33713c9d98"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "cb75fa02e52615b0"
+      "source": "d21a9178cab254c4",
+      "output": "b0e58e727b734fdb"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -65165,8 +65181,8 @@
       "output": "7b7407679df9a0a8"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "fb740ead3d4af275"
+      "source": "d1c5112cdef709df",
+      "output": "32d64541e0bb0773"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -65759,6 +65775,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "577facfc552fb7cd"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "f6c00e05e2e2cf26"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "6db3b916a9dfe030"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -87963,8 +87987,8 @@
       "output": "4029d5ea9436c3d9"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "062fd40422c49020"
+      "source": "2e898f326a4ea225",
+      "output": "ed65e2b55fada620"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -88195,8 +88219,8 @@
       "output": "c5d64b30ec74e238"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "eb42c6f462cce12c"
+      "source": "bdd45d5a308d9cdf",
+      "output": "fb836c21d824a6e2"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -88315,8 +88339,8 @@
       "output": "b65ccd47b7f1d16b"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "2f16c2252a1facab"
+      "source": "def495038f1f0a06",
+      "output": "785ac445c39d7c2d"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -88515,8 +88539,8 @@
       "output": "41fb6818bd5f7238"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "be823d42204bbbce"
+      "source": "334dd19e82cf3202",
+      "output": "27736607563dff02"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -88571,8 +88595,8 @@
       "output": "9e6c0dc8d941defe"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "41184dc20f85010e"
+      "source": "6ee9882cb9c99548",
+      "output": "24ade98738e39c4e"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -88651,8 +88675,8 @@
       "output": "4545f2c38d20fa91"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "52f9a14e0c1fcdee"
+      "source": "d21a9178cab254c4",
+      "output": "4804cf1a091f605c"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -88723,8 +88747,8 @@
       "output": "34a72f97b23c81ed"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "e139627c5d68477c"
+      "source": "d1c5112cdef709df",
+      "output": "37df32eb5bfc93ec"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -89317,6 +89341,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "721b6de2653cbb89"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "e49716c6bcf80fa2"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "b7e0bacfdd6f6fe1"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -111521,8 +111553,8 @@
       "output": "563276a8e3e71e09"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "3253aed0bd4e150b"
+      "source": "2e898f326a4ea225",
+      "output": "00b059042de2965a"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -111753,8 +111785,8 @@
       "output": "7e500b588012f1b7"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "0fd7a3a30b849f2d"
+      "source": "bdd45d5a308d9cdf",
+      "output": "9e49218306882587"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -111873,8 +111905,8 @@
       "output": "cfbf6f747779f4cf"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "cb1d4b34fd29dd0c"
+      "source": "def495038f1f0a06",
+      "output": "fc58ffeda1dc55c7"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -112073,8 +112105,8 @@
       "output": "90e96f71d3f09e8b"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "0df80e15359e75a7"
+      "source": "334dd19e82cf3202",
+      "output": "2b0e5af8c528defe"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -112129,8 +112161,8 @@
       "output": "b4387243e90b7b55"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "710e1a2dea43f542"
+      "source": "6ee9882cb9c99548",
+      "output": "23c9fca8d037b492"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -112209,8 +112241,8 @@
       "output": "ebf1486188c6adf0"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "88ee6ed5f6713d7a"
+      "source": "d21a9178cab254c4",
+      "output": "652463b2402961eb"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -112281,8 +112313,8 @@
       "output": "c815639a060747c9"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "848056c7e4eb8095"
+      "source": "d1c5112cdef709df",
+      "output": "e0d9f107859f96b0"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -112875,6 +112907,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "8f3ca56b5eb4e4e5"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "a3a513d0992cb0a0"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "a0f7c557e5cc6469"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -135079,8 +135119,8 @@
       "output": "f494e1ab221d4f55"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "35b5abf8376ab518"
+      "source": "2e898f326a4ea225",
+      "output": "5bd0de7416a624a3"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -135311,8 +135351,8 @@
       "output": "80dacff1bf83dd14"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "5dd514d44ebd140c"
+      "source": "bdd45d5a308d9cdf",
+      "output": "4065430d4ae537e8"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -135431,8 +135471,8 @@
       "output": "b5682e430cb6fdc1"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "c9f99556ac726281"
+      "source": "def495038f1f0a06",
+      "output": "e0cd403c7a61a47e"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -135631,8 +135671,8 @@
       "output": "ab287b27e7e3890b"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "2d32d443a2c7958c"
+      "source": "334dd19e82cf3202",
+      "output": "ee288632d1b17460"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -135687,8 +135727,8 @@
       "output": "6c6919196ad87fed"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "a1c1f08dd1591668"
+      "source": "6ee9882cb9c99548",
+      "output": "cc4f5ed310783959"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -135767,8 +135807,8 @@
       "output": "fc9f87d5c6bdee67"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "c0f8481f3a6f17a9"
+      "source": "d21a9178cab254c4",
+      "output": "5e201416b5893807"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -135839,8 +135879,8 @@
       "output": "5ec378964921ae63"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "6ddd29a46256e87f"
+      "source": "d1c5112cdef709df",
+      "output": "06accd2aa54baa0d"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -136433,6 +136473,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "aef7630bf8585e27"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "446e676ba961e5bd"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "1ddb371b8579e73a"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",
@@ -158637,8 +158685,8 @@
       "output": "d5276d78694a51d1"
     },
     "settings.keys.agents.journalRetentionDays.help": {
-      "source": "d82a0c7f03c0974e",
-      "output": "c7841960652ded5e"
+      "source": "2e898f326a4ea225",
+      "output": "475979f56246cbcf"
     },
     "settings.keys.agents.journalRetentionDays.label": {
       "source": "06a0efbed2f11a1b",
@@ -158869,8 +158917,8 @@
       "output": "551f6367ed29bf5a"
     },
     "settings.keys.ai.runPayloadRetentionDays.help": {
-      "source": "96faeb672633eadc",
-      "output": "5a1bff04bb1ba422"
+      "source": "bdd45d5a308d9cdf",
+      "output": "89dc066ca4527a69"
     },
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
@@ -158989,8 +159037,8 @@
       "output": "17e04b96321772b1"
     },
     "settings.keys.automations.runRetentionDays.help": {
-      "source": "89665e6b77c726cf",
-      "output": "ecab767fa52bb997"
+      "source": "def495038f1f0a06",
+      "output": "85bfa0baff2412a0"
     },
     "settings.keys.automations.runRetentionDays.label": {
       "source": "492fad9ace3c12d8",
@@ -159189,8 +159237,8 @@
       "output": "35be5db45a669710"
     },
     "settings.keys.memory.factHalfLifeDays.help": {
-      "source": "ac6e01943449a64d",
-      "output": "f48bd3b72b4d22c2"
+      "source": "334dd19e82cf3202",
+      "output": "62e43b762e0ed3be"
     },
     "settings.keys.memory.factHalfLifeDays.label": {
       "source": "8f72e4261fd30e13",
@@ -159245,8 +159293,8 @@
       "output": "d8f62bf407ce11d7"
     },
     "settings.keys.memory.retentionDays.help": {
-      "source": "a0c77f1587c1373f",
-      "output": "68041004f496eb82"
+      "source": "6ee9882cb9c99548",
+      "output": "463bd5818848a864"
     },
     "settings.keys.memory.retentionDays.label": {
       "source": "5e0044207829ff51",
@@ -159325,8 +159373,8 @@
       "output": "972ee72308a1c5e1"
     },
     "settings.keys.projects.buildRetentionDays.help": {
-      "source": "01b2d10bfcfa475b",
-      "output": "a0408c955dd10230"
+      "source": "d21a9178cab254c4",
+      "output": "fba67f2a86ffe2c9"
     },
     "settings.keys.projects.buildRetentionDays.label": {
       "source": "bea9cf55ecd7da95",
@@ -159397,8 +159445,8 @@
       "output": "90e56c29531441c3"
     },
     "settings.keys.render.jobRetentionDays.help": {
-      "source": "219fb431858e0c2e",
-      "output": "1c327f59db6feb64"
+      "source": "d1c5112cdef709df",
+      "output": "421af0a59d4ac081"
     },
     "settings.keys.render.jobRetentionDays.label": {
       "source": "9250d89b319ecd0c",
@@ -159991,6 +160039,14 @@
     "settings.row.rangeHintAmounts": {
       "source": "51b8e75b4ec18581",
       "output": "53af1031732edb2f"
+    },
+    "settings.row.zeroMeans.noDecay": {
+      "source": "ab2186e6e3de6f8b",
+      "output": "c29ab4cc2a5c02ba"
+    },
+    "settings.row.zeroMeans.unlimited": {
+      "source": "30cc38a98a3432a2",
+      "output": "bb1dcbb24f2c1e91"
     },
     "settings.unsaved.description": {
       "source": "f8ef9e75c121a08e",

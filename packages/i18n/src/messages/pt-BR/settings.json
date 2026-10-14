@@ -121,7 +121,7 @@
       },
       "runPayloadRetentionDays": {
         "label": "Retenção de textos da IA (dias)",
-        "help": "Em execuções mais antigas da IA, a pergunta e a resposta são apagadas, mantendo apenas os números para a visualização de uso. 0 significa: nunca limpar. Os históricos nos chats não são afetados."
+        "help": "Em execuções de IA mais antigas, a pergunta e a resposta são esvaziadas, mantendo os números para a visualização de uso. O histórico nos chats não é afetado."
       },
       "pdfExtractionEnabled": {
         "label": "Extrair texto de PDFs",
@@ -207,7 +207,7 @@
       },
       "retentionDays": {
         "label": "Retenção de notas (dias)",
-        "help": "Notas de sessão mais antigas são excluídas no espaço de trabalho da memória. 0 significa: nunca limpar. As páginas de projetos são sempre mantidas, e outros espaços de trabalho nunca são alterados."
+        "help": "Notas de sessão mais antigas são excluídas no espaço de trabalho de memória. As páginas de projeto são sempre mantidas; outros espaços de trabalho nunca são alterados."
       },
       "consolidationEnabled": {
         "label": "Condensar lembranças",
@@ -227,7 +227,7 @@
       },
       "factHalfLifeDays": {
         "label": "Meia-vida de um fato (dias)",
-        "help": "Um fato que ninguém mais confirma perde metade do seu peso ao longo desse período, e depois metade novamente. Ele não desaparece, apenas perde força. 0 desativa o decaimento."
+        "help": "Um fato que ninguém mais confirma perde metade do seu peso ao longo desse período, e depois metade novamente. Ele não desaparece; fica apenas menos relevante."
       },
       "factConfidenceFloor": {
         "label": "Limite inferior para fatos (%)",
@@ -365,7 +365,7 @@
     "agents": {
       "journalRetentionDays": {
         "label": "Retenção de sessões de agentes (dias)",
-        "help": "Por esse período, é possível acompanhar na área “Agentes” qual sessão escreveu o quê, e reverter uma sessão inteira de uma vez. Depois disso, apenas a atribuição desaparece; os estados salvos das páginas não são afetados. 0 significa: para sempre."
+        "help": "Por quanto tempo é possível rastrear na seção „Agentes“ qual sessão escreveu o quê, e por quanto tempo uma sessão pode ser revertida de uma só vez. Depois disso, apenas a atribuição desaparece; as versões salvas das páginas não são afetadas."
       },
       "largePageChars": {
         "label": "Página é considerada grande a partir de (caracteres)",
@@ -395,7 +395,7 @@
       },
       "runRetentionDays": {
         "label": "Retenção do registro de execuções (dias)",
-        "help": "Por esse período, o que as automações fizeram permanece visível. As regras em si não são afetadas. 0 significa: para sempre."
+        "help": "Por quanto tempo fica visível o que as automações fizeram. As regras em si não são afetadas."
       }
     },
     "workflows": {
@@ -465,7 +465,7 @@
       },
       "jobRetentionDays": {
         "label": "Retenção do registro de compilações (dias)",
-        "help": "Tempo durante o qual compilações concluídas e seus registros permanecem visíveis. Os PDFs gerados continuam salvos como anexos. 0 significa: para sempre."
+        "help": "Por quanto tempo as compilações concluídas permanecem visíveis junto com o registro. Os PDFs gerados são mantidos como anexos."
       }
     },
     "projects": {
@@ -495,7 +495,7 @@
       },
       "buildRetentionDays": {
         "label": "Retenção de registros de compilação (dias)",
-        "help": "Tempo durante o qual compilações concluídas, registros e listas de erros permanecem visíveis. Os PDFs continuam salvos como anexos. 0 significa: para sempre."
+        "help": "Por quanto tempo as compilações concluídas permanecem visíveis junto com o registro e a lista de erros. Os PDFs são mantidos como anexos."
       }
     }
   },
@@ -517,6 +517,10 @@
       "GiB": "GiB"
     },
     "byteUnitsExplained": "1 MB equivale a 1.000.000 de bytes, 1 MiB equivale a 1.048.576 bytes.",
+    "zeroMeans": {
+      "unlimited": "Ilimitado",
+      "noDecay": "Sem decaimento"
+    },
     "bytesInexact": "Isso não resulta em um número inteiro de bytes. O último estado válido será mantido.",
     "choices": {
       "pdfExtractor": {

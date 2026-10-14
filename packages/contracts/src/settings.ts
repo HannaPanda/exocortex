@@ -1138,6 +1138,38 @@ export const SETTING_NUMBER_RANGES: Readonly<Partial<Record<SettingKey, SettingN
   );
 
 /**
+ * What a stored 0 means for the numeric settings where 0 is no amount at all
+ * (issue #202): a retention that never clears, a half-life with no decay.
+ *
+ * Listed by key rather than read off a `*Days` suffix, because other day
+ * counts know no such zero. The form shows these as a switch beside the
+ * number, so nobody reads 0 as "delete at once"; storage and API keep the 0.
+ */
+export type SettingZeroMeaning = 'unlimited' | 'noDecay';
+
+export const SETTING_ZERO_MEANS: Readonly<Partial<Record<SettingKey, SettingZeroMeaning>>> = {
+  'ai.runPayloadRetentionDays': 'unlimited',
+  'memory.retentionDays': 'unlimited',
+  'agents.journalRetentionDays': 'unlimited',
+  'automations.runRetentionDays': 'unlimited',
+  'render.jobRetentionDays': 'unlimited',
+  'projects.buildRetentionDays': 'unlimited',
+  'memory.factHalfLifeDays': 'noDecay',
+};
+
+/** The amount a setting of `SETTING_ZERO_MEANS` gets back when its switch goes off. */
+const ZERO_MEANS_FALLBACK = 30;
+
+/**
+ * The value a zero-meaning setting takes when somebody switches "unlimited"
+ * off: its default, unless that default is the 0 itself, then 30.
+ */
+export function limitedValueOf(key: SettingKey): number {
+  const fallback: unknown = settingsSchema.shape[key].parse(undefined);
+  return typeof fallback === 'number' && fallback !== 0 ? fallback : ZERO_MEANS_FALLBACK;
+}
+
+/**
  * Environment variables that seed a setting when its row is absent. The `.env`
  * file stays the bootstrap configuration; the database overrides it at runtime.
  */
