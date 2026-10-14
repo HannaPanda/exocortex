@@ -36,4 +36,4 @@ export * from './components/ui/toggle-group';
 export * from './components/ui/toolbar';
 export * from './components/ui/tooltip';
 export * from './hooks/use-mobile';
-export { cn } from './lib/utils';
+export { cn, TYPE_SCALE_SIZES } from './lib/utils';

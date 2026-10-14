@@ -79,10 +79,10 @@ export function RunTraceView({ steps, live }: RunTraceViewProps) {
     <section className="flex flex-col gap-1.5" data-testid="ai-run-trace" aria-live="off">
       <button
         type="button"
-        // Concatenated rather than passed through `cn`: tailwind-merge takes
-        // `text-micro` and `text-muted-foreground` for the same property and
-        // drops the size, which left this label at 16 px.
-        className={`flex w-fit max-w-full items-center gap-2 rounded-sm transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${sectionLabelClassName}`}
+        className={cn(
+          'flex w-fit max-w-full items-center gap-2 rounded-sm transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+          sectionLabelClassName,
+        )}
         aria-expanded={open}
         aria-controls={bodyId}
         data-testid="ai-run-trace-toggle"
