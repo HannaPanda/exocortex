@@ -843,6 +843,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   each call re-reads the approval first. A server an owner marks `trusted`
   still has its answers fenced, but they do not lock the run's writes; the
   screen suggests read or write per tool and a person applies the list.
+- ADR-087: reasoning is shown to the person who asked and kept by nobody.
+  The adapter passes `delta.reasoning` on as its own stream event, never into
+  the answer; the worker coalesces it and publishes `ai.run.reasoning` with
+  `recipientUserId`, the one event the gateway delivers to a person's sockets
+  in the run's workspace rather than to the room. No column, timeline row,
+  log line or replay holds it, and it is not sent back to the provider. The
+  panel says "Gedankengang" only when reasoning arrived, "Aktivitäten" for
+  tool calls alone, and nothing for neither.
 
 Full list: `docs/adr/`.
 

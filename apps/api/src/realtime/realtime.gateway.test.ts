@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { type WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
-import { type AuthorizationRevocation } from '@exocortex/contracts';
+import { type ApplicationEvent, type AuthorizationRevocation } from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 
 import { type AuthService } from '../auth/auth.service';
@@ -214,5 +214,66 @@ describe('RealtimeGateway', () => {
     ).recheckSubscriptions();
 
     expect(client.disconnect).toHaveBeenCalledWith(true);
+  });
+
+  /**
+   * ADR-087: a model's reasoning goes to the person who asked, never to the
+   * workspace room, and not to a tab of theirs that left the workspace.
+   */
+  describe('reasoning', () => {
+    function reasoningEvent(recipientUserId: string): ApplicationEvent {
+      return {
+        type: 'ai.run.reasoning',
+        workspaceId: 'workspace-1',
+        emittedAt: new Date().toISOString(),
+        correlationId: 'test',
+        payload: { runId: 'run-1', recipientUserId, turn: 1, delta: 'Hm.', sequence: 1 },
+      };
+    }
+
+    function deliver(gateway: RealtimeGateway, event: ApplicationEvent): void {
+      (
+        gateway as unknown as { broadcastLocally: (input: ApplicationEvent) => void }
+      ).broadcastLocally(event);
+    }
+
+    function eventsEmitted(client: Socket): unknown[] {
+      return vi
+        .mocked(client.emit)
+        .mock.calls.filter(([name]) => name === 'exocortex.event')
+        .map(([, event]) => event);
+    }
+
+    it('reaches only the recipient, and only where they are subscribed', async () => {
+      const sessions: Record<string, string> = {
+        asker: 'user-1',
+        other: 'user-2',
+        elsewhere: 'user-1',
+      };
+      const gateway = createGateway(async () => null);
+      const clients = Object.fromEntries(
+        Object.keys(sessions).map((name) => [name, createSocket(name)]),
+      );
+      for (const [name, client] of Object.entries(clients)) {
+        (
+          gateway as unknown as { authService: { verifySession: () => Promise<unknown> } }
+        ).authService.verifySession = async () => ({ userId: sessions[name] });
+        await gateway.handleConnection(client);
+      }
+      await gateway.subscribeWorkspace(clients.asker!, { workspaceId: 'workspace-1' });
+      await gateway.subscribeWorkspace(clients.other!, { workspaceId: 'workspace-1' });
+      await gateway.subscribeWorkspace(clients.elsewhere!, { workspaceId: 'workspace-2' });
+      // The room path must not be taken at all.
+      const to = vi.fn(() => ({ emit: vi.fn() }));
+      (gateway as unknown as { server: { to: typeof to } }).server = { to };
+
+      const event = reasoningEvent('user-1');
+      deliver(gateway, event);
+
+      expect(eventsEmitted(clients.asker!)).toEqual([event]);
+      expect(eventsEmitted(clients.other!)).toEqual([]);
+      expect(eventsEmitted(clients.elsewhere!)).toEqual([]);
+      expect(to).not.toHaveBeenCalled();
+    });
   });
 });

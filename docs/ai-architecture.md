@@ -894,9 +894,6 @@ throttled engine and a genuinely rare topic produce the same short list.
   forbids. It reports that auto-compaction happens automatically instead;
   `/clear` covers the case where the user wants the context gone
   immediately.
-- **Reasoning deltas are dropped.** `OpenRouterProvider.stream` deliberately
-  discards `delta.reasoning` chunks rather than folding them into
-  `resultText` — surfacing model "thinking" is a later feature.
 - **`POST /api/documents/:id/content` can lose against a live Hocuspocus
   session.** A document being edited collaboratively has its canonical state
   in memory in `apps/collaboration`; a programmatic content write snapshots
@@ -945,19 +942,31 @@ container.
    goes: the row always carries the answer as far as it has streamed, so there
    is something authoritative to fall back on.
 4. A phase that produces no text of its own is announced as `ai.run.phase`
-   (`reasoning`, `compacting`, `generating`). Reasoning fragments are dropped
-   by the provider adapter before they become deltas, and compaction only used
-   to report itself once it was over, so both looked exactly like a stalled
-   run. The payload carries the phase and nothing else: the model's
-   working-out and the compaction summary never travel on the event bus.
-   Repeats of the same phase are throttled to `AI_RUN_PHASE_MIN_INTERVAL_MS`.
-5. On completion the run is stored with `resultText` and `usage`, and
+   (`reasoning`, `compacting`, `generating`) to the whole workspace, because
+   thinking and compaction used to look exactly like a stalled run. The
+   payload carries the phase and nothing else. Repeats of the same phase are
+   throttled to `AI_RUN_PHASE_MIN_INTERVAL_MS`.
+5. The thinking itself (ADR-087, issue #195) arrives from the provider as a
+   `reasoning` stream event carrying the fragment (`delta.reasoning`, the
+   same field on OpenRouter and Cline, measured 2026-10-14) and never joins
+   the answer. `ReasoningRelay` (`apps/worker/src/processors/ai-run/reasoning-relay.ts`)
+   collects the fragments for `REASONING_FLUSH_INTERVAL_MS` and publishes
+   them as `ai.run.reasoning`, the one event addressed to a person: the
+   gateway hands it to `recipientUserId` (the run's `createdById`) and only
+   on sockets subscribed to the run's workspace. It is never written to the
+   run row, the timeline or a log, and nothing replays it. The panel shows it
+   with the tool calls in order as the run's trace (`run-trace-view.tsx`),
+   open while the run is live and folded beside the answer afterwards.
+   Reasoning is not passed back to the provider on the next turn: neither
+   endpoint needs it for the tool loop, and on Cline doing so suppressed the
+   next turn's reasoning.
+6. On completion the run is stored with `resultText` and `usage`, and
    `ai.run.completed` is published. On failure, timeout or cancellation the
    status (`FAILED`, `TIMED_OUT` or `CANCELLED`) and `errorCode` are stored
    and `ai.run.failed` is published. Every one of these terminal writes is a
    status-filtered `updateMany`, so a race with the maintenance reaper or a
    cancellation can never resurrect an already-ended row.
-6. The API's event-bus subscriber re-emits into the workspace room; the panel
+7. The API's event-bus subscriber re-emits into the workspace room; the panel
    renders the deltas as they arrive.
 
 The panel never relies on that channel alone. For as long as it believes a run

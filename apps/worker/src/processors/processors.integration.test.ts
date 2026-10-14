@@ -2880,7 +2880,7 @@ class ScriptedAiProvider implements AiProvider {
     this.requests.push(request);
     yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
     for (let index = 0; index < (turn.reasoningChunks ?? 0); index += 1) {
-      yield { type: 'reasoning', charCount: 40 };
+      yield { type: 'reasoning', text: 'x'.repeat(40) };
     }
     if (turn.text.length > 0) yield { type: 'delta', text: turn.text, sequence: 1 };
     if (turn.interrupted === true) {
@@ -3472,10 +3472,22 @@ describe('ai runs', () => {
     // Five fragments, one announcement: the throttle keeps a life sign from
     // turning into a flood.
     expect(phases.filter((event) => event.payload.phase === 'reasoning')).toHaveLength(1);
-    // The thinking itself must never ride along on the bus.
+    // The phase goes to the workspace and carries no thinking.
     for (const event of phases) {
       expect(Object.keys(event.payload).sort()).toEqual(['phase', 'runId']);
     }
+    // The thinking travels on its own event, addressed to the person who
+    // started the run (ADR-087), collected into batches and ahead of the
+    // answer it led to.
+    const reasoning = published.filter((event) => event.type === 'ai.run.reasoning');
+    expect(reasoning.length).toBeGreaterThan(0);
+    expect(reasoning.length).toBeLessThan(5);
+    expect(reasoning.map((event) => event.payload.delta).join('')).toBe('x'.repeat(5 * 40));
+    for (const event of reasoning) {
+      expect(event.payload).toMatchObject({ runId, recipientUserId: userId, turn: 1 });
+    }
+    const order = published.map((event) => event.type);
+    expect(order.lastIndexOf('ai.run.reasoning')).toBeLessThan(order.indexOf('ai.run.progress'));
   }, 60_000);
 
   it('keeps the partial answer on the run while it streams, so a client can reload it', async () => {

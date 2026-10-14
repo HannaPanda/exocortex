@@ -489,12 +489,12 @@ export class ChatCompletionsProvider implements AiProvider {
 
     if (state.firstTokenAt === null && isFirstSign(delta)) state.firstTokenAt = Date.now();
 
-    // Reasoning *text* is still deliberately dropped: it is not the answer
-    // and would corrupt `resultText`. Only its size is passed on, so a
-    // client can tell "the model is thinking" apart from "nothing is
-    // happening" without the thinking itself leaving this adapter.
+    // Reasoning is passed on as its own event and never joins the answer,
+    // which it would corrupt. Measured on 2026-10-14 (issue #195): OpenRouter
+    // and Cline both stream it live in `delta.reasoning`, and repeat the same
+    // text in `delta.reasoning_details[].text`, which is therefore not read.
     if (typeof delta?.reasoning === 'string' && delta.reasoning.length > 0) {
-      events.push({ type: 'reasoning', charCount: delta.reasoning.length });
+      events.push({ type: 'reasoning', text: delta.reasoning });
     }
     if (typeof delta?.content === 'string' && delta.content.length > 0) {
       state.text += delta.content;

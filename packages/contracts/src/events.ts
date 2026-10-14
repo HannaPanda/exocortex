@@ -39,6 +39,7 @@ export const APPLICATION_EVENT_TYPES = [
   'ai.conversation.compacted',
   'ai.run.tool_call',
   'ai.run.phase',
+  'ai.run.reasoning',
   'document.content.replaced',
   'document.cover.generated',
   'document.overview.updated',
@@ -222,15 +223,37 @@ export const aiRunToolCallPayloadSchema = z.object({
 /**
  * A run entered a phase that produces no text of its own (issue #6).
  *
- * Deliberately carries nothing but the phase: reasoning tokens are the
- * model's private working-out and must not travel to a client or into a log,
- * and the compaction summary is not the user's answer either. The point is to
- * name the silence, not to fill it.
+ * Deliberately carries nothing but the phase, because it goes to the whole
+ * workspace: the reasoning itself travels only as `ai.run.reasoning`, to the
+ * person who asked (ADR-087), and the compaction summary is not the user's
+ * answer either. The point is to name the silence, not to fill it.
  */
 export const aiRunPhasePayloadSchema = z.object({
   runId: idSchema,
   phase: aiRunPhaseSchema,
 });
+
+/**
+ * What the model is thinking, live, for the one person who asked (issue #195,
+ * ADR-087).
+ *
+ * The only event addressed to a person rather than a workspace: the gateway
+ * delivers it to `recipientUserId`'s sockets in the run's workspace room and
+ * to nobody else, because a model's working-out about somebody's question is
+ * theirs, not the workspace's. It is never stored, never logged and never
+ * replayed; a reload or a dropped frame loses it on purpose, so `sequence` is
+ * for ordering, not for repair. `turn` counts the provider exchanges of the
+ * run, so a client can keep the thinking before and after a tool call apart.
+ * The worker coalesces the provider's fragments before publishing.
+ */
+export const aiRunReasoningPayloadSchema = z.object({
+  runId: idSchema,
+  recipientUserId: idSchema,
+  turn: z.number().int().positive(),
+  delta: z.string().min(1),
+  sequence: z.number().int().positive(),
+});
+export type AiRunReasoningPayload = z.infer<typeof aiRunReasoningPayloadSchema>;
 
 export const documentContentReplacedPayloadSchema = z.object({
   documentId: idSchema,
@@ -515,6 +538,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
   envelope('ai.run.phase', aiRunPhasePayloadSchema),
+  envelope('ai.run.reasoning', aiRunReasoningPayloadSchema),
   envelope('document.content.replaced', documentContentReplacedPayloadSchema),
   envelope('document.cover.generated', documentCoverGeneratedPayloadSchema),
   envelope('document.overview.updated', documentOverviewUpdatedPayloadSchema),

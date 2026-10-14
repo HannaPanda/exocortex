@@ -35,9 +35,11 @@ import {
   TRUNCATION_CONTINUE_PROMPT,
   TRUNCATION_TOOL_RETRY_PROMPT,
 } from './loop-messages';
+import { reasoningPublisher, ReasoningRelay } from './reasoning-relay';
+import { publishToolCallEvent, type ToolCallStatus } from './live-events';
 import { toolCallEvent, turnEvent } from './run-events';
 import { abortFailure, type AbortReason, budgetFailure, runTimeoutFailure } from './run-failures';
-import { REASONING_LEVEL_TO_LOWER, toolCallSubject, toolCallTarget, toWireToolCalls } from './wire';
+import { REASONING_LEVEL_TO_LOWER, toolCallTarget, toWireToolCalls } from './wire';
 
 /**
  * Runs the conversation with the provider until it produces an answer, fails,
@@ -103,11 +105,14 @@ class RunExecution {
    */
   private turnChars = 0;
   private turnSawReasoning = false;
+  /** Shows the person who asked what the model is thinking, live (ADR-087). */
+  private readonly reasoning: ReasoningRelay;
 
   constructor(input: RunExecutionInput) {
     this.input = input;
     this.providerMessages = [...input.messages];
     this.runDeadline = Date.now() + input.timeouts.runBudgetMs;
+    this.reasoning = new ReasoningRelay(reasoningPublisher(input));
   }
 
   async execute(): Promise<RunOutcome> {
@@ -388,6 +393,7 @@ class RunExecution {
     this.liveText = this.carriedText;
     this.turnChars = 0;
     this.turnSawReasoning = false;
+    await this.reasoning.startTurn(this.turns);
 
     try {
       for await (const event of provider.stream({
@@ -404,6 +410,8 @@ class RunExecution {
       })) {
         switch (event.type) {
           case 'delta': {
+            // Whatever the model thought before this sentence arrives first.
+            await this.reasoning.flush();
             text += event.text;
             this.liveText = this.carriedText + text;
             this.turnChars = text.length;
@@ -423,10 +431,11 @@ class RunExecution {
             break;
           }
           case 'reasoning':
-            // The fragment itself never leaves the provider adapter; only
-            // the fact that thinking is going on does.
+            // The workspace hears that the model is thinking; only the
+            // person who asked hears what (ADR-087).
             this.turnSawReasoning = true;
             await this.publishPhase('reasoning');
+            await this.reasoning.push(event.text);
             break;
           case 'tool_calls':
             toolCalls = [...event.toolCalls];
@@ -448,6 +457,7 @@ class RunExecution {
     } finally {
       clearTimeout(turnTimer);
       this.runController.signal.removeEventListener('abort', onRunAbort);
+      await this.reasoning.flush();
     }
 
     return { text, toolCalls, usage, failure, finishReason };
@@ -717,24 +727,14 @@ class RunExecution {
 
   private async publishToolCall(
     call: AiToolCall,
-    status: 'started' | 'succeeded' | 'failed' | 'refused',
+    status: ToolCallStatus,
     target: string | null,
   ): Promise<void> {
-    const { bus, run, payload } = this.input;
-    const toolName = call.name;
-    await bus.publish({
-      type: 'ai.run.tool_call',
-      workspaceId: run.workspaceId,
-      correlationId: payload.correlationId,
-      emittedAt: new Date().toISOString(),
-      payload: {
-        runId: run.id,
-        iteration: this.toolIterations,
-        toolName: toolName.length > 0 ? toolName : 'unbekannt',
-        status,
-        target,
-        subject: toolCallSubject(call.name, call.argumentsJson),
-      },
+    await publishToolCallEvent(this.input, {
+      iteration: this.toolIterations,
+      call,
+      status,
+      target,
     });
   }
 

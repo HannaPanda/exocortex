@@ -144,7 +144,7 @@ describe('OpenRouterProvider.stream', () => {
     });
   });
 
-  it('streams text deltas with a rising sequence and never leaks reasoning text', async () => {
+  it('streams text deltas with a rising sequence and keeps reasoning out of the answer', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () =>
@@ -159,8 +159,7 @@ describe('OpenRouterProvider.stream', () => {
 
     const events = await collect(provider().stream(request));
 
-    expect(events).toContainEqual({ type: 'reasoning', charCount: 18 });
-    expect(JSON.stringify(events)).not.toContain('überlege');
+    expect(events).toContainEqual({ type: 'reasoning', text: 'Ich überlege kurz.' });
     expect(events.filter((event) => event.type === 'delta')).toEqual([
       { type: 'delta', text: 'Es ist ', sequence: 1 },
       { type: 'delta', text: 'sechs.', sequence: 2 },

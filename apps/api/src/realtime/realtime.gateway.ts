@@ -152,7 +152,24 @@ export class RealtimeGateway
   }
 
   private broadcastLocally(event: ApplicationEvent): void {
+    if (event.type === 'ai.run.reasoning') {
+      this.deliverToRecipient(event, event.payload.recipientUserId);
+      return;
+    }
     this.server?.to(workspaceRoom(event.workspaceId)).emit(REALTIME_EVENT_NAME, event);
+  }
+
+  /**
+   * Delivers an event to one person's sockets, and only those still subscribed
+   * to its workspace (ADR-087). Both conditions, not either: the user room
+   * alone would reach a tab whose membership was just withdrawn, and the
+   * workspace room alone is everybody.
+   */
+  private deliverToRecipient(event: ApplicationEvent, userId: string): void {
+    for (const socket of this.socketsByUser.get(userId) ?? []) {
+      if (!socketData(socket).subscribedWorkspaces.has(event.workspaceId)) continue;
+      socket.emit(REALTIME_EVENT_NAME, event);
+    }
   }
 
   async handleConnection(client: Socket): Promise<void> {
