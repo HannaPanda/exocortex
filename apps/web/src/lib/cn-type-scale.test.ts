@@ -28,6 +28,6 @@ describe('cn and the type scale', () => {
 
   it('knows every size styles.css defines, and nothing else', () => {
     const defined = [...stylesCss.matchAll(/^\s*--text-([a-z]+):/gm)].map((match) => match[1]);
-    expect([...TYPE_SCALE_SIZES].sort()).toEqual([...new Set(defined)].sort());
+    expect(new Set(TYPE_SCALE_SIZES)).toEqual(new Set(defined));
   });
 });
