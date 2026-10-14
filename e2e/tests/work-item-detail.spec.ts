@@ -165,15 +165,10 @@ test('fits a phone without scrolling sideways', async ({ page }) => {
  * stop at the viewport: the container is stretched to its content first.
  */
 async function shoot(page: Page, name: string): Promise<void> {
-  await page.locator('[data-slot="app-page"]').evaluate((node) => {
-    (node as HTMLElement).style.overflow = 'visible';
-    (node as HTMLElement).style.flex = 'none';
-    let parent = node.parentElement;
-    while (parent !== null) {
-      parent.style.overflow = 'visible';
-      parent.style.height = 'auto';
-      parent = parent.parentElement;
-    }
+  await page.addStyleTag({
+    content:
+      '[data-slot="app-page"] { overflow: visible !important; flex: none !important; }' +
+      ' *:has([data-slot="app-page"]) { overflow: visible !important; height: auto !important; }',
   });
   await page.screenshot({ path: `test-results/work-item-detail/${name}.png`, fullPage: true });
 }
