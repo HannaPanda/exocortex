@@ -772,7 +772,7 @@ instead. The workflow's settings open from the end of the head's second row.
 A node's family is its mark's shape, not a colour: a circle where a run
 starts, a square for work, a diamond for a decision about the path, a ringed
 circle where it ends (`NodeTypeMark`). The One Signal Rule leaves no colour for
-it, and a shape survives a glance at 55% zoom, which is as far as a whole
+it, and a shape survives a glance at 70% zoom, which is as far as a whole
 graph is ever fitted.
 
 **The State-Channels Rule.** A node can be selected, unfinished and running

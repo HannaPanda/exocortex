@@ -138,7 +138,7 @@ export function NumberField({
         placeholder={placeholder}
         aria-invalid={invalid}
         data-testid={testId}
-        className="max-w-40"
+        className="max-w-56"
         onChange={(event) => {
           setText(event.target.value);
           const next = parseNumber(event.target.value);
@@ -185,7 +185,7 @@ export function MoneyField({
         allowEmpty
         keepsLastValid
         placeholder={placeholder}
-        className="max-w-40"
+        className="max-w-56"
         data-testid={testId}
         onChange={onChange}
       />

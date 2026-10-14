@@ -100,7 +100,7 @@ type AddFrom = (source: string, handle: string, type: WorkflowNodeType) => void;
 const AddFromContext = React.createContext<AddFrom | null>(null);
 
 /** The lowest zoom a whole graph is fitted at; below it the cards stop being readable. */
-const FIT_MIN_ZOOM = 0.55;
+const FIT_MIN_ZOOM = 0.7;
 
 export function prefersReducedMotion(): boolean {
   return (
