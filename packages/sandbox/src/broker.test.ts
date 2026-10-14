@@ -147,10 +147,13 @@ describe('the broker', () => {
     const closed = new Promise((resolve) => child.on('close', resolve));
     child.kill();
     await closed;
-    for (let attempt = 0; attempt < 50 && !existsSync(killLog()); attempt += 1) {
+    // `>>` creates the file before `echo` writes into it, so existing is not
+    // enough: wait for the name itself.
+    const killed = (): string => (existsSync(killLog()) ? readFileSync(killLog(), 'utf8') : '');
+    for (let attempt = 0; attempt < 50 && !killed().endsWith('\n'); attempt += 1) {
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
-    expect(readFileSync(killLog(), 'utf8')).toMatch(/^exocortex-sandbox-/);
+    expect(killed()).toMatch(/^exocortex-sandbox-/);
   });
 
   it('answers a forged request with a refusal and starts nothing', async () => {
