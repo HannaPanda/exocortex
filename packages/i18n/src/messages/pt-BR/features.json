@@ -1086,5 +1086,15 @@
       "p6": "Uma automação pode transferir trabalho: a ação “Criar tarefa” transforma a página modificada em uma tarefa com o objetivo da regra e o perfil selecionado; se desejado, a IA começa imediatamente."
     },
     "where": "Em Tarefas através de “Gerenciar perfis”, na tarefa no perfil de agente, ou Strg + K e “Abrir perfis de agente”."
+  },
+  "externe-mcp-server": {
+    "title": "Conectar servidores MCP externos",
+    "summary": "Você pode adicionar servidores MCP externos a um espaço de trabalho, como o aplicativo de saúde, e decidir por conta própria para cada uma de suas ferramentas se a IA pode usá-la para leitura, para escrita ou de forma alguma. Cada ferramenta fica bloqueada por padrão.",
+    "details": {
+      "p1": "Um servidor precisa de um endereço https acessível pela internet e, opcionalmente, de um token ou cabeçalho personalizado. O segredo é armazenado criptografado e nunca mais é exibido. Endereços na rede local e nesta máquina são rejeitados, mesmo após redirecionamentos.",
+      "p2": "Após o teste de conexão, você vê cada ferramenta com sua descrição, parâmetros e o que o próprio servidor informa sobre ela. O que você autoriza vale apenas para essa versão exata: se o servidor alterar a descrição ou os parâmetros posteriormente, a ferramenta será bloqueada novamente até que você a revise.",
+      "p3": "Conectar, alterar e autorizar só é possível na função de proprietária ou proprietário no navegador, nunca com um token e nunca por meio de um agente. Dessa forma, nenhuma IA consegue conceder a si mesma novas ferramentas. O uso efetivo das ferramentas autorizadas pela IA durante uma execução virá em uma próxima etapa."
+    },
+    "where": "Configurações do espaço de trabalho, aba Ferramentas externas. A opção para toda a instância fica em Administração, Configurações, seção IA."
   }
 }

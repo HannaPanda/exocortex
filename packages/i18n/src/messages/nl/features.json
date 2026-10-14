@@ -1086,5 +1086,15 @@
       "p6": "Een automatisering kan werk overdragen: de actie „Opdracht aanmaken” maakt van de gewijzigde pagina een opdracht met het doel van de regel en het gekozen profiel; desgewenst begint de AI direct."
     },
     "where": "Onder Opdrachten via „Profielen beheren”, bij de opdracht onder agentprofiel, of Strg + K en „Agentprofielen openen”."
+  },
+  "externe-mcp-server": {
+    "title": "Externe MCP-servers koppelen",
+    "summary": "Je kunt externe MCP-servers aan een werkruimte toevoegen, zoals de Health-app, en voor elk van hun tools zelf bepalen of de AI deze mag gebruiken om te lezen, te schrijven of helemaal niet. Elke tool is eerst geblokkeerd.",
+    "details": {
+      "p1": "Een server heeft een https-adres nodig dat bereikbaar is vanaf het internet, en desgewenst een token of een eigen header. Het geheim wordt versleuteld opgeslagen en nooit meer getoond. Adressen in het eigen netwerk en op deze computer worden geweigerd, ook na een omleiding.",
+      "p2": "Na de verbindingscontrole zie je elke tool met beschrijving, parameters en wat de server er zelf over zegt. Wat je vrijgeeft, geldt alleen voor precies deze versie: wijzigt de server later de beschrijving of parameters, dan is de tool weer geblokkeerd totdat je deze opnieuw hebt bekeken.",
+      "p3": "Koppelen, wijzigen en vrijgeven kan alleen als eigenaar in de browser, nooit met een token en nooit door een agent. Zo kan geen enkele AI zichzelf nieuwe tools verschaffen. Dat de AI vrijgegeven tools tijdens een run ook daadwerkelijk gebruikt, volgt in een volgende stap."
+    },
+    "where": "Instellingen van de werkruimte, tabblad Externe tools. De schakelaar voor de hele instantie bevindt zich onder Beheer, Instellingen, sectie AI."
   }
 }

@@ -17,7 +17,7 @@ export const WORKSPACE_TAB_PARAM = 'tab';
  * identifier, although the path around them is German: an address is the
  * same in every locale (ADR-062), and these name tabs rather than places.
  */
-export const WORKSPACE_SETTINGS_TABS = ['general', 'members', 'ai', 'overrides'] as const;
+export const WORKSPACE_SETTINGS_TABS = ['general', 'members', 'ai', 'tools', 'overrides'] as const;
 export type WorkspaceSettingsTab = (typeof WORKSPACE_SETTINGS_TABS)[number];
 
 export function isWorkspaceSettingsTab(value: string): value is WorkspaceSettingsTab {

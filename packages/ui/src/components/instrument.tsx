@@ -54,7 +54,7 @@ export function SectionRule({
   trailing?: React.ReactNode;
   action?: React.ReactNode;
   /** Heading level, so the rule fits the document outline it appears in. */
-  as?: 'h2' | 'h3';
+  as?: 'h2' | 'h3' | 'h4';
 }) {
   return (
     <div className={cn('flex items-center gap-2.5', className)} {...props}>

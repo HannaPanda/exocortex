@@ -317,6 +317,8 @@
       },
       "workspaceMembers": "Gérer les membres",
       "workspaceMembersKeywords": "membres inviter personnes rôles accès espace de travail workspace",
+      "workspaceTools": "Serveurs MCP externes et leurs outils",
+      "workspaceToolsKeywords": "mcp serveur externe outils tools partager health connecter connexion intégration",
       "workspaceAi": "Paramètres d’IA de l’espace de travail",
       "workspaceAiKeywords": "ia clé api key propre byok openrouter espace de travail workspace",
       "workspaceOverrides": "Paramètres personnalisés de l’espace de travail",

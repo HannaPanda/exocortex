@@ -1086,5 +1086,15 @@
       "p6": "Automatyzacja może przekazywać pracę: akcja „Utwórz zadanie” zamienia zmienioną stronę w zadanie z celem reguły i wybranym profilem – na życzenie AI zaczyna działać natychmiast."
     },
     "where": "W sekcji Zadania pod „Zarządzaj profilami”, w zadaniu przy profilu agenta lub przez Ctrl + K i „Otwórz profile agentów”."
+  },
+  "externe-mcp-server": {
+    "title": "Podłączanie zewnętrznych serwerów MCP",
+    "summary": "Do obszaru roboczego możesz dodawać zewnętrzne serwery MCP, na przykład aplikację Zdrowie, i dla każdego z ich narzędzi decydować, czy AI może go używać do odczytu, do zapisu, czy wcale. Każde narzędzie jest domyślnie zablokowane.",
+    "details": {
+      "p1": "Serwer wymaga adresu https dostępnego z internetu oraz opcjonalnie tokena lub własnego nagłówka. Sekret jest zapisywany w formie zaszyfrowanej i nigdy więcej nie jest wyświetlany. Adresy w sieci lokalnej i na tym komputerze są odrzucane, także po przekierowaniu.",
+      "p2": "Po sprawdzeniu połączenia zobaczysz każde narzędzie wraz z opisem, parametrami i informacjami przekazanymi przez sam serwer. Zgoda dotyczy wyłącznie tej konkretnej wersji: jeśli serwer zmieni później opis lub parametry, narzędzie zostanie ponownie zablokowane, dopóki go nie sprawdzisz.",
+      "p3": "Podłączanie, modyfikowanie i zatwierdzanie jest możliwe wyłącznie w przeglądarce jako właściciel lub właścicielka, nigdy za pomocą tokena ani przez agenta. Dzięki temu żadna AI nie może samodzielnie nadać sobie nowych narzędzi. Używanie zatwierdzonych narzędzi przez AI podczas wykonywania zadań zostanie dodane w kolejnym kroku."
+    },
+    "where": "Ustawienia obszaru roboczego, zakładka Zewnętrzne narzędzia. Przełącznik dla całej instancji znajduje się w: Administracja, Ustawienia, sekcja AI."
   }
 }

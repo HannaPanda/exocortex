@@ -44,6 +44,7 @@ import { AiRulesPanel } from '@/components/ai/ai-rules-panel';
 import { InvitationTable } from '@/components/invitations/invitation-table';
 import { InviteDialog } from '@/components/invitations/invite-dialog';
 import { isWorkspaceSettingsTab } from '@/components/palette/settings-addresses';
+import { ExternalMcpPanel } from '@/components/settings/external-mcp-panel';
 import { WorkspaceCredentialsForm } from '@/components/settings/workspace-credentials-form';
 import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-form';
 import { ApiError } from '@/lib/api/client';
@@ -93,6 +94,7 @@ export function WorkspaceSettings({
 
   const original = detail.data;
   const canEdit = WORKSPACE_ADMIN_ROLES.has(original.role);
+  const isOwner = original.role === 'OWNER';
   const nameDirty = name.trim().length > 0 && name.trim() !== original.name;
 
   const errorCode =
@@ -132,6 +134,11 @@ export function WorkspaceSettings({
           <TabsTrigger value="ai" className="py-1.5 text-sm">
             {t('tabs.ai')}
           </TabsTrigger>
+          {isOwner ? (
+            <TabsTrigger value="tools" className="py-1.5 text-sm" data-testid="tab-external-tools">
+              {t('tabs.tools')}
+            </TabsTrigger>
+          ) : null}
           <TabsTrigger value="overrides" className="py-1.5 text-sm">
             {t('tabs.settings')}
           </TabsTrigger>
@@ -204,10 +211,7 @@ export function WorkspaceSettings({
                 {t('aiKey.description')}
               </p>
             </div>
-            <WorkspaceCredentialsForm
-              workspaceId={workspaceId}
-              isOwner={original.role === 'OWNER'}
-            />
+            <WorkspaceCredentialsForm workspaceId={workspaceId} isOwner={isOwner} />
           </section>
 
           {/* A list rather than a link: a rule is a page that already has its
@@ -223,6 +227,21 @@ export function WorkspaceSettings({
             <AiRulesPanel workspaceId={workspaceId} />
           </section>
         </TabsContent>
+
+        {/* Owner only, like the API (ADR-086): which foreign server the
+            assistant may call, and with which of its tools, widens what it
+            can do and where this workspace's data can go. */}
+        {isOwner ? (
+          <TabsContent value="tools" className="flex flex-col gap-6">
+            <div>
+              <h2 className="text-base font-semibold">{t('externalMcp.title')}</h2>
+              <p className="mt-1 max-w-measure text-sm text-muted-foreground">
+                {t('externalMcp.description')}
+              </p>
+            </div>
+            <ExternalMcpPanel workspaceId={workspaceId} />
+          </TabsContent>
+        ) : null}
 
         {/* Outside the administrator branch on purpose: what prompt and what
             model this workspace runs under is not a secret from the people

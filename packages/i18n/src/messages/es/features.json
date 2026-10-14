@@ -1086,5 +1086,15 @@
       "p6": "Una automatización puede delegar trabajo: la acción «Crear encargo» convierte la página modificada en un encargo con el objetivo de la regla y el perfil elegido; si se desea, la IA empieza de inmediato."
     },
     "where": "En Encargos a través de «Gestionar perfiles», en el propio encargo junto al perfil de agente, o con Strg + K y «Abrir perfiles de agente»."
+  },
+  "externe-mcp-server": {
+    "title": "Conectar servidores MCP externos",
+    "summary": "Puedes añadir servidores MCP externos a un espacio de trabajo, como la app de salud, y decidir para cada una de sus herramientas si la IA puede usarla para leer, escribir o si no puede usarla en absoluto. Al principio, cada herramienta está bloqueada.",
+    "details": {
+      "p1": "Un servidor necesita una dirección https accesible desde Internet y, opcionalmente, un token o una cabecera personalizada. El secreto se guarda cifrado y nunca se vuelve a mostrar. Las direcciones de la red local y de este equipo se rechazan, incluso tras una redirección.",
+      "p2": "Tras comprobar la conexión, verás cada herramienta con su descripción, parámetros y lo que el propio servidor dice de ella. Lo que autorices solo se aplica exactamente a esa versión: si más adelante el servidor cambia la descripción o los parámetros, la herramienta volverá a bloquearse hasta que la revises de nuevo.",
+      "p3": "Conectar, modificar y autorizar solo es posible desde el navegador con el rol de propietario, nunca mediante un token ni a través de un agente. Así, ninguna IA puede concederse nuevas herramientas por sí misma. Que la IA use las herramientas autorizadas durante una ejecución llegará en un próximo paso."
+    },
+    "where": "Configuración del espacio de trabajo, pestaña Herramientas externas. El interruptor para toda la instancia está en Administración, Configuración, sección IA."
   }
 }

@@ -65,6 +65,14 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_web_search', 'exo_web_fetch'],
   }),
   defineFeature({
+    id: 'externe-mcp-server',
+    area: 'ki',
+    since: '2026-10-14',
+    references: ['#196', 'ADR-086'],
+    ui: {},
+    settings: ['ai.externalMcpEnabled', 'ai.externalMcpTimeoutSeconds'],
+  }),
+  defineFeature({
     id: 'fremdinhalte-sperre',
     area: 'ki',
     since: '2026-09-16',

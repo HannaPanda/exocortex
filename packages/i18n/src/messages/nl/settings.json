@@ -660,7 +660,8 @@
       "general": "Algemeen",
       "members": "Leden",
       "ai": "AI",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "tools": "Externe tools"
     },
     "readOnly": "Alleen eigenaars en beheerders van deze werkruimte kunnen deze hernoemen of de slug wijzigen.",
     "nameLabel": "Naam",
@@ -718,6 +719,124 @@
       "ADMIN": "Beheerder",
       "MEMBER": "Lid",
       "GUEST": "Gast"
+    },
+    "externalMcp": {
+      "title": "Externe MCP-servers",
+      "description": "Hier koppel je externe MCP-servers, bijvoorbeeld de Health-app. Elk tool van een server is eerst geblokkeerd. Pas wanneer je het hebt bekeken en goedgekeurd, mag de AI het gebruiken. Wijzigt de server een tool later, dan is het weer geblokkeerd."
+    }
+  },
+  "externalMcp": {
+    "loading": "MCP-servers worden geladen …",
+    "disabled": "Externe MCP-servers zijn uitgeschakeld op deze instantie. Je kunt niets koppelen en niets controleren tot een beheerder de schakelaar onder <link>Beheer, AI</link> aanzet. Wat al is ingesteld, blijft bewaard.",
+    "empty": {
+      "title": "Nog geen server gekoppeld",
+      "description": "Een server heeft een https-adres nodig dat bereikbaar is vanaf het internet. Adressen in het eigen netwerk en op deze computer worden geweigerd."
+    },
+    "add": "MCP-server koppelen",
+    "addTitle": "Nieuwe MCP-server",
+    "check": "Verbinding controleren",
+    "checkFirst": "Verbinding controleren en tools laden",
+    "edit": "Bewerken",
+    "remove": "Verwijderen",
+    "removeTitle": "{name} verwijderen?",
+    "removeDescription": "De server, het bijbehorende geheim en alle goedkeuringen van de bijbehorende tools worden verwijderd. Koppel je de server opnieuw, dan zijn alle tools weer geblokkeerd.",
+    "enabled": "Ingeschakeld voor de AI",
+    "enabledHint": "Uitgeschakeld blijft alles bewaard, maar de AI krijgt geen van de bijbehorende tools aangeboden.",
+    "tools": "Tools",
+    "toolCount": "{approved} van {total} goedgekeurd",
+    "toolsHint": "Lees wat een tool volgens de server doet en beslis zelf: lezen betekent dat het alleen gegevens ophaalt. Schrijven betekent dat het iets wijzigt, en geldt dan voor de AI net als elke andere wijziging.",
+    "noToolsYet": "Controleer de verbinding, dan zie je hier welke tools de server aanbiedt.",
+    "noTools": "De server biedt geen tools aan.",
+    "truncated": "De server biedt meer tools aan dan hier worden opgeslagen. De overige blijven buiten beschouwing.",
+    "instructions": "Instructies van de server weergeven",
+    "status": {
+      "ok": "Bereikbaar",
+      "error": "Fout",
+      "unchecked": "Nog niet gecontroleerd",
+      "checking": "Wordt gecontroleerd …"
+    },
+    "facts": {
+      "key": "Afkorting",
+      "auth": "Authenticatie",
+      "lastChecked": "Laatst gecontroleerd",
+      "reported": "Server meldt zich als",
+      "never": "nog nooit",
+      "endsWith": "eindigt op {hint}"
+    },
+    "auth": {
+      "none": "Geen",
+      "bearer": "Bearer-token",
+      "header": "Aangepaste header"
+    },
+    "errorCodes": {
+      "address_refused": "Het adres is niet toegestaan: het verwijst naar het eigen netwerk, naar deze computer of is geen https.",
+      "unauthorized": "De server weigert de aanmelding. Controleer het token of de header.",
+      "forbidden": "De server weigert de toegang met deze aanmelding.",
+      "not_found": "Op dit adres antwoordt geen MCP-server.",
+      "http_error": "De server heeft met een fout geantwoord.",
+      "timeout": "De server heeft niet op tijd geantwoord.",
+      "response_too_large": "Het antwoord van de server was te groot.",
+      "protocol_error": "De server spreekt geen MCP dat hier wordt begrepen.",
+      "tool_not_found": "De server kent deze tool niet.",
+      "unreachable": "De server is niet bereikbaar.",
+      "credential_unreadable": "Het opgeslagen geheim kan niet meer worden ontsleuteld. Voer het opnieuw in."
+    },
+    "form": {
+      "name": "Naam",
+      "namePlaceholder": "Health-app",
+      "key": "Kortingscode",
+      "keyHint": "2 tot 12 kleine letters of cijfers, beginnend met een letter. De AI ziet de tools als {name}. Dit kan later niet meer worden gewijzigd.",
+      "keyFixed": "Dit voorvoegsel zit in elke toolnaam en kan daarom niet worden gewijzigd.",
+      "url": "Adres",
+      "urlHint": "Het https-adres van het MCP-eindpunt, bijvoorbeeld https://health.example.org/mcp.",
+      "urlHintBlocks": "Als je het adres wijzigt, worden alle tools weer geblokkeerd: onder een ander adres kan een andere server antwoorden.",
+      "auth": "Aanmelding",
+      "noCredentials": "Deze instantie kan geen geheimen opslaan omdat de sleutel voor versleuteling ontbreekt. Alleen servers zonder authenticatie zijn mogelijk.",
+      "headerName": "Naam van de header",
+      "token": "Token",
+      "headerValue": "Waarde van de header",
+      "secretKeep": "Leeg laten behoudt het opgeslagen geheim (eindigt op {hint})",
+      "secretHint": "Wordt versleuteld opgeslagen en nooit meer getoond.",
+      "create": "Koppelen",
+      "save": "Opslaan",
+      "cancel": "Annuleren",
+      "invalid": {
+        "key": "De code moet uit 2 tot 12 kleine letters of cijfers bestaan en met een letter beginnen.",
+        "name": "Geef de server een naam van maximaal 80 tekens.",
+        "url": "Het adres moet beginnen met https:// en mag geen gebruikersnaam of wachtwoord bevatten.",
+        "authHeaderName": "Een headernaam met letters, cijfers en koppeltekens. Headers die MCP zelf instelt, zijn niet toegestaan.",
+        "secret": "Het geheim ontbreekt of is korter dan 8 tekens."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Geblokkeerd",
+        "read": "Lezen",
+        "write": "Schrijven"
+      },
+      "noDescription": "De server geeft geen beschrijving voor deze tool.",
+      "serverSays": "De server meldt: {hints}",
+      "noHints": "De server geeft niet aan of de tool iets wijzigt.",
+      "hints": {
+        "readOnly": "leest alleen",
+        "writes": "wijzigt gegevens",
+        "destructive": "kan verwijderen of overschrijven",
+        "idempotent": "herhaalbaar zonder bijwerkingen",
+        "openWorld": "reikt verder dan de server"
+      },
+      "approvedAt": "goedgekeurd op {date}",
+      "parameters": "Parameters bekijken",
+      "unusable": "Niet bruikbaar",
+      "problems": {
+        "invalid_name": "De naam bevat tekens die een model niet als toolnaam accepteert.",
+        "name_too_long": "Samen met de afkorting wordt de naam langer dan 64 tekens.",
+        "schema_too_large": "De beschrijving van de parameters is groter dan 16 KB.",
+        "schema_invalid": "De beschrijving van de parameters is geen geldig object."
+      },
+      "gone": "Niet meer aangeboden",
+      "goneHint": "De server noemde deze tool niet meer bij de laatste controle.",
+      "changed": "Gewijzigd",
+      "changedHint": "De server heeft de beschrijving of parameters gewijzigd sinds je deze hebt goedgekeurd. Daarom is hij weer geblokkeerd. Bekijk hem opnieuw."
     }
   }
 }

@@ -14,6 +14,7 @@ export const queryKeys = {
   workspaceOverview: (workspaceId: string) => ['workspace', workspaceId, 'overview'] as const,
   workspaceSettings: (workspaceId: string) => ['workspace', workspaceId, 'settings'] as const,
   workspaceCredentials: (workspaceId: string) => ['workspace', workspaceId, 'credentials'] as const,
+  externalMcpServers: (workspaceId: string) => ['workspace', workspaceId, 'mcp-servers'] as const,
   trash: (workspaceId: string) => ['workspace', workspaceId, 'trash'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) =>

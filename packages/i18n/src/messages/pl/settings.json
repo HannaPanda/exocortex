@@ -660,7 +660,8 @@
       "general": "Ogólne",
       "members": "Członkowie",
       "ai": "AI",
-      "settings": "Ustawienia"
+      "settings": "Ustawienia",
+      "tools": "Narzędzia zewnętrzne"
     },
     "readOnly": "Tylko właściciele i administratorzy tego obszaru roboczego mogą zmienić jego nazwę lub slug.",
     "nameLabel": "Nazwa",
@@ -718,6 +719,124 @@
       "ADMIN": "Administrator",
       "MEMBER": "Członek",
       "GUEST": "Gość"
+    },
+    "externalMcp": {
+      "title": "Zewnętrzne serwery MCP",
+      "description": "Tutaj podłączasz zewnętrzne serwery MCP, na przykład aplikację Zdrowie. Każde narzędzie serwera jest początkowo zablokowane. Dopiero po jego sprawdzeniu i zatwierdzeniu SI może z niego korzystać. Jeśli serwer zmieni narzędzie później, zostanie ono ponownie zablokowane."
+    }
+  },
+  "externalMcp": {
+    "loading": "Ładowanie serwerów MCP…",
+    "disabled": "Zewnętrzne serwery MCP są wyłączone w tej instancji. Nie możesz niczego podłączyć ani sprawdzić, dopóki administrator nie włączy przełącznika w sekcji <link>Administracja, SI</link>. To, co już skonfigurowano, pozostaje zachowane.",
+    "empty": {
+      "title": "Brak podłączonych serwerów",
+      "description": "Serwer wymaga adresu https dostępnego z internetu. Adresy w sieci lokalnej i na tym komputerze są odrzucane."
+    },
+    "add": "Podłącz serwer MCP",
+    "addTitle": "Nowy serwer MCP",
+    "check": "Sprawdź połączenie",
+    "checkFirst": "Sprawdź połączenie i załaduj narzędzia",
+    "edit": "Edytuj",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć {name}?",
+    "removeDescription": "Serwer, jego klucz tajny i wszystkie zatwierdzenia jego narzędzi zostaną usunięte. Jeśli podłączysz go ponownie, wszystkie narzędzia znów będą zablokowane.",
+    "enabled": "Włączone dla SI",
+    "enabledHint": "Po wyłączeniu wszystko pozostaje zapisane, ale SI nie otrzymuje żadnego z jego narzędzi.",
+    "tools": "Narzędzia",
+    "toolCount": "Zatwierdzono {approved} z {total}",
+    "toolsHint": "Przeczytaj, co według serwera robi narzędzie, i zdecyduj: Odczyt oznacza, że tylko pobiera dane. Zapis oznacza, że wprowadza zmiany – i jest traktowany przez SI jak każda inna modyfikacja.",
+    "noToolsYet": "Sprawdź połączenie, aby zobaczyć tutaj narzędzia oferowane przez serwer.",
+    "noTools": "Serwer nie oferuje żadnych narzędzi.",
+    "truncated": "Serwer oferuje więcej narzędzi, niż można tutaj zapisać. Pozostałe zostaną pominięte.",
+    "instructions": "Pokaż instrukcje serwera",
+    "status": {
+      "ok": "Dostępny",
+      "error": "Błąd",
+      "unchecked": "Jeszcze niesprawdzony",
+      "checking": "Sprawdzanie…"
+    },
+    "facts": {
+      "key": "Identyfikator",
+      "auth": "Uwierzytelnianie",
+      "lastChecked": "Ostatnio sprawdzono",
+      "reported": "Serwer zgłasza się jako",
+      "never": "nigdy",
+      "endsWith": "kończy się na {hint}"
+    },
+    "auth": {
+      "none": "Brak",
+      "bearer": "Token Bearer",
+      "header": "Własny nagłówek"
+    },
+    "errorCodes": {
+      "address_refused": "Adres jest niedozwolony: wskazuje na sieć lokalną, na ten komputer lub nie używa https.",
+      "unauthorized": "Serwer odrzuca uwierzytelnianie. Sprawdź token lub nagłówek.",
+      "forbidden": "Serwer odmawia dostępu przy tym uwierzytelnianiu.",
+      "not_found": "Pod tym adresem żaden serwer MCP nie odpowiada.",
+      "http_error": "Serwer odpowiedział błędem.",
+      "timeout": "Serwer nie odpowiedział w wyznaczonym czasie.",
+      "response_too_large": "Odpowiedź serwera była zbyt duża.",
+      "protocol_error": "Serwer nie obsługuje protokołu MCP zrozumiałego dla tego systemu.",
+      "tool_not_found": "Serwer nie rozpoznaje tego narzędzia.",
+      "unreachable": "Serwer jest nieosiągalny.",
+      "credential_unreadable": "Zapisany sekret nie może już zostać odszyfrowany. Wprowadź go ponownie."
+    },
+    "form": {
+      "name": "Nazwa",
+      "namePlaceholder": "Aplikacja Zdrowie",
+      "key": "Identyfikator",
+      "keyHint": "Od 2 do 12 małych liter lub cyfr, zaczynając od litery. AI widzi narzędzia jako {name}. Identyfikatora nie można później zmienić.",
+      "keyFixed": "Identyfikator jest częścią każdej nazwy narzędzia i dlatego nie można go zmienić.",
+      "url": "Adres",
+      "urlHint": "Adres https punktu końcowego MCP, na przykład https://health.example.org/mcp.",
+      "urlHintBlocks": "Jeśli zmienisz adres, wszystkie narzędzia zostaną ponownie zablokowane: pod innym adresem może odpowiadać inny serwer.",
+      "auth": "Uwierzytelnianie",
+      "noCredentials": "Ta instancja nie może zapisywać sekretów, ponieważ brakuje jej klucza do szyfrowania. Obsługiwane są tylko serwery bez uwierzytelniania.",
+      "headerName": "Nazwa nagłówka",
+      "token": "Token",
+      "headerValue": "Wartość nagłówka",
+      "secretKeep": "Pozostawienie pustego zachowuje zapisany (kończy się na {hint})",
+      "secretHint": "Zostanie zapisany w formie zaszyfrowanej i nigdy więcej nie zostanie wyświetlony.",
+      "create": "Połącz",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "invalid": {
+        "key": "Identyfikator musi zawierać od 2 do 12 małych liter lub cyfr i zaczynać się od litery.",
+        "name": "Nadaj serwerowi nazwę o długości maksymalnie 80 znaków.",
+        "url": "Adres musi zaczynać się od https:// i nie może zawierać nazwy użytkownika ani hasła.",
+        "authHeaderName": "Nazwa nagłówka składająca się z liter, cyfr i myślników. Nagłówki ustawiane bezpośrednio przez MCP są niedozwolone.",
+        "secret": "Brakuje sekretu lub ma on mniej niż 8 znaków."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Zablokowany",
+        "read": "Odczyt",
+        "write": "Zapis"
+      },
+      "noDescription": "Serwer nie zawiera opisu tego narzędzia.",
+      "serverSays": "Serwer informuje: {hints}",
+      "noHints": "Serwer nie podaje informacji o tym, czy narzędzie modyfikuje dane.",
+      "hints": {
+        "readOnly": "tylko do odczytu",
+        "writes": "modyfikuje dane",
+        "destructive": "może usuwać lub nadpisywać",
+        "idempotent": "powtarzalne bez skutków ubocznych",
+        "openWorld": "wykracza poza serwer"
+      },
+      "approvedAt": "zatwierdzono: {date}",
+      "parameters": "Zobacz parametry",
+      "unusable": "Nie do użytku",
+      "problems": {
+        "invalid_name": "Nazwa zawiera znaki, których model nie akceptuje jako nazwy narzędzia.",
+        "name_too_long": "Wraz z prefiksem nazwa przekracza 64 znaki.",
+        "schema_too_large": "Opis parametrów przekracza 16 KB.",
+        "schema_invalid": "Opis parametrów nie jest prawidłowym obiektem."
+      },
+      "gone": "Już niedostępne",
+      "goneHint": "Serwer nie zwrócił tego narzędzia podczas ostatniego sprawdzania.",
+      "changed": "Zmieniono",
+      "changedHint": "Serwer zmienił opis lub parametry od czasu twojego zatwierdzenia. Z tego powodu narzędzie jest ponownie zablokowane. Przejrzyj je jeszcze raz."
     }
   }
 }

@@ -317,6 +317,8 @@
       },
       "workspaceMembers": "Leden beheren",
       "workspaceMembersKeywords": "leden uitnodigen personen rollen toegang werkruimte workspace",
+      "workspaceTools": "Externe MCP-servers en hun tools",
+      "workspaceToolsKeywords": "mcp server extern tools gereedschappen delen health koppelen verbinding integratie",
       "workspaceAi": "AI-instellingen van werkruimte",
       "workspaceAiKeywords": "ai sleutel api key eigen byok openrouter werkruimte workspace",
       "workspaceOverrides": "Afwijkende instellingen van werkruimte",

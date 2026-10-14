@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-296 routes are reachable from at least one client; 177 from all three.
+302 routes are reachable from at least one client; 177 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -57,6 +57,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/workflows/:x` | ✓ | · | ✓ | `exo_workflow_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
+| `DELETE /api/workspaces/:x/mcp-servers/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `GET /api/admin/ai-models` | ✓ | · | · | — |
 | `GET /api/admin/ai-models/:x/endpoints` | ✓ | · | · | — |
@@ -159,6 +160,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/inbox` | ✓ | ✓ | ✓ | `exo_inbox` |
 | `GET /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
 | `GET /api/workspaces/:x/map` | ✓ | ✓ | ✓ | `exo_knowledge_map` |
+| `GET /api/workspaces/:x/mcp-servers` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/overview` | ✓ | ✓ | ✓ | `exo_workspace_overview` |
 | `GET /api/workspaces/:x/projects` | · | ✓ | ✓ | `exo_project_list` |
 | `GET /api/workspaces/:x/projects/builds` | ✓ | ✓ | ✓ | `exo_project_builds` |
@@ -202,6 +204,8 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/work-items/:x` | ✓ | ✓ | ✓ | `exo_work_item_update` |
 | `PATCH /api/workflows/:x` | ✓ | ✓ | ✓ | `exo_workflow_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
+| `PATCH /api/workspaces/:x/mcp-servers/:x` | ✓ | · | · | — |
+| `PATCH /api/workspaces/:x/mcp-servers/:x/tools/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
 | `PATCH /api/workspaces/order` | ✓ | ✓ | ✓ | `exo_workspace_reorder` |
@@ -308,6 +312,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/import/markdown` | ✓ | ✓ | ✓ | `exo_page_create` |
 | `POST /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_create` |
 | `POST /api/workspaces/:x/invitations/:x/resend` | · | ✓ | ✓ | `exo_invitation_resend` |
+| `POST /api/workspaces/:x/mcp-servers` | ✓ | · | · | — |
+| `POST /api/workspaces/:x/mcp-servers/:x/check` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/projects` | ✓ | ✓ | ✓ | `exo_project_create` |
 | `POST /api/workspaces/:x/render/templates` | ✓ | ✓ | ✓ | `exo_render_template_create` |
 | `POST /api/workspaces/:x/research/fetch` | · | ✓ | ✓ | `exo_web_fetch` |
@@ -323,7 +329,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-70 of them. Each is covered by a documented exemption; the reasons
+76 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -337,6 +343,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `DELETE /api/me/connections/:x`
 - `DELETE /api/workflows/:x` (reachable from MCP)
 - `DELETE /api/workspaces/:x/credentials/:x`
+- `DELETE /api/workspaces/:x/mcp-servers/:x`
 - `DELETE /api/workspaces/:x/members/:x`
 - `GET /api/admin/ai-models`
 - `GET /api/admin/ai-models/:x/endpoints`
@@ -353,6 +360,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `GET /api/session`
 - `GET /api/workspaces/:x`
 - `GET /api/workspaces/:x/credentials`
+- `GET /api/workspaces/:x/mcp-servers`
 - `GET /api/workspaces/:x/settings`
 - `PATCH /api/admin/ai-models/:x`
 - `PATCH /api/admin/settings`
@@ -362,6 +370,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/ai/conversations/:x/sources/:x`
 - `PATCH /api/eval-attempts/:x/review` (reachable from MCP)
 - `PATCH /api/eval-cases/:x` (reachable from MCP)
+- `PATCH /api/workspaces/:x/mcp-servers/:x`
+- `PATCH /api/workspaces/:x/mcp-servers/:x/tools/:x`
 - `PATCH /api/workspaces/:x/members/:x`
 - `PATCH /api/workspaces/:x/settings`
 - `POST /api/admin/ai-models`
@@ -393,6 +403,8 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/workspaces/:x/agent-profiles` (reachable from MCP)
 - `POST /api/workspaces/:x/eval-cases` (reachable from MCP)
 - `POST /api/workspaces/:x/eval-runs` (reachable from MCP)
+- `POST /api/workspaces/:x/mcp-servers`
+- `POST /api/workspaces/:x/mcp-servers/:x/check`
 - `POST /api/workspaces/:x/trash/delete`
 - `POST /api/workspaces/:x/trash/deletion-preview`
 - `PUT /api/workspaces/:x/credentials/:x`

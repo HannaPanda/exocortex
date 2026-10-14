@@ -469,8 +469,9 @@ Deliberately absent, while the architecture leaves room for each:
   pretending; when they are built they run from `apps/worker` in a container
 - granular per-block permissions
 - the built-in AI calling tools on somebody else's MCP server. A workspace
-  owner can connect a server, check it and approve its tools (ADR-086), but no
-  run is offered them yet, and there is no screen for it yet (issue #196)
+  owner can connect a server, check it and approve its tools in the workspace
+  settings under "Externe Werkzeuge" (ADR-086), but no run is offered them yet
+  (issue #196)
 - horizontal scaling beyond one host. The Redis event bus is the boundary that
   makes it possible, and nothing has been run against a second instance
 

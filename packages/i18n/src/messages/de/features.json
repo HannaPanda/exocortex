@@ -1086,5 +1086,15 @@
       "p6": "Eine Automation kann Arbeit übergeben: die Aktion „Auftrag anlegen“ macht aus der geänderten Seite einen Auftrag mit dem Ziel der Regel und dem gewählten Profil, auf Wunsch fängt die KI sofort an."
     },
     "where": "Unter Aufträge über „Profile verwalten“, am Auftrag beim Agentenprofil, oder Strg + K und „Agentenprofile öffnen“."
+  },
+  "externe-mcp-server": {
+    "title": "Fremde MCP-Server anbinden",
+    "summary": "Du kannst einem Arbeitsbereich fremde MCP-Server hinzufügen, etwa die Health-App, und für jedes ihrer Werkzeuge selbst entscheiden, ob die KI es zum Lesen, zum Schreiben oder gar nicht benutzen darf. Jedes Werkzeug ist zuerst gesperrt.",
+    "details": {
+      "p1": "Ein Server braucht eine https-Adresse, die aus dem Internet erreichbar ist, und auf Wunsch ein Token oder einen eigenen Header. Das Secret wird verschlüsselt gespeichert und nie wieder angezeigt. Adressen im eigenen Netz und auf diesem Rechner werden abgelehnt, auch nach einer Weiterleitung.",
+      "p2": "Nach der Verbindungsprüfung siehst du jedes Werkzeug mit Beschreibung, Parametern und dem, was der Server selbst darüber sagt. Was du freigibst, gilt nur für genau diese Fassung: Ändert der Server später Beschreibung oder Parameter, ist das Werkzeug wieder gesperrt, bis du es neu angesehen hast.",
+      "p3": "Anbinden, Ändern und Freigeben geht nur als Besitzerin oder Besitzer im Browser, nie mit einem Token und nie durch einen Agenten. So kann sich keine KI selbst neue Werkzeuge verschaffen. Dass die KI freigegebene Werkzeuge in einem Lauf auch benutzt, kommt in einem nächsten Schritt."
+    },
+    "where": "Einstellungen des Arbeitsbereichs, Reiter Externe Werkzeuge. Der Schalter für die ganze Instanz liegt unter Verwaltung, Einstellungen, Abschnitt KI."
   }
 }

@@ -660,7 +660,8 @@
       "general": "Allgemein",
       "members": "Mitglieder",
       "ai": "KI",
-      "settings": "Einstellungen"
+      "settings": "Einstellungen",
+      "tools": "Externe Werkzeuge"
     },
     "readOnly": "Nur Besitzer und Administratoren dieses Arbeitsbereichs können ihn umbenennen oder den Slug ändern.",
     "nameLabel": "Name",
@@ -718,6 +719,124 @@
       "ADMIN": "Administrator",
       "MEMBER": "Mitglied",
       "GUEST": "Gast"
+    },
+    "externalMcp": {
+      "title": "Externe MCP-Server",
+      "description": "Hier bindest du fremde MCP-Server an, zum Beispiel die Health-App. Jedes Werkzeug eines Servers ist zuerst gesperrt. Erst wenn du es dir angesehen und freigegeben hast, darf die KI es benutzen. Ändert der Server ein Werkzeug später, ist es wieder gesperrt."
+    }
+  },
+  "externalMcp": {
+    "loading": "MCP-Server werden geladen …",
+    "disabled": "Externe MCP-Server sind auf dieser Instanz ausgeschaltet. Du kannst nichts anbinden und nichts prüfen, bis eine Administratorin den Schalter unter <link>Verwaltung, KI</link> einschaltet. Was schon eingerichtet ist, bleibt erhalten.",
+    "empty": {
+      "title": "Noch kein Server angebunden",
+      "description": "Ein Server braucht eine https-Adresse, die aus dem Internet erreichbar ist. Adressen im eigenen Netz und auf diesem Rechner werden abgelehnt."
+    },
+    "add": "MCP-Server anbinden",
+    "addTitle": "Neuer MCP-Server",
+    "check": "Verbindung prüfen",
+    "checkFirst": "Verbindung prüfen und Werkzeuge laden",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "removeTitle": "{name} entfernen?",
+    "removeDescription": "Der Server, sein Secret und alle Freigaben seiner Werkzeuge werden gelöscht. Bindest du ihn neu an, sind alle Werkzeuge wieder gesperrt.",
+    "enabled": "Für die KI eingeschaltet",
+    "enabledHint": "Ausgeschaltet bleibt alles gespeichert, aber die KI bekommt keines seiner Werkzeuge angeboten.",
+    "tools": "Werkzeuge",
+    "toolCount": "{approved} von {total} freigegeben",
+    "toolsHint": "Lies, was ein Werkzeug laut Server tut, und entscheide selbst: Lesen heißt, es holt nur Daten. Schreiben heißt, es ändert etwas, und gilt dann für die KI wie jede andere Änderung.",
+    "noToolsYet": "Prüf die Verbindung, dann siehst du hier, welche Werkzeuge der Server anbietet.",
+    "noTools": "Der Server bietet keine Werkzeuge an.",
+    "truncated": "Der Server bietet mehr Werkzeuge an, als hier gespeichert werden. Die übrigen bleiben außen vor.",
+    "instructions": "Hinweise des Servers anzeigen",
+    "status": {
+      "ok": "Erreichbar",
+      "error": "Fehler",
+      "unchecked": "Noch nicht geprüft",
+      "checking": "Wird geprüft …"
+    },
+    "facts": {
+      "key": "Kürzel",
+      "auth": "Anmeldung",
+      "lastChecked": "Zuletzt geprüft",
+      "reported": "Server meldet sich als",
+      "never": "noch nie",
+      "endsWith": "endet auf {hint}"
+    },
+    "auth": {
+      "none": "Keine",
+      "bearer": "Bearer-Token",
+      "header": "Eigener Header"
+    },
+    "errorCodes": {
+      "address_refused": "Die Adresse ist nicht erlaubt: Sie zeigt ins eigene Netz, auf diesen Rechner oder ist kein https.",
+      "unauthorized": "Der Server lehnt die Anmeldung ab. Prüf Token oder Header.",
+      "forbidden": "Der Server verweigert den Zugriff mit dieser Anmeldung.",
+      "not_found": "Unter dieser Adresse antwortet kein MCP-Server.",
+      "http_error": "Der Server hat mit einem Fehler geantwortet.",
+      "timeout": "Der Server hat nicht rechtzeitig geantwortet.",
+      "response_too_large": "Die Antwort des Servers war zu groß.",
+      "protocol_error": "Der Server spricht kein MCP, das hier verstanden wird.",
+      "tool_not_found": "Der Server kennt dieses Werkzeug nicht.",
+      "unreachable": "Der Server ist nicht erreichbar.",
+      "credential_unreadable": "Das gespeicherte Secret lässt sich nicht mehr entschlüsseln. Trag es neu ein."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Health-App",
+      "key": "Kürzel",
+      "keyHint": "2 bis 12 Kleinbuchstaben oder Ziffern, am Anfang ein Buchstabe. Die KI sieht die Werkzeuge als {name}. Das Kürzel lässt sich später nicht ändern.",
+      "keyFixed": "Das Kürzel steckt in jedem Werkzeugnamen und lässt sich deshalb nicht ändern.",
+      "url": "Adresse",
+      "urlHint": "Die https-Adresse des MCP-Endpunkts, zum Beispiel https://health.example.org/mcp.",
+      "urlHintBlocks": "Änderst du die Adresse, sind alle Werkzeuge wieder gesperrt: Unter einer anderen Adresse kann ein anderer Server antworten.",
+      "auth": "Anmeldung",
+      "noCredentials": "Diese Instanz kann keine Secrets speichern, weil ihr der Schlüssel zum Verschlüsseln fehlt. Es gehen nur Server ohne Anmeldung.",
+      "headerName": "Name des Headers",
+      "token": "Token",
+      "headerValue": "Wert des Headers",
+      "secretKeep": "Leer lassen behält das gespeicherte (endet auf {hint})",
+      "secretHint": "Wird verschlüsselt gespeichert und nie wieder angezeigt.",
+      "create": "Anbinden",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "invalid": {
+        "key": "Das Kürzel braucht 2 bis 12 Kleinbuchstaben oder Ziffern und muss mit einem Buchstaben anfangen.",
+        "name": "Gib dem Server einen Namen, höchstens 80 Zeichen.",
+        "url": "Die Adresse muss mit https:// anfangen und darf keinen Benutzernamen oder Passwort enthalten.",
+        "authHeaderName": "Ein Header-Name aus Buchstaben, Ziffern und Bindestrichen. Header, die MCP selbst setzt, gehen nicht.",
+        "secret": "Das Secret fehlt oder ist kürzer als 8 Zeichen."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Gesperrt",
+        "read": "Lesen",
+        "write": "Schreiben"
+      },
+      "noDescription": "Der Server beschreibt dieses Werkzeug nicht.",
+      "serverSays": "Der Server sagt: {hints}",
+      "noHints": "Der Server sagt nichts darüber, ob das Werkzeug etwas ändert.",
+      "hints": {
+        "readOnly": "liest nur",
+        "writes": "ändert etwas",
+        "destructive": "kann löschen oder überschreiben",
+        "idempotent": "wiederholbar ohne Nebenwirkung",
+        "openWorld": "greift über den Server hinaus"
+      },
+      "approvedAt": "freigegeben am {date}",
+      "parameters": "Parameter ansehen",
+      "unusable": "Nicht nutzbar",
+      "problems": {
+        "invalid_name": "Der Name enthält Zeichen, die ein Modell nicht als Werkzeugnamen annimmt.",
+        "name_too_long": "Zusammen mit dem Kürzel wird der Name länger als 64 Zeichen.",
+        "schema_too_large": "Die Beschreibung der Parameter ist größer als 16 KB.",
+        "schema_invalid": "Die Beschreibung der Parameter ist kein gültiges Objekt."
+      },
+      "gone": "Nicht mehr angeboten",
+      "goneHint": "Der Server hat dieses Werkzeug bei der letzten Prüfung nicht mehr genannt.",
+      "changed": "Geändert",
+      "changedHint": "Der Server hat Beschreibung oder Parameter geändert, seit du es freigegeben hast. Deshalb ist es wieder gesperrt. Sieh es dir neu an."
     }
   }
 }

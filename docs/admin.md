@@ -305,9 +305,10 @@ for an address a person typed, carrying arguments a model wrote.
 | `ai.externalMcpEnabled`        | Master switch, deployment-wide. Off stops new servers, switching one on and every check; what is configured stays. |
 | `ai.externalMcpTimeoutSeconds` | Seconds one operation may take, connect and handshake included.                                                    |
 
-The servers themselves are configured per workspace under
-`/api/workspaces/:id/mcp-servers`, by its OWNER and only from the browser:
-every token is refused for a change. A server needs an `https` address that
+The servers themselves are configured per workspace, by its OWNER and only
+from the browser: the tab "Externe Werkzeuge" in the workspace settings
+(`?tab=tools`, also `Strg + K`), over `/api/workspaces/:id/mcp-servers`.
+Every token is refused for a change. A server needs an `https` address that
 resolves to a public address, which today includes reaching an app on this
 host through its public name. Its secret is stored like a workspace's provider
 key and needs `CREDENTIAL_ENCRYPTION_KEY`. Every tool the server lists starts

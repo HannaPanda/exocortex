@@ -660,7 +660,8 @@
       "general": "Geral",
       "members": "Membros",
       "ai": "IA",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "tools": "Ferramentas externas"
     },
     "readOnly": "Apenas pessoas proprietárias e administradoras deste espaço de trabalho podem renomeá-lo ou alterar o slug.",
     "nameLabel": "Nome",
@@ -718,6 +719,124 @@
       "ADMIN": "Administrador",
       "MEMBER": "Membro",
       "GUEST": "Convidado"
+    },
+    "externalMcp": {
+      "title": "Servidores MCP externos",
+      "description": "Aqui você conecta servidores MCP externos, por exemplo, o app de saúde. Cada ferramenta de um servidor fica bloqueada no início. A IA só pode usá-la depois que você a avaliar e aprovar. Se o servidor alterar uma ferramenta mais tarde, ela será bloqueada novamente."
+    }
+  },
+  "externalMcp": {
+    "loading": "Carregando servidores MCP…",
+    "disabled": "Servidores MCP externos estão desativados nesta instância. Você não pode conectar nem testar nada até que alguém da administração ative a opção em <link>Administração, IA</link>. O que já estiver configurado será mantido.",
+    "empty": {
+      "title": "Nenhum servidor conectado ainda",
+      "description": "Um servidor precisa de um endereço https acessível pela internet. Endereços na rede local e neste computador serão rejeitados."
+    },
+    "add": "Conectar servidor MCP",
+    "addTitle": "Novo servidor MCP",
+    "check": "Testar conexão",
+    "checkFirst": "Testar conexão e carregar ferramentas",
+    "edit": "Editar",
+    "remove": "Remover",
+    "removeTitle": "Remover {name}?",
+    "removeDescription": "O servidor, o segredo dele e todas as aprovações de suas ferramentas serão excluídos. Se você o reconectar, todas as ferramentas estarão bloqueadas novamente.",
+    "enabled": "Ativado para a IA",
+    "enabledHint": "Quando desativado, tudo continua salvo, mas nenhuma de suas ferramentas será disponibilizada para a IA.",
+    "tools": "Ferramentas",
+    "toolCount": "{approved} de {total} aprovadas",
+    "toolsHint": "Veja o que a ferramenta faz segundo o servidor e decida: leitura significa que ela apenas obtém dados. Escrita significa que ela altera algo, valendo para a IA como qualquer outra alteração.",
+    "noToolsYet": "Teste a conexão para ver aqui quais ferramentas o servidor oferece.",
+    "noTools": "O servidor não oferece ferramentas.",
+    "truncated": "O servidor oferece mais ferramentas do que as armazenadas aqui. O restante fica de fora.",
+    "instructions": "Mostrar instruções do servidor",
+    "status": {
+      "ok": "Acessível",
+      "error": "Erro",
+      "unchecked": "Ainda não testado",
+      "checking": "Testando…"
+    },
+    "facts": {
+      "key": "Identificador",
+      "auth": "Autenticação",
+      "lastChecked": "Última verificação",
+      "reported": "O servidor se identifica como",
+      "never": "nunca",
+      "endsWith": "termina com {hint}"
+    },
+    "auth": {
+      "none": "Nenhuma",
+      "bearer": "Token Bearer",
+      "header": "Cabeçalho personalizado"
+    },
+    "errorCodes": {
+      "address_refused": "O endereço não é permitido: ele aponta para a rede local, para este computador ou não usa https.",
+      "unauthorized": "O servidor recusou a autenticação. Verifique o token ou o cabeçalho.",
+      "forbidden": "O servidor negou o acesso com esta autenticação.",
+      "not_found": "Nenhum servidor MCP responde neste endereço.",
+      "http_error": "O servidor respondeu com um erro.",
+      "timeout": "O servidor não respondeu a tempo.",
+      "response_too_large": "A resposta do servidor foi grande demais.",
+      "protocol_error": "O servidor não utiliza um MCP compatível aqui.",
+      "tool_not_found": "O servidor não reconhece esta ferramenta.",
+      "unreachable": "O servidor não está acessível.",
+      "credential_unreadable": "Não é mais possível descriptografar o segredo armazenado. Insira-o novamente."
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "App de Saúde",
+      "key": "Identificador",
+      "keyHint": "De 2 a 12 letras minúsculas ou dígitos, começando com uma letra. A IA vê as ferramentas como {name}. O identificador não pode ser alterado depois.",
+      "keyFixed": "O identificador faz parte do nome de cada ferramenta e, por isso, não pode ser alterado.",
+      "url": "Endereço",
+      "urlHint": "O endereço https do endpoint MCP, por exemplo https://health.example.org/mcp.",
+      "urlHintBlocks": "Se você alterar o endereço, todas as ferramentas serão bloqueadas novamente: outro servidor pode responder em um endereço diferente.",
+      "auth": "Autenticação",
+      "noCredentials": "Esta instância não pode salvar segredos porque falta a chave de criptografia. Apenas servidores sem autenticação são suportados.",
+      "headerName": "Nome do cabeçalho",
+      "token": "Token",
+      "headerValue": "Valor do cabeçalho",
+      "secretKeep": "Deixar em branco mantém o valor salvo (termina em {hint})",
+      "secretHint": "Armazenado de forma criptografada e nunca mais exibido.",
+      "create": "Conectar",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "invalid": {
+        "key": "O identificador precisa ter de 2 a 12 letras minúsculas ou dígitos e começar com uma letra.",
+        "name": "Dê um nome ao servidor, com no máximo 80 caracteres.",
+        "url": "O endereço deve começar com https:// e não pode conter nome de usuário nem senha.",
+        "authHeaderName": "Um nome de cabeçalho composto por letras, dígitos e hifens. Cabeçalhos definidos pelo próprio MCP não são permitidos.",
+        "secret": "O segredo está ausente ou tem menos de 8 caracteres."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Bloqueado",
+        "read": "Leitura",
+        "write": "Gravação"
+      },
+      "noDescription": "O servidor não fornece uma descrição para esta ferramenta.",
+      "serverSays": "O servidor informa: {hints}",
+      "noHints": "O servidor não informa se a ferramenta altera dados.",
+      "hints": {
+        "readOnly": "somente leitura",
+        "writes": "faz alterações",
+        "destructive": "pode excluir ou sobrescrever",
+        "idempotent": "repetível sem efeitos colaterais",
+        "openWorld": "acessa recursos além do servidor"
+      },
+      "approvedAt": "aprovado em {date}",
+      "parameters": "Ver parâmetros",
+      "unusable": "Inutilizável",
+      "problems": {
+        "invalid_name": "O nome contém caracteres que um modelo não aceita como nome de ferramenta.",
+        "name_too_long": "Junto com a sigla, o nome fica com mais de 64 caracteres.",
+        "schema_too_large": "A descrição dos parâmetros é maior que 16 KB.",
+        "schema_invalid": "A descrição dos parâmetros não é um objeto válido."
+      },
+      "gone": "Não mais disponível",
+      "goneHint": "O servidor não listou mais esta ferramenta na última verificação.",
+      "changed": "Alterado",
+      "changedHint": "O servidor alterou a descrição ou os parâmetros desde que você fez a aprovação. Por isso, ela foi bloqueada novamente. Revise-a."
     }
   }
 }

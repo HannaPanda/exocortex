@@ -1086,5 +1086,15 @@
       "p6": "An automation can hand off work: the “Create task” action turns the modified page into a task with the rule’s target and the selected profile; if desired, the AI starts right away."
     },
     "where": "Under Tasks via “Manage profiles”, on the task at the agent profile, or Strg + K and “Open agent profiles”."
+  },
+  "externe-mcp-server": {
+    "title": "Connect external MCP servers",
+    "summary": "You can add external MCP servers to a workspace, such as the Health app, and decide for each of their tools whether the AI may use it for reading, writing, or not at all. Every tool is locked by default.",
+    "details": {
+      "p1": "A server requires an https address reachable from the internet, and optionally a token or a custom header. The secret is stored encrypted and never displayed again. Addresses in your local network and on this machine are rejected, even after redirects.",
+      "p2": "After testing the connection, you will see each tool along with its description, parameters, and what the server itself reports about it. What you approve applies only to that exact version: if the server later changes its description or parameters, the tool is locked again until you review it anew.",
+      "p3": "Connecting, editing, and approving can only be done as an owner in the browser—never with a token and never by an agent. This ensures no AI can grant itself new tools. Enabling the AI to actually use approved tools during a run will come in a next step."
+    },
+    "where": "Workspace settings, External tools tab. The switch for the entire instance is located under administration, Settings, AI section."
   }
 }

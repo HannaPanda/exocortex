@@ -660,7 +660,8 @@
       "general": "Generale",
       "members": "Membri",
       "ai": "IA",
-      "settings": "Impostazioni"
+      "settings": "Impostazioni",
+      "tools": "Strumenti esterni"
     },
     "readOnly": "Solo chi possiede o amministra quest’area di lavoro può rinominarla o modificarne lo slug.",
     "nameLabel": "Nome",
@@ -718,6 +719,124 @@
       "ADMIN": "Amministratore",
       "MEMBER": "Membro",
       "GUEST": "Ospite"
+    },
+    "externalMcp": {
+      "title": "Server MCP esterni",
+      "description": "Qui colleghi server MCP esterni, per esempio l’app Salute. Ogni strumento di un server è inizialmente bloccato. L’IA può usarlo solo dopo che lo hai esaminato e approvato. Se il server modifica uno strumento in un secondo momento, questo viene nuovamente bloccato."
+    }
+  },
+  "externalMcp": {
+    "loading": "Caricamento dei server MCP…",
+    "disabled": "I server MCP esterni sono disattivati su questa istanza. Non puoi collegare né verificare nulla finché chi amministra non attiva l’opzione sotto <link>Amministrazione, IA</link>. Gli elementi già configurati vengono conservati.",
+    "empty": {
+      "title": "Nessun server ancora collegato",
+      "description": "Un server richiede un indirizzo https accessibile da Internet. Gli indirizzi nella rete locale e su questo computer vengono rifiutati."
+    },
+    "add": "Collega server MCP",
+    "addTitle": "Nuovo server MCP",
+    "check": "Verifica connessione",
+    "checkFirst": "Verifica connessione e carica strumenti",
+    "edit": "Modifica",
+    "remove": "Rimuovi",
+    "removeTitle": "Rimuovere {name}?",
+    "removeDescription": "Il server, il suo secret e tutte le approvazioni dei suoi strumenti verranno eliminati. Se lo colleghi di nuovo, tutti gli strumenti saranno di nuovo bloccati.",
+    "enabled": "Attivato per l’IA",
+    "enabledHint": "Se disattivato, tutto resta salvato, ma all’IA non viene proposto alcuno dei suoi strumenti.",
+    "tools": "Strumenti",
+    "toolCount": "{approved} su {total} approvati",
+    "toolsHint": "Leggi cosa fa uno strumento in base al server e decidi autonomamente: Lettura significa che recupera solo dati. Scrittura significa che apporta modifiche, e per l’IA vale come qualsiasi altra modifica.",
+    "noToolsYet": "Verifica la connessione per visualizzare qui gli strumenti offerti dal server.",
+    "noTools": "Il server non offre alcuno strumento.",
+    "truncated": "Il server offre più strumenti di quanti ne possano essere salvati qui. I restanti vengono esclusi.",
+    "instructions": "Mostra istruzioni del server",
+    "status": {
+      "ok": "Raggiungibile",
+      "error": "Errore",
+      "unchecked": "Non ancora verificato",
+      "checking": "Verifica in corso…"
+    },
+    "facts": {
+      "key": "Sigla",
+      "auth": "Autenticazione",
+      "lastChecked": "Ultima verifica",
+      "reported": "Il server si presenta come",
+      "never": "mai",
+      "endsWith": "termina con {hint}"
+    },
+    "auth": {
+      "none": "Nessuna",
+      "bearer": "Token Bearer",
+      "header": "Header personalizzato"
+    },
+    "errorCodes": {
+      "address_refused": "L’indirizzo non è consentito: punta alla rete locale, a questo computer oppure non è https.",
+      "unauthorized": "Il server rifiuta l’accesso. Controlla il token o l’header.",
+      "forbidden": "Il server nega l’accesso con questa autenticazione.",
+      "not_found": "Nessun server MCP risponde a questo indirizzo.",
+      "http_error": "Il server ha risposto con un errore.",
+      "timeout": "Il server non ha risposto in tempo.",
+      "response_too_large": "La risposta del server era troppo grande.",
+      "protocol_error": "Il server non usa un protocollo MCP comprensibile qui.",
+      "tool_not_found": "Il server non conosce questo strumento.",
+      "unreachable": "Il server non è raggiungibile.",
+      "credential_unreadable": "Impossibile decifrare il secret salvato. Inseriscilo di nuovo."
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Health-App",
+      "key": "Sigla",
+      "keyHint": "Da 2 a 12 lettere minuscole o cifre, che iniziano con una lettera. L’IA vede gli strumenti come {name}. La sigla non potrà essere modificata in seguito.",
+      "keyFixed": "La sigla fa parte del nome di ciascuno strumento e non può quindi essere modificata.",
+      "url": "Indirizzo",
+      "urlHint": "L’indirizzo https dell’endpoint MCP, ad esempio https://health.example.org/mcp.",
+      "urlHintBlocks": "Se modifichi l’indirizzo, tutti gli strumenti verranno bloccati di nuovo: a un indirizzo diverso potrebbe rispondere un altro server.",
+      "auth": "Autenticazione",
+      "noCredentials": "Questa istanza non può salvare secret perché manca la chiave di cifratura. Sono utilizzabili solo server senza autenticazione.",
+      "headerName": "Nome dell’header",
+      "token": "Token",
+      "headerValue": "Valore dell’header",
+      "secretKeep": "Lascia vuoto per mantenere quello salvato (termina con {hint})",
+      "secretHint": "Viene salvato in modo cifrato e non verrà mai più mostrato.",
+      "create": "Collega",
+      "save": "Salva",
+      "cancel": "Annulla",
+      "invalid": {
+        "key": "La sigla deve contenere da 2 a 12 lettere minuscole o cifre e iniziare con una lettera.",
+        "name": "Assegna un nome al server, al massimo 80 caratteri.",
+        "url": "L’indirizzo deve iniziare con https:// e non può contenere nome utente o password.",
+        "authHeaderName": "Un nome di header composto da lettere, cifre e trattini. Gli header impostati da MCP stesso non sono ammessi.",
+        "secret": "Il secret manca o è inferiore a 8 caratteri."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Bloccato",
+        "read": "Lettura",
+        "write": "Scrittura"
+      },
+      "noDescription": "Il server non fornisce una descrizione per questo strumento.",
+      "serverSays": "Il server indica: {hints}",
+      "noHints": "Il server non indica se lo strumento apporta modifiche.",
+      "hints": {
+        "readOnly": "sola lettura",
+        "writes": "apporta modifiche",
+        "destructive": "può eliminare o sovrascrivere",
+        "idempotent": "ripetibile senza effetti collaterali",
+        "openWorld": "accede all’esterno del server"
+      },
+      "approvedAt": "approvato il {date}",
+      "parameters": "Visualizza parametri",
+      "unusable": "Non utilizzabile",
+      "problems": {
+        "invalid_name": "Il nome contiene caratteri che un modello non accetta come nome di strumento.",
+        "name_too_long": "Insieme alla sigla, il nome supera i 64 caratteri.",
+        "schema_too_large": "La descrizione dei parametri supera i 16 KB.",
+        "schema_invalid": "La descrizione dei parametri non è un oggetto valido."
+      },
+      "gone": "Non più disponibile",
+      "goneHint": "Il server non ha più elencato questo strumento durante l’ultima verifica.",
+      "changed": "Modificato",
+      "changedHint": "Il server ha modificato la descrizione o i parametri dopo la tua approvazione, quindi è stato bloccato di nuovo. Controllalo di nuovo."
     }
   }
 }

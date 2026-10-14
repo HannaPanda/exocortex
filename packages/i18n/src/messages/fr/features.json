@@ -1086,5 +1086,15 @@
       "p6": "Une automatisation peut transmettre du travail : l’action « Créer une tâche » transforme la page modifiée en tâche avec l’objectif de la règle et le profil choisi ; si tu le souhaites, l’IA commence immédiatement."
     },
     "where": "Sous Tâches via « Gérer les profils », sur la tâche au niveau du profil d’agent, ou via Strg + K et « Ouvrir les profils d’agent »."
+  },
+  "externe-mcp-server": {
+    "title": "Connecter des serveurs MCP externes",
+    "summary": "Tu peux ajouter des serveurs MCP externes à un espace de travail, comme l’application Santé, et décider pour chacun de leurs outils si l’IA peut l’utiliser en lecture, en écriture ou pas du tout. Chaque outil est d’abord bloqué.",
+    "details": {
+      "p1": "Un serveur nécessite une adresse https accessible depuis Internet et, si tu le souhaites, un jeton ou un en-tête personnalisé. Le secret est stocké de manière chiffrée et n’est plus jamais affiché. Les adresses situées sur le réseau local et sur cette machine sont refusées, même après une redirection.",
+      "p2": "Après vérification de la connexion, tu vois chaque outil avec sa description, ses paramètres et ce que le serveur indique lui-même à son sujet. Ce que tu autorises ne vaut que pour cette version précise : si le serveur modifie par la suite la description ou les paramètres, l’outil est à nouveau bloqué jusqu’à ce que tu l’aies réexaminé.",
+      "p3": "La connexion, la modification et l’autorisation ne peuvent être effectuées que par la personne propriétaire dans le navigateur, jamais avec un jeton ni par un agent. Ainsi, aucune IA ne peut s’octroyer elle-même de nouveaux outils. L’utilisation effective des outils autorisés par l’IA lors d’une exécution interviendra dans une prochaine étape."
+    },
+    "where": "Paramètres de l’espace de travail, onglet Outils externes. L’interrupteur pour toute l’instance se trouve sous Administration, Paramètres, section IA."
   }
 }

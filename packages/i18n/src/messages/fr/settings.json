@@ -660,7 +660,8 @@
       "general": "Général",
       "members": "Membres",
       "ai": "IA",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "tools": "Outils externes"
     },
     "readOnly": "Seules les personnes propriétaires et administratrices de cet espace de travail peuvent le renommer ou en modifier le slug.",
     "nameLabel": "Nom",
@@ -718,6 +719,124 @@
       "ADMIN": "Administrateur",
       "MEMBER": "Membre",
       "GUEST": "Invité"
+    },
+    "externalMcp": {
+      "title": "Serveurs MCP externes",
+      "description": "Connecte ici des serveurs MCP tiers, comme une application Santé. Chaque outil d’un serveur est d’abord bloqué. L’IA ne peut l’utiliser que lorsque tu l’as examiné et approuvé. Si le serveur modifie un outil par la suite, celui-ci est de nouveau bloqué."
+    }
+  },
+  "externalMcp": {
+    "loading": "Chargement des serveurs MCP…",
+    "disabled": "Les serveurs MCP externes sont désactivés sur cette instance. Tu ne peux rien connecter ni vérifier tant qu’une personne administratrice n’a pas activé l’option sous <link>Administration, IA</link>. La configuration existante est conservée.",
+    "empty": {
+      "title": "Aucun serveur connecté pour l’instant",
+      "description": "Un serveur a besoin d’une adresse https accessible depuis Internet. Les adresses situées sur le réseau local ou sur cette machine sont refusées."
+    },
+    "add": "Connecter un serveur MCP",
+    "addTitle": "Nouveau serveur MCP",
+    "check": "Vérifier la connexion",
+    "checkFirst": "Vérifier la connexion et charger les outils",
+    "edit": "Modifier",
+    "remove": "Supprimer",
+    "removeTitle": "Supprimer {name} ?",
+    "removeDescription": "Le serveur, son secret et toutes les approbations de ses outils seront supprimés. Si tu le reconnectes, tous ses outils seront à nouveau bloqués.",
+    "enabled": "Activé pour l’IA",
+    "enabledHint": "Lorsqu’il est désactivé, tout reste enregistré, mais aucun de ses outils n’est proposé à l’IA.",
+    "tools": "Outils",
+    "toolCount": "{approved} sur {total} approuvés",
+    "toolsHint": "Lis la description de l’outil fournie par le serveur et décide toi-même : la lecture signifie qu’il récupère seulement des données. L’écriture signifie qu’il modifie quelque chose, ce qui compte alors pour l’IA comme n’importe quelle autre modification.",
+    "noToolsYet": "Vérifie la connexion pour voir ici quels outils le serveur propose.",
+    "noTools": "Le serveur ne propose aucun outil.",
+    "truncated": "Le serveur propose plus d’outils qu’il n’est possible d’en enregistrer ici. Les autres sont ignorés.",
+    "instructions": "Afficher les consignes du serveur",
+    "status": {
+      "ok": "Accessible",
+      "error": "Erreur",
+      "unchecked": "Pas encore vérifié",
+      "checking": "Vérification en cours…"
+    },
+    "facts": {
+      "key": "Identifiant",
+      "auth": "Authentification",
+      "lastChecked": "Dernière vérification",
+      "reported": "Le serveur se présente comme",
+      "never": "jamais",
+      "endsWith": "se termine par {hint}"
+    },
+    "auth": {
+      "none": "Aucune",
+      "bearer": "Jeton Bearer",
+      "header": "En-tête personnalisé"
+    },
+    "errorCodes": {
+      "address_refused": "L’adresse n’est pas autorisée : elle pointe vers le réseau local, vers cette machine ou n’utilise pas https.",
+      "unauthorized": "Le serveur refuse l’authentification. Vérifie le jeton ou l’en-tête.",
+      "forbidden": "Le serveur refuse l’accès avec ces identifiants.",
+      "not_found": "Aucun serveur MCP ne répond à cette adresse.",
+      "http_error": "Le serveur a répondu par une erreur.",
+      "timeout": "Le serveur n’a pas répondu à temps.",
+      "response_too_large": "La réponse du serveur était trop volumineuse.",
+      "protocol_error": "Le serveur n’utilise pas une version de MCP comprise ici.",
+      "tool_not_found": "Le serveur ne connaît pas cet outil.",
+      "unreachable": "Le serveur n’est pas joignable.",
+      "credential_unreadable": "Impossible de déchiffrer le secret enregistré. Saisis-le à nouveau."
+    },
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "App Santé",
+      "key": "Identifiant court",
+      "keyHint": "2 à 12 lettres minuscules ou chiffres, commençant par une lettre. L’IA voit les outils sous la forme {name}. Cet identifiant ne pourra plus être modifié par la suite.",
+      "keyFixed": "Cet identifiant court fait partie du nom de chaque outil et ne peut donc plus être modifié.",
+      "url": "Adresse",
+      "urlHint": "L’adresse https du point de terminaison MCP, par exemple https://health.example.org/mcp.",
+      "urlHintBlocks": "Si tu modifies l’adresse, tous les outils seront à nouveau bloqués : un autre serveur peut répondre à une adresse différente.",
+      "auth": "Authentification",
+      "noCredentials": "Cette instance ne peut pas enregistrer de secrets car la clé de chiffrement est manquante. Seuls les serveurs sans authentification sont possibles.",
+      "headerName": "Nom de l’en-tête",
+      "token": "Jeton",
+      "headerValue": "Valeur de l’en-tête",
+      "secretKeep": "Laisser vide conserve la valeur enregistrée (se termine par {hint})",
+      "secretHint": "Enregistré de manière chiffrée et ne sera plus jamais affiché.",
+      "create": "Connecter",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "invalid": {
+        "key": "L’identifiant court doit comporter 2 à 12 lettres minuscules ou chiffres et commencer par une lettre.",
+        "name": "Donne un nom au serveur, 80 caractères au maximum.",
+        "url": "L’adresse doit commencer par https:// et ne doit contenir ni nom d’utilisateur ni mot de passe.",
+        "authHeaderName": "Un nom d’en-tête composé de lettres, chiffres et tirets. Les en-têtes définis par MCP lui-même ne sont pas autorisés.",
+        "secret": "Le secret est manquant ou comporte moins de 8 caractères."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Bloqué",
+        "read": "Lecture",
+        "write": "Écriture"
+      },
+      "noDescription": "Le serveur ne fournit aucune description pour cet outil.",
+      "serverSays": "Le serveur indique : {hints}",
+      "noHints": "Le serveur n’indique pas si l’outil modifie des données.",
+      "hints": {
+        "readOnly": "lecture seule",
+        "writes": "modifie des données",
+        "destructive": "peut supprimer ou écraser",
+        "idempotent": "répétable sans effet secondaire",
+        "openWorld": "s’étend au-delà du serveur"
+      },
+      "approvedAt": "approuvé le {date}",
+      "parameters": "Voir les paramètres",
+      "unusable": "Inutilisable",
+      "problems": {
+        "invalid_name": "Le nom contient des caractères qu’un modèle n’accepte pas comme nom d’outil.",
+        "name_too_long": "Avec le préfixe, le nom dépasse 64 caractères.",
+        "schema_too_large": "La description des paramètres dépasse 16 Ko.",
+        "schema_invalid": "La description des paramètres n’est pas un objet valide."
+      },
+      "gone": "Plus proposé",
+      "goneHint": "Le serveur n’a plus mentionné cet outil lors de la dernière vérification.",
+      "changed": "Modifié",
+      "changedHint": "Le serveur a modifié la description ou les paramètres depuis ton approbation. L’outil est donc de nouveau bloqué. Examine-le à nouveau."
     }
   }
 }

@@ -660,7 +660,8 @@
       "general": "General",
       "members": "Members",
       "ai": "AI",
-      "settings": "Settings"
+      "settings": "Settings",
+      "tools": "External tools"
     },
     "readOnly": "Only owners and administrators of this workspace can rename it or change its slug.",
     "nameLabel": "Name",
@@ -718,6 +719,124 @@
       "ADMIN": "Administrator",
       "MEMBER": "Member",
       "GUEST": "Guest"
+    },
+    "externalMcp": {
+      "title": "External MCP servers",
+      "description": "Connect external MCP servers here, like your health app. Each server tool is blocked by default. Only once you have reviewed and approved it can the AI use it. If the server changes a tool later, it is blocked again."
+    }
+  },
+  "externalMcp": {
+    "loading": "Loading MCP servers…",
+    "disabled": "External MCP servers are turned off on this instance. You cannot connect or check anything until an administrator enables the switch under <link>Administration, AI</link>. Whatever is already set up remains intact.",
+    "empty": {
+      "title": "No server connected yet",
+      "description": "A server needs an https address accessible from the internet. Addresses on the local network and on this machine are rejected."
+    },
+    "add": "Connect MCP server",
+    "addTitle": "New MCP server",
+    "check": "Check connection",
+    "checkFirst": "Check connection and load tools",
+    "edit": "Edit",
+    "remove": "Remove",
+    "removeTitle": "Remove {name}?",
+    "removeDescription": "The server, its secret, and all approvals for its tools will be deleted. If you connect it again, all tools will be blocked again.",
+    "enabled": "Enabled for AI",
+    "enabledHint": "When turned off, everything stays saved, but the AI won’t be offered any of its tools.",
+    "tools": "Tools",
+    "toolCount": "{approved} of {total} approved",
+    "toolsHint": "Read what the server says a tool does and decide for yourself: Reading means it only fetches data. Writing means it changes something, and is then treated for the AI like any other change.",
+    "noToolsYet": "Check the connection, and you’ll see the tools offered by the server here.",
+    "noTools": "The server offers no tools.",
+    "truncated": "The server offers more tools than can be saved here. The rest are left out.",
+    "instructions": "Show server instructions",
+    "status": {
+      "ok": "Reachable",
+      "error": "Error",
+      "unchecked": "Not checked yet",
+      "checking": "Checking…"
+    },
+    "facts": {
+      "key": "Key",
+      "auth": "Authentication",
+      "lastChecked": "Last checked",
+      "reported": "Server identifies as",
+      "never": "never",
+      "endsWith": "ends with {hint}"
+    },
+    "auth": {
+      "none": "None",
+      "bearer": "Bearer token",
+      "header": "Custom header"
+    },
+    "errorCodes": {
+      "address_refused": "The address is not allowed: it points to the local network, to this machine, or is not https.",
+      "unauthorized": "The server rejected the login. Check the token or header.",
+      "forbidden": "The server denied access with these credentials.",
+      "not_found": "No MCP server responds at this address.",
+      "http_error": "The server responded with an error.",
+      "timeout": "The server did not respond in time.",
+      "response_too_large": "The server’s response was too large.",
+      "protocol_error": "The server does not speak an MCP protocol understood here.",
+      "tool_not_found": "The server does not recognize this tool.",
+      "unreachable": "The server cannot be reached.",
+      "credential_unreadable": "The saved secret can no longer be decrypted. Please enter it again."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Health app",
+      "key": "Key",
+      "keyHint": "2 to 12 lowercase letters or digits, starting with a letter. The AI sees the tools as {name}. The key cannot be changed later.",
+      "keyFixed": "The key is part of every tool name and therefore cannot be changed.",
+      "url": "Address",
+      "urlHint": "The https address of the MCP endpoint, for example https://health.example.org/mcp.",
+      "urlHintBlocks": "If you change the address, all tools will be blocked again: a different server might respond under another address.",
+      "auth": "Authentication",
+      "noCredentials": "This instance cannot store secrets because it lacks an encryption key. Only servers without authentication are supported.",
+      "headerName": "Header name",
+      "token": "Token",
+      "headerValue": "Header value",
+      "secretKeep": "Leave empty to keep the saved one (ends with {hint})",
+      "secretHint": "Stored encrypted and never displayed again.",
+      "create": "Connect",
+      "save": "Save",
+      "cancel": "Cancel",
+      "invalid": {
+        "key": "The key must be 2 to 12 lowercase letters or digits and start with a letter.",
+        "name": "Give the server a name, up to 80 characters.",
+        "url": "The address must start with https:// and must not contain a username or password.",
+        "authHeaderName": "A header name made of letters, digits, and hyphens. Headers set by MCP itself cannot be used.",
+        "secret": "The secret is missing or shorter than 8 characters."
+      }
+    },
+    "tool": {
+      "access": {
+        "blocked": "Blocked",
+        "read": "Read",
+        "write": "Write"
+      },
+      "noDescription": "The server provides no description for this tool.",
+      "serverSays": "The server reports: {hints}",
+      "noHints": "The server does not specify whether this tool makes changes.",
+      "hints": {
+        "readOnly": "read-only",
+        "writes": "makes changes",
+        "destructive": "can delete or overwrite",
+        "idempotent": "repeatable without side effects",
+        "openWorld": "reaches beyond the server"
+      },
+      "approvedAt": "approved on {date}",
+      "parameters": "View parameters",
+      "unusable": "Not usable",
+      "problems": {
+        "invalid_name": "The name contains characters that a model will not accept as a tool name.",
+        "name_too_long": "Together with the prefix, the name is longer than 64 characters.",
+        "schema_too_large": "The parameter description is larger than 16 KB.",
+        "schema_invalid": "The parameter description is not a valid object."
+      },
+      "gone": "No longer offered",
+      "goneHint": "The server did not list this tool during the last check.",
+      "changed": "Changed",
+      "changedHint": "The server changed the description or parameters since you approved it. That is why it is locked again. Review it again."
     }
   }
 }

@@ -1086,5 +1086,15 @@
       "p6": "Un’automazione può delegare lavoro: l’azione «Crea attività» trasforma la pagina modificata in un’attività con l’obiettivo della regola e il profilo selezionato; se desideri, l’IA inizia subito."
     },
     "where": "Sotto Attività tramite «Gestisci profili», sull’attività accanto al profilo agente, oppure premendo Strg + K e «Apri profili agente»."
+  },
+  "externe-mcp-server": {
+    "title": "Collegare server MCP esterni",
+    "summary": "Puoi aggiungere server MCP esterni a un’area di lavoro, come l’app Salute, e decidere per ciascuno dei loro strumenti se l’IA può usarlo in lettura, in scrittura o per niente. Ogni strumento è inizialmente bloccato.",
+    "details": {
+      "p1": "Un server richiede un indirizzo https raggiungibile da Internet e, facoltativamente, un token o un’intestazione personalizzata. Il secret viene memorizzato in modo cifrato e non viene mai più mostrato. Gli indirizzi nella rete locale e su questo computer vengono rifiutati, anche in caso di reindirizzamento.",
+      "p2": "Dopo la verifica della connessione, visualizzi ciascuno strumento con descrizione, parametri e ciò che il server dichiara a riguardo. Ciò che autorizzi vale solo per questa esatta versione: se in seguito il server modifica la descrizione o i parametri, lo strumento viene di nuovo bloccato finché non lo esamini nuovamente.",
+      "p3": "Collegare, modificare e autorizzare è possibile solo da titolare dell’area di lavoro nel browser, mai tramite token e mai tramite un agente. In questo modo nessuna IA può procurarsi autonomamente nuovi strumenti. L’utilizzo effettivo degli strumenti autorizzati da parte dell’IA durante un’esecuzione arriverà in un passaggio successivo."
+    },
+    "where": "Impostazioni dell’area di lavoro, scheda Strumenti esterni. L’opzione per l’intera istanza si trova in Amministrazione, Impostazioni, sezione IA."
   }
 }

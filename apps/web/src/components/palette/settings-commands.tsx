@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings2Icon, SettingsIcon, SparklesIcon, UsersIcon } from 'lucide-react';
+import { PlugIcon, Settings2Icon, SettingsIcon, SparklesIcon, UsersIcon } from 'lucide-react';
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -60,6 +60,17 @@ export function settingsCommands(
         icon: <UsersIcon className={ICON} />,
         keywords: keywordsOf(t('workspaceMembersKeywords')),
         href: `${base}members`,
+      });
+    }
+    // Owner only, like the tab and the API behind it (ADR-086).
+    if (context.workspaceRole === 'OWNER') {
+      commands.push({
+        id: 'settings-workspace-tools',
+        group: 'settings',
+        label: t('workspaceTools'),
+        icon: <PlugIcon className={ICON} />,
+        keywords: keywordsOf(t('workspaceToolsKeywords')),
+        href: `${base}tools`,
       });
     }
     commands.push(

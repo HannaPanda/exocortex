@@ -317,6 +317,8 @@
       },
       "workspaceMembers": "Manage members",
       "workspaceMembersKeywords": "members invite people roles access workspace",
+      "workspaceTools": "External MCP servers and their tools",
+      "workspaceToolsKeywords": "mcp server external tools share health connect connection integration",
       "workspaceAi": "Workspace AI settings",
       "workspaceAiKeywords": "ai key api key custom byok openrouter workspace",
       "workspaceOverrides": "Workspace overrides",
