@@ -115,7 +115,7 @@ export function EditorCanvasTools({
  * The panel for what is selected, or for the workflow's settings. Beside
  * the canvas where there is room, over its right edge where there is not:
  * never below it, where it would be off screen the moment something is
- * selected. Escape inside it closes it.
+ * selected. Escape closes it (`useEditorKeys`).
  */
 export function EditorPanel({
   onClose,
@@ -133,12 +133,6 @@ export function EditorPanel({
         'absolute inset-y-3 right-3 z-10 flex w-88 max-w-[calc(100%-4.5rem)] flex-col rounded-lg border border-border-strong bg-popover shadow-lg',
         '@4xl:static @4xl:w-88 @4xl:max-w-none @4xl:rounded-none @4xl:border-0 @4xl:border-l @4xl:border-border @4xl:bg-surface @4xl:shadow-none',
       ].join(' ')}
-      onKeyDown={(event) => {
-        if (event.key !== 'Escape') return;
-        // A menu opened from the panel lives in a portal; its Escape is its own.
-        if (!event.currentTarget.contains(event.target as Node)) return;
-        onClose();
-      }}
     >
       <Button
         variant="ghost"
@@ -156,7 +150,7 @@ export function EditorPanel({
 }
 
 /**
- * The editor's keys: Ctrl+S saves anywhere; on the draft, Ctrl+Z and
+ * The editor's keys: Ctrl+S saves anywhere, Escape closes the panel; on the draft, Ctrl+Z and
  * Ctrl+Shift+Z (or Ctrl+Y) walk the history and `A` opens the add list. A
  * text field keeps its own undo and its own letters, and a dialog or a menu
  * keeps its keys.
@@ -166,11 +160,14 @@ export function useEditorKeys({
   history,
   active,
   onAdd,
+  onEscape,
 }: {
   save: () => Promise<void>;
   history: GraphHistory;
   active: boolean;
   onAdd: () => void;
+  /** Closes the panel; returns whether there was one to close. */
+  onEscape: () => boolean;
 }): void {
   const onKey = React.useEffectEvent((event: KeyboardEvent): void => {
     const mod = event.metaKey || event.ctrlKey;
@@ -180,22 +177,35 @@ export function useEditorKeys({
       void save();
       return;
     }
-    if (!active || isTypingTarget(event.target) || insideOverlay(event.target)) return;
-    if (mod && !event.altKey && (key === 'z' || key === 'y')) {
-      event.preventDefault();
-      if (key === 'y' || event.shiftKey) history.redo();
-      else history.undo();
+    // Escape closes the panel from anywhere in the editor, but a dialog, a
+    // menu or a list that is open keeps its own Escape.
+    if (key === 'escape' && !event.defaultPrevented && !insideOverlay(event.target)) {
+      if (onEscape()) event.preventDefault();
       return;
     }
-    if (!mod && !event.altKey && !event.shiftKey && key === 'a') {
-      event.preventDefault();
-      onAdd();
-    }
+    if (!active || isTypingTarget(event.target) || insideOverlay(event.target)) return;
+    draftKey(event, history, onAdd);
   });
   React.useEffect(() => {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+}
+
+/** Undo, redo and add: the keys that only mean something on the draft. */
+function draftKey(event: KeyboardEvent, history: GraphHistory, onAdd: () => void): void {
+  const mod = event.metaKey || event.ctrlKey;
+  const key = event.key.toLowerCase();
+  if (mod && !event.altKey && (key === 'z' || key === 'y')) {
+    event.preventDefault();
+    if (key === 'y' || event.shiftKey) history.redo();
+    else history.undo();
+    return;
+  }
+  if (!mod && !event.altKey && !event.shiftKey && key === 'a') {
+    event.preventDefault();
+    onAdd();
+  }
 }
 
 /** Whether a key press comes from inside a dialog, a menu or a list that owns its keys. */

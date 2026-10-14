@@ -201,6 +201,11 @@ function LoadedEditor({
     history,
     active: tab === 'entwurf' && !readOnly,
     onAdd: () => setAddOpen(true),
+    onEscape: () => {
+      if (selection === null && !settingsOpen) return false;
+      closePanel();
+      return true;
+    },
   });
 
   const selectedNode =
@@ -290,14 +295,7 @@ function LoadedEditor({
           onMenuOpenChange={setAddOpen}
           hasSelection={selectedNode !== undefined}
         />
-        <div
-          ref={canvasRef}
-          className="relative min-w-0 flex-1"
-          data-testid="workflow-canvas"
-          onKeyDown={(event) => {
-            if (event.key === 'Escape' && panel !== null) closePanel();
-          }}
-        >
+        <div ref={canvasRef} className="relative min-w-0 flex-1" data-testid="workflow-canvas">
           <WorkflowCanvas
             graph={draft.graph}
             mode={readOnly ? 'view' : 'edit'}

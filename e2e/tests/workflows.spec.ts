@@ -198,19 +198,20 @@ test('builds from the canvas: the add key, a way out, undo, tidy and the setting
 
   await selectNode(page, 'start');
   await page.keyboard.press('a');
-  await page.getByTestId('workflow-add-search').fill('Bedingung');
+  await page.getByTestId('workflow-add-search').fill('Agent');
   await page.keyboard.press('Enter');
-  await expect(node('condition')).toBeVisible();
+  await expect(node('agent')).toBeVisible();
   await expect(page.getByTestId('workflow-node-inspector')).toBeVisible();
 
-  // Selected and unfinished at once: the halo and the problem mark both show.
-  await expect(node('condition')).toHaveAttribute('data-selected', 'true');
-  await expect(node('condition')).toHaveAttribute('data-problems', /\d+/u);
-  await expect(node('condition').getByTestId('workflow-node-problems')).toBeVisible();
+  // Selected and unfinished (no goal yet) at once: the halo and the problem
+  // mark both show.
+  await expect(node('agent')).toHaveAttribute('data-selected', 'true');
+  await expect(node('agent')).toHaveAttribute('data-problems', /\d+/u);
+  await expect(node('agent').getByTestId('workflow-node-problems')).toBeVisible();
 
-  // The "nein" way out has nothing behind it: its + adds the next step there.
-  await node('condition').hover();
-  await page.getByTestId('workflow-add-from-condition-false').click();
+  // Its way out has nothing behind it: the + adds the next step there.
+  await node('agent').hover();
+  await page.getByTestId('workflow-add-from-agent-next').click();
   await expect(page.getByTestId('workflow-add-trigger.manual')).toHaveCount(0);
   await page.getByTestId('workflow-add-end').click();
   await expect(node('end')).toBeVisible();
@@ -230,6 +231,10 @@ test('builds from the canvas: the add key, a way out, undo, tidy and the setting
   await expect(page.getByTestId('workflow-limit-budget')).toBeInViewport();
   await page.getByTestId('workflow-name').press('Escape');
   await expect(page.getByTestId('workflow-inspector')).toHaveCount(0);
+  // From the head as well: Escape is the editor's, not the panel's.
+  await page.getByTestId('workflow-open-settings').click();
+  await page.getByTestId('workflow-open-settings').press('Escape');
+  await expect(page.getByTestId('workflow-inspector')).toHaveCount(0);
 
   await page.getByTestId('workflow-save').click();
   await expect(page.getByTestId('workflow-state')).toContainText('Stand 2', { timeout: 30_000 });
@@ -241,7 +246,7 @@ test('builds from the canvas: the add key, a way out, undo, tidy and the setting
     body.draft.edges
       .map((edge) => `${edge.source.nodeId}.${edge.source.handle}>${edge.target.nodeId}`)
       .sort(),
-  ).toEqual(['condition.false>end', 'start.next>condition']);
+  ).toEqual(['agent.next>end', 'start.next>agent']);
 });
 
 test('asks before leaving a draft with unsaved changes', async ({ page }) => {
