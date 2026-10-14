@@ -495,6 +495,15 @@ build:
   hover-only row actions open with Shift + F10; every stop of the focus example
   draws the ring
 
+A section is shot alone on the page (`isolate-section.css` hides the others)
+and a phone frame as its own page at the size of its window, never as an
+iframe inside the long page (issue #205). The sections have fractional
+heights, so one that grew by a few tenths of a pixel used to move every
+section below it to another sub-pixel offset, where Chromium rasterises text
+a shade differently: untouched sections went red, by 1 to 2 percent, without
+a visible change. A shot now depends on its own content and the page header,
+so a red shot outside the change is a finding, not noise.
+
 A changed screenshot is a difference to review. When it was meant, the new
 baseline is committed on its own with the decision it records;
 `docs/local-development.md` has the commands. Literal colours are refused

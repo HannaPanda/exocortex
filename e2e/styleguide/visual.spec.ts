@@ -2,7 +2,7 @@ import { join } from 'node:path';
 
 import { expect, type Locator, test } from '@playwright/test';
 
-import { DESKTOP, NARROW, openStyleguide } from './open';
+import { DESKTOP, NARROW, openFrame, openStyleguide } from './open';
 
 /**
  * Screenshot baselines of the canonical examples (issue #127).
@@ -17,7 +17,8 @@ import { DESKTOP, NARROW, openStyleguide } from './open';
  * timestamps are offsets that always read the same ("vor 3 Tagen"), presence
  * colours are hashed from fixed ids, animations and the caret are switched off
  * by the config, and every shot waits for hydration and the self-hosted fonts
- * (`open.ts`).
+ * (`open.ts`). A section is shot alone on the page and a phone frame as its
+ * own page, so neither moves when something above it changes height (#205).
  *
  * A red shot is a difference to review, not a verdict. See
  * `scripts/test-styleguide.sh` for the update step and when it is allowed.
@@ -30,6 +31,14 @@ import { DESKTOP, NARROW, openStyleguide } from './open';
  * the frame's document; what is inside has its own shot below.
  */
 const HIDE_FRAMES = join(__dirname, 'hide-frames.css');
+
+/** Hides every section but the one marked `data-shot` (#205). */
+const ISOLATE_SECTION = join(__dirname, 'isolate-section.css');
+
+/** Marks the section a shot is of, for `isolate-section.css`. */
+async function markShot(section: Locator): Promise<void> {
+  await section.evaluate((element) => element.setAttribute('data-shot', ''));
+}
 
 /** What a loaded phone frame shows: the list-mode table or a settings row. */
 const FRAME_READY = 'table, [data-testid^="setting-row-"]';
@@ -72,7 +81,10 @@ test.describe('styleguide screenshots, desktop', () => {
       await openStyleguide(page, DESKTOP);
       const section = page.locator(`section#${id}`);
       await loadFrames(section);
-      await expect(section).toHaveScreenshot(`desktop-${id}.png`, { stylePath: HIDE_FRAMES });
+      await markShot(section);
+      await expect(section).toHaveScreenshot(`desktop-${id}.png`, {
+        stylePath: [HIDE_FRAMES, ISOLATE_SECTION],
+      });
     });
   }
 
@@ -139,7 +151,10 @@ test.describe('styleguide screenshots, phone width', () => {
       await openStyleguide(page, NARROW);
       const section = page.locator(`section#${id}`);
       await loadFrames(section);
-      await expect(section).toHaveScreenshot(`narrow-${id}.png`, { stylePath: HIDE_FRAMES });
+      await markShot(section);
+      await expect(section).toHaveScreenshot(`narrow-${id}.png`, {
+        stylePath: [HIDE_FRAMES, ISOLATE_SECTION],
+      });
     });
   }
 
@@ -152,29 +167,20 @@ test.describe('styleguide screenshots, phone width', () => {
   });
 
   // The narrow tables and the settings form are drawn in phone-width frames,
-  // because their breakpoints answer to the window. The frame is shot at
-  // desktop width: its inside is the phone, whatever the page around it is.
-  const FRAME_CONTENT = {
-    'tabelle-liste': 'table',
-    einstellungen: '[data-testid^="setting-row-"]',
+  // because their breakpoints answer to the window. The shot opens the frame's
+  // own page at the size of its window (the iframe's height and 390 px, each
+  // less the 1 px border) rather than the iframe inside the long page: there
+  // its offset moved with every section above it, and the text inside was
+  // rasterised a shade differently each time (#205).
+  const FRAME_WINDOW = {
+    'tabelle-liste': { width: 388, height: 438 },
+    einstellungen: { width: 388, height: 558 },
   } as const;
   for (const probe of ['tabelle-liste', 'einstellungen'] as const) {
     test(`frame ${probe}`, async ({ page }) => {
-      await openStyleguide(page, DESKTOP);
-      const frameElement = page.getByTestId(`ds-frame-${probe}`);
-      await frameElement.scrollIntoViewIfNeeded();
-      const inside = page.frameLocator(`[data-testid="ds-frame-${probe}"]`);
-      // The content, not just a body: the frame is lazy, and on a slow runner
-      // an empty document is already "visible".
-      await expect(inside.locator(FRAME_CONTENT[probe]).first()).toBeVisible();
-      await inside
-        .locator('body')
-        .evaluate(
-          () =>
-            (globalThis as unknown as { document: { fonts: { ready: Promise<unknown> } } }).document
-              .fonts.ready,
-        );
-      await expect(frameElement).toHaveScreenshot(`narrow-frame-${probe}.png`);
+      await openFrame(page, `/design-system/rahmen/${probe}`, FRAME_WINDOW[probe]);
+      await expect(page.locator(FRAME_READY).first()).toBeVisible();
+      await expect(page).toHaveScreenshot(`narrow-frame-${probe}.png`);
     });
   }
 });

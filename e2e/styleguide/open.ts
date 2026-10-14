@@ -34,8 +34,12 @@ export async function openStyleguide(
 }
 
 /** For a frame route: it has no heading and no checkbox, so it waits for the network to settle. */
-export async function openFrame(page: Page, path: string): Promise<void> {
-  await page.setViewportSize({ width: 390, height: 844 });
+export async function openFrame(
+  page: Page,
+  path: string,
+  viewport: { width: number; height: number } = { width: 390, height: 844 },
+): Promise<void> {
+  await page.setViewportSize(viewport);
   await page.goto(path);
   await page.waitForLoadState('networkidle');
   await page.evaluate(() => (globalThis as unknown as BrowserDocument).document.fonts.ready);

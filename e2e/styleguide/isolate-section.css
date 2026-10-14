@@ -1,0 +1,9 @@
+/* Applied to the section screenshots only (visual.spec.ts, issue #205): every
+   section but the one being shot is taken out of the page. The sections have
+   fractional heights, so one that grows by 7.3 px moved every section below
+   it to another sub-pixel offset, Chromium rasterised their text a shade
+   differently, and shots of untouched sections went red. Alone on the page, a
+   section's offset depends on the page header and nothing else. */
+main#exocortex-main > section:not([data-shot]) {
+  display: none !important;
+}
