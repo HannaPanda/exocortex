@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Provider-routing bij OpenRouter",
-        "help": "Geldt voor elk verzoek aan OpenRouter, als JSON in het formaat van het veld „provider”: bijvoorbeeld sort met throughput, latency of price, ignore en only met namen van providers. Leeg laat OpenRouter vrij kiezen. Individuele modellen overschrijven waarden hieruit in het modelbeheer."
+        "help": "Geldt voor elk verzoek aan OpenRouter. Zonder opgave kiest OpenRouter zelf. Afzonderlijke modellen en agentprofielen kunnen waarden hiervan in hun eigen instellingen overschrijven."
       },
       "subscriptionFallback": {
         "label": "Bij leeg abonnement uitwijken naar OpenRouter",
@@ -534,7 +534,6 @@
         "read_only": "Alleen lezen"
       }
     },
-    "jsonInvalid": "Dit is geen geldige waarde. De laatst geldige status wordt opgeslagen.",
     "containerImage": {
       "copy": "Image-naam kopiëren",
       "unlock": "Wijzigen …",
@@ -850,6 +849,83 @@
       "changed": "Gewijzigd",
       "changedHint": "De server heeft de beschrijving of parameters gewijzigd sinds je deze hebt goedgekeurd. Daarom is hij weer geblokkeerd. Bekijk hem opnieuw.",
       "suggested": "Suggestie: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter beslist",
+      "inherit": "Overnemen",
+      "inheritWith": "Overnemen ({value})",
+      "remove": "Verwijderen (OpenRouter beslist)",
+      "custom": "Aangepaste lijst"
+    },
+    "yes": "Ja",
+    "no": "Nee",
+    "emptyList": "lege lijst",
+    "sort": {
+      "label": "Volgorde van providers",
+      "unsetHelp": "OpenRouter verdeelt de verzoeken zelf, met het oog op prijs en beschikbaarheid.",
+      "price": {
+        "label": "Prijs",
+        "help": "De voordeligste passende provider komt eerst."
+      },
+      "throughput": {
+        "label": "Doorvoer",
+        "help": "De provider met de meeste tokens per seconde komt eerst. Lange antwoorden zijn zo sneller klaar."
+      },
+      "latency": {
+        "label": "Latentie",
+        "help": "De provider met de kortste tijd tot de eerste token komt eerst. Het antwoord begint zo eerder."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Alleen deze providers",
+        "help": "Verzoeken gaan uitsluitend naar de genoemde providers. Past er geen enkele, dan mislukt het verzoek."
+      },
+      "ignore": {
+        "label": "Deze providers nooit",
+        "help": "De genoemde providers worden overgeslagen, alle andere blijven mogelijk."
+      },
+      "order": {
+        "label": "Deze providers eerst proberen",
+        "help": "In deze volgorde, vóór alle andere. De provider-volgorde hierboven geldt dan niet."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Uitwijken naar andere providers",
+        "default": "Standaard van OpenRouter (ja)",
+        "help": "Als de gewenste provider niet bereikbaar is, mag OpenRouter een andere kiezen."
+      },
+      "require_parameters": {
+        "label": "Alleen providers die alle parameters ondersteunen",
+        "default": "Standaard van OpenRouter (nee)",
+        "help": "Sluit providers uit die een deel van het verzoek (zoals tools of denktijd) stilzwijgend zouden negeren."
+      }
+    },
+    "dataCollection": {
+      "label": "Providers die gegevens opslaan",
+      "help": "Of providers in aanmerking komen die verzoeken mogen opslaan of voor training mogen gebruiken.",
+      "allow": "Toegestaan",
+      "deny": "Uitgesloten"
+    },
+    "chips": {
+      "placeholder": "Provider invoeren of kiezen",
+      "add": "„{name}” toevoegen",
+      "remove": "{name} verwijderen",
+      "empty": "Geen passende providers"
+    },
+    "extra": {
+      "summary": "Aanvullende gegevens als JSON",
+      "help": "Voor sleutels uit het provider-veld van OpenRouter die hierboven geen eigen veld hebben, zoals max_price of quantizations.",
+      "invalid": "Dit is geen geldig JSON-object.",
+      "knownKey": "Deze sleutel heeft hierboven een eigen veld. Stel hem daar in."
+    },
+    "preview": {
+      "title": "Geldt daarmee voor verzoeken",
+      "empty": "Geen voorkeuren: OpenRouter kiest vrij.",
+      "invalid": "Pas zichtbaar wanneer de gegevens geldig zijn."
     }
   }
 }

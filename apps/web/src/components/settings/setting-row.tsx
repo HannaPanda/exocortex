@@ -9,7 +9,6 @@ import {
   SETTING_NUMBER_RANGES,
   type SettingKey,
   type Settings,
-  settingsSchema,
 } from '@exocortex/contracts';
 import {
   cn,
@@ -21,9 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-  Textarea,
 } from '@exocortex/ui';
 
+import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
 import { DurationInput, useDurationWords } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
 import { EntityDatabaseField } from '@/components/settings/entity-database-field';
@@ -44,6 +43,7 @@ import {
 import { durationBaseOfSettingKey, isHourOfDaySettingKey } from '@/lib/duration';
 import { isFractionSettingKey } from '@/lib/fraction';
 import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
+import { sameRouting } from '@/lib/provider-routing-form';
 import { type ModelCatalogs, modelFieldHasList, modelFieldOf } from '@/lib/setting-references';
 
 /**
@@ -209,90 +209,12 @@ export const SETTING_LIST_CLASS =
  *
  * Every setting used to be a scalar and `!==` was enough. An object setting
  * (`ai.providerRouting`) is rebuilt on every keystroke, so identity would call
- * it changed after it was typed back to what is stored.
+ * it changed after it was typed back to what is stored, and the form writes
+ * its keys in its own order, which is no change either.
  */
 export function sameSettingValue(a: Settings[SettingKey], b: Settings[SettingKey]): boolean {
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return a === b;
-  return JSON.stringify(a) === JSON.stringify(b);
-}
-
-/** What an object setting's text field shows as its example, when it is empty. */
-const JSON_SETTING_PLACEHOLDERS: Partial<Record<SettingKey, string>> = {
-  'ai.providerRouting': '{ "sort": "throughput", "ignore": ["relace"] }',
-};
-
-/**
- * An object-valued setting, edited as JSON.
- *
- * The text is the field's own state, because half-typed JSON is not a value
- * yet: only text that parses and passes the setting's schema reaches the
- * draft. Until it does, the field says so, and the draft keeps the last
- * value that was valid.
- */
-function JsonSettingField({
-  settingKey,
-  value,
-  onChange,
-  described,
-  id,
-}: {
-  settingKey: SettingKey;
-  value: Settings[SettingKey];
-  onChange: (value: Settings[SettingKey]) => void;
-  described: { 'aria-describedby': string; 'aria-invalid': boolean };
-  id: string;
-}) {
-  const t = useTranslations('settings.row');
-  const [text, setText] = React.useState(() =>
-    Object.keys(value ?? {}).length === 0 ? '' : JSON.stringify(value, null, 2),
-  );
-  const [invalid, setInvalid] = React.useState(false);
-  const invalidId = `${id}-json-invalid`;
-
-  function handleChange(next: string): void {
-    setText(next);
-    let candidate: unknown = {};
-    if (next.trim().length > 0) {
-      try {
-        candidate = JSON.parse(next);
-      } catch {
-        setInvalid(true);
-        return;
-      }
-    }
-    const parsed = settingsSchema.shape[settingKey].safeParse(candidate);
-    setInvalid(!parsed.success);
-    if (parsed.success) onChange(parsed.data);
-  }
-
-  return (
-    <>
-      <Textarea
-        id={id}
-        name={settingKey}
-        rows={4}
-        spellCheck={false}
-        className="font-mono text-xs"
-        placeholder={JSON_SETTING_PLACEHOLDERS[settingKey]}
-        value={text}
-        {...described}
-        aria-invalid={described['aria-invalid'] || invalid}
-        aria-describedby={
-          invalid ? `${described['aria-describedby']} ${invalidId}` : described['aria-describedby']
-        }
-        onChange={(event) => handleChange(event.target.value)}
-      />
-      {invalid ? (
-        <p
-          id={invalidId}
-          className="text-xs text-destructive-text"
-          data-testid={`${id}-json-invalid`}
-        >
-          {t('jsonInvalid')}
-        </p>
-      ) : null}
-    </>
-  );
+  return sameRouting(a, b);
 }
 
 /** What a byte field shows, and the byte count that text last stood for. */
@@ -662,14 +584,19 @@ export function SettingRow({
         id={id}
       />
     );
-  } else if (typeof value === 'object' && value !== null) {
+  } else if (settingKey === 'ai.providerRouting' && typeof value === 'object') {
+    // Half-filled is not a value yet: only a form that describes one reaches
+    // the draft, which keeps the last valid object until then (issue #201).
     control = (
-      <JsonSettingField
-        settingKey={settingKey}
-        value={value}
-        onChange={onChange}
-        described={described}
+      <ProviderRoutingEditor
         id={id}
+        mode="setting"
+        value={value}
+        describedBy={described['aria-describedby']}
+        invalid={described['aria-invalid']}
+        onChange={(next) => {
+          if (next !== undefined) onChange(next);
+        }}
       />
     );
   } else {

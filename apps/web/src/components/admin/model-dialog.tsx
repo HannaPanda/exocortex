@@ -10,7 +10,6 @@ import {
   type AiReasoningLevel,
   type CreateAiModelRequest,
   type ProviderRoutingOverride,
-  providerRoutingOverrideSchema,
   type UpdateAiModelRequest,
 } from '@exocortex/contracts';
 import {
@@ -31,12 +30,17 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-  Textarea,
   Toggle,
   ToggleGroup,
 } from '@exocortex/ui';
 
-import { useCreateAiModel, useUpdateAiModel } from '@/lib/api/admin-queries';
+import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
+import {
+  useAdminSettings,
+  useAiModelEndpoints,
+  useCreateAiModel,
+  useUpdateAiModel,
+} from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { microUsdFromText, usdInputText } from '@/lib/money';
@@ -81,28 +85,10 @@ interface ModelFormState {
   visionCompanionSlug: string;
   enabled: boolean;
   sortOrder: string;
-  /** The override as JSON text; empty means "inherit the setting" (ADR-063). */
-  providerRouting: string;
-}
-
-/** What the routing field shows while it is empty: an override of one key. */
-const PROVIDER_ROUTING_PLACEHOLDER = '{ "sort": "latency" }';
-
-/**
- * The override the text describes, `null` for an empty field, `undefined` for
- * text that is not one.
- */
-function parseProviderRouting(text: string): ProviderRoutingOverride | null | undefined {
-  if (text.trim().length === 0) return null;
-  let candidate: unknown;
-  try {
-    candidate = JSON.parse(text);
-  } catch {
-    return undefined;
-  }
-  const parsed = providerRoutingOverrideSchema.safeParse(candidate);
-  if (!parsed.success) return undefined;
-  return Object.keys(parsed.data).length === 0 ? null : parsed.data;
+  /** The override of `ai.providerRouting`; `null` inherits the setting (ADR-063). */
+  providerRouting: ProviderRoutingOverride | null;
+  /** False while the routing form describes no override (issue #201). */
+  providerRoutingValid: boolean;
 }
 
 function isModelProvider(value: string): value is AiModelProvider {
@@ -130,7 +116,8 @@ function emptyForm(): ModelFormState {
     visionCompanionSlug: NO_COMPANION,
     enabled: true,
     sortOrder: '100',
-    providerRouting: '',
+    providerRouting: null,
+    providerRoutingValid: true,
   };
 }
 
@@ -150,8 +137,8 @@ function formFromModel(model: AiModel, locale: string): ModelFormState {
     visionCompanionSlug: model.visionCompanionSlug ?? NO_COMPANION,
     enabled: model.enabled,
     sortOrder: String(model.sortOrder),
-    providerRouting:
-      model.providerRouting === null ? '' : JSON.stringify(model.providerRouting, null, 2),
+    providerRouting: model.providerRouting,
+    providerRoutingValid: true,
   };
 }
 
@@ -234,35 +221,50 @@ function ProviderField({
   );
 }
 
-/** The model's override of `ai.providerRouting` as JSON text (ADR-063). */
+/**
+ * The model's override of `ai.providerRouting` (ADR-063, issue #201). The
+ * lists offer the providers of the model's endpoint snapshot, and the preview
+ * lays the override over the deployment setting.
+ */
 function ProviderRoutingField({
+  modelId,
   value,
   invalid,
   onChange,
 }: {
-  value: string;
+  modelId: string | undefined;
+  value: ProviderRoutingOverride | null;
   invalid: boolean;
-  onChange: (text: string) => void;
+  onChange: (value: ProviderRoutingOverride | null | undefined) => void;
 }) {
   const t = useTranslations('admin.modelDialog');
+  const endpoints = useAiModelEndpoints(modelId ?? '', modelId !== undefined);
+  const settings = useAdminSettings();
+  const suggestions = React.useMemo(
+    () => [...new Set((endpoints.data?.endpoints ?? []).map((entry) => entry.providerKey))],
+    [endpoints.data],
+  );
   return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor="model-provider-routing">{t('fields.providerRouting')}</Label>
-      <Textarea
-        id="model-provider-routing"
-        rows={3}
-        spellCheck={false}
-        className="font-mono text-xs"
-        placeholder={PROVIDER_ROUTING_PLACEHOLDER}
-        aria-describedby="model-provider-routing-help"
-        aria-invalid={invalid}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
-      <p id="model-provider-routing-help" className="text-xs text-muted-foreground">
+    <fieldset className="flex min-w-0 flex-col gap-1.5 border-0 p-0">
+      <legend className="mb-1.5 text-sm leading-none font-medium">
+        {t('fields.providerRouting')}
+      </legend>
+      <p id="model-provider-routing-help" className="mb-2 text-xs text-muted-foreground">
         {t('fields.providerRoutingHelp')}
       </p>
-    </div>
+      <ProviderRoutingEditor
+        id="model-provider-routing"
+        mode="override"
+        value={value}
+        suggestions={suggestions}
+        inherited={settings.data?.settings['ai.providerRouting']}
+        describedBy="model-provider-routing-help"
+        invalid={invalid}
+        onChange={(next) =>
+          onChange(next === undefined ? undefined : Object.keys(next).length === 0 ? null : next)
+        }
+      />
+    </fieldset>
   );
 }
 
@@ -312,8 +314,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
     if (form.reasoningLevels.length === 0) {
       errors.push('reasoningRequired');
     }
-    const providerRouting = parseProviderRouting(form.providerRouting);
-    if (providerRouting === undefined) {
+    if (!form.providerRoutingValid) {
       errors.push('providerRoutingInvalid');
     }
 
@@ -342,7 +343,7 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         form.visionCompanionSlug === NO_COMPANION ? null : form.visionCompanionSlug,
       enabled: form.enabled,
       sortOrder,
-      providerRouting: providerRouting ?? null,
+      providerRouting: form.providerRouting,
     };
 
     if (isEdit && model !== undefined) {
@@ -563,9 +564,16 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         </div>
 
         <ProviderRoutingField
+          modelId={model?.id}
           value={form.providerRouting}
           invalid={fieldErrors.includes('providerRoutingInvalid')}
-          onChange={(providerRouting) => setForm((prev) => ({ ...prev, providerRouting }))}
+          onChange={(providerRouting) =>
+            setForm((prev) =>
+              providerRouting === undefined
+                ? { ...prev, providerRoutingValid: false }
+                : { ...prev, providerRouting, providerRoutingValid: true },
+            )
+          }
         />
 
         <DialogFooter>

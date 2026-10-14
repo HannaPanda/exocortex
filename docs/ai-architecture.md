@@ -617,6 +617,13 @@ inherits, a value replaces, `null` removes). Example for issue #135:
 - Each request shaped by configured preferences logs
   `OpenRouter provider preferences for request` with the `provider` object and
   the correlation id.
+- The browser edits all three (the setting, a model, an agent profile)
+  through one form, `apps/web/src/components/ai/provider-routing-editor.tsx`
+  (issue #201). It reads and writes the stored object unchanged: the known
+  keys are fields (an override's in three states, inherit, remove, value),
+  the provider lists offer the model's endpoint snapshot, and every key the
+  form has no field for stays as JSON in a folded section. The conversion is
+  `apps/web/src/lib/provider-routing-form.ts`, tested both ways.
 
 ## Auto-compaction
 

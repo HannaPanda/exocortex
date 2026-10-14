@@ -149,7 +149,7 @@
       "inputPriceNumber": "O preço de entrada deve ser um valor em dólares americanos, por exemplo 0,15, com no máximo seis casas decimais.",
       "outputPriceNumber": "O preço de saída deve ser um valor em dólares americanos, por exemplo 0,60, com no máximo seis casas decimais.",
       "reasoningRequired": "Pelo menos um nível de raciocínio deve ser selecionado.",
-      "providerRoutingInvalid": "O roteamento de provedores não é um objeto JSON válido com valores reconhecidos pelo OpenRouter."
+      "providerRoutingInvalid": "O roteamento de provedores ainda está incompleto. Os dados adicionais precisam ser um objeto JSON válido."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "Nenhum",
       "sortOrder": "Ordenação",
       "providerRouting": "Roteamento de provedores para este modelo",
-      "providerRoutingHelp": "Apenas as chaves definidas aqui substituem a configuração „Roteamento de provedores no OpenRouter“. Uma chave com null remove o valor global para este modelo. Deixar em branco mantém a configuração inalterada."
+      "providerRoutingHelp": "Cada campo herda a configuração “Roteamento de provedores no OpenRouter” até você escolher outra opção aqui. “Remover” descarta o valor herdado para este modelo."
     },
     "cancel": "Cancelar",
     "save": "Salvar",

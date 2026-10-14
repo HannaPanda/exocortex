@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Provider routing on OpenRouter",
-        "help": "Applies to every request to OpenRouter, as JSON in the format of the “provider” field: for example sort with throughput, latency or price, ignore and only with provider names. Leaving it empty lets OpenRouter choose freely. Individual models override these values in model administration."
+        "help": "Applies to every request to OpenRouter. If left blank, OpenRouter chooses on its own. Individual models and agent profiles can override these values in their own settings."
       },
       "subscriptionFallback": {
         "label": "Fall back to OpenRouter when subscription is depleted",
@@ -534,7 +534,6 @@
         "read_only": "Read-only"
       }
     },
-    "jsonInvalid": "This is not a valid value. The last valid state will be saved.",
     "containerImage": {
       "copy": "Copy image name",
       "unlock": "Change…",
@@ -850,6 +849,83 @@
       "changed": "Changed",
       "changedHint": "The server changed the description or parameters since you approved it. That is why it is locked again. Review it again.",
       "suggested": "Suggested: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter decides",
+      "inherit": "Inherit",
+      "inheritWith": "Inherit ({value})",
+      "remove": "Remove (OpenRouter decides)",
+      "custom": "Custom list"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "emptyList": "empty list",
+    "sort": {
+      "label": "Provider sorting",
+      "unsetHelp": "OpenRouter routes requests on its own, balancing price and availability.",
+      "price": {
+        "label": "Price",
+        "help": "The most affordable matching provider comes first."
+      },
+      "throughput": {
+        "label": "Throughput",
+        "help": "The provider with the most tokens per second comes first. This completes long responses faster."
+      },
+      "latency": {
+        "label": "Latency",
+        "help": "The provider with the shortest time to first token comes first. This makes responses start sooner."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Only these providers",
+        "help": "Requests go exclusively to the listed providers. If none match, the request fails."
+      },
+      "ignore": {
+        "label": "Never these providers",
+        "help": "The listed providers are skipped; all others remain eligible."
+      },
+      "order": {
+        "label": "Try these providers first",
+        "help": "In this order, before all others. The provider sorting above then does not apply."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Fall back to other providers",
+        "default": "OpenRouter default (yes)",
+        "help": "If the desired provider is unavailable, OpenRouter may use another one."
+      },
+      "require_parameters": {
+        "label": "Only providers supporting all parameters",
+        "default": "OpenRouter default (no)",
+        "help": "Excludes providers that would silently ignore part of the request (such as tools or reasoning effort)."
+      }
+    },
+    "dataCollection": {
+      "label": "Providers that store data",
+      "help": "Whether providers that may store requests or use them for training are eligible.",
+      "allow": "Allowed",
+      "deny": "Excluded"
+    },
+    "chips": {
+      "placeholder": "Enter or select a provider",
+      "add": "Add “{name}”",
+      "remove": "Remove {name}",
+      "empty": "No matching providers"
+    },
+    "extra": {
+      "summary": "Additional options as JSON",
+      "help": "For keys from OpenRouter’s provider field that do not have their own field above, such as max_price or quantizations.",
+      "invalid": "This is not a valid JSON object.",
+      "knownKey": "This key has its own field above. Please configure it there."
+    },
+    "preview": {
+      "title": "Applies to requests as follows",
+      "empty": "No preferences: OpenRouter chooses freely.",
+      "invalid": "Only visible once the details are valid."
     }
   }
 }

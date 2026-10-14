@@ -149,7 +149,7 @@
       "inputPriceNumber": "Cena wejściowa musi być kwotą w dolarach amerykańskich, na przykład 0,15, z maksymalnie sześcioma miejscami po przecinku.",
       "outputPriceNumber": "Cena wyjściowa musi być kwotą w dolarach amerykańskich, na przykład 0,60, z maksymalnie sześcioma miejscami po przecinku.",
       "reasoningRequired": "Musisz wybrać co najmniej jeden poziom myślenia.",
-      "providerRoutingInvalid": "Routing dostawców nie jest prawidłowym obiektem JSON z wartościami rozpoznawanymi przez OpenRouter."
+      "providerRoutingInvalid": "Routing dostawców jest jeszcze niekompletny. Pozostałe dane muszą być prawidłowym obiektem JSON."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "Brak",
       "sortOrder": "Sortowanie",
       "providerRouting": "Routing dostawców dla tego modelu",
-      "providerRoutingHelp": "Tylko podane tutaj klucze zastępują ustawienie „Routing dostawców w OpenRouter”. Klucz z wartością null usuwa wartość globalną dla tego modelu. Pozostawienie pustego pola zachowuje ustawienie bez zmian."
+      "providerRoutingHelp": "Każde pole dziedziczy ustawienie „Routing dostawców w OpenRouter”, dopóki nie wybierzesz tutaj czegoś innego. „Usuń” odrzuca dziedziczoną wartość dla tego modelu."
     },
     "cancel": "Anuluj",
     "save": "Zapisz",

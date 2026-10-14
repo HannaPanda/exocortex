@@ -149,7 +149,7 @@
       "inputPriceNumber": "The input price must be an amount in US dollars, for example 0.15, with at most six decimal places.",
       "outputPriceNumber": "The output price must be an amount in US dollars, for example 0.60, with at most six decimal places.",
       "reasoningRequired": "At least one reasoning level must be selected.",
-      "providerRoutingInvalid": "Provider routing is not a valid JSON object with values recognized by OpenRouter."
+      "providerRoutingInvalid": "Provider routing is incomplete. The additional details must be a valid JSON object."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "None",
       "sortOrder": "Sort order",
       "providerRouting": "Provider routing for this model",
-      "providerRoutingHelp": "Only the keys listed here override the “Provider routing on OpenRouter” setting. A key set to null removes the global value for this model. Leaving it empty keeps the setting unchanged."
+      "providerRoutingHelp": "Every field inherits the “Provider routing with OpenRouter” setting until you choose something else here. “Remove” takes away the inherited value for this model."
     },
     "cancel": "Cancel",
     "save": "Save",

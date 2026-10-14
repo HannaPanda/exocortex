@@ -988,10 +988,10 @@
     "summary": "Du legst fest, wie OpenRouter unter den Anbietern eines Modells wählt: nach Durchsatz, Antwortzeit oder Preis, mit Anbietern, die nie oder als einzige drankommen. Jedes Modell kann einzelne dieser Vorgaben für sich ändern.",
     "details": {
       "p1": "Dasselbe Modell läuft bei mehreren Anbietern, und die sind sehr unterschiedlich schnell. Bei einer langen Antwort entscheidet vor allem die Schreibgeschwindigkeit, wie lange du wartest: knapp zehntausend Tokens dauern bei 32 Tokens pro Sekunde gut fünf Minuten, bei 150 gut eine. Ohne Vorgabe wählt die Vermittlung selbst und landet dabei manchmal beim langsamsten.",
-      "p2": "In den Einstellungen steht deshalb eine Vorgabe für alle Anfragen, im Format, das OpenRouter selbst versteht: sortieren nach Durchsatz, Antwortzeit oder Preis, Anbieter ausschließen oder nur bestimmte zulassen. Was OpenRouter später dazulernt, lässt sich dort ebenfalls eintragen.",
-      "p3": "Ein Modell kann einzelne Werte davon ändern, ohne den Rest zu verlieren: stellt es nur die Sortierung um, bleiben die ausgeschlossenen Anbieter ausgeschlossen. Welche Anbieter eine Anfrage überhaupt bedienen können, weil ihr Fenster groß genug ist, wird weiterhin vor jeder Anfrage geprüft, und nur unter diesen wird sortiert."
+      "p2": "In den Einstellungen steht deshalb eine Vorgabe für alle Anfragen, als Formular: sortieren nach Durchsatz, Antwortzeit oder Preis, Anbieter ausschließen, nur bestimmte zulassen oder zuerst versuchen. Die Anbieter wählst du als Chips aus den bekannten Anbietern eines Modells oder tippst sie ein. Was OpenRouter später dazulernt und das Formular nicht kennt, lässt sich darunter als JSON eintragen und bleibt beim Speichern erhalten.",
+      "p3": "Ein Modell und ein Agentenprofil können einzelne Werte davon ändern, ohne den Rest zu verlieren: jedes Feld erbt, entfernt den geerbten Wert oder setzt einen eigenen, und beim Modell zeigt eine Vorschau, was dann gilt. Stellt es nur die Sortierung um, bleiben die ausgeschlossenen Anbieter ausgeschlossen. Welche Anbieter eine Anfrage überhaupt bedienen können, weil ihr Fenster groß genug ist, wird weiterhin vor jeder Anfrage geprüft, und nur unter diesen wird sortiert."
     },
-    "where": "Verwaltung, Einstellungen, Gruppe KI, und je Modell in Verwaltung, KI-Modelle, beim Bearbeiten."
+    "where": "Verwaltung, Einstellungen, Gruppe KI; je Modell in Verwaltung, KI-Modelle, beim Bearbeiten; je Agentenprofil im Profil-Dialog des Arbeitsbereichs."
   },
   "abo-anbieter": {
     "title": "Ein Abo statt Abrechnung pro Token nutzen",

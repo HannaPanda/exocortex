@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Routing dostawców w OpenRouter",
-        "help": "Dotyczy każdego zapytania do OpenRouter, jako JSON w formacie pola „provider”: na przykład sort z throughput, latency lub price, ignore oraz only z nazwami dostawców. Pozostawienie pustego pola pozwala OpenRouter wybrać dowolnie. Poszczególne modele mogą nadpisywać te wartości w administracji modeli."
+        "help": "Dotyczy każdego zapytania do OpenRouter. Bez określenia OpenRouter wybiera sam. Poszczególne modele i profile agentów mogą nadpisywać te wartości we własnych ustawieniach."
       },
       "subscriptionFallback": {
         "label": "Przełączanie na OpenRouter po wyczerpaniu subskrypcji",
@@ -534,7 +534,6 @@
         "read_only": "Tylko do odczytu"
       }
     },
-    "jsonInvalid": "To nie jest prawidłowa wartość. Zostanie zapisany ostatni poprawny stan.",
     "containerImage": {
       "copy": "Skopiuj nazwę obrazu",
       "unlock": "Zmień…",
@@ -850,6 +849,83 @@
       "changed": "Zmieniono",
       "changedHint": "Serwer zmienił opis lub parametry od czasu twojego zatwierdzenia. Z tego powodu narzędzie jest ponownie zablokowane. Przejrzyj je jeszcze raz.",
       "suggested": "Sugestia: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter decyduje",
+      "inherit": "Dziedzicz",
+      "inheritWith": "Dziedzicz ({value})",
+      "remove": "Usuń (OpenRouter decyduje)",
+      "custom": "Własna lista"
+    },
+    "yes": "Tak",
+    "no": "Nie",
+    "emptyList": "pusta lista",
+    "sort": {
+      "label": "Kolejność dostawców",
+      "unsetHelp": "OpenRouter sam rozdziela zapytania, uwzględniając cenę i dostępność.",
+      "price": {
+        "label": "Cena",
+        "help": "Najtańszy pasujący dostawca ma pierwszeństwo."
+      },
+      "throughput": {
+        "label": "Przepustowość",
+        "help": "Dostawca z największą liczbą tokenów na sekundę ma pierwszeństwo. Długie odpowiedzi kończą się szybciej."
+      },
+      "latency": {
+        "label": "Opóźnienie",
+        "help": "Dostawca z najkrótszym czasem do pierwszego tokena ma pierwszeństwo. Odpowiedź zaczyna się wcześniej."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Tylko ci dostawcy",
+        "help": "Zapytania trafiają wyłącznie do wymienionych dostawców. Jeśli żaden nie pasuje, zapytanie kończy się niepowodzeniem."
+      },
+      "ignore": {
+        "label": "Nigdy ci dostawcy",
+        "help": "Wymienieni dostawcy są pomijani, wszyscy inni pozostają dostępni."
+      },
+      "order": {
+        "label": "Wypróbuj najpierw tych dostawców",
+        "help": "W tej kolejności, przed wszystkimi innymi. Kolejność dostawców z góry wtedy nie obowiązuje."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Przełączaj na innych dostawców",
+        "default": "Domyślnie dla OpenRouter (tak)",
+        "help": "Jeśli wybrany dostawca jest niedostępny, OpenRouter może wybrać innego."
+      },
+      "require_parameters": {
+        "label": "Tylko dostawcy obsługujący wszystkie parametry",
+        "default": "Domyślnie dla OpenRouter (nie)",
+        "help": "Wyklucza dostawców, którzy po cichu zignorowaliby część zapytania (np. narzędzia lub budżet na myślenie)."
+      }
+    },
+    "dataCollection": {
+      "label": "Dostawcy przechowujący dane",
+      "help": "Czy dopuszczać dostawców, którzy mogą przechowywać zapytania lub wykorzystywać je do trenowania.",
+      "allow": "Dozwolone",
+      "deny": "Wykluczone"
+    },
+    "chips": {
+      "placeholder": "Wpisz lub wybierz dostawcę",
+      "add": "Dodaj „{name}”",
+      "remove": "Usuń {name}",
+      "empty": "Brak pasujących dostawców"
+    },
+    "extra": {
+      "summary": "Dodatkowe parametry w formacie JSON",
+      "help": "Dla kluczy z pola provider w OpenRouter, które nie mają powyżej własnego pola, np. max_price lub quantizations.",
+      "invalid": "To nie jest prawidłowy obiekt JSON.",
+      "knownKey": "Ten klucz ma własne pole powyżej. Ustaw go tam."
+    },
+    "preview": {
+      "title": "Będzie obowiązywać dla zapytań",
+      "empty": "Brak reguł: OpenRouter wybiera dowolnie.",
+      "invalid": "Widoczne dopiero po podaniu prawidłowych danych."
     }
   }
 }

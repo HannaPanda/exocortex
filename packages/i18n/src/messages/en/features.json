@@ -988,10 +988,10 @@
     "summary": "You decide how OpenRouter chooses among the providers of a model: by throughput, latency, or price, with providers that are never picked or the only ones allowed. Each model can override individual preferences for itself.",
     "details": {
       "p1": "The same model runs across multiple providers, and their speeds vary greatly. For a long response, the generation speed is the main factor determining how long you wait: nearly ten thousand tokens take well over five minutes at 32 tokens per second, but just over one minute at 150. Without a preference, routing chooses on its own and sometimes ends up with the slowest one.",
-      "p2": "The settings therefore contain a default for all requests, in the format that OpenRouter itself understands: sort by throughput, latency, or price, exclude providers, or only allow specific ones. Whatever OpenRouter adds in the future can be configured there as well.",
-      "p3": "A model can change individual values without losing the rest: if it only changes the sorting, excluded providers remain excluded. Which providers can serve a request at all because their context window is large enough is still checked before each request, and sorting only applies among those."
+      "p2": "In the settings, you’ll therefore find a default for all requests as a form: sort by throughput, latency, or price; exclude providers; only allow specific ones; or try certain ones first. You select providers as chips from a model’s known providers or type them in. Anything OpenRouter adds later that the form doesn’t recognize can be entered below as JSON and is preserved when saving.",
+      "p3": "A model and an agent profile can override individual values without losing the rest: each field inherits, clears the inherited value, or sets its own, and for models, a preview shows the resulting configuration. If it only changes the sorting, excluded providers remain excluded. Which providers can actually handle a request because their context window is large enough is still checked before each request, and only those are sorted."
     },
-    "where": "Administration, Settings, AI group, and per model in Administration, AI models, when editing."
+    "where": "Administration, Settings, AI group; per model in Administration, AI Models, when editing; per agent profile in the workspace profile dialog."
   },
   "abo-anbieter": {
     "title": "Use a subscription instead of per-token billing",

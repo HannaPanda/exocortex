@@ -988,10 +988,10 @@
     "summary": "Je bepaalt hoe OpenRouter kiest tussen de providers van een model: op doorvoer, responstijd of prijs, met providers die nooit of juist als enige aan bod komen. Elk model kan afzonderlijke instellingen hiervan voor zichzelf aanpassen.",
     "details": {
       "p1": "Hetzelfde model draait bij meerdere providers, en die verschillen enorm in snelheid. Bij een lang antwoord bepaalt vooral de schrijfsnelheid hoelang je wacht: bijna tienduizend tokens duren bij 32 tokens per seconde ruim vijf minuten, bij 150 ruim één. Zonder voorkeur kiest de routing zelf en komt daarbij soms bij de langzaamste uit.",
-      "p2": "In de instellingen staat daarom een standaard voor alle verzoeken, in de indeling die OpenRouter zelf begrijpt: sorteren op doorvoer, responstijd of prijs, providers uitsluiten of alleen specifieke toestaan. Nieuwe functies die OpenRouter later toevoegt, kunnen daar ook worden ingevuld.",
-      "p3": "Een model kan afzonderlijke waarden hiervan aanpassen zonder de rest kwijt te raken: past het alleen de sortering aan, dan blijven de uitgesloten providers uitgesloten. Welke providers een verzoek überhaupt kunnen afhandelen omdat hun venster groot genoeg is, wordt nog steeds vóór elk verzoek gecontroleerd, en alleen tussen die providers wordt gesorteerd."
+      "p2": "In de instellingen vind je daarom een standaard voor alle verzoeken, in de vorm van een formulier: sorteren op doorvoer, responstijd of prijs, aanbieders uitsluiten, alleen bepaalde toestaan of als eerste proberen. De aanbieders kies je als chips uit de bekende aanbieders van een model of je typt ze in. Wat OpenRouter later toevoegt en het formulier niet kent, kun je daaronder als JSON invoeren en blijft bij het opslaan behouden.",
+      "p3": "Een model en een agentprofiel kunnen afzonderlijke waarden hiervan wijzigen zonder de rest kwijt te raken: elk veld erft, verwijdert de overgeërfde waarde of stelt een eigen waarde in, en bij het model laat een voorbeeld zien wat er dan geldt. Past het alleen de sortering aan, dan blijven de uitgesloten aanbieders uitgesloten. Welke aanbieders een verzoek überhaupt kunnen verwerken omdat hun contextvenster groot genoeg is, wordt nog steeds voorafgaand aan elk verzoek gecontroleerd, en er wordt alleen tussen deze aanbieders gesorteerd."
     },
-    "where": "Beheer, Instellingen, groep AI, en per model in Beheer, AI-modellen, tijdens het bewerken."
+    "where": "Beheer, Instellingen, groep AI; per model in Beheer, AI-modellen, tijdens het bewerken; per agentprofiel in het profieldialoogvenster van de werkruimte."
   },
   "abo-anbieter": {
     "title": "Een abonnement gebruiken in plaats van afrekenen per token",

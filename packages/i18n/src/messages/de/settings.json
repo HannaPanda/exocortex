@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Anbieter-Routing bei OpenRouter",
-        "help": "Gilt für jede Anfrage an OpenRouter, als JSON im Format des Felds „provider“: etwa sort mit throughput, latency oder price, ignore und only mit Anbieternamen. Leer lässt OpenRouter frei wählen. Einzelne Modelle überschreiben Werte daraus in der Modellverwaltung."
+        "help": "Gilt für jede Anfrage an OpenRouter. Ohne Angabe wählt OpenRouter selbst. Einzelne Modelle und Agentenprofile können Werte daraus in ihren eigenen Einstellungen überschreiben."
       },
       "subscriptionFallback": {
         "label": "Bei leerem Abo auf OpenRouter ausweichen",
@@ -534,7 +534,6 @@
         "read_only": "Nur lesen"
       }
     },
-    "jsonInvalid": "Das ist so kein gültiger Wert. Gespeichert wird der zuletzt gültige Stand.",
     "containerImage": {
       "copy": "Namen des Abbilds kopieren",
       "unlock": "Ändern …",
@@ -850,6 +849,83 @@
       "changed": "Geändert",
       "changedHint": "Der Server hat Beschreibung oder Parameter geändert, seit du es freigegeben hast. Deshalb ist es wieder gesperrt. Sieh es dir neu an.",
       "suggested": "Vorschlag: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter entscheidet",
+      "inherit": "Erben",
+      "inheritWith": "Erben ({value})",
+      "remove": "Entfernen (OpenRouter entscheidet)",
+      "custom": "Eigene Liste"
+    },
+    "yes": "Ja",
+    "no": "Nein",
+    "emptyList": "leere Liste",
+    "sort": {
+      "label": "Reihenfolge der Anbieter",
+      "unsetHelp": "OpenRouter verteilt die Anfragen selbst, mit Blick auf Preis und Verfügbarkeit.",
+      "price": {
+        "label": "Preis",
+        "help": "Der günstigste passende Anbieter kommt zuerst."
+      },
+      "throughput": {
+        "label": "Durchsatz",
+        "help": "Der Anbieter mit den meisten Token pro Sekunde kommt zuerst. Lange Antworten sind so schneller fertig."
+      },
+      "latency": {
+        "label": "Latenz",
+        "help": "Der Anbieter mit der kürzesten Zeit bis zum ersten Token kommt zuerst. Die Antwort beginnt so früher."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Nur diese Anbieter",
+        "help": "Anfragen gehen ausschließlich an die genannten Anbieter. Passt keiner, schlägt die Anfrage fehl."
+      },
+      "ignore": {
+        "label": "Diese Anbieter nie",
+        "help": "Die genannten Anbieter werden übersprungen, alle anderen bleiben möglich."
+      },
+      "order": {
+        "label": "Diese Anbieter zuerst versuchen",
+        "help": "In dieser Reihenfolge, vor allen anderen. Die Reihenfolge der Anbieter oben gilt dann nicht."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Auf andere Anbieter ausweichen",
+        "default": "OpenRouter-Standard (ja)",
+        "help": "Ist der gewünschte Anbieter nicht erreichbar, darf OpenRouter einen anderen nehmen."
+      },
+      "require_parameters": {
+        "label": "Nur Anbieter, die alle Parameter können",
+        "default": "OpenRouter-Standard (nein)",
+        "help": "Schließt Anbieter aus, die einen Teil der Anfrage (etwa Werkzeuge oder Denkaufwand) stillschweigend ignorieren würden."
+      }
+    },
+    "dataCollection": {
+      "label": "Anbieter, die Daten speichern",
+      "help": "Ob Anbieter in Frage kommen, die Anfragen speichern oder zum Training verwenden dürfen.",
+      "allow": "Erlaubt",
+      "deny": "Ausgeschlossen"
+    },
+    "chips": {
+      "placeholder": "Anbieter eingeben oder wählen",
+      "add": "„{name}“ hinzufügen",
+      "remove": "{name} entfernen",
+      "empty": "Keine passenden Anbieter"
+    },
+    "extra": {
+      "summary": "Weitere Angaben als JSON",
+      "help": "Für Schlüssel aus dem provider-Feld von OpenRouter, die oben kein eigenes Feld haben, etwa max_price oder quantizations.",
+      "invalid": "Das ist kein gültiges JSON-Objekt.",
+      "knownKey": "Dieser Schlüssel hat oben ein eigenes Feld. Bitte dort einstellen."
+    },
+    "preview": {
+      "title": "Gilt damit für Anfragen",
+      "empty": "Keine Vorgaben: OpenRouter wählt frei.",
+      "invalid": "Erst sichtbar, wenn die Angaben gültig sind."
     }
   }
 }

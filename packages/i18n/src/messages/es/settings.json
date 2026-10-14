@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Enrutamiento de proveedores en OpenRouter",
-        "help": "Se aplica a cada solicitud a OpenRouter, como JSON en el formato del campo «provider»: por ejemplo, sort con throughput, latency o price, e ignore y only con nombres de proveedores. Si se deja vacío, OpenRouter elige libremente. Los modelos individuales pueden sobrescribir estos valores en la administración de modelos."
+        "help": "Se aplica a cada solicitud a OpenRouter. Si no se especifica, OpenRouter elige por su cuenta. Determinados modelos y perfiles de agente pueden sobrescribir estos valores en su propia configuración."
       },
       "subscriptionFallback": {
         "label": "Recurrir a OpenRouter si se agota la suscripción",
@@ -534,7 +534,6 @@
         "read_only": "Solo lectura"
       }
     },
-    "jsonInvalid": "Este valor no es válido. Se guardará el último estado válido.",
     "containerImage": {
       "copy": "Copiar nombre de la imagen",
       "unlock": "Cambiar…",
@@ -850,6 +849,83 @@
       "changed": "Modificada",
       "changedHint": "El servidor ha cambiado la descripción o los parámetros desde que la aprobaste. Por eso vuelve a estar bloqueada. Revísala de nuevo.",
       "suggested": "Sugerencia: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter decide",
+      "inherit": "Heredar",
+      "inheritWith": "Heredar ({value})",
+      "remove": "Quitar (OpenRouter decide)",
+      "custom": "Lista personalizada"
+    },
+    "yes": "Sí",
+    "no": "No",
+    "emptyList": "lista vacía",
+    "sort": {
+      "label": "Orden de los proveedores",
+      "unsetHelp": "OpenRouter distribuye las solicitudes por su cuenta, teniendo en cuenta el precio y la disponibilidad.",
+      "price": {
+        "label": "Precio",
+        "help": "El proveedor adecuado más económico va primero."
+      },
+      "throughput": {
+        "label": "Rendimiento",
+        "help": "El proveedor con más tokens por segundo va primero. Así las respuestas largas terminan antes."
+      },
+      "latency": {
+        "label": "Latencia",
+        "help": "El proveedor con el menor tiempo hasta el primer token va primero. Así la respuesta empieza antes."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Solo estos proveedores",
+        "help": "Las solicitudes van exclusivamente a los proveedores indicados. Si ninguno encaja, la solicitud falla."
+      },
+      "ignore": {
+        "label": "No usar nunca estos proveedores",
+        "help": "Los proveedores indicados se omiten; todos los demás siguen disponibles."
+      },
+      "order": {
+        "label": "Probar estos proveedores primero",
+        "help": "En este orden, antes que todos los demás. En este caso no se aplica el orden de los proveedores de arriba."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Recurrir a otros proveedores",
+        "default": "Predeterminado de OpenRouter (sí)",
+        "help": "Si el proveedor deseado no está disponible, OpenRouter puede recurrir a otro."
+      },
+      "require_parameters": {
+        "label": "Solo proveedores compatibles con todos los parámetros",
+        "default": "Predeterminado de OpenRouter (no)",
+        "help": "Excluye a los proveedores que ignorarían de forma silenciosa una parte de la solicitud (como herramientas o esfuerzo de razonamiento)."
+      }
+    },
+    "dataCollection": {
+      "label": "Proveedores que guardan datos",
+      "help": "Indica si se admiten proveedores autorizados a almacenar solicitudes o usarlas para entrenamiento.",
+      "allow": "Permitido",
+      "deny": "Excluido"
+    },
+    "chips": {
+      "placeholder": "Escribe o elige un proveedor",
+      "add": "Añadir «{name}»",
+      "remove": "Quitar {name}",
+      "empty": "No hay proveedores coincidentes"
+    },
+    "extra": {
+      "summary": "Parámetros adicionales en formato JSON",
+      "help": "Para claves del campo provider de OpenRouter que no tienen un campo propio arriba, como max_price o quantizations.",
+      "invalid": "No es un objeto JSON válido.",
+      "knownKey": "Esta clave tiene un campo propio arriba. Configúrala allí, por favor."
+    },
+    "preview": {
+      "title": "Se aplica por tanto a las solicitudes",
+      "empty": "Sin restricciones: OpenRouter elige libremente.",
+      "invalid": "Solo será visible cuando los datos sean válidos."
     }
   }
 }

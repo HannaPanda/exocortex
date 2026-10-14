@@ -113,7 +113,7 @@
       },
       "providerRouting": {
         "label": "Roteamento de provedores no OpenRouter",
-        "help": "Aplica-se a cada solicitação ao OpenRouter, como JSON no formato do campo „provider”: por exemplo sort com throughput, latency ou price, ignore e only com nomes de provedores. Deixar em branco permite que o OpenRouter escolha livremente. Modelos individuais substituem esses valores na administração de modelos."
+        "help": "Aplica-se a todas as requisições ao OpenRouter. Se não for especificado, o OpenRouter decide por conta própria. Modelos e perfis de agente individuais podem substituir esses valores em suas próprias configurações."
       },
       "subscriptionFallback": {
         "label": "Alternar para o OpenRouter quando a assinatura esgotar",
@@ -534,7 +534,6 @@
         "read_only": "Apenas ler"
       }
     },
-    "jsonInvalid": "Este não é um valor válido. O último estado válido será mantido salvo.",
     "containerImage": {
       "copy": "Copiar nome da imagem",
       "unlock": "Alterar…",
@@ -850,6 +849,83 @@
       "changed": "Alterado",
       "changedHint": "O servidor alterou a descrição ou os parâmetros desde que você fez a aprovação. Por isso, ela foi bloqueada novamente. Revise-a.",
       "suggested": "Sugestão: {access}"
+    }
+  },
+  "providerRouting": {
+    "state": {
+      "default": "OpenRouter decide",
+      "inherit": "Herdar",
+      "inheritWith": "Herdar ({value})",
+      "remove": "Remover (OpenRouter decide)",
+      "custom": "Lista personalizada"
+    },
+    "yes": "Sim",
+    "no": "Não",
+    "emptyList": "lista vazia",
+    "sort": {
+      "label": "Ordem dos provedores",
+      "unsetHelp": "O OpenRouter distribui as requisições por conta própria, considerando preço e disponibilidade.",
+      "price": {
+        "label": "Preço",
+        "help": "O provedor adequado mais barato vem primeiro."
+      },
+      "throughput": {
+        "label": "Taxa de transferência",
+        "help": "O provedor com mais tokens por segundo vem primeiro. Respostas longas são concluídas mais rápido assim."
+      },
+      "latency": {
+        "label": "Latência",
+        "help": "O provedor com o menor tempo até o primeiro token vem primeiro. A resposta começa mais cedo assim."
+      }
+    },
+    "lists": {
+      "only": {
+        "label": "Apenas estes provedores",
+        "help": "As requisições vão exclusivamente para os provedores indicados. Se nenhum for adequado, a requisição falha."
+      },
+      "ignore": {
+        "label": "Nunca estes provedores",
+        "help": "Os provedores indicados são ignorados; todos os outros continuam disponíveis."
+      },
+      "order": {
+        "label": "Tentar estes provedores primeiro",
+        "help": "Nesta ordem, antes de todos os outros. A ordem dos provedores acima deixa de valer."
+      }
+    },
+    "flags": {
+      "allow_fallbacks": {
+        "label": "Recorrer a outros provedores",
+        "default": "Padrão do OpenRouter (sim)",
+        "help": "Se o provedor desejado estiver indisponível, o OpenRouter pode escolher outro."
+      },
+      "require_parameters": {
+        "label": "Apenas provedores que suportam todos os parâmetros",
+        "default": "Padrão do OpenRouter (não)",
+        "help": "Exclui provedores que ignorariam silenciosamente parte da requisição (como ferramentas ou esforço de reflexão)."
+      }
+    },
+    "dataCollection": {
+      "label": "Provedores que armazenam dados",
+      "help": "Se provedores autorizados a armazenar requisições ou a usá-las para treinamento podem ser considerados.",
+      "allow": "Permitido",
+      "deny": "Excluído"
+    },
+    "chips": {
+      "placeholder": "Digitar ou selecionar provedor",
+      "add": "Adicionar “{name}”",
+      "remove": "Remover {name}",
+      "empty": "Nenhum provedor correspondente"
+    },
+    "extra": {
+      "summary": "Outros parâmetros em JSON",
+      "help": "Para chaves do campo provider do OpenRouter que não têm campo próprio acima, como max_price ou quantizations.",
+      "invalid": "Isto não é um objeto JSON válido.",
+      "knownKey": "Esta chave tem um campo próprio acima. Ajuste lá, por favor."
+    },
+    "preview": {
+      "title": "Aplica-se às solicitações",
+      "empty": "Sem preferências: o OpenRouter escolhe livremente.",
+      "invalid": "Visível apenas quando as informações forem válidas."
     }
   }
 }

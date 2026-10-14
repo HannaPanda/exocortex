@@ -149,7 +149,7 @@
       "inputPriceNumber": "Der Eingabepreis muss ein Betrag in US-Dollar sein, zum Beispiel 0,15, mit höchstens sechs Nachkommastellen.",
       "outputPriceNumber": "Der Ausgabepreis muss ein Betrag in US-Dollar sein, zum Beispiel 0,60, mit höchstens sechs Nachkommastellen.",
       "reasoningRequired": "Mindestens eine Denkstufe muss ausgewählt sein.",
-      "providerRoutingInvalid": "Das Anbieter-Routing ist kein gültiges JSON-Objekt mit Werten, die OpenRouter kennt."
+      "providerRoutingInvalid": "Das Anbieter-Routing ist noch unvollständig. Die weiteren Angaben müssen ein gültiges JSON-Objekt sein."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "Keines",
       "sortOrder": "Sortierung",
       "providerRouting": "Anbieter-Routing für dieses Modell",
-      "providerRoutingHelp": "Nur die Schlüssel, die hier stehen, ersetzen die Einstellung „Anbieter-Routing bei OpenRouter“. Ein Schlüssel mit null nimmt den globalen Wert für dieses Modell weg. Leer übernimmt die Einstellung unverändert."
+      "providerRoutingHelp": "Jedes Feld erbt die Einstellung „Anbieter-Routing bei OpenRouter“, bis du hier etwas anderes wählst. „Entfernen“ nimmt den geerbten Wert für dieses Modell weg."
     },
     "cancel": "Abbrechen",
     "save": "Speichern",

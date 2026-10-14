@@ -26,7 +26,12 @@ import {
 
 import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 
-import { DatePickerExample, InputTypesExample, TimeZonePickerExample } from './input-types';
+import {
+  DatePickerExample,
+  InputTypesExample,
+  ProviderRoutingEditorExample,
+  TimeZonePickerExample,
+} from './input-types';
 
 /**
  * Buttons, form fields, toggles and tabs: the controls a person touches, each
@@ -199,6 +204,7 @@ export function FormsSection() {
 
       <DatePickerExample />
       <TimeZonePickerExample />
+      <ProviderRoutingEditorExample />
 
       <DsExample
         id="feld-mehrzeilig"

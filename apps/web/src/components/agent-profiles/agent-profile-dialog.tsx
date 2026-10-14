@@ -14,7 +14,7 @@ import {
   type AiReasoningLevel,
   type AiWriteMode,
   type CreateAgentProfileRequest,
-  providerRoutingOverrideSchema,
+  type ProviderRoutingOverride,
   TOOL_DOMAINS,
   type ToolDomain,
 } from '@exocortex/contracts';
@@ -42,6 +42,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
 import { DurationInput } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
 import { useCreateAgentProfile, useUpdateAgentProfile } from '@/lib/api/agent-profile-queries';
@@ -71,7 +72,10 @@ interface Draft {
   rules: { documentId: string; title: string }[];
   modelSlug: string | null;
   reasoningLevel: AiReasoningLevel | null;
-  routing: string;
+  /** The override of `ai.providerRouting`; `null` follows the configuration. */
+  routing: ProviderRoutingOverride | null;
+  /** False while the routing form describes no override (issue #201). */
+  routingValid: boolean;
   allTools: boolean;
   toolDomains: ToolDomain[];
   writeMode: AiWriteMode;
@@ -99,7 +103,8 @@ const NEW_DRAFT: Draft = {
   rules: [],
   modelSlug: null,
   reasoningLevel: null,
-  routing: '',
+  routing: null,
+  routingValid: true,
   allTools: true,
   toolDomains: ['pages'],
   writeMode: 'propose',
@@ -124,8 +129,8 @@ function draftOf(profile: AgentProfile | null): Draft {
     rules: profile.ruleDocuments.flatMap((rule) =>
       rule.title === null ? [] : [{ documentId: rule.documentId, title: rule.title }],
     ),
-    routing:
-      profile.providerRouting === null ? '' : JSON.stringify(profile.providerRouting, null, 2),
+    routing: profile.providerRouting,
+    routingValid: true,
     allTools: profile.toolDomains === null,
     toolDomains: profile.toolDomains ?? NEW_DRAFT.toolDomains,
     budgetRunValid: true,
@@ -133,17 +138,6 @@ function draftOf(profile: AgentProfile | null): Draft {
     maxToolIterations: profile.maxToolIterations?.toString() ?? '',
     maxRunSecondsValid: true,
   };
-}
-
-/** The routing text as an override, `null` for none, `undefined` when it does not parse. */
-function routingOf(text: string): CreateAgentProfileRequest['providerRouting'] | undefined {
-  if (text.trim().length === 0) return null;
-  try {
-    const parsed = providerRoutingOverrideSchema.safeParse(JSON.parse(text));
-    return parsed.success ? parsed.data : undefined;
-  } catch {
-    return undefined;
-  }
 }
 
 export function AgentProfileDialog({
@@ -176,18 +170,17 @@ export function AgentProfileDialog({
   const set = <TKey extends keyof Draft>(field: TKey, value: Draft[TKey]): void =>
     setDraft((current) => ({ ...current, [field]: value }));
 
-  const routing = routingOf(draft.routing);
   const pending = create.isPending || update.isPending;
   const error = create.error ?? update.error;
   const valid =
     draft.name.trim().length > 0 &&
-    routing !== undefined &&
+    draft.routingValid &&
     draft.maxRunSecondsValid &&
     draft.budgetRunValid &&
     draft.budgetTaskValid;
 
   const submit = async (): Promise<void> => {
-    if (routing === undefined) return;
+    if (!draft.routingValid) return;
     const request: CreateAgentProfileRequest = {
       name: draft.name.trim(),
       description: draft.description.trim() || null,
@@ -195,7 +188,7 @@ export function AgentProfileDialog({
       ruleDocumentIds: draft.rules.map((rule) => rule.documentId),
       modelSlug: draft.modelSlug,
       reasoningLevel: draft.reasoningLevel,
-      providerRouting: routing,
+      providerRouting: draft.routing,
       toolDomains: draft.allTools ? null : draft.toolDomains,
       writeMode: draft.writeMode,
       approvalPolicy: draft.approvalPolicy,
@@ -274,7 +267,7 @@ export function AgentProfileDialog({
               onChange={(rules) => set('rules', rules)}
             />
 
-            <ModelFields draft={draft} set={set} routingValid={routing !== undefined} />
+            <ModelFields draft={draft} set={set} />
             <ToolFields draft={draft} set={set} />
 
             <PolicyFields draft={draft} set={set} />
@@ -299,7 +292,7 @@ export function AgentProfileDialog({
 }
 
 /** Model, reasoning and routing: the profile's preferences, never a binding. */
-function ModelFields({ draft, set, routingValid }: FieldProps & { routingValid: boolean }) {
+function ModelFields({ draft, set }: FieldProps) {
   const t = useTranslations('agentProfiles.dialog');
   const wording = useAgentProfileWording();
   const models = useAiModels();
@@ -367,20 +360,27 @@ function ModelFields({ draft, set, routingValid }: FieldProps & { routingValid: 
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="agent-profile-routing">{t('routingLabel')}</Label>
-        <Textarea
-          id="agent-profile-routing"
-          value={draft.routing}
-          rows={2}
-          className="font-mono text-xs"
-          onChange={(event) => set('routing', event.target.value)}
-          aria-invalid={!routingValid}
-        />
-        <p className="text-xs text-muted-foreground">
-          {!routingValid ? t('routingInvalid') : t('routingHint', { example: '{"sort": "price"}' })}
+      <fieldset className="flex min-w-0 flex-col gap-1.5 border-0 p-0">
+        <legend className="mb-1.5 text-sm leading-none font-medium">{t('routingLabel')}</legend>
+        <p id="agent-profile-routing-help" className="mb-2 text-xs text-muted-foreground">
+          {draft.routingValid ? t('routingHint') : t('routingInvalid')}
         </p>
-      </div>
+        <ProviderRoutingEditor
+          id="agent-profile-routing"
+          mode="override"
+          value={draft.routing}
+          describedBy="agent-profile-routing-help"
+          invalid={!draft.routingValid}
+          onChange={(next) => {
+            if (next === undefined) {
+              set('routingValid', false);
+              return;
+            }
+            set('routing', Object.keys(next).length === 0 ? null : next);
+            set('routingValid', true);
+          }}
+        />
+      </fieldset>
     </>
   );
 }

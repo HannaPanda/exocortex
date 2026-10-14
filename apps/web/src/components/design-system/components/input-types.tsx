@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { DatePicker, DateTimePicker, Input, Label } from '@exocortex/ui';
 
+import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
 import { TimeZonePicker } from '@/components/time-zone-picker';
 
 import { FIXTURE_DATE, FIXTURE_DATE_TIME } from '../fixtures';
@@ -211,6 +212,49 @@ export function TimeZonePickerExample() {
             onChange={setUnknown}
             className="w-72"
           />
+        </DsState>
+      </DsStates>
+    </DsExample>
+  );
+}
+
+/**
+ * The routing form (issue #201) in both of its modes: the deployment setting,
+ * where a field is either OpenRouter's default or a value, and an override,
+ * where it inherits, removes or replaces and the preview shows the result.
+ * The suggestions stand in for a model's endpoint snapshot.
+ */
+export function ProviderRoutingEditorExample() {
+  return (
+    <DsExample
+      id="feld-anbieter-routing"
+      title="Anbieter-Routing"
+      source="apps/web/src/components/ai/provider-routing-editor.tsx"
+      note="Ein Formular für die Einstellung ai.providerRouting, die Überschreibung je Modell und die je Agentenprofil. Listen sind Chips aus der Combobox mit multiple: Vorschläge aus den bekannten Endpunkten, freie Eingabe bleibt möglich, jeder Chip hat eine benannte Entfernen-Schaltfläche. Was das Formular nicht kennt, bleibt als JSON im eingeklappten Bereich erhalten."
+    >
+      <DsStates>
+        <DsState label="Einstellung">
+          <div className="w-80">
+            <ProviderRoutingEditor
+              id="ds-routing-setting"
+              mode="setting"
+              value={{ sort: 'throughput', ignore: ['relace'] }}
+              suggestions={['deepinfra/fp8', 'novita', 'relace']}
+              onChange={() => {}}
+            />
+          </div>
+        </DsState>
+        <DsState label="Überschreibung mit Vorschau">
+          <div className="w-80">
+            <ProviderRoutingEditor
+              id="ds-routing-override"
+              mode="override"
+              value={{ sort: null, only: ['deepinfra/fp8'], max_price: { prompt: 1 } }}
+              inherited={{ sort: 'throughput', ignore: ['relace'] }}
+              suggestions={['deepinfra/fp8', 'novita', 'relace']}
+              onChange={() => {}}
+            />
+          </div>
         </DsState>
       </DsStates>
     </DsExample>

@@ -1109,8 +1109,8 @@
       "output": "41af27bf99c0d9af"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "c5fc0e508452dde8"
+      "source": "9fc5f3541d7d618b",
+      "output": "68f4bd7940b93859"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -1173,8 +1173,8 @@
       "output": "c084a26c920da63f"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "63491e47b450505e"
+      "source": "615f13a5b3887824",
+      "output": "feba503768a9c715"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -2153,16 +2153,16 @@
       "output": "6dbc2366fc60da23"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "7b5b799f932589eb"
+      "source": "0d4fed6d7f15ae92",
+      "output": "13ac523a845eaff2"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "0a61b4c0218261b3"
+      "source": "9fc5f3541d7d618b",
+      "output": "bb847c4b7e63b861"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "6f095faa9afadaf0"
+      "source": "4f6204155a3780a3",
+      "output": "886d1fc9abafa8f0"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -11305,12 +11305,12 @@
       "output": "cd5e0bf39204dadf"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "21a6641f7b15a860"
+      "source": "6730335b7ca43b69",
+      "output": "e160a9710bc2a9a7"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "7bb13e81a12370bd"
+      "source": "40ac67196e926584",
+      "output": "64fc772b0225e645"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -11321,8 +11321,8 @@
       "output": "ca91333b12193655"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "aa6a77a34a2d3df7"
+      "source": "d8a2d50be4cd18a6",
+      "output": "8f455a918ef82bd3"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -17513,8 +17513,8 @@
       "output": "b9031a8591122118"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "6f6d3378edcd63ca"
+      "source": "ede164c32074a97a",
+      "output": "28bd7e35ec9f31c2"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -18168,6 +18168,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "a4fe65264ef7dbb3"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "dc784fc1450d7b2b"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "9c82379afa4faf6e"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "b9c991374ce81c77"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "e6a3c4a1250a6ad3"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "1bb201d188352e9b"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "bef1fd9e5caea8b5"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "c6b673967bbc4cf2"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "1d73d8c68a79d951"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "d24e16a5f13640d8"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "c920a649ed4b3b32"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "0a61b4c0218261b3"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "b0c8895ef57482e1"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "28c21ad8cf95826f"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "58d56062ea0e63e2"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "0e22e04d7bece238"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "b1229cc455630120"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "2fd78cb9c12f1dc1"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "5c55614436bc14e5"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "19c92a235342b01e"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "72945f5f0b352846"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "eaca83a20d025bfd"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "b2c6ac2458ee4163"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "bd751219a4235c22"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "ea9a51c295089864"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "4ecf0b9b48b24b1d"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "e650823d71d02b50"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "866a13b3717f5f5c"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "1b5fa309ec5c2284"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "77d3926f6afb7cbd"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "bb8b5bff49f46741"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "e0e7d293043c8cf6"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "8109c68cfa1cc9e2"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "93c91c851e7acc17"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "beb074694799d042"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "960bcc4e48b929b8"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "a3b5f7f6107433a6"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "533acc70e103e71a"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "00e81eec92d70c6d"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "3f72f0385768d284"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "3ed2e84a740393f6"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "bee82d5f89d60a57"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "85a39ab345d672ff"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -18391,10 +18563,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "85d5d67cef43ac82"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "bc53299aab6c65fd"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -24499,8 +24667,8 @@
       "output": "ab5ee351fd62b1ed"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "a123ab308e7b7c91"
+      "source": "9fc5f3541d7d618b",
+      "output": "b62afdbf0716ac0a"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -24563,8 +24731,8 @@
       "output": "7174d17887f89eeb"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "8f419c354207e062"
+      "source": "615f13a5b3887824",
+      "output": "6d7f75e1695c0749"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -25543,16 +25711,16 @@
       "output": "5fcbc09878388a37"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "68d9d42ecc2341a6"
+      "source": "0d4fed6d7f15ae92",
+      "output": "3d5e3826752b53e2"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "8543620e73d6f93c"
+      "source": "9fc5f3541d7d618b",
+      "output": "b62afdbf0716ac0a"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "5a4f624de5c65a07"
+      "source": "4f6204155a3780a3",
+      "output": "693a32894569196e"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -34695,12 +34863,12 @@
       "output": "4d07ecee3a3b3180"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "9cd601736b0051ab"
+      "source": "6730335b7ca43b69",
+      "output": "db2f942f6b24f233"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "5b882511e61e57a8"
+      "source": "40ac67196e926584",
+      "output": "9da8c5522aa4383a"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -34711,8 +34879,8 @@
       "output": "95ce54692ec6f3ea"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "9d5010a91d4aeda3"
+      "source": "d8a2d50be4cd18a6",
+      "output": "f057bad208ba3cd2"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -40903,8 +41071,8 @@
       "output": "6f2fa5ddd1bad2c1"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "08591ce626fbd34c"
+      "source": "ede164c32074a97a",
+      "output": "2b98a05b3aae4e26"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -41558,6 +41726,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "7ae9d418353b399f"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "1a381c2676277ddf"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "d438a30df155d418"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "618c772c739ce54a"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "43abea8c77b91ea3"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "f3fb44a969080b74"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "45d4b79b0e226b7c"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "1e714da7ff7390e4"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "9d4d807266d6334d"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "4bb04e20744163f7"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "b205f9753fa9beee"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "8543620e73d6f93c"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "755fa342b0742c38"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "25f25029077fe685"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "ded05db99de2d876"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "8cc36285a64952c8"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "2ca59a357f727a6c"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "8203ab96e33732a1"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "c0d420759254fd28"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "77ba6c7040f25401"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "f26e6a719687f141"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "625ae13fa3a8a56e"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "39c69bd6ee40c607"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "553c180d530761ed"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "a9eb38844079f885"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "8ba9ce03e72366e8"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "4f4c3d9750c34b27"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "dc98ab95c9b5df9f"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "1ae0f34a376923fa"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "234e5b96b5e19340"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "6527c8be67881c91"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "b88e4b2658967383"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "65022b0aa7fe3a04"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "2e4385b6057f6d7f"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "70c2d1cf4b89fa69"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "0fb6f5157a9090e0"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "1e2015680731b0b2"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "401832f787bf7039"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "56b34f218e5aaa1b"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "3914dcd498648de8"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "f5b5761b1b7bf419"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "0f212e15b01b723c"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "739215889580345e"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -41781,10 +42121,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "1470ee2e03cab5bd"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "ccc30c9e4ffa5f7c"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -47889,8 +48225,8 @@
       "output": "15a5bd21f6cbd04a"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "54ed8c0ee07b731a"
+      "source": "9fc5f3541d7d618b",
+      "output": "c94be7eb8c044444"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -47953,8 +48289,8 @@
       "output": "820b859974faf3a3"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "446adfa7f3390e4e"
+      "source": "615f13a5b3887824",
+      "output": "7e8b5868fda37da6"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -48933,16 +49269,16 @@
       "output": "ccb55b1ba36ec884"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "f70b8492f438ee6f"
+      "source": "0d4fed6d7f15ae92",
+      "output": "a779c290e162a675"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "ece506aad5707678"
+      "source": "9fc5f3541d7d618b",
+      "output": "b65460a7b8aa50ac"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "b132e4da9cd44976"
+      "source": "4f6204155a3780a3",
+      "output": "2c6b7a192e2e176d"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -58085,12 +58421,12 @@
       "output": "4fa822caaecc313a"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "51f63efa5a1f2662"
+      "source": "6730335b7ca43b69",
+      "output": "144776458f6c2fce"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "27677096ba424d77"
+      "source": "40ac67196e926584",
+      "output": "45fad9d13057508e"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -58101,8 +58437,8 @@
       "output": "f34d830d46efc439"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "55ec910dc9133437"
+      "source": "d8a2d50be4cd18a6",
+      "output": "b98dbd371d9ba5a9"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -64293,8 +64629,8 @@
       "output": "ad07888010ed73cb"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "aa438f34deb333f2"
+      "source": "ede164c32074a97a",
+      "output": "b48dfd42bf853f12"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -64948,6 +65284,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "5f6baab4dbe152fc"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "7ab489cf368ac5c4"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "2641944f5327ab96"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "23bab815295d3038"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "807c8d51756d690a"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "e538eb967442aa15"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "7645bf55fcc0b46a"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "dad7d707e1f6404c"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "b79a8465e704e8ad"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "26f3252285974068"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "cb8ea843b967cf0b"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "90a66383c72dde4d"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "9a6fcf8946dc8c59"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "aa2e7ed41ed7c0e1"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "4053453322fe2d09"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "123a0223f3b8648a"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "211cfe02d5304c12"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "fc727c29c9054b58"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "68768dd8cdb2cc3e"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "31854218598975ba"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "7d9a5e37156931a8"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "094d3557674e06b9"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "6adc7e3c38215d23"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "2e83b72cce8469ee"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "c91b85c5d037a1dc"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "105857b937620a2f"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "7f62496b0cb865f7"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "81352a1f37df4786"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "bd3397728b33e138"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "4b953cb7523447bf"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "bac98e1454f69c5b"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "a45bad1abece8da8"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "9ae29546b04881e8"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "ee4434e6e0bfc088"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "54c324f6c12fad53"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "66f7fb532293359f"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "e1f6321374c73f30"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "ab33fc0976ce0d6e"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "70b25ea77949e856"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "1873b26d34e4168b"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "851d6318296d0fad"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "bb93a45579fd8239"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "50c728eacabf1d9e"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "0a90407639c4155a"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -65171,10 +65679,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "505a1c18075d5484"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "5fc6cca5f7b3ff87"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -71279,8 +71783,8 @@
       "output": "364607149dc2dc8b"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "bb44250b462ad911"
+      "source": "9fc5f3541d7d618b",
+      "output": "f051ac606364b821"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -71343,8 +71847,8 @@
       "output": "0ced8c699234acb7"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "499c93ac439fb55e"
+      "source": "615f13a5b3887824",
+      "output": "3054da05f73debf8"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -72323,16 +72827,16 @@
       "output": "6d1a40b633dc2db5"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "20da65e0e253b71d"
+      "source": "0d4fed6d7f15ae92",
+      "output": "4494869b48b941e6"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "0954a8389f7ba5d9"
+      "source": "9fc5f3541d7d618b",
+      "output": "f1d3e4341c40267f"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "bf7730afb7d6bf6e"
+      "source": "4f6204155a3780a3",
+      "output": "ea067409bf068511"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -81475,12 +81979,12 @@
       "output": "fc2bb2941f974ae2"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "6800a551f5a7b92d"
+      "source": "6730335b7ca43b69",
+      "output": "0355cb637fdfb184"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "6efc0229955639bc"
+      "source": "40ac67196e926584",
+      "output": "ae09fc71eec76a0f"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -81491,8 +81995,8 @@
       "output": "920497cd14f0fe42"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "7c2d1e220446f023"
+      "source": "d8a2d50be4cd18a6",
+      "output": "659a0062d1cb05e9"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -87683,8 +88187,8 @@
       "output": "e82249ff929e21ec"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "380afbb4169cfc1f"
+      "source": "ede164c32074a97a",
+      "output": "43b19bcb1285a622"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -88338,6 +88842,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "0fcc9b7d744c5fee"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "be5cbcb7b7fe1197"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "46bd5ce8687cf644"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "c5b617aed043866e"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "812e2fb662f2fbc1"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "fea818e19c37a778"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "0c2690153ac884be"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "a6a8cfdedb0d9507"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "ef9b8fd8f85dcf04"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "095778574d85da83"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "00a73c363e6823bf"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "0954a8389f7ba5d9"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "9d23fac02da96a96"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "bbf2790800f51bd1"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "c9de40f4490c93f9"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "8c755a00738a0dbf"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "419469d12021b1f4"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "4ca67cb3b499f41b"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "5b66a02fc391c459"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "db58e2381858e898"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "9ee61603133f49fd"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "143aa6644fd38f3f"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "1b742bd6804a91c9"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "f691f2e3c5cacc33"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "a72aca143fdba46e"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "c841091fc3b16265"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "1ea442a134b2a184"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "c6e6b7d4d8633849"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "da6f364a92951f9c"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "8121e73cbe3e24ea"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "73b6fd0f9a3745b9"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "d92d1dfd3fc0a8f1"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "12ea263f13e770a5"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "41825a5a393d5c37"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "13cf86b02a0d2508"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "180e7fd8f8fa562a"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "960bcc4e48b929b8"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "f2e3ff00c582c13f"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "067e06db1c91c6db"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "312bcd286b887fe2"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "97a5e4e5dbf0c43d"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "d5ae372104ee6d92"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "84c8a708bf92d859"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "5209723fc252a013"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -88561,10 +89237,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "144ce95d033010e9"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "9a820a01c4bb29f9"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -94669,8 +95341,8 @@
       "output": "1681343e52bb290a"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "9bd389e0d904f3da"
+      "source": "9fc5f3541d7d618b",
+      "output": "55f809daf02a383a"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -94733,8 +95405,8 @@
       "output": "ec8a70b79f2e9784"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "93d1a2e7d4da14b9"
+      "source": "615f13a5b3887824",
+      "output": "e58b59dbc18042b2"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -95713,16 +96385,16 @@
       "output": "ab7123a07203fc04"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "d62e3c37f2966f83"
+      "source": "0d4fed6d7f15ae92",
+      "output": "f73d1b6e1e6e8afb"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "985046ce8f463043"
+      "source": "9fc5f3541d7d618b",
+      "output": "fd56b69e53e388f9"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "92af85dc93b506d4"
+      "source": "4f6204155a3780a3",
+      "output": "14b5535d640ec122"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -104865,12 +105537,12 @@
       "output": "2979feb468198ea9"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "5199a5c4eefe2637"
+      "source": "6730335b7ca43b69",
+      "output": "115a23aec69b755a"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "800ac0a5344c724b"
+      "source": "40ac67196e926584",
+      "output": "a74109a686564e66"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -104881,8 +105553,8 @@
       "output": "24e3c02e45661a7a"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "30bb039c61577d5c"
+      "source": "d8a2d50be4cd18a6",
+      "output": "b46eeab2c4d8856a"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -111073,8 +111745,8 @@
       "output": "d6e1d28ceaa19c09"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "105cf77591521f76"
+      "source": "ede164c32074a97a",
+      "output": "c0e30f12309f2fe1"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -111728,6 +112400,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "532568d0860c656f"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "0c43000df73fc5b4"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "22149b05331af818"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "93196df36182c48c"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "f057d5c742ce7d54"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "79f45ca7e4e42279"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "58c87b73da32738a"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "cf222ac2f437713e"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "2c3e520814ca3281"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "29758efbcb5ef59e"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "eb674f461a628ae7"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "985046ce8f463043"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "5b631b2aaa5e1851"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "f4704605c6297bae"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "4ea2e61c930ceb07"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "8d963dac69cd82be"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "77c8d2ec684b3fdc"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "a427eba3a872ae05"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "4c6f9df9f108371c"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "a3bada0d32ae6f25"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "e9cf9b7c4bcd7074"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "6f3b69f73df28eb0"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "1c07ef996c8ca123"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "cfad6a9fcefc2804"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "6c99e561f04091c9"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "585a4d96c67e3978"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "bec455afe13123ea"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "77bf7cfbceb3c374"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "1dd07a00e5ce5eff"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "a017eeb3caa728c2"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "7a9ec92932e04375"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "b3904102a7cf879d"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "e2191797fcb58bac"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "5cb44d31380d5892"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "ca999f7c9593cf17"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "42ab213e37966dbf"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "f26e38dd4fe4a9ec"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "6dcb90c347ffa75c"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "7dcd7fc992372950"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "b2b96f6556a64d71"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "e9dba97c8ef1e6e5"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "3464d72d3dd748e9"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "d3de6d2e43a82d02"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "cde9e58a9a4e1f36"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -111951,10 +112795,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "ae94eccb8325d35a"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "302f6c824fc622e3"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -118059,8 +118899,8 @@
       "output": "053d6ee63bf90387"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "40ddb67b7ca33d7f"
+      "source": "9fc5f3541d7d618b",
+      "output": "28bee57da1b7451a"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -118123,8 +118963,8 @@
       "output": "3c1c47202b42ffb2"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "96e995ae1a87f0d2"
+      "source": "615f13a5b3887824",
+      "output": "d23ab56159d56829"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -119103,16 +119943,16 @@
       "output": "2872e422bd6d4e50"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "7d0216ba8403ec06"
+      "source": "0d4fed6d7f15ae92",
+      "output": "677489f242b6df55"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "116c4698dace5c6a"
+      "source": "9fc5f3541d7d618b",
+      "output": "e3fc409a454cad42"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "627073154dfcf35a"
+      "source": "4f6204155a3780a3",
+      "output": "8fbaa277016219d8"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -128255,12 +129095,12 @@
       "output": "8672d359324bbeaf"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "5fd701a2e720ceb4"
+      "source": "6730335b7ca43b69",
+      "output": "81d4188aa2cd00b9"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "dc24b8c941fcd1fe"
+      "source": "40ac67196e926584",
+      "output": "78b58bf1f881281e"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -128271,8 +129111,8 @@
       "output": "e5b90bfe4b3cca80"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "8abba8ffbd074a29"
+      "source": "d8a2d50be4cd18a6",
+      "output": "5dc3cb17d02c4be9"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -134463,8 +135303,8 @@
       "output": "0b37c709026ea483"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "220885f5d9e90563"
+      "source": "ede164c32074a97a",
+      "output": "35dbe38cd9e6327e"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -135118,6 +135958,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "314cd0c9855dffc4"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "02d84b6158a70d13"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "7f7996eda2ec7ded"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "200a022935e59450"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "9dcd7e99a64fd366"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "2986c6967a90a104"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "12ff689d8de8abfc"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "69c3bcf5b6d91345"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "b01751a65d27b677"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "baac6be315a9a91a"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "cc2b03c4b3cc5e52"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "116c4698dace5c6a"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "3bfba6aa8a1a3806"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "735f9536997b964f"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "11d76e31d60a39fc"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "ef9001536ccf4dc2"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "c9fc565cb20ff00d"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "9528a23d69d37e5d"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "f9f1005445b55a0d"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "0b6787a14c87bab0"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "b47749c23298eb80"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "2d5226cc91434872"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "8432c9ad40f510f0"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "7e2da4ec2c561c61"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "a631d134d6f6adde"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "57fd86c0e78e4933"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "c38811a58a4b777b"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "89d74849dd8ad312"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "64e5f09944891b4f"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "610c6fea8b399516"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "806b79eb4a13332a"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "68e9198fe68d10ef"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "dc1dd8026e4dd33f"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "128bbbf760ab7128"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "941b287ad6871bc9"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "18fd122a460b1bd5"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "f727c465cfe73dbf"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "16936a0a66c3ae08"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "9e137e16cb6c53b6"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "65157118bd936ec3"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "772e1fb8c47eac8a"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "a18da29284a2ce8f"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "70f1df5b4ff58652"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "dae91306c776f85d"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -135341,10 +136353,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "486a0166b2db8b8a"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "fe85628ff82e7b9a"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",
@@ -141449,8 +142457,8 @@
       "output": "3566e07f6a843130"
     },
     "admin.modelDialog.errors.providerRoutingInvalid": {
-      "source": "6461efe1632b25fc",
-      "output": "bc956ca1e6c44580"
+      "source": "9fc5f3541d7d618b",
+      "output": "9e194598094876bc"
     },
     "admin.modelDialog.errors.reasoningRequired": {
       "source": "a911d61ba391e4ca",
@@ -141513,8 +142521,8 @@
       "output": "885dedeeec079fe7"
     },
     "admin.modelDialog.fields.providerRoutingHelp": {
-      "source": "58769d255a6976da",
-      "output": "90d49a64be87e082"
+      "source": "615f13a5b3887824",
+      "output": "00b57a186e4a4875"
     },
     "admin.modelDialog.fields.reasoning": {
       "source": "a3653eebab17e890",
@@ -142493,16 +143501,16 @@
       "output": "7984b6ff9111c2b7"
     },
     "agentProfiles.dialog.routingHint": {
-      "source": "aa9ae0ae7d2e29c8",
-      "output": "df1ba318195099a7"
+      "source": "0d4fed6d7f15ae92",
+      "output": "585833e37edf8992"
     },
     "agentProfiles.dialog.routingInvalid": {
-      "source": "974f913f8d92d4e6",
-      "output": "fd727cd1a875992c"
+      "source": "9fc5f3541d7d618b",
+      "output": "401514a1550e7fbf"
     },
     "agentProfiles.dialog.routingLabel": {
-      "source": "a2f13d241015db4d",
-      "output": "cc3cb61d1b882549"
+      "source": "4f6204155a3780a3",
+      "output": "c66f584cf7981970"
     },
     "agentProfiles.dialog.rulesAdd": {
       "source": "1b921d28f7b0d7f0",
@@ -151645,12 +152653,12 @@
       "output": "de5d46cad000644c"
     },
     "features.anbieter-routing.details.p2": {
-      "source": "9d759f70ebe1898e",
-      "output": "800e66924bf81f68"
+      "source": "6730335b7ca43b69",
+      "output": "8da14a185ef658ed"
     },
     "features.anbieter-routing.details.p3": {
-      "source": "8129cf64f4c74d55",
-      "output": "b0460d8889128d14"
+      "source": "40ac67196e926584",
+      "output": "902ea1f23ee533bc"
     },
     "features.anbieter-routing.summary": {
       "source": "2d298712f9d7a3ed",
@@ -151661,8 +152669,8 @@
       "output": "c2a13200b03940e6"
     },
     "features.anbieter-routing.where": {
-      "source": "c507b6d3b621cc4e",
-      "output": "c5bd882e79fa3fcb"
+      "source": "d8a2d50be4cd18a6",
+      "output": "87c1161d48d826dd"
     },
     "features.angeheftete-quellen.details.p1": {
       "source": "bcdae3424068ea46",
@@ -157853,8 +158861,8 @@
       "output": "1204d606ead75a6e"
     },
     "settings.keys.ai.providerRouting.help": {
-      "source": "987c094d5744226a",
-      "output": "1bc9d1e58743b5cc"
+      "source": "ede164c32074a97a",
+      "output": "83cd51cb3c9c6fff"
     },
     "settings.keys.ai.providerRouting.label": {
       "source": "c6d5227eeb35a6b9",
@@ -158508,6 +159516,178 @@
       "source": "f2a1cc71fa59a04b",
       "output": "7ae9d418353b399f"
     },
+    "settings.providerRouting.chips.add": {
+      "source": "bdbf1e35649298c8",
+      "output": "85978e8caab1281f"
+    },
+    "settings.providerRouting.chips.empty": {
+      "source": "74025dfb77f513ec",
+      "output": "130b0aee8c097b04"
+    },
+    "settings.providerRouting.chips.placeholder": {
+      "source": "29186cb58d4d9752",
+      "output": "ecb069a1eb8ff690"
+    },
+    "settings.providerRouting.chips.remove": {
+      "source": "a906c4fafc65ceb6",
+      "output": "fe37ae087e8842a8"
+    },
+    "settings.providerRouting.dataCollection.allow": {
+      "source": "0931b618f91fcfbf",
+      "output": "f3fb44a969080b74"
+    },
+    "settings.providerRouting.dataCollection.deny": {
+      "source": "f7f82eab8971cc86",
+      "output": "e660ce34d4dfd644"
+    },
+    "settings.providerRouting.dataCollection.help": {
+      "source": "eb23a370d2923e46",
+      "output": "20500808117b3452"
+    },
+    "settings.providerRouting.dataCollection.label": {
+      "source": "c3b546729261a8a9",
+      "output": "0da29bcf2d75d8fb"
+    },
+    "settings.providerRouting.emptyList": {
+      "source": "6e0b57f7ed77fd94",
+      "output": "e72dc5ab3d7b4a42"
+    },
+    "settings.providerRouting.extra.help": {
+      "source": "544f6e7a48c1ba5a",
+      "output": "ba034ed4890a1e50"
+    },
+    "settings.providerRouting.extra.invalid": {
+      "source": "974f913f8d92d4e6",
+      "output": "fd727cd1a875992c"
+    },
+    "settings.providerRouting.extra.knownKey": {
+      "source": "31e55d8a0340f972",
+      "output": "c3f8010f081d54ae"
+    },
+    "settings.providerRouting.extra.summary": {
+      "source": "d7e3da02046627c2",
+      "output": "b12cacfa1649a7e6"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.default": {
+      "source": "b0d6269ee8fcc2a0",
+      "output": "1aa9a138a3fd6bc2"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.help": {
+      "source": "ca5d9cc4dd8aea2b",
+      "output": "a5f667c5ba1200a0"
+    },
+    "settings.providerRouting.flags.allow_fallbacks.label": {
+      "source": "f2cf39a1fcc824a3",
+      "output": "fb2f8ceca9d6dcbf"
+    },
+    "settings.providerRouting.flags.require_parameters.default": {
+      "source": "ff2b35b1d5876b0f",
+      "output": "c3931adbcc6992b4"
+    },
+    "settings.providerRouting.flags.require_parameters.help": {
+      "source": "d1d5fec34e5dbe72",
+      "output": "b020cd1c3cd71160"
+    },
+    "settings.providerRouting.flags.require_parameters.label": {
+      "source": "ba36a9c85fb3128e",
+      "output": "40775d3038d0bdb4"
+    },
+    "settings.providerRouting.lists.ignore.help": {
+      "source": "741d8e266f06d781",
+      "output": "adc5af538ce5bdb0"
+    },
+    "settings.providerRouting.lists.ignore.label": {
+      "source": "50e24ae16a8fe5f8",
+      "output": "11a10cbf1eb34e3b"
+    },
+    "settings.providerRouting.lists.only.help": {
+      "source": "3b2360b005de250b",
+      "output": "b7d2d5301188acf1"
+    },
+    "settings.providerRouting.lists.only.label": {
+      "source": "7a0b840aa8d471f4",
+      "output": "deede26ee50ed5ea"
+    },
+    "settings.providerRouting.lists.order.help": {
+      "source": "16ca0a1d74af39ef",
+      "output": "690f8fe95ace3a4b"
+    },
+    "settings.providerRouting.lists.order.label": {
+      "source": "a4a3aa66ee24d46b",
+      "output": "35282fb8c306b1c6"
+    },
+    "settings.providerRouting.no": {
+      "source": "90ebc1bde6f3b1ff",
+      "output": "9bc947e58b62b2fe"
+    },
+    "settings.providerRouting.preview.empty": {
+      "source": "a534688bac906a42",
+      "output": "4fc06a587e1f888e"
+    },
+    "settings.providerRouting.preview.invalid": {
+      "source": "f46019b0e9f24749",
+      "output": "7dc4a77ee5542c47"
+    },
+    "settings.providerRouting.preview.title": {
+      "source": "79f0ebdf7db020f2",
+      "output": "54db259fa807d8b3"
+    },
+    "settings.providerRouting.sort.label": {
+      "source": "bd5c67baf36d2b96",
+      "output": "ea950b4fba5addb7"
+    },
+    "settings.providerRouting.sort.latency.help": {
+      "source": "ac1b56972ac5b7ba",
+      "output": "b03c39cb1e92cace"
+    },
+    "settings.providerRouting.sort.latency.label": {
+      "source": "9addcbc9817b4c62",
+      "output": "50032bf5a4706b15"
+    },
+    "settings.providerRouting.sort.price.help": {
+      "source": "03fd320c84a4790e",
+      "output": "1999c183c029669a"
+    },
+    "settings.providerRouting.sort.price.label": {
+      "source": "9883291e666c6771",
+      "output": "9586221ed35b578f"
+    },
+    "settings.providerRouting.sort.throughput.help": {
+      "source": "52e6a548baad5dd5",
+      "output": "598ec44725989e46"
+    },
+    "settings.providerRouting.sort.throughput.label": {
+      "source": "037b9652238c124b",
+      "output": "2be24530dcf2ca37"
+    },
+    "settings.providerRouting.sort.unsetHelp": {
+      "source": "07a81df0c979c27b",
+      "output": "3b8702bef227d2af"
+    },
+    "settings.providerRouting.state.custom": {
+      "source": "ec4807ee10bbeb89",
+      "output": "401832f787bf7039"
+    },
+    "settings.providerRouting.state.default": {
+      "source": "f1d8ae4e355a1029",
+      "output": "56b34f218e5aaa1b"
+    },
+    "settings.providerRouting.state.inherit": {
+      "source": "e27ddac0020e898c",
+      "output": "fd90c99d15f2fa24"
+    },
+    "settings.providerRouting.state.inheritWith": {
+      "source": "5ed300d0af151703",
+      "output": "b39e966e32b1062c"
+    },
+    "settings.providerRouting.state.remove": {
+      "source": "6be20348e93bbf30",
+      "output": "b5720ca479a0dff9"
+    },
+    "settings.providerRouting.yes": {
+      "source": "cde9e58a9a4e1f36",
+      "output": "9313455e45aa2243"
+    },
     "settings.row.byteAmount": {
       "source": "959630fc7d9784d7",
       "output": "959630fc7d9784d7"
@@ -158731,10 +159911,6 @@
     "settings.row.invalidWithRangeAmounts": {
       "source": "d8a621e03c3d2d26",
       "output": "69bc9981faae894f"
-    },
-    "settings.row.jsonInvalid": {
-      "source": "0a98f06d2c120478",
-      "output": "c402f856a3d6286d"
     },
     "settings.row.modelPicker.disabled": {
       "source": "1fa013fda67cf639",

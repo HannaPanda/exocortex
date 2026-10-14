@@ -149,7 +149,7 @@
       "inputPriceNumber": "De invoerprijs moet een bedrag in US dollar zijn, bijvoorbeeld 0,15, met maximaal zes decimalen.",
       "outputPriceNumber": "De uitvoerprijs moet een bedrag in US dollar zijn, bijvoorbeeld 0,60, met maximaal zes decimalen.",
       "reasoningRequired": "Er moet ten minste één redeneerniveau zijn geselecteerd.",
-      "providerRoutingInvalid": "De provider-routing is geen geldig JSON-object met waarden die OpenRouter kent."
+      "providerRoutingInvalid": "De provider-routing is nog onvolledig. De overige gegevens moeten een geldig JSON-object zijn."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "Geen",
       "sortOrder": "Volgorde",
       "providerRouting": "Provider-routing voor dit model",
-      "providerRoutingHelp": "Alleen de sleutels die hier staan, vervangen de instelling „Provider-routing bij OpenRouter”. Een sleutel met null verwijdert de globale waarde voor dit model. Leeg laten neemt de instelling ongewijzigd over."
+      "providerRoutingHelp": "Elk veld erft de instelling „Provider-routing bij OpenRouter”, totdat je hier iets anders kiest. „Verwijderen” wist de overgeërfde waarde voor dit model."
     },
     "cancel": "Annuleren",
     "save": "Opslaan",

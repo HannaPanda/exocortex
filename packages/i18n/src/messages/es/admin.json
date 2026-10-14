@@ -149,7 +149,7 @@
       "inputPriceNumber": "El precio de entrada debe ser un importe en dólares estadounidenses, por ejemplo 0,15, con un máximo de seis decimales.",
       "outputPriceNumber": "El precio de salida debe ser un importe en dólares estadounidenses, por ejemplo 0,60, con un máximo de seis decimales.",
       "reasoningRequired": "Debes seleccionar al menos un nivel de razonamiento.",
-      "providerRoutingInvalid": "El enrutamiento de proveedores no es un objeto JSON válido con valores que OpenRouter reconozca."
+      "providerRoutingInvalid": "El enrutamiento de proveedores aún no está completo. Los datos adicionales deben ser un objeto JSON válido."
     },
     "fields": {
       "slug": "Slug",
@@ -170,7 +170,7 @@
       "companionNone": "Ninguno",
       "sortOrder": "Orden",
       "providerRouting": "Enrutamiento de proveedores para este modelo",
-      "providerRoutingHelp": "Solo las claves que pongas aquí sustituyen el ajuste «Enrutamiento de proveedores en OpenRouter». Una clave con null elimina el valor global para este modelo. Si se deja en blanco, se mantiene el ajuste sin cambios."
+      "providerRoutingHelp": "Cada campo hereda el ajuste «Enrutamiento de proveedores en OpenRouter», a menos que elijas algo diferente aquí. «Eliminar» quita el valor heredado para este modelo."
     },
     "cancel": "Cancelar",
     "save": "Guardar",
