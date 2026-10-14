@@ -1,6 +1,7 @@
 export * from './agent-runners';
 export * from './anydoc';
 export * from './chat-completions-provider';
+export * from './decision-provider';
 export * from './docling';
 export * from './embedding-provider';
 export * from './fallback-provider';
