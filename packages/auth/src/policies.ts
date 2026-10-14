@@ -188,6 +188,24 @@ export function canManageWorkspaceCredentials(role: WorkspaceRole | null): Polic
 }
 
 /**
+ * Who may connect, change and approve external MCP servers (issue #196,
+ * ADR-086), and read their configuration.
+ *
+ * OWNER, the bar `canManageWorkspaceCredentials` sets: a server carries a
+ * credential, and approving one of its tools decides where the workspace's
+ * data may go and what an agent may do there. Whether the request came from a
+ * person at the browser is checked by the service on top of this.
+ */
+export function canManageExternalMcpServers(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (role !== 'OWNER') {
+    return deny('forbidden', 'Managing external MCP servers requires the OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
  * Creating, changing, deleting or firing an automation rule (issue #50,
  * ADR-024).
  *

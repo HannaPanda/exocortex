@@ -192,6 +192,16 @@ export const API_ERROR_CODES = [
   'workflow_not_published',
   /** Publishing and switching on are a person's, at the browser: never an agent's or a run's (issue #165). */
   'workflow_human_only',
+  /** The deployment does not allow external MCP servers (`ai.externalMcpEnabled`, issue #196). */
+  'external_mcp_disabled',
+  /** Connecting a server or approving its tools is a person's, at the browser (issue #196). */
+  'external_mcp_human_only',
+  /** Another server in this workspace already has that key. */
+  'external_mcp_key_taken',
+  /** The workspace already has as many servers as `EXTERNAL_MCP_LIMITS` allows. */
+  'external_mcp_limit_reached',
+  /** The tool has a problem or was not listed at the last check, so it cannot be approved. */
+  'external_mcp_tool_unusable',
   /** A run of the built-in AI drafted an agent under a looser profile than its own; `details.problems` names the nodes. */
   'workflow_exceeds_author',
   /** A run of this workflow has not finished; it cannot be deleted under it. */
@@ -454,6 +464,11 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   workflow_revision_conflict: 409,
   workflow_not_published: 409,
   workflow_human_only: 403,
+  external_mcp_disabled: 409,
+  external_mcp_human_only: 403,
+  external_mcp_key_taken: 409,
+  external_mcp_limit_reached: 409,
+  external_mcp_tool_unusable: 422,
   workflow_exceeds_author: 422,
   workflow_has_active_runs: 409,
   workflows_disabled: 409,

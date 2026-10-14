@@ -364,6 +364,32 @@ public. Properties worth stating:
   itself goes through the ordinary upload: magic-byte detection, the allow-list,
   `MAX_UPLOAD_BYTES`.
 
+## External MCP servers
+
+The other direction from the next section: eXocortex as an MCP _client_ of
+somebody else's server (issue #196,
+[ADR-086](adr/ADR-086-an-external-tool-is-blocked-until-a-person-approves-what-they-saw.md)).
+
+- **Egress.** Every request goes through `createGuardedFetch`
+  (`packages/ai/src/guarded-fetch.ts`): `https` only, no credentials in the
+  address, a literal private address refused before connecting, and
+  `publicOnlyLookup` on the socket, so a name that rebinds between the check
+  and the connect is refused at the connect. No pooled sockets, no redirect
+  followed by the fetch, and the body cut at a byte limit while it streams.
+- **Who.** OWNER only, reading included. Adding, changing, deleting a server
+  and approving a tool need a person at the browser; every token and every
+  agent session gets `external_mcp_human_only`. The routes are not tools.
+- **Secrets.** AES-256-GCM like `workspace_credential`, the purpose bound to
+  workspace and key, never in a response, an audit row or a log line. A check
+  decrypts in the API for one request; an error detail the server sends back
+  has the secret replaced before it is stored.
+- **Tools.** Blocked until a person approves one as reading or writing; the
+  server's `readOnlyHint` and friends are shown, never used. The approval is
+  bound to the tool's fingerprint by a check constraint, so a changed
+  description or schema is a new tool that starts blocked. Descriptions,
+  schemas and `instructions` are the server's text and are stored and shown
+  as such.
+
 ## The MCP endpoint and its OAuth server
 
 `POST /api/mcp` ([ADR-018](adr/ADR-018-remote-mcp-over-http.md)) is the one

@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { AiProviderError, type WebFetcher, type WebSearcher } from '@exocortex/ai';
+import {
+  AiProviderError,
+  checkPublicAddress,
+  type WebFetcher,
+  type WebSearcher,
+} from '@exocortex/ai';
 import { assertPolicy, canReadWorkspace, WorkspaceAccessService } from '@exocortex/auth';
 import {
   type WebFetchRequest,
@@ -15,7 +20,6 @@ import { currentCorrelationId } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
 import { SettingsService } from '../platform/settings.service';
 
-import { checkPublicAddress } from './public-address';
 import { WEB_FETCHER, WEB_SEARCHER } from './research-tokens';
 
 /**

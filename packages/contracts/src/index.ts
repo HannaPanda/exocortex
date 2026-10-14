@@ -28,6 +28,7 @@ export * from './entities';
 export * from './errors';
 export * from './evals';
 export * from './events';
+export * from './external-mcp';
 export * from './features';
 export * from './inbox';
 export * from './invitations';

@@ -174,6 +174,14 @@
       "webSearchMaxResults": {
         "label": "Wyniki na wyszukiwanie",
         "help": "Górny limit wyników wyszukiwania w sieci."
+      },
+      "externalMcpEnabled": {
+        "label": "Zewnętrzne serwery MCP",
+        "help": "Zezwala obszarom roboczym na podłączanie zewnętrznych serwerów MCP, z których narzędzi może potem korzystać AI. Domyślnie wyłączone: powoduje wysyłanie zapytań i argumentów narzędzi z tego serwera na obce adresy. Każde narzędzie jest zablokowane, dopóki człowiek go nie zatwierdzi."
+      },
+      "externalMcpTimeoutSeconds": {
+        "label": "Limit czasu dla zewnętrznych serwerów MCP",
+        "help": "Liczba sekund, ile może trwać zapytanie do zewnętrznego serwera MCP, wliczając nawiązywanie połączenia. Po tym czasie wywołanie uznaje się za nieudane."
       }
     },
     "memory": {

@@ -9588,6 +9588,26 @@
       "source": "8f9f721f2eda8000",
       "output": "1d01c8636c458be6"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "79ea284b146b0ca2"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "1b631d0fcfc062d8"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "994e28deb1c231df"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "c7b91cc288275011"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "41fd9fb8383135ff"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "e0aee77901f14800"
@@ -16859,6 +16879,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "84a0944258ae3296"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "272065979374ef56"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "6ebd33a47713c880"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "a600afca7239c6f4"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "341f4f0f6ee49c2a"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -32310,6 +32346,26 @@
       "source": "8f9f721f2eda8000",
       "output": "3a307fa19d7f3bd1"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "65c100dc30a6fd83"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "24085e6d0e814854"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "2954aaf79034ffa6"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "cc24eec48decf06e"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "d50a3f1ba68bc049"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "08e0093654dd0861"
@@ -39581,6 +39637,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "1a97868171b4d9f7"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "14ce8952a5ed5667"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "f0910953428bb89e"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "4187b641e34a301c"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "15c7f14ada4dae1a"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -55032,6 +55104,26 @@
       "source": "8f9f721f2eda8000",
       "output": "bc64610a39b157e3"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "960917feeb6b69df"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "b4920e4a522ca226"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "49184c998dd10132"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "8384ab62c7ef9b76"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "ae5c3172fa1ad22b"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "c7ea10fa79a1e183"
@@ -62303,6 +62395,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "cc9f8df03bc10ef9"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "b5b7c0bf30a8125b"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "8ba915a33e3243ea"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "4b2a2a7491e91b8d"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "9854ce600e6432f0"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -77754,6 +77862,26 @@
       "source": "8f9f721f2eda8000",
       "output": "9dcbc69ad02993c7"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "ea52a05049654b38"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "99b6cab816e5cc25"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "22a047aa001f0d97"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "536dfd130d6825d8"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "96dde8e43dd40082"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "422cc4a418f297e4"
@@ -85025,6 +85153,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "efaa71d548ab0cac"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "1c14194f897c273b"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "d9f4a72af4ccee45"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "25a01227532aa28b"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "a9d0bcf1896ebd8c"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -100476,6 +100620,26 @@
       "source": "8f9f721f2eda8000",
       "output": "92b378880996ca88"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "cdff5668e655860e"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "a081a61d0913c808"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "bb6f3fa3de19f74f"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "283fc7e83c9e0387"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "bae6840674e567e8"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "9c95caffb23b2f4a"
@@ -107747,6 +107911,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "ea14e459e3e056a7"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "9fb531413bf6fa9c"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "fa00d78ed87544ea"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "689c530693b07cf7"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "af58d22938652e16"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -123198,6 +123378,26 @@
       "source": "8f9f721f2eda8000",
       "output": "b276a9155cf73997"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "b62b69b4889dd1b9"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "fad91b79666052dd"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "ff0bf69c99551651"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "67fca8122a6144e0"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "4cc12100527ff282"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "2221edbd0a1b4515"
@@ -130469,6 +130669,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "b9327c09d32536da"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "48e9b83a3f28afad"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "65d8615a536e483d"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "00b7da2b84abfed7"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "c92e12d106b05751"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -145920,6 +146136,26 @@
       "source": "8f9f721f2eda8000",
       "output": "ce2c9429ac3fc4d9"
     },
+    "errors.codes.external_mcp_disabled": {
+      "source": "fbb1203473efe6b9",
+      "output": "b0762970065d362c"
+    },
+    "errors.codes.external_mcp_human_only": {
+      "source": "825c00a9efd293b7",
+      "output": "ee5d483f545540fe"
+    },
+    "errors.codes.external_mcp_key_taken": {
+      "source": "b110d401ce2cddc8",
+      "output": "6497fa73661f6962"
+    },
+    "errors.codes.external_mcp_limit_reached": {
+      "source": "3bae89a3f905786a",
+      "output": "415eeebb8b5bccdf"
+    },
+    "errors.codes.external_mcp_tool_unusable": {
+      "source": "feddfced70a3dfef",
+      "output": "64f0d20ec7982a67"
+    },
     "errors.codes.forbidden": {
       "source": "15d21a30f31e9053",
       "output": "2809ccc2bc4478c5"
@@ -153191,6 +153427,22 @@
     "settings.keys.ai.enabled.label": {
       "source": "750ee0fb03543672",
       "output": "2749af18bc05c8d2"
+    },
+    "settings.keys.ai.externalMcpEnabled.help": {
+      "source": "760abbcc8950da22",
+      "output": "e181249b4c684be1"
+    },
+    "settings.keys.ai.externalMcpEnabled.label": {
+      "source": "eb8b69c130d17d59",
+      "output": "f0910953428bb89e"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.help": {
+      "source": "f5e03f9531371581",
+      "output": "0c76558637c1f5fa"
+    },
+    "settings.keys.ai.externalMcpTimeoutSeconds.label": {
+      "source": "8593ba194b8bb4c1",
+      "output": "ee7965a0118db1b3"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",

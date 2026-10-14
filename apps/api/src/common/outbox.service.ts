@@ -77,6 +77,17 @@ export const AUDIT_ACTIONS = [
   'workflow.enabled',
   'workflow.disabled',
   'workflow.deleted',
+  /**
+   * An external MCP server was connected, changed or removed, or one of its
+   * tools was approved or blocked (issue #196, ADR-086). Each decides where
+   * the workspace's data may go or what an agent may call there. The entry
+   * names the key, the host, the fields and the tool's fingerprint, never the
+   * secret or the address's path and query.
+   */
+  'external_mcp.server.created',
+  'external_mcp.server.updated',
+  'external_mcp.server.deleted',
+  'external_mcp.tool.access',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -96,7 +107,8 @@ export interface WriteAuditInput {
     | 'workspace_credential'
     | 'invitation'
     | 'agent_profile'
-    | 'workflow';
+    | 'workflow'
+    | 'external_mcp_server';
   targetId: string;
   correlationId: string;
   /**

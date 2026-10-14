@@ -72,7 +72,7 @@ resolved address.**
 
 Steel sits in this host's Docker network. A fetch it performs starts _inside_
 the perimeter: nginx never sees it, fail2ban never sees it. `http://grafana:3000/`
-is answered (measured). So `apps/api/src/research/public-address.ts` refuses
+is answered (measured). So `packages/ai/src/public-address.ts` refuses
 anything that is not `http`/`https`, and anything whose **resolved** addresses
 are not globally routable -- including a name that does not resolve out here at
 all, which is the ordinary shape of an internal one. The check runs again on the

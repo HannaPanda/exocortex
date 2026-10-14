@@ -247,6 +247,22 @@ export const settingsSchema = z.object({
   /** Hits one search returns. Above this the engines' own long tail is noise. */
   'ai.webSearchMaxResults': z.number().int().min(1).max(50).default(8),
   /**
+   * Whether a workspace may connect somebody else's MCP server for the
+   * built-in AI (issue #196, ADR-086).
+   *
+   * Defaults **off**, like `ai.webResearchEnabled`: a connected server is a
+   * place this host sends requests to and a tool loop sends arguments to.
+   * Switching it off stops every check and every call at once; the
+   * configured servers stay, so switching it on again restores them.
+   */
+  'ai.externalMcpEnabled': z.boolean().default(false),
+  /**
+   * Seconds one request to an external MCP server may take, connect and
+   * handshake included. The server is somebody else's, and a call that waits
+   * for it holds a worker slot the whole time.
+   */
+  'ai.externalMcpTimeoutSeconds': z.number().int().min(2).max(120).default(20),
+  /**
    * The agents' memory area (issue #34, #52).
    *
    * Master switch for the whole feature. *Which* workspace an account writes
@@ -904,6 +920,9 @@ export const SETTING_SCOPES = {
   'ai.webResearchMaxChars': 'workspace',
   'ai.webResearchMaxFetchesPerRun': 'workspace',
   'ai.webSearchMaxResults': 'workspace',
+  /** Which hosts this deployment talks to is a fact about the host, not a workspace's choice. */
+  'ai.externalMcpEnabled': 'deployment',
+  'ai.externalMcpTimeoutSeconds': 'deployment',
   'memory.enabled': 'deployment',
   'memory.captureModelSlug': 'workspace',
   'memory.captureMinChars': 'workspace',

@@ -73,6 +73,8 @@ model User {
   updatedSettings             Setting[]                @relation("SettingUpdatedBy")
   updatedWorkspaceSettings    WorkspaceSetting[]       @relation("WorkspaceSettingUpdatedBy")
   createdWorkspaceCredentials WorkspaceCredential[]    @relation("WorkspaceCredentialCreatedBy")
+  createdExternalMcpServers   ExternalMcpServer[]      @relation("ExternalMcpServerCreatedBy")
+  approvedExternalMcpTools    ExternalMcpTool[]        @relation("ExternalMcpToolApprovedBy")
   aiConversations             AiConversation[]         @relation("AiConversationCreatedBy")
   projectBuilds               ProjectBuild[]           @relation("ProjectBuildCreatedBy")
   calendarAccounts            CalendarAccount[]        @relation("CalendarAccountOwner")
@@ -604,6 +606,7 @@ model Workspace {
   agentWrites             AgentWriteJournal[]
   settings                WorkspaceSetting[]
   credentials             WorkspaceCredential[]
+  externalMcpServers      ExternalMcpServer[]
   automations             AutomationRule[]
   automationRuns          AutomationRun[]
   renderTemplates         RenderTemplate[]
@@ -693,6 +696,111 @@ model WorkspaceCredential {
 
   @@unique([workspaceId, purpose])
   @@map("workspace_credential")
+}
+
+enum ExternalMcpTransport {
+  STREAMABLE_HTTP
+}
+
+enum ExternalMcpAuthKind {
+  NONE
+  BEARER
+  HEADER
+}
+
+enum ExternalMcpStatus {
+  UNCHECKED
+  OK
+  ERROR
+}
+
+enum ExternalMcpToolAccess {
+  BLOCKED
+  READ
+  WRITE
+}
+
+/// Somebody else's MCP server, connected for this workspace's built-in AI
+/// (issue #196, ADR-086). Configured by a person at the browser; the secret
+/// is encrypted like `workspace_credential` (AES-256-GCM, purpose bound in as
+/// `external-mcp:<id>`) and never leaves the API or the worker again.
+model ExternalMcpServer {
+  id          String               @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// Part of every function name (`mcp_<key>__<tool>`), so fixed once created.
+  key         String
+  name        String
+  transport   ExternalMcpTransport @default(STREAMABLE_HTTP)
+  url         String
+  /// Off until a person switches it on; a disabled server offers nothing.
+  enabled     Boolean              @default(false)
+
+  authKind         ExternalMcpAuthKind @default(NONE)
+  /// The header the secret is the whole value of, when `authKind` is HEADER.
+  authHeaderName   String?
+  secretCiphertext String?
+  secretIv         String?
+  secretAuthTag    String?
+  secretKeyVersion Int?
+  secretHint       String?
+
+  /// The last connection check. Facts about the server, all of them its text
+  /// except the error code, which is ours.
+  status          ExternalMcpStatus @default(UNCHECKED)
+  lastCheckedAt   DateTime?
+  lastOkAt        DateTime?
+  lastErrorCode   String?
+  lastErrorDetail String?
+  serverName      String?
+  serverVersion   String?
+  protocolVersion String?
+  instructions    String?
+  toolsTruncated  Boolean           @default(false)
+
+  createdById String?
+  createdBy   User?    @relation("ExternalMcpServerCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tools ExternalMcpTool[]
+
+  @@unique([workspaceId, key])
+  @@map("external_mcp_server")
+}
+
+/// One tool an external server listed, and what a person decided about it.
+/// An approval counts only while `approvedFingerprint` equals `fingerprint`:
+/// a check that sees a changed tool sets `access` back to BLOCKED in the same
+/// write, and a check constraint refuses an approval for another fingerprint.
+model ExternalMcpTool {
+  id          String            @id @default(cuid(2))
+  serverId    String
+  server      ExternalMcpServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  name        String
+  title       String?
+  description String
+  inputSchema Json
+  /// What the server says (`readOnlyHint` and friends). Shown, never trusted.
+  hints       Json
+  /// sha256 over name, title, description, schema and hints.
+  fingerprint String
+  /// `EXTERNAL_MCP_TOOL_PROBLEMS`, or null when the tool could be offered.
+  problem     String?
+  /// Listed at the last successful check.
+  available   Boolean           @default(true)
+
+  access              ExternalMcpToolAccess @default(BLOCKED)
+  approvedFingerprint String?
+  approvedById        String?
+  approvedBy          User?                 @relation("ExternalMcpToolApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt          DateTime?
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  @@unique([serverId, name])
+  @@map("external_mcp_tool")
 }
 
 model WorkspaceMember {

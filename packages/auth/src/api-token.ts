@@ -124,6 +124,13 @@ export function requestClassFor(method: string, path: string): RequestClass {
   if (path.includes('/agent-profiles') && !SAFE_METHODS.has(verb)) {
     return 'admin';
   }
+  // An external MCP server is where the workspace's data may go and what an
+  // agent may call there (issue #196, ADR-086). The service refuses every
+  // token for these writes anyway; classing them as admin keeps a run's write
+  // mode from ever being the thing that decides.
+  if (path.includes('/mcp-servers') && !SAFE_METHODS.has(verb)) {
+    return 'admin';
+  }
   // A workflow is a standing instruction too (issue #160, ADR-075): once
   // enabled it starts agents by itself. Checking a graph is a POST only
   // because the graph travels in the body; it stores nothing, so it is a read

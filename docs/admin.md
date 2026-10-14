@@ -293,6 +293,28 @@ and from a datacentre address some of them answer with a CAPTCHA rather than
 results. The engines that stayed silent are named in the answer, so a short list
 is readable as "an engine said no" rather than "nothing exists".
 
+### External MCP servers (issue #196)
+
+Off until somebody turns it on. With `ai.externalMcpEnabled` a workspace owner
+can connect somebody else's MCP server so that, in a later stage of #196, the
+built-in AI can use its tools. Every request to such a server leaves this host
+for an address a person typed, carrying arguments a model wrote.
+
+| Setting                        | Meaning                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `ai.externalMcpEnabled`        | Master switch, deployment-wide. Off stops new servers, switching one on and every check; what is configured stays. |
+| `ai.externalMcpTimeoutSeconds` | Seconds one operation may take, connect and handshake included.                                                    |
+
+The servers themselves are configured per workspace under
+`/api/workspaces/:id/mcp-servers`, by its OWNER and only from the browser:
+every token is refused for a change. A server needs an `https` address that
+resolves to a public address, which today includes reaching an app on this
+host through its public name. Its secret is stored like a workspace's provider
+key and needs `CREDENTIAL_ENCRYPTION_KEY`. Every tool the server lists starts
+blocked; a person approves it as reading or writing, and a server that changes
+a tool's description or schema afterwards gets it blocked again
+([ADR-086](adr/ADR-086-an-external-tool-is-blocked-until-a-person-approves-what-they-saw.md)).
+
 ### Search settings (issue #34, AP4)
 
 Semantic search is off until somebody turns it on, because switching it on

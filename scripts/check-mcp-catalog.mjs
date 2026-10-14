@@ -196,6 +196,11 @@ const EXEMPT = [
       "A workspace's own provider key (issue #52, ADR-023). Same reason as `/api/me/api-tokens*`: a credential is entered by a human in a browser, and a tool that could store one would let an agent point the deployment's spending at a key nobody chose. Reading is no better -- the route answers with a hint and a date, which is exactly what an agent has no use for and an owner does.",
   },
   {
+    route: '* /api/workspaces/:x/mcp-servers*',
+    reason:
+      "Somebody else's MCP servers, connected for the built-in AI (issue #196, ADR-086). Same reason as the credentials above, twice over: a server carries a secret a person typed, and approving one of its tools decides what an agent may call and where the workspace's data may go. A tool here would let an agent widen its own toolset. The service refuses every token for the changes, and the reads name stored secrets and the server's own text, which an agent has no use for.",
+  },
+  {
     route: '* /api/admin/ai-models*',
     reason:
       'The model registry. Same reason, and it is edited once in a while by a human in the admin area.',

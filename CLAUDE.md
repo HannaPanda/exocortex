@@ -376,7 +376,7 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
 - ADR-033: web research is two REST calls, never an MCP client in the worker.
   Search (SearXNG) and fetching (Steel) are separate tools because the choice
   between them is what research costs; the address check in
-  `apps/api/src/research/public-address.ts` judges the _resolved_ address before
+  `packages/ai/src/public-address.ts` judges the _resolved_ address before
   the browser sees it and again after a redirect, because the browser fetches
   from inside this host's Docker network; the per-run fetch budget is counted in
   the worker, since only the loop knows what a run is.
@@ -828,6 +828,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   ever held an item, because only a document that never saw this one writes
   that; the browser then deletes its `y-indexeddb` store and reloads. The
   stored state always wins.
+- ADR-086: an external tool is blocked until a person approves what they saw.
+  The built-in AI's MCP _client_ is the official SDK behind
+  `createGuardedFetch` (https only, `publicOnlyLookup` on the socket, nothing
+  followed, bodies cut while streaming), one connection per operation. A server
+  is an `ExternalMcpServer` row an OWNER configures at the browser, never with
+  a token; its secret is encrypted like a workspace credential. Every tool
+  starts blocked, a person approves it as read or write, and the approval is
+  bound to the tool's fingerprint by a check constraint, so a changed
+  description is a new tool. The routes are not in the tool catalogue.
 
 Full list: `docs/adr/`.
 

@@ -69,7 +69,7 @@ calls `POST /v1/scrape`. Both addresses go into `.env` as `SEARXNG_BASE_URL` and
 One consequence worth stating plainly, because it is invisible from the edge:
 Steel fetches from **inside** the Docker network, so nginx and fail2ban never
 see those requests. What stops a model from reading Grafana through it is the
-address check in `apps/api/src/research/public-address.ts`, not the perimeter.
+address check in `packages/ai/src/public-address.ts`, not the perimeter.
 
 There is no HTTP basic auth in front of the application. There was one while the
 deployment was private; it came off on 2026-08-09, once the things it had been

@@ -21,6 +21,7 @@
     "@exocortex/contracts": "workspace:*",
     "@exocortex/logger": "workspace:*",
     "@firecrawl/anydoc": "0.2.4",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "pdf-lib": "1.17.1",
     "zod": "4.6.5"
   },

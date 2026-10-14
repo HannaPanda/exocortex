@@ -25,6 +25,7 @@ import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { EntitiesModule } from './entities/entities.module';
 import { EvalsModule } from './evals/evals.module';
+import { ExternalMcpModule } from './external-mcp/external-mcp.module';
 import { FeaturesModule } from './features/features.module';
 import { HealthModule } from './health/health.module';
 import { InboxModule } from './inbox/inbox.module';
@@ -87,6 +88,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     ChangesetsModule,
     EvalsModule,
     WorkflowsModule,
+    ExternalMcpModule,
     AttachmentsModule,
     AiModule,
     AdminModule,

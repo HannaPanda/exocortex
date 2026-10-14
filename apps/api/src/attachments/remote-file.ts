@@ -3,15 +3,15 @@ import { type IncomingMessage } from 'node:http';
 import * as https from 'node:https';
 import { type LookupFunction } from 'node:net';
 
-import { type Logger } from '@exocortex/logger';
-
-import { AppError } from '../common/app-error';
 import {
   checkPublicAddress,
   PrivateAddressError,
   publicOnlyLookup,
   type Resolver,
-} from '../research/public-address';
+} from '@exocortex/ai';
+import { type Logger } from '@exocortex/logger';
+
+import { AppError } from '../common/app-error';
 
 /**
  * Fetching a file somebody named by address (issue #117).
