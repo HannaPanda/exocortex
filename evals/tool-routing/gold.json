@@ -1,0 +1,1505 @@
+{
+  "format": "exocortex.tool-routing-gold/1",
+  "createdAt": "2026-10-14",
+  "languages": ["de", "en", "fr", "es", "it", "nl", "pl", "pt-BR", "zh", "ja", "ar"],
+  "groups": [
+    {
+      "id": "image-describe",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Beschreib das Bild auf dieser Seite.",
+        "en": "Describe the image on this page.",
+        "fr": "Décris l'image sur cette page.",
+        "es": "Describe la imagen de esta página.",
+        "it": "Descrivi l'immagine in questa pagina.",
+        "nl": "Beschrijf de afbeelding op deze pagina.",
+        "pl": "Opisz obrazek na tej stronie.",
+        "pt-BR": "Descreva a imagem desta página.",
+        "zh": "请描述这个页面上的图片。",
+        "ja": "このページの画像を説明してください。",
+        "ar": "صف الصورة الموجودة في هذه الصفحة."
+      }
+    },
+    {
+      "id": "image-sketch-synonym",
+      "split": "dev",
+      "kind": "synonym",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Was zeigt diese Skizze?",
+        "en": "What's depicted in this drawing?",
+        "fr": "Décris ce visuel.",
+        "es": "¿Qué aparece en esta ilustración?",
+        "it": "Cosa raffigura questo schizzo?",
+        "nl": "Wat staat er op deze tekening?",
+        "pl": "Co przedstawia ten szkic?",
+        "pt-BR": "O que aparece nesta ilustração?",
+        "zh": "请描述这张图片",
+        "ja": "この図に何が描かれていますか",
+        "ar": "ماذا يظهر في هذا الرسم؟"
+      }
+    },
+    {
+      "id": "pdf-question",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Was steht im angehängten PDF zur Kündigungsfrist?",
+        "en": "What does the attached PDF say about the notice period?",
+        "fr": "Que dit le PDF joint sur le délai de préavis ?",
+        "es": "¿Qué dice el PDF adjunto sobre el plazo de preaviso?",
+        "it": "Cosa dice il PDF allegato sul periodo di preavviso?",
+        "nl": "Wat staat er in de bijgevoegde pdf over de opzegtermijn?",
+        "pl": "Co jest napisane w załączonym PDF-ie o okresie wypowiedzenia?",
+        "pt-BR": "O que o PDF anexado diz sobre o prazo de aviso prévio?",
+        "zh": "附件里的PDF关于解约通知期是怎么写的？",
+        "ja": "添付のPDFには解約予告期間について何と書いてありますか？",
+        "ar": "ماذا يقول ملف PDF المرفق عن مدة الإشعار المسبق؟"
+      }
+    },
+    {
+      "id": "scan-correct-text",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Beim gescannten Brief wurde der Name des Absenders falsch erkannt, bitte korrigier das.",
+        "en": "The sender's name in the scanned letter was misread, please correct it.",
+        "fr": "Dans la lettre numérisée, le nom de l'expéditeur a été mal reconnu, corrige-le s'il te plaît.",
+        "es": "En la carta escaneada se reconoció mal el nombre del remitente, corrígelo por favor.",
+        "it": "Nella lettera scansionata il nome del mittente è stato riconosciuto male, correggilo per favore.",
+        "nl": "In de gescande brief is de naam van de afzender verkeerd herkend, wil je dat verbeteren?",
+        "pl": "W zeskanowanym liście źle rozpoznano nazwisko nadawcy, popraw to proszę.",
+        "pt-BR": "Na carta digitalizada o nome do remetente foi reconhecido errado, corrija, por favor.",
+        "zh": "扫描的信件里寄件人的名字识别错了，请改正。",
+        "ja": "スキャンした手紙で差出人の名前が誤認識されているので、直してください。",
+        "ar": "في الرسالة الممسوحة ضوئيًا تمت قراءة اسم المرسل بشكل خاطئ، صحّحه من فضلك."
+      }
+    },
+    {
+      "id": "file-download",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Lad mir die Excel-Datei von dieser Seite herunter, ich will sie lokal bearbeiten.",
+        "en": "Download the Excel file from this page for me, I want to edit it locally.",
+        "fr": "Télécharge-moi le fichier Excel de cette page, je veux le modifier en local.",
+        "es": "Descárgame el archivo de Excel de esta página, quiero editarlo en local.",
+        "it": "Scaricami il file Excel da questa pagina, voglio modificarlo in locale.",
+        "nl": "Download het Excel-bestand van deze pagina voor me, ik wil het lokaal bewerken.",
+        "pl": "Pobierz mi plik Excela z tej strony, chcę go edytować lokalnie.",
+        "pt-BR": "Baixe para mim o arquivo do Excel desta página, quero editá-lo localmente.",
+        "zh": "帮我把这个页面上的Excel文件下载下来，我想在本地编辑。",
+        "ja": "このページのExcelファイルをダウンロードしてください。ローカルで編集したいです。",
+        "ar": "نزّل لي ملف الإكسل من هذه الصفحة، أريد تعديله على جهازي."
+      }
+    },
+    {
+      "id": "history-restore",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["history"],
+      "texts": {
+        "de": "Stell die Seite so wieder her, wie sie gestern Abend aussah.",
+        "en": "Put this page back the way it looked last night.",
+        "fr": "Remets cette page dans l'état où elle était hier soir.",
+        "es": "Deja esta página como estaba anoche.",
+        "it": "Riporta questa pagina com'era ieri sera.",
+        "nl": "Zet deze pagina terug zoals ze gisteravond was.",
+        "pl": "Przywróć tę stronę do stanu z wczorajszego wieczoru.",
+        "pt-BR": "Volte esta página para como ela estava ontem à noite.",
+        "zh": "把这个页面恢复成昨晚的样子。",
+        "ja": "このページを昨夜の状態に戻してください。",
+        "ar": "أعد هذه الصفحة إلى ما كانت عليه مساء أمس."
+      }
+    },
+    {
+      "id": "history-diff",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["history"],
+      "texts": {
+        "de": "Was hat sich an dieser Seite seit letzter Woche geändert?",
+        "en": "What has changed on this page since last week?",
+        "fr": "Qu'est-ce qui a changé sur cette page depuis la semaine dernière ?",
+        "es": "¿Qué ha cambiado en esta página desde la semana pasada?",
+        "it": "Cosa è cambiato in questa pagina dalla settimana scorsa?",
+        "nl": "Wat is er sinds vorige week aan deze pagina veranderd?",
+        "pl": "Co się zmieniło na tej stronie od zeszłego tygodnia?",
+        "pt-BR": "O que mudou nesta página desde a semana passada?",
+        "zh": "这个页面从上周到现在改了什么？",
+        "ja": "先週からこのページで何が変わりましたか？",
+        "ar": "ما الذي تغيّر في هذه الصفحة منذ الأسبوع الماضي؟"
+      }
+    },
+    {
+      "id": "lifecycle-trash",
+      "split": "dev",
+      "kind": "colloquial",
+      "expected": ["lifecycle"],
+      "texts": {
+        "de": "Wirf die alten Entwürfe unter dieser Seite weg.",
+        "en": "Get rid of the old drafts under this page.",
+        "fr": "Débarrasse-toi des vieux brouillons sous cette page.",
+        "es": "Quita de en medio los borradores viejos que cuelgan de esta página.",
+        "it": "Butta via le vecchie bozze sotto questa pagina.",
+        "nl": "Gooi de oude concepten onder deze pagina weg.",
+        "pl": "Pozbądź się starych szkiców pod tą stroną.",
+        "pt-BR": "Jogue fora os rascunhos antigos que estão abaixo desta página.",
+        "zh": "把这个页面下面的旧草稿都扔掉。",
+        "ja": "このページの下にある古い下書きを捨ててください。",
+        "ar": "تخلّص من المسودات القديمة الموجودة تحت هذه الصفحة."
+      }
+    },
+    {
+      "id": "lifecycle-archive",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["lifecycle"],
+      "texts": {
+        "de": "Das Projekt ist abgeschlossen, leg die Seite ins Archiv.",
+        "en": "The project is finished, archive this page.",
+        "fr": "Le projet est terminé, archive cette page.",
+        "es": "El proyecto ha terminado, archiva esta página.",
+        "it": "Il progetto è concluso, archivia questa pagina.",
+        "nl": "Het project is afgerond, archiveer deze pagina.",
+        "pl": "Projekt jest zakończony, zarchiwizuj tę stronę.",
+        "pt-BR": "O projeto terminou, arquive esta página.",
+        "zh": "项目已经结束了，把这个页面归档吧。",
+        "ja": "プロジェクトは完了したので、このページをアーカイブしてください。",
+        "ar": "انتهى المشروع، ضع هذه الصفحة في الأرشيف."
+      }
+    },
+    {
+      "id": "appearance-cover",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["appearance"],
+      "texts": {
+        "de": "Gib der Seite ein schönes Titelbild mit Bergen.",
+        "en": "Give this page a nice cover image with mountains.",
+        "fr": "Donne à cette page une jolie image de couverture avec des montagnes.",
+        "es": "Ponle a esta página una portada bonita con montañas.",
+        "it": "Dai a questa pagina una bella immagine di copertina con delle montagne.",
+        "nl": "Geef deze pagina een mooie omslagafbeelding met bergen.",
+        "pl": "Daj tej stronie ładny obraz w nagłówku z górami.",
+        "pt-BR": "Coloque uma capa bonita com montanhas nesta página.",
+        "zh": "给这个页面配一张有山的漂亮封面图。",
+        "ja": "このページに山のきれいなカバー画像を付けてください。",
+        "ar": "ضع لهذه الصفحة صورة غلاف جميلة فيها جبال."
+      }
+    },
+    {
+      "id": "appearance-width",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["appearance"],
+      "texts": {
+        "de": "Die Seite ist mir zu schmal, zieh sie auf volle Breite.",
+        "en": "This page is too narrow for me, make it full width.",
+        "fr": "Cette page est trop étroite, mets-la en pleine largeur.",
+        "es": "Esta página me resulta muy estrecha, ponla a ancho completo.",
+        "it": "Questa pagina è troppo stretta, mettila a larghezza piena.",
+        "nl": "Deze pagina is me te smal, zet hem op volle breedte.",
+        "pl": "Ta strona jest dla mnie za wąska, rozciągnij ją na pełną szerokość.",
+        "pt-BR": "Esta página está estreita demais, deixe-a com largura total.",
+        "zh": "这个页面太窄了，把它改成全宽。",
+        "ja": "このページは幅が狭すぎるので、全幅にしてください。",
+        "ar": "هذه الصفحة ضيقة جدًا، اجعلها بعرض كامل."
+      }
+    },
+    {
+      "id": "inbox-capture",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["inbox"],
+      "texts": {
+        "de": "Notier mir schnell im Eingang: Zahnarzt anrufen.",
+        "en": "Quickly jot this into my inbox: call the dentist.",
+        "fr": "Note vite dans ma boîte de réception : appeler le dentiste.",
+        "es": "Apunta rápido en mi bandeja de entrada: llamar al dentista.",
+        "it": "Segna al volo nella mia casella in arrivo: chiamare il dentista.",
+        "nl": "Zet snel in mijn inbox: tandarts bellen.",
+        "pl": "Zapisz szybko w skrzynce odbiorczej: zadzwonić do dentysty.",
+        "pt-BR": "Anota rapidinho na minha caixa de entrada: ligar para o dentista.",
+        "zh": "帮我在收件箱里快速记一下：给牙医打电话。",
+        "ja": "受信箱にさっとメモして：歯医者に電話する。",
+        "ar": "دوّن بسرعة في صندوق الوارد: الاتصال بطبيب الأسنان."
+      }
+    },
+    {
+      "id": "comments-annotate",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["comments"],
+      "texts": {
+        "de": "Hinterlass am zweiten Absatz einen Kommentar, dass die Zahl nicht stimmt.",
+        "en": "Leave a comment on the second paragraph saying the figure is wrong.",
+        "fr": "Laisse un commentaire sur le deuxième paragraphe pour dire que le chiffre est faux.",
+        "es": "Deja un comentario en el segundo párrafo diciendo que la cifra está mal.",
+        "it": "Lascia un commento sul secondo paragrafo dicendo che il numero è sbagliato.",
+        "nl": "Zet een opmerking bij de tweede alinea dat het getal niet klopt.",
+        "pl": "Zostaw komentarz przy drugim akapicie, że ta liczba się nie zgadza.",
+        "pt-BR": "Deixe um comentário no segundo parágrafo dizendo que o número está errado.",
+        "zh": "在第二段加一条评论，说明这个数字不对。",
+        "ja": "2段落目に、数字が間違っているというコメントを残してください。",
+        "ar": "اترك تعليقًا على الفقرة الثانية تقول فيه إن الرقم غير صحيح."
+      }
+    },
+    {
+      "id": "comments-open",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["comments"],
+      "texts": {
+        "de": "Sind an dieser Seite noch Anmerkungen offen? Die erledigten bitte abhaken.",
+        "en": "Are there any open remarks left on this page? Please tick off the ones that are done.",
+        "fr": "Reste-t-il des remarques ouvertes sur cette page ? Coche celles qui sont réglées.",
+        "es": "¿Quedan observaciones abiertas en esta página? Marca como resueltas las que ya estén hechas.",
+        "it": "Ci sono ancora osservazioni aperte su questa pagina? Spunta quelle risolte.",
+        "nl": "Staan er op deze pagina nog open opmerkingen? Vink de afgehandelde af.",
+        "pl": "Czy na tej stronie są jeszcze otwarte uwagi? Odhacz te załatwione.",
+        "pt-BR": "Ainda há observações em aberto nesta página? Marque as resolvidas.",
+        "zh": "这个页面上还有没处理的批注吗？已经解决的请标记完成。",
+        "ja": "このページに未解決の指摘は残っていますか？対応済みのものは解決にしてください。",
+        "ar": "هل بقيت ملاحظات مفتوحة على هذه الصفحة؟ علّم ما تم حله منها."
+      }
+    },
+    {
+      "id": "database-add-row",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["databases"],
+      "texts": {
+        "de": "Trag in meine Leseliste-Tabelle das Buch Dune mit Status gelesen ein.",
+        "en": "Add Dune to my reading list table with the status read.",
+        "fr": "Ajoute Dune dans mon tableau de lectures avec le statut lu.",
+        "es": "Añade Dune a mi tabla de lecturas con el estado leído.",
+        "it": "Aggiungi Dune alla mia tabella delle letture con stato letto.",
+        "nl": "Zet Dune in mijn leeslijsttabel met de status gelezen.",
+        "pl": "Dodaj Diunę do mojej tabeli lektur ze statusem przeczytane.",
+        "pt-BR": "Adicione Duna à minha tabela de leituras com o status lido.",
+        "zh": "把《沙丘》加到我的阅读清单表格里，状态设为已读。",
+        "ja": "読書リストの表に『デューン』を追加して、ステータスを読了にしてください。",
+        "ar": "أضف كتاب كثيب إلى جدول قائمة القراءة الخاص بي بحالة تمت قراءته."
+      }
+    },
+    {
+      "id": "database-filter",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["databases"],
+      "texts": {
+        "de": "Zeig mir alle Einträge in der Aufgaben-Datenbank, die diese Woche fällig sind.",
+        "en": "Show me every entry in the tasks database that is due this week.",
+        "fr": "Montre-moi toutes les entrées de la base de données des tâches qui arrivent à échéance cette semaine.",
+        "es": "Muéstrame todas las entradas de la base de datos de tareas que vencen esta semana.",
+        "it": "Mostrami tutte le voci del database delle attività in scadenza questa settimana.",
+        "nl": "Laat alle items in de takendatabase zien die deze week moeten.",
+        "pl": "Pokaż mi wszystkie wpisy w bazie zadań, które mają termin w tym tygodniu.",
+        "pt-BR": "Mostre todas as entradas do banco de dados de tarefas que vencem esta semana.",
+        "zh": "把任务数据库里本周到期的条目都列出来。",
+        "ja": "タスクのデータベースで今週が期限の項目をすべて見せてください。",
+        "ar": "اعرض لي كل الإدخالات في قاعدة بيانات المهام التي يحين موعدها هذا الأسبوع."
+      }
+    },
+    {
+      "id": "database-context-column",
+      "split": "dev",
+      "kind": "context",
+      "expected": ["databases"],
+      "context": { "databaseViewOpen": true },
+      "texts": {
+        "de": "Füg eine Spalte für die Priorität hinzu.",
+        "en": "Add a column for priority.",
+        "fr": "Ajoute une colonne pour la priorité.",
+        "es": "Añade una columna para la prioridad.",
+        "it": "Aggiungi una colonna per la priorità.",
+        "nl": "Voeg een kolom voor de prioriteit toe.",
+        "pl": "Dodaj kolumnę na priorytet.",
+        "pt-BR": "Adicione uma coluna para a prioridade.",
+        "zh": "加一列优先级。",
+        "ja": "優先度の列を追加してください。",
+        "ar": "أضف عمودًا للأولوية."
+      }
+    },
+    {
+      "id": "template-use",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["templates"],
+      "texts": {
+        "de": "Leg eine neue Besprechungsnotiz nach unserer Vorlage an.",
+        "en": "Create a new meeting note from our template.",
+        "fr": "Crée une nouvelle note de réunion à partir de notre modèle.",
+        "es": "Crea una nueva nota de reunión a partir de nuestra plantilla.",
+        "it": "Crea una nuova nota di riunione dal nostro modello.",
+        "nl": "Maak een nieuwe vergadernotitie op basis van ons sjabloon.",
+        "pl": "Utwórz nową notatkę ze spotkania według naszego szablonu.",
+        "pt-BR": "Crie uma nova nota de reunião a partir do nosso modelo.",
+        "zh": "按我们的模板新建一份会议记录。",
+        "ja": "いつものテンプレートで新しい議事メモを作ってください。",
+        "ar": "أنشئ ملاحظة اجتماع جديدة من القالب الخاص بنا."
+      }
+    },
+    {
+      "id": "saved-query-create",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["savedQueries"],
+      "texts": {
+        "de": "Speichere diese Suche nach offenen Rechnungen, damit ich sie später wieder aufrufen kann.",
+        "en": "Save this search for unpaid invoices so I can run it again later.",
+        "fr": "Enregistre cette recherche de factures impayées pour que je puisse la relancer plus tard.",
+        "es": "Guarda esta búsqueda de facturas pendientes para poder repetirla más tarde.",
+        "it": "Salva questa ricerca delle fatture non pagate così posso rifarla più tardi.",
+        "nl": "Bewaar deze zoekopdracht naar openstaande facturen zodat ik hem later opnieuw kan draaien.",
+        "pl": "Zapisz to wyszukiwanie niezapłaconych faktur, żebym mógł je później powtórzyć.",
+        "pt-BR": "Salve esta busca por faturas em aberto para eu poder rodá-la de novo depois.",
+        "zh": "把这个查找未付发票的搜索保存起来，方便我以后再用。",
+        "ja": "未払いの請求書を探すこの検索を保存して、後でまた使えるようにしてください。",
+        "ar": "احفظ هذا البحث عن الفواتير غير المدفوعة حتى أتمكن من تشغيله مرة أخرى لاحقًا."
+      }
+    },
+    {
+      "id": "work-item-delegate",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["workItems"],
+      "texts": {
+        "de": "Mach daraus einen Auftrag für die KI: Literaturliste bis Freitag prüfen.",
+        "en": "Turn this into a task for the AI to work on: check the bibliography by Friday.",
+        "fr": "Fais-en une mission pour l'IA : vérifier la bibliographie d'ici vendredi.",
+        "es": "Conviértelo en un encargo para la IA: revisar la bibliografía antes del viernes.",
+        "it": "Trasformalo in un incarico per l'IA: controllare la bibliografia entro venerdì.",
+        "nl": "Maak hier een opdracht voor de AI van: literatuurlijst voor vrijdag controleren.",
+        "pl": "Zrób z tego zlecenie dla AI: sprawdzić bibliografię do piątku.",
+        "pt-BR": "Transforme isso numa tarefa delegada à IA: revisar a bibliografia até sexta.",
+        "zh": "把这个变成交给AI的委托任务：周五前检查参考文献列表。",
+        "ja": "これをAIへの依頼タスクにして：金曜までに参考文献リストを確認する。",
+        "ar": "حوّل هذا إلى مهمة مُسندة للذكاء الاصطناعي: مراجعة قائمة المراجع قبل يوم الجمعة."
+      }
+    },
+    {
+      "id": "attention-pending",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["attention"],
+      "texts": {
+        "de": "Gibt es gerade etwas, das auf meine Entscheidung wartet?",
+        "en": "Is anything waiting on a decision from me right now?",
+        "fr": "Y a-t-il quelque chose qui attend une décision de ma part en ce moment ?",
+        "es": "¿Hay algo ahora mismo que esté esperando una decisión mía?",
+        "it": "C'è qualcosa che in questo momento aspetta una mia decisione?",
+        "nl": "Is er op dit moment iets dat op een beslissing van mij wacht?",
+        "pl": "Czy coś teraz czeka na moją decyzję?",
+        "pt-BR": "Tem alguma coisa esperando uma decisão minha agora?",
+        "zh": "现在有什么事情在等我做决定吗？",
+        "ja": "いま私の判断待ちになっているものはありますか？",
+        "ar": "هل هناك شيء ينتظر قرارًا مني الآن؟"
+      }
+    },
+    {
+      "id": "changeset-propose",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["changesets"],
+      "texts": {
+        "de": "Schreib die Einleitung nicht direkt um, sondern mach mir einen Vorschlag, den ich prüfen kann.",
+        "en": "Don't rewrite the introduction directly, give me a suggested change I can review first.",
+        "fr": "Ne réécris pas l'introduction directement, propose-moi une modification que je pourrai relire.",
+        "es": "No reescribas la introducción directamente, prepárame una propuesta de cambio para revisarla.",
+        "it": "Non riscrivere direttamente l'introduzione, preparami una proposta di modifica da controllare.",
+        "nl": "Herschrijf de inleiding niet meteen, maar maak een wijzigingsvoorstel dat ik kan nakijken.",
+        "pl": "Nie przepisuj wstępu od razu, tylko przygotuj propozycję zmian do sprawdzenia.",
+        "pt-BR": "Não reescreva a introdução direto, me mande uma proposta de alteração para eu revisar.",
+        "zh": "先别直接改写引言，给我一个可以审阅的修改建议。",
+        "ja": "導入部を直接書き換えないで、確認できる変更案を出してください。",
+        "ar": "لا تعد كتابة المقدمة مباشرة، بل قدّم لي اقتراح تعديل أراجعه أولًا."
+      }
+    },
+    {
+      "id": "eval-compare",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["evals"],
+      "texts": {
+        "de": "Lass den Testfall zur Zusammenfassung gegen das neue Modell laufen und vergleich die Ergebnisse.",
+        "en": "Run the summarisation test case against the new model and compare the results.",
+        "fr": "Lance le cas de test de résumé sur le nouveau modèle et compare les résultats.",
+        "es": "Ejecuta el caso de prueba de resumen con el modelo nuevo y compara los resultados.",
+        "it": "Esegui il caso di test sul riassunto con il nuovo modello e confronta i risultati.",
+        "nl": "Draai de testcase voor samenvatten tegen het nieuwe model en vergelijk de resultaten.",
+        "pl": "Uruchom przypadek testowy podsumowania na nowym modelu i porównaj wyniki.",
+        "pt-BR": "Rode o caso de teste de resumo com o modelo novo e compare os resultados.",
+        "zh": "用新模型跑一下摘要那个测试用例，比较一下结果。",
+        "ja": "要約のテストケースを新しいモデルで実行して、結果を比較してください。",
+        "ar": "شغّل حالة اختبار التلخيص على النموذج الجديد وقارن النتائج."
+      }
+    },
+    {
+      "id": "workflow-build",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["workflows"],
+      "acceptable": ["automations", "workItems", "attention"],
+      "texts": {
+        "de": "Bau mir einen Ablauf: Wenn eine Rechnung reinkommt, prüft ein Agent sie und danach gebe ich sie frei.",
+        "en": "Build me a flow: when an invoice comes in, an agent checks it and then I approve it.",
+        "fr": "Construis-moi un enchaînement : quand une facture arrive, un agent la vérifie, puis je la valide.",
+        "es": "Créame un flujo: cuando llegue una factura, un agente la revisa y luego yo la apruebo.",
+        "it": "Costruiscimi un flusso: quando arriva una fattura, un agente la controlla e poi io la approvo.",
+        "nl": "Bouw een stroom voor me: als er een factuur binnenkomt, controleert een agent hem en daarna keur ik hem goed.",
+        "pl": "Zbuduj mi przepływ: gdy przyjdzie faktura, agent ją sprawdza, a potem ja ją zatwierdzam.",
+        "pt-BR": "Monte um fluxo para mim: quando chegar uma fatura, um agente confere e depois eu aprovo.",
+        "zh": "帮我搭一个流程：收到发票时先由一个智能体检查，然后由我审批。",
+        "ja": "請求書が届いたらエージェントが確認し、その後に私が承認する、という流れを作ってください。",
+        "ar": "ابنِ لي مسارًا: عندما تصل فاتورة يفحصها وكيل ثم أوافق عليها أنا."
+      }
+    },
+    {
+      "id": "share-read-only",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["shares"],
+      "texts": {
+        "de": "Gib Anna Zugang zu dieser Seite, sie soll aber nur lesen dürfen.",
+        "en": "Give Anna access to this page, but she should only be able to read it.",
+        "fr": "Donne à Anna l'accès à cette page, mais en lecture seule.",
+        "es": "Dale a Anna acceso a esta página, pero solo para leer.",
+        "it": "Dai ad Anna accesso a questa pagina, ma solo in lettura.",
+        "nl": "Geef Anna toegang tot deze pagina, maar ze mag alleen lezen.",
+        "pl": "Daj Annie dostęp do tej strony, ale tylko do odczytu.",
+        "pt-BR": "Dê à Anna acesso a esta página, mas só para leitura.",
+        "zh": "给Anna这个页面的访问权限，但只能看不能改。",
+        "ja": "アンナにこのページへのアクセス権を与えてください。ただし閲覧のみです。",
+        "ar": "امنح آنا صلاحية الوصول إلى هذه الصفحة، لكن للقراءة فقط."
+      }
+    },
+    {
+      "id": "share-public-link",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["shares"],
+      "texts": {
+        "de": "Mach mir einen öffentlichen Link für die Rezeptsammlung.",
+        "en": "Make me a public link for the recipe collection.",
+        "fr": "Crée-moi un lien public pour la collection de recettes.",
+        "es": "Hazme un enlace público para la colección de recetas.",
+        "it": "Creami un link pubblico per la raccolta di ricette.",
+        "nl": "Maak een openbare link voor de receptenverzameling.",
+        "pl": "Zrób mi publiczny link do zbioru przepisów.",
+        "pt-BR": "Gere um link público para a coleção de receitas.",
+        "zh": "给菜谱合集生成一个公开链接。",
+        "ja": "レシピ集の公開リンクを作ってください。",
+        "ar": "أنشئ لي رابطًا عامًا لمجموعة الوصفات."
+      }
+    },
+    {
+      "id": "entity-profile",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["entities"],
+      "texts": {
+        "de": "Was wissen wir alles über die Firma Brandt & Söhne? Verknüpf diese Seite mit ihr.",
+        "en": "What do we know about the company Brandt & Sons? Link this page to it.",
+        "fr": "Que savons-nous de l'entreprise Brandt & Fils ? Relie cette page à elle.",
+        "es": "¿Qué sabemos de la empresa Brandt e Hijos? Vincula esta página con ella.",
+        "it": "Cosa sappiamo dell'azienda Brandt & Figli? Collega questa pagina all'azienda.",
+        "nl": "Wat weten we allemaal over het bedrijf Brandt & Zonen? Koppel deze pagina eraan.",
+        "pl": "Co wiemy o firmie Brandt i Synowie? Powiąż z nią tę stronę.",
+        "pt-BR": "O que sabemos sobre a empresa Brandt & Filhos? Vincule esta página a ela.",
+        "zh": "关于布兰特父子公司我们都知道些什么？把这个页面和它关联起来。",
+        "ja": "ブラント＆サンズ社について分かっていることは？このページをその会社に紐づけてください。",
+        "ar": "ماذا نعرف عن شركة براندت وأبناؤه؟ اربط هذه الصفحة بها."
+      }
+    },
+    {
+      "id": "memory-remember",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["memory"],
+      "texts": {
+        "de": "Merk dir für die Zukunft, dass ich Termine lieber vormittags habe.",
+        "en": "Remember for the future that I prefer appointments in the morning.",
+        "fr": "Retiens pour la suite que je préfère les rendez-vous le matin.",
+        "es": "Recuerda para el futuro que prefiero las citas por la mañana.",
+        "it": "Ricordati per il futuro che preferisco gli appuntamenti di mattina.",
+        "nl": "Onthoud voortaan dat ik afspraken liever 's ochtends heb.",
+        "pl": "Zapamiętaj na przyszłość, że wolę spotkania przed południem.",
+        "pt-BR": "Lembre para as próximas vezes que eu prefiro compromissos de manhã.",
+        "zh": "以后记住，我更喜欢把约会安排在上午。",
+        "ja": "今後のために、私は予定を午前中に入れるのが好きだと覚えておいてください。",
+        "ar": "تذكّر للمستقبل أنني أفضّل المواعيد في الصباح."
+      }
+    },
+    {
+      "id": "chat-earlier",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["chats"],
+      "acceptable": ["memory"],
+      "texts": {
+        "de": "Worüber haben wir letzte Woche im Chat zum Umzug gesprochen?",
+        "en": "What did we talk about in last week's chat about the move?",
+        "fr": "De quoi avons-nous parlé la semaine dernière dans la discussion sur le déménagement ?",
+        "es": "¿De qué hablamos la semana pasada en el chat sobre la mudanza?",
+        "it": "Di cosa abbiamo parlato la settimana scorsa nella chat sul trasloco?",
+        "nl": "Waar hadden we het vorige week in de chat over de verhuizing over?",
+        "pl": "O czym rozmawialiśmy w zeszłym tygodniu na czacie o przeprowadzce?",
+        "pt-BR": "Sobre o que falamos semana passada no chat da mudança?",
+        "zh": "上周我们在聊天里关于搬家都说了些什么？",
+        "ja": "先週の引っ越しについてのチャットで、何を話しましたっけ？",
+        "ar": "عمّ تحدثنا الأسبوع الماضي في المحادثة الخاصة بالانتقال؟"
+      }
+    },
+    {
+      "id": "chat-usage-cost",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["chats"],
+      "texts": {
+        "de": "Wie viel hat mich die KI diesen Monat gekostet?",
+        "en": "How much has the AI cost me this month?",
+        "fr": "Combien l'IA m'a-t-elle coûté ce mois-ci ?",
+        "es": "¿Cuánto me ha costado la IA este mes?",
+        "it": "Quanto mi è costata l'IA questo mese?",
+        "nl": "Hoeveel heeft de AI me deze maand gekost?",
+        "pl": "Ile kosztowała mnie AI w tym miesiącu?",
+        "pt-BR": "Quanto a IA me custou este mês?",
+        "zh": "这个月AI花了我多少钱？",
+        "ja": "今月AIにいくらかかりましたか？",
+        "ar": "كم كلّفني الذكاء الاصطناعي هذا الشهر؟"
+      }
+    },
+    {
+      "id": "automation-weekly",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["automations"],
+      "acceptable": ["notifications"],
+      "texts": {
+        "de": "Erinnere mich jeden Montag um acht per Mail an den Wochenbericht.",
+        "en": "Email me a reminder about the weekly report every Monday at eight.",
+        "fr": "Envoie-moi chaque lundi à huit heures un mail de rappel pour le rapport hebdomadaire.",
+        "es": "Mándame cada lunes a las ocho un correo recordándome el informe semanal.",
+        "it": "Mandami ogni lunedì alle otto una mail per ricordarmi il report settimanale.",
+        "nl": "Stuur me elke maandag om acht uur een mail als herinnering voor het weekrapport.",
+        "pl": "Przypominaj mi mailem w każdy poniedziałek o ósmej o raporcie tygodniowym.",
+        "pt-BR": "Me mande toda segunda às oito um e-mail lembrando do relatório semanal.",
+        "zh": "每周一早上八点给我发邮件，提醒我写周报。",
+        "ja": "毎週月曜の8時に、週報のリマインダーをメールで送ってください。",
+        "ar": "ذكّرني كل يوم اثنين الساعة الثامنة برسالة بريد إلكتروني بالتقرير الأسبوعي."
+      }
+    },
+    {
+      "id": "notifications-language",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["notifications"],
+      "texts": {
+        "de": "Stell die Oberfläche bitte auf Englisch um.",
+        "en": "Please switch the interface to German.",
+        "fr": "Passe l'interface en anglais, s'il te plaît.",
+        "es": "Cambia la interfaz al inglés, por favor.",
+        "it": "Imposta l'interfaccia in inglese, per favore.",
+        "nl": "Zet de interface alsjeblieft op Engels.",
+        "pl": "Przełącz proszę interfejs na angielski.",
+        "pt-BR": "Mude a interface para inglês, por favor.",
+        "zh": "请把界面语言切换成英语。",
+        "ja": "画面の表示言語を英語に切り替えてください。",
+        "ar": "غيّر لغة الواجهة إلى الإنجليزية من فضلك."
+      }
+    },
+    {
+      "id": "notifications-push",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["notifications"],
+      "texts": {
+        "de": "Schick mir eine Push-Nachricht aufs Handy, wenn du fertig bist.",
+        "en": "Send a push notification to my phone when you're done.",
+        "fr": "Envoie une notification push sur mon téléphone quand tu as fini.",
+        "es": "Mándame una notificación push al móvil cuando termines.",
+        "it": "Mandami una notifica push sul telefono quando hai finito.",
+        "nl": "Stuur een pushmelding naar mijn telefoon als je klaar bent.",
+        "pl": "Wyślij mi powiadomienie push na telefon, kiedy skończysz.",
+        "pt-BR": "Mande uma notificação push no meu celular quando terminar.",
+        "zh": "你做完以后给我手机发一条推送通知。",
+        "ja": "終わったらスマホにプッシュ通知を送ってください。",
+        "ar": "أرسل إشعارًا إلى هاتفي عندما تنتهي."
+      }
+    },
+    {
+      "id": "project-latex-build",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["projects"],
+      "texts": {
+        "de": "Kompilier meine Masterarbeit und sag mir, welche Fehler LaTeX meldet.",
+        "en": "Compile my master's thesis and tell me which errors LaTeX reports.",
+        "fr": "Compile mon mémoire de master et dis-moi quelles erreurs LaTeX signale.",
+        "es": "Compila mi tesis de máster y dime qué errores da LaTeX.",
+        "it": "Compila la mia tesi magistrale e dimmi quali errori segnala LaTeX.",
+        "nl": "Compileer mijn masterscriptie en vertel welke fouten LaTeX geeft.",
+        "pl": "Skompiluj moją pracę magisterską i powiedz, jakie błędy zgłasza LaTeX.",
+        "pt-BR": "Compile minha dissertação de mestrado e me diga quais erros o LaTeX aponta.",
+        "zh": "编译一下我的硕士论文，告诉我LaTeX报了哪些错。",
+        "ja": "修士論文をコンパイルして、LaTeXが出すエラーを教えてください。",
+        "ar": "قم بتجميع رسالة الماجستير الخاصة بي وأخبرني بالأخطاء التي يبلغ عنها LaTeX."
+      }
+    },
+    {
+      "id": "render-print-pdf",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["render"],
+      "texts": {
+        "de": "Mach aus dieser Seite ein PDF zum Ausdrucken.",
+        "en": "Turn this page into a PDF I can print.",
+        "fr": "Transforme cette page en PDF à imprimer.",
+        "es": "Convierte esta página en un PDF para imprimir.",
+        "it": "Trasforma questa pagina in un PDF da stampare.",
+        "nl": "Maak van deze pagina een pdf om af te drukken.",
+        "pl": "Zrób z tej strony PDF do wydruku.",
+        "pt-BR": "Transforme esta página num PDF para imprimir.",
+        "zh": "把这个页面转成可以打印的PDF。",
+        "ja": "このページを印刷用のPDFにしてください。",
+        "ar": "حوّل هذه الصفحة إلى ملف PDF للطباعة."
+      }
+    },
+    {
+      "id": "web-current-price",
+      "split": "dev",
+      "kind": "indirect",
+      "expected": ["web"],
+      "texts": {
+        "de": "Was kostet ein Bahnticket von Berlin nach Hamburg gerade?",
+        "en": "How much is a train ticket from Berlin to Hamburg at the moment?",
+        "fr": "Combien coûte actuellement un billet de train de Berlin à Hambourg ?",
+        "es": "¿Cuánto cuesta ahora mismo un billete de tren de Berlín a Hamburgo?",
+        "it": "Quanto costa adesso un biglietto del treno da Berlino ad Amburgo?",
+        "nl": "Wat kost een treinkaartje van Berlijn naar Hamburg op dit moment?",
+        "pl": "Ile teraz kosztuje bilet kolejowy z Berlina do Hamburga?",
+        "pt-BR": "Quanto está custando uma passagem de trem de Berlim para Hamburgo?",
+        "zh": "现在从柏林到汉堡的火车票多少钱？",
+        "ja": "いまベルリンからハンブルクまでの電車の切符はいくらですか？",
+        "ar": "كم سعر تذكرة القطار من برلين إلى هامبورغ حاليًا؟"
+      }
+    },
+    {
+      "id": "web-reviews",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["web"],
+      "texts": {
+        "de": "Such im Netz nach Rezensionen zu diesem Buch.",
+        "en": "Look up reviews of this book on the web.",
+        "fr": "Cherche des critiques de ce livre sur le web.",
+        "es": "Busca reseñas de este libro en la red.",
+        "it": "Cerca in rete delle recensioni di questo libro.",
+        "nl": "Zoek op het web naar recensies van dit boek.",
+        "pl": "Poszukaj w sieci recenzji tej książki.",
+        "pt-BR": "Procure na internet resenhas deste livro.",
+        "zh": "在网上搜一下这本书的书评。",
+        "ja": "この本のレビューをネットで探してください。",
+        "ar": "ابحث في الإنترنت عن مراجعات لهذا الكتاب."
+      }
+    },
+    {
+      "id": "admin-invite",
+      "split": "dev",
+      "kind": "direct",
+      "expected": ["admin"],
+      "texts": {
+        "de": "Lade meine Schwester in den Arbeitsbereich ein.",
+        "en": "Invite my sister to the workspace.",
+        "fr": "Invite ma sœur dans l'espace de travail.",
+        "es": "Invita a mi hermana al espacio de trabajo.",
+        "it": "Invita mia sorella nello spazio di lavoro.",
+        "nl": "Nodig mijn zus uit voor de werkruimte.",
+        "pl": "Zaproś moją siostrę do obszaru roboczego.",
+        "pt-BR": "Convide minha irmã para o espaço de trabalho.",
+        "zh": "邀请我妹妹加入这个工作区。",
+        "ja": "妹をワークスペースに招待してください。",
+        "ar": "ادعُ أختي إلى مساحة العمل."
+      }
+    },
+    {
+      "id": "plain-summarize",
+      "split": "dev",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Fasse diese Seite in drei Sätzen zusammen.",
+        "en": "Summarise this page in three sentences.",
+        "fr": "Résume cette page en trois phrases.",
+        "es": "Resume esta página en tres frases.",
+        "it": "Riassumi questa pagina in tre frasi.",
+        "nl": "Vat deze pagina samen in drie zinnen.",
+        "pl": "Streść tę stronę w trzech zdaniach.",
+        "pt-BR": "Resuma esta página em três frases.",
+        "zh": "用三句话总结一下这个页面。",
+        "ja": "このページを3文で要約してください。",
+        "ar": "لخّص هذه الصفحة في ثلاث جمل."
+      }
+    },
+    {
+      "id": "plain-write",
+      "split": "dev",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Schreib unter Ideen einen Absatz über die Gartenplanung fürs Frühjahr.",
+        "en": "Write a paragraph under Ideas about planning the garden for spring.",
+        "fr": "Écris un paragraphe sous Idées sur l'aménagement du jardin au printemps.",
+        "es": "Escribe un párrafo en Ideas sobre la planificación del jardín para la primavera.",
+        "it": "Scrivi un paragrafo sotto Idee sulla pianificazione del giardino in primavera.",
+        "nl": "Schrijf onder Ideeën een alinea over de tuinplanning voor het voorjaar.",
+        "pl": "Napisz pod Pomysłami akapit o planowaniu ogrodu na wiosnę.",
+        "pt-BR": "Escreva um parágrafo em Ideias sobre o planejamento do jardim para a primavera.",
+        "zh": "在想法下面写一段关于春季花园规划的内容。",
+        "ja": "アイデアの下に、春の庭づくりの計画について一段落書いてください。",
+        "ar": "اكتب فقرة تحت قسم الأفكار عن تخطيط الحديقة للربيع."
+      }
+    },
+    {
+      "id": "plain-find-notes",
+      "split": "dev",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Finde meine Notizen zur Steuererklärung.",
+        "en": "Find my notes on the tax return.",
+        "fr": "Trouve mes notes sur la déclaration d'impôts.",
+        "es": "Encuentra mis notas sobre la declaración de la renta.",
+        "it": "Trova i miei appunti sulla dichiarazione dei redditi.",
+        "nl": "Zoek mijn aantekeningen over de belastingaangifte.",
+        "pl": "Znajdź moje notatki o zeznaniu podatkowym.",
+        "pt-BR": "Encontre minhas anotações sobre a declaração de imposto de renda.",
+        "zh": "找一下我关于报税的笔记。",
+        "ja": "確定申告についての私のメモを探してください。",
+        "ar": "ابحث عن ملاحظاتي حول الإقرار الضريبي."
+      }
+    },
+    {
+      "id": "plain-move-page",
+      "split": "dev",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Verschieb diese Seite unter Projekte.",
+        "en": "Move this page under Projects.",
+        "fr": "Déplace cette page sous Projets.",
+        "es": "Mueve esta página dentro de Proyectos.",
+        "it": "Sposta questa pagina sotto Progetti.",
+        "nl": "Verplaats deze pagina naar onder Projecten.",
+        "pl": "Przenieś tę stronę pod Projekty.",
+        "pt-BR": "Mova esta página para dentro de Projetos.",
+        "zh": "把这个页面移到项目下面。",
+        "ja": "このページをプロジェクトの下に移動してください。",
+        "ar": "انقل هذه الصفحة إلى أسفل المشاريع."
+      }
+    },
+    {
+      "id": "multi-whiteboard-notes",
+      "split": "dev",
+      "kind": "multi",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Lies die Seite, schau dir das Foto vom Whiteboard an und schreib die Punkte darunter als Liste.",
+        "en": "Read the page, look at the whiteboard photo and write the points below it as a list.",
+        "fr": "Lis la page, regarde la photo du tableau blanc et écris les points en dessous sous forme de liste.",
+        "es": "Lee la página, mira la foto de la pizarra y escribe los puntos debajo en forma de lista.",
+        "it": "Leggi la pagina, guarda la foto della lavagna e scrivi i punti sotto come elenco.",
+        "nl": "Lees de pagina, bekijk de foto van het whiteboard en zet de punten eronder als lijst.",
+        "pl": "Przeczytaj stronę, obejrzyj zdjęcie tablicy i wypisz pod nim punkty jako listę.",
+        "pt-BR": "Leia a página, veja a foto do quadro branco e escreva os pontos embaixo em forma de lista.",
+        "zh": "读一下这个页面，看看白板的照片，然后在下面把要点列成清单。",
+        "ja": "ページを読んで、ホワイトボードの写真を見て、その下に要点を箇条書きにしてください。",
+        "ar": "اقرأ الصفحة وانظر إلى صورة السبورة واكتب النقاط تحتها على شكل قائمة."
+      }
+    },
+    {
+      "id": "multi-research-table",
+      "split": "dev",
+      "kind": "multi",
+      "expected": ["web", "databases"],
+      "texts": {
+        "de": "Recherchier die aktuellen Preise der drei Laptops und trag sie in die Vergleichsdatenbank ein.",
+        "en": "Research the current prices of the three laptops and enter them in the comparison database.",
+        "fr": "Recherche les prix actuels des trois ordinateurs portables et saisis-les dans la base de comparaison.",
+        "es": "Investiga los precios actuales de los tres portátiles y apúntalos en la base de datos comparativa.",
+        "it": "Cerca i prezzi attuali dei tre portatili e inseriscili nel database di confronto.",
+        "nl": "Zoek de actuele prijzen van de drie laptops op en zet ze in de vergelijkingsdatabase.",
+        "pl": "Sprawdź aktualne ceny tych trzech laptopów i wpisz je do bazy porównawczej.",
+        "pt-BR": "Pesquise os preços atuais dos três notebooks e lance no banco de dados de comparação.",
+        "zh": "查一下这三台笔记本电脑现在的价格，然后填进对比数据库里。",
+        "ja": "3台のノートPCの現在の価格を調べて、比較用データベースに入力してください。",
+        "ar": "ابحث عن الأسعار الحالية لأجهزة اللابتوب الثلاثة وأدخلها في قاعدة بيانات المقارنة."
+      }
+    },
+    {
+      "id": "multi-restore-comment",
+      "split": "dev",
+      "kind": "multi",
+      "expected": ["history", "comments"],
+      "texts": {
+        "de": "Hol den gelöschten Absatz von gestern zurück und markier mit einem Kommentar, was du geändert hast.",
+        "en": "Bring back yesterday's deleted paragraph and mark what you changed with a comment.",
+        "fr": "Récupère le paragraphe supprimé hier et signale par un commentaire ce que tu as modifié.",
+        "es": "Recupera el párrafo que se borró ayer y señala con un comentario lo que cambiaste.",
+        "it": "Recupera il paragrafo cancellato ieri e segna con un commento cosa hai cambiato.",
+        "nl": "Haal de gisteren verwijderde alinea terug en geef met een opmerking aan wat je hebt veranderd.",
+        "pl": "Przywróć wczoraj usunięty akapit i zaznacz komentarzem, co zmieniłeś.",
+        "pt-BR": "Recupere o parágrafo apagado ontem e indique com um comentário o que você mudou.",
+        "zh": "把昨天删掉的那段找回来，并用评论标出你改了什么。",
+        "ja": "昨日削除された段落を元に戻して、何を変えたかコメントで示してください。",
+        "ar": "استرجع الفقرة التي حُذفت أمس وبيّن بتعليق ما الذي غيّرته."
+      }
+    },
+    {
+      "id": "multi-pdf-share",
+      "split": "dev",
+      "kind": "multi",
+      "expected": ["render", "shares"],
+      "texts": {
+        "de": "Exportier das Protokoll als PDF und teil die Seite mit dem Vorstand.",
+        "en": "Export the minutes as a PDF and share the page with the board.",
+        "fr": "Exporte le compte rendu en PDF et partage la page avec le bureau.",
+        "es": "Exporta el acta en PDF y comparte la página con la junta directiva.",
+        "it": "Esporta il verbale in PDF e condividi la pagina con il consiglio direttivo.",
+        "nl": "Exporteer de notulen als pdf en deel de pagina met het bestuur.",
+        "pl": "Wyeksportuj protokół do PDF i udostępnij stronę zarządowi.",
+        "pt-BR": "Exporte a ata em PDF e compartilhe a página com a diretoria.",
+        "zh": "把会议纪要导出成PDF，并把这个页面共享给董事会。",
+        "ja": "議事録をPDFで書き出して、このページを役員会と共有してください。",
+        "ar": "صدّر المحضر بصيغة PDF وشارك الصفحة مع مجلس الإدارة."
+      }
+    },
+    {
+      "id": "context-compare-elements",
+      "split": "dev",
+      "kind": "context",
+      "expected": ["attachments"],
+      "context": { "pageAttachments": ["image"] },
+      "texts": {
+        "de": "Vergleiche das erste und das zweite Element rechts.",
+        "en": "Compare the first and the second element on the right.",
+        "fr": "Compare le premier et le deuxième élément à droite.",
+        "es": "Compara el primer y el segundo elemento de la derecha.",
+        "it": "Confronta il primo e il secondo elemento a destra.",
+        "nl": "Vergelijk het eerste en het tweede element rechts.",
+        "pl": "Porównaj pierwszy i drugi element po prawej.",
+        "pt-BR": "Compare o primeiro e o segundo elemento da direita.",
+        "zh": "比较一下右边的第一个和第二个元素。",
+        "ja": "右側の1つ目と2つ目の要素を比べてください。",
+        "ar": "قارن بين العنصر الأول والعنصر الثاني على اليمين."
+      }
+    },
+    {
+      "id": "colloquial-screenshot",
+      "split": "dev",
+      "kind": "colloquial",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "kannst du mal gucken was auf dem screenshot drauf is",
+        "en": "can u check whats on the screenshot pls",
+        "fr": "tu peux regarder ce qu'il y a sur la capture stp",
+        "es": "puedes mirar q sale en la captura porfa",
+        "it": "puoi guardare cosa c'è nello screen pls",
+        "nl": "kun je ff kijken wat er op die screenshot staat",
+        "pl": "zerknij co jest na tym zrzucie ekranu plz",
+        "pt-BR": "dá uma olhada no q tem nesse print pfv",
+        "zh": "帮我看看截图上是啥",
+        "ja": "スクショに何が写ってるか見てくれる？",
+        "ar": "شوف لي إيش في لقطة الشاشة لو سمحت"
+      }
+    },
+    {
+      "id": "mixed-image",
+      "split": "dev",
+      "kind": "mixed",
+      "expected": ["attachments"],
+      "texts": {
+        "mixed": [
+          "Kannst du das image hier kurz describen?",
+          "Please beschreib mir kurz das Foto oben.",
+          "请帮我 describe 一下这张 screenshot",
+          "Peux-tu me dire ce qu'il y a sur ce picture ?",
+          "このphotoには何が写っていますか？"
+        ]
+      }
+    },
+    {
+      "id": "mixed-research-table",
+      "split": "dev",
+      "kind": "mixed",
+      "expected": ["web", "databases"],
+      "texts": {
+        "mixed": [
+          "Bitte research die prices online und update die Datenbank.",
+          "Look up the Preise im Internet and put them in the table database.",
+          "在网上查一下 prices，然后更新 database。"
+        ]
+      }
+    },
+    {
+      "id": "image-poster-read",
+      "split": "holdout",
+      "kind": "synonym",
+      "expected": ["attachments"],
+      "texts": {
+        "de": "Lies mir vor, was auf dem eingefügten Plakat steht.",
+        "en": "Read out what the poster I added says.",
+        "fr": "Lis-moi ce qui est écrit sur l'affiche que j'ai ajoutée.",
+        "es": "Léeme lo que pone en el cartel que he añadido.",
+        "it": "Leggimi cosa c'è scritto sul manifesto che ho inserito.",
+        "nl": "Lees me voor wat er op de poster staat die ik heb toegevoegd.",
+        "pl": "Przeczytaj mi, co jest napisane na plakacie, który wstawiłem.",
+        "pt-BR": "Leia para mim o que está escrito no cartaz que eu adicionei.",
+        "zh": "把我放进去的那张海报上写的内容念给我听。",
+        "ja": "貼り付けたポスターに何と書いてあるか読み上げてください。",
+        "ar": "اقرأ لي ما هو مكتوب على الملصق الذي أضفته."
+      }
+    },
+    {
+      "id": "history-who-changed",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["history"],
+      "texts": {
+        "de": "Wer hat hier zuletzt etwas geändert?",
+        "en": "Who was the last person to change something here?",
+        "fr": "Qui a modifié quelque chose ici en dernier ?",
+        "es": "¿Quién fue el último en cambiar algo aquí?",
+        "it": "Chi è stato l'ultimo a modificare qualcosa qui?",
+        "nl": "Wie heeft hier als laatste iets veranderd?",
+        "pl": "Kto ostatnio coś tu zmieniał?",
+        "pt-BR": "Quem foi a última pessoa a mudar algo aqui?",
+        "zh": "这里最后是谁改的？",
+        "ja": "ここを最後に変更したのは誰ですか？",
+        "ar": "من آخر شخص غيّر شيئًا هنا؟"
+      }
+    },
+    {
+      "id": "lifecycle-no-longer-needed",
+      "split": "holdout",
+      "kind": "colloquial",
+      "expected": ["lifecycle"],
+      "texts": {
+        "de": "Die Seite Alte Wohnung brauch ich nicht mehr, weg damit.",
+        "en": "I don't need the Old Flat page anymore, get it out of here.",
+        "fr": "Je n'ai plus besoin de la page Ancien appartement, vire-la.",
+        "es": "Ya no necesito la página Piso antiguo, quítala.",
+        "it": "Non mi serve più la pagina Vecchio appartamento, levala.",
+        "nl": "De pagina Oude woning heb ik niet meer nodig, weg ermee.",
+        "pl": "Strony Stare mieszkanie już nie potrzebuję, wywal ją.",
+        "pt-BR": "Não preciso mais da página Apartamento antigo, pode tirar.",
+        "zh": "旧公寓那个页面我用不着了，弄掉吧。",
+        "ja": "旧居のページはもう要らないので、消してください。",
+        "ar": "لم أعد بحاجة إلى صفحة الشقة القديمة، تخلّص منها."
+      }
+    },
+    {
+      "id": "database-count-rating",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["databases"],
+      "texts": {
+        "de": "Wie viele Einträge in meiner Filmsammlung haben vier Sterne oder mehr?",
+        "en": "How many entries in my film collection have four stars or more?",
+        "fr": "Combien d'entrées de ma collection de films ont quatre étoiles ou plus ?",
+        "es": "¿Cuántas entradas de mi colección de películas tienen cuatro estrellas o más?",
+        "it": "Quante voci della mia collezione di film hanno quattro stelle o più?",
+        "nl": "Hoeveel items in mijn filmcollectie hebben vier sterren of meer?",
+        "pl": "Ile pozycji w mojej kolekcji filmów ma cztery gwiazdki lub więcej?",
+        "pt-BR": "Quantas entradas da minha coleção de filmes têm quatro estrelas ou mais?",
+        "zh": "我的电影收藏里有多少条评分在四星及以上？",
+        "ja": "映画コレクションの中で星4つ以上の項目はいくつありますか？",
+        "ar": "كم عدد الإدخالات في مجموعة أفلامي التي حصلت على أربع نجوم أو أكثر؟"
+      }
+    },
+    {
+      "id": "web-yesterday-match",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["web"],
+      "texts": {
+        "de": "Wer hat gestern das Spiel von Bayern gewonnen?",
+        "en": "Who won yesterday's Bayern match?",
+        "fr": "Qui a gagné le match du Bayern hier ?",
+        "es": "¿Quién ganó ayer el partido del Bayern?",
+        "it": "Chi ha vinto ieri la partita del Bayern?",
+        "nl": "Wie heeft gisteren de wedstrijd van Bayern gewonnen?",
+        "pl": "Kto wygrał wczoraj mecz Bayernu?",
+        "pt-BR": "Quem ganhou o jogo do Bayern ontem?",
+        "zh": "昨天拜仁那场比赛谁赢了？",
+        "ja": "昨日のバイエルンの試合はどっちが勝ちましたか？",
+        "ar": "من فاز في مباراة بايرن أمس؟"
+      }
+    },
+    {
+      "id": "share-who-can-see",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["shares"],
+      "texts": {
+        "de": "Wer außer mir kann diese Seite sehen?",
+        "en": "Who besides me can see this page?",
+        "fr": "Qui à part moi peut voir cette page ?",
+        "es": "¿Quién además de mí puede ver esta página?",
+        "it": "Chi oltre a me può vedere questa pagina?",
+        "nl": "Wie kan deze pagina behalve ik zien?",
+        "pl": "Kto oprócz mnie widzi tę stronę?",
+        "pt-BR": "Quem além de mim consegue ver esta página?",
+        "zh": "除了我还有谁能看到这个页面？",
+        "ja": "私以外にこのページを見られるのは誰ですか？",
+        "ar": "من غيري يستطيع رؤية هذه الصفحة؟"
+      }
+    },
+    {
+      "id": "automation-on-capture",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["automations"],
+      "acceptable": ["inbox"],
+      "texts": {
+        "de": "Jedes Mal, wenn ich etwas im Eingang ablege, soll es von selbst den Tag unsortiert bekommen.",
+        "en": "Every time I drop something into the inbox it should get the tag unsorted on its own.",
+        "fr": "Chaque fois que je dépose quelque chose dans la boîte de réception, il doit recevoir tout seul l'étiquette non trié.",
+        "es": "Cada vez que deje algo en la bandeja de entrada, que reciba solo la etiqueta sin ordenar.",
+        "it": "Ogni volta che metto qualcosa nella casella in arrivo, deve ricevere da solo il tag da smistare.",
+        "nl": "Elke keer dat ik iets in de inbox zet, moet het vanzelf de tag ongesorteerd krijgen.",
+        "pl": "Za każdym razem, gdy wrzucę coś do skrzynki odbiorczej, ma samo dostać tag nieposortowane.",
+        "pt-BR": "Toda vez que eu jogar algo na caixa de entrada, quero que ganhe sozinho a etiqueta não organizado.",
+        "zh": "以后每次我往收件箱里放东西，都自动给它加上未分类的标签。",
+        "ja": "受信箱に何か入れるたびに、自動で未整理タグが付くようにしてください。",
+        "ar": "في كل مرة أضع شيئًا في صندوق الوارد، يجب أن يحصل تلقائيًا على وسم غير مصنّف."
+      }
+    },
+    {
+      "id": "template-reuse-structure",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["templates"],
+      "texts": {
+        "de": "Diese Gliederung will ich für jeden neuen Reisebericht wiederverwenden.",
+        "en": "I want to reuse this structure for every new travel report.",
+        "fr": "Je veux réutiliser cette structure pour chaque nouveau récit de voyage.",
+        "es": "Quiero reutilizar esta estructura para cada nuevo diario de viaje.",
+        "it": "Voglio riutilizzare questa struttura per ogni nuovo resoconto di viaggio.",
+        "nl": "Deze opbouw wil ik voor elk nieuw reisverslag hergebruiken.",
+        "pl": "Chcę używać tej struktury przy każdej nowej relacji z podróży.",
+        "pt-BR": "Quero reaproveitar esta estrutura em todo novo relato de viagem.",
+        "zh": "这个结构我想在以后每篇新的游记里都复用。",
+        "ja": "この構成を、新しい旅行記を書くたびに使い回したいです。",
+        "ar": "أريد إعادة استخدام هذا الهيكل في كل تقرير سفر جديد."
+      }
+    },
+    {
+      "id": "comments-feedback",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["comments"],
+      "texts": {
+        "de": "Was haben die anderen an meinem Entwurf angemerkt?",
+        "en": "What did the others remark on my draft?",
+        "fr": "Qu'est-ce que les autres ont relevé sur mon brouillon ?",
+        "es": "¿Qué han señalado los demás en mi borrador?",
+        "it": "Cosa hanno annotato gli altri sulla mia bozza?",
+        "nl": "Wat hebben de anderen bij mijn concept opgemerkt?",
+        "pl": "Co pozostali zauważyli w moim szkicu?",
+        "pt-BR": "O que os outros anotaram no meu rascunho?",
+        "zh": "其他人在我的草稿上都批注了什么？",
+        "ja": "ほかの人たちは私の下書きにどんな指摘をしましたか？",
+        "ar": "ما الملاحظات التي تركها الآخرون على مسودتي؟"
+      }
+    },
+    {
+      "id": "memory-preferences",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["memory"],
+      "acceptable": ["chats"],
+      "texts": {
+        "de": "Was weißt du noch aus unseren früheren Sitzungen über meine Vorlieben beim Schreiben?",
+        "en": "What do you still know from our earlier sessions about how I like to write?",
+        "fr": "Que te reste-t-il de nos sessions précédentes sur mes préférences d'écriture ?",
+        "es": "¿Qué recuerdas de nuestras sesiones anteriores sobre cómo me gusta escribir?",
+        "it": "Cosa ricordi delle nostre sessioni precedenti sulle mie preferenze di scrittura?",
+        "nl": "Wat weet je nog uit onze eerdere sessies over hoe ik graag schrijf?",
+        "pl": "Co pamiętasz z naszych wcześniejszych sesji o tym, jak lubię pisać?",
+        "pt-BR": "O que você ainda sabe das nossas sessões anteriores sobre como eu gosto de escrever?",
+        "zh": "从我们之前的会话里，你还记得我写作上有哪些偏好吗？",
+        "ja": "以前のセッションから、私の文章の好みについて何を覚えていますか？",
+        "ar": "ماذا تتذكر من جلساتنا السابقة عن تفضيلاتي في الكتابة؟"
+      }
+    },
+    {
+      "id": "project-bib-entry",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["projects"],
+      "texts": {
+        "de": "In meiner Doktorarbeit fehlt ein Eintrag im Literaturverzeichnis, füg ihn in die .bib-Datei ein.",
+        "en": "My PhD thesis is missing an entry in the bibliography, add it to the .bib file.",
+        "fr": "Il manque une entrée dans la bibliographie de ma thèse, ajoute-la dans le fichier .bib.",
+        "es": "A mi tesis doctoral le falta una entrada en la bibliografía, añádela al archivo .bib.",
+        "it": "Nella mia tesi di dottorato manca una voce in bibliografia, aggiungila al file .bib.",
+        "nl": "In mijn proefschrift ontbreekt een item in de literatuurlijst, zet het in het .bib-bestand.",
+        "pl": "W mojej pracy doktorskiej brakuje pozycji w bibliografii, dodaj ją do pliku .bib.",
+        "pt-BR": "Falta uma entrada na bibliografia da minha tese de doutorado, adicione no arquivo .bib.",
+        "zh": "我的博士论文参考文献里少了一条，把它加到.bib文件里。",
+        "ja": "博士論文の参考文献に1件抜けているので、.bibファイルに追加してください。",
+        "ar": "ينقص مرجع في قائمة المراجع في رسالة الدكتوراه الخاصة بي، أضفه إلى ملف ‎.bib‎."
+      }
+    },
+    {
+      "id": "render-official-document",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["render"],
+      "texts": {
+        "de": "Ich brauch das als druckfertiges Dokument für die Behörde.",
+        "en": "I need this as a print-ready document for the authorities.",
+        "fr": "J'en ai besoin sous forme de document prêt à imprimer pour l'administration.",
+        "es": "Lo necesito como documento listo para imprimir para la administración.",
+        "it": "Mi serve come documento pronto per la stampa per l'ufficio pubblico.",
+        "nl": "Ik heb dit nodig als drukklaar document voor de gemeente.",
+        "pl": "Potrzebuję tego jako dokumentu gotowego do druku dla urzędu.",
+        "pt-BR": "Preciso disso como um documento pronto para impressão para o órgão público.",
+        "zh": "我需要把这个做成可以直接打印的文件交给政府部门。",
+        "ja": "役所に出すので、印刷できる文書の形にしてください。",
+        "ar": "أحتاج هذا كمستند جاهز للطباعة لتقديمه إلى الجهة الرسمية."
+      }
+    },
+    {
+      "id": "plain-backlinks",
+      "split": "holdout",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Welche Seiten verlinken auf diese hier?",
+        "en": "Which pages link to this one?",
+        "fr": "Quelles pages renvoient vers celle-ci ?",
+        "es": "¿Qué páginas enlazan a esta?",
+        "it": "Quali pagine rimandano a questa?",
+        "nl": "Welke pagina's linken naar deze?",
+        "pl": "Które strony linkują do tej?",
+        "pt-BR": "Quais páginas apontam para esta?",
+        "zh": "哪些页面链接到了这一页？",
+        "ja": "このページにリンクしているページはどれですか？",
+        "ar": "ما الصفحات التي ترتبط بهذه الصفحة؟"
+      }
+    },
+    {
+      "id": "plain-spelling",
+      "split": "holdout",
+      "kind": "negative",
+      "expected": [],
+      "texts": {
+        "de": "Korrigier die Rechtschreibung in diesem Abschnitt.",
+        "en": "Fix the spelling in this section.",
+        "fr": "Corrige l'orthographe de cette section.",
+        "es": "Corrige la ortografía de esta sección.",
+        "it": "Correggi l'ortografia di questa sezione.",
+        "nl": "Verbeter de spelling in deze sectie.",
+        "pl": "Popraw pisownię w tej sekcji.",
+        "pt-BR": "Corrija a ortografia desta seção.",
+        "zh": "改正这一节里的错别字。",
+        "ja": "このセクションの誤字を直してください。",
+        "ar": "صحّح الأخطاء الإملائية في هذا القسم."
+      }
+    },
+    {
+      "id": "multi-photo-price",
+      "split": "holdout",
+      "kind": "multi",
+      "expected": ["attachments", "web"],
+      "texts": {
+        "de": "Auf dem Foto ist ein Gerät, finde raus, was das online kostet.",
+        "en": "There's a device in the photo, find out what it costs online.",
+        "fr": "Il y a un appareil sur la photo, trouve combien il coûte en ligne.",
+        "es": "En la foto sale un aparato, averigua cuánto cuesta por internet.",
+        "it": "Nella foto c'è un apparecchio, scopri quanto costa online.",
+        "nl": "Op de foto staat een apparaat, zoek uit wat het online kost.",
+        "pl": "Na zdjęciu jest urządzenie, sprawdź, ile kosztuje w internecie.",
+        "pt-BR": "Tem um aparelho na foto, descubra quanto custa na internet.",
+        "zh": "照片里有个设备，查一下它在网上卖多少钱。",
+        "ja": "写真に写っている機械が、ネットでいくらで売られているか調べてください。",
+        "ar": "في الصورة جهاز، اعرف كم سعره على الإنترنت."
+      }
+    },
+    {
+      "id": "work-item-progress",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["workItems"],
+      "acceptable": ["chats"],
+      "texts": {
+        "de": "Wie weit bist du mit der Aufgabe, die ich dir heute früh übertragen habe?",
+        "en": "How far along are you with the job I handed you this morning?",
+        "fr": "Où en es-tu de la mission que je t'ai confiée ce matin ?",
+        "es": "¿Cómo vas con el encargo que te di esta mañana?",
+        "it": "A che punto sei con l'incarico che ti ho affidato stamattina?",
+        "nl": "Hoe ver ben je met de opdracht die ik je vanochtend gaf?",
+        "pl": "Jak ci idzie zlecenie, które ci dałem dziś rano?",
+        "pt-BR": "Em que pé está a tarefa que eu te passei hoje cedo?",
+        "zh": "我今天早上交给你的那个任务进展到哪一步了？",
+        "ja": "今朝お願いした仕事はどこまで進みましたか？",
+        "ar": "إلى أين وصلت في المهمة التي أسندتها إليك هذا الصباح؟"
+      }
+    },
+    {
+      "id": "admin-disable-account",
+      "split": "holdout",
+      "kind": "direct",
+      "expected": ["admin"],
+      "texts": {
+        "de": "Sperr das Konto von Max, er ist nicht mehr im Team.",
+        "en": "Lock Max's account, he's no longer on the team.",
+        "fr": "Bloque le compte de Max, il ne fait plus partie de l'équipe.",
+        "es": "Bloquea la cuenta de Max, ya no está en el equipo.",
+        "it": "Blocca l'account di Max, non fa più parte del team.",
+        "nl": "Blokkeer het account van Max, hij zit niet meer in het team.",
+        "pl": "Zablokuj konto Maxa, nie jest już w zespole.",
+        "pt-BR": "Bloqueie a conta do Max, ele não está mais na equipe.",
+        "zh": "把Max的账号停用，他已经不在团队里了。",
+        "ja": "マックスのアカウントを停止してください。もうチームにいません。",
+        "ar": "أوقف حساب ماكس، فهو لم يعد في الفريق."
+      }
+    },
+    {
+      "id": "database-context-sort",
+      "split": "holdout",
+      "kind": "context",
+      "expected": ["databases"],
+      "context": { "databaseViewOpen": true },
+      "texts": {
+        "de": "Sortier die Einträge nach Datum, neueste zuerst.",
+        "en": "Sort the entries by date, newest first.",
+        "fr": "Trie les entrées par date, les plus récentes d'abord.",
+        "es": "Ordena las entradas por fecha, las más nuevas primero.",
+        "it": "Ordina le voci per data, dalle più recenti.",
+        "nl": "Sorteer de items op datum, nieuwste eerst.",
+        "pl": "Posortuj wpisy według daty, od najnowszych.",
+        "pt-BR": "Ordene as entradas por data, as mais novas primeiro.",
+        "zh": "按日期排序，最新的排在前面。",
+        "ja": "項目を日付順に、新しいものから並べてください。",
+        "ar": "رتّب الإدخالات حسب التاريخ، الأحدث أولًا."
+      }
+    },
+    {
+      "id": "attention-unanswered",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["attention"],
+      "texts": {
+        "de": "Hat mich irgendein Agent etwas gefragt, das ich noch nicht beantwortet habe?",
+        "en": "Has any agent asked me something I haven't answered yet?",
+        "fr": "Un agent m'a-t-il posé une question à laquelle je n'ai pas encore répondu ?",
+        "es": "¿Algún agente me ha preguntado algo que todavía no he contestado?",
+        "it": "Qualche agente mi ha chiesto qualcosa a cui non ho ancora risposto?",
+        "nl": "Heeft een agent me iets gevraagd waar ik nog niet op heb geantwoord?",
+        "pl": "Czy jakiś agent zadał mi pytanie, na które jeszcze nie odpowiedziałem?",
+        "pt-BR": "Algum agente me perguntou algo que eu ainda não respondi?",
+        "zh": "有没有哪个智能体问了我问题而我还没回答？",
+        "ja": "まだ答えていない質問をエージェントから受けていますか？",
+        "ar": "هل سألني أي وكيل عن شيء لم أجب عنه بعد؟"
+      }
+    },
+    {
+      "id": "entity-people-involved",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["entities"],
+      "texts": {
+        "de": "Mit welchen Personen hab ich beim Gartenhaus zu tun?",
+        "en": "Which people am I dealing with on the garden shed?",
+        "fr": "Avec quelles personnes suis-je en contact pour l'abri de jardin ?",
+        "es": "¿Con qué personas tengo que ver en lo de la caseta del jardín?",
+        "it": "Con quali persone ho a che fare per la casetta da giardino?",
+        "nl": "Met welke mensen heb ik te maken bij het tuinhuis?",
+        "pl": "Z jakimi osobami mam do czynienia przy domku ogrodowym?",
+        "pt-BR": "Com quais pessoas eu estou lidando na casinha do jardim?",
+        "zh": "花园小屋这件事上我要和哪些人打交道？",
+        "ja": "庭の物置の件で、私が関わっている人は誰ですか？",
+        "ar": "مع أي أشخاص أتعامل في موضوع بيت الحديقة؟"
+      }
+    },
+    {
+      "id": "inbox-hold-thought",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["inbox"],
+      "texts": {
+        "de": "Halt diesen Gedanken irgendwo fest, ich sortier ihn morgen ein.",
+        "en": "Park this thought somewhere, I'll file it tomorrow.",
+        "fr": "Garde cette idée quelque part, je la rangerai demain.",
+        "es": "Guarda esta idea en algún sitio, mañana la ordeno.",
+        "it": "Metti da parte questo pensiero da qualche parte, domani lo sistemo.",
+        "nl": "Zet deze gedachte ergens neer, morgen orden ik hem.",
+        "pl": "Zapisz gdzieś tę myśl, jutro ją uporządkuję.",
+        "pt-BR": "Guarda essa ideia em algum lugar, amanhã eu organizo.",
+        "zh": "先把这个想法随便记在哪儿，我明天再整理。",
+        "ja": "この考えをとりあえずどこかに置いておいて。明日整理します。",
+        "ar": "احفظ هذه الفكرة في مكان ما، سأرتبها غدًا."
+      }
+    },
+    {
+      "id": "saved-query-smart-view",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["savedQueries"],
+      "texts": {
+        "de": "Ich hätte gern eine Ansicht, die immer alle Seiten zeigt, die ich diese Woche bearbeitet habe.",
+        "en": "I'd like a view that always shows every page I've edited this week.",
+        "fr": "J'aimerais une vue qui affiche toujours toutes les pages que j'ai modifiées cette semaine.",
+        "es": "Quiero una vista que muestre siempre todas las páginas que he editado esta semana.",
+        "it": "Vorrei una vista che mostri sempre tutte le pagine che ho modificato questa settimana.",
+        "nl": "Ik wil een weergave die altijd alle pagina's toont die ik deze week heb bewerkt.",
+        "pl": "Chcę widok, który zawsze pokazuje wszystkie strony edytowane przeze mnie w tym tygodniu.",
+        "pt-BR": "Queria uma visão que sempre mostrasse todas as páginas que editei nesta semana.",
+        "zh": "我想要一个视图，始终显示我这周编辑过的所有页面。",
+        "ja": "今週自分が編集したページをいつでも一覧できるビューがほしいです。",
+        "ar": "أريد عرضًا يُظهر دائمًا كل الصفحات التي عدّلتها هذا الأسبوع."
+      }
+    },
+    {
+      "id": "notifications-stop-mail",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["notifications"],
+      "acceptable": ["comments"],
+      "texts": {
+        "de": "Ich will keine Mails mehr bekommen, wenn jemand kommentiert.",
+        "en": "I don't want to get emails anymore when someone comments.",
+        "fr": "Je ne veux plus recevoir de mails quand quelqu'un commente.",
+        "es": "No quiero recibir más correos cuando alguien comente.",
+        "it": "Non voglio più ricevere mail quando qualcuno commenta.",
+        "nl": "Ik wil geen mails meer krijgen als iemand reageert.",
+        "pl": "Nie chcę już dostawać maili, gdy ktoś coś skomentuje.",
+        "pt-BR": "Não quero mais receber e-mail quando alguém comentar.",
+        "zh": "有人评论的时候，我不想再收到邮件了。",
+        "ja": "誰かがコメントしたときのメールはもう受け取りたくありません。",
+        "ar": "لا أريد أن تصلني رسائل بريد بعد الآن عندما يعلّق أحد."
+      }
+    },
+    {
+      "id": "chat-search-old",
+      "split": "holdout",
+      "kind": "direct",
+      "expected": ["chats"],
+      "acceptable": ["memory"],
+      "texts": {
+        "de": "Such in unseren alten Unterhaltungen, wo wir über den Mietvertrag gesprochen haben.",
+        "en": "Search our old conversations for where we discussed the lease.",
+        "fr": "Cherche dans nos anciennes conversations l'endroit où on a parlé du bail.",
+        "es": "Busca en nuestras conversaciones antiguas dónde hablamos del contrato de alquiler.",
+        "it": "Cerca nelle nostre vecchie conversazioni dove abbiamo parlato del contratto d'affitto.",
+        "nl": "Zoek in onze oude gesprekken waar we het over het huurcontract hadden.",
+        "pl": "Przeszukaj nasze stare rozmowy, gdzie mówiliśmy o umowie najmu.",
+        "pt-BR": "Procure nas nossas conversas antigas onde falamos do contrato de aluguel.",
+        "zh": "在我们以前的对话里找找，我们在哪儿聊过租房合同。",
+        "ja": "以前の会話の中から、賃貸契約について話したところを探してください。",
+        "ar": "ابحث في محادثاتنا القديمة عن الموضع الذي تحدثنا فيه عن عقد الإيجار."
+      }
+    },
+    {
+      "id": "appearance-ai-rule",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["appearance"],
+      "texts": {
+        "de": "Hinterleg für diese Seite, dass du hier immer nur in Stichpunkten antwortest.",
+        "en": "Set it up for this page that you always answer here in bullet points only.",
+        "fr": "Configure pour cette page que tu répondes toujours uniquement sous forme de puces.",
+        "es": "Configura en esta página que aquí respondas siempre solo con viñetas.",
+        "it": "Imposta per questa pagina che qui rispondi sempre solo per punti elenco.",
+        "nl": "Stel voor deze pagina in dat je hier altijd alleen in opsommingstekens antwoordt.",
+        "pl": "Ustaw dla tej strony, żebyś tutaj zawsze odpowiadał tylko w punktach.",
+        "pt-BR": "Defina para esta página que aqui você sempre responda só em tópicos.",
+        "zh": "给这个页面设定一下：你在这里回答时一律只用要点列表。",
+        "ja": "このページでは常に箇条書きだけで答える、という設定にしてください。",
+        "ar": "اضبط لهذه الصفحة أن تجيب هنا دائمًا بنقاط مختصرة فقط."
+      }
+    },
+    {
+      "id": "workflow-run-stuck",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["workflows"],
+      "acceptable": ["automations", "workItems"],
+      "texts": {
+        "de": "Zeig mir, wo der letzte Durchlauf meines Rechnungsablaufs hängen geblieben ist.",
+        "en": "Show me where the last run of my invoice flow got stuck.",
+        "fr": "Montre-moi où la dernière exécution de mon circuit de factures s'est bloquée.",
+        "es": "Muéstrame dónde se quedó atascada la última ejecución de mi flujo de facturas.",
+        "it": "Fammi vedere dove si è bloccata l'ultima esecuzione del mio flusso delle fatture.",
+        "nl": "Laat zien waar de laatste run van mijn factuurstroom is blijven hangen.",
+        "pl": "Pokaż mi, gdzie utknęło ostatnie uruchomienie mojego przepływu faktur.",
+        "pt-BR": "Mostre onde a última execução do meu fluxo de faturas travou.",
+        "zh": "给我看看我那个发票流程上一次运行卡在哪一步了。",
+        "ja": "請求書フローの前回の実行がどこで止まったか見せてください。",
+        "ar": "أرني أين توقف آخر تشغيل لمسار الفواتير الخاص بي."
+      }
+    },
+    {
+      "id": "changeset-pending-apply",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["changesets"],
+      "acceptable": ["attention"],
+      "texts": {
+        "de": "Hast du Änderungen vorbereitet, die ich noch übernehmen muss?",
+        "en": "Have you prepared any changes that I still need to accept?",
+        "fr": "As-tu préparé des modifications que je dois encore accepter ?",
+        "es": "¿Has preparado cambios que todavía tengo que aceptar?",
+        "it": "Hai preparato delle modifiche che devo ancora accettare?",
+        "nl": "Heb je wijzigingen klaargezet die ik nog moet overnemen?",
+        "pl": "Czy przygotowałeś zmiany, które muszę jeszcze zatwierdzić?",
+        "pt-BR": "Você preparou alterações que eu ainda preciso aceitar?",
+        "zh": "你有没有准备好、还等我采纳的修改？",
+        "ja": "私がまだ取り込む必要のある変更を用意していますか？",
+        "ar": "هل جهّزت تعديلات ما زال عليّ قبولها؟"
+      }
+    },
+    {
+      "id": "eval-which-model-better",
+      "split": "holdout",
+      "kind": "indirect",
+      "expected": ["evals"],
+      "texts": {
+        "de": "Welches Modell hat bei den gespeicherten Prüfaufgaben besser abgeschnitten?",
+        "en": "Which model did better on the saved test tasks?",
+        "fr": "Quel modèle s'en est le mieux sorti sur les tâches de test enregistrées ?",
+        "es": "¿Qué modelo salió mejor en las tareas de prueba guardadas?",
+        "it": "Quale modello è andato meglio sui compiti di prova salvati?",
+        "nl": "Welk model scoorde beter op de opgeslagen testtaken?",
+        "pl": "Który model wypadł lepiej w zapisanych zadaniach testowych?",
+        "pt-BR": "Qual modelo se saiu melhor nas tarefas de teste salvas?",
+        "zh": "在保存的测试任务上，哪个模型表现更好？",
+        "ja": "保存してあるテスト課題では、どのモデルの成績が良かったですか？",
+        "ar": "أي نموذج حقق نتيجة أفضل في مهام الاختبار المحفوظة؟"
+      }
+    },
+    {
+      "id": "mixed-holdout-pdf-share",
+      "split": "holdout",
+      "kind": "mixed",
+      "expected": ["render", "shares"],
+      "texts": {
+        "mixed": [
+          "Mach bitte ein PDF export davon und share es mit dem Team.",
+          "把这页 export 成 PDF，再 share 给团队。",
+          "Exporte en PDF y compártela with the team, please."
+        ]
+      }
+    }
+  ]
+}

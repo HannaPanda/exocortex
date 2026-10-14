@@ -67,6 +67,27 @@ feature is unavailable", not "something broke". What consumes it is
 port and the `createEmbeddingClient` bridge — see ADR-020 and
 `docs/architecture.md`.
 
+## Decisions
+
+`DecisionProvider` (`packages/ai/src/decision-provider.ts`, issue #108) is the
+third contract beside chat and embeddings: a typed semantic decision (yes or
+no, one of a closed set, a level on a scale) about a state, several questions
+per call, with a distribution as the answer. It generates no text, so it is
+not an `AiProvider` either. The caller names the decision in eXocortex's
+words; the wire format stays in the adapter.
+
+- `OpenRouterDecisionProvider` — OpenRouter's Decisions API
+  (`POST /api/alpha/decisions`, beside `/v1`), same key and account. The path
+  says alpha, so a missing answer, an answer of the wrong kind or an option
+  nobody offered is refused (`ai_decision_invalid`), never defaulted.
+  `JEV_DECISION_MODEL` pins `typesafe/jev-1.13`.
+
+Nothing in the product calls it yet. It is measured first: issue #206 against
+the keyword tool routing (`scripts/tool-routing-eval.mjs` on the gold standard
+in `evals/tool-routing/`), issue #108 against search reranking and the memory
+capture gate. Whoever wires a caller up owes it a fallback, because an
+unreachable decision engine must never stop a run.
+
 ## Vision preprocessing
 
 `z-ai/glm-5.2` cannot see images, so the worker turns them into text first

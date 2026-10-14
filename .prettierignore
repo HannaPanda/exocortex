@@ -42,3 +42,8 @@ docs/capability-matrix.md
 # for byte; vitest compares them verbatim, so a formatter would make the test
 # and the format check undo each other on every run.
 packages/mail/src/layout/__snapshots__
+
+# The raw answers of a decision engine, written by scripts/tool-routing-eval.mjs
+# one entry per line so a diff shows which answers changed. Reformatting would
+# spread each entry over thirty lines and the file over twenty thousand.
+evals/tool-routing/results
