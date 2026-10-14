@@ -123,9 +123,10 @@
       "zoomIn": "Aumentar zoom",
       "zoomOut": "Diminuir zoom",
       "fitView": "Mostrar workflow inteiro",
-      "interactive": "Ativar ou desativar edição",
       "handle": "Conector"
-    }
+    },
+    "addFrom": "Adicionar próxima etapa após „{handle}“ de {node}",
+    "addFromContext": "Após „{handle}“ de {node}"
   },
   "pagePicker": {
     "group": "Páginas",
@@ -286,7 +287,9 @@
     "on": "ativado",
     "off": "desativado",
     "writeModeCeiling": "Modo de escrita máximo",
-    "addTrigger": "Adicionar gatilho"
+    "addTrigger": "Adicionar gatilho",
+    "title": "Configurações do workflow",
+    "titleHint": "Nome, descrição e os limites que se aplicam a cada execução."
   },
   "problems": {
     "listLabel": "Problemas",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Adicionar nó",
-    "hint": "Um clique anexa o nó após o selecionado e o conecta. Arrastar coloca o nó onde você o soltar."
+    "add": "Adicionar nó",
+    "search": "Buscar nós",
+    "empty": "Nenhum nó corresponde a „{query}“.",
+    "addAfterSelection": "Fica após o nó selecionado e é conectado a ele.",
+    "pressAfter": "Clique: anexar após o nó selecionado. Arraste: soltar onde você quiser.",
+    "pressAppend": "Clique: anexar à direita. Arraste: soltar onde você quiser."
   },
   "summary": {
     "manual": "Inicia manualmente",
@@ -324,15 +332,21 @@
     "back": "Todos os workflows",
     "conflict": "Alguém salvou o rascunho enquanto isso. Suas alterações ainda estão aqui; recarregue o estado mais recente para descartá-las ou copie-as manualmente depois.",
     "reload": "Recarregar versão mais recente",
-    "unsavable": "Não é possível salvar o rascunho dessa forma. Os problemas à direita indicam onde.",
+    "unsavable": "Não é possível salvar o rascunho dessa forma. Os problemas no canto inferior direito da tela indicam o local.",
     "tabDraft": "Rascunho",
     "tabRuns": "Execuções",
     "tabVersions": "Versões",
     "canvasLabel": "Grafo do workflow {name}",
     "inspectorLabel": "Configurações",
-    "noProblems": "Nenhum problema",
     "noProblemsHint": "O rascunho já pode ser publicado.",
-    "problemsTitle": "{count, plural, one {# problema antes de publicar} many {# de problemas antes de publicar} other {# problemas antes de publicar}}"
+    "problemsTitle": "{count, plural, one {# problema antes de publicar} many {# de problemas antes de publicar} other {# problemas antes de publicar}}",
+    "unsavedLeave": "O rascunho tem alterações que ainda não foram salvas. Se você sair agora, elas serão perdidas; isso não pode ser desfeito. Fique aqui e salve para mantê-las.",
+    "undo": "Desfazer",
+    "redo": "Refazer",
+    "tidy": "Organizar grafo",
+    "settings": "Configurações",
+    "addTrigger": "Adicionar gatilho",
+    "closePanel": "Fechar painel"
   },
   "header": {
     "unsaved": "Não salvo",
@@ -363,7 +377,10 @@
     "deleteDescription": "O workflow, todas as versões e suas execuções concluídas desaparecerão. Os itens de trabalho criados por suas execuções permanecerão.",
     "deleteConfirm": "Excluir",
     "cancel": "Cancelar",
-    "workflowsOff": "Os workflows estão desativados neste espaço de trabalho. É possível criar e publicar, mas nada poderá ser executado, nem mesmo um teste. Você pode ativá-los nas configurações do espaço de trabalho em “Workflows”."
+    "workflowsOff": "Os workflows estão desativados neste espaço de trabalho. É possível criar e publicar, mas nada poderá ser executado, nem mesmo um teste. Você pode ativá-los nas configurações do espaço de trabalho em “Workflows”.",
+    "back": "Todos os workflows",
+    "draftAheadShort": "Rascunho mais recente",
+    "deleteBlockedRuns": "Só é possível quando nenhuma execução estiver em andamento."
   },
   "activation": {
     "enableTitle": "Ativar workflow?",

@@ -27,6 +27,8 @@ export function WorkflowProblemList({
 }) {
   const t = useTranslations('workflows.problems');
   const wording = useWorkflowWording();
+  const nameOf = (id: string): string =>
+    graph.nodes.find((candidate) => candidate.id === id)?.label ?? id;
   const where = (problem: WorkflowProblem): string | null => {
     if (problem.nodeId !== null) {
       const node = graph.nodes.find((candidate) => candidate.id === problem.nodeId);
@@ -36,7 +38,7 @@ export function WorkflowProblemList({
       const edge = graph.edges.find((candidate) => candidate.id === problem.edgeId);
       return edge === undefined
         ? t('atEdge', { from: problem.edgeId, to: '?' })
-        : t('atEdge', { from: edge.source.nodeId, to: edge.target.nodeId });
+        : t('atEdge', { from: nameOf(edge.source.nodeId), to: nameOf(edge.target.nodeId) });
     }
     return problem.path === null ? null : t('atPath', { path: problem.path.join('.') });
   };
@@ -69,7 +71,7 @@ export function WorkflowProblemList({
                 type="button"
                 className={cn(
                   'flex w-full items-start gap-2 rounded-md px-2 py-1 text-left text-sm',
-                  'hover:bg-accent',
+                  'hover:bg-accent-solid',
                 )}
                 data-testid="workflow-problem"
                 data-code={problem.code}

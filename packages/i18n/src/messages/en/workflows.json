@@ -123,9 +123,10 @@
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
       "fitView": "Fit entire workflow to view",
-      "interactive": "Toggle editing",
       "handle": "Handle"
-    }
+    },
+    "addFrom": "Add next step after “{handle}” of {node}",
+    "addFromContext": "After “{handle}” of {node}"
   },
   "pagePicker": {
     "group": "Pages",
@@ -286,7 +287,9 @@
     "on": "enabled",
     "off": "disabled",
     "writeModeCeiling": "Maximum write mode",
-    "addTrigger": "Add trigger"
+    "addTrigger": "Add trigger",
+    "title": "Workflow settings",
+    "titleHint": "Name, description, and the limits that apply to every run."
   },
   "problems": {
     "listLabel": "Problems",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Add node",
-    "hint": "Clicking appends the node after the selected one and connects it. Dragging places it wherever you drop it."
+    "add": "Add node",
+    "search": "Search nodes",
+    "empty": "No nodes match “{query}”.",
+    "addAfterSelection": "Appears after the selected node and connects to it.",
+    "pressAfter": "Click: attach after the selected node. Drag: place where you drop it.",
+    "pressAppend": "Click: append to the right. Drag: place where you drop it."
   },
   "summary": {
     "manual": "Starts manually",
@@ -324,15 +332,21 @@
     "back": "All workflows",
     "conflict": "Someone saved the draft in the meantime. Your changes are still here; load the new state to discard them, or transfer them manually afterwards.",
     "reload": "Load new state",
-    "unsavable": "The draft cannot be saved like this. The issues on the right show where.",
+    "unsavable": "The draft cannot be saved as is. The issues in the bottom right of the canvas show where.",
     "tabDraft": "Draft",
     "tabRuns": "Runs",
     "tabVersions": "Versions",
     "canvasLabel": "Graph of workflow {name}",
     "inspectorLabel": "Settings",
-    "noProblems": "No issues",
     "noProblemsHint": "The draft is ready to be published.",
-    "problemsTitle": "{count, plural, one {# issue before publishing} other {# issues before publishing}}"
+    "problemsTitle": "{count, plural, one {# issue before publishing} other {# issues before publishing}}",
+    "unsavedLeave": "The draft has unsaved changes. If you leave now, you’ll lose them; this cannot be undone. Stay here and save to keep them.",
+    "undo": "Undo",
+    "redo": "Redo",
+    "tidy": "Tidy graph",
+    "settings": "Settings",
+    "addTrigger": "Add trigger",
+    "closePanel": "Close panel"
   },
   "header": {
     "unsaved": "Unsaved",
@@ -363,7 +377,10 @@
     "deleteDescription": "The workflow, all versions, and its completed runs will disappear. Work items created by its runs will remain.",
     "deleteConfirm": "Delete",
     "cancel": "Cancel",
-    "workflowsOff": "Workflows are disabled in this workspace. You can build and publish, but nothing can run, not even a test run. You can enable them in the workspace settings under “Workflows”."
+    "workflowsOff": "Workflows are disabled in this workspace. You can build and publish, but nothing can run, not even a test run. You can enable them in the workspace settings under “Workflows”.",
+    "back": "All workflows",
+    "draftAheadShort": "Draft ahead",
+    "deleteBlockedRuns": "Can only be done once no runs are in progress."
   },
   "activation": {
     "enableTitle": "Enable workflow?",

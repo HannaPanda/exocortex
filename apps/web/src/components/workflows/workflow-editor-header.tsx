@@ -1,6 +1,13 @@
 'use client';
 
-import { FlaskConicalIcon, MoreHorizontalIcon, SaveIcon, UploadIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  FlaskConicalIcon,
+  MoreHorizontalIcon,
+  SaveIcon,
+  UploadIcon,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -26,6 +33,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Switch,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@exocortex/ui';
 
 import {
@@ -38,15 +48,18 @@ import { WorkflowActivationDialog } from './workflow-activation-dialog';
 import { WorkflowTestRunDialog } from './workflow-test-run-dialog';
 
 /**
- * The editor's title row (issue #164): the workflow's name and state, and
- * the decisions that are made about the whole of it: save the draft, publish
- * it as a version, try that version, switch it on.
+ * The editor's head (issues #164, #198): the workflow's name and state, and
+ * the decisions made about the whole of it -- save the draft, publish it as
+ * a version, try that version, switch it on.
  *
- * Each of those is a separate step on purpose, and each says why it cannot
- * be taken yet: a draft with problems cannot be published, an unsaved one
- * cannot either, only a published workflow can be tried or switched on, and
- * only the owner may switch one on. A draft an agent wrote says so
- * (`AgentDraftNotice`, issue #165).
+ * Each is a separate step on purpose, and each says why it cannot be taken
+ * yet, in text a keyboard and a screen reader reach rather than a tooltip:
+ * a draft with problems cannot be published, an unsaved one cannot either,
+ * only a published workflow can be tried or switched on, and only the owner
+ * may switch one on. Of the three buttons exactly one is filled, the one
+ * that is the next step from here (save, then publish, then try), so the
+ * head answers "what now" without being read twice. A draft an agent wrote
+ * says so (`AgentDraftNotice`, issue #165).
  */
 export function WorkflowEditorHeader({
   workspaceId,
@@ -61,6 +74,7 @@ export function WorkflowEditorHeader({
   profiles,
   onSave,
   onOpenRuns,
+  tabs,
 }: {
   workspaceId: string;
   response: WorkflowResponse;
@@ -74,6 +88,8 @@ export function WorkflowEditorHeader({
   profiles: readonly AgentProfile[];
   onSave: () => void;
   onOpenRuns: () => void;
+  /** The tab list (Entwurf, Läufe, Versionen), drawn in the head's second row. */
+  tabs: React.ReactNode;
 }) {
   const t = useTranslations('workflows.header');
   const { workflow } = response;
@@ -85,51 +101,28 @@ export function WorkflowEditorHeader({
   const published = workflow.publishedVersion;
   const router = useRouter();
   const duplicate = useDuplicateWorkflow(workspaceId, workflow.id);
+  const ids = React.useId();
+  const showBlocker = blocker !== null && canManage && (dirty || problems.length > 0);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="exocortex-page-title truncate">{name.trim() || workflow.name}</h1>
-          <StateLine response={response} dirty={dirty} onOpenRuns={onOpenRuns} />
-        </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <HeaderTitle workspaceId={workspaceId} name={name.trim() || workflow.name} />
         <div className="flex flex-wrap items-center gap-2">
-          <ActivationSwitch
-            enabled={workflow.enabled}
-            published={published !== null}
-            canActivate={canActivate}
-            onChange={setActivating}
-          />
           {canManage ? (
             <>
-              <Button
-                variant="outline"
-                onClick={onSave}
-                disabled={!dirty || !savable || saving}
-                data-testid="workflow-save"
-              >
-                <SaveIcon className="size-4" />
-                {saving ? t('saving') : t('save')}
-              </Button>
-              <Button
-                variant="outline"
-                disabled={blocker !== null || publish.isPending}
-                title={blocker ?? undefined}
-                onClick={() => publish.mutate(workflow.draftRevision)}
-                data-testid="workflow-publish"
-              >
-                <UploadIcon className="size-4" />
-                {t('publish')}
-              </Button>
-              <Button
-                onClick={() => setTesting(true)}
-                disabled={published === null}
-                title={published === null ? t('testNeedsVersion') : undefined}
-                data-testid="workflow-test-run"
-              >
-                <FlaskConicalIcon className="size-4" />
-                {t('testRun')}
-              </Button>
+              <StepButtons
+                next={nextStep({ dirty, savable, blocker, published: published !== null })}
+                canSave={dirty && savable && !saving}
+                saving={saving}
+                onSave={onSave}
+                blocker={blocker}
+                blockerId={`${ids}-blocker`}
+                publishing={publish.isPending}
+                onPublish={() => publish.mutate(workflow.draftRevision)}
+                published={published !== null}
+                onTest={() => setTesting(true)}
+              />
               <MoreMenu
                 deletable={workflow.activeRunCount === 0}
                 onDelete={() => setDeleting(true)}
@@ -145,18 +138,37 @@ export function WorkflowEditorHeader({
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {tabs}
+        <StateLine
+          response={response}
+          dirty={dirty}
+          onOpenRuns={onOpenRuns}
+          activation={
+            <ActivationSwitch
+              enabled={workflow.enabled}
+              published={published !== null}
+              canActivate={canActivate}
+              onChange={setActivating}
+            />
+          }
+        />
+      </div>
+
+      <p
+        id={`${ids}-blocker`}
+        className={showBlocker ? 'text-meta text-muted-foreground' : 'exocortex-sr-only'}
+        data-testid={showBlocker ? 'workflow-publish-blocker' : undefined}
+      >
+        {blocker ?? ''}
+      </p>
+      <p role="status" className="text-meta text-muted-foreground empty:hidden">
+        {publish.isSuccess && !workflow.hasUnpublishedChanges && published !== null
+          ? t('publishedNow', { version: published.version })
+          : ''}
+      </p>
       <AgentDraftNotice workflow={workflow} />
       <ErrorAlert error={duplicate.error} />
-      {blocker !== null && canManage && (dirty || problems.length > 0) ? (
-        <p className="text-xs text-muted-foreground" data-testid="workflow-publish-blocker">
-          {blocker}
-        </p>
-      ) : null}
-      {publish.isSuccess && !workflow.hasUnpublishedChanges && published !== null ? (
-        <p className="text-xs text-muted-foreground" role="status">
-          {t('publishedNow', { version: published.version })}
-        </p>
-      ) : null}
       <ErrorAlert error={publish.error} />
       {response.envelope.workflowsEnabled ? null : (
         <Alert data-testid="workflow-switched-off">
@@ -189,6 +201,115 @@ export function WorkflowEditorHeader({
       />
     </div>
   );
+}
+
+function HeaderTitle({ workspaceId, name }: { workspaceId: string; name: string }) {
+  const t = useTranslations('workflows.header');
+  return (
+    <div className="flex min-w-0 flex-1 items-center gap-2">
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('back')}
+              render={<Link href={`/arbeitsbereich/${workspaceId}/workflows`} />}
+              data-testid="workflow-back"
+            >
+              <ArrowLeftIcon />
+            </Button>
+          }
+        />
+        <TooltipContent>{t('back')}</TooltipContent>
+      </Tooltip>
+      <h1 className="exocortex-page-title min-w-0 truncate" title={name}>
+        {name}
+      </h1>
+    </div>
+  );
+}
+
+/** Save, publish, try: the three steps, with the next one filled. */
+function StepButtons({
+  next,
+  canSave,
+  saving,
+  onSave,
+  blocker,
+  blockerId,
+  publishing,
+  onPublish,
+  published,
+  onTest,
+}: {
+  next: 'save' | 'publish' | 'test' | null;
+  canSave: boolean;
+  saving: boolean;
+  onSave: () => void;
+  blocker: string | null;
+  blockerId: string;
+  publishing: boolean;
+  onPublish: () => void;
+  published: boolean;
+  onTest: () => void;
+}) {
+  const t = useTranslations('workflows.header');
+  const testHint = React.useId();
+  return (
+    <>
+      <Button
+        variant={next === 'save' ? 'default' : 'outline'}
+        onClick={onSave}
+        disabled={!canSave}
+        aria-keyshortcuts="Control+S"
+        data-testid="workflow-save"
+      >
+        <SaveIcon className="size-4" />
+        {saving ? t('saving') : t('save')}
+      </Button>
+      <Button
+        variant={next === 'publish' ? 'default' : 'outline'}
+        disabled={blocker !== null || publishing}
+        aria-describedby={blocker === null ? undefined : blockerId}
+        onClick={onPublish}
+        data-testid="workflow-publish"
+      >
+        <UploadIcon className="size-4" />
+        {t('publish')}
+      </Button>
+      <Button
+        variant={next === 'test' ? 'default' : 'outline'}
+        onClick={onTest}
+        disabled={!published}
+        aria-describedby={published ? undefined : testHint}
+        data-testid="workflow-test-run"
+      >
+        <FlaskConicalIcon className="size-4" />
+        {t('testRun')}
+      </Button>
+      <span id={testHint} className="exocortex-sr-only">
+        {published ? '' : t('testNeedsVersion')}
+      </span>
+    </>
+  );
+}
+
+/**
+ * The one step that moves this workflow forward from where it stands: an
+ * unsaved draft is saved first, a saved one with something new is
+ * published, a published one is tried. Null while problems block the way,
+ * because then the next step is on the canvas, not in the head.
+ */
+function nextStep(input: {
+  dirty: boolean;
+  savable: boolean;
+  blocker: string | null;
+  published: boolean;
+}): 'save' | 'publish' | 'test' | null {
+  if (input.dirty) return input.savable ? 'save' : null;
+  if (input.blocker === null) return 'publish';
+  return input.published ? 'test' : null;
 }
 
 /** Why the draft cannot be published yet, or null when it can. */
@@ -237,16 +358,21 @@ function StateLine({
   response,
   dirty,
   onOpenRuns,
+  activation,
 }: {
   response: WorkflowResponse;
   dirty: boolean;
   onOpenRuns: () => void;
+  activation: React.ReactNode;
 }) {
   const t = useTranslations('workflows.header');
   const { workflow } = response;
   const published = workflow.publishedVersion;
   return (
-    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs" data-testid="workflow-state">
+    <div
+      className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 text-xs"
+      data-testid="workflow-state"
+    >
       {dirty ? (
         <Badge variant="secondary">{t('unsaved')}</Badge>
       ) : (
@@ -255,15 +381,24 @@ function StateLine({
       {published === null ? (
         <Badge variant="outline">{t('neverPublished')}</Badge>
       ) : (
-        <Badge variant="outline" data-testid="workflow-published-version">
+        <Badge
+          variant="outline"
+          data-testid="workflow-published-version"
+          title={workflow.hasUnpublishedChanges ? t('draftAhead') : undefined}
+        >
           {t('publishedVersion', { version: published.version })}
+          {workflow.hasUnpublishedChanges ? (
+            <span className="text-muted-foreground"> · {t('draftAheadShort')}</span>
+          ) : null}
         </Badge>
       )}
-      {published !== null && workflow.hasUnpublishedChanges ? (
-        <span className="text-muted-foreground">{t('draftAhead')}</span>
-      ) : null}
+      {activation}
       {workflow.activeRunCount > 0 ? (
-        <button type="button" className="text-primary-text hover:underline" onClick={onOpenRuns}>
+        <button
+          type="button"
+          className="inline-flex min-h-6 items-center text-primary-text hover:underline"
+          onClick={onOpenRuns}
+        >
           {t('activeRuns', { count: workflow.activeRunCount })}
         </button>
       ) : null}
@@ -295,7 +430,12 @@ function MoreMenu({
           {t('duplicate')}
         </DropdownMenuItem>
         <DropdownMenuItem variant="destructive" onClick={onDelete} disabled={!deletable}>
-          {t('delete')}
+          <span className="flex flex-col">
+            {t('delete')}
+            {deletable ? null : (
+              <span className="text-meta text-muted-foreground">{t('deleteBlockedRuns')}</span>
+            )}
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -364,20 +504,25 @@ function ActivationSwitch({
   onChange: (enabled: boolean) => void;
 }) {
   const t = useTranslations('workflows.header');
+  const id = React.useId();
   const hint = !canActivate
     ? t('activateOwnerOnly')
     : published
       ? undefined
       : t('activateNeedsVersion');
   return (
-    <label className="flex items-center gap-2 text-sm" title={hint}>
+    <label className="flex items-center gap-2 text-xs" title={hint}>
       <Switch
         checked={enabled}
         disabled={!canActivate || (!published && !enabled)}
         onCheckedChange={(checked) => onChange(checked === true)}
+        aria-describedby={hint === undefined ? undefined : id}
         data-testid="workflow-enabled"
       />
       {enabled ? t('enabled') : t('disabled')}
+      <span id={id} className="exocortex-sr-only">
+        {hint ?? ''}
+      </span>
     </label>
   );
 }

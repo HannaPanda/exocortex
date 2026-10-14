@@ -851,9 +851,35 @@
 }
 
 .exocortex-workflow-canvas .exocortex-workflow-handle {
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.75rem;
+  height: 0.75rem;
   border-width: 1.5px;
+}
+
+/* A way out says it can be dragged from; while a line is being drawn, the
+   point it would land on says whether it may (issue #198). */
+.exocortex-workflow-canvas .exocortex-workflow-handle.connectable:hover {
+  --xy-handle-border-color: var(--primary);
+}
+
+.exocortex-workflow-canvas .exocortex-workflow-handle.connectingto {
+  --xy-handle-background-color: var(--destructive);
+  --xy-handle-border-color: var(--destructive-text);
+}
+
+.exocortex-workflow-canvas .exocortex-workflow-handle.connectingto.valid {
+  --xy-handle-background-color: var(--primary);
+  --xy-handle-border-color: var(--primary);
+}
+
+/* A node being carried lifts off the sheet; the shadow is the only depth on
+   the canvas, and it says "in your hand". */
+.exocortex-workflow-canvas .react-flow__node.dragging > div {
+  box-shadow: var(--shadow-lg);
+}
+
+.exocortex-workflow-canvas .react-flow__panel {
+  margin: 0.75rem;
 }
 
 /* The product's one focus ring, on a node and on a line, rather than the

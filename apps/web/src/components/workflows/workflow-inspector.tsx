@@ -18,10 +18,11 @@ import { Button, Input, Readout, SectionRule, Textarea } from '@exocortex/ui';
 
 import { useRunFormat } from '../runs/run-inspector-format';
 
+import { NodeTypeMark } from './workflow-add-menu';
 import { AgentNodeForm } from './workflow-agent-form';
 import { connect, removeEdges, replaceNode } from './workflow-draft';
 import { ChoiceField, Field, MoneyField, NumberField } from './workflow-fields';
-import { NODE_ICONS, useWorkflowWording } from './workflow-labels';
+import { useWorkflowWording } from './workflow-labels';
 import {
   ApprovalForm,
   ConditionForm,
@@ -71,21 +72,22 @@ export function NodeInspector({
   const t = useTranslations('workflows.inspector');
   const wording = useWorkflowWording();
   const { graph, onGraphChange, readOnly } = shared;
-  const Icon = NODE_ICONS[node.type];
   const change = (next: WorkflowNode): void => onGraphChange(replaceNode(graph, next));
   const own = shared.problems.filter((problem) => problem.nodeId === node.id);
 
   return (
     <div className="flex flex-col gap-5" data-testid="workflow-node-inspector">
-      <div className="flex items-start gap-2">
-        <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <div className="flex items-start gap-2.5 pr-8">
+        <NodeTypeMark type={node.type} size="lg" />
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-medium">{wording.type(node.type)}</h2>
-          <p className="text-xs text-muted-foreground">{wording.typeHint(node.type)}</p>
+          <h2 className="flex flex-wrap items-baseline gap-x-2 text-ui font-semibold">
+            {wording.type(node.type)}
+            <span className="exocortex-numeric rounded-sm bg-sunken px-1.5 py-0.5 text-micro font-normal text-muted-foreground">
+              {node.id}
+            </span>
+          </h2>
+          <p className="text-meta text-muted-foreground">{wording.typeHint(node.type)}</p>
         </div>
-        <span className="exocortex-numeric shrink-0 rounded-sm bg-sunken px-1.5 py-0.5 text-micro text-muted-foreground">
-          {node.id}
-        </span>
       </div>
 
       {own.length === 0 ? null : (
@@ -220,7 +222,12 @@ function Connections({ node, graph, readOnly, onGraphChange }: Shared & { node: 
   ];
 
   return (
-    <section className="flex flex-col gap-3" data-testid="workflow-node-connections">
+    <fieldset
+      disabled={readOnly}
+      aria-label={t('connections')}
+      className="flex flex-col gap-3"
+      data-testid="workflow-node-connections"
+    >
       <SectionRule as="h3">{t('connections')}</SectionRule>
       {handles.map((handle) => {
         const edges = graph.edges.filter(
@@ -295,7 +302,7 @@ function Connections({ node, graph, readOnly, onGraphChange }: Shared & { node: 
           />
         );
       })}
-    </section>
+    </fieldset>
   );
 }
 
@@ -313,12 +320,12 @@ export function EdgeInspector({
   const own = shared.problems.filter((problem) => problem.edgeId === edge.id);
   return (
     <div className="flex flex-col gap-4" data-testid="workflow-edge-inspector">
-      <h2 className="text-sm font-medium">{t('edgeTitle')}</h2>
+      <h2 className="pr-8 text-ui font-semibold">{t('edgeTitle')}</h2>
       <p className="text-sm">
         {t('edgeDescription', {
-          from: edge.source.nodeId,
+          from: nodeName(graph, edge.source.nodeId),
           handle: wording.handle(edge.source.handle),
-          to: edge.target.nodeId,
+          to: nodeName(graph, edge.target.nodeId),
         })}
       </p>
       {own.length === 0 ? null : (
@@ -343,6 +350,10 @@ export function EdgeInspector({
       )}
     </div>
   );
+}
+
+function nodeName(graph: WorkflowGraph, id: string): string {
+  return graph.nodes.find((node) => node.id === id)?.label ?? id;
 }
 
 /** The workflow itself: its name, what it is for, and the limits every run is held to. */
@@ -372,6 +383,10 @@ export function WorkflowInspector({
 
   return (
     <div className="flex flex-col gap-5" data-testid="workflow-settings">
+      <div className="pr-8">
+        <h2 className="text-ui font-semibold">{t('title')}</h2>
+        <p className="text-meta text-muted-foreground">{t('titleHint')}</p>
+      </div>
       <fieldset disabled={readOnly} className="flex flex-col gap-4">
         <Field id="workflow-name" label={t('name')}>
           <Input

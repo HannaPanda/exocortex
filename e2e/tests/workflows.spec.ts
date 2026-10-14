@@ -98,7 +98,7 @@ test('authors trigger, agent, condition, approval and end without drawing a line
   await page.getByTestId('workflow-palette-end').click();
 
   await page.locator('.react-flow__pane').click({ position: { x: 5, y: 5 } });
-  await expect(page.getByText('Keine Probleme')).toBeVisible();
+  await expect(page.getByTestId('workflow-no-problems')).toBeVisible();
 
   await page.getByTestId('workflow-save').click();
   await expect(page.getByTestId('workflow-state')).toContainText('Stand 2', { timeout: 30_000 });
@@ -175,6 +175,87 @@ test('shows a draft an agent wrote and leaves publishing it to the person', asyn
   await page.getByTestId('workflow-publish').click();
   await expect(page.getByTestId('workflow-published-version')).toBeVisible();
   await expect(page.getByTestId('workflow-agent-draft')).toHaveCount(0);
+});
+
+test('builds from the canvas: the add key, a way out, undo, tidy and the settings panel', async ({
+  page,
+}) => {
+  // Issue #198. The keyboard path to a new node is `A` and a filter; the
+  // pointer path is the `+` beside a way out with nothing behind it yet.
+  const created = await api.post(`${origin}/api/workspaces/${workspaceId}/workflows`, {
+    data: { name: `Werkbank ${Date.now().toString(36)}` },
+  });
+  expect(created.ok(), await created.text()).toBe(true);
+  const id = ((await created.json()) as { workflow: { id: string } }).workflow.id;
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.goto(`/arbeitsbereich/${workspaceId}/workflows/${id}`);
+  await expect(page.getByTestId('workflow-canvas')).toBeVisible();
+  const node = (nodeId: string) =>
+    page.locator(`[data-testid="workflow-node"][data-node-id="${nodeId}"]`);
+
+  // Nothing selected: no panel takes width from the canvas.
+  await expect(page.getByTestId('workflow-inspector')).toHaveCount(0);
+
+  await selectNode(page, 'start');
+  await page.keyboard.press('a');
+  await page.getByTestId('workflow-add-search').fill('Bedingung');
+  await page.keyboard.press('Enter');
+  await expect(node('condition')).toBeVisible();
+  await expect(page.getByTestId('workflow-node-inspector')).toBeVisible();
+
+  // Selected and unfinished at once: the halo and the problem mark both show.
+  await expect(node('condition')).toHaveAttribute('data-selected', 'true');
+  await expect(node('condition')).toHaveAttribute('data-problems', /\d+/u);
+  await expect(node('condition').getByTestId('workflow-node-problems')).toBeVisible();
+
+  // The "nein" way out has nothing behind it: its + adds the next step there.
+  await node('condition').hover();
+  await page.getByTestId('workflow-add-from-condition-false').click();
+  await expect(page.getByTestId('workflow-add-trigger.manual')).toHaveCount(0);
+  await page.getByTestId('workflow-add-end').click();
+  await expect(node('end')).toBeVisible();
+
+  // Undo takes the end node back, redo brings it again.
+  await page.getByTestId('workflow-undo').click();
+  await expect(node('end')).toHaveCount(0);
+  await page.getByTestId('workflow-redo').click();
+  await expect(node('end')).toBeVisible();
+
+  await page.getByTestId('workflow-tidy').click();
+  await page.keyboard.press('Escape');
+
+  // Workflow-wide settings are a panel on request, and Escape closes it.
+  await page.getByTestId('workflow-open-settings').click();
+  await expect(page.getByTestId('workflow-settings')).toBeVisible();
+  await expect(page.getByTestId('workflow-limit-budget')).toBeInViewport();
+  await page.getByTestId('workflow-name').press('Escape');
+  await expect(page.getByTestId('workflow-inspector')).toHaveCount(0);
+
+  await page.getByTestId('workflow-save').click();
+  await expect(page.getByTestId('workflow-state')).toContainText('Stand 2', { timeout: 30_000 });
+  const read = await api.get(`${origin}/api/workflows/${id}`);
+  const body = (await read.json()) as {
+    draft: { edges: { source: { nodeId: string; handle: string }; target: { nodeId: string } }[] };
+  };
+  expect(
+    body.draft.edges
+      .map((edge) => `${edge.source.nodeId}.${edge.source.handle}>${edge.target.nodeId}`)
+      .sort(),
+  ).toEqual(['condition.false>end', 'start.next>condition']);
+});
+
+test('asks before leaving a draft with unsaved changes', async ({ page }) => {
+  const created = await api.post(`${origin}/api/workspaces/${workspaceId}/workflows`, {
+    data: { name: `Ungespeichert ${Date.now().toString(36)}` },
+  });
+  const id = ((await created.json()) as { workflow: { id: string } }).workflow.id;
+  await page.goto(`/arbeitsbereich/${workspaceId}/workflows/${id}`);
+  await selectNode(page, 'start');
+  await page.getByTestId('workflow-palette-end').click();
+  await page.getByTestId('workflow-back').click();
+  await expect(page.getByTestId('unsaved-changes-dialog')).toBeVisible();
+  await page.getByTestId('unsaved-changes-stay').click();
+  await expect(page).toHaveURL(new RegExp(`/workflows/${id}$`, 'u'));
 });
 
 /** A small published workflow: start → condition on the run's input → end / stop. */

@@ -4,7 +4,6 @@ import {
   applyNodeChanges,
   Background,
   BackgroundVariant,
-  Controls,
   type Edge,
   type EdgeChange,
   Handle,
@@ -25,6 +24,7 @@ import {
   HourglassIcon,
   LoaderCircleIcon,
   type LucideIcon,
+  PlusIcon,
   RotateCcwIcon,
   TimerOffIcon,
 } from 'lucide-react';
@@ -38,28 +38,36 @@ import {
   type WorkflowNode,
   type WorkflowNodeType,
 } from '@exocortex/contracts';
-import { cn } from '@exocortex/ui';
+import { cn, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
+import { NodeTypeMark, WorkflowAddMenu } from './workflow-add-menu';
 import { connect, moveNode } from './workflow-draft';
-import { NODE_ICONS, useWorkflowWording } from './workflow-labels';
+import { useWorkflowWording } from './workflow-labels';
 import { type WorkflowNodeRunState } from './workflow-run-view';
 
 import '@xyflow/react/dist/style.css';
 
 /**
- * The graph of a workflow on a canvas (issue #164), for editing a draft and
- * for following a run.
+ * The graph of a workflow on a canvas (issues #164, #198), for editing a
+ * draft and for following a run.
  *
  * The canvas holds no workflow of its own. It draws the contract's graph and
  * reports every gesture back as a new graph or a selection; positions are
  * the only state it keeps between renders, so a node follows the pointer
  * while it is dragged and is written into the graph when it is let go.
  *
- * Everything a pointer does here can also be done from the configuration
- * panel, because a drag is not a feature: nodes are added from the palette
- * buttons, connected through a choice per handle, and the canvas itself is
- * keyboard-focusable node by node (Tab, Enter to select, arrows to move,
- * Delete to remove), which React Flow provides and the labels below translate.
+ * Everything a pointer does here can also be done without one, because a
+ * drag is not a feature: nodes are added from the rail, the `A` key or the
+ * `+` beside a free way out, connected through a choice per handle in the
+ * panel, and the canvas itself is keyboard-focusable node by node (Tab,
+ * Enter to select, arrows to move, Delete to remove), which React Flow
+ * provides and the labels below translate.
+ *
+ * A node shows three things that can all be true at once, so each has its
+ * own channel (issue #198): selection is a halo outside the card, a problem
+ * is a strip along its top and a counted mark in its header, and a run's
+ * state is the row at its foot. None of them is a border colour, which is
+ * why none of them can hide another.
  */
 
 export const WORKFLOW_NODE_MIME = 'application/x-exocortex-workflow-node';
@@ -79,11 +87,31 @@ export interface WorkflowNodeDecoration {
 interface CardData extends Record<string, unknown> {
   node: WorkflowNode;
   decoration: WorkflowNodeDecoration | undefined;
+  /** Handles nothing leads out of yet, plus a fan-out, which takes more. */
+  openHandles: readonly string[];
 }
 
 type CardNode = Node<CardData, 'workflow'>;
 
 const NODE_TYPES = { workflow: WorkflowNodeCard };
+
+/** Adding a node from a node's way out; absent while the canvas is read-only. */
+type AddFrom = (source: string, handle: string, type: WorkflowNodeType) => void;
+const AddFromContext = React.createContext<AddFrom | null>(null);
+
+/** The lowest zoom a whole graph is fitted at; below it the cards stop being readable. */
+const FIT_MIN_ZOOM = 0.55;
+
+export function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+/** A view change that animates, unless the reader asked for no motion. */
+export function viewDuration(ms = 200): number {
+  return prefersReducedMotion() ? 0 : ms;
+}
 
 export function WorkflowCanvas({
   graph,
@@ -95,7 +123,9 @@ export function WorkflowCanvas({
   takenEdgeIds,
   onGraphChange,
   onDropType,
+  onAddFrom,
   label,
+  children,
 }: {
   graph: WorkflowGraph;
   mode: 'edit' | 'view';
@@ -106,12 +136,23 @@ export function WorkflowCanvas({
   takenEdgeIds?: ReadonlySet<string>;
   onGraphChange?: (graph: WorkflowGraph) => void;
   onDropType?: (type: WorkflowNodeType, position: { x: number; y: number }) => void;
+  onAddFrom?: AddFrom;
   label: string;
+  /** Overlays drawn on the canvas, e.g. `<Panel>`s with controls. */
+  children?: React.ReactNode;
 }) {
   const t = useTranslations('workflows.canvas');
   const wording = useWorkflowWording();
   const flow = useReactFlow();
   const editing = mode === 'edit';
+
+  const name = React.useCallback(
+    (id: string): string => {
+      const node = graph.nodes.find((candidate) => candidate.id === id);
+      return node?.label ?? id;
+    },
+    [graph.nodes],
+  );
 
   const derived = React.useMemo<CardNode[]>(
     () =>
@@ -119,13 +160,17 @@ export function WorkflowCanvas({
         id: node.id,
         type: 'workflow',
         position: node.position ?? { x: index * 280, y: 0 },
-        data: { node, decoration: decorations.get(node.id) },
+        data: {
+          node,
+          decoration: decorations.get(node.id),
+          openHandles: openHandlesOf(graph, node),
+        },
         selected: selection?.kind === 'node' && selection.id === node.id,
         // Read as the node's name by a screen reader, instead of its id.
         ariaLabel: `${wording.type(node.type)}: ${node.label ?? node.id}`,
         deletable: editing,
       })),
-    [decorations, editing, graph.nodes, selection, wording],
+    [decorations, editing, graph, selection, wording],
   );
 
   // React Flow writes back what it measured and where a dragged node is; the
@@ -159,13 +204,13 @@ export function WorkflowCanvas({
           ...(labelled ? { label: wording.handle(edge.source.handle) } : {}),
           className: cn(taken && 'is-taken', broken && 'has-problem'),
           ariaLabel: t('edgeLabel', {
-            from: edge.source.nodeId,
+            from: name(edge.source.nodeId),
             handle: wording.handle(edge.source.handle),
-            to: edge.target.nodeId,
+            to: name(edge.target.nodeId),
           }),
         };
       }),
-    [editing, graph.edges, graph.nodes, problemEdgeIds, selection, t, takenEdgeIds, wording],
+    [editing, graph.edges, graph.nodes, name, problemEdgeIds, selection, t, takenEdgeIds, wording],
   );
 
   const onNodesChange = React.useCallback(
@@ -208,83 +253,91 @@ export function WorkflowCanvas({
   );
 
   return (
-    <ReactFlow<CardNode>
-      className="exocortex-workflow-canvas"
-      aria-label={label}
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={NODE_TYPES}
-      colorMode="dark"
-      fitView
-      fitViewOptions={{ padding: 0.2, maxZoom: 1 }}
-      minZoom={0.25}
-      maxZoom={1.5}
-      proOptions={{ hideAttribution: true }}
-      nodesDraggable={editing}
-      nodesConnectable={editing}
-      elementsSelectable
-      deleteKeyCode={editing ? ['Backspace', 'Delete'] : null}
-      multiSelectionKeyCode={null}
-      selectionKeyCode={null}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onPaneClick={() => onSelect(null)}
-      isValidConnection={(connection) =>
-        connection.sourceHandle != null &&
-        connect(graph, {
-          source: connection.source,
-          handle: connection.sourceHandle,
-          target: connection.target,
-        }) !== null
-      }
-      onConnect={(connection) => {
-        if (connection.sourceHandle == null) return;
-        const next = connect(graph, {
-          source: connection.source,
-          handle: connection.sourceHandle,
-          target: connection.target,
-        });
-        if (next !== null) onGraphChange?.(next);
-      }}
-      onDelete={({ nodes: gone, edges: cut }) => {
-        if (!editing) return;
-        const goneIds = new Set(gone.map((node) => node.id));
-        const cutIds = new Set(cut.map((edge) => edge.id));
-        onGraphChange?.({
-          ...graph,
-          nodes: graph.nodes.filter((node) => !goneIds.has(node.id)),
-          edges: graph.edges.filter(
-            (edge) =>
-              !cutIds.has(edge.id) &&
-              !goneIds.has(edge.source.nodeId) &&
-              !goneIds.has(edge.target.nodeId),
-          ),
-        });
-        onSelect(null);
-      }}
-      onDragOver={(event) => {
-        if (!editing) return;
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'copy';
-      }}
-      onDrop={onDrop}
-      ariaLabelConfig={{
-        'node.a11yDescription.default': t('a11y.node'),
-        'node.a11yDescription.keyboardDisabled': t('a11y.nodeKeyboardDisabled'),
-        'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }) =>
-          t('a11y.moved', { direction, x: Math.round(x), y: Math.round(y) }),
-        'edge.a11yDescription.default': t('a11y.edge'),
-        'controls.ariaLabel': t('a11y.controls'),
-        'controls.zoomIn.ariaLabel': t('a11y.zoomIn'),
-        'controls.zoomOut.ariaLabel': t('a11y.zoomOut'),
-        'controls.fitView.ariaLabel': t('a11y.fitView'),
-        'controls.interactive.ariaLabel': t('a11y.interactive'),
-        'handle.ariaLabel': t('a11y.handle'),
-      }}
-    >
-      <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
-      <Controls showInteractive={false} position="bottom-left" />
-    </ReactFlow>
+    <AddFromContext.Provider value={editing && onAddFrom !== undefined ? onAddFrom : null}>
+      <ReactFlow<CardNode>
+        className="exocortex-workflow-canvas"
+        aria-label={label}
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={NODE_TYPES}
+        colorMode="dark"
+        fitView
+        fitViewOptions={{ padding: 0.15, maxZoom: 1, minZoom: FIT_MIN_ZOOM }}
+        minZoom={0.25}
+        maxZoom={1.5}
+        proOptions={{ hideAttribution: true }}
+        nodesDraggable={editing}
+        nodesConnectable={editing}
+        elementsSelectable
+        deleteKeyCode={editing ? ['Backspace', 'Delete'] : null}
+        multiSelectionKeyCode={null}
+        selectionKeyCode={null}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onPaneClick={() => onSelect(null)}
+        isValidConnection={(connection) =>
+          connection.sourceHandle != null &&
+          connect(graph, {
+            source: connection.source,
+            handle: connection.sourceHandle,
+            target: connection.target,
+          }) !== null
+        }
+        onConnect={(connection) => {
+          if (connection.sourceHandle == null) return;
+          const next = connect(graph, {
+            source: connection.source,
+            handle: connection.sourceHandle,
+            target: connection.target,
+          });
+          if (next !== null) onGraphChange?.(next);
+        }}
+        onDelete={({ nodes: gone, edges: cut }) => {
+          if (!editing) return;
+          const goneIds = new Set(gone.map((node) => node.id));
+          const cutIds = new Set(cut.map((edge) => edge.id));
+          onGraphChange?.({
+            ...graph,
+            nodes: graph.nodes.filter((node) => !goneIds.has(node.id)),
+            edges: graph.edges.filter(
+              (edge) =>
+                !cutIds.has(edge.id) &&
+                !goneIds.has(edge.source.nodeId) &&
+                !goneIds.has(edge.target.nodeId),
+            ),
+          });
+          onSelect(null);
+        }}
+        onDragOver={(event) => {
+          if (!editing) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'copy';
+        }}
+        onDrop={onDrop}
+        ariaLabelConfig={{
+          'node.a11yDescription.default': t('a11y.node'),
+          'node.a11yDescription.keyboardDisabled': t('a11y.nodeKeyboardDisabled'),
+          'node.a11yDescription.ariaLiveMessage': ({ direction, x, y }) =>
+            t('a11y.moved', { direction, x: Math.round(x), y: Math.round(y) }),
+          'edge.a11yDescription.default': t('a11y.edge'),
+          'handle.ariaLabel': t('a11y.handle'),
+        }}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+        {children}
+      </ReactFlow>
+    </AddFromContext.Provider>
+  );
+}
+
+/** Handles nothing leads out of yet, plus a fan-out, which takes more. */
+function openHandlesOf(graph: WorkflowGraph, node: WorkflowNode): string[] {
+  const fanOut = WORKFLOW_FAN_OUT_HANDLES[node.type];
+  const taken = new Set(
+    graph.edges.flatMap((edge) => (edge.source.nodeId === node.id ? [edge.source.handle] : [])),
+  );
+  return WORKFLOW_NODE_HANDLES[node.type].filter(
+    (handle) => handle === fanOut || !taken.has(handle),
   );
 }
 
@@ -303,11 +356,13 @@ function mergeNodes(current: readonly CardNode[], derived: readonly CardNode[]):
 }
 
 /** How a node's state in a run is shown: an icon and a word, never colour alone. */
-const STATE_MARKS: Readonly<Record<WorkflowNodeRunState, { icon: LucideIcon; tone: string }>> = {
+const STATE_MARKS: Readonly<
+  Record<WorkflowNodeRunState, { icon: LucideIcon; tone: string; spin?: boolean }>
+> = {
   succeeded: { icon: CircleCheckIcon, tone: 'text-success' },
   failed: { icon: CircleXIcon, tone: 'text-destructive-text' },
   timed_out: { icon: TimerOffIcon, tone: 'text-destructive-text' },
-  running: { icon: LoaderCircleIcon, tone: 'text-primary-text' },
+  running: { icon: LoaderCircleIcon, tone: 'text-primary-text', spin: true },
   queued: { icon: CircleDotIcon, tone: 'text-primary-text' },
   waiting: { icon: HourglassIcon, tone: 'text-primary-text' },
   runnable: { icon: CircleDotIcon, tone: 'text-muted-foreground' },
@@ -317,20 +372,29 @@ const STATE_MARKS: Readonly<Record<WorkflowNodeRunState, { icon: LucideIcon; ton
 };
 
 function WorkflowNodeCard({ data, selected }: NodeProps<CardNode>) {
-  const { node, decoration } = data;
+  const { node, decoration, openHandles } = data;
   const problems = decoration?.problems ?? 0;
   const state = decoration?.runState;
   return (
     <div
       className={cn(
-        'relative w-60 rounded-lg border bg-card text-card-foreground shadow-sm',
-        problems > 0 ? 'border-destructive' : selected ? 'border-primary' : 'border-border-strong',
+        'group/node relative w-60 rounded-lg border border-border-strong bg-card text-card-foreground shadow-sm',
+        // Selection is drawn outside the card, so nothing on it can cover it.
+        selected && 'outline-2 outline-offset-4 outline-primary',
         state === 'untouched' || state === 'skipped' ? 'opacity-70' : null,
       )}
       data-testid="workflow-node"
       data-node-id={node.id}
       data-node-state={state}
+      data-selected={selected ? 'true' : undefined}
+      data-problems={problems > 0 ? problems : undefined}
     >
+      {problems > 0 ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1 rounded-t-lg bg-destructive"
+        />
+      ) : null}
       {node.type.startsWith('trigger.') ? null : (
         <Handle type="target" position={Position.Left} className="exocortex-workflow-handle" />
       )}
@@ -339,7 +403,7 @@ function WorkflowNodeCard({ data, selected }: NodeProps<CardNode>) {
       {state === undefined ? null : (
         <CardRunState state={state} attempts={decoration?.attempts ?? 0} />
       )}
-      <CardHandles node={node} />
+      <CardHandles node={node} openHandles={openHandles} />
     </div>
   );
 }
@@ -347,20 +411,21 @@ function WorkflowNodeCard({ data, selected }: NodeProps<CardNode>) {
 function CardHeading({ node, problems }: { node: WorkflowNode; problems: number }) {
   const t = useTranslations('workflows.canvas');
   const wording = useWorkflowWording();
-  const Icon = NODE_ICONS[node.type];
   return (
-    <div className="flex items-center gap-2 px-3 pt-2.5">
-      <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+    <div className="flex items-center gap-2 px-3 pt-3">
+      <NodeTypeMark type={node.type} />
       <span className="min-w-0 truncate text-meta text-muted-foreground">
         {wording.type(node.type)}
       </span>
       {problems > 0 ? (
         <span
-          className="ml-auto inline-flex shrink-0 items-center gap-1 text-meta text-destructive-text"
-          title={t('problems', { count: problems })}
+          className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-sm bg-destructive px-1.5 py-0.5 text-micro font-medium text-destructive-foreground"
+          data-testid="workflow-node-problems"
         >
-          <CircleAlertIcon className="size-3.5" aria-hidden />
-          <span className="exocortex-numeric">{problems}</span>
+          <CircleAlertIcon className="size-3" aria-hidden />
+          <span className="exocortex-numeric" aria-hidden>
+            {problems}
+          </span>
           <span className="exocortex-sr-only">{t('problems', { count: problems })}</span>
         </span>
       ) : null}
@@ -375,9 +440,12 @@ function CardBody({
   node: WorkflowNode;
   decoration: WorkflowNodeDecoration | undefined;
 }) {
+  const name = node.label ?? node.id;
   return (
-    <div className="flex flex-col gap-0.5 px-3 pt-1 pb-2.5">
-      <span className="truncate text-ui font-medium">{node.label ?? node.id}</span>
+    <div className="flex flex-col gap-0.5 px-3 pt-1.5 pb-3">
+      <span className="truncate text-ui font-semibold" title={name}>
+        {name}
+      </span>
       {decoration?.summary ? (
         <span className="line-clamp-2 text-meta text-muted-foreground">{decoration.summary}</span>
       ) : null}
@@ -396,10 +464,13 @@ function CardRunState({ state, attempts }: { state: WorkflowNodeRunState; attemp
   const mark = STATE_MARKS[state];
   return (
     <div
-      className="flex items-center gap-1.5 border-t border-border px-3 py-1.5 text-meta"
+      className="flex items-center gap-1.5 border-t border-border bg-sunken/40 px-3 py-1.5 text-meta"
       data-testid="workflow-node-state"
     >
-      <mark.icon className={cn('size-3.5 shrink-0', mark.tone)} aria-hidden />
+      <mark.icon
+        className={cn('size-3.5 shrink-0', mark.tone, mark.spin && 'motion-safe:animate-spin')}
+        aria-hidden
+      />
       <span>{wording.nodeState(state)}</span>
       {attempts > 1 ? (
         <span className="ml-auto inline-flex items-center gap-1 text-muted-foreground">
@@ -414,20 +485,33 @@ function CardRunState({ state, attempts }: { state: WorkflowNodeRunState; attemp
 /**
  * One way out: a handle on the card's edge. Several, or a fan-out: one
  * labelled row per handle, so "ja" and "nein" are words beside the point a
- * line leaves from rather than two dots to tell apart.
+ * line leaves from rather than two dots to tell apart. A way out with
+ * nothing behind it yet carries a `+` that adds the next step right there.
  */
-function CardHandles({ node }: { node: WorkflowNode }) {
+function CardHandles({
+  node,
+  openHandles,
+}: {
+  node: WorkflowNode;
+  openHandles: readonly string[];
+}) {
   const wording = useWorkflowWording();
   const handles = WORKFLOW_NODE_HANDLES[node.type];
   if (handles.length === 0) return null;
   if (handles.length === 1 && WORKFLOW_FAN_OUT_HANDLES[node.type] === undefined) {
+    const handle = handles[0]!;
     return (
-      <Handle
-        type="source"
-        id={handles[0]}
-        position={Position.Right}
-        className="exocortex-workflow-handle"
-      />
+      <>
+        <Handle
+          type="source"
+          id={handle}
+          position={Position.Right}
+          className="exocortex-workflow-handle"
+        />
+        {openHandles.includes(handle) ? (
+          <AddFromHandle node={node} handle={handle} className="top-1/2 -translate-y-1/2" />
+        ) : null}
+      </>
     );
   }
   return (
@@ -444,8 +528,62 @@ function CardHandles({ node }: { node: WorkflowNode }) {
             position={Position.Right}
             className="exocortex-workflow-handle"
           />
+          {openHandles.includes(handle) ? (
+            <AddFromHandle node={node} handle={handle} className="top-1/2 -translate-y-1/2" />
+          ) : null}
         </span>
       ))}
     </div>
+  );
+}
+
+function AddFromHandle({
+  node,
+  handle,
+  className,
+}: {
+  node: WorkflowNode;
+  handle: string;
+  className?: string;
+}) {
+  const t = useTranslations('workflows.canvas');
+  const wording = useWorkflowWording();
+  const addFrom = React.useContext(AddFromContext);
+  const [open, setOpen] = React.useState(false);
+  if (addFrom === null) return null;
+  const name = node.label ?? node.id;
+  const label = t('addFrom', { handle: wording.handle(handle), node: name });
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
+          <button
+            type="button"
+            aria-label={label}
+            title={label}
+            data-testid={`workflow-add-from-${node.id}-${handle}`}
+            className={cn(
+              // `nodrag nopan`: React Flow leaves a press on this to the button.
+              'nodrag nopan absolute -right-9 grid size-6 place-items-center rounded-full border border-border-strong bg-popover text-foreground shadow-xs',
+              'opacity-0 transition-opacity group-hover/node:opacity-100 focus-visible:opacity-100 hover:bg-accent-solid',
+              'group-data-[selected=true]/node:opacity-100 data-[popup-open]:opacity-100',
+              className,
+            )}
+          >
+            <PlusIcon className="size-3.5" aria-hidden />
+          </button>
+        }
+      />
+      <PopoverContent side="right" align="start" className="p-2">
+        <WorkflowAddMenu
+          withTriggers={false}
+          context={t('addFromContext', { handle: wording.handle(handle), node: name })}
+          onPick={(type) => {
+            setOpen(false);
+            addFrom(node.id, handle, type);
+          }}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

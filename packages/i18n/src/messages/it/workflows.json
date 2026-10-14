@@ -123,9 +123,10 @@
       "zoomIn": "Ingrandisci",
       "zoomOut": "Riduci",
       "fitView": "Mostra l’intero workflow",
-      "interactive": "Attiva o disattiva la modifica",
       "handle": "Punto di connessione"
-    }
+    },
+    "addFrom": "Aggiungi il passaggio successivo dopo «{handle}» di {node}",
+    "addFromContext": "Dopo «{handle}» di {node}"
   },
   "pagePicker": {
     "group": "Pagine",
@@ -286,7 +287,9 @@
     "on": "attivo",
     "off": "disattivo",
     "writeModeCeiling": "Modalità di scrittura massima",
-    "addTrigger": "Aggiungi trigger"
+    "addTrigger": "Aggiungi trigger",
+    "title": "Impostazioni del workflow",
+    "titleHint": "Nome, descrizione e limiti validi per ogni run."
   },
   "problems": {
     "listLabel": "Problemi",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Aggiungi nodo",
-    "hint": "Un clic aggiunge il nodo dopo quello selezionato e lo collega. Trascinalo per posizionarlo dove preferisci."
+    "add": "Aggiungi nodo",
+    "search": "Cerca nodi",
+    "empty": "Nessun nodo corrisponde a «{query}».",
+    "addAfterSelection": "Viene inserito dopo il nodo selezionato e collegato a esso.",
+    "pressAfter": "Clic: inserisci dopo il nodo selezionato. Trascina: posiziona dove rilasci.",
+    "pressAppend": "Clic: aggiungi a destra. Trascina: posiziona dove rilasci."
   },
   "summary": {
     "manual": "Avvio manuale",
@@ -324,15 +332,21 @@
     "back": "Tutti i workflow",
     "conflict": "Nel frattempo qualcuno ha salvato la bozza. Le tue modifiche sono ancora qui; carica la nuova versione per scartarle, oppure riportale a mano successivamente.",
     "reload": "Carica la nuova versione",
-    "unsavable": "Impossibile salvare la bozza in questo stato. I problemi a destra indicano dove intervenire.",
+    "unsavable": "Impossibile salvare la bozza così com’è. I problemi in basso a destra nell’area di lavoro indicano il punto esatto.",
     "tabDraft": "Bozza",
     "tabRuns": "Esecuzioni",
     "tabVersions": "Versioni",
     "canvasLabel": "Grafo del workflow {name}",
     "inspectorLabel": "Impostazioni",
-    "noProblems": "Nessun problema",
     "noProblemsHint": "La bozza è pronta per essere pubblicata.",
-    "problemsTitle": "{count, plural, one {# problema prima della pubblicazione} many {# problemi prima della pubblicazione} other {# problemi prima della pubblicazione}}"
+    "problemsTitle": "{count, plural, one {# problema prima della pubblicazione} many {# problemi prima della pubblicazione} other {# problemi prima della pubblicazione}}",
+    "unsavedLeave": "La bozza contiene modifiche non ancora salvate. Se cambi pagina adesso andranno perse; l’azione non può essere annullata. Resta qui e salva per conservarle.",
+    "undo": "Annulla",
+    "redo": "Ripristina",
+    "tidy": "Riordina grafo",
+    "settings": "Impostazioni",
+    "addTrigger": "Aggiungi trigger",
+    "closePanel": "Chiudi riquadro"
   },
   "header": {
     "unsaved": "Non salvato",
@@ -363,7 +377,10 @@
     "deleteDescription": "Il workflow, tutte le versioni e i suoi cicli terminati spariranno. Gli incarichi creati dai suoi cicli rimarranno.",
     "deleteConfirm": "Elimina",
     "cancel": "Annulla",
-    "workflowsOff": "I workflow sono disattivati in questa area di lavoro. È possibile crearli e pubblicarli, ma niente può essere eseguito, neanche un ciclo di prova. Puoi attivarli nelle impostazioni dell’area di lavoro sotto „Workflow“."
+    "workflowsOff": "I workflow sono disattivati in questa area di lavoro. È possibile crearli e pubblicarli, ma niente può essere eseguito, neanche un ciclo di prova. Puoi attivarli nelle impostazioni dell’area di lavoro sotto „Workflow“.",
+    "back": "Tutti i workflow",
+    "draftAheadShort": "Bozza più recente",
+    "deleteBlockedRuns": "Possibile solo quando non ci sono più run in corso."
   },
   "activation": {
     "enableTitle": "Attivare il workflow?",

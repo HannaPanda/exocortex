@@ -21828,6 +21828,14 @@
       "source": "34283cf0f2dfde44",
       "output": "bc7b631a689b45ca"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "ebf907dbb204c076"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "e622efe4887984b7"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "2fd273e3ea2159f7"
@@ -21944,6 +21952,10 @@
       "source": "05004bb0518de70a",
       "output": "750c4da495f2d442"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "58fd308928ddaee3"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "41a8bf92b49f5e4d"
@@ -21951,6 +21963,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "09504a03606ad3e1"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "a600b900f83db6cb"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -21980,9 +21996,17 @@
       "source": "998150785034696c",
       "output": "b26949c9c7f19ef7"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "74273989b0966e23"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "88ec9703791f2784"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "74a883a037bc227f"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -21996,9 +22020,21 @@
       "source": "ed902d245f069455",
       "output": "f89ea27036ac1d31"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "6d867fa414993de9"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "a8283ade31856f71"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "0688223af08e3d4b"
+      "source": "833e92d1a8909e89",
+      "output": "18b2093829bcea8c"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "03232b9c97630537"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -22124,6 +22160,10 @@
       "source": "f7515d23c23062a0",
       "output": "0204106668f2bd43"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "41a8bf92b49f5e4d"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
@@ -22131,6 +22171,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "b438c4a84eeaf186"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "e3c3ccf72d944a1e"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -22151,6 +22195,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "7ebb254aeaf25687"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "9d1085e78699622b"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -22748,6 +22796,18 @@
       "source": "949deca14afa4fa6",
       "output": "f59ab8d1331b7b16"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "1ba44456db5e5661"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "3d45275e7a27df9f"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "a0393d731e1511f0"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "5317f9ce8b251f6c"
@@ -22755,6 +22815,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "1ba44456db5e5661"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "7ae47df877774659"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "0e21d15edba19c75"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "667f0bd0e7a7cd8d"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -23031,6 +23103,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "fb9cf75606b4070d"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "a7983a3236c44ff9"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "ce47cbdcff95e851"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -45046,6 +45126,14 @@
       "source": "34283cf0f2dfde44",
       "output": "d9865e34c2d64dd1"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "a77d0cc9239f462c"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "847ebdff18358b42"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "b8fd078b704f4b98"
@@ -45162,6 +45250,10 @@
       "source": "05004bb0518de70a",
       "output": "6fc09ab59a58610c"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "55fc51cc1b32d076"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "b665f4a4756a4f4a"
@@ -45169,6 +45261,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "43f26d6a14e66ec1"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "9d4098e131e516f7"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -45198,9 +45294,17 @@
       "source": "998150785034696c",
       "output": "3d0e7a185f78681d"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "0cfa9a607a45f565"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "63f312dcf8dd72cb"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "4f2debbbf4fab6c9"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -45214,9 +45318,21 @@
       "source": "ed902d245f069455",
       "output": "0299c38fd9e11cf9"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "9fc85c0330be83ae"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "29fa864fd744397e"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "996694ce0d9b1ea2"
+      "source": "833e92d1a8909e89",
+      "output": "fb069ad2d190d874"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "f7119ae2ecc62f1e"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -45342,6 +45458,10 @@
       "source": "f7515d23c23062a0",
       "output": "ea411d5760cbf932"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "b665f4a4756a4f4a"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -45349,6 +45469,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "465d7c1eb19d3e18"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "9091c1a2b96db404"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -45369,6 +45493,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "878fe900bc76bb89"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "ee818389e6164b4a"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -45966,6 +46094,18 @@
       "source": "949deca14afa4fa6",
       "output": "30d1a8cd45b235e9"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "694a035f61d2157a"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "49d226713633369c"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "f2fb6d31ee733315"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "4f3b92aa3b6dbdfb"
@@ -45973,6 +46113,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "694a035f61d2157a"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "9f30ac5aa61e54f1"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "716bdd090940c07f"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "aa0547675767bfc3"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -46249,6 +46401,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "6b12871b3c9b1de6"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "2fadef0aa2afdd63"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "d7fc0c68aa95f20a"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -68264,6 +68424,14 @@
       "source": "34283cf0f2dfde44",
       "output": "a1388f9052381295"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "fbc94a34a60531c6"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "1cf8a56aa85b1d1c"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "2158ba9ab5959c1e"
@@ -68380,6 +68548,10 @@
       "source": "05004bb0518de70a",
       "output": "980a23250e1aeb15"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "38f4e170970611d2"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "186d444113da0490"
@@ -68387,6 +68559,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "ac933023a8873078"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "0b696f264076c0ac"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -68416,9 +68592,17 @@
       "source": "998150785034696c",
       "output": "1ba1a2f7a754a358"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "4cf3fd72da6f6f98"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "a4d4010fdfa53ef9"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "01923df7a446c42f"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -68432,9 +68616,21 @@
       "source": "ed902d245f069455",
       "output": "f89ea27036ac1d31"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "c63a3321ef56f848"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "46ad3916f6a09798"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "df939d053d075c14"
+      "source": "833e92d1a8909e89",
+      "output": "e9d3a6036bb71bca"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "8d81104b811d42bd"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -68560,6 +68756,10 @@
       "source": "f7515d23c23062a0",
       "output": "b11e7f1adc7ea8ff"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "186d444113da0490"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
@@ -68567,6 +68767,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "d27c94c713e6c4c5"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "d4042c73b130baab"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -68587,6 +68791,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "a0b1c53c45d2f6ac"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "1adb0a00588b7255"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -69184,6 +69392,18 @@
       "source": "949deca14afa4fa6",
       "output": "2c847c1c25d59e21"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "2215a8912459b0f3"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "bf631436bb0f309c"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "073682b3184b407c"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "d4ec934cde966cc1"
@@ -69191,6 +69411,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "2215a8912459b0f3"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "737379183d98f3e9"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "ca25cfff625d742f"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "397ae753543196d2"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -69467,6 +69699,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "34c5ea2e47544800"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "bfff3d2b93e4c875"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "816e416cb413a459"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -91482,6 +91722,14 @@
       "source": "34283cf0f2dfde44",
       "output": "9114c4bf166f53f9"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "c225aff48bf83144"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "f8b45ff14f410813"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "a039d11bf0e8f850"
@@ -91598,6 +91846,10 @@
       "source": "05004bb0518de70a",
       "output": "9b2e75cab4c90d6c"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "9ae0c6473005d873"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "fe898e53bc7de27a"
@@ -91605,6 +91857,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "43f26d6a14e66ec1"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "a34901d7d8a33ea0"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -91634,9 +91890,17 @@
       "source": "998150785034696c",
       "output": "2c8e0549b56d7519"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "cf1718087073466d"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "08e6274392390aaa"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "7b855ce7525ebc18"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -91650,9 +91914,21 @@
       "source": "ed902d245f069455",
       "output": "03c6d1b139b133ab"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "ed723f2849820a0b"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "18c9d912a21072dd"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "180617c7ee177f10"
+      "source": "833e92d1a8909e89",
+      "output": "abbc5e187ab116b6"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "ea7c39523d0b1b99"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -91778,6 +92054,10 @@
       "source": "f7515d23c23062a0",
       "output": "618687f8f1ed71b1"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "fe898e53bc7de27a"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
@@ -91785,6 +92065,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "5e1294ac355430cb"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "c85fff71f0f75f95"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -91805,6 +92089,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "b4289e0d107284e1"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "ff1784b677a3c197"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -92402,6 +92690,18 @@
       "source": "949deca14afa4fa6",
       "output": "bc0274205537c131"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "aacce1a99b583a20"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "564400b49549b16f"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "b1d5155bc1f3de19"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "3d48ce9b4d44ee7e"
@@ -92409,6 +92709,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "aacce1a99b583a20"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "0aa6ebdaea5d876c"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "c877ead59adc9944"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "51f49ff88a8337bc"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -92685,6 +92997,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "621e85025a24298d"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "b8e13fdea48f659f"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "dd3a888e85f8e659"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -114700,6 +115020,14 @@
       "source": "34283cf0f2dfde44",
       "output": "5900f7e322fa2074"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "502eea6f20f2f8c6"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "8dafa70fb0549eee"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "bb55040eb733e05a"
@@ -114816,6 +115144,10 @@
       "source": "05004bb0518de70a",
       "output": "90eaf9a8ddda7a62"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "329a95edd801595d"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "ca6469e4d9a2e889"
@@ -114823,6 +115155,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "fb413e0c2a58bedd"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "bdd17e9cb3048270"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -114852,9 +115188,17 @@
       "source": "998150785034696c",
       "output": "af79f90e0be7221f"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "598637e5d11b704b"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "3a52a930dc67b9e3"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "2701873dad7cb276"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -114868,9 +115212,21 @@
       "source": "ed902d245f069455",
       "output": "288cf56b2953a602"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "4f6b84129ac7d764"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "7548a6bd52d43eae"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "9915541c88edb4a6"
+      "source": "833e92d1a8909e89",
+      "output": "cca00d85b198550b"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "4a5d3e66e03387c5"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -114996,6 +115352,10 @@
       "source": "f7515d23c23062a0",
       "output": "234f9a87cbddd76f"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "ca6469e4d9a2e889"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
@@ -115003,6 +115363,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "14da8177bafc3184"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "316541f6ee0460f5"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -115023,6 +115387,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "0367fe8828792f60"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "2abfe1988956017f"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -115620,6 +115988,18 @@
       "source": "949deca14afa4fa6",
       "output": "e4c05c374f48dca6"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "c99be11c12ee620c"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "e4f2d1969577aec3"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "ef29055db501dabf"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "97c70d0fddcd3fe9"
@@ -115627,6 +116007,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "c99be11c12ee620c"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "660d00c822aa1d45"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "4c2ee6a0e32914c1"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "588ef554f5c4e44c"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -115903,6 +116295,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "b157dfc5e309bd48"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "2b170ce5180076e2"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "5d951325e81f7c30"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -137918,6 +138318,14 @@
       "source": "34283cf0f2dfde44",
       "output": "a261bd01e2fa4dc0"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "f187104e37a14fa8"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "ed5d68730cdfe790"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "435a015470423963"
@@ -138034,6 +138442,10 @@
       "source": "05004bb0518de70a",
       "output": "2ebec54f51372066"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "48d114f573d3ff93"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "ec168c8f694776f1"
@@ -138041,6 +138453,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "1ba90b847228d5ea"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "0d88b1881ba71adf"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -138070,9 +138486,17 @@
       "source": "998150785034696c",
       "output": "39ae8ac3e99e3370"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "be39b2ec63f947ba"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "37c667d4e878c7b7"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "cbe8870c0411fa6c"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -138086,9 +138510,21 @@
       "source": "ed902d245f069455",
       "output": "56da6d6e535ffaa1"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "d14298d83ec8ac85"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "9234a0683653a982"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "7f112cbada405748"
+      "source": "833e92d1a8909e89",
+      "output": "caddcc498f9279af"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "46670eb8e63742ff"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -138214,6 +138650,10 @@
       "source": "f7515d23c23062a0",
       "output": "394ca9f28d9b7b78"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "ec168c8f694776f1"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
@@ -138221,6 +138661,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "3d9a2d73f92d3353"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "ae09edbf21cfb319"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -138241,6 +138685,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "c613316e7f7c152b"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "270af2cb1ea43354"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -138838,6 +139286,18 @@
       "source": "949deca14afa4fa6",
       "output": "5604e5096a53eba8"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "bf387d3ec71a6d3a"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "0dd4c696883d93c8"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "a8e3baba2ae95d10"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "cdb8bc9e444010b1"
@@ -138845,6 +139305,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "bf387d3ec71a6d3a"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "84dd2f40eff1677f"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "d4e142852b5e93eb"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "bdedfbf9b70f18d3"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -139121,6 +139593,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "a03d4181330f6806"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "c3291b4d847c86b3"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "785c64ca747a0f83"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",
@@ -161136,6 +161616,14 @@
       "source": "34283cf0f2dfde44",
       "output": "c8bed791f2f1e98f"
     },
+    "workflows.canvas.addFrom": {
+      "source": "6631a9319a6b8914",
+      "output": "e0aa1416abd388d4"
+    },
+    "workflows.canvas.addFromContext": {
+      "source": "93a97be6acf7e34a",
+      "output": "aa81848c653f5678"
+    },
     "workflows.canvas.attempts": {
       "source": "2b23853931b113cf",
       "output": "afc57c65f9634da7"
@@ -161252,6 +161740,10 @@
       "source": "05004bb0518de70a",
       "output": "25d201bb7560cb61"
     },
+    "workflows.editor.addTrigger": {
+      "source": "5088a11958b94b2c",
+      "output": "e4982fa530717bdd"
+    },
     "workflows.editor.back": {
       "source": "00c35ae22188fa5f",
       "output": "11ba55fab0fae327"
@@ -161259,6 +161751,10 @@
     "workflows.editor.canvasLabel": {
       "source": "903e7bc18d4eeefb",
       "output": "e0ecd448a28685d7"
+    },
+    "workflows.editor.closePanel": {
+      "source": "4312e7e312e580ac",
+      "output": "4585707b7fd879d0"
     },
     "workflows.editor.conflict": {
       "source": "415d6fac104e532c",
@@ -161288,9 +161784,17 @@
       "source": "998150785034696c",
       "output": "c6d281b8a95b8521"
     },
+    "workflows.editor.redo": {
+      "source": "e0ef009b54561464",
+      "output": "7b659c9caa5e03ae"
+    },
     "workflows.editor.reload": {
       "source": "daa5c5a4b7a4a917",
       "output": "3503f994d9671953"
+    },
+    "workflows.editor.settings": {
+      "source": "f5750a5d7231e1f7",
+      "output": "76b0fb6ad18939ac"
     },
     "workflows.editor.tabDraft": {
       "source": "2ba46e35bdfb6aff",
@@ -161304,9 +161808,21 @@
       "source": "ed902d245f069455",
       "output": "e7e4a84eeafaeb87"
     },
+    "workflows.editor.tidy": {
+      "source": "4a97b4b41934576d",
+      "output": "9fc85c0330be83ae"
+    },
+    "workflows.editor.undo": {
+      "source": "dd7bd2f68c4d4dc3",
+      "output": "786b4822284896ad"
+    },
     "workflows.editor.unsavable": {
-      "source": "2563f4b558bd18fd",
-      "output": "ca5b9c42e76025fa"
+      "source": "833e92d1a8909e89",
+      "output": "7f384e042ceca7a4"
+    },
+    "workflows.editor.unsavedLeave": {
+      "source": "275d148af90d9808",
+      "output": "b3661072d5fe4c21"
     },
     "workflows.end.outcome": {
       "source": "cd8e22cf7439433d",
@@ -161432,6 +161948,10 @@
       "source": "f7515d23c23062a0",
       "output": "974a8bffd64ed504"
     },
+    "workflows.header.back": {
+      "source": "00c35ae22188fa5f",
+      "output": "11ba55fab0fae327"
+    },
     "workflows.header.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -161439,6 +161959,10 @@
     "workflows.header.delete": {
       "source": "214d3fdec9efa16e",
       "output": "6077987a586308be"
+    },
+    "workflows.header.deleteBlockedRuns": {
+      "source": "e0f96664a70d9064",
+      "output": "e1e33f6dbde0cfb2"
     },
     "workflows.header.deleteConfirm": {
       "source": "6c2d352161df5809",
@@ -161459,6 +161983,10 @@
     "workflows.header.draftAhead": {
       "source": "21627ac0a20a1940",
       "output": "524f85a1db67dee7"
+    },
+    "workflows.header.draftAheadShort": {
+      "source": "427614b351278498",
+      "output": "732ec836dbe59418"
     },
     "workflows.header.duplicate": {
       "source": "905ed43f56681151",
@@ -162056,6 +162584,18 @@
       "source": "949deca14afa4fa6",
       "output": "9469c6553b7543ea"
     },
+    "workflows.palette.add": {
+      "source": "991640dbccef5e74",
+      "output": "e67057afb1c42ce6"
+    },
+    "workflows.palette.addAfterSelection": {
+      "source": "4f4ae02522580e33",
+      "output": "1eeb217f7ffd2c25"
+    },
+    "workflows.palette.empty": {
+      "source": "5d4c1effd556974c",
+      "output": "80d52abfab3e9720"
+    },
     "workflows.palette.hint": {
       "source": "8a07edd82e98a1e3",
       "output": "6fcce37be800aea6"
@@ -162063,6 +162603,18 @@
     "workflows.palette.label": {
       "source": "991640dbccef5e74",
       "output": "e67057afb1c42ce6"
+    },
+    "workflows.palette.pressAfter": {
+      "source": "7693067a2b5c4225",
+      "output": "d24ab40e55e36d19"
+    },
+    "workflows.palette.pressAppend": {
+      "source": "af9a83d9d5286bbe",
+      "output": "62d4154bcf2869f0"
+    },
+    "workflows.palette.search": {
+      "source": "5bcf843bf0bc83e5",
+      "output": "d8fc9ce4054f6b65"
     },
     "workflows.problems.atEdge": {
       "source": "8b3f1edeef3eb02e",
@@ -162339,6 +162891,14 @@
     "workflows.settings.on": {
       "source": "aae668f656cdb4d6",
       "output": "eb1bcf0482eeba71"
+    },
+    "workflows.settings.title": {
+      "source": "aa42322263226f41",
+      "output": "985a066080809a09"
+    },
+    "workflows.settings.titleHint": {
+      "source": "5d8980b0fe5e69ed",
+      "output": "dc1a23763ea82e12"
     },
     "workflows.settings.workflowsEnabled": {
       "source": "e2073645cb0dbbdd",

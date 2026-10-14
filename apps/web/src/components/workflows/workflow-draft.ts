@@ -124,30 +124,154 @@ export function placeFor(graph: WorkflowGraph, after: string | null): { x: numbe
   return { x: right + STEP_X, y: top };
 }
 
+/**
+ * Adds a node. Placed "after" a node, it is wired in: from the named handle
+ * when one is given (the `+` beside a way out), otherwise from that node's
+ * first free handle, so building a chain with the keyboard is one choice per
+ * step.
+ */
 export function addNode(
   graph: WorkflowGraph,
   type: WorkflowNodeType,
-  options: { position?: { x: number; y: number }; after?: string | null; timeZone: string },
+  options: {
+    position?: { x: number; y: number };
+    after?: string | null;
+    handle?: string;
+    timeZone: string;
+  },
 ): { graph: WorkflowGraph; nodeId: string } {
   const id = nextNodeId(graph, type);
-  const position = options.position ?? placeFor(graph, options.after ?? null);
+  const after = options.after ?? null;
+  const source =
+    after === null ? undefined : graph.nodes.find((candidate) => candidate.id === after);
+  const handle =
+    source === undefined || isTriggerType(type)
+      ? undefined
+      : (options.handle ?? freeHandle(graph, source));
+  const position =
+    options.position ??
+    (source !== undefined && handle !== undefined
+      ? placeAfterHandle(graph, source, handle)
+      : placeFor(graph, after));
   const node = newNode(type, id, position, options.timeZone);
   let next: WorkflowGraph = { ...graph, nodes: [...graph.nodes, node] };
-  // Added "after" a selected node: wire it in when that node has a free
-  // handle, so building a chain with the keyboard is one choice per step.
-  const after = options.after ?? null;
-  if (after !== null && !isTriggerType(type)) {
-    const source = graph.nodes.find((candidate) => candidate.id === after);
-    const handle = source === undefined ? undefined : freeHandle(graph, source);
-    if (handle !== undefined) {
-      next = connect(next, { source: after, handle, target: id }) ?? next;
-    }
+  if (source !== undefined && handle !== undefined) {
+    next = connect(next, { source: source.id, handle, target: id }) ?? next;
   }
   return { graph: next, nodeId: id };
 }
 
+/** Right of a node, at the height of the handle the new node hangs from. */
+function placeAfterHandle(
+  graph: WorkflowGraph,
+  source: WorkflowNode,
+  handle: string,
+): { x: number; y: number } {
+  if (source.position == null) return placeFor(graph, source.id);
+  const handles = WORKFLOW_NODE_HANDLES[source.type];
+  const index = Math.max(0, handles.indexOf(handle));
+  // A fan-out stacks its branches; every other handle has its own row.
+  const branches =
+    WORKFLOW_FAN_OUT_HANDLES[source.type] === handle
+      ? graph.edges.filter(
+          (edge) => edge.source.nodeId === source.id && edge.source.handle === handle,
+        ).length
+      : 0;
+  const row = handles.length > 1 ? index - (handles.length - 1) / 2 : 0;
+  return {
+    x: source.position.x + STEP_X,
+    y: source.position.y + Math.round((row + branches) * ROW_Y),
+  };
+}
+
 function isTriggerType(type: WorkflowNodeType): boolean {
   return type.startsWith('trigger.');
+}
+
+/** Vertical distance between two rows of a tidied graph. */
+const ROW_Y = 150;
+
+/**
+ * Lays the graph out in columns by how many steps a node is from a trigger
+ * ("Aufräumen"). A node sits one column right of the furthest node leading
+ * into it, so a join lands after every branch it waits for; within a column
+ * the nodes keep the order their predecessors give them, which keeps "ja"
+ * above "nein" and lines from crossing in the common shapes. Only ever run on
+ * a person's request: a position somebody chose is not overwritten silently.
+ * A node on a cycle (which the check refuses anyway) keeps the column it had
+ * when the cycle was found.
+ */
+export function tidyGraph(graph: WorkflowGraph): WorkflowGraph {
+  if (graph.nodes.length === 0) return graph;
+  const incoming = new Map<string, string[]>();
+  const outgoing = new Map<string, WorkflowEdge[]>();
+  for (const edge of graph.edges) {
+    incoming.set(edge.target.nodeId, [
+      ...(incoming.get(edge.target.nodeId) ?? []),
+      edge.source.nodeId,
+    ]);
+    outgoing.set(edge.source.nodeId, [...(outgoing.get(edge.source.nodeId) ?? []), edge]);
+  }
+
+  // Longest path from any root, by a depth-first walk that stops on a cycle.
+  const column = new Map<string, number>();
+  const visiting = new Set<string>();
+  const columnOf = (id: string): number => {
+    const known = column.get(id);
+    if (known !== undefined) return known;
+    if (visiting.has(id)) return 0;
+    visiting.add(id);
+    const sources = incoming.get(id) ?? [];
+    const value = sources.length === 0 ? 0 : Math.max(...sources.map(columnOf)) + 1;
+    visiting.delete(id);
+    column.set(id, value);
+    return value;
+  };
+  for (const node of graph.nodes) columnOf(node.id);
+
+  // Order inside a column: by the rank of the predecessor and the handle the
+  // line leaves from, roots by their current height.
+  const rank = new Map<string, number>();
+  const columns: string[][] = [];
+  for (const node of graph.nodes) {
+    const index = column.get(node.id) ?? 0;
+    (columns[index] ??= []).push(node.id);
+  }
+  const byId = new Map(graph.nodes.map((node) => [node.id, node]));
+  const sortKey = (id: string): number => {
+    const parents = graph.edges.filter((edge) => edge.target.nodeId === id);
+    if (parents.length === 0) return byId.get(id)?.position?.y ?? 0;
+    const keys = parents.map((edge) => {
+      const parent = byId.get(edge.source.nodeId);
+      const handles = parent === undefined ? [] : WORKFLOW_NODE_HANDLES[parent.type];
+      const branch = (outgoing.get(edge.source.nodeId) ?? []).indexOf(edge);
+      return (
+        (rank.get(edge.source.nodeId) ?? 0) * 100 +
+        Math.max(0, handles.indexOf(edge.source.handle)) * 10 +
+        Math.max(0, branch)
+      );
+    });
+    return keys.reduce((sum, key) => sum + key, 0) / keys.length;
+  };
+  for (const ids of columns) {
+    if (ids === undefined) continue;
+    ids.sort((a, b) => sortKey(a) - sortKey(b));
+    ids.forEach((id, index) => rank.set(id, index));
+  }
+
+  const positions = new Map<string, { x: number; y: number }>();
+  columns.forEach((ids, index) => {
+    if (ids === undefined) return;
+    const offset = ((ids.length - 1) * ROW_Y) / 2;
+    ids.forEach((id, row) => positions.set(id, { x: index * STEP_X, y: row * ROW_Y - offset }));
+  });
+  return {
+    ...graph,
+    nodes: graph.nodes.map((node) => ({
+      ...node,
+      position: positions.get(node.id) ?? node.position,
+    })),
+  };
 }
 
 /** The first handle of a node with nothing connected to it yet, or a fan-out handle. */

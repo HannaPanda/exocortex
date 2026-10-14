@@ -1,61 +1,128 @@
 'use client';
 
+import { PlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { type WorkflowNodeType } from '@exocortex/contracts';
-import { SectionRule } from '@exocortex/ui';
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@exocortex/ui';
 
+import { NodeTypeMark, WorkflowAddMenu } from './workflow-add-menu';
 import { WORKFLOW_NODE_MIME } from './workflow-canvas';
 import { NODE_GROUPS } from './workflow-draft';
-import { NODE_ICONS, useWorkflowWording } from './workflow-labels';
+import { useWorkflowWording } from './workflow-labels';
 
 /**
- * The node palette (issue #164): triggers, work and control, in the order a
- * workflow is read. A press adds the node after the selected one and wires it
- * in; a drag puts it where it is dropped. The press is the whole feature, the
- * drag a convenience.
+ * The node rail (issues #164, #198): a narrow column beside the canvas, so
+ * the graph keeps the width. At the top the `+` opens the searchable list
+ * (also on `A`); below it one mark per node type, in the order a workflow is
+ * read. A press adds the node after the selected one and wires it in, a drag
+ * puts it where it is dropped, and each mark names itself in a tooltip with
+ * what the type does. The press is the whole feature, the drag a convenience.
  */
 export function WorkflowPalette({
   onAdd,
   disabled,
+  menuOpen,
+  onMenuOpenChange,
+  hasSelection,
 }: {
   onAdd: (type: WorkflowNodeType) => void;
   disabled: boolean;
+  menuOpen: boolean;
+  onMenuOpenChange: (open: boolean) => void;
+  hasSelection: boolean;
 }) {
   const t = useTranslations('workflows.palette');
   const wording = useWorkflowWording();
   return (
-    <nav aria-label={t('label')} className="flex flex-col gap-4" data-testid="workflow-palette">
-      <p className="text-xs text-muted-foreground">{t('hint')}</p>
-      {NODE_GROUPS.map((group) => (
-        <section key={group.key} className="flex flex-col gap-1">
-          <SectionRule as="h3">{wording.group(group.key)}</SectionRule>
-          <ul className="flex flex-col">
-            {group.types.map((type) => {
-              const Icon = NODE_ICONS[type];
-              return (
-                <li key={type}>
-                  <button
-                    type="button"
+    <nav
+      aria-label={t('label')}
+      className="flex h-full w-12 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-border bg-surface py-2"
+      data-testid="workflow-palette"
+    >
+      <Popover open={menuOpen} onOpenChange={onMenuOpenChange}>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <PopoverTrigger
+                render={
+                  <Button
+                    size="icon"
                     disabled={disabled}
-                    draggable={!disabled}
-                    onDragStart={(event) => {
-                      event.dataTransfer.setData(WORKFLOW_NODE_MIME, type);
-                      event.dataTransfer.effectAllowed = 'copy';
-                    }}
-                    onClick={() => onAdd(type)}
-                    title={wording.typeHint(type)}
-                    data-testid={`workflow-palette-${type}`}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-accent disabled:pointer-events-none disabled:opacity-50"
+                    aria-label={t('add')}
+                    aria-keyshortcuts="A"
+                    data-testid="workflow-add"
                   >
-                    <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                    <span className="truncate">{wording.type(type)}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+                    <PlusIcon />
+                  </Button>
+                }
+              />
+            }
+          />
+          <TooltipContent side="right">
+            {t('add')} <kbd className="ml-1 font-mono text-micro text-muted-foreground">A</kbd>
+          </TooltipContent>
+        </Tooltip>
+        <PopoverContent side="right" align="start" className="p-2">
+          <WorkflowAddMenu
+            withTriggers
+            context={hasSelection ? t('addAfterSelection') : null}
+            onPick={(type) => {
+              onMenuOpenChange(false);
+              onAdd(type);
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+
+      {NODE_GROUPS.map((group) => (
+        <ul
+          key={group.key}
+          aria-label={wording.group(group.key)}
+          className="mt-1 flex flex-col items-center gap-0.5 border-t border-border pt-1.5"
+        >
+          {group.types.map((type) => (
+            <li key={type}>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      draggable={!disabled}
+                      aria-label={wording.type(type)}
+                      aria-description={wording.typeHint(type)}
+                      onDragStart={(event) => {
+                        event.dataTransfer.setData(WORKFLOW_NODE_MIME, type);
+                        event.dataTransfer.effectAllowed = 'copy';
+                      }}
+                      onClick={() => onAdd(type)}
+                      data-testid={`workflow-palette-${type}`}
+                      className="grid size-9 place-items-center rounded-md hover:bg-accent-solid disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      <NodeTypeMark type={type} />
+                    </button>
+                  }
+                />
+                <TooltipContent side="right" className="max-w-64">
+                  <span className="block font-medium text-foreground">{wording.type(type)}</span>
+                  <span className="block text-muted-foreground">{wording.typeHint(type)}</span>
+                  <span className="mt-1 block text-muted-foreground">
+                    {hasSelection ? t('pressAfter') : t('pressAppend')}
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            </li>
+          ))}
+        </ul>
       ))}
     </nav>
   );

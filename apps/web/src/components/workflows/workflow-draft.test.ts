@@ -16,6 +16,7 @@ import {
   readableSources,
   removeNodes,
   sameGraph,
+  tidyGraph,
 } from './workflow-draft';
 import { workflowRunView } from './workflow-run-view';
 
@@ -182,5 +183,53 @@ describe('workflow run view', () => {
     expect(view.nodes.get('approval')?.state).toBe('waiting');
     expect(view.nodes.get('end')?.state).toBe('untouched');
     expect([...view.takenEdgeIds].sort()).toEqual(['e1', 'e2', 'e3']);
+  });
+});
+
+describe('adding from a way out and tidying (issue #198)', () => {
+  it('wires a node to the handle it was added from, not the first free one', () => {
+    let graph = chain();
+    graph = removeNodes(graph, ['approval', 'end']);
+    const added = addNode(graph, 'end', { after: 'condition', handle: 'false', timeZone: ZONE });
+    expect(
+      added.graph.edges
+        .filter((edge) => edge.source.nodeId === 'condition')
+        .map((edge) => `${edge.source.handle}>${edge.target.nodeId}`),
+    ).toEqual(['false>end']);
+    // "nein" is the lower of the two ways out, so the node lands below.
+    const condition = added.graph.nodes.find((node) => node.id === 'condition')!;
+    const end = added.graph.nodes.find((node) => node.id === 'end')!;
+    expect(end.position!.y).toBeGreaterThan(condition.position!.y);
+  });
+
+  it('lays nodes out in columns by distance from the trigger, ja above nein', () => {
+    const scrambled: WorkflowGraph = {
+      ...chain(),
+      nodes: chain().nodes.map((node, index) => ({
+        ...node,
+        position: { x: 1000 - index * 37, y: index * 91 },
+      })),
+    };
+    const tidy = tidyGraph(scrambled);
+    const at = (id: string) => tidy.nodes.find((node) => node.id === id)!.position!;
+    expect([at('start').x, at('agent').x, at('condition').x]).toEqual([0, 280, 560]);
+    expect(at('approval').x).toBe(560 + 280);
+    expect(at('end').x).toBe(560 + 280);
+    expect(at('approval').y).toBeLessThan(at('end').y);
+    // Nothing but positions changes.
+    expect(tidy.edges).toEqual(scrambled.edges);
+    expect(validateWorkflowGraph(tidy).problems).toEqual(validateWorkflowGraph(scrambled).problems);
+  });
+
+  it('puts a join after the longest branch leading into it', () => {
+    let graph = emptyWorkflowGraph();
+    graph = addNode(graph, 'parallel', { after: 'start', timeZone: ZONE }).graph;
+    graph = addNode(graph, 'agent', { after: 'parallel', timeZone: ZONE }).graph;
+    graph = addNode(graph, 'agent', { after: 'agent', timeZone: ZONE }).graph;
+    graph = addNode(graph, 'join', { after: 'agent2', timeZone: ZONE }).graph;
+    graph = connect(graph, { source: 'parallel', handle: 'branch', target: 'join' })!;
+    const tidy = tidyGraph(graph);
+    const x = (id: string) => tidy.nodes.find((node) => node.id === id)!.position!.x;
+    expect(x('join')).toBeGreaterThan(x('agent2'));
   });
 });

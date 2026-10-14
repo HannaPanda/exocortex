@@ -123,9 +123,10 @@
       "zoomIn": "Powiększ",
       "zoomOut": "Pomniejsz",
       "fitView": "Pokaż cały workflow",
-      "interactive": "Włącz lub wyłącz edycję",
       "handle": "Uchwyt"
-    }
+    },
+    "addFrom": "Dodaj kolejny krok po „{handle}” węzła {node}",
+    "addFromContext": "Po „{handle}” węzła {node}"
   },
   "pagePicker": {
     "group": "Strony",
@@ -286,7 +287,9 @@
     "on": "włączone",
     "off": "wyłączone",
     "writeModeCeiling": "Maksymalny tryb zapisu",
-    "addTrigger": "Dodaj wyzwalacz"
+    "addTrigger": "Dodaj wyzwalacz",
+    "title": "Ustawienia workflow",
+    "titleHint": "Nazwa, opis i limity obowiązujące dla każdego uruchomienia."
   },
   "problems": {
     "listLabel": "Problemy",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Dodaj węzeł",
-    "hint": "Kliknięcie dołącza węzeł za zaznaczonym i tworzy połączenie. Przeciągnięcie umieszcza go w miejscu upuszczenia."
+    "add": "Dodaj węzeł",
+    "search": "Szukaj węzłów",
+    "empty": "Żaden węzeł nie pasuje do „{query}”.",
+    "addAfterSelection": "Trafi za zaznaczony węzeł i połączy się z nim.",
+    "pressAfter": "Kliknięcie: dołącz za zaznaczonym węzłem. Przeciągnięcie: umieść tam, gdzie upuścisz.",
+    "pressAppend": "Kliknięcie: dołącz po prawej. Przeciągnięcie: umieść tam, gdzie upuścisz."
   },
   "summary": {
     "manual": "Uruchamiany ręcznie",
@@ -324,15 +332,21 @@
     "back": "Wszystkie workflow",
     "conflict": "Ktoś w międzyczasie zapisał ten szkic. Twoje zmiany nadal tu są; załaduj nową wersję roboczą, aby je odrzucić, lub przenieś je potem ręcznie.",
     "reload": "Załaduj nowy stan",
-    "unsavable": "W tym stanie nie można zapisać szkicu. Problemy po prawej stronie wskazują miejsce.",
+    "unsavable": "Nie można zapisać projektu w tym stanie. Problemy w prawym dolnym rogu obszaru roboczego wskazują miejsce.",
     "tabDraft": "Szkic",
     "tabRuns": "Uruchomienia",
     "tabVersions": "Wersje",
     "canvasLabel": "Graf workflow {name}",
     "inspectorLabel": "Ustawienia",
-    "noProblems": "Brak problemów",
     "noProblemsHint": "Szkic można w tym stanie opublikować.",
-    "problemsTitle": "{count, plural, one {# problem przed publikacją} few {# problemy przed publikacją} many {# problemów przed publikacją} other {# problemu przed publikacją}}"
+    "problemsTitle": "{count, plural, one {# problem przed publikacją} few {# problemy przed publikacją} many {# problemów przed publikacją} other {# problemu przed publikacją}}",
+    "unsavedLeave": "Projekt zawiera niezapisane zmiany. Opuszczenie go teraz spowoduje ich bezpowrotną utratę. Zostań tutaj i zapisz, aby je zachować.",
+    "undo": "Cofnij",
+    "redo": "Ponów",
+    "tidy": "Uporządkuj graf",
+    "settings": "Ustawienia",
+    "addTrigger": "Dodaj wyzwalacz",
+    "closePanel": "Zamknij panel"
   },
   "header": {
     "unsaved": "Niezapisane",
@@ -363,7 +377,10 @@
     "deleteDescription": "Workflow, wszystkie wersje i jego zakończone uruchomienia znikną. Zlecenia utworzone przez te uruchomienia pozostaną.",
     "deleteConfirm": "Usuń",
     "cancel": "Anuluj",
-    "workflowsOff": "Workflowy są wyłączone w tym obszarze roboczym. Można je tworzyć i publikować, ale nic się nie uruchomi, nawet przebieg próbny. Włączyć je można w ustawieniach obszaru roboczego w sekcji „Workflowy”."
+    "workflowsOff": "Workflowy są wyłączone w tym obszarze roboczym. Można je tworzyć i publikować, ale nic się nie uruchomi, nawet przebieg próbny. Włączyć je można w ustawieniach obszaru roboczego w sekcji „Workflowy”.",
+    "back": "Wszystkie workflow",
+    "draftAheadShort": "Wersja robocza nowsza",
+    "deleteBlockedRuns": "Możliwe dopiero wtedy, gdy żadne uruchomienie nie jest w toku."
   },
   "activation": {
     "enableTitle": "Włączyć workflow?",

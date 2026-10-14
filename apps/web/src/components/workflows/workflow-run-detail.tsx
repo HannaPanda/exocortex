@@ -35,6 +35,7 @@ import {
   type WorkflowNodeDecoration,
   type WorkflowSelection,
 } from './workflow-canvas';
+import { CanvasControls } from './workflow-canvas-controls';
 import { runStatusVariant, useWorkflowWording, type WorkflowWording } from './workflow-labels';
 import { attemptDurationMs, workflowRunView } from './workflow-run-view';
 import { useNodeSummary } from './workflow-summaries';
@@ -125,33 +126,39 @@ function LoadedRun({
   const selectedNode =
     selection?.kind === 'node' ? graph.nodes.find((node) => node.id === selection.id) : undefined;
 
+  // Where the panel sits below the canvas, a chosen node's attempts would be
+  // out of sight; bring the top of the panel up to meet the choice.
+  const asideRef = React.useRef<HTMLElement>(null);
+  React.useEffect(() => {
+    const aside = asideRef.current;
+    if (selection === null || aside === null) return;
+    if (aside.getBoundingClientRect().top > window.innerHeight - 80) {
+      aside.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      });
+    }
+  }, [selection]);
+
   return (
-    <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto">
-      <div className="flex flex-col gap-3 border-b border-border px-6 pt-5 pb-4">
-        <Link
-          href={`/arbeitsbereich/${workspaceId}/workflows/${workflowId}?tab=laeufe`}
-          className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeftIcon className="size-4" />
-          {t('back')}
-        </Link>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="exocortex-page-title">
+    <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto @4xl:overflow-hidden">
+      <div className="flex flex-col gap-2 border-b border-border px-4 pt-3 pb-3 @3xl:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('back')}
+              title={t('back')}
+              render={
+                <Link href={`/arbeitsbereich/${workspaceId}/workflows/${workflowId}?tab=laeufe`} />
+              }
+            >
+              <ArrowLeftIcon />
+            </Button>
+            <h1 className="exocortex-page-title min-w-0 truncate">
               {t('title', { moment: format.moment(run.createdAt) })}
             </h1>
-            <div
-              className="mt-1 flex flex-wrap items-center gap-2 text-xs"
-              data-testid="workflow-run-state"
-            >
-              <Badge variant={runStatusVariant(run.status)} data-testid="workflow-run-status">
-                {wording.runStatus(run.status)}
-              </Badge>
-              <Badge variant="outline">{wording.origin(run.origin)}</Badge>
-              <span className="text-muted-foreground">
-                {t('version', { version: run.version })}
-              </span>
-            </div>
           </div>
           {!finished && canManage ? (
             <Button
@@ -163,6 +170,13 @@ function LoadedRun({
               {t('cancel')}
             </Button>
           ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-xs" data-testid="workflow-run-state">
+          <Badge variant={runStatusVariant(run.status)} data-testid="workflow-run-status">
+            {wording.runStatus(run.status)}
+          </Badge>
+          <Badge variant="outline">{wording.origin(run.origin)}</Badge>
+          <span className="text-muted-foreground">{t('version', { version: run.version })}</span>
         </div>
         {run.errorCode === null ? null : (
           <Alert variant={run.status === 'cancelled' ? 'default' : 'destructive'}>
@@ -179,9 +193,9 @@ function LoadedRun({
         )}
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 p-6 @4xl:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col @4xl:flex-row">
         <div
-          className="h-[60dvh] min-h-80 overflow-hidden rounded-lg border border-border @4xl:h-auto @4xl:min-h-0 @4xl:flex-1"
+          className="relative h-[55dvh] min-h-80 shrink-0 @4xl:h-auto @4xl:min-h-0 @4xl:flex-1 @4xl:shrink"
           data-testid="workflow-run-canvas"
         >
           <WorkflowCanvas
@@ -193,10 +207,13 @@ function LoadedRun({
             problemEdgeIds={EMPTY}
             takenEdgeIds={view.takenEdgeIds}
             label={t('canvasLabel')}
-          />
+          >
+            <CanvasControls />
+          </WorkflowCanvas>
         </div>
         <aside
-          className="flex shrink-0 flex-col gap-6 @4xl:w-96 @4xl:overflow-y-auto @4xl:pr-1"
+          ref={asideRef}
+          className="flex shrink-0 flex-col gap-6 border-t border-border bg-surface p-4 @4xl:w-96 @4xl:overflow-y-auto @4xl:border-t-0 @4xl:border-l"
           aria-label={t('panelLabel')}
         >
           {selectedNode === undefined ? (

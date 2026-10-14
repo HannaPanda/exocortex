@@ -123,9 +123,10 @@
       "zoomIn": "Vergrößern",
       "zoomOut": "Verkleinern",
       "fitView": "Ganzen Workflow zeigen",
-      "interactive": "Bearbeiten ein- oder ausschalten",
       "handle": "Anschluss"
-    }
+    },
+    "addFrom": "Nächsten Schritt nach „{handle}“ von {node} hinzufügen",
+    "addFromContext": "Nach „{handle}“ von {node}"
   },
   "pagePicker": {
     "group": "Seiten",
@@ -286,7 +287,9 @@
     "on": "eingeschaltet",
     "off": "ausgeschaltet",
     "writeModeCeiling": "Schreibmodus höchstens",
-    "addTrigger": "Auslöser hinzufügen"
+    "addTrigger": "Auslöser hinzufügen",
+    "title": "Workflow-Einstellungen",
+    "titleHint": "Name, Beschreibung und die Grenzen, die für jeden Lauf gelten."
   },
   "problems": {
     "listLabel": "Probleme",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Knoten hinzufügen",
-    "hint": "Ein Klick hängt den Knoten hinter den ausgewählten und verbindet ihn. Ziehen setzt ihn dorthin, wo du ihn loslässt."
+    "add": "Knoten hinzufügen",
+    "search": "Knoten suchen",
+    "empty": "Kein Knoten passt zu „{query}“.",
+    "addAfterSelection": "Kommt hinter den ausgewählten Knoten und wird mit ihm verbunden.",
+    "pressAfter": "Klick: hinter den ausgewählten Knoten hängen. Ziehen: dorthin setzen, wo du loslässt.",
+    "pressAppend": "Klick: rechts anfügen. Ziehen: dorthin setzen, wo du loslässt."
   },
   "summary": {
     "manual": "Startet von Hand",
@@ -324,15 +332,21 @@
     "back": "Alle Workflows",
     "conflict": "Jemand hat den Entwurf inzwischen gespeichert. Deine Änderungen sind noch hier; lade den neuen Stand, um sie zu verwerfen, oder übertrage sie danach von Hand.",
     "reload": "Neuen Stand laden",
-    "unsavable": "So lässt sich der Entwurf nicht speichern. Die Probleme rechts nennen die Stelle.",
+    "unsavable": "So lässt sich der Entwurf nicht speichern. Die Probleme unten rechts auf der Arbeitsfläche nennen die Stelle.",
     "tabDraft": "Entwurf",
     "tabRuns": "Läufe",
     "tabVersions": "Versionen",
     "canvasLabel": "Graph des Workflows {name}",
     "inspectorLabel": "Einstellungen",
-    "noProblems": "Keine Probleme",
     "noProblemsHint": "Der Entwurf lässt sich so veröffentlichen.",
-    "problemsTitle": "{count, plural, one {# Problem vor dem Veröffentlichen} other {# Probleme vor dem Veröffentlichen}}"
+    "problemsTitle": "{count, plural, one {# Problem vor dem Veröffentlichen} other {# Probleme vor dem Veröffentlichen}}",
+    "unsavedLeave": "Der Entwurf hat Änderungen, die noch nicht gespeichert sind. Wer jetzt wechselt, verliert sie; das lässt sich nicht rückgängig machen. Hier bleiben und speichern behält sie.",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "tidy": "Graph aufräumen",
+    "settings": "Einstellungen",
+    "addTrigger": "Auslöser hinzufügen",
+    "closePanel": "Bereich schließen"
   },
   "header": {
     "unsaved": "Nicht gespeichert",
@@ -363,7 +377,10 @@
     "deleteDescription": "Der Workflow, alle Versionen und seine beendeten Läufe verschwinden. Aufträge, die seine Läufe angelegt haben, bleiben.",
     "deleteConfirm": "Löschen",
     "cancel": "Abbrechen",
-    "workflowsOff": "Workflows sind in diesem Arbeitsbereich ausgeschaltet. Bauen und veröffentlichen geht, laufen kann nichts, auch kein Probelauf. Einschalten lässt es sich in den Einstellungen des Arbeitsbereichs unter „Workflows“."
+    "workflowsOff": "Workflows sind in diesem Arbeitsbereich ausgeschaltet. Bauen und veröffentlichen geht, laufen kann nichts, auch kein Probelauf. Einschalten lässt es sich in den Einstellungen des Arbeitsbereichs unter „Workflows“.",
+    "back": "Alle Workflows",
+    "draftAheadShort": "Entwurf weiter",
+    "deleteBlockedRuns": "Geht erst, wenn kein Lauf mehr unterwegs ist."
   },
   "activation": {
     "enableTitle": "Workflow einschalten?",

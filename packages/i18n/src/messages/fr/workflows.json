@@ -123,9 +123,10 @@
       "zoomIn": "Zoomer",
       "zoomOut": "Dézoomer",
       "fitView": "Afficher tout le workflow",
-      "interactive": "Activer ou désactiver l’édition",
       "handle": "Point de connexion"
-    }
+    },
+    "addFrom": "Ajouter l’étape suivante après « {handle} » de {node}",
+    "addFromContext": "Après « {handle} » de {node}"
   },
   "pagePicker": {
     "group": "Pages",
@@ -286,7 +287,9 @@
     "on": "activé",
     "off": "désactivé",
     "writeModeCeiling": "Mode d’écriture maximal",
-    "addTrigger": "Ajouter un déclencheur"
+    "addTrigger": "Ajouter un déclencheur",
+    "title": "Paramètres du workflow",
+    "titleHint": "Nom, description et limites qui s’appliquent à chaque exécution."
   },
   "problems": {
     "listLabel": "Problèmes",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Ajouter un nœud",
-    "hint": "Un clic place le nœud après le nœud sélectionné et le relie. Glisser-déposer le place là où tu le relâches."
+    "add": "Ajouter un nœud",
+    "search": "Rechercher un nœud",
+    "empty": "Aucun nœud ne correspond à « {query} ».",
+    "addAfterSelection": "S’ajoute après le nœud sélectionné et s’y connecte.",
+    "pressAfter": "Clic : attacher après le nœud sélectionné. Glisser : déposer à l’endroit souhaité.",
+    "pressAppend": "Clic : ajouter à droite. Glisser : déposer à l’endroit souhaité."
   },
   "summary": {
     "manual": "Démarre manuellement",
@@ -324,15 +332,21 @@
     "back": "Tous les workflows",
     "conflict": "Quelqu’un a enregistré le brouillon entre-temps. Tes modifications sont toujours là ; recharge la nouvelle version pour les abandonner, ou reporte-les ensuite manuellement.",
     "reload": "Recharger la nouvelle version",
-    "unsavable": "Impossible d’enregistrer le brouillon en l’état. Les problèmes indiqués à droite précisent où.",
+    "unsavable": "Impossible d’enregistrer le brouillon en l’état. Les erreurs en bas à droite de l’espace de travail indiquent où se situe le problème.",
     "tabDraft": "Brouillon",
     "tabRuns": "Exécutions",
     "tabVersions": "Versions",
     "canvasLabel": "Graphe du workflow {name}",
     "inspectorLabel": "Paramètres",
-    "noProblems": "Aucun problème",
     "noProblemsHint": "Le brouillon peut être publié en l’état.",
-    "problemsTitle": "{count, plural, one {# problème avant publication} many {# problèmes avant publication} other {# problèmes avant publication}}"
+    "problemsTitle": "{count, plural, one {# problème avant publication} many {# problèmes avant publication} other {# problèmes avant publication}}",
+    "unsavedLeave": "Le brouillon contient des modifications non enregistrées. Si tu quittes maintenant, elles seront perdues de manière irréversible. Reste ici et enregistre pour les conserver.",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "tidy": "Réorganiser le graphe",
+    "settings": "Paramètres",
+    "addTrigger": "Ajouter un déclencheur",
+    "closePanel": "Fermer le panneau"
   },
   "header": {
     "unsaved": "Non enregistré",
@@ -363,7 +377,10 @@
     "deleteDescription": "Le workflow, toutes ses versions et ses exécutions terminées disparaîtront. Les ordres créés par ses exécutions seront conservés.",
     "deleteConfirm": "Supprimer",
     "cancel": "Annuler",
-    "workflowsOff": "Les workflows sont désactivés dans cet espace de travail. Tu peux concevoir et publier, mais rien ne peut être exécuté, pas même un test. Tu peux les activer dans les paramètres de l’espace de travail, sous « Workflows »."
+    "workflowsOff": "Les workflows sont désactivés dans cet espace de travail. Tu peux concevoir et publier, mais rien ne peut être exécuté, pas même un test. Tu peux les activer dans les paramètres de l’espace de travail, sous « Workflows ».",
+    "back": "Tous les workflows",
+    "draftAheadShort": "Brouillon en avance",
+    "deleteBlockedRuns": "Possible uniquement lorsqu’aucune exécution n’est en cours."
   },
   "activation": {
     "enableTitle": "Activer le workflow ?",

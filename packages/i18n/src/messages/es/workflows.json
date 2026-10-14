@@ -123,9 +123,10 @@
       "zoomIn": "Acercar",
       "zoomOut": "Alejar",
       "fitView": "Mostrar el workflow completo",
-      "interactive": "Activar o desactivar la edición",
       "handle": "Conector"
-    }
+    },
+    "addFrom": "Añadir siguiente paso tras «{handle}» de {node}",
+    "addFromContext": "Tras «{handle}» de {node}"
   },
   "pagePicker": {
     "group": "Páginas",
@@ -286,7 +287,9 @@
     "on": "activado",
     "off": "desactivado",
     "writeModeCeiling": "Modo de escritura máximo",
-    "addTrigger": "Añadir disparador"
+    "addTrigger": "Añadir disparador",
+    "title": "Ajustes del workflow",
+    "titleHint": "Nombre, descripción y los límites aplicables a cada ejecución."
   },
   "problems": {
     "listLabel": "Problemas",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Añadir nodo",
-    "hint": "Un clic añade el nodo detrás del seleccionado y lo conecta. Al arrastrarlo, se coloca donde lo sueltes."
+    "add": "Añadir nodo",
+    "search": "Buscar nodo",
+    "empty": "Ningún nodo coincide con «{query}».",
+    "addAfterSelection": "Se colocará detrás del nodo seleccionado y se conectará a él.",
+    "pressAfter": "Clic: añadir detrás del nodo seleccionado. Arrastrar: colocar donde sueltes.",
+    "pressAppend": "Clic: añadir a la derecha. Arrastrar: colocar donde sueltes."
   },
   "summary": {
     "manual": "Se inicia manualmente",
@@ -324,15 +332,21 @@
     "back": "Todos los workflows",
     "conflict": "Alguien ha guardado el borrador mientras tanto. Tus cambios siguen aquí; carga la nueva versión para descartarlos o trasládalos a mano después.",
     "reload": "Cargar nueva versión",
-    "unsavable": "El borrador no se puede guardar así. Consulta los problemas a la derecha para ver dónde.",
+    "unsavable": "El borrador no se puede guardar así. Los problemas abajo a la derecha en el lienzo indican el lugar.",
     "tabDraft": "Borrador",
     "tabRuns": "Ejecuciones",
     "tabVersions": "Versiones",
     "canvasLabel": "Grafo del workflow {name}",
     "inspectorLabel": "Ajustes",
-    "noProblems": "Sin problemas",
     "noProblemsHint": "El borrador ya se puede publicar.",
-    "problemsTitle": "{count, plural, one {# problema antes de publicar} many {# problemas antes de publicar} other {# problemas antes de publicar}}"
+    "problemsTitle": "{count, plural, one {# problema antes de publicar} many {# problemas antes de publicar} other {# problemas antes de publicar}}",
+    "unsavedLeave": "El borrador tiene cambios sin guardar. Si sales ahora, se perderán y no se podrán recuperar. Quédate aquí y guarda para conservarlos.",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "tidy": "Organizar grafo",
+    "settings": "Ajustes",
+    "addTrigger": "Añadir disparador",
+    "closePanel": "Cerrar panel"
   },
   "header": {
     "unsaved": "Sin guardar",
@@ -363,7 +377,10 @@
     "deleteDescription": "El workflow, todas las versiones y sus ejecuciones finalizadas desaparecerán. Los encargos creados por sus ejecuciones se mantendrán.",
     "deleteConfirm": "Eliminar",
     "cancel": "Cancelar",
-    "workflowsOff": "Los workflows están desactivados en este espacio de trabajo. Puedes crearlos y publicarlos, pero nada podrá ejecutarse, ni siquiera una prueba. Puedes activarlos en los ajustes del espacio de trabajo, en «Workflows»."
+    "workflowsOff": "Los workflows están desactivados en este espacio de trabajo. Puedes crearlos y publicarlos, pero nada podrá ejecutarse, ni siquiera una prueba. Puedes activarlos en los ajustes del espacio de trabajo, en «Workflows».",
+    "back": "Todos los workflows",
+    "draftAheadShort": "Borrador más reciente",
+    "deleteBlockedRuns": "Solo es posible cuando no haya ninguna ejecución en curso."
   },
   "activation": {
     "enableTitle": "¿Activar el workflow?",

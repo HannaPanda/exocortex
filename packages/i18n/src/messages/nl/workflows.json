@@ -123,9 +123,10 @@
       "zoomIn": "Inzoomen",
       "zoomOut": "Uitzoomen",
       "fitView": "Hele workflow tonen",
-      "interactive": "Bewerken in- of uitschakelen",
       "handle": "Aansluiting"
-    }
+    },
+    "addFrom": "Volgende stap na „{handle}” van {node} toevoegen",
+    "addFromContext": "Na „{handle}” van {node}"
   },
   "pagePicker": {
     "group": "Pagina’s",
@@ -286,7 +287,9 @@
     "on": "ingeschakeld",
     "off": "uitgeschakeld",
     "writeModeCeiling": "Schrijfmodus maximaal",
-    "addTrigger": "Trigger toevoegen"
+    "addTrigger": "Trigger toevoegen",
+    "title": "Workflow-instellingen",
+    "titleHint": "Naam, beschrijving en de limieten die voor elke run gelden."
   },
   "problems": {
     "listLabel": "Problemen",
@@ -296,7 +299,12 @@
   },
   "palette": {
     "label": "Node toevoegen",
-    "hint": "Een klik plaatst de node achter de geselecteerde en verbindt hem. Slepen plaatst hem waar je hem loslaat."
+    "add": "Node toevoegen",
+    "search": "Nodes zoeken",
+    "empty": "Geen node gevonden voor „{query}”.",
+    "addAfterSelection": "Wordt achter de geselecteerde node geplaatst en ermee verbonden.",
+    "pressAfter": "Klik: achter de geselecteerde node hangen. Slepen: neerzetten waar je loslaat.",
+    "pressAppend": "Klik: rechts toevoegen. Slepen: neerzetten waar je loslaat."
   },
   "summary": {
     "manual": "Start handmatig",
@@ -324,15 +332,21 @@
     "back": "Alle workflows",
     "conflict": "Iemand heeft het concept intussen opgeslagen. Je wijzigingen zijn er nog; laad de nieuwe versie om ze te negeren, of neem ze daarna handmatig over.",
     "reload": "Nieuwe versie laden",
-    "unsavable": "Zo kan het concept niet worden opgeslagen. De problemen rechts geven aan waar het om gaat.",
+    "unsavable": "Dit ontwerp kan zo niet worden opgeslagen. De problemen rechtsonder op het canvas geven aan waar het om gaat.",
     "tabDraft": "Concept",
     "tabRuns": "Läufe",
     "tabVersions": "Versies",
     "canvasLabel": "Graaf van workflow {name}",
     "inspectorLabel": "Instellingen",
-    "noProblems": "Geen problemen",
     "noProblemsHint": "Het concept kan zo worden gepubliceerd.",
-    "problemsTitle": "{count, plural, one {# probleem vóór publicatie} other {# problemen vóór publicatie}}"
+    "problemsTitle": "{count, plural, one {# probleem vóór publicatie} other {# problemen vóór publicatie}}",
+    "unsavedLeave": "Het ontwerp bevat niet-opgeslagen wijzigingen. Als je nu weggaat, gaan ze verloren; dit kan niet ongedaan worden gemaakt. Blijf hier en sla op om ze te bewaren.",
+    "undo": "Ongedaan maken",
+    "redo": "Opnieuw uitvoeren",
+    "tidy": "Graaf ordenen",
+    "settings": "Instellingen",
+    "addTrigger": "Trigger toevoegen",
+    "closePanel": "Paneel sluiten"
   },
   "header": {
     "unsaved": "Niet opgeslagen",
@@ -363,7 +377,10 @@
     "deleteDescription": "De workflow, alle versies en voltooide runs verdwijnen. Opdrachten die door de runs zijn aangemaakt, blijven bewaard.",
     "deleteConfirm": "Verwijderen",
     "cancel": "Annuleren",
-    "workflowsOff": "Workflows zijn uitgeschakeld in deze werkruimte. Je kunt ze wel bouwen en publiceren, maar er kan niets worden uitgevoerd, ook geen testrun. Je kunt dit inschakelen in de instellingen van de werkruimte onder „Workflows”."
+    "workflowsOff": "Workflows zijn uitgeschakeld in deze werkruimte. Je kunt ze wel bouwen en publiceren, maar er kan niets worden uitgevoerd, ook geen testrun. Je kunt dit inschakelen in de instellingen van de werkruimte onder „Workflows”.",
+    "back": "Alle workflows",
+    "draftAheadShort": "Ontwerp verder",
+    "deleteBlockedRuns": "Kan pas als er geen runs meer actief zijn."
   },
   "activation": {
     "enableTitle": "Workflow inschakelen?",

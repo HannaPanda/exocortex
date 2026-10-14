@@ -69,7 +69,11 @@ function navigationTargetOf(event: MouseEvent): string | null {
  * there is nothing left to ask about. `beforeunload` does cover a back that
  * leaves the application altogether.
  */
-export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
+export function useUnsavedChangesGuard(
+  changedCount: number,
+  /** What is lost, when it is not a count of settings (e.g. a workflow draft, issue #198). */
+  description?: string,
+): React.ReactNode {
   const router = useRouter();
   const t = useTranslations('settings.unsaved');
   const [pendingHref, setPendingHref] = React.useState<string | null>(null);
@@ -121,7 +125,9 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
               across thirteen groups and "you have unsaved changes" tells
               somebody nothing about whether it was the one switch they just
               flipped or an afternoon's work. */}
-          <DialogDescription>{t('description', { count: changedCount })}</DialogDescription>
+          <DialogDescription>
+            {description ?? t('description', { count: changedCount })}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button
