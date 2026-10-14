@@ -9,6 +9,7 @@ import { resolveToolImageDescriber } from './preparation';
 function modelRow(overrides: Partial<ResolvedModelRow>): ResolvedModelRow {
   return {
     slug: 'vendor/text-model',
+    provider: 'openrouter',
     supportsVision: false,
     visionCompanionSlug: null,
     ...overrides,
@@ -50,6 +51,23 @@ describe('resolveToolImageDescriber (issue #204)', () => {
       correlationId: 'c1',
     });
     expect(visionPreprocessorFor).toHaveBeenCalledWith('vendor/chosen-companion');
+  });
+
+  it('borrows the companion for a subscription model, whose slug OpenRouter does not know', () => {
+    const visionPreprocessorFor = vi.fn().mockReturnValue(preprocessor);
+    resolveToolImageDescriber({
+      settings: settings(true),
+      modelRow: modelRow({
+        slug: 'cline-pass/vision-model',
+        provider: 'cline',
+        supportsVision: true,
+      }),
+      conversationCompanionSlug: null,
+      visionPreprocessorFor,
+      correlationId: 'c1',
+    });
+    // null: the deployment's default companion.
+    expect(visionPreprocessorFor).toHaveBeenCalledWith(null);
   });
 
   it('answers null when vision is off or the conversation switched the companion off', () => {

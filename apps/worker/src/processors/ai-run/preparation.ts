@@ -1,6 +1,7 @@
 import {
   type AiProvider,
   estimateTokens,
+  isProviderPresetId,
   planRoute,
   restrictEndpoints,
   type RoutingEndpoint,
@@ -353,7 +354,10 @@ export function resolveToolImageDescriber(input: {
 }): ToolImageDescriber | null {
   if (!input.settings['ai.visionEnabled']) return null;
   let slug: string | null;
-  if (input.modelRow.supportsVision) {
+  // The describer speaks to OpenRouter. A subscription preset's slug
+  // (`cline-pass/...`) is a name only the preset knows, and OpenRouter answers
+  // it with a 400, so such a model borrows the companion like a text-only one.
+  if (input.modelRow.supportsVision && !isProviderPresetId(input.modelRow.provider)) {
     slug = input.modelRow.slug;
   } else {
     const companion = resolveVisionCompanionSlug(
