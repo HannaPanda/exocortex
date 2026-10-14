@@ -134,8 +134,19 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
     ],
   },
   attachments: {
-    label: 'Dateien hochladen, ihren Text lesen und korrigieren.',
+    label: 'Dateien hochladen, Bilder ansehen, Text lesen und korrigieren, Dateien herunterladen.',
     keywords: [
+      // "Beschreib das Bild" is the whole task, and it names no file (#204).
+      'bild',
+      'foto',
+      'screenshot',
+      'grafik',
+      'diagramm',
+      'image',
+      'picture',
+      'photo',
+      'herunterlad',
+      'download',
       'anhang',
       'anhäng',
       'anhaeng',

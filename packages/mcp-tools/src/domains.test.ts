@@ -28,6 +28,13 @@ describe('selectToolDomains', () => {
     expect(selectToolDomains({ text: 'Archiviere die Seite.' })).toContain('lifecycle');
   });
 
+  it('offers the picture tools when a task asks about a picture and names no file', () => {
+    expect(selectToolDomains({ text: 'beschreib das erste Bild auf dieser Seite' })).toContain(
+      'attachments',
+    );
+    expect(selectToolDomains({ text: 'Was zeigt der Screenshot?' })).toContain('attachments');
+  });
+
   it('takes a domain the words cannot say, because the context already knows it', () => {
     // An open database view: the page on screen is a database, and waiting for
     // somebody to write the word would cost the run a turn.
