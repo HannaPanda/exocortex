@@ -49,9 +49,18 @@ async function choose(page: Page, testId: string, option: string | RegExp): Prom
   await page.getByRole('option', { name: option }).click();
 }
 
+/**
+ * Selects a node the way the keyboard does: focus it (React Flow pans it into
+ * view) and press Enter. A click would miss a node panned off the canvas.
+ */
 async function selectNode(page: Page, nodeId: string): Promise<void> {
-  await page.locator(`[data-testid="workflow-node"][data-node-id="${nodeId}"]`).click();
+  const wrapper = page.locator(`.react-flow__node[data-id="${nodeId}"]`);
+  await wrapper.focus();
+  await wrapper.press('Enter');
   await expect(page.getByTestId('workflow-node-inspector')).toBeVisible();
+  await expect(
+    page.locator(`[data-testid="workflow-node"][data-node-id="${nodeId}"]`),
+  ).toHaveAttribute('data-selected', 'true');
 }
 
 test('authors trigger, agent, condition, approval and end without drawing a line', async ({
@@ -228,6 +237,7 @@ test('builds from the canvas: the add key, a way out, undo, tidy and the setting
   // Workflow-wide settings are a panel on request, and Escape closes it.
   await page.getByTestId('workflow-open-settings').click();
   await expect(page.getByTestId('workflow-settings')).toBeVisible();
+  await page.getByTestId('workflow-limit-budget').scrollIntoViewIfNeeded();
   await expect(page.getByTestId('workflow-limit-budget')).toBeInViewport();
   await page.getByTestId('workflow-name').press('Escape');
   await expect(page.getByTestId('workflow-inspector')).toHaveCount(0);
