@@ -115,6 +115,11 @@ test.describe('AI side panel', () => {
     await createPage(page, `Denken ${Date.now().toString(36)}`);
 
     await page.getByTestId('context-tab-ai').click();
+    // A new conversation starts at "aus", which since 2026-10-14 really is no
+    // thinking; ask for some, the way a person would.
+    await page.getByTestId('ai-input').fill('/think low');
+    await page.getByTestId('ai-send').click();
+    await expect(page.getByTestId('ai-input')).toHaveValue('', { timeout: 30_000 });
     await page
       .getByTestId('ai-input')
       .fill(
