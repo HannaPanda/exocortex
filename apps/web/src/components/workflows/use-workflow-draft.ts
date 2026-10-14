@@ -124,25 +124,44 @@ export function useWorkflowDraft(
   };
 }
 
-/** Brings a point of the graph into view, but only when it is not already (or when asked to). */
+/**
+ * Brings a point of the graph into view, but only when it is not already (or
+ * when asked to). The part of the canvas a floating panel covers does not
+ * count as in view: the point is centred in what is left of it. Measured a
+ * frame later, because the panel for a node just selected is not drawn yet.
+ */
 export function useReveal(canvasRef: React.RefObject<HTMLDivElement | null>) {
   const flow = useReactFlow();
   return React.useCallback(
     (position: { x: number; y: number }, always = false) => {
-      const box = canvasRef.current?.getBoundingClientRect();
-      const centre = { x: position.x + 120, y: position.y + 50 };
-      if (!always && box !== undefined) {
-        const onScreen = flow.flowToScreenPosition(centre);
-        const inside =
-          onScreen.x > box.left + 40 &&
-          onScreen.x < box.right - 40 &&
-          onScreen.y > box.top + 40 &&
-          onScreen.y < box.bottom - 40;
-        if (inside) return;
-      }
-      void flow.setCenter(centre.x, centre.y, {
-        zoom: Math.max(flow.getZoom(), 0.8),
-        duration: viewDuration(),
+      window.requestAnimationFrame(() => {
+        const canvas = canvasRef.current;
+        if (canvas === null) return;
+        const box = canvas.getBoundingClientRect();
+        const panel = document.querySelector('[data-testid="workflow-inspector"]');
+        const panelBox = panel?.getBoundingClientRect();
+        // A docked panel sits beside the canvas and covers none of it.
+        const right =
+          panelBox !== undefined && panelBox.left < box.right && panelBox.right > box.left
+            ? panelBox.left
+            : box.right;
+        const centre = { x: position.x + 120, y: position.y + 50 };
+        if (!always) {
+          const onScreen = flow.flowToScreenPosition(centre);
+          const inside =
+            onScreen.x > box.left + 40 &&
+            onScreen.x < right - 40 &&
+            onScreen.y > box.top + 40 &&
+            onScreen.y < box.bottom - 40;
+          if (inside) return;
+        }
+        const zoom = Math.max(flow.getZoom(), 0.8);
+        // setCenter centres in the whole canvas; shift by half the covered width.
+        const covered = box.right - right;
+        void flow.setCenter(centre.x + covered / 2 / zoom, centre.y, {
+          zoom,
+          duration: viewDuration(),
+        });
       });
     },
     [canvasRef, flow],
