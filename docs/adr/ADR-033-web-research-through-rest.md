@@ -71,8 +71,8 @@ decision is most of what research costs.
 resolved address.**
 
 Steel sits in this host's Docker network. A fetch it performs starts _inside_
-the perimeter: nginx never sees it, fail2ban never sees it. `http://grafana:3000/`
-is answered (measured). So `packages/ai/src/public-address.ts` refuses
+the perimeter: nginx never sees it, fail2ban never sees it. An internal
+service on the same Docker network answered it (measured when this was written). So `packages/ai/src/public-address.ts` refuses
 anything that is not `http`/`https`, and anything whose **resolved** addresses
 are not globally routable -- including a name that does not resolve out here at
 all, which is the ordinary shape of an internal one. The check runs again on the
@@ -121,3 +121,15 @@ as the early refusal with a reason; the binding one is the lookup. The same
 change judges every spelling of an IPv4 address inside IPv6 (mapped in hex,
 compatible, SIIT, 6to4), which the dotted-text test had let through, and strips
 the brackets the URL parser leaves on an IPv6 literal.
+
+## Addendum 2026-10-14: the host closes the rebinding gap around Steel
+
+The first limit in section 4 is closed, outside this repository, because only
+the host can close it: Steel resolves the name itself, so no check of ours can
+be bound to its socket. Steel now has a Docker bridge of its own instead of
+sharing one with the rest of the automation stack, the host firewall drops
+every new connection from that bridge to a non-public address, and the host
+itself refuses it. The address check stays in front as the refusal with a
+reason; the firewall is the binding one, the same split as `publicOnlyLookup`
+in the addendum above. Where the rules live is in `deploy/README.md` (issue
+#185).

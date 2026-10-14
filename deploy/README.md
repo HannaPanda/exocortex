@@ -67,9 +67,17 @@ calls `POST /v1/scrape`. Both addresses go into `.env` as `SEARXNG_BASE_URL` and
 `STEEL_BASE_URL`.
 
 One consequence worth stating plainly, because it is invisible from the edge:
-Steel fetches from **inside** the Docker network, so nginx and fail2ban never
-see those requests. What stops a model from reading Grafana through it is the
-address check in `packages/ai/src/public-address.ts`, not the perimeter.
+Steel fetches from **inside** this host, so nginx and fail2ban never see those
+requests. Two layers keep it on the public internet. The address check in
+`packages/ai/src/public-address.ts` refuses a URL whose resolved addresses are
+not public, and since 2026-10-14 the host enforces the same thing on the
+socket, because Steel resolves the name a second time itself: Steel sits alone
+on its own bridge (`br-steel`, `steel` network in
+`/opt/automation-stack/docker-compose.yml`, which Windmill joins to keep
+calling it), `DOCKER-USER` in `/etc/ufw/after.rules` drops every new
+connection from that bridge to a private, loopback, link-local or CGNAT
+address, and ufw denies it the host itself. Neither file is in this
+repository; both say why they exist.
 
 There is no HTTP basic auth in front of the application. There was one while the
 deployment was private; it came off on 2026-08-09, once the things it had been

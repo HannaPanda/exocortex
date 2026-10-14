@@ -866,13 +866,14 @@ one. It runs before Steel sees the URL and again on the address Steel reports it
 ended up at, since a redirect is the cheapest way past a check that only reads
 what was typed.
 
-This is not belt and braces. Steel runs in this host's Docker network, so a
-fetch starts inside the perimeter: nginx and fail2ban never see it, and
-`http://grafana:3000/` is answered. Two limits are known and written down rather
-than implied: DNS rebinding is out of reach without an egress firewall around
-the container, and our own back ends (SearXNG, Steel, both on loopback) are
-deliberately not subject to the rule -- it guards a parameter a model supplied,
-not the outgoing HTTP layer.
+This is not belt and braces. Steel runs on this host, so a fetch starts inside
+the perimeter: nginx and fail2ban never see it. Steel resolves the name a second
+time itself, which no check in this process can bind to its socket; that half
+is the host's, which gives Steel a bridge of its own and lets it connect to
+public addresses only (`deploy/README.md`, ADR-033 addendum of 2026-10-14).
+Our own back ends (SearXNG, Steel, both on loopback) are deliberately not
+subject to the rule -- it guards a parameter a model supplied, not the outgoing
+HTTP layer.
 A request the API makes itself, the URL attachment fetch, has no rebinding gap:
 it hands the socket `publicOnlyLookup`, so the check and the connection are one
 resolution (issue #178, addendum to ADR-033).
