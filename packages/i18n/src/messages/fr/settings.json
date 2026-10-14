@@ -230,8 +230,8 @@
         "help": "Un fait que plus personne ne confirme perd la moitié de son poids sur cette période, puis encore la moitié. Il ne disparaît pas, il s’estompe. 0 désactive la dépréciation."
       },
       "factConfidenceFloor": {
-        "label": "Seuil minimal pour les faits",
-        "help": "En dessous de ce poids, un fait n’est plus considéré comme valide et passe dans la corbeille. Entre 0 et 1."
+        "label": "Seuil inférieur pour les faits (%)",
+        "help": "En dessous de ce poids, un fait n’est plus considéré comme valide et part à la corbeille. Un nouveau fait commence à 50 %, et chaque confirmation le rapproche un peu plus de 100 %."
       },
       "recallFactLimit": {
         "label": "Faits avant la liste de résultats",

@@ -230,8 +230,8 @@
         "help": "Un hecho que nadie vuelve a confirmar pierde en este intervalo la mitad de su peso, y luego otra mitad. No desaparece, pierde intensidad. 0 desactiva el deterioro."
       },
       "factConfidenceFloor": {
-        "label": "Umbral mínimo para hechos",
-        "help": "Por debajo de este peso, un hecho ya no se considera vigente y pasa a la papelera. Entre 0 y 1."
+        "label": "Umbral mínimo para hechos (%)",
+        "help": "Por debajo de este peso, un hecho deja de considerarse actual y se traslada a la papelera. Un hecho nuevo empieza al 50 % y cada confirmación lo acerca un poco más al 100 %."
       },
       "recallFactLimit": {
         "label": "Hechos antes de la lista de resultados",

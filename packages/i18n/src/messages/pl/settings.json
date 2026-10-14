@@ -230,8 +230,8 @@
         "help": "Fakt, którego nikt już nie potwierdza, po upływie tego czasu traci połowę swojej wagi, potem kolejną połowę. Nie znika, po prostu cichnie. 0 wyłącza wygasanie."
       },
       "factConfidenceFloor": {
-        "label": "Dolny próg dla faktów",
-        "help": "Poniżej tej wagi fakt nie jest już uznawany za aktualny i trafia do kosza. Wartość od 0 do 1."
+        "label": "Dolny próg pewności faktów (%)",
+        "help": "Poniżej tej wagi fakt przestaje być uznawany za aktualny i trafia do kosza. Nowy fakt zaczyna z wartością 50%, a każde potwierdzenie przesuwa go nieco w stronę 100%."
       },
       "recallFactLimit": {
         "label": "Fakty przed listą wyników",

@@ -230,8 +230,8 @@
         "help": "Um fato que ninguém mais confirma perde metade do seu peso ao longo desse período, e depois metade novamente. Ele não desaparece, apenas perde força. 0 desativa o decaimento."
       },
       "factConfidenceFloor": {
-        "label": "Limiar mínimo para fatos",
-        "help": "Abaixo desse peso, o fato deixa de ser considerado atual e vai para a lixeira. Entre 0 e 1."
+        "label": "Limite inferior para fatos (%)",
+        "help": "Abaixo deste peso, um fato não é mais considerado atual e vai para a lixeira. Um novo fato começa em 50 %, e cada confirmação o eleva um pouco em direção a 100 %."
       },
       "recallFactLimit": {
         "label": "Fatos antes da lista de resultados",

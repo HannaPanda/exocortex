@@ -230,8 +230,8 @@
         "help": "Een feit dat niemand meer bevestigt, verliest over deze periode de helft van zijn gewicht, daarna weer de helft. Het verdwijnt niet, het wordt stiller. 0 schakelt het verval uit."
       },
       "factConfidenceFloor": {
-        "label": "Ondergrens voor feiten",
-        "help": "Onder dit gewicht geldt een feit niet meer als actueel en verhuist het naar de prullenbak. Tussen 0 en 1."
+        "label": "Ondergrens voor feiten (%)",
+        "help": "Onder deze weging geldt een feit niet meer als actueel en verhuist het naar de prullenbak. Een nieuw feit begint bij 50%, elke bevestiging tilt het een stukje richting 100%."
       },
       "recallFactLimit": {
         "label": "Feiten vóór de resultatenlijst",

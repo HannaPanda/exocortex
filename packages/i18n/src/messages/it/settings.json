@@ -230,8 +230,8 @@
         "help": "Un fatto che nessuno conferma più perde la metà del suo peso in questo intervallo, poi di nuovo la metà. Non scompare, diventa più debole. 0 disattiva il decadimento."
       },
       "factConfidenceFloor": {
-        "label": "Soglia minima per i fatti",
-        "help": "Al di sotto di questo peso, un fatto non è più considerato attuale e finisce nel cestino. Tra 0 e 1."
+        "label": "Soglia minima per i fatti (%)",
+        "help": "Al di sotto di questo peso, un fatto non è più considerato attuale e finisce nel cestino. Un nuovo fatto parte dal 50%, e ogni conferma lo avvicina un po’ al 100%."
       },
       "recallFactLimit": {
         "label": "Fatti prima dei risultati",

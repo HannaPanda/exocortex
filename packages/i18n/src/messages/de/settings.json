@@ -230,8 +230,8 @@
         "help": "Ein Fakt, den niemand mehr bestätigt, verliert über diese Spanne die Hälfte seines Gewichts, dann wieder die Hälfte. Er verschwindet nicht, er wird leiser. 0 schaltet den Verfall ab."
       },
       "factConfidenceFloor": {
-        "label": "Untere Schwelle für Fakten",
-        "help": "Unter diesem Gewicht gilt ein Fakt nicht mehr als aktuell und wandert in den Papierkorb. Zwischen 0 und 1."
+        "label": "Untere Schwelle für Fakten (%)",
+        "help": "Unter diesem Gewicht gilt ein Fakt nicht mehr als aktuell und wandert in den Papierkorb. Ein neuer Fakt beginnt bei 50 %, jede Bestätigung hebt ihn ein Stück Richtung 100 %."
       },
       "recallFactLimit": {
         "label": "Fakten vor der Trefferliste",

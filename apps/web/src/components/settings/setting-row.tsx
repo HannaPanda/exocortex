@@ -27,6 +27,8 @@ import {
 import { DurationInput, useDurationWords } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
 import { EntityDatabaseField } from '@/components/settings/entity-database-field';
+import { FractionSettingField } from '@/components/settings/fraction-setting-field';
+import { HourSettingField } from '@/components/settings/hour-setting-field';
 import { ModelSettingField } from '@/components/settings/model-setting-field';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import { TextSettingField } from '@/components/settings/text-setting-field';
@@ -40,6 +42,7 @@ import {
   preferredByteUnit,
 } from '@/lib/byte-size';
 import { durationBaseOfSettingKey, isHourOfDaySettingKey } from '@/lib/duration';
+import { isFractionSettingKey } from '@/lib/fraction';
 import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
 import { type ModelCatalogs, modelFieldHasList, modelFieldOf } from '@/lib/setting-references';
 
@@ -124,7 +127,8 @@ export function useSettingMessages(): {
     // A byte setting names its bounds in the unit each reads best in
     // (`1 KiB bis 50 MiB`), never as 52428800 (issue #174), and a duration in
     // its own (`1 Minute bis 30 Tage`, never 60 to 2592000, issue #169), and
-    // money in dollars (`0,001 $ bis 50,00 $`, never 1000 to 50000000, #167).
+    // money in dollars (`0,001 $ bis 50,00 $`, never 1000 to 50000000, #167),
+    // and a share as a percentage (`0 % bis 100 %`, never 0 to 1, #170).
     const bytes = (value: number): string => {
       const { amount, unit } = describeBytes(value);
       return t('byteAmount', { amount, unit: t(`byteUnits.${unit}`) });
@@ -132,6 +136,10 @@ export function useSettingMessages(): {
     const inUnits = (key: SettingKey): ((value: number) => string) | null => {
       if (isByteSettingKey(key)) return bytes;
       if (isMoneySettingKey(key)) return (value: number) => formatMicroUsd(format, value);
+      if (isFractionSettingKey(key)) {
+        return (value: number) =>
+          format.number(value, { style: 'percent', maximumFractionDigits: 2 });
+      }
       const base = durationBaseOfSettingKey(key);
       return base === null ? null : (value: number) => duration(value, base);
     };
@@ -394,54 +402,9 @@ function ByteSettingField({
 }
 
 /**
- * An hour of the day (0 to 23), picked as a time (issue #169). The stored
- * value has no minutes, so the list offers whole hours and promises no more.
- * The times are written the reader's way (`09:00`, `9:00 AM`), read in UTC so
- * the browser's own zone cannot shift the label away from the stored hour.
- */
-function HourSettingField({
-  value,
-  onChange,
-  described,
-  id,
-}: {
-  value: number;
-  onChange: (value: Settings[SettingKey]) => void;
-  described: { 'aria-describedby': string; 'aria-invalid': boolean };
-  id: string;
-}) {
-  const format = useFormatter();
-  const label = (hour: number): string =>
-    format.dateTime(new Date(Date.UTC(2000, 0, 1, hour)), {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC',
-    });
-  return (
-    <Select
-      value={String(value)}
-      onValueChange={(next) => {
-        const hour = Number(next);
-        if (Number.isInteger(hour)) onChange(hour);
-      }}
-    >
-      <SelectTrigger id={id} className="w-full sm:w-40" {...described}>
-        <SelectValue>{() => label(value)}</SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {Array.from({ length: 24 }, (_, hour) => (
-          <SelectItem key={hour} value={String(hour)}>
-            {label(hour)}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-/**
  * A numeric setting: an amount with a unit for bytes and durations, dollars
- * for money, a time for an hour of the day, a plain number otherwise.
+ * for money, a percentage for a share, a time for an hour of the day, a plain
+ * number otherwise.
  */
 function NumberSettingField({
   settingKey,
@@ -480,6 +443,17 @@ function NumberSettingField({
         {...(bounds === undefined ? {} : { min: bounds.min, max: bounds.max })}
         keepsLastValid
         {...described}
+      />
+    );
+  }
+  if (isFractionSettingKey(settingKey)) {
+    return (
+      <FractionSettingField
+        settingKey={settingKey}
+        value={value}
+        onChange={onChange}
+        described={described}
+        id={id}
       />
     );
   }

@@ -230,8 +230,8 @@
         "help": "A fact that nobody confirms anymore loses half its weight over this period, then half again. It doesn’t disappear; it fades. 0 disables decay."
       },
       "factConfidenceFloor": {
-        "label": "Lower threshold for facts",
-        "help": "Below this weight, a fact is no longer considered current and is moved to the trash. Between 0 and 1."
+        "label": "Lower threshold for facts (%)",
+        "help": "Below this weight, a fact is no longer considered up to date and moves to the trash. A new fact starts at 50%, and each confirmation raises it a bit closer to 100%."
       },
       "recallFactLimit": {
         "label": "Facts before the result list",
