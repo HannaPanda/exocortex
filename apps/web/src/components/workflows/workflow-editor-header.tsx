@@ -206,7 +206,7 @@ export function WorkflowEditorHeader({
 function HeaderTitle({ workspaceId, name }: { workspaceId: string; name: string }) {
   const t = useTranslations('workflows.header');
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2">
+    <div className="flex min-w-64 flex-1 items-center gap-2">
       <Tooltip>
         <TooltipTrigger
           render={

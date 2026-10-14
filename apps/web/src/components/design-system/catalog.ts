@@ -56,6 +56,7 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
       { id: 'einstellungszeile', title: 'Einstellungszeile' },
       { id: 'seitenbaum', title: 'Seitenbaum' },
       { id: 'seitengliederung', title: 'Seitengliederung' },
+      { id: 'workflow-knoten', title: 'Workflow-Knoten' },
       { id: 'suchtreffer', title: 'Suchtreffer' },
       { id: 'praesenz', title: 'Präsenz' },
       { id: 'ki-fortschritt', title: 'KI-Lauf in Arbeit' },

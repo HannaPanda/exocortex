@@ -54,6 +54,7 @@ import {
   SearchResultsPattern,
   SettingRowPattern,
 } from './patterns/rows';
+import { WorkflowNodePattern } from './patterns/workflow-node';
 import { DsSection, DsSource } from './showcase';
 
 /**
@@ -224,6 +225,7 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <SettingRowPattern />
           <PageTreePattern />
           <PageOutlinePattern />
+          <WorkflowNodePattern />
           <SearchResultsPattern />
           <PresencePattern />
           <RunProgressPattern />

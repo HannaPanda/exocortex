@@ -12,6 +12,7 @@ import {
   type NodeProps,
   Position,
   ReactFlow,
+  useNodesInitialized,
   useReactFlow,
 } from '@xyflow/react';
 import {
@@ -261,8 +262,6 @@ export function WorkflowCanvas({
         edges={edges}
         nodeTypes={NODE_TYPES}
         colorMode="dark"
-        fitView
-        fitViewOptions={{ padding: 0.15, maxZoom: 1, minZoom: FIT_MIN_ZOOM }}
         minZoom={0.25}
         maxZoom={1.5}
         proOptions={{ hideAttribution: true }}
@@ -324,10 +323,35 @@ export function WorkflowCanvas({
         }}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+        <InitialFit />
         {children}
       </ReactFlow>
     </AddFromContext.Provider>
   );
+}
+
+/**
+ * Fits the graph once its nodes are measured. A graph too wide to fit at a
+ * readable zoom is not centred, which would cut off both ends; it starts at
+ * its left edge instead, so the trigger -- where reading begins -- is whole,
+ * and the rest is a pan away.
+ */
+function InitialFit() {
+  const flow = useReactFlow();
+  const ready = useNodesInitialized();
+  const done = React.useRef(false);
+  React.useEffect(() => {
+    if (!ready || done.current) return;
+    done.current = true;
+    void flow.fitView({ padding: 0.15, maxZoom: 1, minZoom: FIT_MIN_ZOOM }).then(() => {
+      const zoom = flow.getZoom();
+      if (zoom > FIT_MIN_ZOOM + 0.001) return;
+      const bounds = flow.getNodesBounds(flow.getNodes());
+      const viewport = flow.getViewport();
+      void flow.setViewport({ x: 32 - bounds.x * zoom, y: viewport.y, zoom });
+    });
+  }, [flow, ready]);
+  return null;
 }
 
 /** Handles nothing leads out of yet, plus a fan-out, which takes more. */
@@ -419,7 +443,7 @@ function CardHeading({ node, problems }: { node: WorkflowNode; problems: number 
       </span>
       {problems > 0 ? (
         <span
-          className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-sm bg-destructive px-1.5 py-0.5 text-micro font-medium text-destructive-foreground"
+          className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-sm bg-destructive px-1.5 py-0.5 text-meta font-medium text-destructive-foreground"
           data-testid="workflow-node-problems"
         >
           <CircleAlertIcon className="size-3" aria-hidden />
@@ -450,7 +474,7 @@ function CardBody({
         <span className="line-clamp-2 text-meta text-muted-foreground">{decoration.summary}</span>
       ) : null}
       {decoration?.badge ? (
-        <span className="mt-1 w-fit rounded-sm bg-secondary px-1.5 py-0.5 text-micro text-secondary-foreground">
+        <span className="mt-1 w-fit rounded-sm bg-secondary px-1.5 py-0.5 text-meta text-secondary-foreground">
           {decoration.badge}
         </span>
       ) : null}
@@ -519,7 +543,7 @@ function CardHandles({
       {handles.map((handle) => (
         <span
           key={handle}
-          className="relative block pr-3 text-right text-micro text-muted-foreground"
+          className="relative block pr-3 text-right text-meta text-muted-foreground"
         >
           {wording.handle(handle)}
           <Handle
@@ -564,8 +588,10 @@ function AddFromHandle({
             data-testid={`workflow-add-from-${node.id}-${handle}`}
             className={cn(
               // `nodrag nopan`: React Flow leaves a press on this to the button.
-              'nodrag nopan absolute -right-9 grid size-6 place-items-center rounded-full border border-border-strong bg-popover text-foreground shadow-xs',
-              'opacity-0 transition-opacity group-hover/node:opacity-100 focus-visible:opacity-100 hover:bg-accent-solid',
+              'nodrag nopan absolute -right-9 grid size-6 place-items-center rounded-full border border-border-strong bg-popover shadow-xs',
+              // Always there, quiet until the node is in play: a way to add that
+              // has to be discovered by hovering is one nobody is told about.
+              'text-muted-foreground opacity-70 transition-opacity group-hover/node:opacity-100 focus-visible:opacity-100 hover:bg-accent-solid hover:text-foreground',
               'group-data-[selected=true]/node:opacity-100 data-[popup-open]:opacity-100',
               className,
             )}

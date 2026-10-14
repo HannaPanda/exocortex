@@ -847,7 +847,7 @@
 }
 
 .exocortex-workflow-canvas .react-flow__edge-text {
-  font-size: var(--text-micro, 0.6875rem);
+  font-size: var(--text-meta, 0.75rem);
 }
 
 .exocortex-workflow-canvas .exocortex-workflow-handle {

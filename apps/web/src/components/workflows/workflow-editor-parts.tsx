@@ -319,11 +319,15 @@ export function SettingsToggle({ open, onToggle }: { open: boolean; onToggle: ()
       variant={open ? 'secondary' : 'ghost'}
       size="sm"
       aria-pressed={open}
+      aria-label={t('settings')}
+      title={t('settings')}
       onClick={onToggle}
       data-testid="workflow-open-settings"
     >
       <Settings2Icon />
-      {t('settings')}
+      {/* Named on screen where the head has room; the icon and its name
+          for a screen reader carry it where it does not. */}
+      <span className="hidden @5xl:inline">{t('settings')}</span>
     </Button>
   );
 }

@@ -59,6 +59,7 @@ const DESKTOP_SECTIONS = [
   'einstellungszeile',
   'seitenbaum',
   'seitengliederung',
+  'workflow-knoten',
   'huelle',
 ] as const;
 
