@@ -79,10 +79,10 @@ export function RunTraceView({ steps, live }: RunTraceViewProps) {
     <section className="flex flex-col gap-1.5" data-testid="ai-run-trace" aria-live="off">
       <button
         type="button"
-        className={cn(
-          'flex w-fit items-center gap-2 rounded-sm transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-          sectionLabelClassName,
-        )}
+        // Concatenated rather than passed through `cn`: tailwind-merge takes
+        // `text-micro` and `text-muted-foreground` for the same property and
+        // drops the size, which left this label at 16 px.
+        className={`flex w-fit max-w-full items-center gap-2 rounded-sm transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${sectionLabelClassName}`}
         aria-expanded={open}
         aria-controls={bodyId}
         data-testid="ai-run-trace-toggle"
@@ -95,14 +95,14 @@ export function RunTraceView({ steps, live }: RunTraceViewProps) {
         {reasoned ? t('reasoningTitle') : t('activityTitle')}
         <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
         {status === null ? null : (
-          <span className="flex items-center gap-1.5 tracking-normal normal-case">
+          <span className="flex items-center gap-1.5 tracking-normal whitespace-nowrap normal-case">
             {live ? (
               <span
                 aria-hidden
                 className="size-1.5 rounded-full bg-primary motion-safe:animate-pulse"
               />
             ) : null}
-            <span className={live ? undefined : 'exocortex-numeric'}>{status}</span>
+            <span>{status}</span>
           </span>
         )}
       </button>

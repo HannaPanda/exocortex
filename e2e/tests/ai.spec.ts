@@ -98,6 +98,54 @@ test.describe('AI side panel', () => {
     }
   });
 
+  /**
+   * Issue #195, ADR-087: the thinking arrives live, only in the asker's
+   * browser, and folds above the answer once the run is over.
+   *
+   * Depends on the deployment's default model streaming its reasoning, which
+   * DeepSeek V4.1 Flash does on OpenRouter and on Cline (measured 2026-10-14).
+   * A default model that does not stream any fails here by name rather than
+   * passing on activities alone, because then this test no longer proves what
+   * it is about.
+   */
+  test('shows the model thinking live and folds it above the answer', async ({ page }) => {
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Denken ${Date.now().toString(36)}`);
+
+    await page.getByTestId('context-tab-ai').click();
+    await page
+      .getByTestId('ai-input')
+      .fill(
+        'Ein Zug fährt um 9:14 los und braucht 2 h 53 min mit 17 min Verspätung. Ein zweiter fährt 41 min später und ist 12 % schneller. Wer ist zuerst da? Antworte in einem Satz, ohne Werkzeuge.',
+      );
+    await page.getByTestId('ai-send').click();
+
+    const trace = page.getByTestId('ai-run-trace');
+    const toggle = page.getByTestId('ai-run-trace-toggle');
+    await expect(page.getByTestId('ai-run-activity')).toBeVisible({ timeout: 30_000 });
+    await expect(
+      page.getByTestId('ai-run-trace-reasoning').first(),
+      'the default model streamed no reasoning; see the comment above this test',
+    ).toBeVisible({ timeout: AI_RUN_FINISH_TIMEOUT_MS });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(toggle).toContainText('Gedankengang');
+
+    await waitForAiRun(page, 'ai:thinking');
+    // Folded once the run is over, and standing right above the answer.
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByTestId('ai-run-trace-reasoning')).toHaveCount(0);
+    await expect(trace).toHaveCount(1);
+    const traceBox = await trace.boundingBox();
+    const answerBox = await page.getByTestId('ai-answer').last().boundingBox();
+    expect(traceBox !== null && answerBox !== null && traceBox.y < answerBox.y).toBe(true);
+
+    await toggle.click();
+    await expect(page.getByTestId('ai-run-trace-reasoning').first()).toBeVisible();
+    await expect(trace).toContainText('nicht gespeichert');
+  });
+
   test('keeps quiet while a fast background job is materialized', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
