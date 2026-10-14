@@ -756,6 +756,39 @@ reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.
 
+### The workflow canvas
+
+The workflow editor is a workbench, not a form with a graph behind it (issue
+#198). The canvas takes the whole editor; a 3rem rail beside it holds the node
+types, and the panel for a selection or the workflow's settings appears only
+when one is asked for: beside the canvas where the editor is at least 56rem
+wide, over its right edge where it is not, never below it. Escape closes it.
+The head fills exactly one of its three steps (save, publish, try), the one
+that moves the workflow forward from where it stands; while problems block the
+way none is filled, and the counted problem button in the canvas's upper left
+corner (the one a panel over the right edge never covers) is the next step
+instead. The workflow's settings open from the end of the head's second row.
+
+A node's family is its mark's shape, not a colour: a circle where a run
+starts, a square for work, a diamond for a decision about the path, a ringed
+circle where it ends (`NodeTypeMark`). The One Signal Rule leaves no colour for
+it, and a shape survives a glance at 55% zoom, which is as far as a whole
+graph is ever fitted.
+
+**The State-Channels Rule.** A node can be selected, unfinished and running
+at once, so each of the three has its own channel and none of them is the
+border: selection is a `primary` outline four pixels outside the card, a
+problem is a `destructive` strip along the card's top plus a filled mark with
+its count in the header, and a run's state is the footer row with an icon and
+a word. Focus keeps the product's ring. A state that took over the border
+would hide whichever other state had been there, which is exactly what the
+first version did with a selected node that had a problem.
+
+**The Plus-Is-Where-You-Are Rule.** A way out with nothing behind it carries
+a `+` that adds the next step right there, wired to that handle, from the same
+filtered list the rail's `+` and the `A` key open. Adding never needs an
+instruction sentence, and it never needs a pointer either.
+
 ### The logo
 
 Two components, and which one you reach for is a rule rather than a preference.

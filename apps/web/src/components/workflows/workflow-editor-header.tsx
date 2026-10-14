@@ -75,6 +75,7 @@ export function WorkflowEditorHeader({
   onSave,
   onOpenRuns,
   tabs,
+  tools,
 }: {
   workspaceId: string;
   response: WorkflowResponse;
@@ -90,6 +91,8 @@ export function WorkflowEditorHeader({
   onOpenRuns: () => void;
   /** The tab list (Entwurf, Läufe, Versionen), drawn in the head's second row. */
   tabs: React.ReactNode;
+  /** Whatever the open tab adds at the end of the second row. */
+  tools?: React.ReactNode;
 }) {
   const t = useTranslations('workflows.header');
   const { workflow } = response;
@@ -102,8 +105,6 @@ export function WorkflowEditorHeader({
   const router = useRouter();
   const duplicate = useDuplicateWorkflow(workspaceId, workflow.id);
   const ids = React.useId();
-  const showBlocker = blocker !== null && canManage && (dirty || problems.length > 0);
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -153,13 +154,12 @@ export function WorkflowEditorHeader({
             />
           }
         />
+        {tools === undefined || tools === null ? null : <div className="ml-auto">{tools}</div>}
       </div>
 
-      <p
-        id={`${ids}-blocker`}
-        className={showBlocker ? 'text-meta text-muted-foreground' : 'exocortex-sr-only'}
-        data-testid={showBlocker ? 'workflow-publish-blocker' : undefined}
-      >
+      {/* Why publishing is not possible yet, for the button's description. On
+          screen the filled step and the problem count say the same. */}
+      <p id={`${ids}-blocker`} className="exocortex-sr-only">
         {blocker ?? ''}
       </p>
       <p role="status" className="text-meta text-muted-foreground empty:hidden">

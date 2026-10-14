@@ -35,17 +35,16 @@ import { WorkflowProblemList } from './workflow-problems';
  */
 
 /**
- * The canvas's own tools: view and history in the lower left, the
- * workflow's settings in the upper right, the problems in the lower right,
- * and -- only while there is none -- a way to add the trigger at the top.
+ * The canvas's own tools: view and history in the lower left, the problems
+ * in the upper left (the corner a panel opened over the canvas's right edge
+ * never covers), and -- only while there is none -- a way to add the
+ * trigger at the top.
  */
 export function EditorCanvasTools({
   readOnly,
   history,
   canTidy,
   onTidy,
-  settingsOpen,
-  onToggleSettings,
   problems,
   graph,
   onSelectProblem,
@@ -55,8 +54,6 @@ export function EditorCanvasTools({
   history: GraphHistory;
   canTidy: boolean;
   onTidy: () => void;
-  settingsOpen: boolean;
-  onToggleSettings: () => void;
   problems: readonly WorkflowProblem[];
   graph: WorkflowGraph;
   onSelectProblem: (problem: WorkflowProblem) => void;
@@ -99,20 +96,7 @@ export function EditorCanvasTools({
           </>
         )}
       </CanvasControls>
-      <Panel position="top-right">
-        <Button
-          variant={settingsOpen ? 'secondary' : 'outline'}
-          size="sm"
-          className="bg-popover shadow-md"
-          aria-pressed={settingsOpen}
-          onClick={onToggleSettings}
-          data-testid="workflow-open-settings"
-        >
-          <Settings2Icon />
-          {t('settings')}
-        </Button>
-      </Panel>
-      <Panel position="bottom-right">
+      <Panel position="top-left">
         <ProblemsButton problems={problems} graph={graph} onSelect={onSelectProblem} />
       </Panel>
       {onAddTrigger === null ? null : (
@@ -314,5 +298,22 @@ export function ProblemsButton({
         />
       </PopoverContent>
     </Popover>
+  );
+}
+
+/** Opens the workflow's own settings in the panel; pressed while they are shown. */
+export function SettingsToggle({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const t = useTranslations('workflows.editor');
+  return (
+    <Button
+      variant={open ? 'secondary' : 'ghost'}
+      size="sm"
+      aria-pressed={open}
+      onClick={onToggle}
+      data-testid="workflow-open-settings"
+    >
+      <Settings2Icon />
+      {t('settings')}
+    </Button>
   );
 }

@@ -25,6 +25,7 @@ import {
   EditorCanvasTools,
   EditorNotices,
   EditorPanel,
+  SettingsToggle,
   useEditorKeys,
 } from './workflow-editor-parts';
 import { EdgeInspector, NodeInspector, WorkflowInspector } from './workflow-inspector';
@@ -240,6 +241,17 @@ function LoadedEditor({
           profiles={profileList}
           onSave={() => void save()}
           onOpenRuns={() => setTab('laeufe')}
+          tools={
+            tab === 'entwurf' ? (
+              <SettingsToggle
+                open={panel === 'settings'}
+                onToggle={() => {
+                  setSelection(null);
+                  setSettingsOpen(panel !== 'settings');
+                }}
+              />
+            ) : null
+          }
           tabs={
             <TabsList className="w-fit">
               <TabsTrigger value="entwurf" data-testid="workflow-tab-draft">
@@ -306,11 +318,6 @@ function LoadedEditor({
               history={history}
               canTidy={draft.graph.nodes.length > 1}
               onTidy={tidy}
-              settingsOpen={panel === 'settings'}
-              onToggleSettings={() => {
-                setSelection(null);
-                setSettingsOpen(panel !== 'settings');
-              }}
               problems={problems}
               graph={draft.graph}
               onSelectProblem={focusProblem}
