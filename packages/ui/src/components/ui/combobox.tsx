@@ -1,7 +1,7 @@
 'use client';
 
 import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
-import { CheckIcon, ChevronDownIcon } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
 import { useTranslations } from 'use-intl';
 
@@ -16,8 +16,13 @@ import { cn } from '../../lib/utils';
  * listbox role and keyboard selection come from Base UI. Changed: the
  * `InputGroup` the registry builds the field from does not exist here, so the
  * field is `Input`'s classes with the trigger laid over its end; the popup and
- * the items carry `Select`'s look, so the two read as one family. Left out:
- * chips and multiple selection, which nothing here asks for yet.
+ * the items carry `Select`'s look, so the two read as one family.
+ *
+ * The chips (`multiple`) came later, from the same source, for the provider
+ * lists of the routing form (issue #201): the chip row is the field and the
+ * popup is anchored to it through `useComboboxAnchor`. A chip's remove button
+ * is a plain button with a name, because the registry's `IconPlaceholder` and
+ * `icon-xs` button size do not exist here.
  */
 const Combobox = ComboboxPrimitive.Root;
 const ComboboxGroup = ComboboxPrimitive.Group;
@@ -61,16 +66,20 @@ function ComboboxContent({
   className,
   align = 'start',
   sideOffset = 6,
+  anchor,
   ...props
 }: React.ComponentProps<typeof ComboboxPrimitive.Popup> & {
   align?: 'start' | 'center' | 'end';
   sideOffset?: number;
+  /** The element the popup lines up with; the chip row, for a `multiple` box. */
+  anchor?: React.ComponentProps<typeof ComboboxPrimitive.Positioner>['anchor'];
 }) {
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
         align={align}
         sideOffset={sideOffset}
+        anchor={anchor}
         className="z-50 outline-none"
       >
         <ComboboxPrimitive.Popup
@@ -159,8 +168,85 @@ function ComboboxEmpty({
   );
 }
 
+/** The field of a `multiple` box: the chips and the input they share a row with. */
+function ComboboxChips({
+  className,
+  ...props
+}: React.ComponentProps<typeof ComboboxPrimitive.Chips>) {
+  return (
+    <ComboboxPrimitive.Chips
+      data-slot="combobox-chips"
+      className={cn(
+        'flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-input bg-transparent px-2 py-1 text-base shadow-xs transition-[color,box-shadow] md:text-sm',
+        'focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+        'has-aria-invalid:border-destructive has-aria-invalid:ring-destructive/20',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function ComboboxChip({
+  className,
+  children,
+  removeLabel,
+  ...props
+}: React.ComponentProps<typeof ComboboxPrimitive.Chip> & {
+  /** The remove button's accessible name; it should name the chip. */
+  removeLabel: string;
+}) {
+  return (
+    <ComboboxPrimitive.Chip
+      data-slot="combobox-chip"
+      className={cn(
+        'flex h-6 w-fit items-center gap-0.5 rounded-sm bg-muted pl-1.5 text-xs font-medium whitespace-nowrap text-foreground',
+        'data-highlighted:ring-2 data-highlighted:ring-ring/50',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <ComboboxPrimitive.ChipRemove
+        data-slot="combobox-chip-remove"
+        aria-label={removeLabel}
+        className={cn(
+          'flex size-6 items-center justify-center rounded-sm text-muted-foreground outline-none',
+          'hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        )}
+      >
+        <XIcon className="size-3.5" aria-hidden />
+      </ComboboxPrimitive.ChipRemove>
+    </ComboboxPrimitive.Chip>
+  );
+}
+
+function ComboboxChipsInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof ComboboxPrimitive.Input>) {
+  return (
+    <ComboboxPrimitive.Input
+      data-slot="combobox-chip-input"
+      className={cn(
+        'h-7 min-w-24 flex-1 bg-transparent px-1 outline-none placeholder:text-muted-foreground',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+/** The ref a `multiple` box's chip row and its popup share. */
+function useComboboxAnchor(): React.RefObject<HTMLDivElement | null> {
+  return React.useRef<HTMLDivElement | null>(null);
+}
+
 export {
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
@@ -169,4 +255,5 @@ export {
   ComboboxItem,
   ComboboxLabel,
   ComboboxList,
+  useComboboxAnchor,
 };
