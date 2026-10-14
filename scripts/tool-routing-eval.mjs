@@ -40,10 +40,9 @@ import { JEV_DECISION_MODEL, OpenRouterDecisionProvider } from '../packages/ai/d
 import { createLogger } from '../packages/logger/dist/index.js';
 import {
   ALWAYS_OFFERED_DOMAINS,
-  EXOCORTEX_TOOLS,
   selectToolDomains,
   toolSchemaChars,
-  toolsInDomains,
+  toolsFor,
 } from '../packages/mcp-tools/dist/index.js';
 
 import {
@@ -245,7 +244,10 @@ function score(cases, predictions) {
       unnecessary,
       covered: missing.length === 0,
       exact: missing.length === 0 && unnecessary.length === 0,
-      schemaChars: toolSchemaChars(toolsInDomains(EXOCORTEX_TOOLS, offered)),
+      // What the built-in AI is sent: its own surface, mutating tools included
+      // as in an ordinary run. The worker's real figure differs by the
+      // per-run extras (web budget, write mode, external servers).
+      schemaChars: toolSchemaChars(toolsFor('ai', { domains: offered })),
     };
   });
   return rows;
