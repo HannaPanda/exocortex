@@ -483,6 +483,27 @@ cannot be loaded here is still an address -- but the response says so in
 `warnings`. Creating a page with Markdown (`exo_page_create`) answers with the
 same warnings since 2026-09-25; before that only `exo_page_write` did.
 
+### Linking a section of the same page
+
+A place on a page is addressed by its block id, never by its heading text:
+`[Linktext](#blockId)`, with the id `exo_page_read` (`includeBlockIds: true`)
+and `exo_page_block_read` show as `^blockId`, minus the caret. The editor
+scrolls to the block with that `data-block-id`, the Markdown round trip keeps
+the href, and the reference index ignores it, because it names no page.
+
+Obsidian's `[[#Überschrift]]` is not that. Here it is a reference to a page
+titled "#Überschrift", which stays unresolved
+([issue #197](https://github.com/HannaPanda/exocortex/issues/197)). The write
+is carried out, as with a foreign image, but every write path (`exo_page_write`,
+the three narrow writes, `exo_page_create`) answers with a warning naming the
+working link, with the block id filled in when exactly one heading on the
+finished page carries that text (`findSectionWikiLinks` in
+`packages/editor/src/section-links.ts`). `exo_page_backlinks` says the same
+instead of "keine Seite mit diesem Titel". The syntax itself is taught by
+`HOW_TO_LINK_A_SECTION` in `packages/mcp-tools/src/tools/page-edits.ts`, which
+the read and write tools carry, and by the handshake instructions; a test in
+`section-links.test.ts` beside it keeps it there.
+
 Database property tools only accept `IMPLEMENTED_PROPERTY_TYPES` from
 `@exocortex/contracts` (`RELATION`/`ROLLUP`/`FORMULA` are reserved and
 rejected by the query engine), so a model is never told it can create a

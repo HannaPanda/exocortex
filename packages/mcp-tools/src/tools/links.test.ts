@@ -72,6 +72,29 @@ describe('pageBacklinksTool', () => {
     expect(result.text).toContain('nicht auflösbar');
   });
 
+  it('says why an Obsidian section link resolves to nothing (issue #197)', async () => {
+    const { client } = createFakeClient({
+      ...RESPONSE,
+      outgoing: [
+        {
+          id: 'link000003',
+          kind: 'wikiMark',
+          targetTitle: '#Ziel und Planung',
+          blockId: null,
+          context: 'Siehe #Ziel und Planung.',
+          target: null,
+        },
+      ],
+    });
+    const result = await pageBacklinksTool.run(client, {
+      documentId: 'doc1234567',
+      direction: 'outgoing',
+    });
+    expect(result.text).toContain('[[#…]] ist kein Abschnittslink');
+    expect(result.text).toContain('[Ziel und Planung](#blockId)');
+    expect(result.text).not.toContain('keine Seite mit diesem Titel');
+  });
+
   it('restricts the output to one direction on request', async () => {
     const { client } = createFakeClient(RESPONSE);
     const result = await pageBacklinksTool.run(client, {

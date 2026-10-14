@@ -44,6 +44,7 @@ export * from './schema-v3';
 export * from './schema-v4';
 export * from './schema-v5';
 export * from './section-extract';
+export * from './section-links';
 export * from './table-of-contents';
 export * from './toggle';
 export * from './transclusion';

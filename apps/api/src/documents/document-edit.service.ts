@@ -34,7 +34,7 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { foreignMediaWarnings } from './document-content.service';
+import { foreignMediaWarnings, sectionLinkWarnings } from './document-content.service';
 import { assertExpectedRevision } from './document-revision';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { judgePageGrowth, oversizedPageRefusal, pageGrowthLimits } from './page-growth-policy';
@@ -300,6 +300,11 @@ export class DocumentEditService {
       contents.push(content);
     }
     if (applied === null) throw AppError.validation('Nothing to write');
+    // Judged against the finished page: the heading a fragment links to
+    // usually stands outside the fragment (issue #197).
+    for (const content of contents) {
+      warnings.push(...sectionLinkWarnings(content, applied.proseMirrorJson));
+    }
 
     const markdown = serializeMarkdown(applied.proseMirrorJson);
     await this.refuseUnboundedGrowth(context.workspaceId, page, markdown.length);

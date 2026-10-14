@@ -49,6 +49,21 @@ export const WHERE_THE_REVISION_COMES_FROM =
   'dann die aktuelle Revision, also erneut lesen und darauf aufbauend schreiben. Ohne den ' +
   'Parameter wird ohne diese Sicherung geschrieben.';
 
+/**
+ * How a link to a place on the same page is written (issue #197).
+ *
+ * Said on every tool that reads or writes a page's Markdown, because the agent
+ * that got it wrong had the block ids in front of it and no sentence anywhere
+ * telling it what they were for. Without one, a model falls back on Obsidian's
+ * `[[#Überschrift]]`, which here is a reference to a page of that name.
+ */
+export const HOW_TO_LINK_A_SECTION =
+  'Ein Verweis auf einen Abschnitt oder Block derselben Seite heißt [Linktext](#blockId): ' +
+  'die Blockkennung der Überschrift oder des Blocks, wie sie als "^blockId" hinter dem Block ' +
+  'steht, aber ohne das ^. Die Kennung immer aus einer Leseantwort übernehmen, nie aus dem ' +
+  'Text der Überschrift ableiten oder erfinden. [[#Überschrift]] ist hier kein Abschnittslink, ' +
+  'sondern ein Verweis auf eine Seite dieses Namens, und bleibt unaufgelöst.';
+
 /** The one sentence that says where the addresses come from. */
 const WHERE_BLOCK_IDS_COME_FROM =
   'Blockkennungen kommen aus exo_page_block_read (ohne blockId listet es alle Blöcke der Seite) ' +
@@ -81,7 +96,9 @@ export const pageBlockWriteTool: AnyToolDefinition = defineTool({
     'exo_page_section_write. ' +
     WHERE_THE_REVISION_COMES_FROM +
     ' ' +
-    WHERE_BLOCK_IDS_COME_FROM,
+    WHERE_BLOCK_IDS_COME_FROM +
+    ' ' +
+    HOW_TO_LINK_A_SECTION,
   inputSchema: z
     .object({ documentId: idSchema })
     .extend(documentBlockWriteRequestSchema.shape)
@@ -116,7 +133,9 @@ export const pagePatchTool: AnyToolDefinition = defineTool({
     'ist eine bewusste Entscheidung, keine Bequemlichkeit. ' +
     'Für eine Änderung, die sich nicht als eindeutige Textstelle sagen lässt, ist ' +
     'exo_page_block_update der genauere Weg. ' +
-    WHERE_THE_REVISION_COMES_FROM,
+    WHERE_THE_REVISION_COMES_FROM +
+    ' ' +
+    HOW_TO_LINK_A_SECTION,
   inputSchema: z.object({ documentId: idSchema }).extend(documentPatchRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'pages',
@@ -147,7 +166,9 @@ export const pageSectionWriteTool: AnyToolDefinition = defineTool({
     'Der Text der Überschrift wird ohne Rücksicht auf Groß- und Kleinschreibung verglichen. ' +
     'Kommt er mehrfach vor, wird nichts geschrieben und der Aufruf nennt die Blockkennungen der ' +
     'Kandidaten; dann ist exo_page_block_update mit einer davon der eindeutige Weg. ' +
-    WHERE_THE_REVISION_COMES_FROM,
+    WHERE_THE_REVISION_COMES_FROM +
+    ' ' +
+    HOW_TO_LINK_A_SECTION,
   inputSchema: z.object({ documentId: idSchema }).extend(documentSectionWriteRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'pages',

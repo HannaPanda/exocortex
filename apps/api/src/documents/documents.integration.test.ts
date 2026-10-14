@@ -2616,6 +2616,56 @@ describe('editing part of a page', () => {
 
     expect(result.warnings.join(' ')).toContain('fremden Server');
   });
+
+  it('links a section by block id through write and read, and names it for [[#…]] (issue #197)', async () => {
+    const { documentId, blockIds } = await seed(
+      '## Ziel und Planung\n\nText.\n\n## Begleitbeobachtungen\n\nMehr.',
+    );
+    const goal = blockIds[0] as string;
+
+    // What an agent reads: the heading with its id behind a caret.
+    const before = await markdownService.export(documentId, ownerId, { blockIds: true });
+    expect(before.markdown).toContain(`## Ziel und Planung ^${goal}`);
+
+    // What it writes: the id without the caret, plus the Obsidian form it must not use.
+    const result = await editService.writeSection({
+      documentId,
+      userId: ownerId,
+      request: {
+        heading: 'Begleitbeobachtungen',
+        markdown: `Siehe [Ziel und Planung](#${goal}) und [[#Ziel und Planung]].`,
+        mode: 'append',
+      },
+      correlationId,
+      source: 'api',
+    });
+
+    // Exactly one warning, naming the link that works with the real id.
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain('kein Abschnittslink');
+    expect(result.warnings[0]).toContain(`[Ziel und Planung](#${goal})`);
+
+    // The anchor survives the round trip, and the heading keeps its id.
+    const after = await markdownService.export(documentId, ownerId, { blockIds: true });
+    expect(after.markdown).toContain(`[Ziel und Planung](#${goal})`);
+    expect(after.markdown).toContain(`## Ziel und Planung ^${goal}`);
+    expect((await blockIdsOf(documentId))[0]).toBe(goal);
+  });
+
+  it('names the id for [[#…]] in a whole-page write too (issue #197)', async () => {
+    const documentId = await createPage(`Abschnittslink ${Math.random().toString(36).slice(2)}`);
+    const result = await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: '## Verlauf\n\nText.\n\nSiehe [[#Verlauf]].', mode: 'replace' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+
+    const heading = (await blockIdsOf(documentId))[0] as string;
+    expect(result.warnings.join(' ')).toContain(`[Verlauf](#${heading})`);
+  });
 });
 
 /**

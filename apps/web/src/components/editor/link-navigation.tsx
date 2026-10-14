@@ -142,7 +142,9 @@ export function useLinkNavigation({
           return;
         case 'anchor':
           document
-            .querySelector(`[data-block-id="${target.blockId}"]`)
+            // Escaped: the href is whatever the Markdown said, and a quote in it
+            // would otherwise throw out of the selector.
+            .querySelector(`[data-block-id="${CSS.escape(target.blockId)}"]`)
             ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
           return;
         case 'wiki':

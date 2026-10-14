@@ -34,7 +34,11 @@ import {
 } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
-import { PAGE_EDIT_TOOLS, WHERE_THE_REVISION_COMES_FROM } from './page-edits.js';
+import {
+  HOW_TO_LINK_A_SECTION,
+  PAGE_EDIT_TOOLS,
+  WHERE_THE_REVISION_COMES_FROM,
+} from './page-edits.js';
 import {
   pageActivityTool,
   pageArchiveTool,
@@ -211,7 +215,10 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt. ' +
     'Mit includeBlockIds: true steht hinter jedem Block seine Kennung als "^kennung". Das ist die ' +
     'Adresse für exo_page_block_update, exo_page_patch und exo_page_section_write, also für jede ' +
-    'Änderung, die nicht die ganze Seite neu schreiben soll. ' +
+    'Änderung, die nicht die ganze Seite neu schreiben soll, und das Ziel eines Verweises auf ' +
+    'diese Stelle. ' +
+    HOW_TO_LINK_A_SECTION +
+    ' ' +
     'Am Ende der Antwort steht die Revision der Seite. Genau dieser Wert gehört als ' +
     'expectedYjsUpdatedAt in den nächsten Schreibaufruf; das updatedAt aus dem Frontmatter ist ' +
     'ein anderer Zeitstempel und führt zu einem Konflikt.',
@@ -354,6 +361,8 @@ const WRITE_MARKDOWN_DESCRIPTION =
   'mit diesem Titel, sodass der Verweis ein späteres Umbenennen dieser Seite übersteht. ' +
   'Ein Titel, den es noch nicht gibt, bleibt als unaufgelöster Verweis stehen und bietet in ' +
   'der Oberfläche an, die Seite anzulegen. ' +
+  HOW_TO_LINK_A_SECTION +
+  ' ' +
   // The one thing an agent could not know and had no way to find out (issue
   // #117). It belongs in the parameter description rather than only in the
   // attachment tools: the mistake is made while writing Markdown, by a caller

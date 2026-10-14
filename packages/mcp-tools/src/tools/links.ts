@@ -36,6 +36,24 @@ function renderIncoming(result: DocumentLinksResponse): string {
   return [`Verweise auf diese Seite (${result.incoming.length}):`, ...lines].join('\n');
 }
 
+/**
+ * Why a reference resolved to nothing, said so an agent can act on it.
+ *
+ * `[[#Überschrift]]` is Obsidian's section link; here it is a reference to a
+ * page titled "#Überschrift". Reported as just another missing page, it taught
+ * an agent that sections cannot be linked at all (issue #197).
+ */
+function unresolvedReason(targetTitle: string): string {
+  // The same reading as `sectionLinkHeading` in `@exocortex/editor`, which this
+  // package may not import (it reaches only the contracts).
+  const heading = targetTitle.startsWith('#') ? targetTitle.slice(1).trim() : '';
+  if (heading.length === 0) return 'nicht auflösbar: keine Seite mit diesem Titel';
+  return (
+    'nicht auflösbar: [[#…]] ist kein Abschnittslink. Einen Abschnitt derselben Seite ' +
+    `verlinkt [${heading}](#blockId) mit der Blockkennung der Überschrift`
+  );
+}
+
 function renderOutgoing(result: DocumentLinksResponse): string {
   if (result.outgoing.length === 0) {
     return result.pending
@@ -44,7 +62,7 @@ function renderOutgoing(result: DocumentLinksResponse): string {
   }
   const lines = result.outgoing.map((link) =>
     link.target === null
-      ? `- ${link.targetTitle} (${KIND_LABEL[link.kind]}, nicht auflösbar: keine Seite mit diesem Titel)`
+      ? `- ${link.targetTitle} (${KIND_LABEL[link.kind]}, ${unresolvedReason(link.targetTitle)})`
       : `- ${link.target.title} (id: ${link.target.id}, ${KIND_LABEL[link.kind]})`,
   );
   const unresolved = result.outgoing.filter((link) => link.target === null).length;

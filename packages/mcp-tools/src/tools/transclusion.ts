@@ -89,7 +89,8 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     'expectedYjsUpdatedAt in den nächsten Schreibaufruf. ' +
     'Das ist auch die Adresse, mit der sich Inhalt einbetten lässt: ein Block ' +
     '":::transclusion <Seitentitel>^<blockId>" auf einer anderen Seite zeigt genau diesen ' +
-    'Inhalt, ohne ihn zu kopieren, und ändert sich mit der Quelle mit.',
+    'Inhalt, ohne ihn zu kopieren, und ändert sich mit der Quelle mit. Auf derselben Seite ' +
+    'verlinkt [Linktext](#blockId) die Stelle, mit der Kennung ohne das ^ davor.',
   inputSchema: z.object({
     documentId: idSchema,
     blockId: blockIdSchema.optional(),

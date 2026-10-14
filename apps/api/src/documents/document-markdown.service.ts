@@ -44,7 +44,7 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
-import { foreignMediaWarnings } from './document-content.service';
+import { foreignMediaWarnings, sectionLinkWarnings } from './document-content.service';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
@@ -397,7 +397,10 @@ export class DocumentMarkdownService {
 
     return {
       document: summary,
-      warnings: foreignMediaWarnings(imported.proseMirrorJson, this.env.APP_URL),
+      warnings: [
+        ...foreignMediaWarnings(imported.proseMirrorJson, this.env.APP_URL),
+        ...sectionLinkWarnings(imported.proseMirrorJson, imported.proseMirrorJson),
+      ],
     };
   }
 

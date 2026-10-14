@@ -13,6 +13,7 @@ import {
   bindPageLinkIdentities,
   collectForeignMediaSources,
   EXOCORTEX_SCHEMA_VERSION,
+  findSectionWikiLinks,
   leadingTitleHeading,
   parseMarkdown,
   type ProseMirrorDocument,
@@ -157,6 +158,35 @@ export function foreignMediaWarnings(document: ProseMirrorDocument, origin: stri
       'exo_attachment_upload_ticket, eine, die schon öffentlich im Netz steht, mit ' +
       'exo_attachment_upload_url. Lege eine Datei dafür nie auf einem anderen Server ab.',
   ];
+}
+
+/**
+ * The warning a write earns with an Obsidian section link, `[[#Überschrift]]`
+ * (issue #197).
+ *
+ * That notation is a reference to a page titled "#Überschrift", which nothing
+ * is called, so the link stays unresolved. The write stands, as it does for a
+ * foreign image; the warning names the link that works instead, with the block
+ * id filled in when exactly one heading on the page carries that text, because
+ * an agent that is told only "use the block id" will look for it in the wrong
+ * place or invent one.
+ */
+export function sectionLinkWarnings(
+  content: ProseMirrorDocument,
+  page: ProseMirrorDocument,
+): string[] {
+  return findSectionWikiLinks(content, page).map(({ heading, blockId }) => {
+    const instead =
+      blockId === null
+        ? `Ein Abschnitt dieser Seite wird als [${heading}](#<blockId>) verlinkt, mit der ` +
+          'Blockkennung seiner Überschrift aus exo_page_block_read (ohne das ^ davor); ' +
+          'eine solche Überschrift gibt es auf dieser Seite nicht eindeutig.'
+        : `Ein Abschnitt dieser Seite wird so verlinkt: [${heading}](#${blockId}).`;
+    return (
+      `[[#${heading}]] ist kein Abschnittslink, sondern ein Verweis auf eine Seite namens ` +
+      `„#${heading}“, die es nicht gibt. ${instead}`
+    );
+  });
 }
 
 /**
@@ -385,6 +415,7 @@ export class DocumentContentService {
     // that has had a broken image on it for a month would otherwise warn on
     // every append, and the warning would stop being read.
     warnings.push(...foreignMediaWarnings(liveUpdate, this.env.APP_URL));
+    warnings.push(...sectionLinkWarnings(liveUpdate, applied.proseMirrorJson));
 
     // Only for a write that made the page bigger: a correction to a page that
     // has been large for months is not the moment to say so, and a warning
