@@ -14,11 +14,14 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
+  ATTACHMENT_IMAGE_MAX_BYTES,
   attachmentDownloadPath,
+  type AttachmentImageResponse,
   attachmentTextEngine,
   type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
   documentTextMetadataSchema,
+  isAttachmentImageSource,
   isAttachmentTextErrorCode,
   QUEUE_NAMES,
   type UploadAttachmentFromUrlRequest,
@@ -28,11 +31,13 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 import {
+  AgentImageError,
   buildAttachmentKey,
   buildAttachmentPreviewKey,
   createImagePreview,
   detectMimeType,
   type ObjectStorage,
+  renderImageForAgent,
   sanitizeFilename,
 } from '@exocortex/storage';
 
@@ -401,6 +406,72 @@ export class AttachmentsService {
       mimeType: attachment.mimeType,
       byteSize: attachment.byteSize,
     };
+  }
+
+  /**
+   * An image attachment as pixels a model can look at (issue #204).
+   *
+   * The same access check as the download above, so a confined token reads no
+   * picture it could not download, and the original rather than the stored
+   * preview: the preview is a lossy WebP, and a screenshot diff read through
+   * it would show compression noise as change. The bytes are never logged.
+   */
+  async readImage(
+    attachmentId: string,
+    userId: string,
+    maxEdge: number,
+  ): Promise<AttachmentImageResponse> {
+    const context = await this.access.findAttachmentContext(attachmentId, userId);
+    if (context === null) {
+      throw new AppError(
+        'attachment_access_denied',
+        'Attachment does not exist or is not visible to this user',
+      );
+    }
+    const { attachment } = context;
+    assertPolicy(canDownloadAttachment(context.role, attachment, attachment.workspaceId));
+    if (!isAttachmentImageSource(attachment.mimeType)) {
+      throw new AppError(
+        'attachment_not_image',
+        `Attachment is ${attachment.mimeType}, not a raster image; mint a download ticket for its bytes`,
+        { mimeType: attachment.mimeType },
+      );
+    }
+
+    const stream = await this.storage.getObject({ key: attachment.storageKey });
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) chunks.push(chunk as Buffer);
+
+    try {
+      const image = await renderImageForAgent(Buffer.concat(chunks), attachment.mimeType, {
+        maxEdge,
+        maxBytes: ATTACHMENT_IMAGE_MAX_BYTES,
+      });
+      return {
+        attachmentId: attachment.id,
+        documentId: attachment.documentId,
+        filename: attachment.filename,
+        sourceMimeType: attachment.mimeType,
+        sourceByteSize: attachment.byteSize,
+        originalWidth: image.originalWidth,
+        originalHeight: image.originalHeight,
+        mimeType: image.mimeType,
+        byteSize: image.body.byteLength,
+        width: image.width,
+        height: image.height,
+        resized: image.resized,
+        data: image.body.toString('base64'),
+      };
+    } catch (error) {
+      if (!(error instanceof AgentImageError)) throw error;
+      throw new AppError(
+        'attachment_image_unreadable',
+        error.reason === 'too_large'
+          ? 'Image does not fit the per-image limit even scaled down'
+          : 'Image could not be decoded',
+        { reason: error.reason },
+      );
+    }
   }
 
   /** Soft-deletes the row, removes the object and writes an audit entry. */

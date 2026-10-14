@@ -417,6 +417,15 @@
     },
     "where": "Trascina il file nell’editor."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Gli agenti guardano le immagini e scaricano i file",
+    "summary": "Un agente può recuperare un allegato immagine come immagine reale e visualizzarlo, ad esempio uno screenshot o un confronto prima e dopo. Altri file, come i PDF, vengono recuperati tramite un indirizzo di download valido per dieci minuti e utilizzabile una sola volta.",
+    "details": {
+      "p1": "Finora un agente vedeva di un’immagine su una pagina solo l’indirizzo e il nome del file. Con exo_attachment_read_image ottiene l’immagine stessa: un modello che comprende le immagini può quindi osservarla davvero. Le immagini piccole arrivano inalterate pixel per pixel, quelle grandi vengono ridotte e l’agente sa di quanto.",
+      "p2": "L’IA integrata lavora con il testo. Se recupera un’immagine, un modello di visione la descrive per lei: il modello selezionato stesso, se è in grado di vedere le immagini, altrimenti il modello di supporto per le immagini. Se non ne è configurato alcuno, lo segnala invece di tirare a indovinare.",
+      "p3": "Per tutto ciò che non rientra nella conversazione, esiste exo_attachment_download_ticket: un indirizzo di download monouso per lo script dell’agente, ad esempio per un PDF o l’originale di una foto. Il download avviene con i permessi dell’agente che lo ha richiesto, validi al momento del recupero. Un token revocato o una pagina non più accessibile chiude subito le porte."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Gli agenti caricano direttamente i file locali",
     "summary": "Un agente che ha a disposizione una foto o un PDF può inviarlo direttamente a eXocortex, invece di doverlo prima caricare su un altro sito web. A questo scopo richiede un indirizzo di upload valido per dieci minuti e utilizzabile esattamente una volta.",

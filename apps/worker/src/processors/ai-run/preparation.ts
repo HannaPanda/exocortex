@@ -24,6 +24,7 @@ import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { compactIfNeeded, estimateFloorInputTokens } from '../../compaction';
 import { buildSystemPrompt, type PromptSection } from '../../system-prompt';
+import { type ToolImageDescriber } from '../../tool-images';
 
 import { type ResolvedModelRow } from './contract';
 import { type RunTimeline } from './timeline';
@@ -331,6 +332,47 @@ export function resolveVisionPreprocessor(input: {
   );
   if (companionSlug === 'off') return null;
   return input.visionPreprocessorFor(companionSlug);
+}
+
+/**
+ * Who looks at a picture a tool returned (issue #204), or `null` when nobody
+ * may: vision switched off, or a conversation that turned its companion off.
+ *
+ * The built-in loop's messages are text (ADR-009), so the picture reaches the
+ * model as a description either way. What differs from the page images above
+ * is who writes it: a main model that sees images describes the picture
+ * itself, with the question in front of it being the one the run is about,
+ * and only a text-only model borrows its companion (ADR-012).
+ */
+export function resolveToolImageDescriber(input: {
+  settings: Settings;
+  modelRow: ResolvedModelRow;
+  conversationCompanionSlug: string | null;
+  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
+  correlationId: string;
+}): ToolImageDescriber | null {
+  if (!input.settings['ai.visionEnabled']) return null;
+  let slug: string | null;
+  if (input.modelRow.supportsVision) {
+    slug = input.modelRow.slug;
+  } else {
+    const companion = resolveVisionCompanionSlug(
+      input.conversationCompanionSlug,
+      input.modelRow.visionCompanionSlug,
+    );
+    if (companion === 'off') return null;
+    slug = companion;
+  }
+  const preprocessor = input.visionPreprocessorFor(slug);
+  if (preprocessor === null) return null;
+  return async (image, label) =>
+    preprocessor.describeImage({
+      data: Buffer.from(image.data, 'base64'),
+      mimeType: image.mimeType,
+      label,
+      correlationId: input.correlationId,
+      timeoutMs: 30_000,
+    });
 }
 
 /**

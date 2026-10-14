@@ -18,6 +18,10 @@ import { type FastifyReply, type FastifyRequest } from 'fastify';
 import { type VerifiedSession } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import {
+  type AttachmentImageQuery,
+  attachmentImageQuerySchema,
+  type AttachmentImageResponse,
+  attachmentImageResponseSchema,
   type AttachmentTextCorrectionInput,
   attachmentTextCorrectionInputSchema,
   type AttachmentTextInfoResponse,
@@ -123,6 +127,21 @@ export class AttachmentsController {
         }),
       )
       .send(result.stream);
+  }
+
+  /**
+   * An image as Base64 pixels, scaled to `maxEdge` when it is larger
+   * (issue #204). JSON rather than a stream, because this is the read an
+   * agent's tool makes, and every tool speaks JSON to this API (ADR-014).
+   */
+  @Get('attachments/:attachmentId/image')
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentImageResponseSchema) })
+  async image(
+    @CurrentSession() session: VerifiedSession,
+    @Param('attachmentId') attachmentId: string,
+    @Query(zodPipe(attachmentImageQuerySchema)) query: AttachmentImageQuery,
+  ): Promise<AttachmentImageResponse> {
+    return this.attachments.readImage(attachmentId, session.userId, query.maxEdge);
   }
 
   @Delete('attachments/:attachmentId')

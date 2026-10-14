@@ -1,3 +1,4 @@
+export * from './agent-image';
 export * from './image-preview';
 export * from './mime';
 export * from './object-storage';

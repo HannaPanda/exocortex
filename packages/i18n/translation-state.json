@@ -9436,6 +9436,14 @@
       "source": "a6567b84d0564254",
       "output": "44d38a0e8b63acb4"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "e0112fe175d80e80"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "831977050104fe91"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "736b707e8a001a04"
@@ -9571,6 +9579,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "a80b666a3b9c68a3"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "217fedd3a22eab9a"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -11167,6 +11179,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "f94bd5a52ec41819"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "44646a9140ae6acd"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "facb6c0e5eb8bc36"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "e38a1a186bedd9bc"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "566159f2bb61bd34"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "358a1c5256fdd922"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -33002,6 +33034,14 @@
       "source": "a6567b84d0564254",
       "output": "db0eb914a9b874da"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "f3e77e14b9e40962"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "63ba3d8760ee5d93"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "886af9688503b413"
@@ -33137,6 +33177,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "54d22c23acab93c3"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "84ac0baddae16016"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -34733,6 +34777,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "d9b035913411835e"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "cb57b8dc5af23b86"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "f0a903ec0fd46e7c"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "b079ea1ccfffc044"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "57257eb2ede001a0"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "06f8e56e0418997c"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -56568,6 +56632,14 @@
       "source": "a6567b84d0564254",
       "output": "4cb657693efb01bc"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "b6a4f33524fc6328"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "3683a893dc4f73ed"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "f3903cb554023d6d"
@@ -56703,6 +56775,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "6974251227aa26ce"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "6ce3573d8f1c4885"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -58299,6 +58375,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "b7418d900a43223f"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "3995831e962b4f63"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "786bef71c5424977"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "81710873b37949df"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "85e1758fef280c8f"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "2a60d670a561778a"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -80134,6 +80230,14 @@
       "source": "a6567b84d0564254",
       "output": "d767a57247bf49b2"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "9be4db8bf1147bdd"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "c87d0e8cf24f2f45"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "a0c04ede0086a099"
@@ -80269,6 +80373,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "b43e77624af629b2"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "b4f32a49b5a64ff0"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -81865,6 +81973,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "e0b7b5bc2f4ac543"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "314168cbb313b70c"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "ca8529214fb0b222"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "653421856a1d7d0c"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "07c48011e271ff5a"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "340d2c255d152a4e"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -103700,6 +103828,14 @@
       "source": "a6567b84d0564254",
       "output": "ed8a1b692148b63e"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "8a0b364aa08db168"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "0c56db5108bff677"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "79154c37bc0a9ba7"
@@ -103835,6 +103971,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "f31146bd7e4b444d"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "7755a3544a808f6d"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -105431,6 +105571,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "12da0c6d52693109"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "31e68fbdc3280afa"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "12b538473b4454e7"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "8b991692c018082f"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "f66f051164614c10"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "ddd6000581ae3790"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -127266,6 +127426,14 @@
       "source": "a6567b84d0564254",
       "output": "44e13b2d5070348c"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "854b452f00f75a79"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "54aaebc3f5342b8d"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "e59de886d1db8c35"
@@ -127401,6 +127569,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "6e0d95786ace939e"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "a33416a8caff5cc3"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -128997,6 +129169,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "a13bb1f020d2218d"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "9fab7093a15477bb"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "7ad4cb76dd2ce351"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "40a19841569f7b92"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "8ef13fe941fbc920"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "7cd87eda81a6c161"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -150832,6 +151024,14 @@
       "source": "a6567b84d0564254",
       "output": "4e49055c0605543b"
     },
+    "errors.codes.attachment_image_unreadable": {
+      "source": "75ce022ff75bdff7",
+      "output": "17b620b2f53440af"
+    },
+    "errors.codes.attachment_not_image": {
+      "source": "e7beba1d204df933",
+      "output": "3476f5ba203b7fa7"
+    },
     "errors.codes.attachment_text_unavailable": {
       "source": "9977703e32828601",
       "output": "b7678b8eee67c50b"
@@ -150967,6 +151167,10 @@
     "errors.codes.document_patch_not_unique": {
       "source": "bddacda25a09fd4e",
       "output": "938f85b8c94970cf"
+    },
+    "errors.codes.download_ticket_invalid": {
+      "source": "d2557d91d5ec5234",
+      "output": "88a5a282c02bbbc5"
     },
     "errors.codes.entity_candidate_promoted": {
       "source": "d41be382ad0b8786",
@@ -152563,6 +152767,26 @@
     "features.agenten-aenderungen-sehen.where": {
       "source": "d96062679def7491",
       "output": "4a77cd8ec8a7f5aa"
+    },
+    "features.agenten-bilder-ansehen.details.p1": {
+      "source": "b5571e6508b714db",
+      "output": "3b3f05fd66a415f4"
+    },
+    "features.agenten-bilder-ansehen.details.p2": {
+      "source": "2e711db686e14f58",
+      "output": "fe12c6abc4f57a53"
+    },
+    "features.agenten-bilder-ansehen.details.p3": {
+      "source": "c68e020044b18ed1",
+      "output": "bd0f8af55e8e961e"
+    },
+    "features.agenten-bilder-ansehen.summary": {
+      "source": "755e927f13564259",
+      "output": "33b730c703c21fd2"
+    },
+    "features.agenten-bilder-ansehen.title": {
+      "source": "78fe232aea4c8d27",
+      "output": "0aabb6445576a05e"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",

@@ -283,21 +283,31 @@ export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, report
 const UPLOAD_TICKET_RETENTION_MS = DAY_MS;
 
 /**
- * Removes upload tickets a day after they expired (ADR-064).
+ * Removes upload tickets a day after they expired (ADR-064), and the download
+ * tickets beside them (issue #204).
  *
  * A hard delete, like the invitations above and for the same reason: a ticket
  * is an address that was valid for ten minutes, not something anybody wrote.
- * The file a ticket produced is an ordinary attachment and is not touched;
- * the column pointing at it is on the ticket, not on the file.
+ * The file a ticket produced or handed out is an ordinary attachment and is
+ * not touched; the column pointing at it is on the ticket, not on the file.
+ * One task for both kinds rather than a second schedule: they are the same
+ * thing in two directions, and nothing reads either after it expired.
  */
 export const pruneUploadTickets: MaintenanceTask = async ({ prisma, logger, reportProgress }) => {
   await reportProgress(10, 'pruningUploadTickets');
-  const removed = await prisma.attachmentUploadTicket.deleteMany({
-    where: { expiresAt: { lt: new Date(Date.now() - UPLOAD_TICKET_RETENTION_MS) } },
+  const before = new Date(Date.now() - UPLOAD_TICKET_RETENTION_MS);
+  const uploads = await prisma.attachmentUploadTicket.deleteMany({
+    where: { expiresAt: { lt: before } },
+  });
+  const downloads = await prisma.attachmentDownloadTicket.deleteMany({
+    where: { expiresAt: { lt: before } },
   });
   await reportProgress(100, 'done');
-  if (removed.count > 0) {
-    logger.info('Expired upload tickets pruned', { removed: removed.count });
+  if (uploads.count > 0 || downloads.count > 0) {
+    logger.info('Expired attachment tickets pruned', {
+      uploads: uploads.count,
+      downloads: downloads.count,
+    });
   }
 };
 

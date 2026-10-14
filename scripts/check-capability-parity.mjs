@@ -190,6 +190,11 @@ const SURFACE_EXEMPT = [
       "Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.",
   },
   {
+    tool: 'exo_attachment_download_ticket',
+    reason:
+      "Hands out an address a script fetches one file from (issue #204). The built-in AI has no disk and no shell, so the address could not be used by anything on that surface. What it can do with a file, it does through tools: a picture through `exo_attachment_read_image`, a document's text through `exo_attachment_read_text`.",
+  },
+  {
     tool: 'exo_page_delete',
     reason:
       "The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).",

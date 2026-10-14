@@ -74,6 +74,17 @@ export const API_ERROR_CODES = [
    */
   'document_page_oversized',
   'attachment_text_unavailable',
+  /**
+   * The image read was asked for a file that is not a raster image it can
+   * hand over (issue #204): a PDF, an SVG, a video. The way to the bytes is a
+   * download ticket, which the message names.
+   */
+  'attachment_not_image',
+  /**
+   * The image could not be brought under the per-image byte limit, or not
+   * decoded at all (issue #204). A smaller `maxEdge` is the first thing to try.
+   */
+  'attachment_image_unreadable',
   'setting_unknown',
   'setting_not_overridable',
   'setting_above_deployment_ceiling',
@@ -269,6 +280,11 @@ export const API_ERROR_CODES = [
    * oracle for guessed tickets. The cure is the same either way: mint a new one.
    */
   'upload_ticket_invalid',
+  /**
+   * The download ticket does not exist, was already used, or has expired
+   * (issue #204). One code for all three, exactly as `upload_ticket_invalid`.
+   */
+  'download_ticket_invalid',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -345,6 +361,10 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // the page's state that refuses it, which is what 409 says.
   document_page_oversized: 409,
   attachment_text_unavailable: 409,
+  // 422: the request is well formed, the file is simply not something the
+  // image read can turn into pixels, and asking again will not change that.
+  attachment_not_image: 422,
+  attachment_image_unreadable: 422,
   setting_unknown: 400,
   // A deployment-wide key arrived in a workspace patch (ADR-023). 400 rather
   // than 403: the caller may well administer this workspace, the key is simply
@@ -510,4 +530,5 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // 404 for the reason `share_link_invalid` is one: an anonymous caller must
   // not learn whether a ticket ever existed.
   upload_ticket_invalid: 404,
+  download_ticket_invalid: 404,
 };

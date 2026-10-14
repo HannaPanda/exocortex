@@ -44,6 +44,7 @@ export function buildToolRunnerFactory(env: WorkerEnv, logger: Logger): ToolRunn
       toolCallTimeoutMs: input.toolCallTimeoutMs,
       agentSession: input.agentSession,
       runId: input.runId,
+      describeImage: input.describeImage,
       logger,
     });
 }

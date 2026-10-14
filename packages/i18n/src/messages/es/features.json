@@ -417,6 +417,15 @@
     },
     "where": "Arrastrar un archivo al editor."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Los agentes ven imágenes y descargan archivos",
+    "summary": "Un agente puede obtener un archivo adjunto de imagen como una imagen real y verla, por ejemplo una captura de pantalla o una comparación del antes y el después. Otros archivos, como los PDF, los descarga a través de una dirección de descarga válida durante diez minutos y de un solo uso.",
+    "details": {
+      "p1": "Hasta ahora, un agente solo veía la dirección y el nombre de archivo de una imagen en una página. Con exo_attachment_read_image recibe la imagen en sí: un modelo capaz de entender imágenes puede entonces observarla de verdad. Las imágenes pequeñas se reciben píxel a píxel sin cambios; las grandes se reducen y el agente sabe en qué medida.",
+      "p2": "La IA integrada trabaja con texto. Si solicita una imagen, un modelo de visión la describe para ella: el propio modelo elegido si admite imágenes, o bien el modelo complementario para imágenes. Si no hay ninguno configurado, te lo indicará en vez de inventárselo.",
+      "p3": "Para todo lo que no encaje en la conversación existe exo_attachment_download_ticket: una dirección de descarga de un solo uso para el script del agente, por ejemplo para un PDF o la versión original de una foto. La descarga se realiza con los permisos que tenga el agente que la solicitó en el momento exacto de la descarga. Un token revocado o una página retirada cierran el acceso de inmediato."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Los agentes suben archivos locales directamente",
     "summary": "Un agente que tiene una foto o un PDF en local lo envía directamente a eXocortex, en lugar de alojarlo primero en otro sitio web. Para ello, obtiene una dirección de subida válida durante diez minutos y para un solo uso.",

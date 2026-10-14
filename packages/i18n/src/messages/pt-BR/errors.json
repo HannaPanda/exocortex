@@ -45,6 +45,8 @@
     "document_patch_not_found": "Este texto não aparece na página.",
     "document_patch_not_unique": "Este texto aparece várias vezes na página. Nada foi alterado.",
     "attachment_text_unavailable": "O texto deste arquivo ainda não está disponível.",
+    "attachment_not_image": "Este arquivo não é uma imagem que possa ser lida como tal. Para baixar, use um ticket de download.",
+    "attachment_image_unreadable": "Não foi possível ler esta imagem ou reduzi-la o suficiente. Tente com dimensões menores.",
     "setting_unknown": "Esta configuração não existe.",
     "setting_not_overridable": "Esta configuração se aplica a toda a instalação e não pode ser definida por espaço de trabalho.",
     "setting_above_deployment_ceiling": "Este valor está acima do permitido pela instalação. Um espaço de trabalho pode ficar abaixo, mas não acima.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Não há nenhuma conta associada a este endereço.",
     "share_grantee_is_member": "Esta pessoa já tem acesso à página: ela é membro deste espaço de trabalho.",
     "token_scope_exceeded": "Este token é válido apenas para determinadas páginas e não tem permissão de acesso aqui.",
-    "upload_ticket_invalid": "Este ticket de upload não é mais válido. Ele já foi usado, expirou ou nunca foi válido. Obtenha um novo."
+    "upload_ticket_invalid": "Este ticket de upload não é mais válido. Ele já foi usado, expirou ou nunca foi válido. Obtenha um novo.",
+    "download_ticket_invalid": "Este ticket de download não é mais válido. Ele já foi usado, expirou ou nunca foi válido. Obtenha um novo."
   },
   "boundary": {
     "pageTitle": "Não foi possível carregar esta página",

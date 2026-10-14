@@ -417,6 +417,15 @@
     },
     "where": "Glisser un fichier dans l’éditeur."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Les agents examinent des images et récupèrent des fichiers",
+    "summary": "Un agent peut récupérer une pièce jointe image sous forme d’image réelle et la regarder, par exemple une capture d’écran ou une comparaison avant/après. Il récupère les autres fichiers tels que les PDF via une URL de téléchargement valable dix minutes et une seule fois.",
+    "details": {
+      "p1": "Jusqu’à présent, un agent ne voyait d’une image sur une page que l’adresse et le nom de fichier. Avec exo_attachment_read_image, il obtient l’image elle-même : un modèle qui comprend les images peut alors véritablement l’observer. Les petites images arrivent pixel par pixel sans modification, les grandes sont réduites, et l’agent apprend dans quelle proportion.",
+      "p2": "L’IA intégrée fonctionne avec du texte. Si elle récupère une image, un modèle de vision la décrit pour elle : le modèle sélectionné lui-même s’il peut voir les images, sinon le modèle compagnon pour les images. Si aucun n’est configuré, elle l’indique au lieu de deviner.",
+      "p3": "Pour tout ce qui ne relève pas de la conversation, il existe exo_attachment_download_ticket : une adresse de téléchargement à usage unique pour le script de l’agent, par exemple pour un PDF ou l’original d’une photo. La récupération s’effectue avec les droits de l’agent qui l’a obtenue, et ce au moment du téléchargement. Un jeton révoqué ou une page dont l’accès a été retiré ferme immédiatement la porte."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Les agents téléversent directement des fichiers locaux",
     "summary": "Un agent qui dispose d’une photo ou d’un PDF en local l’envoie directement dans eXocortex, au lieu de devoir d’abord le déposer sur un autre site web. Il récupère pour cela une adresse de téléversement valable dix minutes et pour une seule utilisation.",

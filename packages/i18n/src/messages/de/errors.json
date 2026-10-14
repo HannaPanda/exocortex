@@ -45,6 +45,8 @@
     "document_patch_not_found": "Dieser Text kommt auf der Seite nicht vor.",
     "document_patch_not_unique": "Dieser Text kommt auf der Seite mehrfach vor. Nichts wurde geändert.",
     "attachment_text_unavailable": "Der Text dieser Datei liegt noch nicht vor.",
+    "attachment_not_image": "Diese Datei ist kein Bild, das sich als Bild lesen lässt. Herunterladen geht über ein Download-Ticket.",
+    "attachment_image_unreadable": "Dieses Bild ließ sich nicht lesen oder nicht klein genug machen. Versuch es mit einer kleineren Kantenlänge.",
     "setting_unknown": "Diese Einstellung gibt es nicht.",
     "setting_not_overridable": "Diese Einstellung gilt für die ganze Installation und lässt sich nicht je Arbeitsbereich setzen.",
     "setting_above_deployment_ceiling": "Dieser Wert liegt über dem, was die Installation erlaubt. Ein Arbeitsbereich darf darunter bleiben, nicht darüber.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Zu dieser Adresse gibt es hier kein Konto.",
     "share_grantee_is_member": "Diese Person kommt schon an die Seite: sie ist Mitglied dieses Arbeitsbereichs.",
     "token_scope_exceeded": "Dieses Token gilt nur für bestimmte Seiten und darf hier nicht zugreifen.",
-    "upload_ticket_invalid": "Dieses Upload-Ticket gilt nicht mehr. Es wurde schon benutzt, ist abgelaufen, oder es war nie gültig. Hol dir ein neues."
+    "upload_ticket_invalid": "Dieses Upload-Ticket gilt nicht mehr. Es wurde schon benutzt, ist abgelaufen, oder es war nie gültig. Hol dir ein neues.",
+    "download_ticket_invalid": "Dieses Download-Ticket gilt nicht mehr. Es wurde schon benutzt, ist abgelaufen, oder es war nie gültig. Hol dir ein neues."
   },
   "boundary": {
     "pageTitle": "Diese Seite konnte nicht geladen werden",

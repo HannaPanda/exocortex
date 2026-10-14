@@ -104,6 +104,12 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_attachment_upload_ticket', 'exo_attachment_upload_ticket_get'],
   }),
   defineFeature({
+    id: 'agenten-bilder-ansehen',
+    area: 'dateien',
+    since: '2026-10-14',
+    tools: ['exo_attachment_read_image', 'exo_attachment_download_ticket'],
+  }),
+  defineFeature({
     id: 'texterkennung',
     area: 'dateien',
     since: '2026-08-06',

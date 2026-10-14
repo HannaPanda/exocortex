@@ -147,6 +147,13 @@ describe('tokenHasScope', () => {
 });
 
 describe('request classes (issue #141)', () => {
+  it('counts minting a download ticket as a read, and nothing beside it (issue #204)', () => {
+    expect(requestClassFor('POST', '/api/attachments/a1/download-tickets')).toBe('read');
+    expect(requestClassFor('POST', '/api/attachments/a1/text/reextract')).toBe('write');
+    expect(requestClassFor('POST', '/api/attachments/a1/download-tickets/extra')).toBe('write');
+    expect(requestClassFor('POST', '/api/workspaces/w1/attachments/upload-tickets')).toBe('write');
+  });
+
   it('lets a propose token report on work and propose, and nothing else', () => {
     expect(requestClassFor('PATCH', '/api/work-items/abc123')).toBe('report');
     expect(requestClassFor('POST', '/api/work-items/abc123/notes')).toBe('report');

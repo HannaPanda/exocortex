@@ -151,6 +151,12 @@ export function requestClassFor(method: string, path: string): RequestClass {
     return 'admin';
   }
   if (SAFE_METHODS.has(verb)) return 'read';
+  // A download ticket (issue #204) is a POST only because it stores the hash
+  // of a secret; what it hands out is a read of one file the caller may read,
+  // so a read-only token and a run held to `read_only` can mint one.
+  if (verb === 'POST' && /^\/api\/attachments\/[^/]+\/download-tickets$/u.test(path)) {
+    return 'read';
+  }
   if (matches(REPORT_ROUTES, verb, path)) return 'report';
   if (matches(PROPOSE_ROUTES, verb, path)) return 'propose';
   return 'write';

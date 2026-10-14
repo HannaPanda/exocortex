@@ -45,6 +45,8 @@
     "document_patch_not_found": "Este texto no aparece en la página.",
     "document_patch_not_unique": "Este texto aparece varias veces en la página. No se ha modificado nada.",
     "attachment_text_unavailable": "El texto de este archivo aún no está disponible.",
+    "attachment_not_image": "Este archivo no es una imagen legible como tal. Para descargarlo, usa un vale de descarga.",
+    "attachment_image_unreadable": "No se ha podido leer esta imagen o no se ha podido reducir lo suficiente. Prueba con unas dimensiones más pequeñas.",
     "setting_unknown": "Este ajuste no existe.",
     "setting_not_overridable": "Este ajuste se aplica a toda la instalación y no se puede definir por espacio de trabajo.",
     "setting_above_deployment_ceiling": "Este valor supera lo permitido por la instalación. Un espacio de trabajo puede quedar por debajo, pero no por encima.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "No hay ninguna cuenta asociada a esta dirección.",
     "share_grantee_is_member": "Esta persona ya tiene acceso a la página: es miembro de este espacio de trabajo.",
     "token_scope_exceeded": "Este token solo es válido para ciertas páginas y no tiene permiso para acceder aquí.",
-    "upload_ticket_invalid": "Este tique de subida ya no es válido. Ya se ha utilizado, ha caducado o nunca fue válido. Consigue uno nuevo."
+    "upload_ticket_invalid": "Este tique de subida ya no es válido. Ya se ha utilizado, ha caducado o nunca fue válido. Consigue uno nuevo.",
+    "download_ticket_invalid": "Este vale de descarga ya no es válido. Ya se ha usado, ha caducado o nunca fue válido. Consigue uno nuevo."
   },
   "boundary": {
     "pageTitle": "No se ha podido cargar esta página",

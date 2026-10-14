@@ -45,6 +45,8 @@
     "document_patch_not_found": "Questo testo non compare nella pagina.",
     "document_patch_not_unique": "Questo testo compare più volte nella pagina. Non è stato modificato nulla.",
     "attachment_text_unavailable": "Il testo di questo file non è ancora disponibile.",
+    "attachment_not_image": "Questo file non è un’immagine leggibile come tale. Per scaricarlo puoi usare un ticket di download.",
+    "attachment_image_unreadable": "Impossibile leggere quest’immagine o ridurne a sufficienza le dimensioni. Prova con una risoluzione inferiore.",
     "setting_unknown": "Questa impostazione non esiste.",
     "setting_not_overridable": "Questa impostazione si applica all’intera installazione e non può essere definita per singola area di lavoro.",
     "setting_above_deployment_ceiling": "Questo valore supera il limite consentito dall’installazione. Un’area di lavoro può restare al di sotto, ma non al di sopra.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Nessun account corrisponde a questo indirizzo.",
     "share_grantee_is_member": "Questa persona può già accedere alla pagina: fa parte di quest’area di lavoro.",
     "token_scope_exceeded": "Questo token è valido solo per determinate pagine e non può accedere qui.",
-    "upload_ticket_invalid": "Questo ticket di caricamento non è più valido. È già stato usato, è scaduto oppure non è mai stato valido. Richiedine uno nuovo."
+    "upload_ticket_invalid": "Questo ticket di caricamento non è più valido. È già stato usato, è scaduto oppure non è mai stato valido. Richiedine uno nuovo.",
+    "download_ticket_invalid": "Questo ticket di download non è più valido. È già stato usato, è scaduto oppure non è mai stato valido. Richiedine uno nuovo."
   },
   "boundary": {
     "pageTitle": "Impossibile caricare questa pagina",

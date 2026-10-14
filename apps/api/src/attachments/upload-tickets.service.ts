@@ -180,7 +180,7 @@ export class UploadTicketsService {
       if (ticket.createdBy.disabledAt !== null) {
         throw new AppError('user_disabled', 'This account is disabled');
       }
-      this.actAsMintingCredential(ticket.apiToken);
+      actAsMintingCredential(ticket.apiToken, 'write');
 
       const file = await readUploadedFile(request, this.env.MAX_UPLOAD_BYTES);
       const uploaded = await this.attachments.upload({
@@ -220,35 +220,40 @@ export class UploadTicketsService {
       throw error;
     }
   }
+}
 
-  /**
-   * Puts this request under the authority of the `exo_` token that minted the
-   * ticket, or of its owner when no token did.
-   *
-   * The token is checked as if it had just arrived in a header -- revoked,
-   * expired, disabled -- and it must still carry `write`. Its page confinement
-   * is installed in the request context, where `requireRoleAnchoredAt` reads
-   * it, so a confined token's ticket stays inside the branch it was given.
-   * That context must exist: a confinement that could not be installed would
-   * be an upload with its owner's full reach, so its absence is a refusal.
-   */
-  private actAsMintingCredential(token: ApiTokenCredential | null): void {
-    let restriction: PageScopeRestriction | null = null;
-    if (token !== null) {
-      assertApiTokenUsable(token);
-      if (!tokenHasScope(token.scopes, 'write')) {
-        throw new AppError(
-          'api_token_insufficient_scope',
-          "This API token does not carry the 'write' scope",
-        );
-      }
-      restriction = pageScopesOf(token) ?? null;
+/**
+ * Puts this request under the authority of the `exo_` token that minted a
+ * ticket, or of its owner when no token did. Shared by the upload and the
+ * download tickets (issue #204), which differ only in the scope they need.
+ *
+ * The token is checked as if it had just arrived in a header -- revoked,
+ * expired, disabled -- and it must still carry `scope`. Its page confinement
+ * is installed in the request context, where `requireRoleAnchoredAt` and
+ * `findAttachmentContext` read it, so a confined token's ticket stays inside
+ * the branch it was given. That context must exist: a confinement that could
+ * not be installed would be a request with its owner's full reach, so its
+ * absence is a refusal.
+ */
+export function actAsMintingCredential(
+  token: ApiTokenCredential | null,
+  scope: 'read' | 'write',
+): void {
+  let restriction: PageScopeRestriction | null = null;
+  if (token !== null) {
+    assertApiTokenUsable(token);
+    if (!tokenHasScope(token.scopes, scope)) {
+      throw new AppError(
+        'api_token_insufficient_scope',
+        `This API token does not carry the '${scope}' scope`,
+      );
     }
-    if (getRequestContext() === undefined) {
-      throw AppError.internal('An upload ticket was redeemed outside a request context');
-    }
-    setPageScopeRestriction(restriction);
+    restriction = pageScopesOf(token) ?? null;
   }
+  if (getRequestContext() === undefined) {
+    throw AppError.internal('A ticket was redeemed outside a request context');
+  }
+  setPageScopeRestriction(restriction);
 }
 
 /**
@@ -261,8 +266,12 @@ export class UploadTicketsService {
  * before a script could run. What such a ticket stands on is the account, and
  * that is re-checked when it is redeemed.
  */
-export function ticketExpiry(minter: TicketMinter, now: number): Date {
-  const standard = now + UPLOAD_TICKET_TTL_SECONDS * 1000;
+export function ticketExpiry(
+  minter: TicketMinter,
+  now: number,
+  ttlSeconds: number = UPLOAD_TICKET_TTL_SECONDS,
+): Date {
+  const standard = now + ttlSeconds * 1000;
   if (minter.credential === 'service_token') return new Date(standard);
   return new Date(Math.min(standard, minter.credentialExpiresAt.getTime()));
 }

@@ -200,9 +200,10 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'prune-invitations',
     /**
-     * Deletes upload tickets a day after they expired (ADR-064). A ticket is a
-     * ten-minute address, used or not; the file it produced does not depend
-     * on it and stays.
+     * Deletes upload tickets a day after they expired (ADR-064), and the
+     * download tickets with them (issue #204). A ticket is a ten-minute
+     * address, used or not; the file it produced or handed out does not
+     * depend on it and stays.
      */
     'prune-upload-tickets',
     /**

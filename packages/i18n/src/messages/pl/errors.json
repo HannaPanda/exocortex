@@ -45,6 +45,8 @@
     "document_patch_not_found": "Ten tekst nie występuje na stronie.",
     "document_patch_not_unique": "Ten tekst występuje na stronie wielokrotnie. Nic nie zostało zmienione.",
     "attachment_text_unavailable": "Tekst tego pliku nie jest jeszcze dostępny.",
+    "attachment_not_image": "Ten plik nie jest obrazem, który można odczytać jako obraz. Pobieranie jest możliwe za pomocą biletu pobierania.",
+    "attachment_image_unreadable": "Tego obrazu nie udało się odczytać lub zmniejszyć w wystarczającym stopniu. Spróbuj użyć mniejszej rozdzielczości.",
     "setting_unknown": "Takie ustawienie nie istnieje.",
     "setting_not_overridable": "To ustawienie dotyczy całej instalacji i nie można go ustawić dla pojedynczego obszaru roboczego.",
     "setting_above_deployment_ceiling": "Ta wartość przekracza limit dozwolony dla instalacji. Obszar roboczy może mieć niższą wartość, ale nie wyższą.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Dla tego adresu nie ma tutaj konta.",
     "share_grantee_is_member": "Ta osoba ma już dostęp do strony: jest członkiem tego obszaru roboczego.",
     "token_scope_exceeded": "Ten token jest ważny tylko dla określonych stron i nie ma tutaj dostępu.",
-    "upload_ticket_invalid": "Ten bilet przesyłania jest już nieważny. Został już użyty, wygasł lub nigdy nie był ważny. Pobierz nowy."
+    "upload_ticket_invalid": "Ten bilet przesyłania jest już nieważny. Został już użyty, wygasł lub nigdy nie był ważny. Pobierz nowy.",
+    "download_ticket_invalid": "Ten bilet pobierania jest już nieważny. Został już wykorzystany, wygasł lub nigdy nie był ważny. Pobierz nowy."
   },
   "boundary": {
     "pageTitle": "Nie udało się załadować tej strony",

@@ -20,6 +20,7 @@ import {
   selectToolDomains,
   type ToolDomain,
   ToolInputValidationError,
+  type ToolResult,
   toolSchemaChars,
   toolsFor,
 } from '@exocortex/mcp-tools';
@@ -32,6 +33,7 @@ import {
   offerExternalTool,
   runExternalToolCall,
 } from './external-tool-call';
+import { describeToolImages, type ToolImageDescriber } from './tool-images';
 import { repeatHint, ToolCallLedger, type ToolCallTally } from './tool-ledger';
 
 /** Every tool result is capped here so a single call can never eat the run's whole context. */
@@ -231,6 +233,11 @@ export interface CreateToolRunnerInput {
    * handling the id.
    */
   runId: string;
+  /**
+   * Who looks at a picture a tool returned (issue #204); `null` when nobody
+   * may, which the model is then told instead of seeing nothing.
+   */
+  describeImage?: ToolImageDescriber | null;
 }
 
 /**
@@ -254,6 +261,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'toolCallTimeoutMs'
   | 'agentSession'
   | 'runId'
+  | 'describeImage'
 >;
 
 export type ToolRunnerFactory = (input: ToolRunnerFactoryInput) => ToolRunner;
@@ -505,6 +513,32 @@ function isMutating(offer: ToolOffer, name: string): boolean {
   return findTool(name)?.mutating ?? true;
 }
 
+/**
+ * Runs a catalogue tool and turns any picture in its answer into text
+ * (issue #204), before anything is measured or fenced: the loop's messages are
+ * text, and the description is what the run actually reads.
+ */
+async function runWithImagesDescribed(
+  input: CreateToolRunnerInput,
+  tool: AnyToolDefinition,
+  client: ExocortexApiClient,
+  args: unknown,
+  correlationId: string,
+): Promise<ToolResult> {
+  return describeToolImages({
+    result: await tool.run(client, args),
+    describe: input.describeImage ?? null,
+    label: tool.name,
+    onFailure: (reason) => {
+      input.logger.warn('A tool image could not be described', {
+        tool: tool.name,
+        correlationId,
+        reason,
+      });
+    },
+  });
+}
+
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   const offer = createToolOffer(input);
 
@@ -635,7 +669,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     // be able to hand the failure back to the model as a `tool` message
     // instead of crashing the whole run.
     try {
-      const result = await tool.run(ensureClient(), args);
+      const result = await runWithImagesDescribed(input, tool, ensureClient(), args, correlationId);
       const isError = result.isError ?? false;
       // The catalogue can say what a domain holds; only the loop can hand its
       // tools to the next turn (issue #121).

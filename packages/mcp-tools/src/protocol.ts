@@ -5,7 +5,7 @@ import { buildServerInstructions } from './instructions.js';
 import { getMcpPrompt, listMcpPrompts } from './prompts.js';
 import { listMcpResources, listMcpResourceTemplates, readMcpResource } from './resources.js';
 import { MAX_RESOURCE_SUBSCRIPTIONS, type ResourceSubscriptions } from './subscriptions.js';
-import { type AnyToolDefinition, ToolInputValidationError } from './tool.js';
+import { type AnyToolDefinition, ToolInputValidationError, type ToolResult } from './tool.js';
 
 /**
  * The MCP method dispatch, with no transport in it.
@@ -153,13 +153,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function toMcpResult(result: {
-  text: string;
-  data?: unknown;
-  isError?: boolean;
-}): Record<string, unknown> {
+export function toMcpResult(result: ToolResult): Record<string, unknown> {
   return {
-    content: [{ type: 'text', text: result.text }],
+    content: [
+      { type: 'text', text: result.text },
+      // MCP's own content type for a picture (issue #204): a client that
+      // speaks to a multimodal model hands it over as an image, not as text.
+      ...(result.images ?? []).map((image) => ({
+        type: 'image',
+        data: image.data,
+        mimeType: image.mimeType,
+      })),
+    ],
     structuredContent: result.data,
     isError: result.isError ?? false,
   };
@@ -185,10 +190,7 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
     client.setAgentSession?.({ externalId: options.agentSession.externalId });
   }
 
-  async function callTool(
-    tool: AnyToolDefinition,
-    rawInput: unknown,
-  ): Promise<{ text: string; data?: unknown; isError?: boolean }> {
+  async function callTool(tool: AnyToolDefinition, rawInput: unknown): Promise<ToolResult> {
     const gated = tool.mutating && (confirm === 'all' || tool.irreversible);
     if (gated && gate !== undefined) {
       const target = tool.targetOf(rawInput);

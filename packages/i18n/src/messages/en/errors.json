@@ -45,6 +45,8 @@
     "document_patch_not_found": "This text does not appear on the page.",
     "document_patch_not_unique": "This text appears multiple times on the page. Nothing was changed.",
     "attachment_text_unavailable": "The text of this file is not yet available.",
+    "attachment_not_image": "This file is not an image that can be read as an image. You can download it using a download ticket.",
+    "attachment_image_unreadable": "This image couldn’t be read or couldn’t be made small enough. Try again with smaller dimensions.",
     "setting_unknown": "This setting does not exist.",
     "setting_not_overridable": "This setting applies to the entire installation and cannot be set per workspace.",
     "setting_above_deployment_ceiling": "This value exceeds what the installation allows. A workspace may stay below it, not above.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "There is no account for this address here.",
     "share_grantee_is_member": "This person can already access the page: they are a member of this workspace.",
     "token_scope_exceeded": "This token is only valid for specific pages and cannot access here.",
-    "upload_ticket_invalid": "This upload ticket is no longer valid. It has already been used, has expired, or was never valid. Please get a new one."
+    "upload_ticket_invalid": "This upload ticket is no longer valid. It has already been used, has expired, or was never valid. Please get a new one.",
+    "download_ticket_invalid": "This download ticket is no longer valid. It has already been used, expired, or was never valid. Get a new one."
   },
   "boundary": {
     "pageTitle": "This page could not be loaded",

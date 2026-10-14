@@ -134,11 +134,29 @@ export interface ToolDefinition<TInput> {
   execute: (client: ExocortexApiClient, input: TInput) => Promise<ToolResult>;
 }
 
+/**
+ * A picture a tool hands back beside its text (issue #204): Base64 bytes of a
+ * PNG, JPEG or WebP, never a URL.
+ */
+export interface ToolImage {
+  mimeType: 'image/png' | 'image/jpeg' | 'image/webp';
+  data: string;
+}
+
 /** What a tool returns. `text` is what the model or the MCP client sees. */
 export interface ToolResult {
   text: string;
   /** Structured payload, mirrored into MCP `structuredContent`. */
   data?: unknown;
+  /**
+   * Pictures, sent over MCP as `image` content elements after the text
+   * (issue #204). The built-in loop's messages are text by design (ADR-009),
+   * so the worker turns each one into a fenced description by a vision model
+   * instead. Keep the bytes out of `data`: a client mirrors that into
+   * `structuredContent`, and a model reading it would get the picture twice,
+   * once of it as a megabyte of Base64.
+   */
+  images?: readonly ToolImage[];
   isError?: boolean;
   /**
    * True when this call made the work wait on a person (issue #140): a

@@ -85,6 +85,11 @@ const EXEMPT = [
       "Redeems an upload ticket (ADR-064). The agent's script calls it with the file, not the agent: the whole point is that the bytes never pass through a tool call. Minting and reading the ticket are tools (`exo_attachment_upload_ticket`, `exo_attachment_upload_ticket_get`), so the loop is complete on the agent's side.",
   },
   {
+    route: 'GET /api/attachments/download/*',
+    reason:
+      "Redeems a download ticket (issue #204). The agent's script fetches the file, not the agent: the point is that the bytes land on disk without crossing a tool call or the context window. Minting the ticket is a tool (`exo_attachment_download_ticket`), and a picture's pixels have their own tool (`exo_attachment_read_image`).",
+  },
+  {
     route: '* /health*',
     reason: 'Liveness and readiness for monitoring and for deploy.sh, not a workspace capability.',
   },

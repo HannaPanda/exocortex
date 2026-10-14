@@ -417,6 +417,15 @@
     },
     "where": "Datei in den Editor ziehen."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Agenten sehen sich Bilder an und holen Dateien ab",
+    "summary": "Ein Agent kann einen Bildanhang als echtes Bild abrufen und ihn ansehen, zum Beispiel einen Screenshot oder einen Vorher-nachher-Vergleich. Andere Dateien wie PDFs holt er sich über eine Download-Adresse, die zehn Minuten und genau einmal gilt.",
+    "details": {
+      "p1": "Bisher sah ein Agent von einem Bild auf einer Seite nur die Adresse und den Dateinamen. Mit exo_attachment_read_image bekommt er das Bild selbst: ein Modell, das Bilder versteht, kann es dann wirklich betrachten. Kleine Bilder kommen Pixel für Pixel unverändert, große werden verkleinert, und der Agent erfährt, um wie viel.",
+      "p2": "Die eingebaute KI arbeitet mit Text. Ruft sie ein Bild ab, beschreibt es ein Bildmodell für sie: das gewählte Modell selbst, wenn es Bilder sieht, sonst das Begleitmodell für Bilder. Ist keins eingerichtet, sagt sie das, statt zu raten.",
+      "p3": "Für alles, was nicht ins Gespräch gehört, gibt es exo_attachment_download_ticket: eine einmalige Download-Adresse für das Skript des Agenten, zum Beispiel für ein PDF oder das Original eines Fotos. Abgerufen wird mit den Rechten des Agenten, der sie geholt hat, und zwar zum Zeitpunkt des Abrufs. Ein widerrufenes Token oder eine entzogene Seite schließt die Tür sofort."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Agenten laden lokale Dateien direkt hoch",
     "summary": "Ein Agent, der ein Foto oder PDF bei sich liegen hat, schickt es direkt in eXocortex, statt es erst auf einer anderen Website abzulegen. Er holt sich dafür eine Upload-Adresse, die zehn Minuten und genau einmal gilt.",

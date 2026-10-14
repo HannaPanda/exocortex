@@ -45,6 +45,8 @@
     "document_patch_not_found": "Deze tekst komt niet voor op de pagina.",
     "document_patch_not_unique": "Deze tekst komt meerdere keren voor op de pagina. Er is niets gewijzigd.",
     "attachment_text_unavailable": "De tekst van dit bestand is nog niet beschikbaar.",
+    "attachment_not_image": "Dit bestand is geen afbeelding die als afbeelding kan worden gelezen. Downloaden kan via een downloadticket.",
+    "attachment_image_unreadable": "Deze afbeelding kon niet worden gelezen of niet klein genoeg worden gemaakt. Probeer het met kleinere afmetingen.",
     "setting_unknown": "Deze instelling bestaat niet.",
     "setting_not_overridable": "Deze instelling geldt voor de hele installatie en kan niet per werkruimte worden ingesteld.",
     "setting_above_deployment_ceiling": "Deze waarde ligt hoger dan wat de installatie toestaat. Een werkruimte mag eronder blijven, maar niet erboven.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Er is hier geen account voor dit adres.",
     "share_grantee_is_member": "Deze persoon heeft al toegang tot de pagina: die is lid van deze werkruimte.",
     "token_scope_exceeded": "Dit token geldt alleen voor bepaalde pagina’s en heeft hier geen toegang.",
-    "upload_ticket_invalid": "Dit uploadticket is niet meer geldig. Het is al gebruikt, verlopen of het is nooit geldig geweest. Vraag een nieuw ticket aan."
+    "upload_ticket_invalid": "Dit uploadticket is niet meer geldig. Het is al gebruikt, verlopen of het is nooit geldig geweest. Vraag een nieuw ticket aan.",
+    "download_ticket_invalid": "Dit downloadticket is niet meer geldig. Het is al gebruikt, verlopen of was nooit geldig. Vraag een nieuwe aan."
   },
   "boundary": {
     "pageTitle": "Deze pagina kon niet worden geladen",

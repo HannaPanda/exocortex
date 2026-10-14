@@ -45,6 +45,8 @@
     "document_patch_not_found": "Ce texte n’apparaît pas sur la page.",
     "document_patch_not_unique": "Ce texte apparaît plusieurs fois sur la page. Rien n’a été modifié.",
     "attachment_text_unavailable": "Le texte de ce fichier n’est pas encore disponible.",
+    "attachment_not_image": "Ce fichier n’est pas une image lisible en tant que telle. Le téléchargement est possible via un ticket de téléchargement.",
+    "attachment_image_unreadable": "Cette image n’a pas pu être lue ou suffisamment réduite. Essaie avec des dimensions plus petites.",
     "setting_unknown": "Ce paramètre n’existe pas.",
     "setting_not_overridable": "Ce paramètre s’applique à toute l’installation et ne peut pas être défini par espace de travail.",
     "setting_above_deployment_ceiling": "Cette valeur dépasse ce que l’installation autorise. Un espace de travail peut être en dessous, mais pas au-dessus.",
@@ -134,7 +136,8 @@
     "share_grantee_unknown": "Il n’y a aucun compte pour cette adresse ici.",
     "share_grantee_is_member": "Cette personne a déjà accès à la page : elle est membre de cet espace de travail.",
     "token_scope_exceeded": "Ce jeton n’est valable que pour certaines pages et ne peut pas accéder ici.",
-    "upload_ticket_invalid": "Ce ticket de téléversement n’est plus valable. Il a déjà été utilisé, a expiré ou n’a jamais été valide. Récupères-en un nouveau."
+    "upload_ticket_invalid": "Ce ticket de téléversement n’est plus valable. Il a déjà été utilisé, a expiré ou n’a jamais été valide. Récupères-en un nouveau.",
+    "download_ticket_invalid": "Ce ticket de téléchargement n’est plus valide. Il a déjà été utilisé, a expiré ou n’a jamais été valide. Demande-en un nouveau."
   },
   "boundary": {
     "pageTitle": "Impossible de charger cette page",

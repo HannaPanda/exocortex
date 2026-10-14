@@ -62,69 +62,70 @@ model User {
   sessions                    Session[]
   accounts                    Account[]
   memberships                 WorkspaceMember[]
-  createdDocuments            Document[]               @relation("DocumentCreatedBy")
-  updatedDocuments            Document[]               @relation("DocumentUpdatedBy")
+  createdDocuments            Document[]                 @relation("DocumentCreatedBy")
+  updatedDocuments            Document[]                 @relation("DocumentUpdatedBy")
   createdSnapshots            DocumentSnapshot[]
   createdAttachments          Attachment[]
-  correctedAttachmentTexts    Attachment[]             @relation("AttachmentTextCorrectedBy")
+  correctedAttachmentTexts    Attachment[]               @relation("AttachmentTextCorrectedBy")
   auditEntries                AuditLog[]
   aiRuns                      AiRun[]
   apiTokens                   ApiToken[]
-  updatedSettings             Setting[]                @relation("SettingUpdatedBy")
-  updatedWorkspaceSettings    WorkspaceSetting[]       @relation("WorkspaceSettingUpdatedBy")
-  createdWorkspaceCredentials WorkspaceCredential[]    @relation("WorkspaceCredentialCreatedBy")
-  createdExternalMcpServers   ExternalMcpServer[]      @relation("ExternalMcpServerCreatedBy")
-  approvedExternalMcpTools    ExternalMcpTool[]        @relation("ExternalMcpToolApprovedBy")
-  aiConversations             AiConversation[]         @relation("AiConversationCreatedBy")
-  projectBuilds               ProjectBuild[]           @relation("ProjectBuildCreatedBy")
-  calendarAccounts            CalendarAccount[]        @relation("CalendarAccountOwner")
-  comments                    Comment[]                @relation("CommentCreatedBy")
-  resolvedComments            Comment[]                @relation("CommentResolvedBy")
+  updatedSettings             Setting[]                  @relation("SettingUpdatedBy")
+  updatedWorkspaceSettings    WorkspaceSetting[]         @relation("WorkspaceSettingUpdatedBy")
+  createdWorkspaceCredentials WorkspaceCredential[]      @relation("WorkspaceCredentialCreatedBy")
+  createdExternalMcpServers   ExternalMcpServer[]        @relation("ExternalMcpServerCreatedBy")
+  approvedExternalMcpTools    ExternalMcpTool[]          @relation("ExternalMcpToolApprovedBy")
+  aiConversations             AiConversation[]           @relation("AiConversationCreatedBy")
+  projectBuilds               ProjectBuild[]             @relation("ProjectBuildCreatedBy")
+  calendarAccounts            CalendarAccount[]          @relation("CalendarAccountOwner")
+  comments                    Comment[]                  @relation("CommentCreatedBy")
+  resolvedComments            Comment[]                  @relation("CommentResolvedBy")
   oauthClients                OauthClient[]
   oauthAccessTokens           OauthAccessToken[]
   oauthRefreshTokens          OauthRefreshToken[]
   oauthConsents               OauthConsent[]
-  sentInvitations             Invitation[]             @relation("InvitationInvitedBy")
+  sentInvitations             Invitation[]               @relation("InvitationInvitedBy")
   featureSeen                 UserFeatureSeen?
-  acceptedInvitation          Invitation?              @relation("InvitationAcceptedBy")
+  acceptedInvitation          Invitation?                @relation("InvitationAcceptedBy")
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
   memoryCheckpoints           MemoryCheckpoint[]
-  sentAgentMessages           AgentMessage[]           @relation("AgentMessageSender")
-  receivedAgentMessages       AgentMessage[]           @relation("AgentMessageRecipient")
+  sentAgentMessages           AgentMessage[]             @relation("AgentMessageSender")
+  receivedAgentMessages       AgentMessage[]             @relation("AgentMessageRecipient")
   attachmentUploadTickets     AttachmentUploadTicket[]
-  automationRules             AutomationRule[]         @relation("AutomationRuleCreatedBy")
-  renderTemplates             RenderTemplate[]         @relation("RenderTemplateCreatedBy")
-  renderJobs                  RenderJob[]              @relation("RenderJobCreatedBy")
-  createdSavedQueries         SavedQuery[]             @relation("SavedQueryCreatedBy")
-  updatedSavedQueries         SavedQuery[]             @relation("SavedQueryUpdatedBy")
-  grantedShares               DocumentShare[]          @relation("DocumentShareCreatedBy")
-  receivedShares              DocumentShare[]          @relation("DocumentShareGrantee")
-  pushSubscriptions           PushSubscription[]       @relation("PushSubscriptionOwner")
-  notificationPreferences     NotificationPreference[] @relation("NotificationPreferenceOwner")
-  commentDigestEntries        CommentDigestEntry[]     @relation("CommentDigestRecipient")
-  requestedWorkItems          WorkItem[]               @relation("WorkItemRequester")
-  assignedWorkItems           WorkItem[]               @relation("WorkItemAssignee")
-  workItemEvents              WorkItemEvent[]          @relation("WorkItemEventActor")
-  workItemCheckpoints         WorkItemCheckpoint[]     @relation("WorkItemCheckpointAuthor")
-  attentionForMe              AttentionItem[]          @relation("AttentionRecipient")
-  attentionRaised             AttentionItem[]          @relation("AttentionRaisedBy")
-  attentionSettled            AttentionItem[]          @relation("AttentionSettledBy")
-  changesetsProposed          Changeset[]              @relation("ChangesetProposedBy")
-  agentProfilesCreated        AgentProfile[]           @relation("AgentProfileCreatedBy")
-  agentProfilesUpdated        AgentProfile[]           @relation("AgentProfileUpdatedBy")
-  evalCasesCreated            EvalCase[]               @relation("EvalCaseCreatedBy")
-  evalCasesUpdated            EvalCase[]               @relation("EvalCaseUpdatedBy")
-  evalRunsStarted             EvalRun[]                @relation("EvalRunCreatedBy")
-  evalAttemptsReviewed        EvalAttempt[]            @relation("EvalAttemptReviewedBy")
-  workflowsCreated            Workflow[]               @relation("WorkflowCreatedBy")
-  workflowsUpdated            Workflow[]               @relation("WorkflowUpdatedBy")
-  workflowVersionsPublished   WorkflowVersion[]        @relation("WorkflowVersionPublishedBy")
-  workflowDraftsAuthored      Workflow[]               @relation("WorkflowDraftAuthor")
-  workflowVersionsAuthored    WorkflowVersion[]        @relation("WorkflowVersionDraftAuthor")
-  workflowRunsStarted         WorkflowRun[]            @relation("WorkflowRunStartedBy")
-  workflowsEnabled            Workflow[]               @relation("WorkflowEnabledBy")
-  changeDecisions             ChangesetChange[]        @relation("ChangesetChangeDecidedBy")
+  attachmentDownloadTickets   AttachmentDownloadTicket[]
+  automationRules             AutomationRule[]           @relation("AutomationRuleCreatedBy")
+  renderTemplates             RenderTemplate[]           @relation("RenderTemplateCreatedBy")
+  renderJobs                  RenderJob[]                @relation("RenderJobCreatedBy")
+  createdSavedQueries         SavedQuery[]               @relation("SavedQueryCreatedBy")
+  updatedSavedQueries         SavedQuery[]               @relation("SavedQueryUpdatedBy")
+  grantedShares               DocumentShare[]            @relation("DocumentShareCreatedBy")
+  receivedShares              DocumentShare[]            @relation("DocumentShareGrantee")
+  pushSubscriptions           PushSubscription[]         @relation("PushSubscriptionOwner")
+  notificationPreferences     NotificationPreference[]   @relation("NotificationPreferenceOwner")
+  commentDigestEntries        CommentDigestEntry[]       @relation("CommentDigestRecipient")
+  requestedWorkItems          WorkItem[]                 @relation("WorkItemRequester")
+  assignedWorkItems           WorkItem[]                 @relation("WorkItemAssignee")
+  workItemEvents              WorkItemEvent[]            @relation("WorkItemEventActor")
+  workItemCheckpoints         WorkItemCheckpoint[]       @relation("WorkItemCheckpointAuthor")
+  attentionForMe              AttentionItem[]            @relation("AttentionRecipient")
+  attentionRaised             AttentionItem[]            @relation("AttentionRaisedBy")
+  attentionSettled            AttentionItem[]            @relation("AttentionSettledBy")
+  changesetsProposed          Changeset[]                @relation("ChangesetProposedBy")
+  agentProfilesCreated        AgentProfile[]             @relation("AgentProfileCreatedBy")
+  agentProfilesUpdated        AgentProfile[]             @relation("AgentProfileUpdatedBy")
+  evalCasesCreated            EvalCase[]                 @relation("EvalCaseCreatedBy")
+  evalCasesUpdated            EvalCase[]                 @relation("EvalCaseUpdatedBy")
+  evalRunsStarted             EvalRun[]                  @relation("EvalRunCreatedBy")
+  evalAttemptsReviewed        EvalAttempt[]              @relation("EvalAttemptReviewedBy")
+  workflowsCreated            Workflow[]                 @relation("WorkflowCreatedBy")
+  workflowsUpdated            Workflow[]                 @relation("WorkflowUpdatedBy")
+  workflowVersionsPublished   WorkflowVersion[]          @relation("WorkflowVersionPublishedBy")
+  workflowDraftsAuthored      Workflow[]                 @relation("WorkflowDraftAuthor")
+  workflowVersionsAuthored    WorkflowVersion[]          @relation("WorkflowVersionDraftAuthor")
+  workflowRunsStarted         WorkflowRun[]              @relation("WorkflowRunStartedBy")
+  workflowsEnabled            Workflow[]                 @relation("WorkflowEnabledBy")
+  changeDecisions             ChangesetChange[]          @relation("ChangesetChangeDecidedBy")
 
   @@map("user")
 }
@@ -469,10 +470,12 @@ model ApiToken {
   /// scoped page would widen the token back to the whole account, which is a
   /// privilege escalation dressed as a cleanup. A confined token that has lost
   /// every page it was given reaches nothing at all.
-  pageScoped    Boolean                  @default(false)
-  pageScopes    ApiTokenPageScope[]
+  pageScoped      Boolean                    @default(false)
+  pageScopes      ApiTokenPageScope[]
   /// Upload tickets this token minted (ADR-064); they end with it.
-  uploadTickets AttachmentUploadTicket[]
+  uploadTickets   AttachmentUploadTicket[]
+  /// Download tickets this token minted (issue #204); they end with it too.
+  downloadTickets AttachmentDownloadTicket[]
 
   @@index([userId])
   @@map("api_token")
@@ -1682,17 +1685,19 @@ model Attachment {
   correctedText     String?
   textCorrectedAt   DateTime?
   textCorrectedById String?
-  textCorrectedBy   User?                    @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  textCorrectedBy   User?                      @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
   /// Present when this file is the artifact of a render (issue #44).
-  renderJobs        RenderJob[]              @relation("RenderJobArtifact")
+  renderJobs        RenderJob[]                @relation("RenderJobArtifact")
   /// Present when this file sits in a project's file tree (issue #43).
   projectFiles      ProjectFile[]
   /// Present when this file is the PDF a project build produced.
-  projectBuildPdfs  ProjectBuild[]           @relation("ProjectBuildArtifact")
+  projectBuildPdfs  ProjectBuild[]             @relation("ProjectBuildArtifact")
   /// Present when this file is the SyncTeX map a project build produced.
-  projectBuildMaps  ProjectBuild[]           @relation("ProjectBuildSourceMap")
+  projectBuildMaps  ProjectBuild[]             @relation("ProjectBuildSourceMap")
   /// The upload ticket this file arrived through, if any (ADR-064).
   uploadTickets     AttachmentUploadTicket[]
+  /// Download tickets for this file (issue #204); they end with it.
+  downloadTickets   AttachmentDownloadTicket[]
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -1754,6 +1759,39 @@ model AttachmentUploadTicket {
   @@index([expiresAt])
   @@index([workspaceId, createdAt])
   @@map("attachment_upload_ticket")
+}
+
+/// A one-time address an agent's script GETs one file from (issue #204).
+///
+/// The mirror of `AttachmentUploadTicket`: a file that should not pass through
+/// the model's context (a PDF, an archive, a full-size original) reaches the
+/// agent's disk without the agent's bearer token travelling into a shell. The
+/// redeem acts as the minting credential, re-checked when it is used.
+model AttachmentDownloadTicket {
+  id String @id @default(cuid(2))
+
+  /// SHA-256 of the secret, domain-separated from the upload tickets' hash.
+  tokenHash String @unique
+
+  attachmentId String
+  attachment   Attachment @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  /// The `exo_` token that minted it, when one did.
+  apiTokenId  String?
+  apiToken    ApiToken? @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
+
+  /// Never later than the minting credential's own expiry.
+  expiresAt DateTime
+  /// Set by the request that claims the ticket, before the file is read.
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  /// The daily sweep deletes by expiry.
+  @@index([expiresAt])
+  @@map("attachment_download_ticket")
 }
 
 // ---------------------------------------------------------------------------

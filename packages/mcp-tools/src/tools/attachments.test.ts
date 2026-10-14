@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
+import { toMcpResult } from '../protocol.js';
 import { ToolInputValidationError } from '../tool.js';
 
 import {
   attachmentCorrectTextTool,
+  attachmentDownloadTicketTool,
+  attachmentReadImageTool,
   attachmentReadTextTool,
   attachmentReextractTextTool,
   attachmentUploadTicketGetTool,
@@ -16,6 +19,7 @@ import {
 interface RecordedCall {
   method?: string;
   path: string;
+  query?: unknown;
   body?: unknown;
   contentType?: string;
   fields?: Record<string, string>;
@@ -29,7 +33,7 @@ function createFakeClient(response: unknown): {
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {
-      calls.push({ method: input.method, path: input.path, body: input.body });
+      calls.push({ method: input.method, path: input.path, query: input.query, body: input.body });
       return input.responseSchema.parse(response);
     },
     async upload(input) {
@@ -327,5 +331,109 @@ describe('exo_attachment_upload_ticket_get', () => {
       { workspaceId: 'ws1234567', ticketId: 'ticket12345' },
     );
     expect(expired.text).toContain('neues Ticket');
+  });
+});
+
+const imageResponse = {
+  attachmentId: 'image0001',
+  documentId: 'document01',
+  filename: 'diff.png',
+  sourceMimeType: 'image/png',
+  sourceByteSize: 2048,
+  originalWidth: 800,
+  originalHeight: 600,
+  mimeType: 'image/png' as const,
+  byteSize: 2048,
+  width: 800,
+  height: 600,
+  resized: false,
+  data: 'iVBORw0KGgo=',
+};
+
+describe('exo_attachment_read_image (issue #204)', () => {
+  it('hands the picture over as an image element and keeps the bytes out of data', async () => {
+    const { client, calls } = createFakeClient(imageResponse);
+    const result = await attachmentReadImageTool.run(client, {
+      attachmentId: 'image0001',
+      maxEdge: 1024,
+    });
+
+    expect(calls).toEqual([
+      {
+        method: 'GET',
+        path: '/api/attachments/image0001/image',
+        query: { maxEdge: 1024 },
+        body: undefined,
+      },
+    ]);
+    expect(result.images).toEqual([{ mimeType: 'image/png', data: 'iVBORw0KGgo=' }]);
+    expect(result.data).not.toHaveProperty('data');
+    expect(result.text).toContain('800×600');
+    expect(result.text).toContain('Pixel für Pixel');
+
+    expect(toMcpResult(result).content).toEqual([
+      { type: 'text', text: result.text },
+      { type: 'image', data: 'iVBORw0KGgo=', mimeType: 'image/png' },
+    ]);
+  });
+
+  it('says when the picture was scaled down and how to get more detail', async () => {
+    const { client } = createFakeClient({
+      ...imageResponse,
+      originalWidth: 4000,
+      originalHeight: 3000,
+      width: 1568,
+      height: 1176,
+      resized: true,
+    });
+    const result = await attachmentReadImageTool.run(client, { attachmentId: 'image0001' });
+    expect(result.text).toContain('Verkleinert vom Original (4000×3000 px');
+    expect(result.text).toContain('exo_attachment_download_ticket');
+  });
+
+  it('is fenced as attachment content and read-only on both agent surfaces', () => {
+    expect(attachmentReadImageTool.untrustedOutput).toBe('attachment');
+    expect(attachmentReadImageTool.mutating).toBe(false);
+    expect(attachmentReadImageTool.surfaces).toEqual(['mcp', 'ai']);
+  });
+
+  it('refuses an edge outside the limits before calling anything', async () => {
+    const { client, calls } = createFakeClient(imageResponse);
+    await expect(
+      attachmentReadImageTool.run(client, { attachmentId: 'image0001', maxEdge: 10_000 }),
+    ).rejects.toBeInstanceOf(ToolInputValidationError);
+    expect(calls).toHaveLength(0);
+  });
+});
+
+describe('exo_attachment_download_ticket (issue #204)', () => {
+  it('mints a ticket and writes a curl line that cannot break out of its quotes', async () => {
+    const { client, calls } = createFakeClient({
+      ticket: {
+        id: 'ticket0001',
+        attachmentId: 'attach0001',
+        filename: "../bericht'; rm -rf ~.pdf",
+        mimeType: 'application/pdf',
+        byteSize: 1234,
+        expiresAt: '2026-10-14T12:10:00.000Z',
+        createdAt: '2026-10-14T12:00:00.000Z',
+      },
+      downloadUrl: 'https://exocortex.app/api/attachments/download/secret',
+    });
+    const result = await attachmentDownloadTicketTool.run(client, { attachmentId: 'attach0001' });
+
+    expect(calls).toEqual([
+      {
+        method: 'POST',
+        path: '/api/attachments/attach0001/download-tickets',
+        query: undefined,
+        body: undefined,
+      },
+    ]);
+    expect(result.text).toContain(
+      "curl -sS -o '_bericht__ rm -rf _.pdf' 'https://exocortex.app/api/attachments/download/secret'",
+    );
+    expect(attachmentDownloadTicketTool.mutating).toBe(false);
+    expect(attachmentDownloadTicketTool.surfaces).toEqual(['mcp']);
   });
 });

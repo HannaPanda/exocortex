@@ -5,6 +5,7 @@ export * from './auth-mailer';
 export * from './collaboration-ticket';
 export * from './credential-cipher';
 export * from './document-grants';
+export * from './download-ticket';
 export * from './invitation-token';
 export * from './mcp-oauth';
 export * from './policies';

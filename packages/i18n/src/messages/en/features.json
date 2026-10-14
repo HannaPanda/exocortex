@@ -417,6 +417,15 @@
     },
     "where": "Drag a file into the editor."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Agents view images and retrieve files",
+    "summary": "An agent can retrieve an image attachment as an actual image and view it, such as a screenshot or a before-and-after comparison. For other files like PDFs, it retrieves them via a download address that is valid for ten minutes and exactly once.",
+    "details": {
+      "p1": "Previously, an agent only saw the address and file name of an image on a page. With exo_attachment_read_image, it gets the image itself: a model that understands images can then actually examine it. Small images arrive unchanged pixel by pixel, large ones are scaled down, and the agent learns by how much.",
+      "p2": "The built-in AI works with text. When it retrieves an image, an image model describes it for it: the selected model itself if it sees images, otherwise the companion model for images. If neither is configured, it says so instead of guessing.",
+      "p3": "For anything that does not belong in the conversation, there is exo_attachment_download_ticket: a one-time download address for the agent’s script, for example for a PDF or the original of a photo. It is retrieved using the permissions of the agent that fetched it, at the time of retrieval. A revoked token or a revoked page closes the door immediately."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Agents upload local files directly",
     "summary": "An agent with a photo or PDF stored locally sends it directly to eXocortex instead of hosting it on another website first. To do this, it gets an upload URL valid for ten minutes and exactly once.",

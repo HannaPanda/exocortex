@@ -417,6 +417,15 @@
     },
     "where": "Przeciągnij plik do edytora."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Agenci przeglądają obrazy i pobierają pliki",
+    "summary": "Agent może pobrać załącznik graficzny jako prawdziwy obraz i go obejrzeć, na przykład zrzut ekranu lub porównanie przed i po. Inne pliki, takie jak PDF-y, pobiera przez adres URL ważny przez dziesięć minut i dokładnie na jedno użycie.",
+    "details": {
+      "p1": "Do tej pory agent widział z obrazu na stronie tylko adres i nazwę pliku. Dzięki exo_attachment_read_image otrzymuje sam obraz: model rozumiejący obrazy może go wtedy rzeczywiście obejrzeć. Małe obrazy trafiają do niego piksel w piksel bez zmian, duże są pomniejszane, a agent dowiaduje się, o ile.",
+      "p2": "Wbudowane AI operuje na tekście. Jeśli pobiera obraz, opisuje go dla niego model wizyjny: sam wybrany model, jeśli widzi obrazy, a w przeciwnym razie towarzyszący model wizyjny. Jeśli żaden nie jest skonfigurowany, informuje o tym, zamiast zgadywać.",
+      "p3": "Dla wszystkiego, co nie pasuje do rozmowy, istnieje exo_attachment_download_ticket: jednorazowy adres pobierania dla skryptu agenta, na przykład dla pliku PDF lub oryginału zdjęcia. Pobieranie odbywa się z uprawnieniami agenta, który je zainicjował, i to w momencie pobierania. Unieważniony token lub odebrany dostęp do strony natychmiast zamyka tę możliwość."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Agenci przesyłają pliki lokalne bezpośrednio",
     "summary": "Agent, który ma u siebie zdjęcie lub plik PDF, przesyła go bezpośrednio do eXocortex, zamiast najpierw umieszczać go na innej stronie. Pobiera w tym celu adres do przesłania, który jest ważny przez dziesięć minut i dokładnie jeden raz.",

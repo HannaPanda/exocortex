@@ -417,6 +417,15 @@
     },
     "where": "Bestand naar de editor slepen."
   },
+  "agenten-bilder-ansehen": {
+    "title": "Agents bekijken afbeeldingen en halen bestanden op",
+    "summary": "Een agent kan een afbeeldingsbijlage als echte afbeelding ophalen en bekijken, bijvoorbeeld een screenshot of een voor-en-na-vergelijking. Andere bestanden zoals pdf’s haalt hij op via een download-URL die tien minuten en precies één keer geldig is.",
+    "details": {
+      "p1": "Tot nu toe zag een agent van een afbeelding op een pagina alleen het adres en de bestandsnaam. Met exo_attachment_read_image krijgt hij de afbeelding zelf: een model dat afbeeldingen begrijpt, kan deze dan echt bekijken. Kleine afbeeldingen komen pixel voor pixel ongewijzigd door, grote worden verkleind, en de agent krijgt te horen hoeveel.",
+      "p2": "De ingebouwde AI werkt met tekst. Haalt deze een afbeelding op, dan beschrijft een afbeeldingsmodel die voor haar: het gekozen model zelf als het afbeeldingen kan zien, anders het begeleidende model voor afbeeldingen. Is er geen ingesteld, dan geeft ze dat aan in plaats van te gokken.",
+      "p3": "Voor alles wat niet in het gesprek thuishoort, is er exo_attachment_download_ticket: een eenmalig downloadadres voor het script van de agent, bijvoorbeeld voor een pdf of het origineel van een foto. Het ophalen gebeurt met de rechten van de agent die het adres heeft aangevraagd, en wel op het moment van ophalen. Een ingetrokken token of een ingetrokken pagina sluit de deur direct."
+    }
+  },
   "agenten-datei-hochladen": {
     "title": "Agents uploaden lokale bestanden direct",
     "summary": "Een agent die lokaal een foto of pdf heeft staan, stuurt deze direct naar eXocortex in plaats van het eerst op een andere website te plaatsen. De agent vraagt hiervoor een upload-adres aan dat tien minuten en precies één keer geldig is.",

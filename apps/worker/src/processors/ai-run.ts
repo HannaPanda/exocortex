@@ -16,6 +16,7 @@ import { type ObjectStorage } from '@exocortex/storage';
 import { type ResolvedAiKey } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
 import { type ExternalToolLoader, type ExternalToolSource } from '../external-mcp-tools';
+import { type ToolImageDescriber } from '../tool-images';
 import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun, refuseRun } from './ai-run/admission';
@@ -44,6 +45,7 @@ import {
   buildRunMessages,
   loadConversationMessages,
   resolveModelRow,
+  resolveToolImageDescriber,
   resolveVisionPreprocessor,
   taskTextFor,
   withConfiguredEndpoints,
@@ -305,6 +307,56 @@ async function loadExternalTools(
   }
 }
 
+/**
+ * What a run gets to know about pictures (ADR-012, ADR-088): the open page's
+ * images, described before the first turn, and who describes a picture a tool
+ * returns later. Both read the same companion choice.
+ */
+async function prepareRunVision(input: {
+  dependencies: AiRunDependencies;
+  run: AiRun;
+  settings: Settings;
+  modelRow: ResolvedModelRow;
+  conversationCompanionSlug: string | null;
+  apiKey: string;
+  correlationId: string;
+  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
+}): Promise<{ imageContext: AiMessage | null; describeImage: ToolImageDescriber | null }> {
+  const { dependencies, run, settings, logger } = input;
+  const choice = {
+    settings,
+    modelRow: input.modelRow,
+    conversationCompanionSlug: input.conversationCompanionSlug,
+    visionPreprocessorFor: (modelSlug: string | null) =>
+      dependencies.visionPreprocessorFor(modelSlug, input.apiKey),
+  };
+  const describeImage = resolveToolImageDescriber({
+    ...choice,
+    correlationId: input.correlationId,
+  });
+  const visionPreprocessor = resolveVisionPreprocessor({ ...choice, run, logger });
+  if (run.documentId === null || visionPreprocessor === null) {
+    return { imageContext: null, describeImage };
+  }
+  const imageContext = await describeDocumentImages({
+    prisma: dependencies.prisma,
+    storage: dependencies.storage,
+    visionPreprocessor,
+    workspaceId: run.workspaceId,
+    documentId: run.documentId,
+    correlationId: input.correlationId,
+    logger,
+    maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
+  }).catch((error: unknown) => {
+    logger.info('Skipping image preprocessing for this run', {
+      runId: run.id,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  });
+  return { imageContext, describeImage };
+}
+
 /** The tool loop of one run, told what it may offer and what it may call. */
 function createRunToolRunner(input: {
   factory: ToolRunnerFactory;
@@ -313,6 +365,7 @@ function createRunToolRunner(input: {
   rest: AiMessage[];
   policy: RunPolicy;
   externalTools: ExternalToolSource | null;
+  describeImage: ToolImageDescriber | null;
 }): ToolRunner {
   const { run, settings, policy } = input;
   const proposing = policy.writeMode === 'propose';
@@ -356,6 +409,7 @@ function createRunToolRunner(input: {
     // "what the assistant did while answering that question".
     agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
     runId: run.id,
+    describeImage: input.describeImage,
   });
 }
 
@@ -450,7 +504,7 @@ async function recordTraceId(prisma: PrismaClient, runId: string): Promise<void>
  * provider loop and the terminal write each live in `ai-run/`.
  */
 export function createAiRunProcessor(dependencies: AiRunDependencies) {
-  const { prisma, bus, storage } = dependencies;
+  const { prisma, bus } = dependencies;
   let loggedMissingServiceTokenWarning = false;
 
   return async ({
@@ -549,34 +603,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       },
     });
 
-    const visionPreprocessor = resolveVisionPreprocessor({
+    const { imageContext, describeImage } = await prepareRunVision({
+      dependencies,
+      run,
       settings,
       modelRow,
       conversationCompanionSlug: conversation?.visionCompanionSlug ?? null,
-      visionPreprocessorFor: (modelSlug) =>
-        dependencies.visionPreprocessorFor(modelSlug, key.apiKey),
-      run,
+      apiKey: key.apiKey,
+      correlationId: payload.correlationId,
       logger,
     });
-    const imageContext =
-      run.documentId !== null && visionPreprocessor !== null
-        ? await describeDocumentImages({
-            prisma,
-            storage,
-            visionPreprocessor,
-            workspaceId: run.workspaceId,
-            documentId: run.documentId,
-            correlationId: payload.correlationId,
-            logger,
-            maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
-          }).catch((error: unknown) => {
-            logger.info('Skipping image preprocessing for this run', {
-              runId: run.id,
-              reason: error instanceof Error ? error.message : String(error),
-            });
-            return null;
-          })
-        : null;
     // The mode, the role and the limits this run is held to (issues #141 and
     // #143): told to the model up front, enforced by the loop and, through
     // its signed token, by the API.
@@ -596,6 +632,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           rest,
           policy,
           externalTools: await loadExternalTools(dependencies.externalTools, run, policy, logger),
+          describeImage,
         })
       : null;
     // The image descriptions were produced before the runner existed, and they

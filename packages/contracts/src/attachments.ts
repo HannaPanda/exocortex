@@ -217,6 +217,124 @@ export const uploadTicketResponseSchema = z.object({ ticket: uploadTicketSchema 
 export type UploadTicketResponse = z.infer<typeof uploadTicketResponseSchema>;
 
 /**
+ * Raster formats `GET /api/attachments/:id/image` hands over as pixels
+ * (issue #204).
+ *
+ * SVG is absent on purpose: it is a document that can carry script, not a
+ * bitmap (issue #177), and rasterizing somebody's SVG on the server would put
+ * an XML parser and a renderer in front of foreign input for a picture an
+ * agent can just as well download through a ticket.
+ */
+export const ATTACHMENT_IMAGE_SOURCE_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+] as const;
+
+/**
+ * What the image read answers with. The three formats every multimodal model
+ * this deployment talks to accepts; a GIF (first frame) and an AVIF are
+ * re-encoded as PNG.
+ */
+export const ATTACHMENT_IMAGE_OUTPUT_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+] as const;
+
+export function isAttachmentImageSource(mimeType: string): boolean {
+  return (ATTACHMENT_IMAGE_SOURCE_MIME_TYPES as readonly string[]).includes(mimeType);
+}
+
+/**
+ * Longest edge the image read returns unless asked otherwise. 1568 pixels is
+ * where the large vision models stop gaining detail and start scaling down on
+ * their side, so anything above it is bandwidth and tokens for nothing.
+ */
+export const ATTACHMENT_IMAGE_DEFAULT_MAX_EDGE = 1_568;
+/** The most a caller may ask for: the size of a stored preview (`image-preview.ts`). */
+export const ATTACHMENT_IMAGE_MAX_EDGE = 2_048;
+export const ATTACHMENT_IMAGE_MIN_EDGE = 64;
+
+/**
+ * The most bytes one image answer carries before Base64. Base64 adds a third,
+ * which lands just under the five megabytes a model provider accepts per image,
+ * and keeps a single tool answer from swallowing a context window.
+ */
+export const ATTACHMENT_IMAGE_MAX_BYTES = 3_750_000;
+
+/** Query of `GET /api/attachments/:attachmentId/image`. */
+export const attachmentImageQuerySchema = z.object({
+  maxEdge: z.coerce
+    .number()
+    .int()
+    .min(ATTACHMENT_IMAGE_MIN_EDGE)
+    .max(ATTACHMENT_IMAGE_MAX_EDGE)
+    .default(ATTACHMENT_IMAGE_DEFAULT_MAX_EDGE),
+});
+export type AttachmentImageQuery = z.infer<typeof attachmentImageQuerySchema>;
+
+/**
+ * An image attachment as pixels (issue #204).
+ *
+ * JSON with the bytes as Base64 rather than the stream the download route
+ * sends, because every tool reaches the domain through a JSON API (ADR-014)
+ * and an MCP image content element is Base64 anyway. The original stays where
+ * it is: an image small enough is passed through byte for byte, so a
+ * screenshot diff keeps every pixel, and one that is too large is scaled down
+ * and says so in `resized`.
+ */
+export const attachmentImageResponseSchema = z.object({
+  attachmentId: idSchema,
+  documentId: idSchema.nullable(),
+  filename: z.string(),
+  /** The stored file. */
+  sourceMimeType: z.string(),
+  sourceByteSize: z.number().int().nonnegative(),
+  originalWidth: z.number().int().positive(),
+  originalHeight: z.number().int().positive(),
+  /** What `data` holds. */
+  mimeType: z.enum(ATTACHMENT_IMAGE_OUTPUT_MIME_TYPES),
+  byteSize: z.number().int().nonnegative(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  /** True when `data` is not the stored file: scaled down, or re-encoded. */
+  resized: z.boolean(),
+  data: z.string(),
+});
+export type AttachmentImageResponse = z.infer<typeof attachmentImageResponseSchema>;
+
+/**
+ * How long a download ticket stays redeemable (issue #204). The same ten
+ * minutes as an upload ticket, for the same reason.
+ */
+export const DOWNLOAD_TICKET_TTL_SECONDS = 600;
+
+export const downloadTicketSchema = z.object({
+  id: idSchema,
+  attachmentId: idSchema,
+  filename: z.string(),
+  mimeType: z.string(),
+  byteSize: z.number().int().nonnegative(),
+  expiresAt: z.string(),
+  createdAt: z.string(),
+});
+export type DownloadTicket = z.infer<typeof downloadTicketSchema>;
+
+/** Answer of `POST /api/attachments/:attachmentId/download-tickets`. */
+export const createDownloadTicketResponseSchema = z.object({
+  ticket: downloadTicketSchema,
+  /**
+   * The address to GET the file from, once. Carries the secret and is shown
+   * exactly once. Not an embed address: a page uses `attachmentDownloadPath`.
+   */
+  downloadUrl: z.string(),
+});
+export type CreateDownloadTicketResponse = z.infer<typeof createDownloadTicketResponseSchema>;
+
+/**
  * Why an attachment's text could not be read, as a code each reader words in
  * its own language (issue #98): the engine is switched off, the file is over
  * the size limit, it has no text, or the office converter refused it for a

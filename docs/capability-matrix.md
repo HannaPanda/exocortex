@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-303 routes are reachable from at least one client; 177 from all three.
+305 routes are reachable from at least one client; 177 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -77,6 +77,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
 | `GET /api/ai/runs/:x/inspection` | ✓ | · | ✓ | `exo_ai_run_inspect` |
+| `GET /api/attachments/:x/image` | · | ✓ | ✓ | `exo_attachment_read_image` |
 | `GET /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attachments/:x/text/info` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
 | `GET /api/attention` | ✓ | ✓ | ✓ | `exo_attention_list` |
@@ -223,6 +224,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/ai/runs/:x/eval-case` | ✓ | · | ✓ | `exo_eval_case_from_run` |
+| `POST /api/attachments/:x/download-tickets` | · | · | ✓ | `exo_attachment_download_ticket` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
 | `POST /api/attention/:x/resolve` | ✓ | ✓ | ✓ | `exo_attention_resolve` |
 | `POST /api/attention/:x/withdraw` | · | ✓ | ✓ | `exo_attention_withdraw` |
@@ -421,6 +423,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_ai_run_get` — mcp: Reads the state of an AI run. The built-in AI is the thing being read; a model watching its own run spends tokens on the tokens it is spending.
 - `exo_ai_run_inspect` — mcp: Reads the timeline and context composition of an AI run. Same reason as `exo_ai_run_get`: the built-in AI is the thing being inspected.
 - `exo_ai_usage` — mcp: The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.
+- `exo_attachment_download_ticket` — mcp: Hands out an address a script fetches one file from (issue #204). The built-in AI has no disk and no shell, so the address could not be used by anything on that surface. What it can do with a file, it does through tools: a picture through `exo_attachment_read_image`, a document's text through `exo_attachment_read_text`.
 - `exo_attachment_upload_ticket` — mcp: Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.
 - `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.
 - `exo_changeset_apply` — mcp: Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.
@@ -442,4 +445,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 52 documented route exemptions.
+Counted against 53 documented route exemptions.
