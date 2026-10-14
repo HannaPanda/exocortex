@@ -97,6 +97,9 @@ function toolLine(
       ...(entry.untrustedOrigin === null ? [] : [t('toolUntrusted')]),
       ...(entry.repeated ? [t('toolRepeated')] : []),
       ...(entry.pausedRun ? [t('toolPaused')] : []),
+      ...(entry.failureCode === null || entry.failureCode === undefined
+        ? []
+        : [t('toolFailureCode', { code: entry.failureCode })]),
     ],
     tone: entry.status === 'succeeded' ? 'default' : 'problem',
   };

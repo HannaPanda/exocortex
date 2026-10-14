@@ -50,7 +50,11 @@ import { EvalCaseFixture } from './eval-case-fixture';
 import { useEvalWording } from './eval-labels';
 
 const NONE = '__none__';
-const CHOOSABLE_DOMAINS = TOOL_DOMAINS.filter((domain) => domain !== 'core');
+// An eval replay never reaches an external MCP server (issue #196), so
+// offering the domain here would be a choice that changes nothing.
+const CHOOSABLE_DOMAINS = TOOL_DOMAINS.filter(
+  (domain) => domain !== 'core' && domain !== 'external',
+);
 
 type Set = <TKey extends keyof CaseDraft>(field: TKey, value: CaseDraft[TKey]) => void;
 

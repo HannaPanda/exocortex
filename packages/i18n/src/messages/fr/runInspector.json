@@ -97,6 +97,7 @@
     "toolUntrusted": "Contenu tiers",
     "toolRepeated": "Répétition",
     "toolPaused": "met l’exécution en pause",
+    "toolFailureCode": "Raison {code}",
     "toolStatus": {
       "succeeded": "réussi",
       "failed": "échoué",

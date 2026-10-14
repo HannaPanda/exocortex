@@ -1089,11 +1089,12 @@
   },
   "externe-mcp-server": {
     "title": "Podłączanie zewnętrznych serwerów MCP",
-    "summary": "Do obszaru roboczego możesz dodawać zewnętrzne serwery MCP, na przykład aplikację Zdrowie, i dla każdego z ich narzędzi decydować, czy AI może go używać do odczytu, do zapisu, czy wcale. Każde narzędzie jest domyślnie zablokowane.",
+    "summary": "Możesz dodać do obszaru roboczego zewnętrzne serwery MCP, na przykład aplikację Zdrowie, i dla każdego z ich narzędzi samodzielnie zdecydować, czy AI może go używać do odczytu, do zapisu, czy wcale. Każde narzędzie jest początkowo zablokowane; to, co udostępnisz, AI wykorzysta na czacie i w zadaniach tego obszaru roboczego.",
     "details": {
       "p1": "Serwer wymaga adresu https dostępnego z internetu oraz opcjonalnie tokena lub własnego nagłówka. Sekret jest zapisywany w formie zaszyfrowanej i nigdy więcej nie jest wyświetlany. Adresy w sieci lokalnej i na tym komputerze są odrzucane, także po przekierowaniu.",
       "p2": "Po sprawdzeniu połączenia zobaczysz każde narzędzie wraz z opisem, parametrami i informacjami przekazanymi przez sam serwer. Zgoda dotyczy wyłącznie tej konkretnej wersji: jeśli serwer zmieni później opis lub parametry, narzędzie zostanie ponownie zablokowane, dopóki go nie sprawdzisz.",
-      "p3": "Podłączanie, modyfikowanie i zatwierdzanie jest możliwe wyłącznie w przeglądarce jako właściciel lub właścicielka, nigdy za pomocą tokena ani przez agenta. Dzięki temu żadna AI nie może samodzielnie nadać sobie nowych narzędzi. Używanie zatwierdzonych narzędzi przez AI podczas wykonywania zadań zostanie dodane w kolejnym kroku."
+      "p3": "Podłączanie, modyfikowanie i udostępnianie jest możliwe tylko z poziomu przeglądarki przez osobę będącą właścicielem – nigdy za pomocą tokena ani przez agenta. Dzięki temu żadna AI nie może samodzielnie zdobyć nowych narzędzi.",
+      "p4": "W trakcie uruchomienia narzędzie nazywa się mcp_skrót__nazwa. Jego odpowiedź jest traktowana jako treść zewnętrzna: po niej AI nie może już niczego zmieniać przy włączonym ustawieniu „Zapis po treściach zewnętrznych”, tak jak po stronie internetowej. Narzędzie do zapisu działa tylko w bezpośrednim trybie zapisu, a profil agenta musi zezwalać na obszar „Zewnętrzne narzędzia”. Jeśli zablokujesz narzędzie lub wyłączysz serwer, kolejne wywołanie w ramach trwającego uruchomienia już nie zostanie wysłane. W inspektorze uruchomień widoczne jest każde wywołanie wraz z czasem trwania i powodem ewentualnego odrzucenia lub niepowodzenia."
     },
     "where": "Ustawienia obszaru roboczego, zakładka Zewnętrzne narzędzia. Przełącznik dla całej instancji znajduje się w: Administracja, Ustawienia, sekcja AI."
   }

@@ -40,6 +40,7 @@ export function buildToolRunnerFactory(env: WorkerEnv, logger: Logger): ToolRunn
       allowedDomains: input.allowedDomains,
       confinedWorkspaceId: input.confinedWorkspaceId,
       confinedPageRootId: input.confinedPageRootId,
+      externalTools: input.externalTools,
       toolCallTimeoutMs: input.toolCallTimeoutMs,
       agentSession: input.agentSession,
       runId: input.runId,

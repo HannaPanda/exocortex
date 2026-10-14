@@ -836,7 +836,11 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   a token; its secret is encrypted like a workspace credential. Every tool
   starts blocked, a person approves it as read or write, and the approval is
   bound to the tool's fingerprint by a check constraint, so a changed
-  description is a new tool. The routes are not in the tool catalogue.
+  description is a new tool. The routes are not in the tool catalogue. A run
+  is offered its workspace's approved tools as `mcp_<key>__<tool>` (domain
+  `external`, never in an eval replay); the access class is the `mutating`
+  flag for `decideMutation`, every answer is fenced as `external-mcp`, and
+  each call re-reads the approval first.
 
 Full list: `docs/adr/`.
 

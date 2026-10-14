@@ -389,6 +389,17 @@ somebody else's server (issue #196,
   description or schema is a new tool that starts blocked. Descriptions,
   schemas and `instructions` are the server's text and are stored and shown
   as such.
+- **In a run.** `apps/worker/src/external-mcp-tools.ts` offers a run the
+  approved tools of its own workspace, and only when its user is an OWNER,
+  ADMIN or MEMBER there; `instructions` never reach the model. Every call
+  re-reads the tool, the server, the membership and the master switch and
+  decrypts the secret for that call alone, so a withdrawal stops the next
+  call. The decision is `decideMutation` in `apps/worker/src/external-tool-call.ts`
+  with the person's access class as `mutating`, and it is the only one: no
+  API stands behind an external call to refuse it a second time. Every answer
+  of the server, its error messages included, is fenced as `external-mcp`
+  and marks the run (ADR-030); a failure of ours is a closed code, never the
+  server's words.
 
 ## The MCP endpoint and its OAuth server
 

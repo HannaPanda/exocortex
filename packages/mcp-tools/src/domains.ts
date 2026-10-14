@@ -312,6 +312,14 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'url',
     ],
   },
+  // Never chosen by keywords and never opened by `exo_toolbox`: the worker
+  // offers a run the approved tools of its workspace's servers whenever the
+  // run's profile allows this domain (issue #196, ADR-086).
+  external: {
+    label:
+      'Werkzeuge externer MCP-Server, die eine Besitzerin des Arbeitsbereichs freigegeben hat.',
+    keywords: [],
+  },
   admin: {
     label: 'Einladungen, Benutzerkonten, Arbeitsbereich umbenennen.',
     keywords: [

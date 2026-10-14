@@ -154,6 +154,7 @@
       "projects": "Projecten",
       "render": "Pdf-publicatie",
       "web": "Webonderzoek",
+      "external": "Externe tools (MCP-servers)",
       "admin": "Beheer"
     }
   },

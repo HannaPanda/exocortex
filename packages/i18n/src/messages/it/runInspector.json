@@ -97,6 +97,7 @@
     "toolUntrusted": "Contenuto esterno",
     "toolRepeated": "Ripetizione",
     "toolPaused": "mette in pausa l’esecuzione",
+    "toolFailureCode": "Motivo {code}",
     "toolStatus": {
       "succeeded": "riuscito",
       "failed": "non riuscito",

@@ -1089,11 +1089,12 @@
   },
   "externe-mcp-server": {
     "title": "Fremde MCP-Server anbinden",
-    "summary": "Du kannst einem Arbeitsbereich fremde MCP-Server hinzufügen, etwa die Health-App, und für jedes ihrer Werkzeuge selbst entscheiden, ob die KI es zum Lesen, zum Schreiben oder gar nicht benutzen darf. Jedes Werkzeug ist zuerst gesperrt.",
+    "summary": "Du kannst einem Arbeitsbereich fremde MCP-Server hinzufügen, etwa die Health-App, und für jedes ihrer Werkzeuge selbst entscheiden, ob die KI es zum Lesen, zum Schreiben oder gar nicht benutzen darf. Jedes Werkzeug ist zuerst gesperrt; was du freigibst, benutzt die KI im Chat und in Aufträgen dieses Arbeitsbereichs.",
     "details": {
       "p1": "Ein Server braucht eine https-Adresse, die aus dem Internet erreichbar ist, und auf Wunsch ein Token oder einen eigenen Header. Das Secret wird verschlüsselt gespeichert und nie wieder angezeigt. Adressen im eigenen Netz und auf diesem Rechner werden abgelehnt, auch nach einer Weiterleitung.",
       "p2": "Nach der Verbindungsprüfung siehst du jedes Werkzeug mit Beschreibung, Parametern und dem, was der Server selbst darüber sagt. Was du freigibst, gilt nur für genau diese Fassung: Ändert der Server später Beschreibung oder Parameter, ist das Werkzeug wieder gesperrt, bis du es neu angesehen hast.",
-      "p3": "Anbinden, Ändern und Freigeben geht nur als Besitzerin oder Besitzer im Browser, nie mit einem Token und nie durch einen Agenten. So kann sich keine KI selbst neue Werkzeuge verschaffen. Dass die KI freigegebene Werkzeuge in einem Lauf auch benutzt, kommt in einem nächsten Schritt."
+      "p3": "Anbinden, Ändern und Freigeben geht nur als Besitzerin oder Besitzer im Browser, nie mit einem Token und nie durch einen Agenten. So kann sich keine KI selbst neue Werkzeuge verschaffen.",
+      "p4": "Im Lauf heißt ein Werkzeug mcp_kürzel__name. Seine Antwort gilt als Fremdinhalt: Danach darf die KI unter der Einstellung „Schreiben nach Fremdinhalten“ nichts mehr ändern, wie nach einer Webseite. Ein Werkzeug zum Schreiben läuft nur im direkten Schreibmodus, und ein Agentenprofil muss den Bereich „Externe Werkzeuge“ erlauben. Sperrst du ein Werkzeug oder schaltest den Server aus, geht schon der nächste Aufruf eines laufenden Laufs nicht mehr hinaus. Im Lauf-Inspektor steht jeder Aufruf mit Dauer und Grund, wenn er abgelehnt wurde oder scheiterte."
     },
     "where": "Einstellungen des Arbeitsbereichs, Reiter Externe Werkzeuge. Der Schalter für die ganze Instanz liegt unter Verwaltung, Einstellungen, Abschnitt KI."
   }

@@ -79,12 +79,50 @@ decision does not reopen it; web research stays as it is.
   an answer. The plaintext lives for that request, and an error detail the
   server sent back is stored with the secret replaced (`redactSecret`).
 
+## Calling the tools from a run (stage 3, 2026-10-14)
+
+- **A run is offered its own workspace's approved tools.** When the run
+  starts, `apps/worker/src/external-mcp-tools.ts` reads the tools that are
+  approved for their current fingerprint, listed, without a problem, on a
+  server that is on, while `ai.externalMcpEnabled` holds for the workspace
+  and the run's user is an OWNER, ADMIN or MEMBER of it. A GUEST holds a
+  share of some pages, not the workspace, and gets none.
+- **Offered whole, not guessed.** They form the domain `external`. A person
+  chose every one of them, so they are in every turn rather than picked by
+  keywords, and `exo_toolbox` neither lists nor opens the domain. An agent
+  profile that names domains has to name this one; one that names none
+  allows it. That is a limit enforced in the loop, like every profile domain.
+- **What the model reads.** A line of ours (whose tool, approved for what,
+  that its answer is data) and then the description a person approved. That
+  description does not mark the run as having read foreign text: it is the
+  text a person read and bound by its fingerprint. The server's
+  `instructions` never reach the model.
+- **The access class is the mutation flag.** `write` makes a tool mutating
+  for `decideMutation`, so it is offered only in the `direct` write mode with
+  `ai.mutatingToolsEnabled` on and a policy other than `deny`, and it is
+  refused after foreign text under `guarded`. `read` is never refused there.
+  There is no API behind an external call to refuse it a second time, so
+  this decision in `apps/worker/src/external-tool-call.ts` is the only one.
+- **Every answer is foreign.** The server's text, its error messages
+  included, is cut at the loop's cap, fenced as `external-mcp` and marks the
+  run. A failure of ours is a closed code (`timeout`, `unauthorized`, ...),
+  never the server's words, and tells the model that whether the call had an
+  effect is unknown.
+- **Each call is checked again.** The tool, its server, the membership and
+  the master switch are read from the database before every call, and the
+  secret is decrypted in the worker for that call alone. Blocking a tool,
+  narrowing it to read, a new check that saw it change, switching the server
+  off or deleting it stops the next call of a run already going
+  (`tool_revoked`, `server_disabled`, `external_mcp_disabled`,
+  `membership_revoked`).
+- **An eval replay gets none.** A foreign server is neither replayable nor
+  harmless, and a sandboxed replay must not reach outside the deployment.
+- **The timeline names the reason.** A `tool_call` event carries
+  `failureCode` when the call was refused or failed, for every tool of the
+  loop, and the run inspector shows it beside the duration.
+
 ## Not decided here
 
-- **Calling the tools from a run.** Offering approved tools to the loop, the
-  ADR-030 marking of their results as `external-mcp`, write tools under the
-  write mode and the profile, and the run timeline are stage 3 of issue #196.
-  Until then, an approval is stored and has no effect on any run.
 - **Private and local targets, and stdio.** The guard refuses every private
   address today, including this host. A health app on `127.0.0.1` has to be
   reached through its public name. An allowlist only a global admin writes,
@@ -98,6 +136,10 @@ decision does not reopen it; web research stays as it is.
 
 - An external server can do nothing in a run before a person has looked at
   each tool, and what they looked at is what stays approved.
+- The fingerprint guards what the server _says_ about a tool. A server that
+  changes what a tool _does_ without changing its listing is not caught by
+  it; that is the trust a person extends by approving a tool at all, and the
+  reason a write approval is its own decision.
 - The guard is the same code for every request to an address somebody chose
   that this process makes itself: attachments by URL, and now MCP.
 - A server that changes its tools often is tiresome to use, by design: each

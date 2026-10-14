@@ -2264,6 +2264,10 @@
       "source": "fff553f218c706a6",
       "output": "fff553f218c706a6"
     },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "b397204168a2e622"
+    },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
       "output": "02e3308b9954e286"
@@ -12157,12 +12161,16 @@
       "output": "7ccb36c60d8b17b6"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "0d4475b54b2940dc"
+      "source": "470bac160e71a162",
+      "output": "40b28a638d41436a"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "ecb54ab2df4af488"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "f067c3ed564a063d"
+      "source": "35d10a4015a93888",
+      "output": "8c69237512864417"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -16099,6 +16107,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "a9b2df2c1bb614fd"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -25425,6 +25437,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "fff553f218c706a6"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "ce0a0aac66715f59"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -35319,12 +35335,16 @@
       "output": "d0cd61b62af297b0"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "3c9729cc64165785"
+      "source": "470bac160e71a162",
+      "output": "5acd70eb3c7007e5"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "9960e33e880b055e"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "bfc3594dc4c849c9"
+      "source": "35d10a4015a93888",
+      "output": "c809766e15c0a74e"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -39261,6 +39281,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "4e1c04249fec8c3e"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -48587,6 +48611,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "16e3c7cfea602639"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "49024349b7f87404"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -58481,12 +58509,16 @@
       "output": "b4bc3ed68a9f2be3"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "127ca971bb4414b0"
+      "source": "470bac160e71a162",
+      "output": "cd600ced02007f2c"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "fc174622e747654d"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "6fa12e640e65029b"
+      "source": "35d10a4015a93888",
+      "output": "c4599cadd73280c9"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -62423,6 +62455,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "2871ed3f3058d253"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -71749,6 +71785,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "7f712a33096ba821"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "0f610f6eccb0b84e"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -81643,12 +81683,16 @@
       "output": "6908e0c22566cca4"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "1d55f874a116e20b"
+      "source": "470bac160e71a162",
+      "output": "150b1de7da3ed6a2"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "7df04a732c3e1e5c"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "2c8ea5542726b9e0"
+      "source": "35d10a4015a93888",
+      "output": "225944bccef9ead2"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -85585,6 +85629,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "4e1c04249fec8c3e"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -94911,6 +94959,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "fff553f218c706a6"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "6ff9858a3ba5aeef"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -104805,12 +104857,16 @@
       "output": "a65671c7dc403d9e"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "07754011d1c1cc13"
+      "source": "470bac160e71a162",
+      "output": "2ae550782936262b"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "966566400ee93caa"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "cd58dcd95180d680"
+      "source": "35d10a4015a93888",
+      "output": "2eb171a64e84e09b"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -108747,6 +108803,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "7879bdaec4d00560"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -118073,6 +118133,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "ac009ca1d09138a1"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "aed2839e12e5b603"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -127967,12 +128031,16 @@
       "output": "a537b25505375f73"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "8fd07b721db4d018"
+      "source": "470bac160e71a162",
+      "output": "7b148c63dba9a2f3"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "592d7cdc45ae4305"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "00e94f8e60be7d73"
+      "source": "35d10a4015a93888",
+      "output": "9cd4634df31cd18b"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -131909,6 +131977,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "d2e4edad4b85a920"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",
@@ -141235,6 +141307,10 @@
     "agentProfiles.labels.domains.evals": {
       "source": "fff553f218c706a6",
       "output": "e85aefd8eea1fcf4"
+    },
+    "agentProfiles.labels.domains.external": {
+      "source": "335d238341fc2f5d",
+      "output": "ff2f92eb134f1820"
     },
     "agentProfiles.labels.domains.history": {
       "source": "9ded4c7377e55ec9",
@@ -151129,12 +151205,16 @@
       "output": "993751d7cd6ef19b"
     },
     "features.externe-mcp-server.details.p3": {
-      "source": "0c96855d1d386a71",
-      "output": "5b8453f27ecbac98"
+      "source": "470bac160e71a162",
+      "output": "47cab5a0e55f6666"
+    },
+    "features.externe-mcp-server.details.p4": {
+      "source": "aa47f5b551ee2407",
+      "output": "405db9d0eae68cb9"
     },
     "features.externe-mcp-server.summary": {
-      "source": "d22e74fe64977a2d",
-      "output": "03b260b24674fbe3"
+      "source": "35d10a4015a93888",
+      "output": "06381ea75e1937fe"
     },
     "features.externe-mcp-server.title": {
       "source": "98bb46a3375b2b04",
@@ -155071,6 +155151,10 @@
     "runInspector.timeline.toolCall": {
       "source": "15cf336b72802417",
       "output": "15cf336b72802417"
+    },
+    "runInspector.timeline.toolFailureCode": {
+      "source": "633e7f3f0932261f",
+      "output": "4e1c04249fec8c3e"
     },
     "runInspector.timeline.toolPaused": {
       "source": "82c62853cdeb0ca1",

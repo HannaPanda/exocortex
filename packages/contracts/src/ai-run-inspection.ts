@@ -164,6 +164,12 @@ export const aiRunToolCallEventDataSchema = z.object({
   repeated: z.boolean(),
   /** It raised a blocking human checkpoint and paused the run (ADR-068). */
   pausedRun: z.boolean(),
+  /**
+   * Why it was refused or failed, as a closed code of ours (issue #196): the
+   * mutation decision's code, `profile_domain`, `revoked`, or an external MCP
+   * client error such as `timeout`. Absent on rows written before it existed.
+   */
+  failureCode: z.string().max(64).nullable().optional(),
 });
 
 export const aiRunTruncationEventDataSchema = z.object({

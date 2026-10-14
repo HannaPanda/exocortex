@@ -16,10 +16,13 @@ import {
   type CreateExternalMcpServerRequest,
   type DeleteExternalMcpServerResponse,
   EXTERNAL_MCP_LIMITS,
+  externalMcpAuthHeaders,
   type ExternalMcpAuthKind,
   type ExternalMcpErrorCode,
+  externalMcpSecretPurpose,
   type ExternalMcpServerListResponse,
   type ExternalMcpServerResponse,
+  redactSecret,
   type SetExternalMcpToolAccessRequest,
   type UpdateExternalMcpServerRequest,
 } from '@exocortex/contracts';
@@ -33,12 +36,7 @@ import { PRISMA } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
 import { type WorkItemActor } from '../work-items/work-item-actor';
 
-import {
-  externalMcpAuthHeaders,
-  externalMcpSecretPurpose,
-  reconcileTools,
-  redactSecret,
-} from './external-mcp-check';
+import { reconcileTools } from './external-mcp-check';
 import {
   ACCESS_ROW,
   AUTH_KIND_ROW,

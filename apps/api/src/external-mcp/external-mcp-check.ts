@@ -1,6 +1,5 @@
 import { type DiscoveredMcpTool, type McpDiscovery } from '@exocortex/ai';
 import {
-  type ExternalMcpAuthKind,
   externalMcpFunctionName,
   type ExternalMcpToolProblem,
   MODEL_FUNCTION_NAME_MAX,
@@ -23,34 +22,6 @@ import { type Prisma } from '@exocortex/database';
  *   approval does not silently come back if the server lists it again with a
  *   different description.
  */
-
-/** The secret's purpose, bound into the AES-GCM tag (ADR-086). */
-export function externalMcpSecretPurpose(workspaceId: string, key: string): string {
-  return `external-mcp:${workspaceId}:${key}`;
-}
-
-/** The headers a stored credential becomes. Never logged, never returned. */
-export function externalMcpAuthHeaders(input: {
-  authKind: ExternalMcpAuthKind;
-  authHeaderName: string | null;
-  secret: string | null;
-}): Record<string, string> {
-  if (input.authKind === 'none' || input.secret === null) return {};
-  if (input.authKind === 'bearer') return { authorization: `Bearer ${input.secret}` };
-  return input.authHeaderName === null ? {} : { [input.authHeaderName]: input.secret };
-}
-
-/**
- * Removes a secret from text a server sent back.
- *
- * A server answering 401 may quote the request, and an error detail is
- * stored and shown. Cheap insurance: the person reading it owns the secret,
- * but the audit trail and the logs are read by more people than that.
- */
-export function redactSecret(text: string, secret: string | null): string {
-  if (secret === null || secret.length < 4) return text;
-  return text.split(secret).join('[redacted]');
-}
 
 export function toolProblem(
   serverKey: string,

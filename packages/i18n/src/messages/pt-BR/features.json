@@ -1089,11 +1089,12 @@
   },
   "externe-mcp-server": {
     "title": "Conectar servidores MCP externos",
-    "summary": "Você pode adicionar servidores MCP externos a um espaço de trabalho, como o aplicativo de saúde, e decidir por conta própria para cada uma de suas ferramentas se a IA pode usá-la para leitura, para escrita ou de forma alguma. Cada ferramenta fica bloqueada por padrão.",
+    "summary": "Você pode adicionar servidores MCP externos a um espaço de trabalho, como o app Saúde, e decidir para cada uma de suas ferramentas se a IA pode usá-la para leitura, para escrita ou de forma alguma. Cada ferramenta fica bloqueada por padrão; o que você liberar, a IA usará no chat e nas tarefas deste espaço de trabalho.",
     "details": {
       "p1": "Um servidor precisa de um endereço https acessível pela internet e, opcionalmente, de um token ou cabeçalho personalizado. O segredo é armazenado criptografado e nunca mais é exibido. Endereços na rede local e nesta máquina são rejeitados, mesmo após redirecionamentos.",
       "p2": "Após o teste de conexão, você vê cada ferramenta com sua descrição, parâmetros e o que o próprio servidor informa sobre ela. O que você autoriza vale apenas para essa versão exata: se o servidor alterar a descrição ou os parâmetros posteriormente, a ferramenta será bloqueada novamente até que você a revise.",
-      "p3": "Conectar, alterar e autorizar só é possível na função de proprietária ou proprietário no navegador, nunca com um token e nunca por meio de um agente. Dessa forma, nenhuma IA consegue conceder a si mesma novas ferramentas. O uso efetivo das ferramentas autorizadas pela IA durante uma execução virá em uma próxima etapa."
+      "p3": "Conectar, alterar e liberar só é possível para quem é proprietário no navegador, nunca com um token e nunca por meio de um agente. Assim, nenhuma IA pode obter novas ferramentas por conta própria.",
+      "p4": "Durante a execução, uma ferramenta se chama mcp_kürzel__name. Sua resposta é considerada conteúdo externo: depois disso, a IA não pode mais alterar nada sob a configuração „Gravação após conteúdo externo“, assim como após uma página web. Uma ferramenta de escrita só roda no modo de escrita direta, e o perfil do agente precisa permitir a área „Ferramentas externas“. Se você bloquear uma ferramenta ou desativar o servidor, a próxima chamada de uma execução em andamento já não sairá mais. No inspetor de execução, cada chamada é exibida com duração e o motivo, caso tenha sido rejeitada ou falhado."
     },
     "where": "Configurações do espaço de trabalho, aba Ferramentas externas. A opção para toda a instância fica em Administração, Configurações, seção IA."
   }

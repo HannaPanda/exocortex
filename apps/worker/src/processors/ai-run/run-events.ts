@@ -75,6 +75,7 @@ export function toolCallEvent(input: {
       untrustedOrigin: result?.untrustedOrigin ?? null,
       repeated: result?.repeated ?? false,
       pausedRun: result?.pausesRun === true,
+      failureCode: result?.failureCode ?? null,
     },
   };
 }

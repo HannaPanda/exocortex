@@ -97,6 +97,7 @@
     "toolUntrusted": "Externe inhoud",
     "toolRepeated": "Herhaling",
     "toolPaused": "onderbreekt de run",
+    "toolFailureCode": "Reden {code}",
     "toolStatus": {
       "succeeded": "geslaagd",
       "failed": "mislukt",

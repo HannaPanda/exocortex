@@ -9,12 +9,13 @@ import {
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
-import { currentTraceIds, withSpan } from '@exocortex/logger';
+import { currentTraceIds, type Logger, withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
+import { type ExternalToolLoader, type ExternalToolSource } from '../external-mcp-tools';
 import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun, refuseRun } from './ai-run/admission';
@@ -77,6 +78,8 @@ export interface AiRunDependencies {
   settings: (workspaceId?: string) => Promise<Settings>;
   /** `null` when `SERVICE_TOKEN_SECRET` is unset: the AI simply runs without tools. */
   toolRunnerFactory: ToolRunnerFactory | null;
+  /** The approved tools of a workspace's external MCP servers (issue #196); absent in tests. */
+  externalTools?: ExternalToolLoader;
   /**
    * Resolves (and caches) a vision companion preprocessor for a given model
    * slug. Deliberately widened to accept `null`, meaning "no explicit
@@ -278,6 +281,30 @@ async function resolveRunPolicy(input: {
   };
 }
 
+/**
+ * The external tools a run may be offered (issue #196). A database or
+ * settings failure here costs the run its external tools, never the run.
+ */
+async function loadExternalTools(
+  loader: ExternalToolLoader | undefined,
+  run: AiRun,
+  policy: RunPolicy,
+  logger: Logger,
+): Promise<ExternalToolSource | null> {
+  // An eval replay never reaches outside the deployment (issue #146): a
+  // foreign server is neither replayable nor harmless.
+  if (loader === undefined || policy.evalHold !== null) return null;
+  try {
+    return await loader({ workspaceId: run.workspaceId, userId: run.createdById });
+  } catch (error) {
+    logger.warn('Running without external MCP tools: they could not be loaded', {
+      runId: run.id,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
+
 /** The tool loop of one run, told what it may offer and what it may call. */
 function createRunToolRunner(input: {
   factory: ToolRunnerFactory;
@@ -285,6 +312,7 @@ function createRunToolRunner(input: {
   settings: Settings;
   rest: AiMessage[];
   policy: RunPolicy;
+  externalTools: ExternalToolSource | null;
 }): ToolRunner {
   const { run, settings, policy } = input;
   const proposing = policy.writeMode === 'propose';
@@ -322,6 +350,7 @@ function createRunToolRunner(input: {
         ? run.workspaceId
         : null,
     confinedPageRootId: policy.evalHold?.pageRootId ?? null,
+    externalTools: input.externalTools,
     toolCallTimeoutMs: policy.timeouts.toolCallTimeoutMs,
     // One run, one session (ADR-022): the unit somebody would want back is
     // "what the assistant did while answering that question".
@@ -566,6 +595,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           settings,
           rest,
           policy,
+          externalTools: await loadExternalTools(dependencies.externalTools, run, policy, logger),
         })
       : null;
     // The image descriptions were produced before the runner existed, and they

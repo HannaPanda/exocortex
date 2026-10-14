@@ -5,6 +5,7 @@ import {
   type AiWriteMode,
   decideMutation,
   fenceUntrustedContent,
+  parseExternalMcpFunctionName,
   type UntrustedOrigin,
 } from '@exocortex/contracts';
 import { currentTraceCarrier, type Logger, withSpan } from '@exocortex/logger';
@@ -23,6 +24,14 @@ import {
   toolsFor,
 } from '@exocortex/mcp-tools';
 
+import { type ExternalToolBinding, type ExternalToolSource } from './external-mcp-tools';
+import {
+  EXTERNAL_DOMAIN,
+  externalDomainAllowed,
+  externalToolDefinition,
+  offerExternalTool,
+  runExternalToolCall,
+} from './external-tool-call';
 import { repeatHint, ToolCallLedger, type ToolCallTally } from './tool-ledger';
 
 /** Every tool result is capped here so a single call can never eat the run's whole context. */
@@ -144,6 +153,8 @@ export interface ToolCallOutcome {
   untrustedOrigin?: UntrustedOrigin;
   resultTruncated?: boolean;
   repeated?: boolean;
+  /** Why it was refused or failed, as a closed code (issue #196); the timeline keeps it. */
+  failureCode?: string;
 }
 
 export interface CreateToolRunnerInput {
@@ -200,6 +211,11 @@ export interface CreateToolRunnerInput {
    * (issue #146), signed into its service token like the workspace above.
    */
   confinedPageRootId: string | null;
+  /**
+   * The approved tools of the run's workspace's external MCP servers (issue
+   * #196, ADR-086), or null when it has none or may use none.
+   */
+  externalTools: ExternalToolSource | null;
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
@@ -234,6 +250,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'allowedDomains'
   | 'confinedWorkspaceId'
   | 'confinedPageRootId'
+  | 'externalTools'
   | 'toolCallTimeoutMs'
   | 'agentSession'
   | 'runId'
@@ -244,6 +261,8 @@ export type ToolRunnerFactory = (input: ToolRunnerFactoryInput) => ToolRunner;
 /** What a run is told about, and how that set can still grow (issue #121). */
 interface ToolOffer {
   tools: () => readonly AnyToolDefinition[];
+  /** The external tools this run is offered; fixed for the run (issue #196). */
+  external: readonly ExternalToolBinding[];
   /** `true` when this call widened the set; `false` when the domain was already open. */
   open: (domain: ToolDomain) => boolean;
   domains: () => ToolDomain[];
@@ -282,8 +301,22 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
   const domains = new Set<ToolDomain>(
     selectToolDomains({ text: input.taskText, required: input.requiredDomains }).filter(allowed),
   );
+  // Approved by a person for this workspace, so offered whenever the profile
+  // allows them rather than guessed from the task's words (issue #196).
+  const external =
+    input.externalTools === null || !externalDomainAllowed(input.allowedDomains)
+      ? []
+      : input.externalTools.tools.filter((binding) =>
+          offerExternalTool(binding, {
+            includeMutating: input.includeMutating,
+            policy: input.mutationPolicy,
+            writeMode: input.writeMode,
+          }),
+        );
+  if (external.length > 0) domains.add(EXTERNAL_DOMAIN);
 
   return {
+    external,
     tools: () =>
       toolsFor('ai', { includeMutating, domains: [...domains] }).filter(
         (tool) =>
@@ -311,11 +344,10 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
 function bookCall(
   ledger: ToolCallLedger,
   logger: Logger,
-  name: string,
-  argumentsJson: string,
+  call: { name: string; argumentsJson: string; mutating: boolean },
   result: ToolCallOutcome,
 ): ToolCallOutcome {
-  const mutating = findTool(name)?.mutating ?? true;
+  const { name, argumentsJson, mutating } = call;
   const verdict = ledger.record({
     name,
     argumentsJson,
@@ -365,6 +397,7 @@ function usableTool(
         'mit diesen, oder sage in deiner Antwort, was du sonst bräuchtest.',
       isError: true,
       refused: true,
+      failureCode: 'profile_domain',
     },
   };
 }
@@ -401,6 +434,75 @@ function openFromToolbox(context: {
     });
   }
   return null;
+}
+
+/**
+ * An external MCP tool (issue #196). Only a tool the run was offered can be
+ * called: a name the model made up, or one the profile or the mode kept out
+ * of the offer, is an unknown tool here, never a lookup in the database.
+ */
+function executeExternalCall(context: {
+  input: CreateToolRunnerInput;
+  offer: ToolOffer;
+  call: { name: string; argumentsJson: string; correlationId: string };
+  untrustedOrigins: readonly UntrustedOrigin[];
+  noteUntrustedContent: (origin: UntrustedOrigin) => void;
+}): Promise<ToolCallOutcome> {
+  const { input, call } = context;
+  const binding = context.offer.external.find((candidate) => candidate.functionName === call.name);
+  if (input.externalTools === null || binding === undefined) {
+    return Promise.resolve({
+      text: `Unbekanntes Werkzeug: ${call.name}`,
+      isError: true,
+      refused: false,
+    });
+  }
+  return runExternalToolCall({
+    source: input.externalTools,
+    binding,
+    argumentsJson: call.argumentsJson,
+    correlationId: call.correlationId,
+    policy: input.mutationPolicy,
+    includeMutating: input.includeMutating,
+    writeMode: input.writeMode,
+    allowedDomains: input.allowedDomains,
+    untrustedOrigins: context.untrustedOrigins,
+    noteUntrustedContent: context.noteUntrustedContent,
+    timeoutMs: input.toolCallTimeoutMs,
+    truncate,
+    maxResultChars: MAX_RESULT_CHARS,
+    logger: input.logger,
+  });
+}
+
+/** The offer as the provider request carries it: the catalogue's part, then the external tools. */
+function offerDefinitions(offer: ToolOffer): AiToolDefinition[] {
+  return [
+    ...offer.tools().map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.jsonSchema,
+    })),
+    ...offer.external.map(externalToolDefinition),
+  ];
+}
+
+function offerContext(offer: ToolOffer): ToolContext {
+  const tools = offer.tools();
+  const external = offer.external.map(externalToolDefinition);
+  return {
+    offered: tools.length + external.length,
+    schemaChars:
+      toolSchemaChars(tools) + (external.length === 0 ? 0 : JSON.stringify(external).length),
+    domains: offer.domains(),
+  };
+}
+
+/** Whether a call changes something, for the duplicate guard: an external tool by its approval. */
+function isMutating(offer: ToolOffer, name: string): boolean {
+  const external = offer.external.find((binding) => binding.functionName === name);
+  if (external !== undefined) return external.access === 'write';
+  return findTool(name)?.mutating ?? true;
 }
 
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
@@ -462,6 +564,15 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     argumentsJson: string,
     correlationId: string,
   ): Promise<ToolCallOutcome> {
+    if (parseExternalMcpFunctionName(name) !== null) {
+      return executeExternalCall({
+        input,
+        offer,
+        call: { name, argumentsJson, correlationId },
+        untrustedOrigins,
+        noteUntrustedContent,
+      });
+    }
     const found = usableTool(input, name, correlationId);
     if ('refusal' in found) return found.refusal;
     const { tool } = found;
@@ -483,7 +594,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         code: decision.code,
         untrustedOrigins,
       });
-      return { text: decision.message, isError: true, refused: true };
+      return { text: decision.message, isError: true, refused: true, failureCode: decision.code };
     }
 
     // The budget is spent on the call, not on the page: a fetch that failed
@@ -501,6 +612,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
             'Arbeite mit dem, was du schon gelesen hast, und sage, was du sonst noch nachschlagen würdest.',
           isError: true,
           refused: true,
+          failureCode: 'budget_exhausted',
         };
       }
       webFetches += 1;
@@ -590,20 +702,9 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
 
   return {
     get definitions(): readonly AiToolDefinition[] {
-      return offer.tools().map((tool) => ({
-        name: tool.name,
-        description: tool.description,
-        parameters: tool.jsonSchema,
-      }));
+      return offerDefinitions(offer);
     },
-    toolContext(): ToolContext {
-      const tools = offer.tools();
-      return {
-        offered: tools.length,
-        schemaChars: toolSchemaChars(tools),
-        domains: offer.domains(),
-      };
-    },
+    toolContext: () => offerContext(offer),
     callCount: () => ledger.tallies().reduce((total, tally) => total + tally.calls, 0),
     untrustedOrigins,
     noteUntrustedContent,
@@ -619,8 +720,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
           const result = bookCall(
             ledger,
             input.logger,
-            name,
-            argumentsJson,
+            { name, argumentsJson, mutating: isMutating(offer, name) },
             await executeToolCall(name, argumentsJson, correlationId),
           );
           span.setAttributes({

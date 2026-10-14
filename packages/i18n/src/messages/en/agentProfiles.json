@@ -154,6 +154,7 @@
       "projects": "Projects",
       "render": "PDF publishing",
       "web": "Web research",
+      "external": "External tools (MCP servers)",
       "admin": "Administration"
     }
   },

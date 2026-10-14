@@ -296,8 +296,8 @@ is readable as "an engine said no" rather than "nothing exists".
 ### External MCP servers (issue #196)
 
 Off until somebody turns it on. With `ai.externalMcpEnabled` a workspace owner
-can connect somebody else's MCP server so that, in a later stage of #196, the
-built-in AI can use its tools. Every request to such a server leaves this host
+can connect somebody else's MCP server, and the built-in AI uses the tools
+the owner approved in that workspace's chats and work items. Every request to such a server leaves this host
 for an address a person typed, carrying arguments a model wrote.
 
 | Setting                        | Meaning                                                                                                            |
@@ -315,6 +315,16 @@ key and needs `CREDENTIAL_ENCRYPTION_KEY`. Every tool the server lists starts
 blocked; a person approves it as reading or writing, and a server that changes
 a tool's description or schema afterwards gets it blocked again
 ([ADR-086](adr/ADR-086-an-external-tool-is-blocked-until-a-person-approves-what-they-saw.md)).
+
+A run sees an approved tool as `mcp_<key>__<tool>`. Its answers count as
+foreign content, so `ai.untrustedContentPolicy` decides what the run may still
+change afterwards. A writing tool is offered only in the `direct` write mode
+with `ai.mutatingToolsEnabled` on, and a run under an agent profile needs the
+domain "Externe Werkzeuge" in that profile. An eval replay is never offered
+one. Blocking a tool, switching a server or the master switch off, or removing
+the run's user from the workspace stops the next call of a run that is already
+going; the run inspector names each call with its duration and, when it was
+refused or failed, a code such as `tool_revoked` or `timeout`.
 
 ### Search settings (issue #34, AP4)
 

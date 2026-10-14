@@ -34,6 +34,7 @@ function runnerWith(overrides: Partial<CreateToolRunnerInput> = {}) {
     allowedDomains: null,
     confinedWorkspaceId: null,
     confinedPageRootId: null,
+    externalTools: null,
     toolCallTimeoutMs: 1_000,
     agentSession: { externalId: 'ai-run-test', label: 'eXocortex KI' },
     runId: 'run-test',

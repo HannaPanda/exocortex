@@ -468,10 +468,9 @@ Deliberately absent, while the architecture leaves room for each:
   defines the contract and `createUnimplementedRunner()` throws rather than
   pretending; when they are built they run from `apps/worker` in a container
 - granular per-block permissions
-- the built-in AI calling tools on somebody else's MCP server. A workspace
-  owner can connect a server, check it and approve its tools in the workspace
-  settings under "Externe Werkzeuge" (ADR-086), but no run is offered them yet
-  (issue #196)
+- stdio MCP servers, OAuth-only MCP servers and servers on a private address.
+  The built-in AI reaches only public `https` servers with no credential, a
+  bearer token or a named header (ADR-086, issue #196)
 - horizontal scaling beyond one host. The Redis event bus is the boundary that
   makes it possible, and nothing has been run against a second instance
 

@@ -317,7 +317,13 @@ describe('tool domains', () => {
     } as unknown as ExocortexApiClient;
 
     const all = await toolbox.run(client, {});
-    for (const domain of TOOL_DOMAINS) expect(all.text).toContain(domain);
+    // `external` holds no catalogue tool: the worker offers a run the approved
+    // tools of its workspace's MCP servers itself (issue #196).
+    for (const domain of TOOL_DOMAINS.filter((name) => name !== 'external')) {
+      expect(all.text).toContain(`- ${domain} (`);
+    }
+    expect(all.text).not.toContain('- external (');
+    await expect(toolbox.run(client, { domain: 'external' })).rejects.toThrow();
 
     const one = await toolbox.run(client, { domain: 'databases' });
     expect(one.text).toContain('exo_database_query');

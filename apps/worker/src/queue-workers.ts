@@ -14,6 +14,7 @@ import {
 import { type Logger } from '@exocortex/logger';
 import { createTypedWorker } from '@exocortex/queue';
 
+import { createExternalToolLoader } from './external-mcp-tools';
 import { createAiRunProcessor } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createAutomationProcessor } from './processors/automation';
@@ -164,6 +165,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       storage,
       settings: readSettings,
       toolRunnerFactory,
+      externalTools: createExternalToolLoader({ prisma, env, logger, settings: readSettings }),
       visionPreprocessorFor,
       modelRegistry,
       queues,

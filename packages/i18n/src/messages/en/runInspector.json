@@ -97,6 +97,7 @@
     "toolUntrusted": "external content",
     "toolRepeated": "repeated",
     "toolPaused": "pauses the run",
+    "toolFailureCode": "Reason {code}",
     "toolStatus": {
       "succeeded": "succeeded",
       "failed": "failed",

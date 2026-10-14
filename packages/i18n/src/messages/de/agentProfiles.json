@@ -154,6 +154,7 @@
       "projects": "Projekte",
       "render": "PDF-Veröffentlichung",
       "web": "Web-Recherche",
+      "external": "Externe Werkzeuge (MCP-Server)",
       "admin": "Verwaltung"
     }
   },

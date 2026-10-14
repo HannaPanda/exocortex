@@ -97,6 +97,7 @@
     "toolUntrusted": "treść zewnętrzna",
     "toolRepeated": "powtórzenie",
     "toolPaused": "wstrzymuje przebieg",
+    "toolFailureCode": "Powód {code}",
     "toolStatus": {
       "succeeded": "zakończone sukcesem",
       "failed": "nie powiodło się",

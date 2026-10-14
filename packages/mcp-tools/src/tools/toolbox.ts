@@ -23,6 +23,13 @@ import { type AnyToolDefinition, defineTool, TOOL_DOMAINS } from '../tool.js';
 /** Characters of a tool's description the listing carries. The schema follows next turn. */
 const MAX_DESCRIPTION_CHARS = 220;
 
+/**
+ * The domains this tool can name and open. `external` is not one of them: its
+ * tools are not in the catalogue, and a run that may use them already has
+ * them (issue #196).
+ */
+const OPENABLE_DOMAINS = TOOL_DOMAINS.filter((domain) => domain !== 'external');
+
 function firstSentence(description: string): string {
   const cut = description.slice(0, MAX_DESCRIPTION_CHARS);
   return cut.length < description.length ? `${cut}…` : cut;
@@ -30,7 +37,7 @@ function firstSentence(description: string): string {
 
 export function createToolboxTool(catalogue: readonly AnyToolDefinition[]): AnyToolDefinition {
   const listDomains = (): string =>
-    TOOL_DOMAINS.map((domain) => {
+    OPENABLE_DOMAINS.map((domain) => {
       const count = catalogue.filter((tool) => tool.domain === domain).length;
       return `- ${domain} (${count}): ${domainLabel(domain)}`;
     }).join('\n');
@@ -49,6 +56,7 @@ export function createToolboxTool(catalogue: readonly AnyToolDefinition[]): AnyT
     inputSchema: z.object({
       domain: z
         .enum(TOOL_DOMAINS)
+        .exclude(['external'])
         .optional()
         .describe('Bereich, der freigeschaltet werden soll. Ohne Angabe werden alle aufgezählt.'),
     }),
@@ -62,7 +70,7 @@ export function createToolboxTool(catalogue: readonly AnyToolDefinition[]): AnyT
             'Werkzeugbereiche dieser Installation:\n\n' +
             `${listDomains()}\n\n` +
             'Ruf exo_toolbox mit domain auf, um einen davon freizuschalten.',
-          data: { domains: TOOL_DOMAINS },
+          data: { domains: OPENABLE_DOMAINS },
         });
       }
 

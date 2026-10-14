@@ -53,6 +53,12 @@ export const TOOL_DOMAINS = [
   'projects',
   'render',
   'web',
+  /**
+   * Tools of external MCP servers an owner approved (issue #196, ADR-086).
+   * Not part of the catalogue: the worker offers them per run, and a profile
+   * has to name this domain before a run under it may call one.
+   */
+  'external',
   'admin',
 ] as const;
 export const toolDomainSchema = z.enum(TOOL_DOMAINS);

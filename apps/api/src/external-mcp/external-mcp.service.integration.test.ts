@@ -5,7 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { type DiscoveredMcpTool, McpClientError, type McpDiscovery } from '@exocortex/ai';
 import { AuthorizationError, decryptCredential, WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
-import { type Settings, settingsSchema } from '@exocortex/contracts';
+import { externalMcpSecretPurpose, type Settings, settingsSchema } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
@@ -14,7 +14,6 @@ import { OutboxService } from '../common/outbox.service';
 import { type SettingsService } from '../platform/settings.service';
 
 import { type ExternalMcpCaller, ExternalMcpService } from './external-mcp.service';
-import { externalMcpSecretPurpose } from './external-mcp-check';
 
 /**
  * External MCP servers against the real database (issue #196, ADR-086).

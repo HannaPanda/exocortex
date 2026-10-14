@@ -97,6 +97,7 @@
     "toolUntrusted": "Fremdinhalt",
     "toolRepeated": "Wiederholung",
     "toolPaused": "pausiert den Lauf",
+    "toolFailureCode": "Grund {code}",
     "toolStatus": {
       "succeeded": "erfolgreich",
       "failed": "fehlgeschlagen",

@@ -1089,11 +1089,12 @@
   },
   "externe-mcp-server": {
     "title": "Collegare server MCP esterni",
-    "summary": "Puoi aggiungere server MCP esterni a un’area di lavoro, come l’app Salute, e decidere per ciascuno dei loro strumenti se l’IA può usarlo in lettura, in scrittura o per niente. Ogni strumento è inizialmente bloccato.",
+    "summary": "Puoi aggiungere server MCP esterni a un’area di lavoro, come l’app Salute, e decidere per ciascuno dei loro strumenti se l’IA può usarlo per leggere, per scrivere o per nulla. Ogni strumento è inizialmente bloccato; ciò che abiliti viene usato dall’IA nella chat e negli incarichi di quest’area di lavoro.",
     "details": {
       "p1": "Un server richiede un indirizzo https raggiungibile da Internet e, facoltativamente, un token o un’intestazione personalizzata. Il secret viene memorizzato in modo cifrato e non viene mai più mostrato. Gli indirizzi nella rete locale e su questo computer vengono rifiutati, anche in caso di reindirizzamento.",
       "p2": "Dopo la verifica della connessione, visualizzi ciascuno strumento con descrizione, parametri e ciò che il server dichiara a riguardo. Ciò che autorizzi vale solo per questa esatta versione: se in seguito il server modifica la descrizione o i parametri, lo strumento viene di nuovo bloccato finché non lo esamini nuovamente.",
-      "p3": "Collegare, modificare e autorizzare è possibile solo da titolare dell’area di lavoro nel browser, mai tramite token e mai tramite un agente. In questo modo nessuna IA può procurarsi autonomamente nuovi strumenti. L’utilizzo effettivo degli strumenti autorizzati da parte dell’IA durante un’esecuzione arriverà in un passaggio successivo."
+      "p3": "Il collegamento, la modifica e l’abilitazione sono possibili solo come proprietari nel browser, mai tramite token e mai da parte di un agente. In questo modo nessuna IA può procurarsi da sola nuovi strumenti.",
+      "p4": "Durante l’esecuzione uno strumento si chiama mcp_abbreviazione__nome. La sua risposta è considerata contenuto esterno: dopodiché, con l’impostazione «Scrittura dopo contenuti esterni», l’IA non può più modificare nulla, proprio come dopo una pagina web. Uno strumento di scrittura funziona solo in modalità di scrittura diretta, e un profilo agente deve consentire l’area «Strumenti esterni». Se blocchi uno strumento o disattivi il server, già la chiamata successiva di un’esecuzione in corso non partirà più. Nell’ispettore di esecuzione ogni chiamata è riportata con durata e motivo, se è stata rifiutata o non è andata a buon fine."
     },
     "where": "Impostazioni dell’area di lavoro, scheda Strumenti esterni. L’opzione per l’intera istanza si trova in Amministrazione, Impostazioni, sezione IA."
   }

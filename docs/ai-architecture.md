@@ -405,6 +405,18 @@ same `exo_*` tool catalogue the external MCP server serves
   catalogue, still executed if the model names it, and still governed by the
   service token and `decideMutation`. What a run carried is on its `ai_run` row
   (`toolsOffered`, `toolSchemaChars`, `toolDomains`, `toolCalls`).
+- **External MCP tools** (issue #196, ADR-086). Beside the catalogue, a run is
+  offered the tools a workspace owner approved on the workspace's external MCP
+  servers, as `mcp_<key>__<tool>` under the domain `external`. They are not
+  chosen by keywords: a person picked them, so they are in every turn while
+  the run's profile allows the domain, and `exo_toolbox` neither lists nor
+  opens it. `apps/worker/src/external-mcp-tools.ts` loads them when the run
+  starts and checks each call against the database again;
+  `apps/worker/src/external-tool-call.ts` decides it (profile, write mode,
+  `decideMutation` with the approved access class), calls the server through
+  `callMcpTool` and fences every answer as `external-mcp`. An eval replay
+  gets none. A refused or failed call carries `failureCode` on its
+  `tool_call` event, which every refusal of the loop now does.
 - **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
   (summed from every turn's reported usage) stop a runaway loop with
   `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`
