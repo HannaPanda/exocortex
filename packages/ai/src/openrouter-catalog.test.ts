@@ -28,7 +28,27 @@ describe('deriveReasoningLevels', () => {
     ).toEqual(['none', 'low', 'medium', 'high', 'xhigh', 'max']);
   });
 
-  it('drops an effort with no level of ours, and always offers none', () => {
+  it('offers no "do not think" for a model whose reasoning is mandatory', () => {
+    // As OpenRouter reported google/gemini-3.5-flash on 2026-10-14; it answers
+    // `effort: none` with a 400.
+    expect(
+      deriveReasoningLevels({
+        slug: 'google/gemini-3.5-flash',
+        supportedParameters: ['tools', 'reasoning', 'reasoning_effort'],
+        supportedEfforts: ['high', 'medium', 'low', 'minimal'],
+        mandatory: true,
+      }),
+    ).toEqual(['minimal', 'low', 'medium', 'high']);
+    expect(
+      deriveReasoningLevels({
+        slug: 'new/thinker',
+        supportedParameters: ['reasoning'],
+        mandatory: true,
+      }),
+    ).toEqual(['medium']);
+  });
+
+  it('drops an effort with no level of ours, and offers none', () => {
     expect(
       deriveReasoningLevels({
         slug: 'new/model',

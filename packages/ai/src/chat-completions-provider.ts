@@ -265,7 +265,11 @@ export class ChatCompletionsProvider implements AiProvider {
             })),
             tool_choice: request.toolChoice ?? 'auto',
           }),
-      ...(request.reasoning === undefined || request.reasoning.effort === 'none'
+      // `none` is sent rather than left out: leaving it out means the model's
+      // default, which for DeepSeek V4.1 Flash is thousands of reasoning
+      // tokens (measured 2026-10-14). A model that cannot stop thinking never
+      // offers `none` (`deriveReasoningLevels`).
+      ...(request.reasoning === undefined
         ? {}
         : { reasoning: { effort: request.reasoning.effort } }),
       ...(provider === undefined ? {} : { provider }),

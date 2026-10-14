@@ -317,6 +317,25 @@ describe('OpenRouterProvider provider routing', () => {
     });
   });
 
+  /**
+   * Leaving `none` out means the model's own default: DeepSeek V4.1 Flash then
+   * spent 2343 reasoning tokens on a question the thinking level "aus" was meant
+   * to answer without any (measured 2026-10-14, issue #195).
+   */
+  it('sends a thinking level of none instead of leaving it to the model', async () => {
+    const captured = captureBody();
+
+    await collect(provider().stream({ ...request, reasoning: { effort: 'none' } }));
+    expect(captured.body().reasoning).toEqual({ effort: 'none' });
+  });
+
+  it('sends no reasoning field when the caller names no level', async () => {
+    const captured = captureBody();
+
+    await collect(provider().stream(request));
+    expect(captured.body()).not.toHaveProperty('reasoning');
+  });
+
   it('adds no sort or order of its own when nothing is configured', async () => {
     const captured = captureBody();
 

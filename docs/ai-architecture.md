@@ -534,8 +534,10 @@ clamped server-side against the selected `AiModel` row's `reasoningLevels`
 level the model does not support (or does not have selectable at all, e.g.
 Haiku 4.5's single-element `[NONE]`) and gets the closest supported level
 back instead of an error. `/think` reports in German when this happened. The
-clamped level becomes `OpenRouterProvider`'s `reasoning.effort` parameter
-(omitted entirely for `NONE`). The clamping itself lives in
+clamped level becomes the `reasoning.effort` parameter, `none` included: left
+out, a model thinks at its own default, which for DeepSeek V4.1 Flash was
+thousands of reasoning tokens on a run set to `NONE` (measured 2026-10-14,
+issue #195). The clamping itself lives in
 `clampReasoningLevel` (`packages/contracts/src/ai-models.ts`) because the
 browser needs the same answer: the picker must not display a remembered `high`
 on a model that cannot think.
@@ -546,9 +548,11 @@ Which levels a model offers is not guessed: `deriveReasoningLevels`
 entry carries it, and only falls back to the older heuristic (`reasoning_effort`
 in `supported_parameters`, plus `MINIMAL` for OpenAI) when it does not. That is
 how `XHIGH` and `MAX` became reachable, and how the next level will: an effort
-name with no enum value is dropped rather than approximated, and `NONE` is
-always offered, because "do not think" is a choice no model can take away. A
-registry row only learns about a new level once it is synced.
+name with no enum value is dropped rather than approximated. `NONE` is offered
+unless the entry reports `reasoning.mandatory`: such a model answers
+`effort: none` with a 400, so offering it would offer a run that cannot start.
+A registry row only learns about a new level, or a mandatory one, once it is
+synced.
 
 The chosen model and level are remembered per workspace in `localStorage`
 (`useModelPreference`, `apps/web/src/components/ai/model-choice.ts`). A

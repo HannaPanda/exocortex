@@ -59,6 +59,8 @@ What changes is who may see the thinking, not whether it is private.
   a run's facts stay readable through the run inspector.
 - A model that reasons without streaming it (or a provider that drops it)
   simply shows activities; nothing has to be configured per model.
-- Whether the "aus" thinking level should send `effort: none` explicitly
-  (today the field is omitted and DeepSeek then reasons at its default) is a
-  separate decision, recorded in issue #195.
+- Measuring this showed that the "aus" thinking level never meant "no
+  thinking": the field was left out and DeepSeek reasoned at its default.
+  Since 2026-10-14 `effort: none` is sent, and a model whose reasoning
+  OpenRouter reports as `mandatory` no longer offers "aus" at all, because it
+  answers `none` with a 400.

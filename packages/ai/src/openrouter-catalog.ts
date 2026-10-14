@@ -55,6 +55,8 @@ const openRouterModelSchema = z
     reasoning: z
       .object({
         supported_efforts: z.array(z.string()).default([]),
+        /** The model cannot be told not to think: `effort: none` is answered with a 400. */
+        mandatory: z.boolean().optional(),
       })
       .loose()
       .nullable()
@@ -170,8 +172,11 @@ const EFFORT_NAME_TO_LEVEL: Record<string, OpenRouterReasoningLevel> = {
  * `reasoning.supported_efforts` is the provider's own answer and is believed
  * whenever it is there: it is how `xhigh` and `max` became reachable at all, and
  * how the next level will. An effort with no level of ours is dropped rather
- * than guessed at, and `none` is always offered -- "do not think" is a choice no
- * model can take away.
+ * than guessed at. `none` is offered unless OpenRouter reports the reasoning as
+ * `mandatory`: such a model answers `effort: none` with a 400 ("Reasoning is
+ * mandatory for this endpoint and cannot be disabled", measured 2026-10-14 on
+ * four registry models), so offering "do not think" there would offer a run
+ * that cannot start.
  *
  * The fallback is the older heuristic, for an entry that reports no efforts. A
  * model that only lists `reasoning` thinks on its own terms and offers no level
@@ -180,6 +185,19 @@ const EFFORT_NAME_TO_LEVEL: Record<string, OpenRouterReasoningLevel> = {
  * offered where the provider documents it, which today is OpenAI.
  */
 export function deriveReasoningLevels(input: {
+  slug: string;
+  supportedParameters: readonly string[];
+  supportedEfforts?: readonly string[];
+  mandatory?: boolean;
+}): OpenRouterReasoningLevel[] {
+  const levels = offeredReasoningLevels(input);
+  if (input.mandatory !== true) return levels;
+  const thinking = levels.filter((level) => level !== 'none');
+  // A model that must think and names no effort still needs one level to run at.
+  return thinking.length > 0 ? thinking : ['medium'];
+}
+
+function offeredReasoningLevels(input: {
   slug: string;
   supportedParameters: readonly string[];
   supportedEfforts?: readonly string[];
@@ -215,6 +233,7 @@ export function mapModelFields(
       slug: entry.id,
       supportedParameters: entry.supported_parameters,
       supportedEfforts: entry.reasoning?.supported_efforts,
+      mandatory: entry.reasoning?.mandatory,
     }),
     inputMicroUsdPerMTok: toMicroUsdPerMTok(entry.pricing.prompt),
     outputMicroUsdPerMTok: toMicroUsdPerMTok(entry.pricing.completion),

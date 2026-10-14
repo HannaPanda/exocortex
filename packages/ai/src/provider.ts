@@ -69,7 +69,7 @@ export interface AiRoutingRequirements {
 }
 
 export interface AiReasoningOptions {
-  /** OpenRouter `reasoning.effort`. Omitted entirely for 'none'. */
+  /** OpenRouter `reasoning.effort`, sent as it is, `none` included. */
   effort: 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 }
 
