@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Propuestas de cambio",
-    "empty": "No hay propuestas para esta tarea.",
     "writeModeLabel": "Modo de escritura de la IA",
     "writeModeInherit": "Como en el espacio de trabajo",
     "writeModeHelp": "Se aplica a cada ejecución de la IA integrada en esta tarea. Solo puede restringir el modo del espacio de trabajo."

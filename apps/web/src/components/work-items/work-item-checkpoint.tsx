@@ -16,7 +16,7 @@ import { Badge, Button } from '@exocortex/ui';
 import { useWorkItemCheckpoints } from '@/lib/api/work-item-queries';
 
 import { useWorkItemWording } from './work-item-labels';
-import { Section } from './work-item-sections';
+import { pageLinkClassName, Section } from './work-item-sections';
 
 /**
  * Where the work stands (issue #142, ADR-069).
@@ -59,7 +59,12 @@ export function CheckpointSection({ item }: { item: WorkItemDetail }) {
       title={t('heading')}
       action={
         earlier.length === 0 ? null : (
-          <Button size="sm" variant="ghost" onClick={() => setShowEarlier((shown) => !shown)}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowEarlier((shown) => !shown)}
+            aria-expanded={showEarlier}
+          >
             {showEarlier ? t('hideEarlier') : t('showEarlier', { count: query.data.total - 1 })}
           </Button>
         )
@@ -96,7 +101,7 @@ function CheckpointView({
 
   return (
     <div className="flex flex-col gap-3 text-sm">
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-2 text-meta text-muted-foreground">
         <Badge variant={checkpoint.trigger === 'run_interrupted' ? 'destructive' : 'secondary'}>
           {labels(`trigger.${checkpoint.trigger}`)}
         </Badge>
@@ -156,7 +161,7 @@ function CheckpointView({
         </Part>
       )}
       {checkpoint.budgetMicroUsd === null ? null : (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-meta text-muted-foreground">
           {t('budget', {
             spent: wording.money(checkpoint.spentMicroUsd),
             budget: wording.money(checkpoint.budgetMicroUsd),
@@ -170,7 +175,7 @@ function CheckpointView({
 function Part({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <h3 className="text-xs font-medium text-muted-foreground">{title}</h3>
+      <h3 className="text-meta font-medium text-muted-foreground">{title}</h3>
       {children}
     </div>
   );
@@ -225,7 +230,7 @@ function Pages({
             ) : (
               <Link
                 href={`/arbeitsbereich/${workspaceId}/seite/${ref.documentId}`}
-                className="hover:underline"
+                className={pageLinkClassName}
               >
                 {ref.title}
               </Link>

@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Una propuesta reúne cambios en una o varias páginas: un bloque, una sección, un fragmento de texto, la página entera o una página nueva. Nada de esto se aplica en una página antes de que lo aceptes.",
       "p2": "Se aplica tomando como base la versión sobre la que se propuso. Si la página ha cambiado desde entonces, el cambio ya no se escribe y se marca como obsoleto, para evitar que algo se aplique sobre un estado que nadie ha revisado. Antes de cada aplicación se crea una instantánea.",
-      "p3": "El modo de escritura de la IA (en Configuración o por tarea) determina si escribe directamente, solo propone o solo lee. Para agentes externos existe el alcance de token «Leer y proponer». Ambas restricciones se aplican en el servidor, no son solo una petición al modelo.",
+      "p3": "El modo de escritura de la IA (Ajustes, o por encargo en «Ajustes de IA») determina si escribe directamente, solo sugiere o solo lee. Para agentes externos existe para ello el ámbito de token «Leer y sugerir». Ambos se aplican también en el servidor, no solo como una petición al modelo.",
       "p4": "Si una propuesta pertenece a una tarea, esta pasa a revisión al enviarse y aparece en «Esperando tu respuesta». En cuanto se decide sobre todos los cambios, la IA continúa trabajando según tu decisión.",
       "p5": "Los agentes usan exo_changeset_propose, exo_changeset_submit, exo_changeset_get y exo_changeset_list; exo_changeset_apply y exo_changeset_reject solo están disponibles para accesos externos de una persona, nunca para la IA integrada."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Cada ejecución recuerda con qué versión del perfil ha trabajado, y cada cambio en el perfil queda registrado en su historial junto con la persona y los campos modificados. Solo las personas con rol de administración del espacio de trabajo pueden crearlos y modificarlos; los agentes leen perfiles con exo_agent_profile_list y exo_agent_profile_get.",
       "p6": "Una automatización puede delegar trabajo: la acción «Crear encargo» convierte la página modificada en un encargo con el objetivo de la regla y el perfil elegido; si se desea, la IA empieza de inmediato."
     },
-    "where": "En Encargos a través de «Gestionar perfiles», en el propio encargo junto al perfil de agente, o con Strg + K y «Abrir perfiles de agente»."
+    "where": "En Encargos a través de «Gestionar perfiles», en el encargo en «Ajustes de IA», o bien Strg + K y «Abrir perfiles de agente»."
   },
   "externe-mcp-server": {
     "title": "Conectar servidores MCP externos",

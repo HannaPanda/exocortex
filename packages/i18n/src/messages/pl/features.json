@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Propozycja gromadzi zmiany na jednej lub wielu stronach: blok, sekcję, fragment tekstu, całą stronę lub nową stronę. Nic z tego nie trafia na stronę, dopóki tego nie zaakceptujesz.",
       "p2": "Zmiany są stosowane w odniesieniu do stanu, na którym bazowała propozycja. Jeśli strona zmieniła się od tego czasu, zmiana nie zostanie już zapisana, lecz oznaczona jako nieaktualna, aby nic nie trafiło na stan, którego nikt nie sprawdził. Przed każdą akceptacją tworzony jest snapshot.",
-      "p3": "Tryb zapisu sztucznej inteligencji (w ustawieniach lub dla danego zadania) określa, czy zapisuje ona bezpośrednio, tylko proponuje, czy tylko czyta. Dla zewnętrznych agentów służy do tego zakres tokena „Odczyt i proponowanie”. Obie zasady obowiązują również na serwerze, nie tylko jako prośba skierowana do modelu.",
+      "p3": "Tryb zapisu AI (Ustawienia lub dla każdego zadania w „Ustawienia AI”) określa, czy pisze ona bezpośrednio, tylko sugeruje, czy tylko czyta. Dla zewnętrznych agentów dostępny jest w tym celu zakres tokena „Odczyt i sugerowanie”. W obu przypadkach obowiązuje to również na serwerze, a nie tylko jako prośba skierowana do modelu.",
       "p4": "Jeśli propozycja należy do zadania, trafia ono po przesłaniu do sprawdzenia i pojawia się w sekcji „Czeka na ciebie”. Gdy wszystkie zmiany zostaną rozstrzygnięte, sztuczna inteligencja kontynuuje pracę z uwzględnieniem twojej decyzji.",
       "p5": "Agenci korzystają z exo_changeset_propose, exo_changeset_submit, exo_changeset_get i exo_changeset_list; exo_changeset_apply oraz exo_changeset_reject są dostępne tylko dla zewnętrznych dostępów użytkownika, nigdy dla wbudowanej sztucznej inteligencji."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Każde uruchomienie zapamiętuje wersję profilu, z którą pracowało, a każda zmiana w profilu jest odnotowywana w jego historii wraz z autorem i polami. Tworzyć i modyfikować profile mogą administratorzy obszaru roboczego; agenci odczytują profile za pomocą exo_agent_profile_list i exo_agent_profile_get.",
       "p6": "Automatyzacja może przekazywać pracę: akcja „Utwórz zadanie” zamienia zmienioną stronę w zadanie z celem reguły i wybranym profilem – na życzenie AI zaczyna działać natychmiast."
     },
-    "where": "W sekcji Zadania pod „Zarządzaj profilami”, w zadaniu przy profilu agenta lub przez Ctrl + K i „Otwórz profile agentów”."
+    "where": "W sekcji Zadania poprzez „Zarządzaj profilami”, przy zadaniu w „Ustawienia AI” lub przez Strg + K i „Otwórz profile agentów”."
   },
   "externe-mcp-server": {
     "title": "Podłączanie zewnętrznych serwerów MCP",

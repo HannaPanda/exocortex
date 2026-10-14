@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "A proposal gathers changes to one or more pages: a block, a section, a passage of text, the entire page, or a new page. None of it appears on a page until you accept it.",
       "p2": "Changes are applied against the state they were proposed on. If a page has changed since then, the change is no longer written, but marked as outdated so nothing ever lands on an unreviewed state. A snapshot is created before every acceptance.",
-      "p3": "The AI’s write mode (in Settings, or per task) sets whether it writes directly, only proposes, or only reads. For external agents, there is the token scope “Read and propose”. Both are enforced on the server, not just as a prompt request to the model.",
+      "p3": "The AI’s writing mode (settings, or per task under “AI settings”) determines whether it writes directly, only suggests, or only reads. For external agents, there is the token scope “Read and suggest”. Both are enforced on the server, not just as a request to the model.",
       "p4": "If a proposal belongs to a task, submitting it moves the task into review and shows it under “Waiting for you”. Once all changes are decided, the AI continues working based on your decision.",
       "p5": "Agents work with exo_changeset_propose, exo_changeset_submit, exo_changeset_get, and exo_changeset_list; exo_changeset_apply and exo_changeset_reject are only available for a person’s external access, never for the built-in AI."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Each run remembers which version of the profile it worked with, and every change to the profile is recorded with the person and fields in its history. Workspace admins can create and edit them; agents read profiles using exo_agent_profile_list and exo_agent_profile_get.",
       "p6": "An automation can hand off work: the “Create task” action turns the modified page into a task with the rule’s target and the selected profile; if desired, the AI starts right away."
     },
-    "where": "Under Tasks via “Manage profiles”, on the task at the agent profile, or Strg + K and “Open agent profiles”."
+    "where": "Under Tasks via “Manage profiles”, on the task under “AI settings”, or Ctrl + K and “Open agent profiles”."
   },
   "externe-mcp-server": {
     "title": "Connect external MCP servers",

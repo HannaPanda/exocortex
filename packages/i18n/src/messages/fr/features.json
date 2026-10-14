@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Une suggestion regroupe des modifications sur une ou plusieurs pages : un bloc, une section, un passage de texte, la page entière ou une nouvelle page. Rien de tout cela n’apparaît sur une page avant que tu ne l’aies accepté.",
       "p2": "L’application s’effectue sur la base de la version au moment où la suggestion a été faite. Si une page a changé depuis, la modification n’est plus appliquée mais marquée comme obsolète, afin que rien ne vienne s’insérer sur une version que personne n’a vérifiée. Un instantané est créé avant chaque application.",
-      "p3": "Le mode d’écriture de l’IA (Paramètres, ou par tâche) définit si elle écrit directement, propose uniquement ou lit uniquement. Pour les agents externes, il existe la portée de jeton « Lire et suggérer ». Les deux règles s’appliquent également sur le serveur, et non pas seulement comme une consigne adressée au modèle.",
+      "p3": "Le mode d’écriture de l’IA (Paramètres, ou par tâche sous « Paramètres de l’IA ») détermine si elle écrit directement, suggère uniquement ou lit seulement. Pour les agents externes, il existe la portée de jeton « Lire et suggérer ». Les deux s’appliquent également sur le serveur, et non pas simplement comme une consigne adressée au modèle.",
       "p4": "Si une suggestion est liée à une tâche, la tâche passe en révision dès sa soumission et apparaît sous « En attente de ton action ». Dès que toutes les modifications ont été tranchées, l’IA poursuit son travail en tenant compte de ta décision.",
       "p5": "Les agents utilisent exo_changeset_propose, exo_changeset_submit, exo_changeset_get et exo_changeset_list ; exo_changeset_apply et exo_changeset_reject ne sont disponibles que pour les accès externes d’une personne, jamais pour l’IA intégrée."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Chaque exécution enregistre la version du profil avec laquelle elle a travaillé, et toute modification apportée au profil figure dans son historique avec la personne et les champs concernés. Seuls les administrateurs de l’espace de travail peuvent les créer et les modifier ; les agents lisent les profils avec exo_agent_profile_list et exo_agent_profile_get.",
       "p6": "Une automatisation peut transmettre du travail : l’action « Créer une tâche » transforme la page modifiée en tâche avec l’objectif de la règle et le profil choisi ; si tu le souhaites, l’IA commence immédiatement."
     },
-    "where": "Sous Tâches via « Gérer les profils », sur la tâche au niveau du profil d’agent, ou via Strg + K et « Ouvrir les profils d’agent »."
+    "where": "Sous Tâches via « Gérer les profils », sur la tâche sous « Paramètres de l’IA », ou Ctrl + K et « Ouvrir les profils d’agent »."
   },
   "externe-mcp-server": {
     "title": "Connecter des serveurs MCP externes",

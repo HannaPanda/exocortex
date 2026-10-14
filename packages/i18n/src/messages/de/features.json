@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Ein Vorschlag sammelt Änderungen an einer oder mehreren Seiten: einen Block, einen Abschnitt, eine Textstelle, die ganze Seite oder eine neue Seite. Nichts davon steht in einer Seite, bevor du es übernimmst.",
       "p2": "Übernommen wird mit dem Stand, auf dem vorgeschlagen wurde. Hat sich eine Seite seither geändert, wird die Änderung nicht mehr geschrieben, sondern als veraltet markiert, damit nie etwas auf einen Stand trifft, den niemand geprüft hat. Vor jeder Übernahme entsteht ein Snapshot.",
-      "p3": "Der Schreibmodus der KI (Einstellungen, oder je Auftrag) legt fest, ob sie direkt schreibt, nur vorschlägt oder nur liest. Für externe Agenten gibt es dafür den Token-Umfang „Lesen und vorschlagen“. Beides gilt auch auf dem Server, nicht nur als Bitte an das Modell.",
+      "p3": "Der Schreibmodus der KI (Einstellungen, oder je Auftrag unter „KI-Einstellungen“) legt fest, ob sie direkt schreibt, nur vorschlägt oder nur liest. Für externe Agenten gibt es dafür den Token-Umfang „Lesen und vorschlagen“. Beides gilt auch auf dem Server, nicht nur als Bitte an das Modell.",
       "p4": "Gehört ein Vorschlag zu einem Auftrag, geht der Auftrag beim Einreichen in die Prüfung und erscheint unter „Wartet auf dich“. Sobald über alle Änderungen entschieden ist, arbeitet die KI mit deiner Entscheidung weiter.",
       "p5": "Agenten arbeiten mit exo_changeset_propose, exo_changeset_submit, exo_changeset_get und exo_changeset_list; exo_changeset_apply und exo_changeset_reject gibt es nur für externe Zugänge einer Person, nie für die eingebaute KI."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Jeder Lauf merkt sich, mit welchem Stand des Profils er gearbeitet hat, und jede Änderung am Profil steht mit Person und Feldern in seiner Historie. Anlegen und ändern dürfen Admins des Arbeitsbereichs; Agenten lesen Profile mit exo_agent_profile_list und exo_agent_profile_get.",
       "p6": "Eine Automation kann Arbeit übergeben: die Aktion „Auftrag anlegen“ macht aus der geänderten Seite einen Auftrag mit dem Ziel der Regel und dem gewählten Profil, auf Wunsch fängt die KI sofort an."
     },
-    "where": "Unter Aufträge über „Profile verwalten“, am Auftrag beim Agentenprofil, oder Strg + K und „Agentenprofile öffnen“."
+    "where": "Unter Aufträge über „Profile verwalten“, am Auftrag unter „KI-Einstellungen“, oder Strg + K und „Agentenprofile öffnen“."
   },
   "externe-mcp-server": {
     "title": "Fremde MCP-Server anbinden",

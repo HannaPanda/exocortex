@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Uma sugestão reúne alterações em uma ou mais páginas: um bloco, uma seção, um trecho de texto, a página inteira ou uma nova página. Nada disso é inserido em uma página antes da sua aprovação.",
       "p2": "A aplicação considera a versão na qual a sugestão foi criada. Se uma página tiver sido modificada desde então, a alteração não será mais aplicada, mas sim marcada como desatualizada, garantindo que nada seja aplicado a uma versão não revisada. Antes de cada aplicação, um snapshot é criado.",
-      "p3": "O modo de escrita da IA (Configurações, ou por tarefa) determina se ela escreve diretamente, apenas sugere ou apenas lê. Para agentes externos, existe o escopo de token „Ler e sugerir“. Ambas as regras se aplicam também no servidor, e não apenas como instrução ao modelo.",
+      "p3": "O modo de escrita da IA (Configurações, ou por tarefa em „Configurações de IA“) define se ela escreve diretamente, apenas sugere ou apenas lê. Para agentes externos, existe o escopo de token „Ler e sugerir“. Ambos também são aplicados no servidor, não apenas como um pedido ao modelo.",
       "p4": "Se uma sugestão pertencer a uma tarefa, a tarefa entrará em revisão ao ser enviada e aparecerá em „Aguardando você“. Assim que todas as alterações forem decididas, a IA continuará o trabalho com base na sua decisão.",
       "p5": "Os agentes usam exo_changeset_propose, exo_changeset_submit, exo_changeset_get e exo_changeset_list; exo_changeset_apply e exo_changeset_reject estão disponíveis apenas para acessos externos de uma pessoa, nunca para a IA integrada."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Cada execução registra com qual versão do perfil trabalhou, e qualquer alteração no perfil é registrada com a pessoa e os campos no seu histórico. Criar e alterar é permitido para administradores do espaço de trabalho; agentes leem perfis com exo_agent_profile_list e exo_agent_profile_get.",
       "p6": "Uma automação pode transferir trabalho: a ação “Criar tarefa” transforma a página modificada em uma tarefa com o objetivo da regra e o perfil selecionado; se desejado, a IA começa imediatamente."
     },
-    "where": "Em Tarefas através de “Gerenciar perfis”, na tarefa no perfil de agente, ou Strg + K e “Abrir perfis de agente”."
+    "where": "Em Tarefas através de „Gerenciar perfis“, na tarefa em „Configurações de IA“, ou Ctrl + K e „Abrir perfis de agentes“."
   },
   "externe-mcp-server": {
     "title": "Conectar servidores MCP externos",

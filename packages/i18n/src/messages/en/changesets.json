@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Proposed changes",
-    "empty": "There are no proposals for this task.",
     "writeModeLabel": "AI write mode",
     "writeModeInherit": "Same as workspace",
     "writeModeHelp": "Applies to every run of the built-in AI on this task. It can only restrict the workspace mode."

@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Una proposta raccoglie modifiche a una o più pagine: un blocco, una sezione, una porzione di testo, l’intera pagina o una nuova pagina. Nulla di tutto questo finisce in una pagina prima che tu lo accetti.",
       "p2": "L’applicazione avviene sulla base dello stato in cui la proposta è stata creata. Se nel frattempo una pagina è cambiata, la modifica non viene più applicata, ma contrassegnata come obsoleta, affinché nulla vada a toccare uno stato non verificato. Prima di ogni applicazione viene creato uno snapshot.",
-      "p3": "La modalità di scrittura dell’IA (nelle impostazioni o per ogni incarico) stabilisce se scrive direttamente, propone soltanto o legge solo. Per gli agenti esterni esiste a tale scopo l’ambito del token „Lettura e proposta”. Entrambe le opzioni si applicano anche sul server, non solo come richiesta al modello.",
+      "p3": "La modalità di scrittura dell’IA (Impostazioni, oppure per ogni incarico sotto «Impostazioni IA») stabilisce se scrive direttamente, se suggerisce soltanto o se legge e basta. Per gli agenti esterni esiste a questo scopo l’ambito di token «Lettura e suggerimento». Entrambe le cose valgono anche sul server, non solo come richiesta al modello.",
       "p4": "Se una proposta appartiene a un incarico, al momento dell’invio l’incarico passa in revisione e compare sotto „In attesa per te”. Non appena si è presa una decisione su tutte le modifiche, l’IA prosegue il lavoro in base alla tua decisione.",
       "p5": "Gli agenti lavorano con exo_changeset_propose, exo_changeset_submit, exo_changeset_get ed exo_changeset_list; exo_changeset_apply ed exo_changeset_reject sono disponibili solo per gli accessi esterni di una persona, mai per l’IA integrata."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Ogni esecuzione ricorda la versione del profilo con cui ha lavorato, e ogni modifica al profilo viene registrata nella sua cronologia con persona e campi modificati. La creazione e la modifica sono riservate a chi amministra l’area di lavoro; gli agenti leggono i profili con exo_agent_profile_list ed exo_agent_profile_get.",
       "p6": "Un’automazione può delegare lavoro: l’azione «Crea attività» trasforma la pagina modificata in un’attività con l’obiettivo della regola e il profilo selezionato; se desideri, l’IA inizia subito."
     },
-    "where": "Sotto Attività tramite «Gestisci profili», sull’attività accanto al profilo agente, oppure premendo Strg + K e «Apri profili agente»."
+    "where": "Sotto Incarichi tramite «Gestisci profili», sull’incarico sotto «Impostazioni IA», oppure Strg + K e «Apri profili agente»."
   },
   "externe-mcp-server": {
     "title": "Collegare server MCP esterni",

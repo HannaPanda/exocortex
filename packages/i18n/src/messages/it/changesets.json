@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Proposte di modifica",
-    "empty": "Non ci sono proposte per questo incarico.",
     "writeModeLabel": "Modalità di scrittura dell’IA",
     "writeModeInherit": "Come nell’area di lavoro",
     "writeModeHelp": "Vale per ogni esecuzione dell’IA integrata su questo incarico. Può solo limitare la modalità dell’area di lavoro."

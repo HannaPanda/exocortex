@@ -1052,7 +1052,7 @@
     "details": {
       "p1": "Een voorstel verzamelt wijzigingen aan een of meer pagina’s: een blok, een sectie, een stuk tekst, de hele pagina of een nieuwe pagina. Niets daarvan staat op een pagina voordat je het accepteert.",
       "p2": "Accepteren gebeurt op basis van de versie waarop het voorstel is gedaan. Is een pagina sindsdien gewijzigd, dan wordt de wijziging niet meer doorgevoerd, maar als verouderd gemarkeerd, zodat er nooit iets wordt toegepast op een versie die niemand heeft gecontroleerd. Vóór elke acceptatie wordt een snapshot gemaakt.",
-      "p3": "De schrijfmodus van de AI (instellingen, of per taak) bepaalt of deze direct schrijft, alleen voorstelt of alleen leest. Voor externe agenten is er hiervoor de token-scope „Lezen en voorstellen”. Beide gelden ook op de server, niet alleen als verzoek aan het model.",
+      "p3": "De schrijfmodus van de AI (instellingen, of per taak onder „AI-instellingen”) bepaalt of ze direct schrijft, alleen voorstelt of alleen leest. Voor externe agenten is er daarvoor de token-scope „Lezen en voorstellen”. Beide gelden ook op de server, niet alleen als verzoek aan het model.",
       "p4": "Hoort een voorstel bij een taak, dan gaat de taak bij het indienen ter beoordeling en verschijnt onder „Wacht op jou”. Zodra over alle wijzigingen is beslist, gaat de AI verder met jouw beslissing.",
       "p5": "Agenten werken met exo_changeset_propose, exo_changeset_submit, exo_changeset_get en exo_changeset_list; exo_changeset_apply en exo_changeset_reject zijn er alleen voor externe toegangen van een persoon, nooit voor de ingebouwde AI."
     },
@@ -1095,7 +1095,7 @@
       "p5": "Elke run onthoudt met welke versie van het profiel hij heeft gewerkt, en elke wijziging aan het profiel staat met persoon en velden in de geschiedenis ervan. Beheerders van de werkruimte mogen profielen aanmaken en wijzigen; agents lezen profielen met exo_agent_profile_list en exo_agent_profile_get.",
       "p6": "Een automatisering kan werk overdragen: de actie „Opdracht aanmaken” maakt van de gewijzigde pagina een opdracht met het doel van de regel en het gekozen profiel; desgewenst begint de AI direct."
     },
-    "where": "Onder Opdrachten via „Profielen beheren”, bij de opdracht onder agentprofiel, of Strg + K en „Agentprofielen openen”."
+    "where": "Onder Taken via „Profielen beheren”, bij de taak onder „AI-instellingen”, of Strg + K en „Agentprofielen openen”."
   },
   "externe-mcp-server": {
     "title": "Externe MCP-servers koppelen",

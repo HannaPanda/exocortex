@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { SectionRule } from '@exocortex/ui';
+
 import { useAttention } from '@/lib/api/attention-queries';
 
 import { AttentionCard } from './attention-card';
@@ -18,10 +20,10 @@ export function WorkItemAttention({ workItemId }: { workItemId: string }) {
   if (items.length === 0) return null;
 
   return (
-    <section aria-labelledby="work-item-attention" className="flex flex-col gap-2">
-      <h2 id="work-item-attention" className="text-sm font-medium">
-        {t('title')}
-      </h2>
+    <section className="flex flex-col gap-3">
+      <div className="flex min-h-8 items-center">
+        <SectionRule trailing={items.length}>{t('title')}</SectionRule>
+      </div>
       <p className="text-sm text-muted-foreground">{t('intro')}</p>
       {items.map((item) => (
         <AttentionCard key={item.id} item={item} showWorkspace={false} />

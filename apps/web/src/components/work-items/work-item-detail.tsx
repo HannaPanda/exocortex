@@ -1,6 +1,14 @@
 'use client';
 
-import { ArrowLeftIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  SparklesIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -26,6 +34,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   ErrorState,
   Input,
   Label,
@@ -50,18 +62,12 @@ import {
 } from '@/lib/api/work-item-queries';
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
+import { WorkItemAiSettings } from './work-item-ai-settings';
 import { CheckpointSection } from './work-item-checkpoint';
 import { ChildrenSection } from './work-item-children';
 import { WorkItemDialog } from './work-item-dialog';
 import { statusVariant, useWorkItemWording } from './work-item-labels';
-import {
-  ContextSection,
-  CriteriaSection,
-  HistorySection,
-  ResultSection,
-  RunsSection,
-  StructuredResultSection,
-} from './work-item-sections';
+import { BriefSection, HistorySection, ResultSection, RunsSection } from './work-item-sections';
 
 /**
  * One piece of delegated work (issue #138, ADR-066).
@@ -121,85 +127,106 @@ function WorkItemView({
   canDelete: boolean;
 }) {
   const t = useTranslations('workItems.detail');
-  const wording = useWorkItemWording();
   const [editing, setEditing] = React.useState(false);
   const [addingChild, setAddingChild] = React.useState(false);
   const [starting, setStarting] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const closed = item.closedAt !== null;
+  const canStart = canWrite && !closed;
 
   return (
-    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-5">
-      <Link
-        href={
-          item.parent === null
-            ? `/arbeitsbereich/${item.workspaceId}/auftraege`
-            : `/arbeitsbereich/${item.workspaceId}/auftraege/${item.parent.id}`
-        }
-        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {item.parent === null ? t('backToList') : t('backToParent', { title: item.parent.title })}
-      </Link>
+    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-8">
+      <header className="flex flex-col gap-3">
+        <Link
+          href={
+            item.parent === null
+              ? `/arbeitsbereich/${item.workspaceId}/auftraege`
+              : `/arbeitsbereich/${item.workspaceId}/auftraege/${item.parent.id}`
+          }
+          className="flex w-fit items-center gap-1 rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeftIcon className="size-4 shrink-0" aria-hidden />
+          <span className="min-w-0 truncate">
+            {item.parent === null
+              ? t('backToList')
+              : t('backToParent', { title: item.parent.title })}
+          </span>
+        </Link>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="exocortex-page-title" data-testid="work-item-title-heading">
+        {/* The title takes the row; the actions wrap under it when the column
+            is narrow, instead of squeezing the title into one word per line. */}
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+          <h1
+            className="exocortex-page-title min-w-[min(100%,18rem)] flex-1 break-words hyphens-auto"
+            data-testid="work-item-title-heading"
+          >
             {item.title}
           </h1>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            {canStart ? (
+              <Button size="sm" onClick={() => setStarting(true)} data-testid="work-item-start-run">
+                <SparklesIcon />
+                {t('startRun')}
+              </Button>
+            ) : null}
             {canWrite ? (
-              <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditing(true)}
+                data-testid="work-item-edit"
+              >
+                <PencilIcon />
                 {t('edit')}
               </Button>
             ) : null}
             {canDelete ? (
-              <Button variant="ghost" size="sm" onClick={() => setDeleting(true)}>
-                {t('delete')}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="outline"
+                      size="icon-sm"
+                      className="size-8"
+                      aria-label={t('moreActions')}
+                      data-testid="work-item-more"
+                    >
+                      <MoreHorizontalIcon />
+                    </Button>
+                  }
+                />
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => setDeleting(true)}
+                    data-testid="work-item-delete"
+                  >
+                    <Trash2Icon />
+                    {t('delete')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : null}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <Badge variant={statusVariant(item.status)}>{wording.status(item.status)}</Badge>
-          {item.priority === 'normal' ? null : (
-            <Badge variant="outline">{wording.priority(item.priority)}</Badge>
-          )}
-          <span>
-            {t('handover', {
-              requester: wording.participant(item.requester),
-              assignee: wording.participant(item.assignee),
-            })}
-          </span>
-          {item.dueAt === null ? null : <span>{t('due', { day: wording.day(item.dueAt) })}</span>}
-        </div>
-      </div>
+
+        <StatusLine item={item} disabled={!canProgress} />
+
+        {item.statusReason === null ? null : (
+          <p className="text-sm text-muted-foreground" data-testid="work-item-status-reason">
+            {item.statusReason}
+          </p>
+        )}
+      </header>
 
       <WorkItemAttention workItemId={item.id} />
-
-      <StatusControl item={item} disabled={!canProgress} />
-
-      <p className="text-sm whitespace-pre-wrap" data-testid="work-item-goal-text">
-        {item.goal}
-      </p>
-
-      <CriteriaSection item={item} canProgress={canProgress} />
-      <ContextSection item={item} />
+      <BriefSection item={item} canProgress={canProgress} />
       <ResultSection item={item} canProgress={canProgress} />
-      <StructuredResultSection item={item} />
-      <WorkItemChangesets item={item} canWrite={canWrite} />
-      <CheckpointSection item={item} />
-      <RunsSection
-        item={item}
-        action={
-          canWrite && !closed ? (
-            <Button size="sm" onClick={() => setStarting(true)} data-testid="work-item-start-run">
-              {t('startRun')}
-            </Button>
-          ) : null
-        }
-      />
+      <WorkItemChangesets item={item} />
       <ChildrenSection item={item} onAddChild={canWrite ? () => setAddingChild(true) : null} />
+      <RunsSection item={item} />
+      <CheckpointSection item={item} />
+      <WorkItemAiSettings item={item} canWrite={canWrite} />
       <HistorySection item={item} canProgress={canProgress} />
 
       {canWrite ? (
@@ -227,89 +254,164 @@ function WorkItemView({
   );
 }
 
-/** The statuses that need a word on why, and get a field for it. */
+/** Status, priority, who handed the work to whom, and when it is due. */
+function StatusLine({ item, disabled }: { item: WorkItemDetail; disabled: boolean }) {
+  const t = useTranslations('workItems.detail');
+  const wording = useWorkItemWording();
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+      <StatusMenu item={item} disabled={disabled} />
+      {item.priority === 'normal' ? null : (
+        <Badge variant="outline">{wording.priority(item.priority)}</Badge>
+      )}
+      <span>
+        {t('handover', {
+          requester: wording.participant(item.requester),
+          assignee: wording.participant(item.assignee),
+        })}
+      </span>
+      {item.dueAt === null ? null : (
+        <span className="exocortex-numeric">{t('due', { day: wording.day(item.dueAt) })}</span>
+      )}
+    </div>
+  );
+}
+
+/** The statuses that need a word on why, and ask for it before they are set. */
 const REASON_STATUSES: readonly WorkItemStatus[] = ['blocked', 'waiting_for_human', 'failed'];
 
-function StatusControl({ item, disabled }: { item: WorkItemDetail; disabled: boolean }) {
+/**
+ * The status is the control (issue #182): the badge opens the list, and a
+ * choice applies at once. A status that needs a reason asks for it in a field
+ * under the header first, so nothing is set half-explained.
+ */
+function StatusMenu({ item, disabled }: { item: WorkItemDetail; disabled: boolean }) {
   const t = useTranslations('workItems.detail');
   const wording = useWorkItemWording();
   const update = useUpdateWorkItem(item.workspaceId);
-  const [status, setStatus] = React.useState<WorkItemStatus>(item.status);
-  const [reason, setReason] = React.useState(item.statusReason ?? '');
-  const [shownFor, setShownFor] = React.useState(`${item.status}:${item.statusReason ?? ''}`);
-  const stored = `${item.status}:${item.statusReason ?? ''}`;
-  if (stored !== shownFor) {
-    setShownFor(stored);
-    setStatus(item.status);
-    setReason(item.statusReason ?? '');
-  }
+  const [asking, setAsking] = React.useState<WorkItemStatus | null>(null);
+  const [reason, setReason] = React.useState('');
 
-  const needsReason = REASON_STATUSES.includes(status);
-  const dirty =
-    status !== item.status || (needsReason && reason.trim() !== (item.statusReason ?? ''));
-
-  const save = (): void => {
+  const apply = (status: WorkItemStatus, statusReason: string | null): void => {
+    update.mutate(
+      { workItemId: item.id, request: { status, statusReason } },
+      { onSuccess: () => setAsking(null) },
+    );
+  };
+  const choose = (status: WorkItemStatus): void => {
+    update.reset();
+    if (REASON_STATUSES.includes(status)) {
+      setReason(status === item.status ? (item.statusReason ?? '') : '');
+      setAsking(status);
+      return;
+    }
+    setAsking(null);
+    if (status !== item.status) apply(status, null);
+  };
+  const confirm = (): void => {
+    if (asking === null) return;
     const trimmed = reason.trim();
-    update.mutate({
-      workItemId: item.id,
-      request: {
-        status,
-        statusReason: needsReason && trimmed.length > 0 ? trimmed : null,
-      },
-    });
+    apply(asking, trimmed.length > 0 ? trimmed : null);
   };
 
+  const badge = (
+    <Badge variant={statusVariant(item.status)} data-testid="work-item-status-badge">
+      {wording.status(item.status)}
+    </Badge>
+  );
+
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-border p-3">
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="work-item-status">{t('statusLabel')}</Label>
-          <Select
-            value={status}
-            onValueChange={(value) => setStatus(value as WorkItemStatus)}
-            disabled={disabled}
-          >
-            <SelectTrigger id="work-item-status" className="w-56" data-testid="work-item-status">
-              <SelectValue>{() => wording.status(status)}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {WORK_ITEM_STATUSES.map((value) => (
-                <SelectItem key={value} value={value}>
-                  {wording.status(value)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {needsReason ? (
-          <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-            <Label htmlFor="work-item-reason">{t('reasonLabel')}</Label>
+    <>
+      {disabled ? (
+        badge
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                type="button"
+                className="inline-flex min-h-8 items-center gap-1 rounded-md px-1 -mx-1 text-foreground transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none"
+                aria-label={t('statusMenuLabel', { status: wording.status(item.status) })}
+                data-testid="work-item-status"
+              >
+                {badge}
+                <ChevronDownIcon className="size-3.5 text-muted-foreground" aria-hidden />
+              </button>
+            }
+          />
+          <DropdownMenuContent align="start">
+            {WORK_ITEM_STATUSES.map((value) => (
+              <DropdownMenuItem
+                key={value}
+                onClick={() => choose(value)}
+                disabled={update.isPending}
+                data-testid={`work-item-status-${value}`}
+              >
+                <CheckIcon
+                  className={value === item.status ? undefined : 'invisible'}
+                  aria-hidden
+                />
+                {wording.status(value)}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {asking === null ? null : (
+        <form
+          className="flex w-full flex-wrap items-end gap-2 pt-1"
+          onSubmit={(event) => {
+            event.preventDefault();
+            confirm();
+          }}
+          data-testid="work-item-reason-form"
+        >
+          <div className="flex min-w-[min(100%,16rem)] flex-1 flex-col gap-1.5">
+            <Label htmlFor="work-item-reason" className="text-foreground">
+              {t('reasonLabelFor', { status: wording.status(asking) })}
+            </Label>
             <Input
               id="work-item-reason"
               value={reason}
               maxLength={1000}
+              autoFocus
               placeholder={t('reasonPlaceholder')}
               onChange={(event) => setReason(event.target.value)}
-              disabled={disabled}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                  event.preventDefault();
+                  setAsking(null);
+                }
+              }}
+              data-testid="work-item-reason"
             />
           </div>
-        ) : null}
-        <Button
-          size="sm"
-          onClick={save}
-          disabled={disabled || !dirty || update.isPending}
-          data-testid="work-item-status-save"
-        >
-          {t('setStatus')}
-        </Button>
-      </div>
-      {!needsReason && item.statusReason !== null ? (
-        <p className="text-sm text-muted-foreground">{item.statusReason}</p>
-      ) : null}
-      {update.error === null ? null : (
-        <p className="text-sm text-destructive-text">{update.error.message}</p>
+          <Button
+            type="submit"
+            size="sm"
+            className="h-9"
+            disabled={update.isPending}
+            data-testid="work-item-status-save"
+          >
+            {t('setStatus')}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-9"
+            onClick={() => setAsking(null)}
+          >
+            {t('cancelEdit')}
+          </Button>
+        </form>
       )}
-    </div>
+      {update.error === null ? null : (
+        <p className="w-full text-sm text-destructive-text" role="alert">
+          {update.error.message}
+        </p>
+      )}
+    </>
   );
 }
 

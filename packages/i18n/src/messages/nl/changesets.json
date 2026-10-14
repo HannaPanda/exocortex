@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Wijzigingsvoorstellen",
-    "empty": "Er zijn geen voorstellen voor deze opdracht.",
     "writeModeLabel": "Schrijfmodus van de AI",
     "writeModeInherit": "Zoals in de werkruimte",
     "writeModeHelp": "Geldt voor elke uitvoering van de ingebouwde AI bij deze opdracht. Deze kan de modus van de werkruimte alleen beperken."

@@ -1,15 +1,16 @@
 'use client';
 
+import { PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { type WorkItemChildResult, type WorkItemDetail } from '@exocortex/contracts';
-import { Badge, Button } from '@exocortex/ui';
+import { Badge, Button, cn } from '@exocortex/ui';
 
 import { useWorkItemChildResults } from '@/lib/api/work-item-queries';
 
 import { statusVariant, useWorkItemWording } from './work-item-labels';
-import { Section } from './work-item-sections';
+import { pageLinkClassName, Section } from './work-item-sections';
 
 /**
  * The parts a piece of work was split into (issue #144, ADR-072).
@@ -40,9 +41,16 @@ export function ChildrenSection({
   return (
     <Section
       title={t('heading')}
+      trailing={item.children.length === 0 ? undefined : item.children.length}
       action={
         onAddChild === null ? null : (
-          <Button size="sm" variant="ghost" onClick={onAddChild} data-testid="work-item-add-child">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onAddChild}
+            data-testid="work-item-add-child"
+          >
+            <PlusIcon />
             {t('add')}
           </Button>
         )
@@ -52,7 +60,7 @@ export function ChildrenSection({
         <p className="text-sm text-muted-foreground">{t('none')}</p>
       ) : (
         <>
-          <p className="text-xs text-muted-foreground" data-testid="work-item-child-progress">
+          <p className="text-meta text-muted-foreground" data-testid="work-item-child-progress">
             {t('progress', {
               total: progress.total,
               open: progress.open + progress.waiting,
@@ -68,33 +76,36 @@ export function ChildrenSection({
               })}
             </p>
           )}
-          <ul className="flex flex-col gap-3 text-sm" data-testid="work-item-children">
+          <ul className="flex flex-col text-sm" data-testid="work-item-children">
             {item.children.map((child) => {
               const result = byId.get(child.id);
               return (
-                <li key={child.id} className="flex flex-col gap-1">
+                <li
+                  key={child.id}
+                  className="flex flex-col gap-1 border-b border-border py-2 last:border-b-0"
+                >
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={statusVariant(child.status)}>
                       {wording.status(child.status)}
                     </Badge>
                     <Link
                       href={`/arbeitsbereich/${item.workspaceId}/auftraege/${child.id}`}
-                      className="hover:underline"
+                      className={cn('min-w-0 break-words', pageLinkClassName)}
                     >
                       {child.title}
                     </Link>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-meta text-muted-foreground">
                       {wording.participant(child.assignee)}
                     </span>
                     {pending.has(child.id) ? <Badge variant="outline">{t('awaited')}</Badge> : null}
                     {result === undefined || result.spentMicroUsd === 0 ? null : (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="exocortex-numeric text-meta text-muted-foreground">
                         {wording.money(result.spentMicroUsd)}
                       </span>
                     )}
                   </div>
                   {child.statusReason === null ? null : (
-                    <p className="text-xs text-muted-foreground">{child.statusReason}</p>
+                    <p className="text-meta text-muted-foreground">{child.statusReason}</p>
                   )}
                   {result?.result == null ? null : (
                     <p className="line-clamp-3 whitespace-pre-wrap text-muted-foreground">

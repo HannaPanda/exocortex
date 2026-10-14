@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Propozycje zmian",
-    "empty": "Brak propozycji dla tego zadania.",
     "writeModeLabel": "Tryb zapisu AI",
     "writeModeInherit": "Taki jak w obszarze roboczym",
     "writeModeHelp": "Dotyczy każdego uruchomienia wbudowanej AI w tym zadaniu. Może jedynie zawęzić tryb obszaru roboczego."

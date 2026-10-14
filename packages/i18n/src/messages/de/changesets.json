@@ -98,7 +98,6 @@
   },
   "workItem": {
     "title": "Änderungsvorschläge",
-    "empty": "Zu diesem Auftrag gibt es keine Vorschläge.",
     "writeModeLabel": "Schreibmodus der KI",
     "writeModeInherit": "Wie im Arbeitsbereich",
     "writeModeHelp": "Gilt für jeden Lauf der eingebauten KI an diesem Auftrag. Er kann den Modus des Arbeitsbereichs nur einschränken."

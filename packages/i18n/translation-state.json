@@ -4708,10 +4708,6 @@
       "source": "79261f970df53185",
       "output": "6628ad6c640ea157"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "52ccaa635cbc7c76"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "486f49f03bf7117c"
@@ -11125,8 +11121,8 @@
       "output": "e40b58602fd7dccf"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "c78c09a76243ff53"
+      "source": "9915fbbf393d4cf0",
+      "output": "284f850ad8d77c9f"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -11301,8 +11297,8 @@
       "output": "39544af3b28512b2"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "0d05e88e29954057"
+      "source": "d0d95b5b6143e92a",
+      "output": "6c7b0b0d4f4e24fa"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -21012,6 +21008,18 @@
       "source": "4f07f41aac5aef98",
       "output": "63565c0485fec4f7"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "cdeed0ba71094a09"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "377c481d3c31ace2"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "0cf028b127ca0db6"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "fc28aa1bf07d5e72"
@@ -21019,6 +21027,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "4283ff8c49fa396d"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "ac40ae1e8d41291c"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -21032,13 +21044,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "3030acc0e24866af"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "a6e600a10fede40f"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "f7d8f1b03edaff3f"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "fdd37e206500ef84"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "5662d78045b5c4db"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "d47a36f4f0558107"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -21049,6 +21069,10 @@
       "output": "3b25fe3d210b1040"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "464c4ffd019e1e96"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "464c4ffd019e1e96"
     },
@@ -21064,6 +21088,10 @@
       "source": "4eaa806899ccca3d",
       "output": "0e76960093379060"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "96460e2cc560fe45"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "a041444a34cf20ed"
@@ -21071,6 +21099,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "6a6faa78cd9fbcaf"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "f8d46c2570e70736"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -21096,9 +21128,9 @@
       "source": "5aa200350750a374",
       "output": "aaf7fccc7d1315f2"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "d334ca62310fbddb"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "3db503daee4b3c5a"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -21107,6 +21139,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "6e7d50e84f4731ef"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "1dc47d0c08927b9d"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "d6ee7b9515368b15"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -21140,6 +21180,10 @@
       "source": "9448e3a9821691b6",
       "output": "935019d730a0dd74"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "1ab60a34711a0916"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "a6fdf772dafa37e3"
@@ -21148,13 +21192,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "4457cb1806768e48"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "255beb6510e7827d"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "2c14183df9a2c9f6"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "920e413c7d411b61"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "fbb9a7da84709ee2"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -28050,10 +28098,6 @@
       "source": "79261f970df53185",
       "output": "8c6c0d9456078b32"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "7ec4a956145857bb"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "8c6c0d9456078b32"
@@ -34467,8 +34511,8 @@
       "output": "03d6d326a7bad553"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "b88d586e47246909"
+      "source": "9915fbbf393d4cf0",
+      "output": "e7ca01591be8e8b6"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -34643,8 +34687,8 @@
       "output": "64393a8bda1798ed"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "87e8f2b0fcf6982d"
+      "source": "d0d95b5b6143e92a",
+      "output": "a00ccb172efd98b3"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -44354,6 +44398,18 @@
       "source": "4f07f41aac5aef98",
       "output": "555fe228de377647"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "ff368bd68f0ed0a3"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "18b1ec847cc1817f"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "538ec155677d10db"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "a05a255681b79e87"
@@ -44361,6 +44417,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "b1acc127dd516e8e"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "d7e2f61c0bfd5d09"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -44374,13 +44434,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "1c5121d8889428ee"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "dbb654a486a5fc1f"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "959d033686adee50"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "9067d3702df8fa88"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "0b39289b32c305a7"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "fb2cd1210c4f5f17"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -44391,6 +44459,10 @@
       "output": "23448d907120672c"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "2eba946b2e1ee4b6"
     },
@@ -44406,6 +44478,10 @@
       "source": "4eaa806899ccca3d",
       "output": "995c071dfaee74ce"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "ab4a137b0825ae4a"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "9fd35ddddb9dbe6e"
@@ -44413,6 +44489,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "1309e00e426e2342"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "78eb2e0551731bd4"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -44438,9 +44518,9 @@
       "source": "5aa200350750a374",
       "output": "777d100e74c9fad3"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "7009e86600df89a0"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "074e8ceb140640a2"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -44449,6 +44529,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "a71bc39fe3f33e42"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "43ac2025fb571bf6"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "effc4374f321a802"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -44482,6 +44570,10 @@
       "source": "9448e3a9821691b6",
       "output": "61ab679ed2edd7a4"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "55407d83a7a60755"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "511d51a5535d89f8"
@@ -44490,13 +44582,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "44be1841aac3d332"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "677b6ee8c1b5c1d9"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "96818f6a25f882d2"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "98e5acddb6c46a24"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "fe6156b1f9252ed5"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -51392,10 +51488,6 @@
       "source": "79261f970df53185",
       "output": "bb6c9d67be60b08a"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "c494154f4035991c"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "5f95fe17db9ed75f"
@@ -57809,8 +57901,8 @@
       "output": "646bd32991da8548"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "c45e6e7d60d6af52"
+      "source": "9915fbbf393d4cf0",
+      "output": "189f345df0c89f1e"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -57985,8 +58077,8 @@
       "output": "e99784d89494ad9f"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "f3e0d9805a915573"
+      "source": "d0d95b5b6143e92a",
+      "output": "c9f5794be6cfc0e7"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -67696,6 +67788,18 @@
       "source": "4f07f41aac5aef98",
       "output": "88595eb5c91420ef"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "5c718a59e68319ad"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "f9eef4e4dc50ab1d"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "3e336e0d57390a6e"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "84297af79d427338"
@@ -67703,6 +67807,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "2d8738944e920f5e"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "e6b85bfbf55020aa"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -67716,13 +67824,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "556b11aeeba444b8"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "2bf0a6d69405ba89"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "dd30344d5be899cf"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "2ab1577d1abcaa95"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "33b999cca4381b12"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "2d7e5e89f6b02840"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -67733,6 +67849,10 @@
       "output": "a460474965a955f9"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "42e37604b638b627"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "42e37604b638b627"
     },
@@ -67748,6 +67868,10 @@
       "source": "4eaa806899ccca3d",
       "output": "865df3324ad95978"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "b4c305fa3be3f5bf"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "813757dd91d470af"
@@ -67755,6 +67879,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "53ee4d8d8b1f141c"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "5839b735405137c5"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -67780,9 +67908,9 @@
       "source": "5aa200350750a374",
       "output": "5b55a18bf92ed4c9"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "b0014d729afe76e1"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "311b0a4231d554e0"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -67791,6 +67919,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "f1ed9999c72bae39"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "c1216feb7d46de97"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "5e812cca36617a14"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -67824,6 +67960,10 @@
       "source": "9448e3a9821691b6",
       "output": "7b65b5fc487e6df0"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "3a2f5ce38edd3039"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "d599004efc7e9074"
@@ -67832,13 +67972,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "1ca514e8180f5ea0"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "9b31b4e6b5cae3b7"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "89cc8652dc7d8a44"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "dee377cfd8cddfb8"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "361f45fdc2a05364"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -74734,10 +74878,6 @@
       "source": "79261f970df53185",
       "output": "08702a9f8bb5024b"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "3e3282e72dd13207"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "4c12336cdb97960f"
@@ -81151,8 +81291,8 @@
       "output": "122d6a4ee93b775c"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "624fe41bf0b9860b"
+      "source": "9915fbbf393d4cf0",
+      "output": "21bbf9e67b04400b"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -81327,8 +81467,8 @@
       "output": "05850b632d643140"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "7c85a04097e10d26"
+      "source": "d0d95b5b6143e92a",
+      "output": "4569c721462f79dd"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -91038,6 +91178,18 @@
       "source": "4f07f41aac5aef98",
       "output": "717e71cdfe531e3d"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "f524641a28672d16"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "b25095fc29f6e46b"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "045512f917fcaf00"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "e0711ec0d26f4243"
@@ -91045,6 +91197,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "c06ec4de89b291e0"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "1278275b55e5a601"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -91058,13 +91214,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "a32b6b7e1172d5d4"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "627c093062ecfd9e"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "9483487283b1387b"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "d51610179b156156"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "09b7d3b306b0b81f"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "23658ea89505f466"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -91075,6 +91239,10 @@
       "output": "380e9b7e01919de8"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "49e493ba9d9cdaee"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "49e493ba9d9cdaee"
     },
@@ -91090,6 +91258,10 @@
       "source": "4eaa806899ccca3d",
       "output": "cc91da834ddfe494"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "217e7220c27ef11a"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "7b483f24a5e10a33"
@@ -91097,6 +91269,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "7703153b36bfc9b6"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "93f019bac96090b2"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -91122,9 +91298,9 @@
       "source": "5aa200350750a374",
       "output": "aadf8844e437ab4f"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "b953f6aaf585947d"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "1be2aee041e1a7b5"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -91133,6 +91309,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "d28636bec9abc135"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "4962996f46e2a8ae"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "7819d9a63b84585c"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -91166,6 +91350,10 @@
       "source": "9448e3a9821691b6",
       "output": "ee0b2a2afadfeae6"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "d9d1d029f5f15e99"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "f464a4f949bf9e8d"
@@ -91174,13 +91362,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "d8bee5d1923e84df"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "d297cb65167c56c0"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "2df1526c3493a5f3"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "5d788017bfe473fd"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "dcceda11d8e8d7f5"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -98076,10 +98268,6 @@
       "source": "79261f970df53185",
       "output": "eb9641c5370f33b6"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "07235ed77a2ff2a0"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "eb9641c5370f33b6"
@@ -104493,8 +104681,8 @@
       "output": "af092dad1e6b2a4c"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "4fff04abbaf8ccd2"
+      "source": "9915fbbf393d4cf0",
+      "output": "976d484a962c3f51"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -104669,8 +104857,8 @@
       "output": "18094f545c4ace68"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "484a3eaf67a7d166"
+      "source": "d0d95b5b6143e92a",
+      "output": "07e8c68682b77c32"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -114380,6 +114568,18 @@
       "source": "4f07f41aac5aef98",
       "output": "99d462dbdc65fe3d"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "5a83527ca6f4e4a0"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "58ac440e5ccd613c"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "06267551cea46fb4"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "d724c3edcf060ddf"
@@ -114387,6 +114587,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "80bf71586693846b"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "d3faff56eea9545a"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -114400,13 +114604,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "98ef998e18320ab7"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "a6e600a10fede40f"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "18d2b5ac93f214bf"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "03ad8038ce4b5468"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "42a56773f6d57bbf"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "cfd0a5ccce2f545c"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -114417,6 +114629,10 @@
       "output": "9c606a0c3aca379d"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "ea89b5636546c3cc"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "ea89b5636546c3cc"
     },
@@ -114432,6 +114648,10 @@
       "source": "4eaa806899ccca3d",
       "output": "749cb5862cf4ba0a"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "e47c7aa7688eaace"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "485d8f3d75fd3a57"
@@ -114439,6 +114659,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "97401a2bde646965"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "95f28b74188c88e9"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -114464,9 +114688,9 @@
       "source": "5aa200350750a374",
       "output": "676bfe4933d2d870"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "292855546e7c104e"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "73040e179e918250"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -114475,6 +114699,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "804254a4851f2ebb"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "875630620f975894"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "4cae33b336ef0194"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -114508,6 +114740,10 @@
       "source": "9448e3a9821691b6",
       "output": "04968677f1cc068a"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "41c0bef9ee87df9a"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "7bb03a861790f895"
@@ -114516,13 +114752,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "f1e444d4de156404"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "a47984df938ab842"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "b254e23f7c87801d"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "920e413c7d411b61"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "517037d10c83274c"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -121418,10 +121658,6 @@
       "source": "79261f970df53185",
       "output": "e5fa9fd22d91b522"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "bc956ac1e4bd899d"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "e5fa9fd22d91b522"
@@ -127835,8 +128071,8 @@
       "output": "efdb6d1f4e302b34"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "c8b39a2b015157f7"
+      "source": "9915fbbf393d4cf0",
+      "output": "c9a2e92971b9589e"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -128011,8 +128247,8 @@
       "output": "57a9342c2d68d9a9"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "0997b9c9f5068a22"
+      "source": "d0d95b5b6143e92a",
+      "output": "9fbe825f8e16f318"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -137722,6 +137958,18 @@
       "source": "4f07f41aac5aef98",
       "output": "38498dc8b5e64c29"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "de58739bd10aa7fd"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "d61187f453480fe9"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "b7d7ab9cc8dc0940"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "e86f7dcd67427ffa"
@@ -137729,6 +137977,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "ed405d4c3b0b0b76"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "c51ec11f6b6000a9"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -137742,13 +137994,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "c6c77cc44f5f16c3"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "33e0a4a8a9a76d95"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "40de6d27633af299"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "6869668c0627e7ea"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "2acc2d81179d5efa"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "ba808de2c6f27ebb"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -137759,6 +138019,10 @@
       "output": "bdd4e1777666e7eb"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "6ebdce7fbd01f5e9"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "6ebdce7fbd01f5e9"
     },
@@ -137774,6 +138038,10 @@
       "source": "4eaa806899ccca3d",
       "output": "47980267f3cdbed0"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "7335b89d664f1457"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "ef1ad35dc5d4e7f5"
@@ -137781,6 +138049,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "8f17178ad38f5e52"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "4d138b8010e2e5a5"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -137806,9 +138078,9 @@
       "source": "5aa200350750a374",
       "output": "aae7a48c28d35dca"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "a54df2c42bee852e"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "c83162bc3df304cc"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -137817,6 +138089,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "931647da0d5b88f2"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "d654a468e527b694"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "150dac26fbcacccf"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -137850,6 +138130,10 @@
       "source": "9448e3a9821691b6",
       "output": "6c5a439691c40bac"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "5f9d43bb08f4c2d0"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "7b26db2f917da9f9"
@@ -137858,13 +138142,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "e27c59e82465695f"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "5345d352e0464d71"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "144127b0976e1d5b"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "920e413c7d411b61"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "58278de6216bc506"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
@@ -144760,10 +145048,6 @@
       "source": "79261f970df53185",
       "output": "0a2b80e18e6a6f11"
     },
-    "changesets.workItem.empty": {
-      "source": "7613eb9352dccc1d",
-      "output": "f7603af75ca44c6e"
-    },
     "changesets.workItem.title": {
       "source": "79261f970df53185",
       "output": "327c1899a8ed4a1d"
@@ -151177,8 +151461,8 @@
       "output": "0dac9a08993a2758"
     },
     "features.aenderungsvorschlaege.details.p3": {
-      "source": "80e6a51a08af3377",
-      "output": "b143e68ffc9a1e04"
+      "source": "9915fbbf393d4cf0",
+      "output": "ca9bb3eb705b539a"
     },
     "features.aenderungsvorschlaege.details.p4": {
       "source": "45c5a3428bd69d99",
@@ -151353,8 +151637,8 @@
       "output": "c1961891fac6521d"
     },
     "features.agentenprofile.where": {
-      "source": "19a635ed17a54940",
-      "output": "46d6eebc4089d0a0"
+      "source": "d0d95b5b6143e92a",
+      "output": "c3d24fde51a1bb81"
     },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
@@ -161064,6 +161348,18 @@
       "source": "4f07f41aac5aef98",
       "output": "11dbbf8c0fd9a766"
     },
+    "workItems.detail.addResult": {
+      "source": "d13f602d7ef66c12",
+      "output": "6f0b37d1cad851e1"
+    },
+    "workItems.detail.aiSettingsHeading": {
+      "source": "1790cb7f1016465e",
+      "output": "62234598d862e7fc"
+    },
+    "workItems.detail.aiSettingsSummary": {
+      "source": "5cbe6af21c41afe7",
+      "output": "d9b19361ae519754"
+    },
     "workItems.detail.backToList": {
       "source": "93ce70ebdfcb8706",
       "output": "42b1a52309119fb0"
@@ -161071,6 +161367,10 @@
     "workItems.detail.backToParent": {
       "source": "f1f261c770d41fa9",
       "output": "f2c87ae1123cf9f7"
+    },
+    "workItems.detail.briefHeading": {
+      "source": "60c8820ffaf32795",
+      "output": "509d1f6e5b3a92c3"
     },
     "workItems.detail.budget": {
       "source": "66e74cf35036ec87",
@@ -161084,13 +161384,21 @@
       "source": "0f82c3ebb1171cba",
       "output": "35baaeda5af1be22"
     },
-    "workItems.detail.contextHeading": {
-      "source": "d2f889a154968f84",
-      "output": "dbb654a486a5fc1f"
+    "workItems.detail.cancelEdit": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
     },
-    "workItems.detail.criteriaHeading": {
-      "source": "cf96d20f99ade78d",
-      "output": "aa1f9782ad710169"
+    "workItems.detail.contextLabel": {
+      "source": "487e285d048f78c2",
+      "output": "9067d3702df8fa88"
+    },
+    "workItems.detail.criteriaCount": {
+      "source": "fb50aedbf0476b18",
+      "output": "0b39289b32c305a7"
+    },
+    "workItems.detail.criteriaLabel": {
+      "source": "97950ea1493a2a51",
+      "output": "e02f7672291f4278"
     },
     "workItems.detail.delete": {
       "source": "6c2d352161df5809",
@@ -161101,6 +161409,10 @@
       "output": "0513992c68a5d959"
     },
     "workItems.detail.edit": {
+      "source": "84e45ee7341134db",
+      "output": "2eba946b2e1ee4b6"
+    },
+    "workItems.detail.editResult": {
       "source": "84e45ee7341134db",
       "output": "2eba946b2e1ee4b6"
     },
@@ -161116,6 +161428,10 @@
       "source": "4eaa806899ccca3d",
       "output": "a80de96d9716c999"
     },
+    "workItems.detail.historyShowAll": {
+      "source": "73898d05d75e2fb3",
+      "output": "d64e0bd894f6e683"
+    },
     "workItems.detail.loadFailed": {
       "source": "212a70a426ded540",
       "output": "6b3311519a9dd1be"
@@ -161123,6 +161439,10 @@
     "workItems.detail.loading": {
       "source": "af1037616893870f",
       "output": "0c9d16da4c63b4c1"
+    },
+    "workItems.detail.moreActions": {
+      "source": "9d3e66bc2ef8c977",
+      "output": "85e1f8ccb430e4a0"
     },
     "workItems.detail.noResult": {
       "source": "ca1b711b709c7d5b",
@@ -161148,9 +161468,9 @@
       "source": "5aa200350750a374",
       "output": "a3aa5ceac630bca5"
     },
-    "workItems.detail.reasonLabel": {
-      "source": "e5ff3f97ee8482d4",
-      "output": "728e79c25ca9a0e6"
+    "workItems.detail.reasonLabelFor": {
+      "source": "8fc2886ab38818fb",
+      "output": "842d5642877be310"
     },
     "workItems.detail.reasonPlaceholder": {
       "source": "6b88814af3540086",
@@ -161159,6 +161479,14 @@
     "workItems.detail.resultHeading": {
       "source": "cd8e22cf7439433d",
       "output": "a71bc39fe3f33e42"
+    },
+    "workItems.detail.resultHint": {
+      "source": "7c286be887d87eb1",
+      "output": "72f76ddc9e6275a0"
+    },
+    "workItems.detail.resultPagesLabel": {
+      "source": "a1a3ce912a072818",
+      "output": "0ae28db7cb8779d2"
     },
     "workItems.detail.resultPlaceholder": {
       "source": "6e6561a07328cf5e",
@@ -161192,6 +161520,10 @@
       "source": "9448e3a9821691b6",
       "output": "8a01adbc3d12c644"
     },
+    "workItems.detail.runsShowAll": {
+      "source": "b6c8b51a9dba161c",
+      "output": "7ca0d6d24a2d5eb6"
+    },
     "workItems.detail.saveResult": {
       "source": "4a588183ebf1d043",
       "output": "9fc232ef7737ded7"
@@ -161200,13 +161532,17 @@
       "source": "6d1352ac5b19e77f",
       "output": "3699d0222ed94cfd"
     },
+    "workItems.detail.showFewer": {
+      "source": "65f4ccb1477612b4",
+      "output": "677b6ee8c1b5c1d9"
+    },
     "workItems.detail.startRun": {
       "source": "3e6de6e0eeb81b3a",
       "output": "93900238fb874e2d"
     },
-    "workItems.detail.statusLabel": {
-      "source": "920e413c7d411b61",
-      "output": "920e413c7d411b61"
+    "workItems.detail.statusMenuLabel": {
+      "source": "e68eb83f5c47a966",
+      "output": "1373c3f19cf06d8c"
     },
     "workItems.detail.structuredHeading": {
       "source": "d5d3fea0653758b4",
