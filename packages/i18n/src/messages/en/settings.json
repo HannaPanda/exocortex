@@ -795,7 +795,7 @@
       "headerName": "Header name",
       "token": "Token",
       "headerValue": "Header value",
-      "secretKeep": "Leave empty to keep the saved one (ends with {hint})",
+      "secretKeep": "Unchanged (ends with {hint})",
       "secretHint": "Stored encrypted and never displayed again.",
       "create": "Connect",
       "save": "Save",

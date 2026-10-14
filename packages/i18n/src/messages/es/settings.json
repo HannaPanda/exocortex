@@ -795,7 +795,7 @@
       "headerName": "Nombre de la cabecera",
       "token": "Token",
       "headerValue": "Valor de la cabecera",
-      "secretKeep": "Dejar en blanco para conservar el actual (termina en {hint})",
+      "secretKeep": "Sin cambios (termina en {hint})",
       "secretHint": "Se guarda de forma cifrada y nunca se vuelve a mostrar.",
       "create": "Conectar",
       "save": "Guardar",

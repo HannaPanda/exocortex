@@ -795,7 +795,7 @@
       "headerName": "Nazwa nagłówka",
       "token": "Token",
       "headerValue": "Wartość nagłówka",
-      "secretKeep": "Pozostawienie pustego zachowuje zapisany (kończy się na {hint})",
+      "secretKeep": "Bez zmian (kończy się na {hint})",
       "secretHint": "Zostanie zapisany w formie zaszyfrowanej i nigdy więcej nie zostanie wyświetlony.",
       "create": "Połącz",
       "save": "Zapisz",

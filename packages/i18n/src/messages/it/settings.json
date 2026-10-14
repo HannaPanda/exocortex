@@ -795,7 +795,7 @@
       "headerName": "Nome dell’header",
       "token": "Token",
       "headerValue": "Valore dell’header",
-      "secretKeep": "Lascia vuoto per mantenere quello salvato (termina con {hint})",
+      "secretKeep": "Invariato (termina con {hint})",
       "secretHint": "Viene salvato in modo cifrato e non verrà mai più mostrato.",
       "create": "Collega",
       "save": "Salva",

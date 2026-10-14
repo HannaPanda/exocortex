@@ -795,7 +795,7 @@
       "headerName": "Naam van de header",
       "token": "Token",
       "headerValue": "Waarde van de header",
-      "secretKeep": "Leeg laten behoudt het opgeslagen geheim (eindigt op {hint})",
+      "secretKeep": "Ongewijzigd (eindigt op {hint})",
       "secretHint": "Wordt versleuteld opgeslagen en nooit meer getoond.",
       "create": "Koppelen",
       "save": "Opslaan",

@@ -795,7 +795,7 @@
       "headerName": "Nom de l’en-tête",
       "token": "Jeton",
       "headerValue": "Valeur de l’en-tête",
-      "secretKeep": "Laisser vide conserve la valeur enregistrée (se termine par {hint})",
+      "secretKeep": "Inchangé (se termine par {hint})",
       "secretHint": "Enregistré de manière chiffrée et ne sera plus jamais affiché.",
       "create": "Connecter",
       "save": "Enregistrer",

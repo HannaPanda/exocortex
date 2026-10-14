@@ -795,7 +795,7 @@
       "headerName": "Name des Headers",
       "token": "Token",
       "headerValue": "Wert des Headers",
-      "secretKeep": "Leer lassen behält das gespeicherte (endet auf {hint})",
+      "secretKeep": "Unverändert (endet auf {hint})",
       "secretHint": "Wird verschlüsselt gespeichert und nie wieder angezeigt.",
       "create": "Anbinden",
       "save": "Speichern",
