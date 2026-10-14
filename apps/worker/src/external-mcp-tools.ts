@@ -1,4 +1,9 @@
-import { callMcpTool, McpClientError, type McpClientErrorCode } from '@exocortex/ai';
+import {
+  callMcpTool,
+  McpClientError,
+  type McpClientErrorCode,
+  type McpOperationOptions,
+} from '@exocortex/ai';
 import { decryptCredential, parseCredentialKey } from '@exocortex/auth';
 import { type WorkerEnv } from '@exocortex/config';
 import {
@@ -179,6 +184,8 @@ export function createExternalToolLoader(input: {
   env: WorkerEnv;
   logger: Logger;
   settings: (workspaceId?: string) => Promise<Settings>;
+  /** Only for tests: reach a loopback server; see `GuardedFetchOptions.insecureForTests`. */
+  insecureForTests?: McpOperationOptions['insecureForTests'];
 }): ExternalToolLoader {
   const { prisma, logger } = input;
   // Parsed once, like the provider key resolver: a malformed key must not
@@ -299,7 +306,10 @@ export function createExternalToolLoader(input: {
               }),
             },
             { name: row.name, arguments: args, maxTextChars: options.maxTextChars },
-            { limits: { timeoutMs } },
+            {
+              limits: { timeoutMs },
+              ...(input.insecureForTests ? { insecureForTests: input.insecureForTests } : {}),
+            },
           );
           logger.info('External MCP tool answered', {
             server: binding.serverKey,
@@ -308,10 +318,12 @@ export function createExternalToolLoader(input: {
             durationMs: Math.round(performance.now() - started),
             correlationId: options.correlationId,
           });
+          // A server that quotes the request back would hand the model its own
+          // credential, and from there the transcript and the next tool call.
           return {
             kind: 'answered',
             isError: result.isError,
-            text: resultText(result),
+            text: redactSecret(resultText(result), secret),
             trusted: row.server.trusted,
           };
         } catch (error) {

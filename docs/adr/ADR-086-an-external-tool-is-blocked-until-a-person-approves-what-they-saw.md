@@ -110,7 +110,9 @@ decision does not reopen it; web research stays as it is.
   effect is unknown.
 - **Each call is checked again.** The tool, its server, the membership and
   the master switch are read from the database before every call, and the
-  secret is decrypted in the worker for that call alone. Blocking a tool,
+  secret is decrypted in the worker for that call alone, and cut out of the
+  answer again before the model reads it, in case the server quotes the
+  request back. Blocking a tool,
   narrowing it to read, a new check that saw it change, switching the server
   off or deleting it stops the next call of a run already going
   (`tool_revoked`, `server_disabled`, `external_mcp_disabled`,
@@ -120,6 +122,13 @@ decision does not reopen it; web research stays as it is.
 - **The timeline names the reason.** A `tool_call` event carries
   `failureCode` when the call was refused or failed, for every tool of the
   loop, and the run inspector shows it beside the duration.
+- **End to end, against a real server.** `external-mcp-end-to-end.integration.test.ts`
+  runs the loop's own tool runner against stored approvals and an MCP server
+  from the official SDK on loopback (stage 4): a fenced read, the refused
+  write after it that never reaches the server, the trusted server that lets
+  it through, an injected instruction, a misdeclared read-only tool, two
+  servers with the same tool, a quoted credential, and a server that refuses
+  the secret or is gone.
 
 ## Trusted servers and suggested classes (2026-10-14)
 

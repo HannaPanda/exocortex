@@ -396,7 +396,8 @@ somebody else's server (issue #196,
   ADMIN or MEMBER there; `instructions` never reach the model. Every call
   re-reads the tool, the server, the membership and the master switch and
   decrypts the secret for that call alone, so a withdrawal stops the next
-  call. The decision is `decideMutation` in `apps/worker/src/external-tool-call.ts`
+  call; an answer quoting the secret back has it replaced before the model
+  reads it. The decision is `decideMutation` in `apps/worker/src/external-tool-call.ts`
   with the person's access class as `mutating`, and it is the only one: no
   API stands behind an external call to refuse it a second time. Every answer
   of the server, its error messages included, is fenced as `external-mcp`
