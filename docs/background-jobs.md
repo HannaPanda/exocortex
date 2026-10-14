@@ -333,7 +333,11 @@ used, not a page somebody wrote.
 
 Daily at 04:50, one indexed `DELETE` of every upload ticket whose `expiresAt`
 lies more than a day back
-([ADR-064](adr/ADR-064-a-local-file-arrives-through-an-upload-ticket.md)).
+([ADR-064](adr/ADR-064-a-local-file-arrives-through-an-upload-ticket.md)),
+and a second one for the download tickets of
+[ADR-088](adr/ADR-088-an-agent-reads-a-picture-as-pixels-and-a-file-through-a-ticket.md):
+the same ten-minute address in the other direction, so one task rather than a
+second schedule.
 A sweep, not event-driven: a ticket needs nothing to happen when it expires,
 because redemption already refuses an expired one; the row only has to go
 eventually.

@@ -864,6 +864,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   log line or replay holds it, and it is not sent back to the provider. The
   panel says "Gedankengang" only when reasoning arrived, "Aktivitäten" for
   tool calls alone, and nothing for neither.
+- ADR-088: an agent reads a picture as pixels and a file through a ticket.
+  `exo_attachment_read_image` answers an MCP `image` element by id, one per
+  call, passing a fitting PNG, JPEG or WebP through byte for byte and scaling
+  the rest; SVG is refused, `exo_page_read` never inlines pictures. The
+  built-in loop stays text (ADR-009): a vision model describes the picture and
+  the description is fenced as attachment content. Any file reaches an
+  agent's disk through a one-time download ticket that mirrors ADR-064, a read
+  by request class, redeemed as the minting credential.
 
 Full list: `docs/adr/`.
 

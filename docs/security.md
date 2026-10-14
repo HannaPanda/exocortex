@@ -364,6 +364,35 @@ public. Properties worth stating:
   itself goes through the ordinary upload: magic-byte detection, the allow-list,
   `MAX_UPLOAD_BYTES`.
 
+## Download tickets
+
+Issue #204,
+[ADR-088](adr/ADR-088-an-agent-reads-a-picture-as-pixels-and-a-file-through-a-ticket.md):
+the mirror of the upload tickets above. An agent mints one through the
+authenticated API (`POST /api/attachments/:id/download-tickets`) and its script
+GETs the file from the returned address (`GET /api/attachments/download/:secret`),
+which is public.
+
+- **Same secret shape, its own hash.** 256 random bits, stored as a SHA-256 hash
+  under a purpose string of its own, so an upload ticket's secret matches no
+  download ticket. Unknown, used and expired all answer `download_ticket_invalid`
+  (404). One fetch, claimed before the file is read and not given back.
+- **A read, by class.** Minting is a `POST` only because it stores a hash;
+  `requestClassFor` counts it as `read`, so a `read` token and a run held to
+  `read_only` may mint one, and redeeming requires the minting token to still
+  carry at least `read`.
+- **Access is decided twice.** Minting runs `findAttachmentContext` and
+  `canDownloadAttachment`; redeeming installs the minting token's page
+  confinement and runs the ordinary download again. A revoked token, a lost
+  page scope or a removed member closes an open ticket.
+- **Served like every stored file**: `attachment` disposition, `nosniff`, the
+  sandboxing policy of issue #177, plus `cache-control: no-store` and
+  `referrer-policy: no-referrer`. 30 requests a minute per address.
+
+The image read beside it (`GET /api/attachments/:id/image`) needs no ticket: it
+is an ordinary authenticated JSON read under the same access check, refuses SVG
+outright (no rasterizer meets foreign XML), and never logs the bytes.
+
 ## External MCP servers
 
 The other direction from the next section: eXocortex as an MCP _client_ of

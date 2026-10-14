@@ -97,6 +97,21 @@ run. `ai.visionEnabled: false` turns this off entirely; see "Vision
 companions" below for how the companion _model_ is now chosen per run rather
 than fixed to `OPENROUTER_VISION_MODEL`.
 
+### Pictures a tool returns
+
+`exo_attachment_read_image` answers an MCP client with an `image` content
+element. The built-in loop cannot carry one, so `apps/worker/src/tool-images.ts`
+hands each picture to a vision model and puts the description in its place
+before the result is measured and fenced
+([ADR-088](adr/ADR-088-an-agent-reads-a-picture-as-pixels-and-a-file-through-a-ticket.md)).
+The describer comes from `resolveToolImageDescriber`
+(`apps/worker/src/processors/ai-run/preparation.ts`): the run's own model when
+`supportsVision` is set, otherwise the companion the conversation or the model
+row names, and nobody when `ai.visionEnabled` is off or the companion is
+switched off. Nobody to ask turns the call into an error that says so. Unlike
+the page images above, a model that sees images is used here rather than
+skipped, because the main path still sends text only.
+
 ## Image generation (page covers)
 
 Drawing a picture sits outside the `AiProvider` contract for the same reason

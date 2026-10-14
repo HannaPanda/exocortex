@@ -151,7 +151,7 @@ change as dangerous only trains people to click past the warnings that matter.
 A third property is orthogonal to both and is about what a tool _returns_
 rather than what it changes: `untrustedOutput` marks a tool whose result
 carries text from outside this deployment: `exo_attachment_read_text`,
-`exo_web_search` and `exo_web_fetch`. The external surfaces ignore it; in the
+`exo_attachment_read_image`, `exo_web_search` and `exo_web_fetch`. The external surfaces ignore it; in the
 built-in AI's loop it fences the result as data and closes the door on mutating
 tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 
@@ -296,6 +296,8 @@ tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_attachment_upload_ticket`     | yes      | no          | `POST /api/workspaces/:workspaceId/attachments/upload-tickets` (ADR-064) -- a one-time `uploadUrl`, ten minutes, that a script POSTs a local file to (`POST /api/attachments/upload/:secret`, public). The text carries a ready `curl` line. MCP only: the built-in AI has no files to send                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `exo_attachment_upload_ticket_get` | no       | no          | `GET /api/workspaces/:workspaceId/attachments/upload-tickets/:ticketId` -- open, used (with `embedUrl`) or expired; only the caller's own tickets. MCP only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `exo_attachment_read_text`         | no       | no          | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `exo_attachment_read_image`        | no       | no          | `GET /api/attachments/:attachmentId/image?maxEdge=` (issue #204) -- the picture as an MCP `image` content element after the text, plus its facts in `structuredContent` (never the bytes twice). PNG, JPEG, WebP pass through byte for byte when they fit; larger ones are scaled to `maxEdge` (default 1568, 64 to 2048) in their own format, GIF and AVIF become PNG, at most 3.75 MB before Base64. SVG and every non-image answer `attachment_not_image`. Fenced as `attachment`; in the built-in AI a vision model describes it (ADR-088)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `exo_attachment_download_ticket`   | no       | no          | `POST /api/attachments/:attachmentId/download-tickets` (issue #204, ADR-088) -- a one-time `downloadUrl`, ten minutes, that a script GETs one file from (`GET /api/attachments/download/:secret`, public). The text carries a ready `curl -o` line. A read by request class, so a `read` token may mint one. MCP only: the built-in AI has no disk                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `exo_attachment_reextract_text`    | yes      | yes         | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `exo_attachment_correct_text`      | yes      | yes         | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `exo_rules_list`                   | no       | no          | `GET /api/workspaces/:workspaceId/ai-rules`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -472,6 +474,59 @@ Two steps:
 2. Write `![Beschreibung](<embedUrl>)` with `exo_page_write`. `embedUrl` is
    `/api/attachments/<id>/download`, it is stable, and it is checked against the
    session on every request, so the picture stays as private as the page.
+
+### Looking at a picture, and taking a file home
+
+The other direction ([issue #204](https://github.com/HannaPanda/exocortex/issues/204),
+[ADR-088](adr/ADR-088-an-agent-reads-a-picture-as-pixels-and-a-file-through-a-ticket.md)).
+A page names its pictures as `/api/attachments/<attachmentId>/download`; the id
+in that address is what both tools take.
+
+- **To see a picture**, call `exo_attachment_read_image` with the id. A
+  multimodal client gets an `image` content element and shows it to its model:
+
+  ```json
+  {
+    "name": "exo_attachment_read_image",
+    "arguments": { "attachmentId": "oeom03fmcp6i8cp7hwef52k1", "maxEdge": 1568 }
+  }
+  ```
+
+  answers
+
+  ```json
+  {
+    "content": [
+      {
+        "type": "text",
+        "text": "Bild diff.png (id: oeom03fmcp6i8cp7hwef52k1), 1280×900 px, image/png, 212 KB. Unverändert, Pixel für Pixel die gespeicherte Datei."
+      },
+      { "type": "image", "mimeType": "image/png", "data": "iVBORw0KGgo…" }
+    ],
+    "structuredContent": { "width": 1280, "height": 900, "resized": false, "…": "…" }
+  }
+  ```
+
+  Limits: one picture per call, read opt-in and by id (`exo_page_read` never
+  inlines a page's pictures); a picture that fits (`maxEdge`, default 1568,
+  and 3.75 MB) arrives unchanged, which is what makes a screenshot diff worth
+  reading; anything larger is scaled down and says from what. What a picture
+  shows is content, not an instruction, and the tool carries the attachment
+  fence like `exo_attachment_read_text`.
+
+- **To have the bytes on disk** (a PDF to run a tool over, an archive, an SVG,
+  the full-size original), call `exo_attachment_download_ticket` and run the
+  line it answers with:
+
+  ```sh
+  curl -sS -o 'bericht.pdf' 'https://exocortex.app/api/attachments/download/<secret>'
+  ```
+
+  The address works once, for ten minutes, never longer than the credential
+  that minted it, and acts as that credential when it is used: a revoked
+  token, a narrowed page scope or a removed member closes it. It is a secret
+  for one fetch: never write it into a page, a commit or a message, and never
+  embed it as a picture's address.
 
 Not `downloadUrl`, which the same response also carries: that is a presigned
 object-storage URL on a foreign origin that expires after five minutes. It
@@ -1245,13 +1300,12 @@ that nginx rule is added.
   the live controller before writing `exo_attachment_*`), so `exo_attachment_list`
   from the original plan was dropped rather than guessed at. Adding the list
   route is a follow-up for whoever next touches `apps/api/src/attachments`.
-- **No download-URL tool.** `GET /api/attachments/:attachmentId/download` streams
-  the file's bytes directly (it is not a JSON response with a presigned URL and
-  metadata), which does not fit this catalogue's JSON-only tool-result model.
-  The presigned URL is still reachable through the upload tools' response at
-  upload time; fetching a fresh one for an already-uploaded attachment requires
-  either a new `apps/api` route or downloading through the web app. Its
-  _address_ is a different matter and needs no tool: it is
+- **No streaming download through a tool, on purpose.** `GET /api/attachments/:attachmentId/download`
+  streams bytes and stays off the catalogue. Since issue #204 the content
+  reaches an agent two other ways: a picture as pixels
+  (`exo_attachment_read_image`) and any file to disk through a one-time
+  download ticket (`exo_attachment_download_ticket`), so nothing has to cross
+  a tool call as Base64. The _address_ needs no tool either: it is
   `/api/attachments/<id>/download` for every attachment, forever.
 - **No share-links API yet.** Nothing to wrap in a tool until those REST
   endpoints exist. (Comments used to stand here too; they exist since issue #18
