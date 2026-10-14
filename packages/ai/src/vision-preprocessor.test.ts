@@ -71,6 +71,68 @@ describe('VisionPreprocessor', () => {
   });
 });
 
+describe('VisionPreprocessor and reasoning models (issue #204)', () => {
+  function preprocessor(): VisionPreprocessor {
+    return new VisionPreprocessor({
+      apiKey: 'test-key',
+      baseUrl: 'https://openrouter.test/api/v1',
+      model: 'vendor/thinking-model',
+      appUrl: 'https://exocortex.test',
+      logger: fakeLogger(),
+    });
+  }
+
+  function bodyOf(call: unknown): { max_tokens: number; reasoning?: { effort: string } } {
+    const [, init] = call as [string, RequestInit];
+    return JSON.parse(init.body as string) as {
+      max_tokens: number;
+      reasoning?: { effort: string };
+    };
+  }
+
+  it('asks without reasoning, so the thinking cannot eat the whole answer', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ choices: [{ message: { content: 'Ein Diff.' } }] })),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(await preprocessor().describeImage(input)).toBe('Ein Diff.');
+    expect(bodyOf(fetchMock.mock.calls[0]).reasoning).toEqual({ effort: 'none' });
+  });
+
+  it('asks again with room to think when reasoning cannot be switched off', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response('{"error":{"message":"Reasoning is mandatory for this endpoint"}}', {
+          status: 400,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ choices: [{ message: { content: 'Ein Diff.' } }] })),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(await preprocessor().describeImage(input)).toBe('Ein Diff.');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const retry = bodyOf(fetchMock.mock.calls[1]);
+    expect(retry.reasoning).toBeUndefined();
+    expect(retry.max_tokens).toBeGreaterThan(bodyOf(fetchMock.mock.calls[0]).max_tokens);
+  });
+
+  it('does not retry a 400 that is about something else', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response('not a valid model ID', { status: 400 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(preprocessor().describeImage(input)).rejects.toThrow(AiProviderError);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('createVisionPreprocessor', () => {
   it('returns null when no model is configured', () => {
     const preprocessor = createVisionPreprocessor({
