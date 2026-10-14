@@ -157,7 +157,7 @@ function WorkItemView({
             is narrow, instead of squeezing the title into one word per line. */}
         <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
           <h1
-            className="exocortex-page-title min-w-[min(100%,18rem)] flex-1 break-words hyphens-auto"
+            className="exocortex-page-title min-w-[min(100%,18rem)] flex-1 break-words"
             data-testid="work-item-title-heading"
           >
             {item.title}
