@@ -528,8 +528,41 @@ codes to German messages in `apps/web/src/lib/api/error-messages.ts`.
   `deploy/` and `packages/sandbox/dist`, which a person later runs or installs
   as root (issue #184, ADR-082). `deploy.sh` reads both properties back from
   the running units and fails when either has loosened.
+- Steel, the browser behind web research, resolves a fetched name itself, so
+  the address check in `public-address.ts` cannot bind it to the socket the
+  way `publicOnlyLookup` does for a fetch this process makes. The host closes
+  that gap instead: Steel has a bridge of its own, and the firewall lets it
+  open connections to public addresses only (`deploy/README.md`, ADR-033
+  addendum of 2026-10-14).
 
 ## Reporting
 
-There is no public deployment yet. Once there is, add a `SECURITY.md` with a
-contact address and a disclosure window.
+`SECURITY.md` in the repository root is the reporting path: GitHub's private
+vulnerability reporting, or mail. A suspected vulnerability is never filed as
+a public issue first.
+
+## Writing about a vulnerability in public
+
+This repository is public, and so is everything around it: issues, comments,
+pull requests, commit messages and these documents. A finding is written about
+in two places, and the split is the rule (issue #185):
+
+- **While it is open**, the technical report is private: a GitHub security
+  advisory on this repository, or a page in the deployment's own workspace.
+  A public issue, if one is useful at all, carries the class of problem, the
+  impact, the priority and the acceptance criteria, and nothing that helps
+  somebody use it: no request sequence, no payload, no internal host, port or
+  address, no statement of which live setting makes it reachable.
+- **Once the fix is live**, deciding what to publish is a decision, not a
+  default. Describing the class, the fix and the test is what makes the
+  history useful; a reproducible attack chain against a fix that a self-hosted
+  copy may not have pulled yet is not.
+- **A limit a document states openly** ("not covered", "needs a firewall") is
+  a disclosure too. Write it once the limit is closed or decided, or describe
+  it at the level of the class.
+- **Old text is corrected, never quietly deleted.** Editing a published issue
+  does not remove it from forks, caches or the issue history, so redacting it
+  creates a false sense of safety. Correct a statement that is wrong, and fix
+  the weakness rather than the paragraph.
+- **The history is not rewritten** for a cosmetic reason. A secret that did
+  reach the history is rotated; the rotation is what makes it harmless.

@@ -124,6 +124,19 @@ file is the contract for automated sessions. Read it before changing code.
     screen that is gone, and for a settings group without search words; the
     rest is the recipe in `docs/command-palette.md`. Editor formatting stays in
     the slash menu.
+17. **An open vulnerability is described in private, and a public text says
+    only what class of problem it is.** The repository and its issues are
+    public (issue #185). A new, unfixed finding goes into a private GitHub
+    security advisory or a page in the deployment's own workspace; a public
+    issue, comment, pull request or commit message carries the problem class,
+    the impact, the priority and the acceptance criteria, and never an attack
+    chain, a payload, an internal host, port or address, or which live setting
+    makes it reachable. The same holds for a document naming a limit that is
+    still open. After the fix is live, what to publish is decided, not
+    defaulted; published text is corrected, never quietly deleted, and the
+    history is never rewritten for cosmetics. The full rule is in
+    `docs/security.md` under "Writing about a vulnerability in public", the
+    reporting path in `SECURITY.md`.
 
 ## The design skills, and which one answers what
 
@@ -890,7 +903,7 @@ Each of these has a step-by-step recipe:
 
 ## Deployment on this machine
 
-`exocortex.app` is served by nginx with TLS and HTTP basic auth in front of four
+`exocortex.app` is served by nginx with TLS in front of four
 systemd units (`exocortex-web`, `exocortex-api`, `exocortex-collaboration`,
 `exocortex-worker`), with the container broker `exocortex-sandbox` beside them
 as the only holder of the Docker socket (ADR-081). See `deploy/README.md`.

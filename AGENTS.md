@@ -41,6 +41,16 @@ This file applies to any coding agent (Claude Code, Codex CLI, or another).
     available_, never _open source_. No GPL or AGPL dependency may enter `apps/`
     or `packages/`: copyleft would force the combined work to be something this
     licence cannot be. Contributions carry the grant in `CONTRIBUTING.md`.
+14. **An open vulnerability is described in private.** Issues, comments, pull
+    requests and commit messages here are public. For a finding that is not
+    fixed and live, the public text names the problem class, the impact, the
+    priority and the acceptance criteria, and nothing more: no attack chain,
+    no payload, no internal host, port or address, no live setting that makes
+    it reachable. The technical report goes into a private GitHub security
+    advisory or the deployment's own workspace. This applies to every
+    workflow that writes to GitHub, including automated ones. Rules and
+    reporting path: `docs/security.md` ("Writing about a vulnerability in
+    public") and `SECURITY.md`.
 
 ## Documentation, and when it has to change with the code
 

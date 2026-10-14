@@ -49,6 +49,11 @@ is a green run there. `AGENTS.md` has the rules that the gates cannot check, in
 particular that visible UI text is German while code, comments and identifiers
 are English, and which documents have to change along with which code.
 
+## Security problems go somewhere else
+
+A suspected vulnerability is not an issue and not a pull request. `SECURITY.md`
+has the private way to report it.
+
 ## What is likely to be merged
 
 Bug fixes, tests, documentation corrections and small well-scoped improvements.
