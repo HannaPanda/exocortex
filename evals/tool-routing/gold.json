@@ -1006,6 +1006,26 @@
       }
     },
     {
+      "id": "lifecycle-remove-empty",
+      "split": "holdout",
+      "kind": "colloquial",
+      "source": "Realer Fehlgriff 2026-10-23: angeboten waren nur core und pages, das Modell benannte 15-mal um statt zu archivieren.",
+      "expected": ["lifecycle"],
+      "texts": {
+        "de": "die leeren Sachen kannst du erstmal entfernen",
+        "en": "you can remove the empty stuff for now",
+        "fr": "tu peux enlever les trucs vides pour l'instant",
+        "es": "de momento puedes quitar las cosas vacías",
+        "it": "per ora puoi togliere le cose vuote",
+        "nl": "de lege dingen kun je voorlopig weghalen",
+        "pl": "na razie możesz usunąć te puste rzeczy",
+        "pt-BR": "por enquanto pode tirar as coisas vazias",
+        "zh": "那些空的东西你先删掉吧",
+        "ja": "空のものはとりあえず消しておいて",
+        "ar": "يمكنك إزالة الأشياء الفارغة الآن"
+      }
+    },
+    {
       "id": "database-count-rating",
       "split": "holdout",
       "kind": "indirect",

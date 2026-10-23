@@ -93,6 +93,16 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
       'trash',
       'entsorg',
       'endgültig weg',
+      // "die leeren Sachen kannst du erstmal entfernen" offered core and pages
+      // only, and the run renamed a page fifteen times instead (2026-10-23).
+      // Jev decides first, but these are its fallback and still have to hold.
+      'entfern',
+      'wegräum',
+      'wegraeum',
+      'weg damit',
+      'aufräum',
+      'aufraeum',
+      'remove',
     ],
   },
   appearance: {

@@ -34,6 +34,18 @@ describe('selectToolDomains', () => {
     expect(selectToolDomains({ text: 'Archiviere die Seite.' })).toContain('lifecycle');
   });
 
+  it('offers lifecycle when a task asks to remove or clear away pages (2026-10-23)', () => {
+    for (const text of [
+      'die leeren Sachen kannst du erstmal entfernen',
+      'Räum die alten Entwürfe weg, bitte wegräumen.',
+      'Die Seite Alte Wohnung brauch ich nicht mehr, weg damit.',
+      'Kannst du hier mal aufräumen?',
+      'Remove the empty pages.',
+    ]) {
+      expect(selectToolDomains({ text })).toContain('lifecycle');
+    }
+  });
+
   it('offers the picture tools when a task asks about a picture and names no file', () => {
     expect(selectToolDomains({ text: 'beschreib das erste Bild auf dieser Seite' })).toContain(
       'attachments',

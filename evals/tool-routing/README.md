@@ -19,6 +19,7 @@ an der Gruppe und nie an einer Übersetzung, deshalb kann eine schlechte
 | `acceptable` | Domänen, deren Angebot nicht falsch ist (zählt nicht als unnötig).                                                                                        |
 | `context`    | was ein Lauf ohne Modellaufruf schon weiß: `databaseViewOpen`, `pageAttachments` (`image`, `pdf`)                                                         |
 | `texts`      | Sprache → Aufgabe. `mixed` ist eine Liste sprachgemischter Fassungen.                                                                                     |
+| `source`     | woher die Gruppe stammt, wenn sie ein realer Fehlgriff ist und nicht ausgedacht.                                                                          |
 
 Sprachen: die acht Oberflächensprachen (`de en fr es it nl pl pt-BR`) und
 `zh ja ar` als Robustheitsfälle ohne eigene Oberfläche.
