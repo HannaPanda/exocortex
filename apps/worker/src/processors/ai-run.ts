@@ -10,8 +10,8 @@ import {
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { currentTraceIds, type Logger, withSpan } from '@exocortex/logger';
-import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { toolOfferNote } from '@exocortex/mcp-tools';
+import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
