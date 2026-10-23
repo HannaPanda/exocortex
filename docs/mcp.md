@@ -704,6 +704,14 @@ So the loop is handed the domains its task needs:
 4. `exo_toolbox` opens anything the words missed. Without an argument it lists
    the domains; with one it opens that domain, whose tools are in the next
    turn's request.
+5. The run is told in its prompt what is missing (issue #206). `toolOfferNote`
+   names every domain the toolbox could still open for this run, with its
+   label, plus two rules: open the domain before reaching for a tool that does
+   something else, and never claim something is missing or empty without
+   looking. The tool description alone did not do it: the default model opened
+   a missing domain in one of fifteen measured cases. The note is the
+   `tool_offer` section in the run inspector, and it survives a compaction
+   between turns like the write mode and the agent role.
 
 Measured straight after the change: a page task is offered 22 tools and 29,032
 characters where it used to get 164 and 148,119; a database task 39 and 45,751;

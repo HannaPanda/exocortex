@@ -51,6 +51,7 @@
       "closing": "Werkruimte en datum",
       "agent_role": "Agentrol",
       "write_mode": "Schrijfmodus",
+      "tool_offer": "Beschikbare tools",
       "images": "Afbeeldingsbeschrijvingen",
       "conversation_summary": "Samenvatting van eerdere berichten",
       "conversation_user": "Je berichten",

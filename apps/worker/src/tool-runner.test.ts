@@ -386,6 +386,20 @@ describe('the tool runner as a tool-context budget', () => {
     expect(runner.definitions.length).toBeGreaterThan(before);
     expect(runner.definitions.map((definition) => definition.name)).toContain('exo_render_start');
     expect(runner.toolContext().domains).toContain('render');
+    expect(runner.toolContext().closedDomains).not.toContain('render');
+  });
+
+  it('names what is still closed, without external or what the profile forbids (issue #206)', () => {
+    const open = runnerWith({ taskText: 'Schreib einen Satz auf die Seite.' }).toolContext();
+    expect(open.closedDomains).toContain('lifecycle');
+    expect(open.closedDomains).not.toContain('pages');
+    expect(open.closedDomains).not.toContain('external');
+
+    const confined = runnerWith({
+      taskText: 'Schreib einen Satz auf die Seite.',
+      allowedDomains: ['core', 'pages', 'lifecycle'],
+    }).toolContext();
+    expect(confined.closedDomains).toEqual(['lifecycle']);
   });
 
   it('counts the calls it made, whatever they were', async () => {

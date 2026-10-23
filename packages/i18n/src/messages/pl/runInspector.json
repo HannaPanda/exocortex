@@ -51,6 +51,7 @@
       "closing": "Obszar roboczy i data",
       "agent_role": "Rola agenta",
       "write_mode": "Tryb pisania",
+      "tool_offer": "Dostępne narzędzia",
       "images": "Opisy obrazów",
       "conversation_summary": "Podsumowanie wcześniejszych wiadomości",
       "conversation_user": "Twoje wiadomości",

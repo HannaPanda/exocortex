@@ -11,6 +11,7 @@ import {
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { currentTraceIds, type Logger, withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
+import { toolOfferNote } from '@exocortex/mcp-tools';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
@@ -29,7 +30,7 @@ import {
   type RunProfile,
 } from './ai-run/agent-profile';
 import { writeOutcome } from './ai-run/completion';
-import { contextEvent } from './ai-run/context-record';
+import { contextEvent, type RunNote } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
 import {
   type EvalHold,
@@ -228,7 +229,7 @@ interface RunPolicy {
   evalHold: EvalHold | null;
   writeMode: AiWriteMode;
   /** System messages before the conversation: the role, then the mode. */
-  notes: { key: 'agent_role' | 'write_mode'; message: AiMessage }[];
+  notes: RunNote[];
   timeouts: AiRunTimeouts;
   budgetMicroUsd: number;
   maxToolIterations: number;
@@ -355,6 +356,14 @@ async function prepareRunVision(input: {
     return null;
   });
   return { imageContext, describeImage };
+}
+
+/** The prompt note naming what the run's tool offer leaves out; none without tools. */
+function toolOfferNotes(runner: ToolRunner | null): RunNote[] {
+  if (runner === null) return [];
+  const offer = runner.toolContext();
+  const content = toolOfferNote({ offered: offer.domains, closed: offer.closedDomains });
+  return content === null ? [] : [{ key: 'tool_offer', message: { role: 'system', content } }];
 }
 
 /** The tool loop of one run, told what it may offer and what it may call. */
@@ -617,12 +626,6 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // #143): told to the model up front, enforced by the loop and, through
     // its signed token, by the API.
     const policy = await resolveRunPolicy({ prisma, run, settings, profile, evalHold: hold });
-    const messages: AiMessage[] = [
-      ...base,
-      ...policy.notes.map((note) => note.message),
-      ...(imageContext === null ? [] : [imageContext]),
-      ...rest,
-    ];
     const { timeouts, writeMode } = policy;
     const runner: ToolRunner | null = tools.enabled
       ? createRunToolRunner({
@@ -640,10 +643,21 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // already read foreign content by the time the first turn starts.
     if (imageContext !== null) runner?.noteUntrustedContent('attachment');
 
+    // What the run was not offered, by name (issue #206): told in the prompt,
+    // because the toolbox's own description did not make the default model
+    // look before it said something was missing.
+    const notes = [...policy.notes, ...toolOfferNotes(runner)];
+    const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
+    const messages: AiMessage[] = [
+      ...preamble,
+      ...(imageContext === null ? [] : [imageContext]),
+      ...rest,
+    ];
+
     timeline.record(
       contextEvent({
         promptSections,
-        notes: policy.notes,
+        notes,
         imageContext,
         documentId: run.documentId,
         conversation: rest,
@@ -691,7 +705,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             settings,
             payload,
             logger,
-            base,
+            // With the notes, so a compaction between turns keeps the run's
+            // mode, role and tool offer rather than only the system prompt.
+            base: preamble,
             imageContext,
             // The routing input's provider writes compaction summaries, nothing else.
             provider: summaryProvider,

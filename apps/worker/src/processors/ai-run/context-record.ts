@@ -32,6 +32,12 @@ function measured(
   };
 }
 
+/** A system message the worker adds after the prompt, measured as its own section. */
+export interface RunNote {
+  key: 'agent_role' | 'write_mode' | 'tool_offer';
+  message: AiMessage;
+}
+
 /**
  * What the first turn's prompt was built from, as the run inspector records
  * it (issue #145): every part measured, every source named by id, no text.
@@ -41,7 +47,7 @@ function measured(
  */
 export function contextEvent(input: {
   promptSections: readonly PromptSection[];
-  notes: readonly { key: 'agent_role' | 'write_mode'; message: AiMessage }[];
+  notes: readonly RunNote[];
   imageContext: AiMessage | null;
   documentId: string | null;
   conversation: readonly AiMessage[];

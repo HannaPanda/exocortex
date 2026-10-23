@@ -51,6 +51,7 @@
       "closing": "Espaço de trabalho e data",
       "agent_role": "Função do agente",
       "write_mode": "Modo de escrita",
+      "tool_offer": "Ferramentas disponíveis",
       "images": "Descrições de imagens",
       "conversation_summary": "Resumo de mensagens anteriores",
       "conversation_user": "Suas mensagens",

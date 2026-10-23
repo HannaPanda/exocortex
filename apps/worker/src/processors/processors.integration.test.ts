@@ -167,7 +167,7 @@ function stubToolRunner(
   const ledger = new ToolCallLedger();
   return {
     definitions: [{ name: 'exo_test_tool', description: 'Ein Testwerkzeug', parameters: {} }],
-    toolContext: () => ({ offered: 1, schemaChars: 42, domains: ['core'] }),
+    toolContext: () => ({ offered: 1, schemaChars: 42, domains: ['core'], closedDomains: [] }),
     callCount: () => ledger.tallies().reduce((total, tally) => total + tally.calls, 0),
     untrustedOrigins: [],
     noteUntrustedContent() {},

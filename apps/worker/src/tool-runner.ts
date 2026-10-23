@@ -16,6 +16,7 @@ import {
   type ExocortexApiClient,
   ExocortexApiError,
   findTool,
+  OPENABLE_DOMAINS,
   openedDomain,
   selectToolDomains,
   type ToolDomain,
@@ -93,6 +94,11 @@ export interface ToolContext {
   schemaChars: number;
   /** The domains behind that number, including any `exo_toolbox` opened. */
   domains: ToolDomain[];
+  /**
+   * What `exo_toolbox` could still open for this run: not offered, not
+   * `external`, and allowed by the agent profile (issue #206).
+   */
+  closedDomains: ToolDomain[];
 }
 
 /**
@@ -274,6 +280,8 @@ interface ToolOffer {
   /** `true` when this call widened the set; `false` when the domain was already open. */
   open: (domain: ToolDomain) => boolean;
   domains: () => ToolDomain[];
+  /** Openable, allowed and not yet offered. */
+  closed: () => ToolDomain[];
 }
 
 /**
@@ -336,6 +344,7 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
       return true;
     },
     domains: () => [...domains],
+    closed: () => OPENABLE_DOMAINS.filter((domain) => !domains.has(domain) && allowed(domain)),
   };
 }
 
@@ -503,6 +512,7 @@ function offerContext(offer: ToolOffer): ToolContext {
     schemaChars:
       toolSchemaChars(tools) + (external.length === 0 ? 0 : JSON.stringify(external).length),
     domains: offer.domains(),
+    closedDomains: offer.closed(),
   };
 }
 

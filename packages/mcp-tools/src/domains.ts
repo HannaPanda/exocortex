@@ -412,3 +412,52 @@ export function openedDomain(argumentsJson: string): ToolDomain | null {
   const domain = (parsed as { domain?: unknown } | null)?.domain;
   return TOOL_DOMAINS.find((known) => known === domain) ?? null;
 }
+
+/**
+ * The domains `exo_toolbox` can open. `external` is not one of them: its
+ * tools are not in the catalogue, and a run that may use them already has
+ * them (issue #196).
+ */
+export const OPENABLE_DOMAINS: readonly ToolDomain[] = TOOL_DOMAINS.filter(
+  (domain) => domain !== 'external',
+);
+
+/**
+ * What the run is told about its own tool offer, before the first turn
+ * (issue #206).
+ *
+ * The tool description of `exo_toolbox` alone did not reach the default model:
+ * in the measured runs it opened a missing domain once in fifteen cases, and
+ * otherwise answered "there is no picture" or "nothing is pending" without
+ * looking, or reached for a tool that does something else (fifteen renames
+ * with an unchanged title instead of one archive call, 2026-10-23). So the
+ * run is told in its prompt what is missing by name, and the two rules that
+ * those failures broke.
+ *
+ * `closed` is what `exo_toolbox` could still open for this run: the agent
+ * profile has already taken out what it forbids, so the list never names a
+ * domain the next call would refuse.
+ */
+export function toolOfferNote(input: {
+  offered: readonly ToolDomain[];
+  closed: readonly ToolDomain[];
+}): string | null {
+  if (input.closed.length === 0) return null;
+  return [
+    '## Werkzeugangebot dieses Laufs',
+    '',
+    `Dir liegen zu Beginn nur die Werkzeuge dieser Bereiche vor: ${input.offered.join(', ')}.`,
+    'Diese Bereiche gibt es außerdem. Sie sind nicht angeboten, aber mit einem Aufruf von ' +
+      'exo_toolbox (domain: <Bereich>) ab dem nächsten Schritt verfügbar:',
+    ...input.closed.map((domain) => `- ${domain}: ${domainLabel(domain)}`),
+    '',
+    'Zwei Regeln dazu:',
+    '- Brauchst du eine Fähigkeit, für die dir kein passendes Werkzeug vorliegt (zum Beispiel ' +
+      'archivieren, löschen, ein Bild ansehen, einen Vorschlag prüfen), schalte zuerst ihren ' +
+      'Bereich mit exo_toolbox frei. Weiche nie auf ein Werkzeug aus, das etwas anderes tut, ' +
+      'und wiederhole keinen Aufruf, der nichts verändert hat.',
+    '- Behaupte nie, etwas fehle, sei leer oder existiere nicht (kein Bild, nichts offen, keine ' +
+      'Einträge), bevor du es mit einem Werkzeug nachgesehen hast. Fehlt dir das Werkzeug zum ' +
+      'Nachsehen, schalte seinen Bereich frei und sieh dann nach.',
+  ].join('\n');
+}

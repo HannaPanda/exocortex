@@ -15940,6 +15940,10 @@
       "source": "29943f39fdc4bb6e",
       "output": "67ee0e521c8369d9"
     },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "6eb7a22c74299471"
+    },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
       "output": "eb258712115692d2"
@@ -39537,6 +39541,10 @@
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
       "output": "495b583f28fef03e"
+    },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "4fd0f7c3c9532ee1"
     },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
@@ -63136,6 +63144,10 @@
       "source": "29943f39fdc4bb6e",
       "output": "f72a2ddd29d13fc7"
     },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "89918c195c48edd8"
+    },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
       "output": "8f825a52a8300e6d"
@@ -86733,6 +86745,10 @@
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
       "output": "d8c6012379a2e46d"
+    },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "a0d153b24ecc709a"
     },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
@@ -110332,6 +110348,10 @@
       "source": "29943f39fdc4bb6e",
       "output": "096f458baea90e37"
     },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "be16038605e9fa9c"
+    },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
       "output": "ba2ba0000d187ed1"
@@ -133930,6 +133950,10 @@
       "source": "29943f39fdc4bb6e",
       "output": "9a995fe24bcc098e"
     },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "39c83cf784df9ac6"
+    },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",
       "output": "f83cd006c460f8ea"
@@ -157527,6 +157551,10 @@
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
       "output": "e3be78fcd7a142c2"
+    },
+    "runInspector.context.sections.tool_offer": {
+      "source": "9142a3cc7fcb3007",
+      "output": "83a388d53f29ea08"
     },
     "runInspector.context.sections.tool_schemas": {
       "source": "b9d6d686e53ba9af",

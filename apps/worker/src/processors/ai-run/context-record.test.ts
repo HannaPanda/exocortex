@@ -34,7 +34,7 @@ describe('the recorded context of a run (issue #145)', () => {
       { role: 'assistant', content: 'Antwort' },
       { role: 'user', content: 'Frage zwei' },
     ],
-    tools: { offered: 22, schemaChars: 3600, domains: ['core', 'pages'] },
+    tools: { offered: 22, schemaChars: 3600, domains: ['core', 'pages'], closedDomains: [] },
   });
 
   it('measures every part and leaves out the empty ones', () => {

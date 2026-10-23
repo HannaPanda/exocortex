@@ -42,6 +42,7 @@ export const AI_RUN_CONTEXT_SECTIONS = [
   'closing',
   'agent_role',
   'write_mode',
+  'tool_offer',
   'images',
   'conversation_summary',
   'conversation_user',

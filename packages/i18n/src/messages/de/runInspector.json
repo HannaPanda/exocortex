@@ -51,6 +51,7 @@
       "closing": "Arbeitsbereich und Datum",
       "agent_role": "Agentenrolle",
       "write_mode": "Schreibmodus",
+      "tool_offer": "Werkzeugangebot",
       "images": "Bildbeschreibungen",
       "conversation_summary": "Zusammenfassung früherer Nachrichten",
       "conversation_user": "Deine Nachrichten",

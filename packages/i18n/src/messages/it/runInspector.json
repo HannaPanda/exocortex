@@ -51,6 +51,7 @@
       "closing": "Area di lavoro e data",
       "agent_role": "Ruolo dell’agente",
       "write_mode": "Modalità di scrittura",
+      "tool_offer": "Strumenti disponibili",
       "images": "Descrizioni delle immagini",
       "conversation_summary": "Riepilogo dei messaggi precedenti",
       "conversation_user": "I tuoi messaggi",

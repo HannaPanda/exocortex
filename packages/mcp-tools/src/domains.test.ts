@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { toolSchemaChars, toolsFor } from './catalog.js';
-import { ALWAYS_OFFERED_DOMAINS, openedDomain, selectToolDomains } from './domains.js';
+import {
+  ALWAYS_OFFERED_DOMAINS,
+  OPENABLE_DOMAINS,
+  openedDomain,
+  selectToolDomains,
+  toolOfferNote,
+} from './domains.js';
 
 /**
  * Which part of the catalogue a task hears about (issue #121, ADR-060).
@@ -77,5 +83,33 @@ describe('openedDomain', () => {
     expect(openedDomain(JSON.stringify({ domain: 'erfundenes' }))).toBeNull();
     expect(openedDomain(JSON.stringify({}))).toBeNull();
     expect(openedDomain('kein json')).toBeNull();
+  });
+});
+
+/**
+ * The prompt note on what a run was not offered (issue #206). The default
+ * model did not open a domain on the toolbox's description alone, so the note
+ * names each missing one and the rule it broke.
+ */
+describe('toolOfferNote', () => {
+  it('names every closed domain with its label and the way to open it', () => {
+    const note = toolOfferNote({
+      offered: ['core', 'pages'],
+      closed: ['lifecycle', 'attachments'],
+    });
+
+    expect(note).toContain('core, pages');
+    expect(note).toContain('- lifecycle: Archivieren');
+    expect(note).toContain('- attachments: ');
+    expect(note).toContain('exo_toolbox (domain: <Bereich>)');
+    expect(note).toContain('bevor du es mit einem Werkzeug nachgesehen hast');
+  });
+
+  it('says nothing when nothing is left to open', () => {
+    expect(toolOfferNote({ offered: [...OPENABLE_DOMAINS], closed: [] })).toBeNull();
+  });
+
+  it('never offers external, which the toolbox cannot open', () => {
+    expect(OPENABLE_DOMAINS).not.toContain('external');
   });
 });

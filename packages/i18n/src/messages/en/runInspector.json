@@ -51,6 +51,7 @@
       "closing": "Workspace and date",
       "agent_role": "Agent role",
       "write_mode": "Writing mode",
+      "tool_offer": "Available tools",
       "images": "Image descriptions",
       "conversation_summary": "Summary of earlier messages",
       "conversation_user": "Your messages",
