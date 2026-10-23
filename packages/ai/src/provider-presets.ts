@@ -54,6 +54,8 @@ const CLINE: ProviderPreset = {
   baseUrl: 'https://api.cline.bot/api/v1',
   openRouterEquivalents: {
     'cline-pass/deepseek-v4.1-flash': 'deepseek/deepseek-v4.1-flash',
+    // Measured 2026-10-23: Cline answers this slug with the 1017 build.
+    'cline-pass/deepseek-v4.1-flash-1017': 'deepseek/deepseek-v4.1-flash-1017',
   },
 };
 
