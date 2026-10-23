@@ -878,9 +878,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   `packages/mcp-tools/src/tool-routing.ts` and the gold standard imports them,
   so a reworded question is an unmeasured router. No key, 1.5 s, an error or
   an empty answer fall back to `selectToolDomains`, and the run starts anyway.
-  An open database view, a proposing run, a page with a picture or PDF and
-  the domains the conversation's last three runs reached for are added
-  whoever chooses. `ai.semanticToolRouting` defaults on, is workspace-scoped
+  An open database view, a proposing run and the domains the conversation's
+  last three runs reached for are added whoever chooses; a page with a
+  picture or PDF adds `attachments` only while the routing is on. `ai.semanticToolRouting` defaults on, is workspace-scoped
   with a ceiling, and is the one setting with its own admin route and tools
   (`exo_tool_routing_set`), because it is the emergency stop. Only the
   person's own last messages leave the deployment. The run timeline names

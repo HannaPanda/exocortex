@@ -79,6 +79,19 @@ describe('routeToolDomains', () => {
     expect(outcome.domains).toContain('lifecycle');
   });
 
+  it('adds no page signal when switched off, only what the caller requires', async () => {
+    const outcome = await route({
+      enabled: false,
+      text: 'Was zeigt diese Skizze?',
+      required: ['lifecycle'],
+      carried: ['lifecycle'],
+      signals: ['page_images'],
+    });
+
+    expect(outcome.domains).toEqual(['core', 'pages', 'lifecycle']);
+    expect(outcome.event).toMatchObject({ carried: ['lifecycle'], signals: [] });
+  });
+
   it('keeps what the caller knows and what the page carries, whatever Jev says', async () => {
     const outcome = await route({
       text: 'Was zeigt diese Skizze?',

@@ -40,11 +40,13 @@ them from there, so the question the worker asks is the question that was
 measured.
 
 **Three facts are added whoever chooses.** An open database view needs
-`databases`, a proposing run needs `changesets`, a page carrying a picture or
-a PDF needs `attachments`, and the domains the conversation's last three runs
-called a tool of or opened with the toolbox are offered again
-(`carriedToolDomains`). These are things the deployment knows without asking
-anybody.
+`databases`, a proposing run needs `changesets`, and the domains the
+conversation's last three runs called a tool of or opened with the toolbox
+are offered again (`carriedToolDomains`). These are things the deployment
+knows without asking anybody. A page carrying a picture or a PDF adds
+`attachments` too, and tells Jev so, but only while the routing is on (also
+in its fallback): switched off, the selection is the one from before, with
+nothing new added but the carried domains.
 
 **The keywords stay, as the fallback.** No OpenRouter key, a call that takes
 longer than 1.5 seconds, an error, an answer of the wrong shape or one without

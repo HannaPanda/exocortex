@@ -706,8 +706,10 @@ So the loop is handed the domains its task needs:
    nothing usable, `selectToolDomains` picks them as before -- lowercase
    substrings, deterministic, no model call -- and the run starts anyway.
    Either way the caller adds what it knows from context: an open database
-   view, a proposing run, a page with a picture or a PDF (`attachments`), and
-   the domains carried over from the conversation (step 6). The run timeline
+   view, a proposing run and the domains carried over from the conversation
+   (step 6). While the routing is on, a page with a picture or a PDF adds
+   `attachments` as well, in the fallback too; switched off, nothing else is
+   added. The run timeline
    records who chose as a `tool_routing` event, and `exo_tool_routing_set`
    switches Jev off for the whole deployment without a deploy.
 3. `core` and `pages` are always offered. Reading, writing and moving pages is

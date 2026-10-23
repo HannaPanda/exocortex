@@ -47,7 +47,9 @@ function signalDomains(signals: readonly ToolRoutingSignal[]): ToolDomain[] {
 /**
  * Chooses the tool domains a run starts with (issue #206, ADR-089).
  *
- * Switched off, this is the keyword selection exactly as before. Switched on,
+ * Switched off, this is the keyword selection exactly as before, plus only
+ * what the caller requires (an open database view, a proposing run, the
+ * domains carried from the conversation). Switched on,
  * Jev decides: one yes/no question per domain, answered together in one call,
  * and everything at or above the measured threshold is offered. Any way that
  * call can go wrong (no key, a timeout, an error, an answer without
@@ -58,11 +60,31 @@ function signalDomains(signals: readonly ToolRoutingSignal[]): ToolDomain[] {
  * are always offered, and an unoffered tool stays executable.
  */
 export async function routeToolDomains(input: ToolRoutingInput): Promise<ToolRoutingOutcome> {
+  if (!input.enabled) {
+    // Off is the selection from before the routing, unchanged: no page
+    // signal, which is part of the routing (the carried domains are not, they
+    // hold whoever chooses).
+    const domains = selectToolDomains({ text: input.text, required: input.required });
+    return {
+      domains,
+      durationMs: null,
+      event: {
+        decider: 'keywords',
+        fallbackReason: null,
+        domains,
+        model: null,
+        costMicroUsd: null,
+        carried: [...input.carried],
+        signals: [],
+      },
+    };
+  }
+
   const required = [...new Set([...input.required, ...signalDomains(input.signals)])];
   const keywords = (): ToolDomain[] => selectToolDomains({ text: input.text, required });
   const facts = { carried: [...input.carried], signals: [...input.signals] };
 
-  if (!input.enabled || input.text.trim().length === 0) {
+  if (input.text.trim().length === 0) {
     return {
       domains: keywords(),
       durationMs: null,
