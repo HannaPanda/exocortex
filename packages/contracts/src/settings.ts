@@ -35,6 +35,20 @@ export const settingsSchema = z.object({
   'ai.maxRunMs': z.number().int().min(60_000).max(3_600_000).default(900_000),
   'ai.budgetMicroUsdPerRun': z.number().int().min(1_000).max(50_000_000).default(500_000),
   'ai.toolsEnabled': z.boolean().default(true),
+  /**
+   * Whether Jev chooses which tool domains a run starts with (issue #206,
+   * ADR-089). Off is the keyword selection exactly as before.
+   *
+   * On by default, unlike the other settings that send something to a new
+   * recipient, because the measurement decided it: the keywords offered every
+   * needed domain in 14 % of the multilingual holdout and Jev in 98 %, and
+   * the default model does not recover a missed domain on its own. What goes
+   * to OpenRouter is the person's own last messages and nothing else, never a
+   * page. A workspace may switch it off for itself, and a deployment that
+   * switches it off switches every workspace off with it, which is the
+   * emergency stop: no deploy, the next run is back on the keywords.
+   */
+  'ai.semanticToolRouting': z.boolean().default(true),
   /** Whether the built-in AI may call tools that change data. */
   'ai.mutatingToolsEnabled': z.boolean().default(true),
   /**
@@ -879,6 +893,7 @@ export const SETTING_SCOPES = {
   'ai.maxRunMs': 'workspace',
   'ai.budgetMicroUsdPerRun': 'workspace',
   'ai.toolsEnabled': 'workspace',
+  'ai.semanticToolRouting': 'workspace',
   'ai.mutatingToolsEnabled': 'workspace',
   'ai.untrustedContentPolicy': 'workspace',
   'ai.writeMode': 'workspace',
@@ -1080,6 +1095,7 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.pdfMaxBytes',
   'ai.officeMaxBytes',
   'ai.webResearchEnabled',
+  'ai.semanticToolRouting',
   'ai.webResearchMaxChars',
   'ai.webResearchMaxFetchesPerRun',
   'ai.webSearchMaxResults',

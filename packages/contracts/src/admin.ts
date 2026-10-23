@@ -336,3 +336,36 @@ export const disconnectAppResponseSchema = z.object({
   clientDisabled: z.boolean(),
 });
 export type DisconnectAppResponse = z.infer<typeof disconnectAppResponseSchema>;
+
+/**
+ * The tool routing switch and how it has been doing (issue #206, ADR-089).
+ *
+ * Its own pair of routes rather than the settings form, because the settings
+ * are deliberately out of an agent's reach (they decide what agents may do)
+ * and this one switch has to be reachable by an operator's agent too: it is
+ * the emergency stop for a model call every run makes. It decides which tools
+ * a run is told about, never which it may call (ADR-060).
+ */
+export const toolRoutingStatusSchema = z.object({
+  /** `ai.semanticToolRouting` as the deployment has it; a workspace can only switch itself off. */
+  enabled: z.boolean(),
+  /** The decision model asked, pinned. */
+  model: z.string(),
+  /** How long a run waits before it starts with the keywords. */
+  timeoutMs: z.number().int().positive(),
+  /** The probability from which a domain is offered. */
+  threshold: z.number().min(0).max(1),
+  /** The runs of the last 24 hours, by who chose their tools. */
+  last24h: z.object({
+    runs: z.number().int().nonnegative(),
+    jev: z.number().int().nonnegative(),
+    keywords: z.number().int().nonnegative(),
+    fallback: z.number().int().nonnegative(),
+    /** Fallbacks by reason (`timeout`, `error`, ...). */
+    fallbackReasons: z.record(z.string(), z.number().int().nonnegative()),
+  }),
+});
+export type ToolRoutingStatus = z.infer<typeof toolRoutingStatusSchema>;
+
+export const updateToolRoutingRequestSchema = z.object({ enabled: z.boolean() });
+export type UpdateToolRoutingRequest = z.infer<typeof updateToolRoutingRequestSchema>;

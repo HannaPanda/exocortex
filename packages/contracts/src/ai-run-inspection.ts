@@ -179,6 +179,45 @@ export const aiRunToolCallEventDataSchema = z.object({
   openedDomain: toolDomainSchema.optional(),
 });
 
+/** Who chose a run's first tool offer (issue #206, ADR-089). */
+export const TOOL_ROUTING_DECIDERS = ['jev', 'keywords', 'fallback'] as const;
+export const toolRoutingDeciderSchema = z.enum(TOOL_ROUTING_DECIDERS);
+
+/**
+ * Why Jev was asked and the keywords chose anyway: no OpenRouter key, the call
+ * took longer than the run waits, it failed, its answer did not have the
+ * shape asked for, or it came back without a single probability.
+ */
+export const TOOL_ROUTING_FALLBACK_REASONS = [
+  'unavailable',
+  'timeout',
+  'error',
+  'invalid',
+  'empty',
+] as const;
+export const toolRoutingFallbackReasonSchema = z.enum(TOOL_ROUTING_FALLBACK_REASONS);
+export type ToolRoutingFallbackReason = z.infer<typeof toolRoutingFallbackReasonSchema>;
+
+/** What the open page is known to carry before anybody asks. */
+export const TOOL_ROUTING_SIGNALS = ['page_images', 'page_pdfs'] as const;
+export const toolRoutingSignalSchema = z.enum(TOOL_ROUTING_SIGNALS);
+export type ToolRoutingSignal = z.infer<typeof toolRoutingSignalSchema>;
+
+export const aiRunToolRoutingEventDataSchema = z.object({
+  decider: toolRoutingDeciderSchema,
+  /** Set exactly when `decider` is `fallback`. */
+  fallbackReason: toolRoutingFallbackReasonSchema.nullable(),
+  /** The domains the first turn was offered, `core` and `pages` included. */
+  domains: z.array(toolDomainSchema),
+  /** Of those, the ones carried over from the conversation's last runs. */
+  carried: z.array(toolDomainSchema),
+  signals: z.array(toolRoutingSignalSchema),
+  /** The build that answered, when Jev did. */
+  model: z.string().nullable(),
+  costMicroUsd: count.nullable(),
+});
+export type AiRunToolRoutingEventData = z.infer<typeof aiRunToolRoutingEventDataSchema>;
+
 export const aiRunTruncationEventDataSchema = z.object({
   attempt: z.number().int().positive(),
   /** A tool call was cut mid-arguments, rather than a text answer mid-sentence. */
@@ -191,6 +230,7 @@ export const aiRunEventDataSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('turn'), data: aiRunTurnEventDataSchema }),
   z.object({ kind: z.literal('tool_call'), data: aiRunToolCallEventDataSchema }),
   z.object({ kind: z.literal('truncation_retry'), data: aiRunTruncationEventDataSchema }),
+  z.object({ kind: z.literal('tool_routing'), data: aiRunToolRoutingEventDataSchema }),
 ]);
 export type AiRunEventData = z.infer<typeof aiRunEventDataSchema>;
 export type AiRunEventKind = AiRunEventData['kind'];
@@ -247,6 +287,11 @@ export const aiRunTimelineEntrySchema = z.discriminatedUnion('kind', [
     ...entryBase,
     kind: z.literal('truncation_retry'),
     ...aiRunTruncationEventDataSchema.shape,
+  }),
+  z.object({
+    ...entryBase,
+    kind: z.literal('tool_routing'),
+    ...aiRunToolRoutingEventDataSchema.shape,
   }),
   z.object({
     ...entryBase,

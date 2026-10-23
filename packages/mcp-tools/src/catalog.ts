@@ -34,6 +34,7 @@ import { SAVED_QUERY_TOOLS } from './tools/saved-queries.js';
 import { SEARCH_TOOLS } from './tools/search.js';
 import { SHARE_TOOLS } from './tools/shares.js';
 import { TEMPLATE_TOOLS } from './tools/templates.js';
+import { TOOL_ROUTING_TOOLS } from './tools/tool-routing.js';
 import { createToolboxTool } from './tools/toolbox.js';
 import { TRANSCLUSION_TOOLS } from './tools/transclusion.js';
 import { WEB_TOOLS } from './tools/web.js';
@@ -86,6 +87,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...AGENT_MESSAGE_TOOLS,
   ...ENTITY_TOOLS,
   ...INVITATION_TOOLS,
+  ...TOOL_ROUTING_TOOLS,
   ...AGENT_SESSION_TOOLS,
   ...AUTOMATION_TOOLS,
   ...PUSH_TOOLS,

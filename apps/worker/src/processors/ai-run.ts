@@ -1,44 +1,43 @@
-import { type AiProvider, estimateTokens, type VisionPreprocessor } from '@exocortex/ai';
+import {
+  type AiProvider,
+  type DecisionProvider,
+  estimateTokens,
+  type VisionPreprocessor,
+} from '@exocortex/ai';
 import {
   type AiMessage,
-  type AiRunTimeouts,
   type AiWriteMode,
   deriveAiRunTimeouts,
   type ProviderRoutingOverride,
   QUEUE_NAMES,
   type Settings,
-  type ToolDomain,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
-import { currentTraceIds, type Logger, withSpan } from '@exocortex/logger';
-import { toolOfferNote } from '@exocortex/mcp-tools';
+import { currentTraceIds, withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
-import { type ExternalToolLoader, type ExternalToolSource } from '../external-mcp-tools';
+import { type ExternalToolLoader } from '../external-mcp-tools';
 import { type ToolImageDescriber } from '../tool-images';
-import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
+import { type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun, refuseRun } from './ai-run/admission';
 import {
   profileColumns,
   profileLimits,
   profileMessage,
-  profileToolDomains,
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
-import { carriedToolDomains } from './ai-run/carried-domains';
 import { writeOutcome } from './ai-run/completion';
-import { contextEvent, type RunNote } from './ai-run/context-record';
+import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
 import {
   type EvalHold,
   evalLimits,
   evalProviderRouting,
-  evalToolDomains,
   resolveEvalHold,
 } from './ai-run/eval-hold';
 import { executeRun } from './ai-run/execution';
@@ -50,9 +49,9 @@ import {
   resolveModelRow,
   resolveToolImageDescriber,
   resolveVisionPreprocessor,
-  taskTextFor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
+import { prepareRunTools, type RunPolicy } from './ai-run/run-tools';
 import { RunTimeline } from './ai-run/timeline';
 import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
 
@@ -95,6 +94,13 @@ export interface AiRunDependencies {
    * conversation → model-row → env fallback chain it also specifies.
    */
   visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
+  /**
+   * Who answers the tool routing's question (issue #206), with the key that
+   * pays for the run's OpenRouter calls; `null` when there is nobody to ask.
+   * Optional so a test that does not care about routing need not build one:
+   * absent, Jev is never asked and a run with the setting on falls back.
+   */
+  decisionsFor?: (apiKey: string) => DecisionProvider | null;
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
   /** Only used to ask for an endpoint refresh when a `latest` alias turns out to have moved (ADR-032). */
   queues: QueueRegistry;
@@ -224,19 +230,6 @@ function buildRunRouting(input: {
   };
 }
 
-/** What holds one run: its mode, its role, its limits (issues #141 and #143). */
-interface RunPolicy {
-  profile: RunProfile | null;
-  /** The eval attempt's case, when the run is one (issue #146). */
-  evalHold: EvalHold | null;
-  writeMode: AiWriteMode;
-  /** System messages before the conversation: the role, then the mode. */
-  notes: RunNote[];
-  timeouts: AiRunTimeouts;
-  budgetMicroUsd: number;
-  maxToolIterations: number;
-}
-
 /**
  * The run's write mode, role and limits, each the strictest of the settings,
  * the work item and the agent profile. A profile can only ever take
@@ -287,30 +280,6 @@ async function resolveRunPolicy(input: {
 }
 
 /**
- * The external tools a run may be offered (issue #196). A database or
- * settings failure here costs the run its external tools, never the run.
- */
-async function loadExternalTools(
-  loader: ExternalToolLoader | undefined,
-  run: AiRun,
-  policy: RunPolicy,
-  logger: Logger,
-): Promise<ExternalToolSource | null> {
-  // An eval replay never reaches outside the deployment (issue #146): a
-  // foreign server is neither replayable nor harmless.
-  if (loader === undefined || policy.evalHold !== null) return null;
-  try {
-    return await loader({ workspaceId: run.workspaceId, userId: run.createdById });
-  } catch (error) {
-    logger.warn('Running without external MCP tools: they could not be loaded', {
-      runId: run.id,
-      reason: error instanceof Error ? error.message : String(error),
-    });
-    return null;
-  }
-}
-
-/**
  * What a run gets to know about pictures (ADR-012, ADR-088): the open page's
  * images, described before the first turn, and who describes a picture a tool
  * returns later. Both read the same companion choice.
@@ -358,73 +327,6 @@ async function prepareRunVision(input: {
     return null;
   });
   return { imageContext, describeImage };
-}
-
-/** The prompt note naming what the run's tool offer leaves out; none without tools. */
-function toolOfferNotes(runner: ToolRunner | null): RunNote[] {
-  if (runner === null) return [];
-  const offer = runner.toolContext();
-  const content = toolOfferNote({ offered: offer.domains, closed: offer.closedDomains });
-  return content === null ? [] : [{ key: 'tool_offer', message: { role: 'system', content } }];
-}
-
-/** The tool loop of one run, told what it may offer and what it may call. */
-function createRunToolRunner(input: {
-  factory: ToolRunnerFactory;
-  run: AiRun;
-  settings: Settings;
-  rest: AiMessage[];
-  policy: RunPolicy;
-  externalTools: ExternalToolSource | null;
-  describeImage: ToolImageDescriber | null;
-  /** What the conversation's last runs used or opened (issue #206). */
-  carriedDomains: readonly ToolDomain[];
-}): ToolRunner {
-  const { run, settings, policy } = input;
-  const proposing = policy.writeMode === 'propose';
-  return input.factory({
-    userId: run.createdById,
-    includeMutating: settings['ai.mutatingToolsEnabled'],
-    mutationPolicy: settings['ai.untrustedContentPolicy'],
-    writeMode: policy.writeMode,
-    // Zero when web research is off, which is also how the fetch tool
-    // disappears from the catalogue instead of refusing every call.
-    webFetchesPerRun: settings['ai.webResearchEnabled']
-      ? settings['ai.webResearchMaxFetchesPerRun']
-      : 0,
-    // Which part of the catalogue this run hears about (issue #121). The
-    // task's own words decide, plus one fact the words cannot say: a database
-    // view is open, so the row and column tools are needed before anybody
-    // writes the word "Datenbank".
-    taskText: taskTextFor(input.rest),
-    requiredDomains: [
-      ...input.carriedDomains,
-      ...(run.databaseViewId === null ? [] : (['databases'] as const)),
-      // A proposing run needs the proposal tools whatever its words say.
-      ...(proposing ? (['changesets'] as const) : []),
-    ],
-    // The agent profile's domains are a limit, not an offer (issue #143),
-    // and an eval case can narrow them further (issue #146).
-    allowedDomains: evalToolDomains(
-      profileToolDomains(policy.profile, { onWorkItem: run.workItemId !== null, proposing }),
-      policy.evalHold,
-      proposing ? ['changesets'] : [],
-    ),
-    // An eval attempt is always held to its workspace, and in the fixture
-    // mode to its sandbox (issue #146).
-    confinedWorkspaceId:
-      policy.profile?.snapshot.confineToWorkspace === true || policy.evalHold !== null
-        ? run.workspaceId
-        : null,
-    confinedPageRootId: policy.evalHold?.pageRootId ?? null,
-    externalTools: input.externalTools,
-    toolCallTimeoutMs: policy.timeouts.toolCallTimeoutMs,
-    // One run, one session (ADR-022): the unit somebody would want back is
-    // "what the assistant did while answering that question".
-    agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
-    runId: run.id,
-    describeImage: input.describeImage,
-  });
 }
 
 /**
@@ -632,27 +534,26 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // its signed token, by the API.
     const policy = await resolveRunPolicy({ prisma, run, settings, profile, evalHold: hold });
     const { timeouts, writeMode } = policy;
-    const runner: ToolRunner | null = tools.enabled
-      ? createRunToolRunner({
-          factory: dependencies.toolRunnerFactory!,
-          run,
-          settings,
-          rest,
-          policy,
-          externalTools: await loadExternalTools(dependencies.externalTools, run, policy, logger),
-          describeImage,
-          carriedDomains: await carriedToolDomains(prisma, run),
-        })
-      : null;
+    // Who chooses the tools, the loop that offers them, and what the prompt
+    // says about the rest (issues #121 and #206).
+    const { runner, notes } = await prepareRunTools({
+      enabled: tools.enabled,
+      dependencies,
+      run,
+      settings,
+      rest,
+      policy,
+      apiKey: key.apiKey,
+      correlationId: payload.correlationId,
+      timeline,
+      describeImage,
+      logger,
+    });
     // The image descriptions were produced before the runner existed, and they
     // are text out of an uploaded file like any other (issue #56): the run has
     // already read foreign content by the time the first turn starts.
     if (imageContext !== null) runner?.noteUntrustedContent('attachment');
 
-    // What the run was not offered, by name (issue #206): told in the prompt,
-    // because the toolbox's own description did not make the default model
-    // look before it said something was missing.
-    const notes = [...policy.notes, ...toolOfferNotes(runner)];
     const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
     const messages: AiMessage[] = [
       ...preamble,

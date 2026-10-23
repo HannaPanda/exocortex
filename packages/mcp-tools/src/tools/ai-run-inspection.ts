@@ -62,6 +62,27 @@ function renderToolCall(entry: TimelineEntryOf<'tool_call'>): string {
   return `${entry.toolName} ${entry.status}${target}, ${notes.join(', ')}`;
 }
 
+type AiRunToolRoutingEntry = TimelineEntryOf<'tool_routing'>;
+
+const ROUTING_DECIDER: Record<AiRunToolRoutingEntry['decider'], string> = {
+  jev: 'Jev',
+  keywords: 'Schlüsselwörter',
+  fallback: 'Schlüsselwörter als Rückfall',
+};
+
+/** Who chose the first tool offer, and what came of it (issue #206). */
+function renderToolRouting(entry: AiRunToolRoutingEntry): string {
+  const notes = [
+    ...(entry.fallbackReason === null ? [] : [`Grund: ${entry.fallbackReason}`]),
+    ...(entry.carried.length === 0 ? [] : [`übernommen: ${entry.carried.join(', ')}`]),
+    ...(entry.signals.length === 0 ? [] : [`Seite: ${entry.signals.join(', ')}`]),
+  ];
+  return (
+    `Werkzeuge gewählt von ${ROUTING_DECIDER[entry.decider]}: ${entry.domains.join(', ')}` +
+    (notes.length === 0 ? '' : ` (${notes.join('; ')})`)
+  );
+}
+
 /** One line per step, relative to the run's creation. */
 function renderEntry(entry: AiRunTimelineEntry, origin: number): string {
   const offset = `+${((Date.parse(entry.at) - origin) / 1000).toFixed(1)} s`;
@@ -81,6 +102,8 @@ function renderEntry(entry: AiRunTimelineEntry, origin: number): string {
       return `${offset} ${renderToolCall(entry)}${took}`;
     case 'truncation_retry':
       return `${offset} am Ausgabelimit abgeschnitten, Versuch ${String(entry.attempt)}`;
+    case 'tool_routing':
+      return `${offset} ${renderToolRouting(entry)}${took}`;
     case 'attention_raised':
       return `${offset} Rückfrage gestellt: ${entry.title}${entry.blocking ? ' (blockierend)' : ''}`;
     case 'attention_settled':

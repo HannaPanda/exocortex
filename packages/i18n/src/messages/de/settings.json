@@ -59,6 +59,10 @@
         "label": "Werkzeuge erlauben",
         "help": "Erlaubt der KI, Werkzeuge wie Suche oder Seiten lesen aufzurufen."
       },
+      "semanticToolRouting": {
+        "label": "Werkzeuge mit Jev auswählen",
+        "help": "Jev entscheidet vor jedem Lauf, welche Werkzeugbereiche die KI angeboten bekommt, auch wenn die Anfrage in einer anderen Sprache oder ohne passende Stichwörter gestellt ist. Dafür gehen deine letzten Nachrichten an OpenRouter, nie der Inhalt einer Seite. Antwortet Jev nicht innerhalb von 1,5 Sekunden, wählt der Lauf wie früher nach Stichwörtern und startet trotzdem. Aus heißt: nur Stichwörter. Das ist keine Berechtigung, jedes Werkzeug bleibt erreichbar."
+      },
       "mutatingToolsEnabled": {
         "label": "Schreibende Werkzeuge erlauben",
         "help": "Erlaubt der KI zusätzlich, Daten zu verändern statt sie nur zu lesen."

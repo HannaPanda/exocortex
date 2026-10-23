@@ -107,6 +107,10 @@
       "undelivered": "onvolledig geleverd"
     },
     "truncationRetry": "Afgekapt bij uitvoerlimiet, poging {attempt}",
+    "toolRouting": "Tools gekozen door {decider, select, jev {Jev} keywords {trefwoorden} other {trefwoorden als terugvaloptie}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev niet bereikbaar} timeout {Jev te traag} error {Jev met fout} invalid {Jev-antwoord onbruikbaar} other {Jev zonder antwoord}}",
+    "toolRoutingCarried": "uit eerdere runs: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {pagina heeft afbeeldingen} page_pdfs {pagina heeft pdf’s} other {pagina heeft afbeeldingen en pdf’s}}",
     "attentionRaised": "Vraag: {title}",
     "attentionBlocking": "blokkerend",
     "attentionSettled": "Vraag afgehandeld",

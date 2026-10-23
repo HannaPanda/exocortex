@@ -34,6 +34,15 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_toolbox'],
   }),
   defineFeature({
+    id: 'werkzeugauswahl-jev',
+    area: 'ki',
+    since: '2026-10-23',
+    references: ['#206', 'ADR-089'],
+    ui: {},
+    settings: ['ai.semanticToolRouting'],
+    tools: ['exo_tool_routing', 'exo_tool_routing_set'],
+  }),
+  defineFeature({
     id: 'seitenkontext',
     area: 'ki',
     since: '2026-08-06',

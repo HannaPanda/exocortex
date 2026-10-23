@@ -432,8 +432,9 @@ same `exo_*` tool catalogue the external MCP server serves
 - **A run is offered the tools its task needs** (issue #121, ADR-060). The
   catalogue travels in _every_ request here, not once at a handshake, so the
   whole of it was 144,285 characters of JSON schema per turn. Each tool
-  declares a `domain`; `selectToolDomains` picks the domains from the user's
-  own messages (lowercase substrings, deterministic, no model call) plus any
+  declares a `domain`; Jev picks the domains from the user's own messages
+  (`routeToolDomains`, ADR-089: one Decisions call, threshold 0.5, keyword
+  fallback after 1.5 s or on any failure, `ai.semanticToolRouting`), plus any
   the caller knows from context, and `core` and `pages` are always offered. A
   page task now carries 22 tools and 29,032 characters. `exo_toolbox` opens
   anything the words missed, in one call, and the tools it opened are in the

@@ -107,6 +107,10 @@
       "undelivered": "entregue incompleta"
     },
     "truncationRetry": "Truncada no limite de saída, tentativa {attempt}",
+    "toolRouting": "Ferramentas escolhidas por {decider, select, jev {Jev} keywords {palavras-chave} other {palavras-chave como alternativa}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev inacessível} timeout {Jev demorou demais} error {Jev com erro} invalid {resposta do Jev inválida} other {Jev sem resposta}}",
+    "toolRoutingCarried": "de execuções anteriores: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {A página tem imagens} page_pdfs {A página tem PDFs} other {A página tem imagens e PDFs}}",
     "attentionRaised": "Pergunta de esclarecimento: {title}",
     "attentionBlocking": "bloqueante",
     "attentionSettled": "Pergunta de esclarecimento resolvida",

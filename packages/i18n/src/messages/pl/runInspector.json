@@ -107,6 +107,10 @@
       "undelivered": "niedostarczone w całości"
     },
     "truncationRetry": "Ucięto z powodu limitu wyjścia, próba {attempt}",
+    "toolRouting": "Narzędzia wybrane przez {decider, select, jev {Jev} keywords {słowa kluczowe} other {słowa kluczowe w trybie awaryjnym}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev jest niedostępny} timeout {przekroczono limit czasu Jev} error {błąd Jev} invalid {nieprawidłowa odpowiedź Jev} other {brak odpowiedzi Jev}}",
+    "toolRoutingCarried": "z wcześniejszych uruchomień: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {strona zawiera obrazy} page_pdfs {strona zawiera pliki PDF} other {strona zawiera obrazy i pliki PDF}}",
     "attentionRaised": "Pytanie: {title}",
     "attentionBlocking": "blokujące",
     "attentionSettled": "Pytanie rozwiązane",

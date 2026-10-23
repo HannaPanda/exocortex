@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
+import { type DecisionProvider, OpenRouterDecisionProvider } from '@exocortex/ai';
 import { type WorkerEnv } from '@exocortex/config';
 import {
   AI_QUEUE_LOCK_DURATION_MS,
@@ -65,6 +66,26 @@ export function startQueueWorkers(
 }
 
 /** Materialization, search indexing, the AI runs and the maintenance sweeps. */
+/**
+ * Who answers the tool routing (issue #206): OpenRouter's Decisions API with
+ * the key that pays for the run, or nobody under the mock provider and
+ * without a key, which the routing records as a fallback.
+ */
+function decisionProviderFactory(
+  env: WorkerEnv,
+  logger: Logger,
+): (apiKey: string) => DecisionProvider | null {
+  return (apiKey) =>
+    env.AI_PROVIDER !== 'openrouter' || apiKey.length === 0
+      ? null
+      : new OpenRouterDecisionProvider({
+          apiKey,
+          baseUrl: env.OPENROUTER_BASE_URL,
+          logger,
+          appUrl: env.APP_URL,
+        });
+}
+
 function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger): QueueWorker[] {
   const {
     prisma,
@@ -167,6 +188,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       toolRunnerFactory,
       externalTools: createExternalToolLoader({ prisma, env, logger, settings: readSettings }),
       visionPreprocessorFor,
+      decisionsFor: decisionProviderFactory(env, logger),
       modelRegistry,
       queues,
       search: { hybrid: search, keyword: keywordSearch },

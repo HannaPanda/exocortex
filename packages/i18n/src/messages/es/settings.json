@@ -59,6 +59,10 @@
         "label": "Permitir herramientas",
         "help": "Permite a la IA invocar herramientas como buscar o leer páginas."
       },
+      "semanticToolRouting": {
+        "label": "Seleccionar herramientas con Jev",
+        "help": "Jev decide antes de cada ejecución qué áreas de herramientas se le ofrecen a la IA, incluso si la consulta está en otro idioma o no incluye las palabras clave adecuadas. Para ello, tus últimos mensajes se envían a OpenRouter, pero nunca el contenido de una página. Si Jev no responde en 1,5 segundos, la ejecución seleccionará por palabras clave como antes y se iniciará de todos modos. Desactivado significa: solo palabras clave. Esto no es un permiso; todas las herramientas siguen estando disponibles."
+      },
       "mutatingToolsEnabled": {
         "label": "Permitir herramientas de escritura",
         "help": "Permite además a la IA modificar datos en lugar de solo leerlos."

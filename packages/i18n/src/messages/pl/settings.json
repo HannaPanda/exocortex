@@ -59,6 +59,10 @@
         "label": "Zezwalaj na narzędzia",
         "help": "Pozwala AI na wywoływanie narzędzi, takich jak wyszukiwanie lub odczyt stron."
       },
+      "semanticToolRouting": {
+        "label": "Wybieranie narzędzi za pomocą Jev",
+        "help": "Przed każdym uruchomieniem Jev decyduje, jakie obszary narzędzi otrzyma AI, nawet jeśli zapytanie jest w innym języku lub bez pasujących słów kluczowych. W tym celu twoje ostatnie wiadomości trafiają do OpenRouter, ale nigdy zawartość strony. Jeśli Jev nie odpowie w ciągu 1,5 sekundy, uruchomienie wybiera narzędzia tak jak dawniej na podstawie słów kluczowych i mimo to startuje. Wyłączone oznacza: tylko słowa kluczowe. To nie są uprawnienia – każde narzędzie pozostaje dostępne."
+      },
       "mutatingToolsEnabled": {
         "label": "Zezwalaj na narzędzia zapisujące",
         "help": "Dodatkowo pozwala AI na modyfikowanie danych zamiast tylko ich odczytywania."

@@ -517,6 +517,16 @@
     },
     "where": "Tool calls are displayed expanded in the conversation history."
   },
+  "werkzeugauswahl-jev": {
+    "title": "The AI finds its tools even without matching keywords",
+    "summary": "Before each run, the decision model Jev determines which tool areas the AI needs. This way it gets image tools even for “What does this sketch show?” or a question in Japanese, and the archive for “you can remove the empty things”.",
+    "details": {
+      "p1": "Previously, a list of German and English keywords selected which tools the AI was offered. In a test across eleven languages, it only got everything it needed in 14 out of 100 cases, compared to 98 out of 100 with Jev. This matters because the default model rarely reloads a missing tool on its own, instead tending to claim there is no image or nothing to do.",
+      "p2": "For this purpose, your recent messages are sent to OpenRouter and nothing else: no page, no attachment. If Jev does not respond within 1.5 seconds or returns an error, the run selects tools by keywords as before and starts anyway. If the open page has an image or a PDF, attachment tools are always included, and whatever the AI used in previous runs of the same conversation remains available.",
+      "p3": "Which method made the selection is shown in the timeline of each run. You can turn it off in the AI settings, either for the entire deployment or just for a single workspace, and with administrator permissions also via MCP. This is not a permission: what the AI is allowed to do is still decided by the tool switches and your own permissions."
+    },
+    "where": "Settings under AI, toggle “Select tools with Jev”. During a run: the timeline in the run inspector."
+  },
   "kompaktierung": {
     "title": "Long conversations keep going",
     "summary": "If a conversation gets longer than the model’s window, the older part is summarized instead of cut off. Compaction only happens when a shorter history really changes something.",

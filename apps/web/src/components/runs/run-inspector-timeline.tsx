@@ -113,6 +113,24 @@ function runLink(workspaceId: string, runId: string, label: string): React.React
   );
 }
 
+/** Who chose the first tool offer (issue #206); a fallback is worth noticing, not alarming. */
+function routingLine(entry: Entry<'tool_routing'>, t: Translate): EntryLine {
+  const signal = entry.signals.length === 2 ? 'both' : (entry.signals[0] ?? null);
+  return {
+    label: t('toolRouting', { decider: entry.decider, domains: entry.domains.join(', ') }),
+    facts: [
+      ...(entry.fallbackReason === null
+        ? []
+        : [t('toolRoutingReason', { reason: entry.fallbackReason })]),
+      ...(entry.carried.length === 0
+        ? []
+        : [t('toolRoutingCarried', { domains: entry.carried.join(', ') })]),
+      ...(signal === null ? [] : [t('toolRoutingSignals', { signal })]),
+    ],
+    tone: entry.decider === 'fallback' ? 'problem' : 'muted',
+  };
+}
+
 function entryLine(
   entry: AiRunTimelineEntry,
   t: Translate,
@@ -144,6 +162,8 @@ function entryLine(
       return toolLine(entry, t, format, workspaceId);
     case 'truncation_retry':
       return { ...plain(t('truncationRetry', { attempt: entry.attempt })), tone: 'problem' };
+    case 'tool_routing':
+      return routingLine(entry, t);
     case 'attention_raised':
       return {
         label: (

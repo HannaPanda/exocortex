@@ -8,10 +8,12 @@ import { AdminService } from './admin.service';
 import { AdminAiModelsController } from './ai-models.controller';
 import { AiModelsService } from './ai-models.service';
 import { AiUsageService } from './ai-usage.service';
+import { ToolRoutingController } from './tool-routing.controller';
+import { ToolRoutingService } from './tool-routing.service';
 
 @Module({
   imports: [AiModule, RealtimeModule],
-  controllers: [AdminController, AdminAiModelsController],
-  providers: [AdminService, AiModelsService, AiUsageService],
+  controllers: [AdminController, AdminAiModelsController, ToolRoutingController],
+  providers: [AdminService, AiModelsService, AiUsageService, ToolRoutingService],
 })
 export class AdminModule {}

@@ -1,6 +1,7 @@
 # ADR-060: a run is offered the tools its task needs, and can ask for the rest
 
-- Status: accepted
+- Status: accepted, amended by ADR-089 (2026-10-23): Jev makes the first
+  choice, the keywords are its fallback
 - Date: 2026-09-21
 
 ## Context

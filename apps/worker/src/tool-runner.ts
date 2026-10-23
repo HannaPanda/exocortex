@@ -215,6 +215,13 @@ export interface CreateToolRunnerInput {
    */
   requiredDomains: readonly ToolDomain[];
   /**
+   * The domains the run starts with, when somebody already chose them (issue
+   * #206): the tool routing, which asks Jev or falls back to the keywords.
+   * When absent the keywords choose here from `taskText` and
+   * `requiredDomains`, which is what every caller before the routing did.
+   */
+  offeredDomains?: readonly ToolDomain[];
+  /**
    * The domains this run may use at all (issue #143), from its agent
    * profile; null when it has none. Unlike the offer above this *is* a
    * limit: a domain outside it is never offered, `exo_toolbox` cannot open
@@ -272,6 +279,7 @@ export type ToolRunnerFactoryInput = Pick<
   | 'webFetchesPerRun'
   | 'taskText'
   | 'requiredDomains'
+  | 'offeredDomains'
   | 'allowedDomains'
   | 'confinedWorkspaceId'
   | 'confinedPageRootId'
@@ -327,7 +335,10 @@ function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
   const allowed = (domain: ToolDomain): boolean =>
     input.allowedDomains === null || input.allowedDomains.includes(domain);
   const domains = new Set<ToolDomain>(
-    selectToolDomains({ text: input.taskText, required: input.requiredDomains }).filter(allowed),
+    (
+      input.offeredDomains ??
+      selectToolDomains({ text: input.taskText, required: input.requiredDomains })
+    ).filter(allowed),
   );
   // Approved by a person for this workspace, so offered whenever the profile
   // allows them rather than guessed from the task's words (issue #196).

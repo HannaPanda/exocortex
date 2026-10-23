@@ -59,6 +59,10 @@
         "label": "Consenti strumenti",
         "help": "Consente all’IA di richiamare strumenti come la ricerca o la lettura di pagine."
       },
+      "semanticToolRouting": {
+        "label": "Seleziona strumenti con Jev",
+        "help": "Jev decide prima di ogni esecuzione quali ambiti di strumenti offrire all’IA, anche se la richiesta è formulata in un’altra lingua o senza parole chiave corrispondenti. A tale scopo, i tuoi ultimi messaggi vengono inviati a OpenRouter, mai il contenuto di una pagina. Se Jev non risponde entro 1,5 secondi, l’esecuzione seleziona come in precedenza in base alle parole chiave e si avvia comunque. Disattivato significa: solo parole chiave. Non si tratta di un’autorizzazione, ogni strumento rimane accessibile."
+      },
       "mutatingToolsEnabled": {
         "label": "Consenti strumenti di scrittura",
         "help": "Consente inoltre all’IA di modificare i dati anziché limitarsi a leggerli."

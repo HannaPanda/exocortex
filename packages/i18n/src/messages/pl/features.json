@@ -517,6 +517,16 @@
     },
     "where": "Wywołania narzędzi znajdują się w historii rozmowy w formie rozwiniętej."
   },
+  "werkzeugauswahl-jev": {
+    "title": "AI znajduje swoje narzędzia nawet bez pasujących słów kluczowych",
+    "summary": "Przed każdym uruchomieniem model decyzyjny Jev ustala, jakich obszarów narzędzi potrzebuje AI. Dzięki temu otrzymuje narzędzia graficzne nawet przy pytaniu „Co przedstawia ten szkic?” lub zadanym po japońsku, a archiwum przy „możesz usunąć puste elementy”.",
+    "details": {
+      "p1": "Dotychczas lista niemieckich i angielskich słów kluczowych decydowała o tym, jakie narzędzia są oferowane AI. W teście z jedenastoma językami otrzymywała w ten sposób wszystko, czego potrzebowała, tylko w 14 na 100 przypadków, a z modelem Jev – w 98 na 100. Ma to znaczenie, ponieważ model domyślny rzadko sam doładowuje brakujące narzędzie i częściej twierdzi, że nie ma obrazu lub nie ma nic do zrobienia.",
+      "p2": "W tym celu do OpenRouter trafiają twoje ostatnie wiadomości i nic więcej: żadna strona, żaden załącznik. Jeśli Jev nie odpowie w ciągu 1,5 sekundy lub zgłosi błąd, uruchomienie wybiera narzędzia po słowach kluczowych, jak dawniej, i startuje mimo to. Jeśli otwarta strona zawiera obraz lub plik PDF, narzędzia załączników są zawsze dostępne, a to, z czego AI korzystała w ostatnich uruchomieniach tej samej rozmowy, pozostaje w ofercie.",
+      "p3": "Informacja o tym, która metoda dokonała wyboru, znajduje się na osi czasu każdego przebiegu. Możesz ją wyłączyć w ustawieniach AI – dla całej instalacji lub tylko dla jednego obszaru roboczego, a z uprawnieniami administratora także przez MCP. To nie jest uprawnienie: o tym, co może robić AI, nadal decydują przełączniki narzędzi i twoje własne uprawnienia."
+    },
+    "where": "Ustawienia w sekcji AI, przełącznik „Wybieraj narzędzia za pomocą Jev”. W uruchomieniu: oś czasu w inspektorze uruchomienia."
+  },
   "kompaktierung": {
     "title": "Długie rozmowy toczą się dalej",
     "summary": "Gdy rozmowa staje się dłuższa niż okno modelu, starsza część jest podsumowywana zamiast obcinana. Kompaktowanie zachodzi tylko wtedy, gdy krótsza historia rzeczywiście coś zmienia.",

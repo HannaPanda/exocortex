@@ -107,6 +107,10 @@
       "undelivered": "unvollständig geliefert"
     },
     "truncationRetry": "Am Ausgabelimit abgeschnitten, Versuch {attempt}",
+    "toolRouting": "Werkzeuge gewählt von {decider, select, jev {Jev} keywords {Schlüsselwörtern} other {Schlüsselwörtern als Rückfall}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev nicht erreichbar} timeout {Jev zu langsam} error {Jev mit Fehler} invalid {Jev-Antwort unbrauchbar} other {Jev ohne Antwort}}",
+    "toolRoutingCarried": "aus früheren Läufen: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {Seite hat Bilder} page_pdfs {Seite hat PDFs} other {Seite hat Bilder und PDFs}}",
     "attentionRaised": "Rückfrage: {title}",
     "attentionBlocking": "blockierend",
     "attentionSettled": "Rückfrage erledigt",

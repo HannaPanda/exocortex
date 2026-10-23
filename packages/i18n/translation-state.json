@@ -13628,6 +13628,30 @@
       "source": "1196095f393aadcb",
       "output": "6fe03ddbae1bce4e"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "93009ddbf770fb32"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "e12f0448d4a88009"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "c0450843cbca132a"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "1d125506a1d4a908"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "41841db1fc305f06"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "f1d5e6d92e823d05"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "d9131dcceed9cf57"
@@ -16200,6 +16224,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "27eecfc00b9ea41f"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "c17613f62cace91b"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "ecf3b83c31226273"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "ff2bb36c6a590430"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "b556d54523359f3a"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "5d28a90f4498a814"
@@ -17563,6 +17603,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "3fee5c367b82bd26"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "b17bbf5eb08297d5"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "88145d88bd086b76"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -37230,6 +37278,30 @@
       "source": "1196095f393aadcb",
       "output": "510c52afecc754d9"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "274b29bc43799525"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "62c1f0b66fe46787"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "fca253482b292d0c"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "2aa08bf154d6d7e8"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "94bc51ff00f68ba9"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "42c2ada48bcd1c41"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "31c0cbce26b63b13"
@@ -39802,6 +39874,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "8ba3e6f413c42552"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "0df426321fa15e3e"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "2b699cd17d5f793b"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "aa6fb876b89f41a8"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "b74ed6f9ea0bee66"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "4033137b151e146a"
@@ -41165,6 +41253,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "f2151f39d020434c"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "18423d1c808e7614"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "ec9514749d439064"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -60832,6 +60928,30 @@
       "source": "1196095f393aadcb",
       "output": "6162f4dfd4c90ed4"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "80f5810ec9019ac6"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "b481569417803177"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "538d3a58d1366230"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "fcb4d3410f771da5"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "ef0db38955cf05be"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "1bf06ad75daf86cf"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "7962a17e6ca2207a"
@@ -63404,6 +63524,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "f3dc3b9775077ed7"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "04d9d82b1d57c0b8"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "2875b71520fdfe08"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "c80ae8a0b6a31d8d"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "1b319ee0e84030d1"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "3d5004bb5b4c1f38"
@@ -64767,6 +64903,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "f461cb9cd2291a28"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "faf13f7d99d209a0"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "49b58d8f9f87d287"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -84434,6 +84578,30 @@
       "source": "1196095f393aadcb",
       "output": "1338ca4263ec6474"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "82875448fc60997f"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "8ce144b116627fe2"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "9aa1ae32a7265f95"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "6ed162b8ff26f3ea"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "7ce7a89b50d81076"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "5f0e69f258314aa4"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "6e87465aa736191b"
@@ -87006,6 +87174,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "27493833f4a334f3"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "0c871baf78b906be"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "7f4b6946915bda20"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "9b4d00629d0697c4"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "14d43ce8b7cc9a9b"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "69e23f5e71fd3b53"
@@ -88369,6 +88553,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "9e4a033af305fb44"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "bea46a6ca641a5b5"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "1c435e1e8d4a5aeb"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -108036,6 +108228,30 @@
       "source": "1196095f393aadcb",
       "output": "3abd451e00881549"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "9af2474943de2208"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "0785986a7c291691"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "73fb7d6bec5a30e3"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "4848d8ef2039873e"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "3fd4e7a622be2878"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "50db639c509ec0e5"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "767b86dd657d6db2"
@@ -110608,6 +110824,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "95aaf3552fc7b855"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "3f4da1da1eaf3c37"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "6846ba043c0b5ad1"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "6b603635b358223f"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "55d2f46b46363492"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "9eaea03a0fb9a721"
@@ -111971,6 +112203,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "492a9d4d86aa83ed"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "bd6339dbdc46e3ff"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "cd5c0d0f68a260ab"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -131638,6 +131878,30 @@
       "source": "1196095f393aadcb",
       "output": "ccdbe41d093961b5"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "6060d8c7c66be507"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "12caa5f3b22b0724"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "2946e2690e52415d"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "e909cb768c310e2b"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "e83c934f505a424d"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "e4ea3e8718c3b800"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "70fea9510a2a137d"
@@ -134210,6 +134474,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "aaa8149ccfaf3e79"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "35af279bed101e7f"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "a64244e642834843"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "34370b71143cf220"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "eaf01cbd2d96f5d5"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "b4b10f572b8c33c0"
@@ -135573,6 +135853,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "8b7be118bd2a48fe"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "6b6332ddfd0efd39"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "faafbf96a7abb829"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -155240,6 +155528,30 @@
       "source": "1196095f393aadcb",
       "output": "02a5696ba603563b"
     },
+    "features.werkzeugauswahl-jev.details.p1": {
+      "source": "daee7cb817c9b5e7",
+      "output": "2848a3d0207ead9b"
+    },
+    "features.werkzeugauswahl-jev.details.p2": {
+      "source": "9d8545c3f88e64e4",
+      "output": "0ddd0747371ae4b5"
+    },
+    "features.werkzeugauswahl-jev.details.p3": {
+      "source": "da3899910460bd36",
+      "output": "e3f663456d161cea"
+    },
+    "features.werkzeugauswahl-jev.summary": {
+      "source": "9e9aaea640b3cf06",
+      "output": "8f5dca0eb2d42b0d"
+    },
+    "features.werkzeugauswahl-jev.title": {
+      "source": "ba97165053b3f3c1",
+      "output": "f19075511489b0f2"
+    },
+    "features.werkzeugauswahl-jev.where": {
+      "source": "1a7e6dd3ac8a6965",
+      "output": "f3eed790a2006a1d"
+    },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
       "output": "83bab9ed0f7ae8fd"
@@ -157812,6 +158124,22 @@
       "source": "aeaaaace91b6b6a9",
       "output": "8ba3e6f413c42552"
     },
+    "runInspector.timeline.toolRouting": {
+      "source": "8f5f0b42f6c6d10c",
+      "output": "1108c0d57a44563c"
+    },
+    "runInspector.timeline.toolRoutingCarried": {
+      "source": "0cad7fd5a0ca6ecf",
+      "output": "7c434241880de7c1"
+    },
+    "runInspector.timeline.toolRoutingReason": {
+      "source": "54cdfc9ed1a47ec1",
+      "output": "c6c548b9e22ea68b"
+    },
+    "runInspector.timeline.toolRoutingSignals": {
+      "source": "b85db9c712d6d59c",
+      "output": "8f055d6f170faa1b"
+    },
     "runInspector.timeline.toolStatus.failed": {
       "source": "e650a8f75edf7b44",
       "output": "365a43015bcee051"
@@ -159175,6 +159503,14 @@
     "settings.keys.ai.runPayloadRetentionDays.label": {
       "source": "49cc3e8a69d56bd2",
       "output": "5da79538fd38aa66"
+    },
+    "settings.keys.ai.semanticToolRouting.help": {
+      "source": "814cebf1d1453a8a",
+      "output": "ff9751ab42eb0398"
+    },
+    "settings.keys.ai.semanticToolRouting.label": {
+      "source": "043536cc52084f06",
+      "output": "1fbb8e94a939ee3c"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",

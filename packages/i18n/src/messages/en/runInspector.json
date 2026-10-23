@@ -107,6 +107,10 @@
       "undelivered": "incomplete delivery"
     },
     "truncationRetry": "Truncated at output limit, attempt {attempt}",
+    "toolRouting": "Tools chosen by {decider, select, jev {Jev} keywords {keywords} other {keywords as fallback}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev unavailable} timeout {Jev timed out} error {Jev error} invalid {Jev response invalid} other {no response from Jev}}",
+    "toolRoutingCarried": "from earlier runs: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {Page has images} page_pdfs {Page has PDFs} other {Page has images and PDFs}}",
     "attentionRaised": "Question: {title}",
     "attentionBlocking": "blocking",
     "attentionSettled": "Question resolved",

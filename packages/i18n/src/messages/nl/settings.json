@@ -59,6 +59,10 @@
         "label": "Tools toestaan",
         "help": "Staat de AI toe tools zoals zoeken of pagina’s lezen aan te roepen."
       },
+      "semanticToolRouting": {
+        "label": "Tools selecteren met Jev",
+        "help": "Jev bepaalt vóór elke run welke toolbereiken de AI aangeboden krijgt, zelfs als het verzoek in een andere taal of zonder passende trefwoorden is gesteld. Hiervoor worden je laatste berichten naar OpenRouter gestuurd, nooit de inhoud van een pagina. Reageert Jev niet binnen 1,5 seconde, dan selecteert de run net als voorheen op basis van trefwoorden en start alsnog. Uit betekent: alleen trefwoorden. Dit is geen toegangsbeperking; elke tool blijft bereikbaar."
+      },
       "mutatingToolsEnabled": {
         "label": "Schrijvende tools toestaan",
         "help": "Staat de AI daarnaast toe om gegevens te wijzigen in plaats van ze alleen te lezen."

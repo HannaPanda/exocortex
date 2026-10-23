@@ -59,6 +59,10 @@
         "label": "Autoriser les outils",
         "help": "Permet à l’IA d’appeler des outils tels que la recherche ou la lecture de pages."
       },
+      "semanticToolRouting": {
+        "label": "Sélectionner les outils avec Jev",
+        "help": "Avant chaque exécution, Jev décide des domaines d’outils proposés à l’IA, même si la requête est formulée dans une autre langue ou sans mots-clés correspondants. Pour cela, tes derniers messages sont envoyés à OpenRouter, jamais le contenu d’une page. Si Jev ne répond pas dans les 1,5 seconde, l’exécution sélectionne par mots-clés comme avant et démarre quand même. Désactivé signifie : uniquement par mots-clés. Il ne s’agit pas d’une restriction de droits, chaque outil reste accessible."
+      },
       "mutatingToolsEnabled": {
         "label": "Autoriser les outils d’écriture",
         "help": "Permet en plus à l’IA de modifier des données au lieu de seulement les lire."

@@ -107,6 +107,10 @@
       "undelivered": "entrega incompleta"
     },
     "truncationRetry": "Truncado por límite de salida, intento {attempt}",
+    "toolRouting": "Herramientas elegidas por {decider, select, jev {Jev} keywords {palabras clave} other {palabras clave como alternativa}}: {domains}",
+    "toolRoutingReason": "{reason, select, unavailable {Jev no disponible} timeout {Jev tardó demasiado} error {Jev con error} invalid {Respuesta de Jev no válida} other {Jev sin respuesta}}",
+    "toolRoutingCarried": "de ejecuciones anteriores: {domains}",
+    "toolRoutingSignals": "{signal, select, page_images {La página tiene imágenes} page_pdfs {La página tiene PDF} other {La página tiene imágenes y PDF}}",
     "attentionRaised": "Consulta: {title}",
     "attentionBlocking": "bloqueante",
     "attentionSettled": "Consulta resuelta",

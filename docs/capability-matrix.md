@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-305 routes are reachable from at least one client; 177 from all three.
+307 routes are reachable from at least one client; 177 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -66,6 +66,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/admin/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
 | `GET /api/admin/overview` | ✓ | · | · | — |
 | `GET /api/admin/settings` | ✓ | · | · | — |
+| `GET /api/admin/tool-routing` | · | ✓ | ✓ | `exo_tool_routing` |
 | `GET /api/admin/users` | ✓ | ✓ | ✓ | `exo_user_list` |
 | `GET /api/agent-profiles/:x` | ✓ | ✓ | ✓ | `exo_agent_profile_get` |
 | `GET /api/agent-sessions` | ✓ | ✓ | ✓ | `exo_agent_session_list` |
@@ -177,6 +178,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/workflows` | ✓ | ✓ | ✓ | `exo_workflow_list` |
 | `PATCH /api/admin/ai-models/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/settings` | ✓ | · | · | — |
+| `PATCH /api/admin/tool-routing` | · | ✓ | ✓ | `exo_tool_routing_set` |
 | `PATCH /api/admin/users/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x/status` | ✓ | ✓ | ✓ | `exo_user_set_disabled` |
 | `PATCH /api/agent-profiles/:x` | ✓ | · | ✓ | `exo_agent_profile_update` |

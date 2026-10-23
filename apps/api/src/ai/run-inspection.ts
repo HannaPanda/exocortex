@@ -155,6 +155,8 @@ function recordedEntry(event: RecordedEvent, titles: VisibleTitles): AiRunTimeli
       return { ...base, kind: 'turn', ...event.data };
     case 'truncation_retry':
       return { ...base, kind: 'truncation_retry', ...event.data };
+    case 'tool_routing':
+      return { ...base, kind: 'tool_routing', ...event.data };
   }
 }
 

@@ -601,11 +601,11 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   readers, beside the English `message` the log keeps.
 - ADR-060: the built-in loop is offered the tools its task needs, not the whole
   catalogue. Every tool declares a `domain` (required, so the compiler is the
-  coverage gate); the domains are picked from the user's own words with no model
-  call, `core` and `pages` are always offered, and `exo_toolbox` opens anything
-  the keywords missed in one call. It is never a permission: an unoffered tool
-  is still executable and still governed by the service token and
-  `decideMutation`. What a run carried is recorded on `ai_run`.
+  coverage gate); `core` and `pages` are always offered, and `exo_toolbox`
+  opens anything the first choice missed in one call. It is never a
+  permission: an unoffered tool is still executable and still governed by the
+  service token and `decideMutation`. What a run carried is recorded on
+  `ai_run`. Who makes the first choice is ADR-089.
 - ADR-061: context is compiled from passages, not pages. `PassageSearchPort`
   answers beside the page search, which stays page-oriented; the keyword half
   runs the page search's own predicate and cuts the pages it found the way the
@@ -872,6 +872,19 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the description is fenced as attachment content. Any file reaches an
   agent's disk through a one-time download ticket that mirrors ADR-064, a read
   by request class, redeemed as the minting credential.
+- ADR-089: Jev chooses a run's first tool offer, the keywords catch it.
+  `routeToolDomains` asks one yes/no question per domain in one Decisions call
+  and offers everything at 0.5 or above; the questions live in
+  `packages/mcp-tools/src/tool-routing.ts` and the gold standard imports them,
+  so a reworded question is an unmeasured router. No key, 1.5 s, an error or
+  an empty answer fall back to `selectToolDomains`, and the run starts anyway.
+  An open database view, a proposing run, a page with a picture or PDF and
+  the domains the conversation's last three runs reached for are added
+  whoever chooses. `ai.semanticToolRouting` defaults on, is workspace-scoped
+  with a ceiling, and is the one setting with its own admin route and tools
+  (`exo_tool_routing_set`), because it is the emergency stop. Only the
+  person's own last messages leave the deployment. The run timeline names
+  who chose (`tool_routing`).
 
 Full list: `docs/adr/`.
 

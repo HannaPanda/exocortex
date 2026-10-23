@@ -59,6 +59,10 @@
         "label": "Allow tools",
         "help": "Allows the AI to call tools such as search or reading pages."
       },
+      "semanticToolRouting": {
+        "label": "Select tools with Jev",
+        "help": "Before each run, Jev decides which tool scopes are offered to the AI, even if the request is in another language or lacks matching keywords. To do this, your recent messages are sent to OpenRouter, never the content of a page. If Jev does not respond within 1.5 seconds, the run selects by keywords as before and starts anyway. Off means: keywords only. This is not a permission; every tool remains accessible."
+      },
       "mutatingToolsEnabled": {
         "label": "Allow mutating tools",
         "help": "Additionally allows the AI to modify data instead of only reading it."

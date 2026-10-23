@@ -154,6 +154,12 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
+- tools chosen per run rather than the whole catalogue: the decision model
+  Jev picks the tool domains a request needs in any language, the keywords
+  take over when it cannot answer within 1.5 seconds, a page with a picture or
+  a PDF always brings the attachment tools, and the run is told by name what
+  it was not offered and how to open it; one setting switches it back to the
+  keywords without a deploy (ADR-060, ADR-089)
 - the model's live thinking and its tool calls, in order, above the answer
   that is being written: shown only when the model streams reasoning, only to
   the person who asked, and stored nowhere (ADR-087)

@@ -517,6 +517,16 @@
     },
     "where": "Las llamadas a herramientas aparecen desplegadas en el historial de la conversación."
   },
+  "werkzeugauswahl-jev": {
+    "title": "La IA encuentra sus herramientas incluso sin palabras clave exactas",
+    "summary": "Antes de cada ejecución, el modelo de decisión Jev determina qué áreas de herramientas necesita la IA. De este modo, obtiene las herramientas de imagen incluso con «¿Qué muestra este boceto?» o una pregunta en japonés, y el archivo con «puedes eliminar las cosas vacías».",
+    "details": {
+      "p1": "Hasta ahora, una lista de palabras clave en alemán e inglés seleccionaba qué herramientas se le ofrecían a la IA. En una prueba con once idiomas, con ese método solo recibía todo lo necesario en 14 de cada 100 casos, mientras que con Jev lo conseguía en 98 de cada 100. Esto importa, porque el modelo estándar rara vez recarga por sí mismo una herramienta que falta y suele afirmar que no hay ninguna imagen o que no hay nada que hacer.",
+      "p2": "Para ello, solo se envían tus últimos mensajes a OpenRouter, nada más: ninguna página, ningún archivo adjunto. Si Jev no responde en 1,5 segundos o devuelve un error, la ejecución recurre a la selección por palabras clave como antes y se inicia de todos modos. Si la página abierta tiene una imagen o un PDF, las herramientas para adjuntos siempre están disponibles, y lo que la IA haya usado en las últimas ejecuciones de la misma conversación se sigue ofreciendo.",
+      "p3": "Qué método se ha elegido figura en el cronograma de cada ejecución. Puedes desactivarlo en los ajustes de IA, para toda la instalación o solo para un espacio de trabajo, y con permisos de administración también a través de MCP. Esto no es un permiso: lo que la IA puede hacer sigue dependiendo de los selectores de herramientas y de tus propios derechos."
+    },
+    "where": "Ajustes en IA, interruptor «Seleccionar herramientas con Jev». Durante la ejecución: en la cronología del inspector de ejecuciones."
+  },
   "kompaktierung": {
     "title": "Las conversaciones largas siguen adelante",
     "summary": "Si una conversación supera la ventana de contexto del modelo, la parte más antigua se resume en lugar de recortarse. Solo se compacta si un historial más corto realmente supone una diferencia.",

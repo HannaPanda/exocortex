@@ -517,6 +517,16 @@
     },
     "where": "De tool-aanroepen staan uitgeklapt in het gespreksverloop."
   },
+  "werkzeugauswahl-jev": {
+    "title": "De AI vindt haar tools ook zonder passende trefwoorden",
+    "summary": "Voor elke run bepaalt het beslissingsmodel Jev welke toolgroepen de AI nodig heeft. Zo krijgt ze de beeldtools ook bij „Wat toont deze schets?” of een vraag in het Japans, en het archief bij „de lege dingen kun je verwijderen”.",
+    "details": {
+      "p1": "Tot nu toe koos een lijst met Duitse en Engelse trefwoorden welke tools aan de AI werden aangeboden. In een test met elf talen kreeg ze daarmee slechts in 14 van de 100 gevallen alles wat ze nodig had, met Jev in 98 van de 100. Dat telt, want het standaardmodel vraagt een ontbrekende tool zelden zelf nog op en beweert dan eerder dat er geen afbeelding is of niets te doen valt.",
+      "p2": "Daarvoor gaan je laatste berichten naar OpenRouter, verder niets: geen pagina, geen bijlage. Reageert Jev niet binnen 1,5 seconde of met een fout, dan kiest de run net als vroeger op basis van trefwoorden en start alsnog. Bevat de geopende pagina een afbeelding of een pdf, dan zijn de bijlagetools er altijd bij, en wat de AI in de laatste runs van hetzelfde gesprek heeft gebruikt, blijft aangeboden.",
+      "p3": "Welke methode gekozen heeft, staat in de tijdlijn van elke run. Uitschakelen kun je dit in de AI-instellingen, voor de hele installatie of alleen voor een werkruimte, en met beheerdersrechten ook via MCP. Dit is geen machtiging: wat de AI mag, bepalen nog steeds de gereedschapsschakelaars en je eigen rechten."
+    },
+    "where": "Instellingen onder AI, schakelaar „Tools selecteren met Jev”. In de run: de tijdlijn in de run-inspector."
+  },
   "kompaktierung": {
     "title": "Lange gesprekken gaan gewoon door",
     "summary": "Wordt een gesprek langer dan het venster van het model, dan wordt het oudere deel samengevat in plaats van afgekapt. Er wordt alleen gecomprimeerd als een korter verloop echt iets uitmaakt.",
