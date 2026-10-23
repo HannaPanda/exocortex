@@ -453,10 +453,14 @@ function usableTool(
 function openFromToolbox(context: {
   input: CreateToolRunnerInput;
   offer: ToolOffer;
+  /** The tool that was called; anything but a successful `exo_toolbox` opens nothing. */
+  name: string;
+  isError: boolean;
   argumentsJson: string;
   correlationId: string;
 }): { refusal: ToolCallOutcome } | { opened: ToolDomain | null } {
   const { input, offer, correlationId } = context;
+  if (context.name !== TOOLBOX_TOOL || context.isError) return { opened: null };
   const opened = openedDomain(context.argumentsJson);
   if (opened === null) return { opened: null };
   if (input.allowedDomains !== null && !input.allowedDomains.includes(opened)) {
@@ -709,10 +713,14 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       const isError = result.isError ?? false;
       // The catalogue can say what a domain holds; only the loop can hand its
       // tools to the next turn (issue #121).
-      const toolbox =
-        name === TOOLBOX_TOOL && !isError
-          ? openFromToolbox({ input, offer, argumentsJson, correlationId })
-          : { opened: null };
+      const toolbox = openFromToolbox({
+        input,
+        offer,
+        name,
+        isError,
+        argumentsJson,
+        correlationId,
+      });
       if ('refusal' in toolbox) return toolbox.refusal;
       // The document is cut first and fenced afterwards, so the closing
       // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
