@@ -163,6 +163,12 @@ export interface ToolCallOutcome {
   repeated?: boolean;
   /** Why it was refused or failed, as a closed code (issue #196); the timeline keeps it. */
   failureCode?: string;
+  /**
+   * The domain an `exo_toolbox` call opened, when it widened the offer. The
+   * timeline keeps it, so the next run of the conversation can be offered it
+   * from the start (issue #206).
+   */
+  openedDomain?: ToolDomain;
 }
 
 export interface CreateToolRunnerInput {
@@ -430,27 +436,28 @@ function openFromToolbox(context: {
   offer: ToolOffer;
   argumentsJson: string;
   correlationId: string;
-}): ToolCallOutcome | null {
+}): { refusal: ToolCallOutcome } | { opened: ToolDomain | null } {
   const { input, offer, correlationId } = context;
   const opened = openedDomain(context.argumentsJson);
-  if (opened === null) return null;
+  if (opened === null) return { opened: null };
   if (input.allowedDomains !== null && !input.allowedDomains.includes(opened)) {
     return {
-      text:
-        `Den Bereich „${opened}“ erlaubt das Agentenprofil dieses Laufs nicht, er bleibt ` +
-        `geschlossen. Erlaubt sind: ${input.allowedDomains.join(', ')}.`,
-      isError: true,
-      refused: true,
+      refusal: {
+        text:
+          `Den Bereich „${opened}“ erlaubt das Agentenprofil dieses Laufs nicht, er bleibt ` +
+          `geschlossen. Erlaubt sind: ${input.allowedDomains.join(', ')}.`,
+        isError: true,
+        refused: true,
+      },
     };
   }
-  if (offer.open(opened)) {
-    input.logger.info('Run opened another tool domain', {
-      domain: opened,
-      correlationId,
-      offered: offer.tools().length,
-    });
-  }
-  return null;
+  if (!offer.open(opened)) return { opened: null };
+  input.logger.info('Run opened another tool domain', {
+    domain: opened,
+    correlationId,
+    offered: offer.tools().length,
+  });
+  return { opened };
 }
 
 /**
@@ -683,11 +690,11 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       const isError = result.isError ?? false;
       // The catalogue can say what a domain holds; only the loop can hand its
       // tools to the next turn (issue #121).
-      const toolboxRefusal =
+      const toolbox =
         name === TOOLBOX_TOOL && !isError
           ? openFromToolbox({ input, offer, argumentsJson, correlationId })
-          : null;
-      if (toolboxRefusal !== null) return toolboxRefusal;
+          : { opened: null };
+      if ('refusal' in toolbox) return toolbox.refusal;
       // The document is cut first and fenced afterwards, so the closing
       // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
       // the truncation ate is a fence that is not there. A failed call
@@ -714,6 +721,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         refused: false,
         resultTruncated,
         ...(result.pausesRun === true && !isError ? { pausesRun: true } : {}),
+        ...(toolbox.opened === null ? {} : { openedDomain: toolbox.opened }),
       };
     } catch (error) {
       if (error instanceof ExocortexApiError) {

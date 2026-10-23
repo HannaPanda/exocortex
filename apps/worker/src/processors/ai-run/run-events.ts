@@ -76,6 +76,7 @@ export function toolCallEvent(input: {
       repeated: result?.repeated ?? false,
       pausedRun: result?.pausesRun === true,
       failureCode: result?.failureCode ?? null,
+      ...(result?.openedDomain === undefined ? {} : { openedDomain: result.openedDomain }),
     },
   };
 }

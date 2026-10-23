@@ -7,6 +7,7 @@ import {
   type ProviderRoutingOverride,
   QUEUE_NAMES,
   type Settings,
+  type ToolDomain,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { currentTraceIds, type Logger, withSpan } from '@exocortex/logger';
@@ -29,6 +30,7 @@ import {
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
+import { carriedToolDomains } from './ai-run/carried-domains';
 import { writeOutcome } from './ai-run/completion';
 import { contextEvent, type RunNote } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
@@ -375,6 +377,8 @@ function createRunToolRunner(input: {
   policy: RunPolicy;
   externalTools: ExternalToolSource | null;
   describeImage: ToolImageDescriber | null;
+  /** What the conversation's last runs used or opened (issue #206). */
+  carriedDomains: readonly ToolDomain[];
 }): ToolRunner {
   const { run, settings, policy } = input;
   const proposing = policy.writeMode === 'propose';
@@ -394,6 +398,7 @@ function createRunToolRunner(input: {
     // writes the word "Datenbank".
     taskText: taskTextFor(input.rest),
     requiredDomains: [
+      ...input.carriedDomains,
       ...(run.databaseViewId === null ? [] : (['databases'] as const)),
       // A proposing run needs the proposal tools whatever its words say.
       ...(proposing ? (['changesets'] as const) : []),
@@ -636,6 +641,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           policy,
           externalTools: await loadExternalTools(dependencies.externalTools, run, policy, logger),
           describeImage,
+          carriedDomains: await carriedToolDomains(prisma, run),
         })
       : null;
     // The image descriptions were produced before the runner existed, and they

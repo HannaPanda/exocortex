@@ -440,7 +440,11 @@ same `exo_*` tool catalogue the external MCP server serves
   next turn. The offer is never a permission: an unoffered tool is still in the
   catalogue, still executed if the model names it, and still governed by the
   service token and `decideMutation`. What a run carried is on its `ai_run` row
-  (`toolsOffered`, `toolSchemaChars`, `toolDomains`, `toolCalls`).
+  (`toolsOffered`, `toolSchemaChars`, `toolDomains`, `toolCalls`). What the
+  last three runs of the same conversation used or opened through the toolbox
+  is offered from the start (`carriedToolDomains`, issue #206), read from their
+  `tool_call` events (`openedDomain`) rather than from `toolDomains`, which
+  also holds everything they were merely offered.
 - **External MCP tools** (issue #196, ADR-086). Beside the catalogue, a run is
   offered the tools a workspace owner approved on the workspace's external MCP
   servers, as `mcp_<key>__<tool>` under the domain `external`. They are not

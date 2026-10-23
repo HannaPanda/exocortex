@@ -712,6 +712,11 @@ So the loop is handed the domains its task needs:
    a missing domain in one of fifteen measured cases. The note is the
    `tool_offer` section in the run inspector, and it survives a compaction
    between turns like the write mode and the agent role.
+6. An opening outlives its run (issue #206). The domains the last three runs
+   of the conversation called a tool of, or opened with `exo_toolbox`, are
+   offered to the next one from the start (`carriedToolDomains` in
+   `apps/worker/src/processors/ai-run/carried-domains.ts`), so "und die
+   anderen auch" after an archive still has the archive tool.
 
 Measured straight after the change: a page task is offered 22 tools and 29,032
 characters where it used to get 164 and 148,119; a database task 39 and 45,751;

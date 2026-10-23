@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { toolDomainSchema } from './agent-profiles';
 import { aiRunSchema, aiRunStatusSchema } from './ai';
 import { contentOriginSchema } from './ai-trust';
 import { attentionKindSchema, attentionStatusSchema } from './attention';
@@ -171,6 +172,11 @@ export const aiRunToolCallEventDataSchema = z.object({
    * client error such as `timeout`. Absent on rows written before it existed.
    */
   failureCode: z.string().max(64).nullable().optional(),
+  /**
+   * The domain an `exo_toolbox` call opened (issue #206). The next run of the
+   * conversation is offered it from the start. Absent when nothing was opened.
+   */
+  openedDomain: toolDomainSchema.optional(),
 });
 
 export const aiRunTruncationEventDataSchema = z.object({
