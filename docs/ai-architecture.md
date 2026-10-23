@@ -576,7 +576,11 @@ thousands of reasoning tokens on a run set to `NONE` (measured 2026-10-14,
 issue #195). The clamping itself lives in
 `clampReasoningLevel` (`packages/contracts/src/ai-models.ts`) because the
 browser needs the same answer: the picker must not display a remembered `high`
-on a model that cannot think.
+on a model that cannot think. The answer is always an offered level: down to
+the nearest one first, up to the weakest one only when nothing lies below. A
+model with mandatory reasoning offers no `none`, so a run requested at `none`
+(the default of an eval variant) runs at its weakest level instead of
+answering 400 (issue #213).
 
 Which levels a model offers is not guessed: `deriveReasoningLevels`
 (`apps/api/src/admin/ai-models.service.ts`) believes

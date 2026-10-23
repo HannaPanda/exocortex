@@ -18,8 +18,21 @@ describe('clampReasoningLevel', () => {
     expect(clampReasoningLevel(['none', 'minimal', 'low'], 'high')).toBe('low');
   });
 
-  it('never climbs above the request', () => {
+  it('does not climb above the request while something below is offered', () => {
     expect(clampReasoningLevel(['none', 'high'], 'low')).toBe('none');
+  });
+
+  it('climbs to the weakest offered level when reasoning is mandatory (issue #213)', () => {
+    expect(clampReasoningLevel(['low', 'medium', 'high'], 'none')).toBe('low');
+    expect(clampReasoningLevel(['low', 'high', 'max'], 'minimal')).toBe('low');
+    expect(clampReasoningLevel(['medium', 'high'], 'low')).toBe('medium');
+  });
+
+  it('never answers a level the model does not offer', () => {
+    const offered = ['low', 'high', 'max'] as const;
+    for (const requested of ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] as const) {
+      expect(offered).toContain(clampReasoningLevel(offered, requested));
+    }
   });
 
   it('clamps down from max to the strongest the model has', () => {

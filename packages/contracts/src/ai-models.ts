@@ -232,6 +232,12 @@ export const REASONING_LEVEL_RANK: Record<AiReasoningLevel, number> = {
  * Shared by the API (which decides what the provider is asked for) and the
  * browser (which decides what the picker shows): a remembered `high` must not
  * appear as the selected value on a model that cannot think at all.
+ *
+ * The answer is always a level the model offers. It moves down to the nearest
+ * offered level first, and up only when there is nothing below: a model whose
+ * reasoning is mandatory offers no `none`, and sending it `none` anyway is a
+ * 400 rather than a run (issue #213). Only a model offering nothing at all
+ * gets `none`.
  */
 export function clampReasoningLevel(
   available: readonly AiReasoningLevel[],
@@ -240,16 +246,17 @@ export function clampReasoningLevel(
   if (available.includes(requested)) return requested;
 
   const requestedRank = REASONING_LEVEL_RANK[requested];
-  let best: AiReasoningLevel = 'none';
+  let below: AiReasoningLevel | null = null;
+  let above: AiReasoningLevel | null = null;
   for (const level of available) {
-    if (
-      REASONING_LEVEL_RANK[level] <= requestedRank &&
-      REASONING_LEVEL_RANK[level] > REASONING_LEVEL_RANK[best]
-    ) {
-      best = level;
+    const rank = REASONING_LEVEL_RANK[level];
+    if (rank <= requestedRank) {
+      if (below === null || rank > REASONING_LEVEL_RANK[below]) below = level;
+    } else if (above === null || rank < REASONING_LEVEL_RANK[above]) {
+      above = level;
     }
   }
-  return best;
+  return below ?? above ?? 'none';
 }
 
 /**
