@@ -273,9 +273,32 @@ describe('OpenRouterProvider.stream', () => {
     expect(events).toContainEqual({
       type: 'error',
       code: 'ai_provider_unavailable',
-      message: 'OpenRouter responded with 502',
+      message: 'OpenRouter responded with 502: nope',
       // The status is what lets a fallback tell "not now" from "wrong" (issue #187).
       status: 502,
+    });
+  });
+
+  it("keeps the provider's reason for a streamed refusal (issue #214)", async () => {
+    const body = JSON.stringify({
+      error: {
+        code: 400,
+        message: 'Reasoning is mandatory for this endpoint and cannot be disabled.',
+      },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(body, { status: 400 })),
+    );
+
+    const events = await collect(provider().stream(request));
+
+    expect(events).toContainEqual({
+      type: 'error',
+      code: 'ai_provider_unavailable',
+      message:
+        'OpenRouter responded with 400: Reasoning is mandatory for this endpoint and cannot be disabled.',
+      status: 400,
     });
   });
 });

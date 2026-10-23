@@ -324,22 +324,38 @@ export class ChatCompletionsProvider implements AiProvider {
     );
   }
 
+  /**
+   * What the provider said when it refused, for the log and the run's error.
+   *
+   * Both paths read it: the streamed one used to keep only the status, so a 400
+   * such as "Reasoning is mandatory" could only be found by calling the
+   * provider by hand (issue #214). An OpenAI-shaped `error.message` is taken
+   * out of the JSON; anything else is kept as text. Cut at 200 characters, and
+   * never part of a prompt or of an answer to the person.
+   */
+  private async refusalMessage(response: Response, request: AiGenerateRequest): Promise<string> {
+    const detail = providerErrorDetail(await response.text().catch(() => ''));
+    this.options.logger.error(`${this.dialect.label} request failed`, undefined, {
+      status: response.status,
+      correlationId: request.correlationId,
+      detail,
+    });
+    const prefix = `${this.dialect.label} responded with ${response.status}`;
+    return detail === '' ? prefix : `${prefix}: ${detail}`;
+  }
+
   async generate(request: AiGenerateRequest): Promise<AiGenerateResult> {
     this.assertConfigured();
     const startedAt = Date.now();
     const response = await this.postCompletions(request, false);
 
     if (!response.ok) {
-      const detail = await response.text();
-      this.options.logger.error(`${this.dialect.label} request failed`, undefined, {
-        status: response.status,
-        correlationId: request.correlationId,
-      });
+      const message = await this.refusalMessage(response, request);
       throw new AiProviderError(
         isRoutingRefusal(this.dialect, response.status, request)
           ? AI_NO_ELIGIBLE_PROVIDER
           : 'ai_provider_unavailable',
-        `${this.dialect.label} responded with ${response.status}: ${detail.slice(0, 200)}`,
+        message,
         { status: response.status },
       );
     }
@@ -379,7 +395,9 @@ export class ChatCompletionsProvider implements AiProvider {
         code: isRoutingRefusal(this.dialect, response.status, request)
           ? AI_NO_ELIGIBLE_PROVIDER
           : 'ai_provider_unavailable',
-        message: `${this.dialect.label} responded with ${response.status}`,
+        message: response.ok
+          ? `${this.dialect.label} responded with ${response.status} and no body`
+          : await this.refusalMessage(response, request),
         status: response.status,
       };
       return;
@@ -658,4 +676,23 @@ function mergeToolCallDeltas(
     if (delta.function?.arguments !== undefined) existing.args += delta.function.arguments;
     partialToolCalls.set(delta.index, existing);
   }
+}
+
+/** The provider's own reason for a refusal: `error.message` when it is JSON, else the text. */
+export function providerErrorDetail(body: string): string {
+  let detail = body.trim();
+  try {
+    const parsed: unknown = JSON.parse(detail);
+    if (typeof parsed === 'object' && parsed !== null && 'error' in parsed) {
+      const error = (parsed as { error: unknown }).error;
+      if (typeof error === 'string') detail = error;
+      else if (typeof error === 'object' && error !== null && 'message' in error) {
+        const message = (error as { message: unknown }).message;
+        if (typeof message === 'string') detail = message;
+      }
+    }
+  } catch {
+    // Not JSON: the text is the reason.
+  }
+  return detail.replace(/\s+/g, ' ').slice(0, 200);
 }

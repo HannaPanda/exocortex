@@ -162,7 +162,7 @@ describe('the Cline preset', () => {
     expect(events).toContainEqual({
       type: 'error',
       code: 'ai_provider_unavailable',
-      message: 'Cline responded with 429',
+      message: 'Cline responded with 429: quota',
       status: 429,
     });
   });
