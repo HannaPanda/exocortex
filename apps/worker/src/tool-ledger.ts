@@ -21,7 +21,19 @@ export interface LedgerVerdict {
   call: number;
   /** The earlier call that already answered exactly this, or `null`. */
   repeatOf: number | null;
+  /**
+   * For a write: how many times this run has made it with the same
+   * arguments and got the same answer, this call included. 0 for a read.
+   */
+  sameWrites: number;
 }
+
+/**
+ * The identical write at which the run is told it is going in circles
+ * (issue #206). Not the second: the confirmation gate asks for every write
+ * twice, so two identical writes are the gate working.
+ */
+export const WRITE_REPEAT_HINT_AT = 3;
 
 interface AnsweredCall {
   call: number;
@@ -54,6 +66,7 @@ interface Counter {
  */
 export class ToolCallLedger {
   private readonly answered = new Map<string, AnsweredCall>();
+  private readonly writes = new Map<string, { hash: string; times: number }>();
   private readonly counters = new Map<string, Counter>();
   private callCount = 0;
 
@@ -63,31 +76,46 @@ export class ToolCallLedger {
    * `comparable` is false for a write, for a refusal and for an error: a write
    * is allowed to be repeated (the confirmation gate is built on exactly
    * that), and two identical failures are two failures rather than a loop.
+   *
+   * A write is still counted (`write`), because it can loop too: on
+   * 2026-10-23 a run renamed a page fifteen times to the title it already had,
+   * each time with the same answer, and nothing said so (issue #206). It is
+   * never swapped for a hint, only reported, so the gate keeps its second call.
    */
   record(input: {
     name: string;
     argumentsJson: string;
     resultText: string;
     comparable: boolean;
+    /** A successful write: counted for `sameWrites`, never compared away. */
+    write?: boolean;
   }): LedgerVerdict {
     this.callCount += 1;
     const call = this.callCount;
     const counter = this.counterFor(input.name);
     counter.calls += 1;
 
-    if (!input.comparable) return { call, repeatOf: null };
-
     const key = `${input.name}\u0000${argumentKey(input.argumentsJson)}`;
     const hash = createHash('sha256').update(input.resultText).digest('hex');
+
+    if (!input.comparable) {
+      if (input.write !== true) return { call, repeatOf: null, sameWrites: 0 };
+      const before = this.writes.get(key);
+      const times = before !== undefined && before.hash === hash ? before.times + 1 : 1;
+      this.writes.set(key, { hash, times });
+      if (times >= WRITE_REPEAT_HINT_AT) counter.repeats += 1;
+      return { call, repeatOf: null, sameWrites: times };
+    }
+
     const earlier = this.answered.get(key);
     if (earlier !== undefined && earlier.hash === hash) {
       counter.repeats += 1;
-      return { call, repeatOf: earlier.call };
+      return { call, repeatOf: earlier.call, sameWrites: 0 };
     }
 
     this.answered.set(key, { call, hash });
     counter.chars += input.resultText.length;
-    return { call, repeatOf: null };
+    return { call, repeatOf: null, sameWrites: 0 };
   }
 
   /** The most-used tools first, so the diagnosis leads with what the run spent itself on. */
@@ -151,6 +179,26 @@ export function repeatHint(input: { name: string; repeatOf: number }): string {
     '- exo_search nennt bei einem semantischen Treffer den Abschnitt samt Blockkennung.',
     '- exo_page_read antwortet bei einer großen Seite mit einer Karte; wähle daraus einen Abschnitt.',
     '- exo_page_block_read öffnet genau einen Abschnitt über seine Blockkennung.',
+  ].join('\n');
+}
+
+/**
+ * What a write is told on top of its answer once it has made the same change
+ * with the same answer three times (issue #206).
+ *
+ * Appended, never instead: the change happened, and the model has to read
+ * that it did. The point is the second half, because the run that named this
+ * did not loop for want of trying. It wanted to archive, had no archive tool
+ * and reached for the closest thing it had.
+ */
+export function writeRepeatHint(input: { name: string; times: number }): string {
+  return [
+    `Hinweis: ${input.name} ist jetzt ${String(input.times)}-mal mit denselben ` +
+      'Argumenten aufgerufen worden und hat jedes Mal dasselbe geantwortet. Ein weiterer gleicher ' +
+      'Aufruf ändert nichts.',
+    'Willst du eigentlich etwas anderes erreichen (zum Beispiel archivieren, löschen oder ' +
+      'verschieben), fehlt dir wahrscheinlich das passende Werkzeug: exo_toolbox nennt die ' +
+      'übrigen Bereiche und schaltet einen davon frei.',
   ].join('\n');
 }
 

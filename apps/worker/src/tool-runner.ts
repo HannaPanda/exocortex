@@ -35,7 +35,13 @@ import {
   runExternalToolCall,
 } from './external-tool-call';
 import { describeToolImages, type ToolImageDescriber } from './tool-images';
-import { repeatHint, ToolCallLedger, type ToolCallTally } from './tool-ledger';
+import {
+  repeatHint,
+  ToolCallLedger,
+  type ToolCallTally,
+  WRITE_REPEAT_HINT_AT,
+  writeRepeatHint,
+} from './tool-ledger';
 
 /** Every tool result is capped here so a single call can never eat the run's whole context. */
 const MAX_RESULT_CHARS = 30_000;
@@ -376,7 +382,20 @@ function bookCall(
     argumentsJson,
     resultText: result.text,
     comparable: !mutating && !result.isError && !result.refused,
+    write: mutating && !result.isError && !result.refused,
   });
+  if (verdict.sameWrites >= WRITE_REPEAT_HINT_AT) {
+    logger.info('Told a run that repeats the same write', {
+      tool: name,
+      call: verdict.call,
+      times: verdict.sameWrites,
+    });
+    return {
+      ...result,
+      text: `${result.text}\n\n${writeRepeatHint({ name, times: verdict.sameWrites })}`,
+      repeated: true,
+    };
+  }
   if (verdict.repeatOf === null) return result;
   logger.info('Answered a repeated tool call with a hint instead of the same text', {
     tool: name,

@@ -471,8 +471,13 @@ same `exo_*` tool catalogue the external MCP server serves
   section anchor of a semantic hit, the page map, `exo_page_block_read`.
   Answers are compared rather than arguments on purpose: a run polling a
   build or a render is never refused, because an answer that changed is
-  handed through untouched. Writes, refusals and errors are never booked as
-  repeats.
+  handed through untouched. Refusals and errors are never booked as repeats,
+  and a write is never replaced, because the confirmation gate asks for every
+  write twice. A write is still counted: from the third time the same write
+  answers the same thing, its answer carries a hint that the call changed
+  nothing and that `exo_toolbox` opens the other domains (issue #206). The run
+  that named this renamed a page fifteen times to its own title because it had
+  no archive tool.
 - **The abort says what the run did.** The ledger also tallies calls,
   characters and repeats per tool, and `ai_tool_limit_exceeded` reads that
   tally out instead of restating the limit. The diagnosis is stored as facts,
