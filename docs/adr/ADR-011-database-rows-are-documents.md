@@ -78,7 +78,11 @@ Costs accepted on purpose:
   thousands of near-empty Yjs documents, snapshot rows and search-index
   rows. This is a known scaling question, not something this ADR solves —
   worth a load test before very large databases are common, not blocking for
-  the initial implementation.
+  the initial implementation. The load test ran on 2026-11-12 (issue #221):
+  10,000 rows cost about 22 KB each, queries stayed near 100 ms and no
+  snapshot or materialization was written for an empty row. What did not
+  hold were the page tree, which drew every row, and the order key, which
+  grew linearly; both are fixed there.
 - **Offset pagination once a view sorts or filters.** The fractional
   `orderKey` cursor only works for the default, unsorted order; a sorted or
   filtered query falls back to an offset cursor, which can skip or repeat a

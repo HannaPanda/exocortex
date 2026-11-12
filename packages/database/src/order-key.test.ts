@@ -9,6 +9,9 @@ import {
   orderKeySequence,
 } from './order-key';
 
+/** How much longer than its neighbour a stepped key may be. */
+const MAX_GROWTH = 3;
+
 describe('generateOrderKey', () => {
   it('creates a deterministic first key', () => {
     expect(initialOrderKey()).toBe('V');
@@ -64,6 +67,57 @@ describe('generateOrderKey', () => {
       keys.unshift(first);
     }
     expect([...keys].sort()).toEqual(keys);
+  });
+
+  it('grows logarithmically, not linearly, when appending (issue #221)', () => {
+    let key = initialOrderKey();
+    let longest = key.length;
+    for (let index = 0; index < 10_000; index += 1) {
+      const next = orderKeyAfter(key);
+      expect(next > key).toBe(true);
+      expect(next.endsWith('0')).toBe(false);
+      key = next;
+      longest = Math.max(longest, key.length);
+    }
+    // The midpoint version ended at 2,000 characters here.
+    expect(longest).toBeLessThanOrEqual(5);
+  });
+
+  it('grows logarithmically when prepending', () => {
+    let key = initialOrderKey();
+    let longest = key.length;
+    for (let index = 0; index < 10_000; index += 1) {
+      const next = orderKeyBefore(key);
+      expect(next < key).toBe(true);
+      expect(next.endsWith('0')).toBe(false);
+      key = next;
+      longest = Math.max(longest, key.length);
+    }
+    expect(longest).toBeLessThanOrEqual(6);
+  });
+
+  it('steps past keys of any shape without growing them', () => {
+    // Keys the midpoint version left behind, and the rebalanced ones.
+    for (const key of [
+      'V',
+      'a0V',
+      'zzzzt',
+      `${'z'.repeat(70)}V`,
+      '1',
+      '01',
+      '0001',
+      'y',
+      'z',
+      'V0CF',
+    ]) {
+      const after = orderKeyAfter(key);
+      const before = orderKeyBefore(key);
+      expect(after > key).toBe(true);
+      expect(before < key).toBe(true);
+      expect(after.endsWith('0') || before.endsWith('0')).toBe(false);
+      expect(after.length).toBeLessThanOrEqual(key.length + MAX_GROWTH);
+      expect(before.length).toBeLessThanOrEqual(key.length + MAX_GROWTH);
+    }
   });
 
   it('rejects inverted bounds', () => {

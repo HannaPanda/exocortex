@@ -136,8 +136,11 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
 - `parentId` gives arbitrary nesting.
 - `orderKey` is a base62 fractional index. Inserting between two siblings generates
   a key strictly between theirs and touches no other row
-  (`packages/database/src/order-key.ts`, 11 tests including 500 sequential and 200
-  same-position insertions).
+  (`packages/database/src/order-key.ts`, 14 tests including 500 sequential and 200
+  same-position insertions). Appending and prepending count up or down instead of
+  halving the gap, so the key at the end of a list grows with the logarithm of
+  its length: 5 characters after 10,000 appends, where halving reached 2,000
+  (issue #221).
 - Cross-workspace parents are rejected (`document_cross_workspace`).
 - Circular moves are rejected (`document_move_cycle`), checked over the whole
   subtree inside the move transaction.
