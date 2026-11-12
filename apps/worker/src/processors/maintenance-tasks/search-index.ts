@@ -179,6 +179,19 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
             )
           )
         )
+        -- A database row with nothing but its title gets no vector (issue
+        -- #221), so it is not owed one either; left in, a table of empty rows
+        -- would fill every batch and stop the sweep before any real page.
+        AND NOT (
+          btrim(index."plainText") = ''
+          AND EXISTS (
+            SELECT 1
+            FROM "document" AS row
+            JOIN "document" AS parent ON parent."id" = row."parentId"
+            WHERE row."id" = index."documentId"
+              AND parent."type" = 'COLLECTION'
+          )
+        )
         ${scope}
       ORDER BY index."updatedAt" DESC
       LIMIT ${context.embeddingBackfillBatchSize}

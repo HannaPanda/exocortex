@@ -73,7 +73,10 @@ no-op once they all have vectors, and a no-op while the setting is off.
 - A page is embedded as `title + plainText`, truncated to 24k characters. Since
   issue #36 a long page carries passage vectors as well, beside that one and
   never instead of it; the `blockId` column is what holds them
-  ([ADR-034](ADR-034-passages-beside-the-page-vector.md)).
+  ([ADR-034](ADR-034-passages-beside-the-page-vector.md)). A database row
+  with nothing on it but its title is not embedded at all (issue #221): its
+  title is a cell, full-text search finds it, and ten thousand of them were
+  63 MB of vectors.
 - Switching the model in `search.embeddingModelSlug` invalidates nothing by
   hand: the vector query filters on the model, so the old rows stop being read,
   the backfill writes new ones, and the next write of a page drops the stale

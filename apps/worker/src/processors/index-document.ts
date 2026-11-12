@@ -34,6 +34,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
         workspaceId: true,
         title: true,
         archivedAt: true,
+        parent: { select: { type: true } },
         content: { select: { plainText: true, proseMirrorJson: true } },
         attachments: {
           where: { deletedAt: null, textStatus: 'READY' },
@@ -64,6 +65,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       title: document.title,
       plainText: attachmentText.length === 0 ? pageText : `${pageText}\n\n${attachmentText}`,
       archivedAt: document.archivedAt,
+      isDatabaseRow: document.parent?.type === 'COLLECTION',
       headingAnchors: headingAnchorsOf(
         document.content?.proseMirrorJson,
         pageText,

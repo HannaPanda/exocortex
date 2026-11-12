@@ -27,6 +27,14 @@ export interface IndexDocumentInput {
    * coming back for, the second is not.
    */
   headingAnchors?: readonly PassageAnchor[];
+  /**
+   * Whether the document is a row of a database (a page under a
+   * `COLLECTION`, ADR-011). A row with nothing on it but its title gets no
+   * vector (issue #221): a table of ten thousand meals would otherwise carry
+   * ten thousand title-only vectors, 63 MB of them, for rows that full-text
+   * search finds by title anyway. Absent means "not a row".
+   */
+  isDatabaseRow?: boolean;
 }
 
 /**

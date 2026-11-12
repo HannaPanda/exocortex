@@ -104,6 +104,16 @@ describe('embeddingTargetsFor', () => {
     archivedAt: null,
   });
 
+  it('gives a database row with nothing but its title no vector (issue #221)', () => {
+    expect(embeddingTargetsFor({ ...page(' \n '), isDatabaseRow: true }, 24_000, 'm')).toEqual([]);
+    // A row somebody wrote on is a page like any other.
+    expect(
+      embeddingTargetsFor({ ...page('Gut vertragen.'), isDatabaseRow: true }, 24_000, 'm'),
+    ).toHaveLength(1);
+    // And a page that is not a row keeps its title vector.
+    expect(embeddingTargetsFor(page(''), 24_000, 'm')).toHaveLength(1);
+  });
+
   it('gives a short page exactly the one vector it had before', () => {
     const targets = embeddingTargetsFor(page('Termine am Freitag.'), 24_000, 'm');
 
