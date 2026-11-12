@@ -121,7 +121,9 @@
     "createProject": "LaTeX-project maken",
     "suggestParent": "Geschikte plek voorstellen …",
     "moveWorkspace": "Naar andere werkruimte verplaatsen …",
-    "archive": "Naar de prullenbak"
+    "archive": "Naar de prullenbak",
+    "rowCount": "{count, plural, one {# rij} other {# rijen}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "„{name}“ omhoog",

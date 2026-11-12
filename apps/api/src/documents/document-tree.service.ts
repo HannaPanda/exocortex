@@ -92,27 +92,35 @@ export class DocumentTreeService {
     const active = scope.filter((row) => row.archivedAt === null);
     const archived = scope.filter((row) => row.archivedAt !== null);
 
+    // Only a database *below* the starting point loses its rows: the roots of
+    // a branch asked for by a database's own id are its rows, and they never
+    // pass through this check as a database.
+    const countRows = request.rows === 'count';
+
     const toNode = (
       entry: {
         node: DocumentRow;
         children: { node: DocumentRow; children: unknown[] }[];
       },
       remainingDepth: number,
-    ): DocumentTreeNode => ({
-      ...toSummary(entry.node),
-      children:
-        remainingDepth <= 1
-          ? []
-          : entry.children.map((child) =>
-              toNode(
-                child as {
-                  node: DocumentRow;
-                  children: { node: DocumentRow; children: unknown[] }[];
-                },
-                remainingDepth - 1,
-              ),
-            ),
-    });
+    ): DocumentTreeNode =>
+      countRows && entry.node.type === 'COLLECTION'
+        ? { ...toSummary(entry.node), children: [], rowCount: entry.children.length }
+        : {
+            ...toSummary(entry.node),
+            children:
+              remainingDepth <= 1
+                ? []
+                : entry.children.map((child) =>
+                    toNode(
+                      child as {
+                        node: DocumentRow;
+                        children: { node: DocumentRow; children: unknown[] }[];
+                      },
+                      remainingDepth - 1,
+                    ),
+                  ),
+          };
 
     const depth = request.depth ?? Number.POSITIVE_INFINITY;
 

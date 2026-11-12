@@ -6,6 +6,13 @@ and rows that are ordinary `Document`s (`type: 'PAGE'`) underneath it. Read
 `docs/adr/ADR-011-database-rows-are-documents.md` first — this document is the
 "how to extend" recipe, the ADR is the "why".
 
+Rows being documents does not make them pages of the hierarchy. The sidebar,
+the move menu and `exo_page_tree` ask the tree with `rows: 'count'`, so a
+database appears there once, with its row count, and its rows live in its
+views (issue #221: unfolding ten thousand rows took 18 s and 1.6 GB). The full
+tree, rows included, is still what the editor's page pickers and link markers
+look titles up in.
+
 ## The pieces
 
 | Layer        | File                                                                                                                                                                                                                                                |

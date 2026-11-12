@@ -77,7 +77,9 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
   const t = useTranslations('shell.pageTree');
   const params = useParams<{ documentId?: string }>();
   const router = useRouter();
-  const tree = useDocumentTree(workspaceId);
+  // Without database rows: a database is one entry here, and its rows are its
+  // table (issue #221). Ten thousand of them made unfolding it take 18 s.
+  const tree = useDocumentTree(workspaceId, { rows: 'count' });
   const createDocument = useCreateDocument(workspaceId);
   const createProjectMutation = useCreateProject(workspaceId);
   const archiveDocument = useArchiveDocument(workspaceId);

@@ -121,7 +121,9 @@
     "createProject": "Criar projeto LaTeX",
     "suggestParent": "Sugerir local adequado…",
     "moveWorkspace": "Mover para outro espaço de trabalho…",
-    "archive": "Mover para a lixeira"
+    "archive": "Mover para a lixeira",
+    "rowCount": "{count, plural, one {# linha} many {# linhas} other {# linhas}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "“{name}” para cima",

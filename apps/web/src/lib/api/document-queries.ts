@@ -16,11 +16,25 @@ import { apiRequest } from './client';
 import { queryKeys } from './query-keys';
 import { applyOptimisticMove } from './tree-move';
 
-export function useDocumentTree(workspaceId: string | undefined) {
+/**
+ * The workspace's page tree.
+ *
+ * `rows: 'count'` leaves the rows of every database out and puts their number
+ * on the database instead: what the sidebar and the move menu need, and the
+ * difference between 50 KB and 15 MB once a database holds ten thousand rows
+ * (issue #221). Without it the tree names every page, rows included, which is
+ * what the editor's page pickers and link markers look titles up in.
+ */
+export function useDocumentTree(workspaceId: string | undefined, options: { rows?: 'count' } = {}) {
+  const countRows = options.rows === 'count';
   return useQuery({
-    queryKey: queryKeys.documentTree(workspaceId ?? 'none'),
+    queryKey: countRows
+      ? queryKeys.documentTreeWithRowCounts(workspaceId ?? 'none')
+      : queryKeys.documentTree(workspaceId ?? 'none'),
     queryFn: () =>
-      apiRequest<DocumentTreeResponse>(`/api/workspaces/${workspaceId ?? ''}/documents/tree`),
+      apiRequest<DocumentTreeResponse>(
+        `/api/workspaces/${workspaceId ?? ''}/documents/tree${countRows ? '?rows=count' : ''}`,
+      ),
     enabled: workspaceId !== undefined,
   });
 }
@@ -83,23 +97,23 @@ export function useMoveDocument(workspaceId: string | undefined) {
      */
     onMutate: async (variables) => {
       if (workspaceId === undefined) return undefined;
-      const key = queryKeys.documentTree(workspaceId);
+      // Every cached variant of the tree: the sidebar's, without rows, and the
+      // full one the editor reads.
+      const filter = { queryKey: queryKeys.documentTree(workspaceId) };
       // Without this, a tree request already in flight would land afterwards and
       // overwrite the optimistic one with the pre-move order.
-      await client.cancelQueries({ queryKey: key });
+      await client.cancelQueries(filter);
 
-      const previous = client.getQueryData<DocumentTreeResponse>(key);
-      if (previous === undefined) return undefined;
-
-      const next = applyOptimisticMove(previous, variables.documentId, variables.request);
-      if (next === null) return undefined;
-
-      client.setQueryData(key, next);
+      const previous = client.getQueriesData<DocumentTreeResponse>(filter);
+      for (const [key, tree] of previous) {
+        if (tree === undefined) continue;
+        const next = applyOptimisticMove(tree, variables.documentId, variables.request);
+        if (next !== null) client.setQueryData(key, next);
+      }
       return { previous };
     },
     onError: (_error, _variables, context) => {
-      if (workspaceId === undefined || context?.previous === undefined) return;
-      client.setQueryData(queryKeys.documentTree(workspaceId), context.previous);
+      for (const [key, tree] of context?.previous ?? []) client.setQueryData(key, tree);
     },
     onSuccess: (_document, variables) => {
       if (workspaceId !== undefined) {

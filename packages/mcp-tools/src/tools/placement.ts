@@ -93,7 +93,9 @@ export async function filingHint(
     const result = await client.request({
       method: 'GET',
       path: `/api/workspaces/${workspaceId}/documents/tree`,
-      query: parentId == null ? { depth: 2 } : { parentId, depth: 2 },
+      // Counted rows: a database is not a section to file a page into, however
+      // many rows it has.
+      query: parentId == null ? { depth: 2, rows: 'count' } : { parentId, depth: 2, rows: 'count' },
       responseSchema: documentTreeResponseSchema,
     });
     const sections = result.nodes

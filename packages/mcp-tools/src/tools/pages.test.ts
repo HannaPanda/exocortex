@@ -224,7 +224,7 @@ describe('pageCreateTool', () => {
         method: 'GET',
         path: '/api/workspaces/ws1234567/documents/tree',
         body: undefined,
-        query: { depth: 2 },
+        query: { depth: 2, rows: 'count' },
       },
     ]);
     expect(result.text).toContain('Test');
@@ -735,10 +735,30 @@ describe('pageTreeTool', () => {
       parentId: 'aaaaaaaa1111aaaa',
     });
 
-    expect((calls[0] as { query: unknown }).query).toEqual({ parentId: 'aaaaaaaa1111aaaa' });
+    expect((calls[0] as { query: unknown }).query).toEqual({
+      parentId: 'aaaaaaaa1111aaaa',
+      rows: 'count',
+    });
     expect(result.text).toContain('Zweig unter: Projekte');
     expect(result.text).toContain('- Kalender (id: bbbbbbbb2222bbbb, type: PAGE)');
     expect(result.text).not.toContain('gekürzt');
+  });
+
+  it('counts the rows of a database instead of listing them, unless asked (issue #221)', async () => {
+    const { client, calls } = createFakeClient(
+      treeResponse([
+        { ...node('aaaaaaaa1111aaaa', 'Mahlzeiten'), type: 'COLLECTION', rowCount: 10_000 },
+      ]),
+    );
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+    expect((calls[0] as { query: unknown }).query).toEqual({ rows: 'count' });
+    expect(result.text).toContain(
+      '- Mahlzeiten (id: aaaaaaaa1111aaaa, type: COLLECTION, 10000 Zeile(n))',
+    );
+
+    await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x', rows: 'include' });
+    expect((calls[1] as { query: unknown }).query).toEqual({ rows: 'include' });
   });
 
   it('says a branch is empty rather than saying the workspace is', async () => {

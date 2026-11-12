@@ -149,10 +149,16 @@ export type DocumentSummary = z.infer<typeof documentSummarySchema>;
 export const documentTreeNodeSchema: z.ZodType<DocumentTreeNode> = z.lazy(() =>
   documentSummarySchema.extend({
     children: z.array(documentTreeNodeSchema),
+    rowCount: z.number().int().nonnegative().optional(),
   }),
 );
 export interface DocumentTreeNode extends DocumentSummary {
   children: DocumentTreeNode[];
+  /**
+   * Set on a database whose rows were left out (`rows: 'count'`): how many
+   * active rows it holds. Absent everywhere else.
+   */
+  rowCount?: number;
 }
 
 /**
@@ -179,6 +185,15 @@ export const documentTreeRequestSchema = z.object({
   parentId: idSchema.optional(),
   /** How many levels below the starting point to include. Omitted: all of them. */
   depth: z.coerce.number().int().min(1).max(20).optional(),
+  /**
+   * What happens to the rows of a database below the starting point.
+   * `include` (the default) lists them as its children like any sub-page;
+   * `count` leaves them and everything under them out and sets `rowCount` on
+   * the database instead. A database with ten thousand rows is a table, not a
+   * branch of the hierarchy (issue #221). The rows of the database named as
+   * `parentId` are always listed: asking for that branch is asking for them.
+   */
+  rows: z.enum(['include', 'count']).optional(),
 });
 export type DocumentTreeRequest = z.infer<typeof documentTreeRequestSchema>;
 

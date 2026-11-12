@@ -121,7 +121,9 @@
     "createProject": "Utwórz projekt LaTeX",
     "suggestParent": "Zaproponuj odpowiednie miejsce …",
     "moveWorkspace": "Przenieś do innego obszaru roboczego …",
-    "archive": "Do kosza"
+    "archive": "Do kosza",
+    "rowCount": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "„{name}” w górę",

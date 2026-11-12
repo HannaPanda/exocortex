@@ -121,7 +121,9 @@
     "createProject": "Crear proyecto de LaTeX",
     "suggestParent": "Sugerir ubicación adecuada…",
     "moveWorkspace": "Mover a otro espacio de trabajo…",
-    "archive": "A la papelera"
+    "archive": "A la papelera",
+    "rowCount": "{count, plural, one {# fila} many {# filas} other {# filas}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "Subir «{name}»",

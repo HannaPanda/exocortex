@@ -121,7 +121,9 @@
     "createProject": "Create LaTeX project",
     "suggestParent": "Suggest suitable location…",
     "moveWorkspace": "Move to another workspace…",
-    "archive": "Move to trash"
+    "archive": "Move to trash",
+    "rowCount": "{count, plural, one {# row} other {# rows}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "Move “{name}” up",

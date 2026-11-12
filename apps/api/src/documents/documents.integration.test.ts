@@ -2,7 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
-import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
+import {
+  type DocumentTreeNode,
+  QUEUE_NAMES,
+  resolveSettings,
+  type Settings,
+} from '@exocortex/contracts';
 import {
   createPrismaClient,
   type PrismaClient,
@@ -784,6 +789,75 @@ describe('document tree', () => {
     const documentId = await createPage('Gast liest');
     const detail = await service.getDetail(documentId, guestId);
     expect(detail.access).toBe('read');
+  });
+
+  describe('the rows of a database (issue #221)', () => {
+    const createDatabaseWithRows = async (title: string, parentId: string | null) => {
+      const collection = await service.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title, type: 'COLLECTION', parentId },
+        correlationId,
+      });
+      const rows = [];
+      for (const rowTitle of ['Erste Zeile', 'Zweite Zeile']) {
+        rows.push(
+          await service.create({
+            workspaceId,
+            userId: ownerId,
+            request: { title: rowTitle, type: 'PAGE', parentId: collection.id },
+            correlationId,
+          }),
+        );
+      }
+      const archived = await service.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Archivierte Zeile', type: 'PAGE', parentId: collection.id },
+        correlationId,
+      });
+      await service.archive({ documentId: archived.id, userId: ownerId, correlationId });
+      return { collection, rows };
+    };
+    const find = (nodes: DocumentTreeNode[], id: string): DocumentTreeNode | undefined => {
+      for (const node of nodes) {
+        if (node.id === id) return node;
+        const below = find(node.children, id);
+        if (below !== undefined) return below;
+      }
+      return undefined;
+    };
+
+    it('lists them as children by default', async () => {
+      const section = await createPage('Bereich mit Datenbank');
+      const { collection, rows } = await createDatabaseWithRows('Datenbank im Baum', section);
+
+      const node = find((await treeService.getTree(workspaceId, ownerId)).nodes, collection.id);
+      expect(node?.children.map((child) => child.id)).toEqual(rows.map((row) => row.id));
+      expect(node?.rowCount).toBeUndefined();
+    });
+
+    it('leaves them out and counts the active ones with rows: count', async () => {
+      const section = await createPage('Bereich mit gezählter Datenbank');
+      const { collection, rows } = await createDatabaseWithRows('Gezählte Datenbank', section);
+
+      const tree = await treeService.getTree(workspaceId, ownerId, { rows: 'count' });
+      const node = find(tree.nodes, collection.id);
+      expect(node?.children).toEqual([]);
+      expect(node?.rowCount).toBe(2);
+      expect(find(tree.nodes, rows[0]?.id ?? '')).toBeUndefined();
+      expect(find(tree.nodes, section)?.children.map((child) => child.id)).toEqual([collection.id]);
+    });
+
+    it('still lists the rows of the database asked for by parentId', async () => {
+      const { collection, rows } = await createDatabaseWithRows('Datenbank als Zweig', null);
+
+      const tree = await treeService.getTree(workspaceId, ownerId, {
+        parentId: collection.id,
+        rows: 'count',
+      });
+      expect(tree.nodes.map((node) => node.id)).toEqual(rows.map((row) => row.id));
+    });
   });
 });
 

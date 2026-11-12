@@ -121,7 +121,9 @@
     "createProject": "Crea progetto LaTeX",
     "suggestParent": "Suggerisci posizione adatta…",
     "moveWorkspace": "Sposta in un’altra area di lavoro…",
-    "archive": "Nel cestino"
+    "archive": "Nel cestino",
+    "rowCount": "{count, plural, one {# riga} many {# righe} other {# righe}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "Sposta “{name}” in alto",

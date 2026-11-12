@@ -11,6 +11,13 @@ export const queryKeys = {
   workspaces: ['workspaces'] as const,
   workspaceDetail: (workspaceId: string) => ['workspace', workspaceId, 'detail'] as const,
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
+  /**
+   * The tree without database rows (issue #221). Below `documentTree` on
+   * purpose: invalidating the tree reaches this one too, and an optimistic
+   * move finds both through the shared prefix.
+   */
+  documentTreeWithRowCounts: (workspaceId: string) =>
+    ['workspace', workspaceId, 'tree', 'row-counts'] as const,
   workspaceOverview: (workspaceId: string) => ['workspace', workspaceId, 'overview'] as const,
   workspaceSettings: (workspaceId: string) => ['workspace', workspaceId, 'settings'] as const,
   workspaceCredentials: (workspaceId: string) => ['workspace', workspaceId, 'credentials'] as const,

@@ -121,7 +121,9 @@
     "createProject": "Créer un projet LaTeX",
     "suggestParent": "Suggérer un emplacement adapté…",
     "moveWorkspace": "Déplacer vers un autre espace de travail…",
-    "archive": "Mettre dans la corbeille"
+    "archive": "Mettre dans la corbeille",
+    "rowCount": "{count, plural, one {# ligne} many {# de lignes} other {# lignes}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "Monter « {name} »",

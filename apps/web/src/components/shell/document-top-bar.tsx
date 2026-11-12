@@ -107,7 +107,9 @@ export function DocumentTopBar({
 
   // The same menu, reachable by name from Strg + K (issue #148), plus
   // moving by walking the tree, which the sidebar has usually loaded already.
-  const tree = useDocumentTree(detail.viaShare ? undefined : workspaceId);
+  // The sidebar's tree, so it costs no second request; a database row is no
+  // place to move a page to anyway.
+  const tree = useDocumentTree(detail.viaShare ? undefined : workspaceId, { rows: 'count' });
   const guardedMove = useGuardedMove({ workspaceId, documentId, title: detail.title });
   usePageMenuCommands(
     detail,

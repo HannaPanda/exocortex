@@ -19812,6 +19812,14 @@
       "source": "0f4b9c5df2d38b76",
       "output": "72c18ff159ecff9b"
     },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "2845f88c9ee8bb1e"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
+    },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
       "output": "d0c6577f4830f5ad"
@@ -43461,6 +43469,14 @@
     "shell.pageTreeRow.outdent": {
       "source": "0f4b9c5df2d38b76",
       "output": "e1bc9268d2564989"
+    },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "f05a15873bf975ac"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
     },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
@@ -67112,6 +67128,14 @@
       "source": "0f4b9c5df2d38b76",
       "output": "b916cd52b6f02c7a"
     },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "a8dc8fccfc1b4b51"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
+    },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
       "output": "58fab12c0300e19b"
@@ -90761,6 +90785,14 @@
     "shell.pageTreeRow.outdent": {
       "source": "0f4b9c5df2d38b76",
       "output": "ba133754208ea272"
+    },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "a8d16de59044b2d5"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
     },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
@@ -114412,6 +114444,14 @@
       "source": "0f4b9c5df2d38b76",
       "output": "d08bc0ad439cf14d"
     },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "3a28909de383429f"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
+    },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
       "output": "2aae64d8f988489a"
@@ -138062,6 +138102,14 @@
       "source": "0f4b9c5df2d38b76",
       "output": "6999dc3d19d8b2d4"
     },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "c6fc8d6713d326ea"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
+    },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",
       "output": "f0d6a55e78200ece"
@@ -161711,6 +161759,14 @@
     "shell.pageTreeRow.outdent": {
       "source": "0f4b9c5df2d38b76",
       "output": "e61aef7dbda14f80"
+    },
+    "shell.pageTreeRow.rowCount": {
+      "source": "93d45d1a1f17fc51",
+      "output": "7f25f7a2f95fce04"
+    },
+    "shell.pageTreeRow.rowCountShort": {
+      "source": "ba19abea3157558c",
+      "output": "ba19abea3157558c"
     },
     "shell.pageTreeRow.suggestParent": {
       "source": "7e19da9cfe375dfc",

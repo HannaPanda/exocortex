@@ -121,7 +121,9 @@
     "createProject": "LaTeX-Projekt anlegen",
     "suggestParent": "Passenden Ort vorschlagen …",
     "moveWorkspace": "In anderen Arbeitsbereich verschieben …",
-    "archive": "In den Papierkorb"
+    "archive": "In den Papierkorb",
+    "rowCount": "{count, plural, one {# Zeile} other {# Zeilen}}",
+    "rowCountShort": "{count, number}"
   },
   "smartViews": {
     "moveUp": "„{name}“ nach oben",

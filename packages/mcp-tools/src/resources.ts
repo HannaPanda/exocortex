@@ -232,6 +232,7 @@ async function readWorkspaceTree(client: ExocortexApiClient, workspaceId: string
   const result = await client.request({
     method: 'GET',
     path: `/api/workspaces/${workspaceId}/documents/tree`,
+    query: { rows: 'count' },
     responseSchema: documentTreeResponseSchema,
   });
   const { lines, omitted } = renderTree(result.nodes);

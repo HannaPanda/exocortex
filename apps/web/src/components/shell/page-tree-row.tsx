@@ -250,6 +250,18 @@ export function PageTreeRow({
                 <TruncatedText text={node.title} side="right" />
               </Link>
 
+              {/* A database's rows are not in the tree (issue #221); how many
+                  there are is what is left of them here. */}
+              {node.rowCount !== undefined && node.rowCount > 0 ? (
+                <span
+                  className="shrink-0 text-xs text-muted-foreground tabular-nums"
+                  data-testid={`tree-row-count-${node.id}`}
+                >
+                  <span aria-hidden>{t('rowCountShort', { count: node.rowCount })}</span>
+                  <span className="sr-only">{t('rowCount', { count: node.rowCount })}</span>
+                </span>
+              ) : null}
+
               <button
                 type="button"
                 tabIndex={-1}

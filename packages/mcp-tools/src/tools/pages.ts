@@ -80,7 +80,9 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     'Liest die Seitenhierarchie als Baum. Ohne parentId den ganzen Workspace (bei vielen Seiten ' +
     'gekürzt), mit parentId nur den Zweig unter dieser Seite. Ein gekürzter Baum ist keine ' +
     'vollständige Liste: um sicher zu wissen, was unter einer Seite hängt, ruf das Tool mit ' +
-    'deren parentId auf.',
+    'deren parentId auf. Eine Datenbank steht mit ihrer Zeilenzahl statt mit ihren Zeilen da; ' +
+    'die Zeilen liest exo_database_query, oder dieses Tool mit der Datenbank als parentId ' +
+    '(rows: "include" listet sie überall mit).',
   inputSchema: z.object({ workspaceId: idSchema }).extend(documentTreeRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'core',
@@ -90,7 +92,9 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'GET',
       path: `/api/workspaces/${workspaceId}/documents/tree`,
-      query,
+      // Rows are counted unless asked for: a database of ten thousand rows
+      // would otherwise spend the whole line budget on itself (issue #221).
+      query: { ...query, rows: query.rows ?? 'count' },
       responseSchema: documentTreeResponseSchema,
     });
     const { lines, structured, omitted, truncated } = renderTree(result.nodes);

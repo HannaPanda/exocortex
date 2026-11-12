@@ -8,12 +8,17 @@ import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contract
  * anything to do with what the tools around it ask the API for.
  */
 
-export function formatDocumentSummary(document: DocumentSummary): string {
+export function formatDocumentSummary(
+  document: DocumentSummary & { rowCount?: number | undefined },
+): string {
   // An overview page says so on its own line: it is the one property that
   // changes what an agent should *do* with the page (write under it, not into
   // it), and a tree is where that decision is made (ADR-028).
   const overview = document.overviewMode === 'auto' ? ', Übersichtsseite' : '';
-  return `${document.title} (id: ${document.id}, type: ${document.type}${overview})`;
+  // A database whose rows were left out says how many there are, so "no
+  // children" is not mistaken for "empty".
+  const rows = document.rowCount === undefined ? '' : `, ${document.rowCount} Zeile(n)`;
+  return `${document.title} (id: ${document.id}, type: ${document.type}${overview}${rows})`;
 }
 
 /**
