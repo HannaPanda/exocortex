@@ -69,6 +69,24 @@ export interface PageTreeRowContext {
 }
 
 /**
+ * A database's rows are not in the tree (issue #221); how many there are is
+ * what is left of them here.
+ */
+function RowCount({ node }: { node: DocumentTreeNode }) {
+  const t = useTranslations('shell.pageTreeRow');
+  if (node.rowCount === undefined || node.rowCount === 0) return null;
+  return (
+    <span
+      className="shrink-0 text-xs text-muted-foreground tabular-nums"
+      data-testid={`tree-row-count-${node.id}`}
+    >
+      <span aria-hidden>{t('rowCountShort', { count: node.rowCount })}</span>
+      <span className="sr-only">{t('rowCount', { count: node.rowCount })}</span>
+    </span>
+  );
+}
+
+/**
  * One page in the tree, and its subtree below it.
  *
  * Recursive rather than a flattened list: the indentation, the unfold state and
@@ -250,17 +268,7 @@ export function PageTreeRow({
                 <TruncatedText text={node.title} side="right" />
               </Link>
 
-              {/* A database's rows are not in the tree (issue #221); how many
-                  there are is what is left of them here. */}
-              {node.rowCount !== undefined && node.rowCount > 0 ? (
-                <span
-                  className="shrink-0 text-xs text-muted-foreground tabular-nums"
-                  data-testid={`tree-row-count-${node.id}`}
-                >
-                  <span aria-hidden>{t('rowCountShort', { count: node.rowCount })}</span>
-                  <span className="sr-only">{t('rowCount', { count: node.rowCount })}</span>
-                </span>
-              ) : null}
+              <RowCount node={node} />
 
               <button
                 type="button"
