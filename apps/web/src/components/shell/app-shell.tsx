@@ -50,6 +50,9 @@ import {
 import { Topbar } from './topbar';
 import { TrashSheet } from './trash-sheet';
 
+/** How long realtime tree events are gathered before the tree is read again. */
+const TREE_REFRESH_GATHER_MS = 1000;
+
 /**
  * Application shell: header, collapsible navigation, document area and optional
  * context panel. Layout preferences are the only client state that is persisted;
@@ -171,11 +174,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     if (workspaceId !== null) subscribe(workspaceId);
   }, [subscribe, workspaceId]);
 
-  // Tree-changing events invalidate the tree query for every browser session.
-  const invalidateTree = React.useCallback(() => {
-    if (workspaceId === null) return;
-    void queryClient.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
-  }, [queryClient, workspaceId]);
+  const invalidateTree = useGatheredTreeRefresh(workspaceId);
 
   /**
    * A page changed as a whole: refresh the tree *and* that page itself.
@@ -447,6 +446,33 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <JobProgressIndicator />
     </AppShellFrame>
   );
+}
+
+/**
+ * Tree-changing events invalidate the tree query for every browser session,
+ * gathered into one refetch per `TREE_REFRESH_GATHER_MS` (issue #221). An
+ * agent filling a database sends several events a second, and each one used
+ * to refetch the whole tree in every open tab. This browser's own changes do
+ * not wait: their mutations invalidate the tree themselves.
+ */
+function useGatheredTreeRefresh(workspaceId: string | null): () => void {
+  const queryClient = useQueryClient();
+  const pending = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  // A refresh still gathering belongs to the workspace it was gathered for.
+  React.useEffect(
+    () => () => {
+      if (pending.current !== null) clearTimeout(pending.current);
+      pending.current = null;
+    },
+    [workspaceId],
+  );
+  return React.useCallback(() => {
+    if (workspaceId === null || pending.current !== null) return;
+    pending.current = setTimeout(() => {
+      pending.current = null;
+      void queryClient.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
+    }, TREE_REFRESH_GATHER_MS);
+  }, [queryClient, workspaceId]);
 }
 
 /**
