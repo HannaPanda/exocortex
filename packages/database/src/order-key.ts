@@ -190,7 +190,7 @@ function counterOf(rest: string, width: number): string {
 }
 
 function isZero(counter: string): boolean {
-  return [...counter].every((digit) => digit === SMALLEST_DIGIT);
+  return counter === SMALLEST_DIGIT.repeat(counter.length);
 }
 
 /**
@@ -200,7 +200,7 @@ function isZero(counter: string): boolean {
  * when counting down.
  */
 function countBy(counter: string, delta: 1 | -1): string {
-  const digits = [...counter].map((digit) => ORDER_KEY_DIGITS.indexOf(digit));
+  const digits = counter.split('').map((digit) => ORDER_KEY_DIGITS.indexOf(digit));
   for (let index = digits.length - 1; index >= 0; index -= 1) {
     const next = (digits[index] as number) + delta;
     if (next >= 0 && next < ORDER_KEY_DIGITS.length) {
