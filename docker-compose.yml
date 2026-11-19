@@ -45,7 +45,14 @@ services:
       retries: 20
 
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    # SILO, the maintained MinIO fork by PGSTY, since 2026-11-19. MinIO archived
+    # its community edition in April 2026 and stopped publishing images; the
+    # last one we ran (RELEASE.2025-04-22) carries two unauthenticated object
+    # write flaws (GHSA-hv4r-mvr4-25vw, GHSA-9c4q-hq6p-c237) that only the fork
+    # fixes. It reads the existing data directory as is, accepts the same
+    # `server` command and MINIO_* variables, and ships `mc` for the
+    # healthcheck. The service keeps its name so nothing else has to change.
+    image: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
     container_name: exocortex-minio
     restart: unless-stopped
     command: ['server', '/data', '--console-address', ':9001']
@@ -64,7 +71,9 @@ services:
       retries: 30
 
   minio-init:
-    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    # Same image as the server: it carries `mc`, and minio/mc is no longer
+    # published either.
+    image: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
     container_name: exocortex-minio-init
     depends_on:
       minio:
