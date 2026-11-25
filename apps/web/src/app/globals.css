@@ -99,6 +99,14 @@
     @apply min-h-[60vh] outline-none;
   }
 
+  /* A browser treats a focused text surface as focus-visible even after a
+     click, so the global ring framed the whole page while somebody typed and
+     read as a marked block. In a writing surface the caret is the focus
+     indicator; the ring stays for everything that is focused by keyboard. */
+  .exocortex-editor .ProseMirror:focus-visible {
+    @apply ring-0;
+  }
+
   /*
    * The editing canvas counts as hovered across the whole gutter.
    *
