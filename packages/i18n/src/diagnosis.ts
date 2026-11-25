@@ -1,6 +1,7 @@
 import {
   type AiRunDiagnosis,
   type AiRunIncompleteTurnArgs,
+  type AiRunNoEligibleProviderArgs,
   type AiRunTimeoutArgs,
   type AiRunToolLoopArgs,
   type AiRunToolTally,
@@ -43,6 +44,8 @@ export function renderAiRunDiagnosis(t: DiagnosisTranslator, diagnosis: AiRunDia
       return renderRunTimeout(t, diagnosis.args);
     case 'incompleteTurn':
       return renderIncompleteTurn(t, diagnosis.args);
+    case 'noEligibleProvider':
+      return renderNoEligibleProvider(t, diagnosis.args);
   }
 }
 
@@ -145,6 +148,33 @@ function renderIncompleteTurn(t: DiagnosisTranslator, args: AiRunIncompleteTurnA
   lines.push(t('incompleteTurn.attempts', { attempts: args.attempts }));
   lines.push(t('incompleteTurn.hint'));
   return lines.join('\n');
+}
+
+/**
+ * Why nobody served the model, and who can change that: a request that is too
+ * large is the reader's to shrink, an account restriction belongs to whoever
+ * owns the key, and an unexplained refusal usually passes on its own.
+ */
+function renderNoEligibleProvider(
+  t: DiagnosisTranslator,
+  args: AiRunNoEligibleProviderArgs,
+): string {
+  const values = { model: args.model };
+  switch (args.cause) {
+    case 'size':
+      return [t('noEligibleProvider.size', values), t('noEligibleProvider.hintSize')].join('\n');
+    case 'account':
+      return [
+        t('noEligibleProvider.account', values),
+        args.ownKey
+          ? t('noEligibleProvider.hintOwnKey', values)
+          : t('noEligibleProvider.hintDeploymentKey'),
+      ].join('\n');
+    case 'unknown':
+      return [t('noEligibleProvider.unknown', values), t('noEligibleProvider.hintUnknown')].join(
+        '\n',
+      );
+  }
 }
 
 /** Whole seconds, or whole minutes once that is the honest unit. */

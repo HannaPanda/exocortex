@@ -40,5 +40,14 @@
     "nothing": "Nie dotarło zupełnie nic, nawet proces myślenia.",
     "attempts": "{attempts, plural, one {Tura została uruchomiona raz.} few {Tura była uruchamiana # razy, za każdym razem z tym samym wynikiem.} many {Tura była uruchamiana # razy, za każdym razem z tym samym wynikiem.} other {Tura była uruchamiana # raza, za każdym razem z tym samym wynikiem.}}",
     "hint": "To, co wykonano do tego momentu (wywołania narzędzi, zmiany na stronach), jest zapisane. Napisz „dalej”, a kolejne uruchomienie podejmie pracę od tego miejsca. Jeśli zdarza się to częściej z tym modelem, pomoże inny model lub niższy poziom myślenia."
+  },
+  "noEligibleProvider": {
+    "size": "Zapytanie jest większe, niż przyjmuje jakikolwiek dostawca {model}.",
+    "hintSize": "Model z większym kontekstem lub nowy czat rozwiąże ten problem.",
+    "account": "OpenRouter odrzucił każdego dostawcę {model}, ponieważ wykluczają go ustawienia konta OpenRouter: lista modeli lub dostawców (Guardrails) albo polityka danych (Privacy).",
+    "hintOwnKey": "Klucz zapisany w tym obszarze roboczym należy do tego konta. Osoba, która go dodała, może odblokować {model} w sekcjach „Guardrails” i „Privacy”. Do tego czasu pomoże inny model.",
+    "hintDeploymentKey": "Zapytanie poszło przez klucz instalacji. Model może odblokować tylko osoba zarządzająca instalacją. Do tego czasu pomoże inny model.",
+    "unknown": "OpenRouter odrzucił każdego zapytanego dostawcę {model} bez podania przyczyny.",
+    "hintUnknown": "Najczęściej zapisana lista dostawców modelu jest nieaktualna i wkrótce zostanie odświeżona. Ponowna próba za kilka minut lub inny model rozwiąże ten problem."
   }
 }

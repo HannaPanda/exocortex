@@ -93,16 +93,32 @@ export const AI_NO_ELIGIBLE_PROVIDER = 'ai_no_eligible_provider';
  */
 export const AI_STREAM_INTERRUPTED = 'ai_stream_interrupted';
 
-/** Whether a failed response is OpenRouter refusing the allowlist rather than failing. */
+/**
+ * Whether a refusal names the settings of the account behind the key: its
+ * guardrails (a model or provider allowlist on the account or the key) or its
+ * data policy. OpenRouter says so in the message and nowhere else, so the
+ * message is what is read; a reworded message makes this answer `false`,
+ * which degrades to the general refusal and never to a wrong diagnosis.
+ */
+export function isAccountRestriction(message: string): boolean {
+  return /guardrail|data policy/i.test(message);
+}
+
+/**
+ * Whether a failed response is OpenRouter refusing every endpoint it was
+ * asked for rather than failing: our allowlist, or the account's own
+ * restrictions, which refuse a request without an allowlist just the same.
+ */
 function isRoutingRefusal(
   dialect: ChatCompletionsDialect,
   status: number,
   request: AiGenerateRequest,
+  message: string,
 ): boolean {
   return (
     dialect.providerRouting &&
     status === 404 &&
-    (request.routing?.allowedProviderKeys?.length ?? 0) > 0
+    ((request.routing?.allowedProviderKeys?.length ?? 0) > 0 || isAccountRestriction(message))
   );
 }
 
@@ -352,7 +368,7 @@ export class ChatCompletionsProvider implements AiProvider {
     if (!response.ok) {
       const message = await this.refusalMessage(response, request);
       throw new AiProviderError(
-        isRoutingRefusal(this.dialect, response.status, request)
+        isRoutingRefusal(this.dialect, response.status, request, message)
           ? AI_NO_ELIGIBLE_PROVIDER
           : 'ai_provider_unavailable',
         message,
@@ -390,14 +406,15 @@ export class ChatCompletionsProvider implements AiProvider {
     const response = await this.postCompletions(request, true);
 
     if (!response.ok || response.body === null) {
+      const message = response.ok
+        ? `${this.dialect.label} responded with ${response.status} and no body`
+        : await this.refusalMessage(response, request);
       yield {
         type: 'error',
-        code: isRoutingRefusal(this.dialect, response.status, request)
+        code: isRoutingRefusal(this.dialect, response.status, request, message)
           ? AI_NO_ELIGIBLE_PROVIDER
           : 'ai_provider_unavailable',
-        message: response.ok
-          ? `${this.dialect.label} responded with ${response.status} and no body`
-          : await this.refusalMessage(response, request),
+        message,
         status: response.status,
       };
       return;

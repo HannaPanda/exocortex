@@ -71,10 +71,32 @@ export const aiRunIncompleteTurnArgsSchema = z.object({
 });
 export type AiRunIncompleteTurnArgs = z.infer<typeof aiRunIncompleteTurnArgsSchema>;
 
+/**
+ * `ai_no_eligible_provider`: nobody would serve the model. Three causes ask
+ * for three different remedies, and before this existed all of them read
+ * "the answer could not be produced":
+ *
+ * - `size`: the request is larger than any provider of the model accepts,
+ *   decided here from the registry before anything was sent.
+ * - `account`: the provider refused every endpoint because of the settings
+ *   of the account the key belongs to (guardrails, data policy). Only the
+ *   owner of that account can change it, which is why `ownKey` says whose.
+ * - `unknown`: the provider refused the endpoints without naming the
+ *   account, which is a stale endpoint snapshot more often than not.
+ */
+export const aiRunNoEligibleProviderArgsSchema = z.object({
+  cause: z.enum(['size', 'account', 'unknown']),
+  model: z.string(),
+  /** Whether the workspace's own key made the request, rather than the deployment's. */
+  ownKey: z.boolean(),
+});
+export type AiRunNoEligibleProviderArgs = z.infer<typeof aiRunNoEligibleProviderArgsSchema>;
+
 export const aiRunDiagnosisSchema = z.discriminatedUnion('key', [
   z.object({ key: z.literal('toolLoop'), args: aiRunToolLoopArgsSchema }),
   z.object({ key: z.literal('runTimeout'), args: aiRunTimeoutArgsSchema }),
   z.object({ key: z.literal('incompleteTurn'), args: aiRunIncompleteTurnArgsSchema }),
+  z.object({ key: z.literal('noEligibleProvider'), args: aiRunNoEligibleProviderArgsSchema }),
 ]);
 export type AiRunDiagnosis = z.infer<typeof aiRunDiagnosisSchema>;
 export type AiRunDiagnosisKey = AiRunDiagnosis['key'];

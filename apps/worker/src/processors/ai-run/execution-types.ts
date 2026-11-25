@@ -54,6 +54,13 @@ export interface RunExecutionInput {
   budgetMicroUsd: number;
   messages: AiMessage[];
   routing: RunRoutingInput;
+  /**
+   * Whether the workspace brought its own OpenRouter key (ADR-023). Whether it
+   * also pays for this run depends on who serves it (`ownKeyPays`): a
+   * subscription run that falls back to OpenRouter is paid by it from that
+   * turn on, and a refusal names whose account refused.
+   */
+  workspaceKey: boolean;
 }
 
 /** What the run produced, whether or not it got as far as an answer. */

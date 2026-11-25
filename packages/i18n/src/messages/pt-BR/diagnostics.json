@@ -40,5 +40,14 @@
     "nothing": "Não chegou absolutamente nada, nem mesmo pensamento.",
     "attempts": "{attempts, plural, one {A rodada foi executada uma vez.} many {A rodada foi solicitada # vezes, sempre com o mesmo resultado.} other {A rodada foi solicitada # vezes, sempre com o mesmo resultado.}}",
     "hint": "O que a execução fez até esse ponto (chamadas de ferramentas, alterações em páginas) está salvo. Escreva „continuar“ para que a próxima execução continue de onde parou. Se isso acontecer com frequência com este modelo, tente outro modelo ou um nível de pensamento menor."
+  },
+  "noEligibleProvider": {
+    "size": "A solicitação é maior do que qualquer provedor de {model} aceita.",
+    "hintSize": "Um modelo com contexto maior ou um novo chat pode resolver isso.",
+    "account": "O OpenRouter recusou todos os provedores de {model} porque as configurações da conta do OpenRouter os excluem: uma lista de modelos ou provedores (Guardrails) ou a política de dados (Privacy).",
+    "hintOwnKey": "A chave configurada neste espaço de trabalho pertence a essa conta. Quem a cadastrou pode liberar {model} lá em „Guardrails“ e „Privacy“. Até lá, use outro modelo.",
+    "hintDeploymentKey": "A solicitação foi feita usando a chave da instalação. Apenas quem administra a instalação pode liberar o modelo. Até lá, use outro modelo.",
+    "unknown": "O OpenRouter recusou todos os provedores solicitados de {model} sem informar um motivo.",
+    "hintUnknown": "Geralmente, a lista de provedores armazenada para o modelo está desatualizada e será recarregada em breve. Tentar novamente em alguns minutos ou escolher outro modelo pode resolver isso."
   }
 }

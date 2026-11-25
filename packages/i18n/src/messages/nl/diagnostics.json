@@ -40,5 +40,14 @@
     "nothing": "Er kwam helemaal niets binnen, ook geen denkproces.",
     "attempts": "{attempts, plural, one {De beurt is één keer uitgevoerd.} other {De beurt is # keer aangevraagd, telkens met hetzelfde resultaat.}}",
     "hint": "Wat de run tot dan toe heeft gedaan (tool-aanroepen, wijzigingen aan pagina’s), is opgeslagen. Typ „verder”, dan gaat de volgende run daarop door. Gebeurt dit vaker met dit model, probeer dan een ander model of een lager denkniveau."
+  },
+  "noEligibleProvider": {
+    "size": "Het verzoek is groter dan welke provider van {model} dan ook accepteert.",
+    "hintSize": "Een model met een grotere context of een nieuwe chat helpt je hier verder.",
+    "account": "OpenRouter heeft elke provider van {model} geweigerd omdat de instellingen van het OpenRouter-account deze uitsluiten: een model- of providerlijst (Guardrails) of het gegevensbeleid (Privacy).",
+    "hintOwnKey": "De sleutel die deze werkruimte heeft opgeslagen, hoort bij dit account. Degene die hem heeft ingevoerd, kan {model} daar onder „Guardrails” en „Privacy” vrijgeven. Tot die tijd helpt een ander model.",
+    "hintDeploymentKey": "Het verzoek liep via de sleutel van de installatie. Alleen de beheerder van de installatie kan het model vrijgeven. Tot die tijd helpt een ander model.",
+    "unknown": "OpenRouter heeft elke opgevraagde provider van {model} geweigerd zonder een reden op te geven.",
+    "hintUnknown": "Meestal is de opgeslagen providerlijst van het model verouderd en wordt deze binnenkort opnieuw geladen. Een nieuwe poging over een paar minuten of een ander model helpt je hier verder."
   }
 }

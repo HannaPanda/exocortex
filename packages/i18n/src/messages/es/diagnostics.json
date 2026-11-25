@@ -40,5 +40,14 @@
     "nothing": "No llegó absolutamente nada, ni siquiera razonamiento.",
     "attempts": "{attempts, plural, one {El turno se ejecutó una vez.} many {El turno se solicitó # veces, cada vez con el mismo resultado.} other {El turno se solicitó # veces, cada vez con el mismo resultado.}}",
     "hint": "Lo que la ejecución haya hecho hasta ese momento (llamadas a herramientas, cambios en páginas) está guardado. Escribe «continúa» y la siguiente ejecución retomará desde ahí. Si ocurre a menudo con este modelo, prueba con otro modelo o con un nivel de pensamiento más bajo."
+  },
+  "noEligibleProvider": {
+    "size": "La solicitud es más grande de lo que acepta cualquier proveedor de {model}.",
+    "hintSize": "Un modelo con mayor contexto o un nuevo chat pueden solucionar esto.",
+    "account": "OpenRouter ha rechazado a todos los proveedores de {model} porque los ajustes de la cuenta de OpenRouter los excluyen: una lista de modelos o proveedores (Guardrails) o la política de privacidad (Privacy).",
+    "hintOwnKey": "La clave guardada en este espacio de trabajo pertenece a esa cuenta. Quien la haya configurado puede habilitar {model} allí, en «Guardrails» y «Privacy». Mientras tanto, puedes usar otro modelo.",
+    "hintDeploymentKey": "La solicitud se realizó con la clave de la instalación. Solo quien administra la instalación puede habilitar el modelo. Mientras tanto, puedes usar otro modelo.",
+    "unknown": "OpenRouter ha rechazado a todos los proveedores solicitados de {model} sin indicar ningún motivo.",
+    "hintUnknown": "Por lo general, la lista guardada de proveedores del modelo está desactualizada y se recargará pronto. Prueba de nuevo en unos minutos o utiliza otro modelo."
   }
 }

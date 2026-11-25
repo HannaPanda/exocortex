@@ -402,6 +402,32 @@ describe('OpenRouterProvider provider routing', () => {
     );
   });
 
+  it('reads a refusal by the account behind the key as a routing refusal, allowlist or not', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response(
+            '{"error":{"message":"0 endpoints out of 37 requested are available matching your guardrail restrictions and data policy."}}',
+            { status: 404 },
+          ),
+        ),
+      ),
+    );
+
+    const events = await collect(
+      provider().stream({ ...request, routing: { allowedProviderKeys: [] } }),
+    );
+
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'error',
+        code: 'ai_no_eligible_provider',
+        message: expect.stringContaining('guardrail restrictions'),
+      }),
+    );
+  });
+
   it('sends the configured preferences verbatim to a model without a plan', async () => {
     const captured = captureBody();
     const asked: string[] = [];

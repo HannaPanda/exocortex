@@ -40,5 +40,14 @@
     "nothing": "Es kam gar nichts an, auch kein Nachdenken.",
     "attempts": "{attempts, plural, one {Die Runde lief einmal.} other {Die Runde wurde # Mal angefragt, jedes Mal mit demselben Ergebnis.}}",
     "hint": "Was der Lauf bis dahin getan hat (Werkzeugaufrufe, Änderungen an Seiten), ist gespeichert. Schreib „weiter“, dann setzt der nächste Lauf dort an. Passiert das öfter mit diesem Modell, hilft ein anderes Modell oder eine niedrigere Denkstufe."
+  },
+  "noEligibleProvider": {
+    "size": "Die Anfrage ist größer, als irgendein Anbieter von {model} annimmt.",
+    "hintSize": "Ein Modell mit größerem Kontext oder ein neuer Chat kommt hier weiter.",
+    "account": "OpenRouter hat jeden Anbieter von {model} abgelehnt, weil die Einstellungen des OpenRouter-Kontos ihn ausschließen: eine Modell- oder Anbieterliste (Guardrails) oder die Datenrichtlinie (Privacy).",
+    "hintOwnKey": "Der Schlüssel, den dieser Arbeitsbereich hinterlegt hat, gehört zu diesem Konto. Wer ihn eingetragen hat, kann {model} dort unter „Guardrails“ und „Privacy“ freigeben. Bis dahin hilft ein anderes Modell.",
+    "hintDeploymentKey": "Die Anfrage lief über den Schlüssel der Installation. Freigeben kann das Modell nur, wer die Installation betreibt. Bis dahin hilft ein anderes Modell.",
+    "unknown": "OpenRouter hat jeden angefragten Anbieter von {model} abgelehnt, ohne einen Grund zu nennen.",
+    "hintUnknown": "Meist ist die gespeicherte Anbieterliste des Modells veraltet und wird bald neu geladen. Ein neuer Versuch in einigen Minuten oder ein anderes Modell kommt hier weiter."
   }
 }

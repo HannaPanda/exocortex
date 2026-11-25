@@ -40,5 +40,14 @@
     "nothing": "Non è arrivato nulla, nemmeno riflessioni.",
     "attempts": "{attempts, plural, one {Il turno è stato eseguito una volta.} many {# volte} other {Il turno è stato richiesto # volte, ogni volta con lo stesso risultato.}}",
     "hint": "Ciò che l’esecuzione ha fatto fino a quel momento (chiamate a strumenti, modifiche alle pagine) è salvato. Scrivi «continua» e l’esecuzione successiva ripartirà da lì. Se accade spesso con questo modello, prova a usarne un altro o a ridurre il livello di riflessione."
+  },
+  "noEligibleProvider": {
+    "size": "La richiesta è più grande di quanto qualsiasi provider di {model} accetti.",
+    "hintSize": "Un modello con un contesto più ampio o una nuova chat possono risolvere il problema.",
+    "account": "OpenRouter ha rifiutato ogni provider di {model} perché le impostazioni dell’account OpenRouter lo escludono: un elenco di modelli o provider (Guardrails) o l’informativa sui dati (Privacy).",
+    "hintOwnKey": "La chiave memorizzata in questa area di lavoro appartiene a questo account. Chi l’ha inserita può abilitare {model} nelle sezioni „Guardrails“ e „Privacy“. Nel frattempo, puoi provare con un altro modello.",
+    "hintDeploymentKey": "La richiesta è passata attraverso la chiave dell’installazione. Solo chi gestisce l’installazione può abilitare il modello. Nel frattempo, puoi provare con un altro modello.",
+    "unknown": "OpenRouter ha rifiutato ogni provider richiesto di {model} senza indicare un motivo.",
+    "hintUnknown": "Di solito l’elenco salvato dei provider del modello non è aggiornato e verrà ricaricato a breve. Riprovare tra qualche minuto o scegliere un altro modello può risolvere il problema."
   }
 }

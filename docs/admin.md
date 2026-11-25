@@ -161,7 +161,11 @@ companion calls inside it. Cover images, memory capture and consolidation, and
 above all search embeddings stay on the deployment key. Embeddings have to
 (ADR-020: one vector space for index and query), the rest is a boundary worth
 knowing about when a bill arrives. `AiRun.usedOwnKey` records which key paid,
-and the usage report shows the share under "Kosten".
+and the usage report shows the share under "Kosten". A run on a subscription
+preset (`provider: cline`) is paid by the deployment's plan and stays `false`,
+unless a turn falls back to OpenRouter (`ai.subscriptionFallback`), which the
+workspace key then pays for. The routing question asked before a run and the
+vision companion use the workspace key either way.
 
 | Key                                           | Type                           | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------------------------------------------- | ------------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

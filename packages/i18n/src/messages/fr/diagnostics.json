@@ -40,5 +40,14 @@
     "nothing": "Rien n’est arrivé du tout, pas même de réflexion.",
     "attempts": "{attempts, plural, one {Le tour a tourné une fois.} many {Le tour a été demandé # de fois, à chaque fois avec le même résultat.} other {Le tour a été demandé # fois, à chaque fois avec le même résultat.}}",
     "hint": "Ce que l’exécution a fait jusque-là (appels d’outils, modifications de pages) est enregistré. Écris « continuer », et la prochaine exécution reprendra à cet endroit. Si cela arrive souvent avec ce modèle, essaye un autre modèle ou un niveau de réflexion plus bas."
+  },
+  "noEligibleProvider": {
+    "size": "La requête est plus volumineuse que ce qu’accepte n’importe quel fournisseur de {model}.",
+    "hintSize": "Un modèle avec un contexte plus grand ou une nouvelle discussion permettra d’avancer.",
+    "account": "OpenRouter a rejeté tous les fournisseurs de {model}, car les paramètres du compte OpenRouter les excluent : une liste de modèles ou de fournisseurs (Guardrails) ou la politique de confidentialité (Privacy).",
+    "hintOwnKey": "La clé enregistrée par cet espace de travail appartient à ce compte. La personne qui l’a ajoutée peut y autoriser {model} sous « Guardrails » et « Privacy ». En attendant, un autre modèle peut dépanner.",
+    "hintDeploymentKey": "La requête est passée par la clé de l’installation. Seule la personne qui gère l’installation peut autoriser le modèle. En attendant, un autre modèle peut dépanner.",
+    "unknown": "OpenRouter a rejeté tous les fournisseurs sollicités pour {model}, sans donner de raison.",
+    "hintUnknown": "La liste enregistrée des fournisseurs du modèle est généralement obsolète et sera bientôt actualisée. Réessaie dans quelques minutes ou choisis un autre modèle."
   }
 }

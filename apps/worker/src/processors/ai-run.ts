@@ -51,6 +51,7 @@ import {
   resolveVisionPreprocessor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
+import { ownKeyPays } from './ai-run/provider-refusal';
 import { prepareRunTools, type RunPolicy } from './ai-run/run-tools';
 import { RunTimeline } from './ai-run/timeline';
 import { resolveRunWriteMode, writeModeColumn, writeModeMessage } from './ai-run/write-mode';
@@ -575,7 +576,10 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     await markRunning({
       prisma,
       run,
-      usedOwnKey: key.usedOwnKey,
+      // Who pays for the run's own provider: a subscription run is the
+      // deployment's plan even where the workspace has a key. A fallback turn
+      // widens this later, in the loop.
+      usedOwnKey: ownKeyPays(run.provider, key.usedOwnKey),
       writeMode,
       profile,
       correlationId: payload.correlationId,
@@ -605,6 +609,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           maxToolIterations: tools.enabled ? policy.maxToolIterations : 0,
           budgetMicroUsd: policy.budgetMicroUsd,
           messages,
+          workspaceKey: key.usedOwnKey,
           routing: buildRunRouting({
             dependencies,
             modelRow,

@@ -633,6 +633,14 @@ before every turn:
    caused by a missing capability is not a size problem.
 4. Still nothing eligible fails the run locally with `ai_no_eligible_provider`,
    before paying for a request that would come back 404.
+5. OpenRouter can still answer 404 for a plan that was not empty: the
+   snapshot is stale, or the account behind the key excludes every endpoint
+   through its guardrails or data policy. Both arrive as
+   `ai_no_eligible_provider` too (an account refusal even without an
+   allowlist), and the run carries the `noEligibleProvider` diagnosis with
+   `cause` `size`, `account` or `unknown` and whose key it was, read from
+   OpenRouter's message. The person sees whose settings to change instead of
+   "no answer".
 
 A model without a snapshot sends no provider preference at all, which is what
 every request did before this existed.

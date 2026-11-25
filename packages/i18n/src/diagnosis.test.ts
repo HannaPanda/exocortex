@@ -95,6 +95,43 @@ describe('renderAiRunDiagnosis', () => {
   });
 });
 
+describe('renderAiRunDiagnosis for a model nobody would serve', () => {
+  const t = serverTranslator('de', 'diagnostics');
+  const model = 'deepseek/deepseek-v4.1-flash';
+
+  it('sends an account restriction on a workspace key to whoever entered the key', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'noEligibleProvider',
+      args: { cause: 'account', model, ownKey: true },
+    });
+    expect(text).toContain('Einstellungen des OpenRouter-Kontos');
+    expect(text).toContain('Wer ihn eingetragen hat');
+    expect(text).not.toContain('Installation');
+  });
+
+  it('sends one on the deployment key to whoever runs the installation', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'noEligibleProvider',
+      args: { cause: 'account', model, ownKey: false },
+    });
+    expect(text).toContain('Schlüssel der Installation');
+  });
+
+  it('keeps the size advice for the size case only', () => {
+    const size = renderAiRunDiagnosis(t, {
+      key: 'noEligibleProvider',
+      args: { cause: 'size', model, ownKey: true },
+    });
+    const unknown = renderAiRunDiagnosis(t, {
+      key: 'noEligibleProvider',
+      args: { cause: 'unknown', model, ownKey: false },
+    });
+    expect(size).toContain('größerem Kontext');
+    expect(unknown).not.toContain('größerem Kontext');
+    expect(unknown).toContain('veraltet');
+  });
+});
+
 describe('aiRunDiagnosisText', () => {
   const t = serverTranslator('de', 'diagnostics');
 

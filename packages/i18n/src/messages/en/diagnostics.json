@@ -40,5 +40,14 @@
     "nothing": "Nothing arrived at all, not even thinking.",
     "attempts": "{attempts, plural, one {The turn ran once.} other {The turn was requested # times, each time with the same result.}}",
     "hint": "What the run did up to that point (tool calls, changes to pages) is saved. Type “continue”, and the next run will pick up from there. If this happens often with this model, trying a different model or a lower thinking level helps."
+  },
+  "noEligibleProvider": {
+    "size": "The request is larger than any provider of {model} accepts.",
+    "hintSize": "A model with a larger context or a new chat will help here.",
+    "account": "OpenRouter rejected every provider of {model} because the OpenRouter account settings exclude them: a model or provider allowlist (Guardrails) or the data policy (Privacy).",
+    "hintOwnKey": "The key stored in this workspace belongs to that account. Whoever added it can enable {model} there under “Guardrails” and “Privacy”. Until then, another model will help.",
+    "hintDeploymentKey": "The request ran using the installation’s key. Only the administrator of this installation can enable the model. Until then, another model will help.",
+    "unknown": "OpenRouter rejected every requested provider of {model} without providing a reason.",
+    "hintUnknown": "Usually the model’s cached provider list is outdated and will be refreshed soon. Trying again in a few minutes or switching to another model will help here."
   }
 }

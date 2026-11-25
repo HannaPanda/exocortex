@@ -1,5 +1,4 @@
 import {
-  AI_NO_ELIGIBLE_PROVIDER,
   AI_STREAM_INTERRUPTED,
   type AiRoutingRequirements,
   type AiToolCall,
@@ -26,6 +25,7 @@ import { toolLoopDiagnosis } from '../../tool-ledger';
 import { requestRouting } from './agent-profile';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
 import { persistCountedMessage, recordMeasuredInput } from './conversation-tally';
+import { explainProviderRefusal, noEligibleProviderFailure, OwnKeyPayer } from './provider-refusal';
 import { emptyTurnFailure, incompleteTurnDiagnosis, isEmptyTurn } from './empty-turn';
 import { type RunExecutionInput, type RunOutcome } from './execution-types';
 import { publishToolCallEvent, type ToolCallStatus } from './live-events';
@@ -107,9 +107,12 @@ class RunExecution {
   private turnSawReasoning = false;
   /** Shows the person who asked what the model is thinking, live (ADR-087). */
   private readonly reasoning: ReasoningRelay;
+  /** Whether the workspace's own key has paid for a turn of this run. */
+  private readonly payer: OwnKeyPayer;
 
   constructor(input: RunExecutionInput) {
     this.input = input;
+    this.payer = new OwnKeyPayer(input);
     this.providerMessages = [...input.messages];
     this.runDeadline = Date.now() + input.timeouts.runBudgetMs;
     this.reasoning = new ReasoningRelay(reasoningPublisher(input));
@@ -188,7 +191,7 @@ class RunExecution {
                 ...turn.failure,
                 diagnosis: incompleteTurnDiagnosis(this.incompleteTurnFacts(true)),
               }
-            : turn.failure;
+            : explainProviderRefusal(turn.failure, this.input.run.model, this.payer.paid);
         if (turn.text.length > 0) this.text = this.carriedText + turn.text;
         return;
       }
@@ -246,10 +249,10 @@ class RunExecution {
       // Only ever a size problem by the time it gets here: a model whose
       // providers cannot do what the run needs answers `known: false` and goes
       // out unrestricted instead (see `planRoute`).
-      this.failure = {
-        code: AI_NO_ELIGIBLE_PROVIDER,
-        message: 'The request is larger than any provider of this model can serve',
-      };
+      this.failure = noEligibleProviderFailure(
+        { cause: 'size', model: run.model, ownKey: this.payer.paid },
+        'The request is larger than any provider of this model can serve',
+      );
       logger.warn('No eligible provider for this run', {
         runId: run.id,
         model: run.model,
@@ -450,6 +453,8 @@ class RunExecution {
             finishReason = event.finishReason;
             break;
           case 'start':
+            await this.payer.note(event.provider);
+            break;
           default:
             break;
         }
