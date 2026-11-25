@@ -6,11 +6,6 @@ import { type PageOutlineEntry } from '@exocortex/editor';
  * rather than a layout read per heading.
  */
 
-/** A page needs at least this many headings before the outline appears. */
-export const OUTLINE_MIN_HEADINGS = 4;
-/** And has to be at least this many screens long: a short page is read whole. */
-export const OUTLINE_MIN_SCREENS = 1.5;
-
 export interface ScrollMetrics {
   scrollTop: number;
   viewportHeight: number;
@@ -128,13 +123,12 @@ export function outlinePlacement(free: number, pinRequested: boolean): OutlinePl
   return 'compact';
 }
 
-/** Whether the page is long and structured enough to deserve the outline. */
-export function outlineWanted(
-  entries: readonly PageOutlineEntry[],
-  metrics: Pick<ScrollMetrics, 'viewportHeight' | 'scrollHeight'>,
-): boolean {
-  return (
-    entries.length >= OUTLINE_MIN_HEADINGS &&
-    metrics.scrollHeight >= metrics.viewportHeight * OUTLINE_MIN_SCREENS
-  );
+/**
+ * Whether the page gets the outline: as soon as it has a heading. It used to
+ * wait for four headings and a page of one and a half screens, and a rule the
+ * reader cannot see made the outline come and go for no visible reason, and
+ * missed the long page with two headings that needs it most.
+ */
+export function outlineWanted(entries: readonly PageOutlineEntry[]): boolean {
+  return entries.length > 0;
 }

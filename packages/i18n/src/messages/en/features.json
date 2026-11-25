@@ -72,14 +72,14 @@
     "where": "Click an image on a page."
   },
   "seitengliederung": {
-    "title": "Outline for long pages",
-    "summary": "On a long page with multiple headings, a narrow scale appears on the right edge, one tick per heading. Clicking it opens the outline, clicking a heading jumps there, and the section you are currently reading is highlighted.",
+    "title": "Heading outline",
+    "summary": "As soon as a page has a heading, a narrow scale appears on the right edge, one tick per heading. Clicking it opens the outline, clicking a heading jumps there, and the section you are currently reading is highlighted.",
     "details": {
-      "p1": "The scale shows the structure of the page, with longer ticks for higher levels. The amber tick marks the section you are currently in and moves along as you scroll. Short pages do not get an outline; you read those in one go anyway.",
+      "p1": "The scale shows the structure of the page, with longer ticks for higher heading levels. The amber tick is the section you are currently in, moving along as you scroll. A page without headings has no outline.",
       "p2": "A collapsed section appears once in the outline, showing the number of headings inside it. Jumping there does not expand it: whether a section is collapsed belongs to the page, and navigating does not change the page.",
       "p3": "If there is enough space next to the page, you can pin the outline using the pin icon at the top; it then stays open until you unpin it. On mobile, the scale turns into a small button at the bottom right that disappears while writing. You can also do it without a mouse via the command palette: “Jump to section”."
     },
-    "where": "On a long page, click the scale on the right edge, or press Strg + K and “Jump to section”."
+    "where": "On a page with headings, click the scale on the right edge, or press Strg + K and “Jump to section”."
   },
   "seiten-editor": {
     "title": "Write pages, collaboratively in real time",

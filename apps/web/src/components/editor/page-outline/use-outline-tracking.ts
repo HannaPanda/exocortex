@@ -121,10 +121,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     const textRight = pageRect.right - paddingRight;
     const visibleRight = scrollerRect.left + scroller.clientWidth;
     const next = {
-      wanted: outlineWanted(entriesRef.current, {
-        viewportHeight: scroller.clientHeight,
-        scrollHeight: scroller.scrollHeight,
-      }),
+      wanted: outlineWanted(entriesRef.current),
       free: Math.max(0, Math.floor(visibleRight - textRight)),
       scrollbarWidth: scroller.offsetWidth - scroller.clientWidth,
     };

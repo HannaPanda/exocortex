@@ -72,14 +72,14 @@
     "where": "Fai clic su un’immagine in una pagina."
   },
   "seitengliederung": {
-    "title": "Struttura delle pagine lunghe",
-    "summary": "Nelle pagine lunghe con più intestazioni, sul bordo destro compare una scala sottile con un trattino per ciascuna intestazione. Cliccandoci sopra si apre la struttura, un clic su un’intestazione ti porta direttamente lì e la sezione che stai leggendo viene evidenziata.",
+    "title": "Struttura delle intestazioni",
+    "summary": "Non appena una pagina ha un’intestazione, sul bordo destro appare una sottile scala graduata, con una tacca per ogni intestazione. Un clic sulla scala apre la struttura, un clic su un’intestazione ti porta lì, e la sezione che stai leggendo viene evidenziata.",
     "details": {
-      "p1": "La scala mostra la struttura della pagina: i trattini più lunghi indicano i livelli superiori. Il trattino color ambra indica la sezione in cui ti trovi attualmente e si sposta mentre scorri la pagina. Le pagine brevi non hanno una struttura, dato che si leggono facilmente tutte d’un fiato.",
+      "p1": "La scala mostra la struttura della pagina, con tratti più lunghi per i livelli superiori. Il tratto color ambra indica la sezione in cui ti trovi attualmente e si sposta mentre scorri. Una pagina senza intestazioni non ha alcuna struttura.",
       "p2": "Una sezione compressa compare una sola volta nella struttura, insieme al numero di intestazioni al suo interno. Raggiungerla con un salto non la espande: lo stato compresso fa parte della pagina e la navigazione non modifica i contenuti della pagina.",
       "p3": "Se c’è abbastanza spazio accanto alla pagina, puoi fissare la struttura con la puntina in alto; in questo modo rimarrà aperta finché non la sblocchi. Sullo smartphone, la scala diventa un piccolo pulsante in basso a destra che scompare durante la scrittura. Puoi navigare anche senza mouse tramite la tavolozza dei comandi: «Vai alla sezione»."
     },
-    "where": "In una pagina lunga, fai clic sulla scala sul bordo destro oppure premi Strg + K e seleziona «Vai alla sezione»."
+    "where": "Su una pagina con intestazioni fai clic sulla scala sul bordo destro, oppure premi Strg + K e seleziona «Vai alla sezione»."
   },
   "seiten-editor": {
     "title": "Scrivere pagine, a quattro mani in contemporanea",

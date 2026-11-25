@@ -78,11 +78,8 @@ describe('outlinePlacement', () => {
 });
 
 describe('outlineWanted', () => {
-  const four = [entry(1), entry(2), entry(2), entry(2)];
-
-  it('needs four headings and a page of one and a half screens', () => {
-    expect(outlineWanted(four, { viewportHeight: 600, scrollHeight: 900 })).toBe(true);
-    expect(outlineWanted(four, { viewportHeight: 600, scrollHeight: 899 })).toBe(false);
-    expect(outlineWanted(four.slice(1), { viewportHeight: 600, scrollHeight: 5000 })).toBe(false);
+  it('appears with the first heading, whatever the length of the page', () => {
+    expect(outlineWanted([entry(2)])).toBe(true);
+    expect(outlineWanted([])).toBe(false);
   });
 });

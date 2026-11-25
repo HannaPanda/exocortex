@@ -728,8 +728,9 @@ being countable.
 
 ### The page outline
 
-A long page (four headings or more, and at least one and a half screens) gets
-a scale in its right margin: one stroke per heading, its length the heading's
+A page with at least one heading gets a scale in its right margin, however
+short it is (decided 2026-11-25: a threshold the reader cannot see made the
+outline come and go for no visible reason): one stroke per heading, its length the heading's
 level, in `signal-line`, and the stroke of the section being read in
 `primary` (issue #194). It is the tree guide turned into a gauge, so it needed
 no new token and no new shape. The whole scale is one control. Its strokes are
