@@ -121,19 +121,20 @@ export const SELF_PRESENCE_COLOR = 'var(--presence-1)';
  * Five tokens, not six. `presence-1` is spent on the local user, so a remote
  * user never draws it and "amber means me" stays true even in a full room.
  */
+export const PRESENCE_COLORS = [
+  'var(--presence-2)',
+  'var(--presence-3)',
+  'var(--presence-4)',
+  'var(--presence-5)',
+  'var(--presence-6)',
+] as const;
+
 export function presenceColor(seed: string): string {
-  const tokens = [
-    'var(--presence-2)',
-    'var(--presence-3)',
-    'var(--presence-4)',
-    'var(--presence-5)',
-    'var(--presence-6)',
-  ];
   let hash = 0;
   for (let index = 0; index < seed.length; index += 1) {
     hash = (hash * 31 + seed.charCodeAt(index)) % 100_000;
   }
-  return tokens[hash % tokens.length] as string;
+  return PRESENCE_COLORS[hash % PRESENCE_COLORS.length] as string;
 }
 
 export function initialsOf(name: string): string {

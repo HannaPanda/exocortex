@@ -35,6 +35,7 @@ import { BlockHandle } from '@/components/editor/block-handle';
 import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
 import { CodeBlockToolbar } from '@/components/editor/code-block-toolbar';
+import { renderCaret, renderCaretSelection } from '@/components/editor/collaboration-caret-render';
 import {
   type Connection,
   useCollaborationConnection,
@@ -448,6 +449,8 @@ function EditorSurface({
           CollaborationCaret.configure({
             provider: connection.provider,
             user: { name: currentUser.name, color: presenceColor(currentUser.id) },
+            render: renderCaret,
+            selectionRender: renderCaretSelection,
           }),
           Placeholder.configure({
             placeholder: ({ node }) => (node.type.name === 'paragraph' ? placeholder : ''),
