@@ -499,4 +499,52 @@ test.describe('AI side panel', () => {
     await page.getByTestId('ai-pinned-remove-item').click();
     await expect(chips).toHaveCount(0, { timeout: 30_000 });
   });
+
+  /**
+   * What is marked is offered, what is taken goes once (issue #249). Only a
+   * browser can check it: the offer lives on ProseMirror keeping its
+   * selection while the focus is in the chat, and on the chip row telling the
+   * two apart.
+   */
+  test('offers the marked text, sends it once and forgets it afterwards', async ({ page }) => {
+    // Waits for one real provider call (issue #90).
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Markierung ${Date.now().toString(36)}`);
+    await page.getByTestId('editor-surface').click();
+    const passage = 'Der Satz, um den es geht.';
+    await page.keyboard.type(passage);
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+
+    await page.getByTestId('context-tab-ai').click();
+    const offer = page.getByTestId('ai-selection-add');
+    const chip = page.getByTestId('ai-selection-chip');
+    // Marked is not yet taken: an offer, and nothing that would be sent.
+    await expect(offer).toContainText(passage, { timeout: 15_000 });
+    await expect(chip).toHaveCount(0);
+
+    await offer.click();
+    await expect(chip).toContainText(passage);
+    await expect(offer).toHaveCount(0);
+
+    // Removable before sending, and the marked text is offered again.
+    await page.getByTestId('ai-selection-remove').click();
+    await expect(chip).toHaveCount(0);
+    await expect(offer).toBeVisible();
+    await offer.click();
+
+    await page.getByTestId('ai-input').fill('Was meint dieser Satz?');
+    await page.getByTestId('ai-send').click();
+    // In the transcript, before the question it belongs to.
+    await expect(page.getByTestId('ai-transcript')).toContainText('Ausgewählter Abschnitt', {
+      timeout: 30_000,
+    });
+    await expect(page.getByTestId('ai-transcript')).toContainText(passage);
+    // One hand-over, one message: neither chip nor offer for the next one.
+    await expect(chip).toHaveCount(0);
+    await expect(offer).toHaveCount(0);
+    await waitForAiRun(page, 'ai:ask');
+  });
 });
