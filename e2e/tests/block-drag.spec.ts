@@ -94,8 +94,11 @@ test.describe('moving blocks', () => {
     if (lineBox === null) throw new Error('line has no layout');
     expect(Math.abs(lineBox.x - eins.x)).toBeLessThan(3);
     expect(lineBox.y).toBeLessThan(eins.y + 1);
-    // The handle's menu stays shut while something is being dragged.
+    // The handle's menu stays shut while something is being dragged, and so
+    // does the formatting toolbar: it would stand right where the item lands
+    // and take the drop.
     await expect(page.getByTestId('block-duplicate')).toHaveCount(0);
+    await expect(page.getByTestId('selection-toolbar')).toBeHidden();
 
     await page.mouse.up();
     await expect(line).toHaveCount(0);
@@ -125,11 +128,14 @@ test.describe('moving blocks', () => {
     await expect(line).toBeVisible();
     // The row it will follow is tinted.
     await expect(page.locator('.exocortex-editor .exocortex-drop-anchor')).toHaveText('Zwei');
-    const sameLevel = await line.boundingBox();
+    // The line's solid part starts at the level it lands on; the faint run to
+    // its left only shows how far the reachable levels go.
+    const solid = line.locator('span');
+    const sameLevel = await solid.boundingBox();
     // One indentation to the right: a sub-item of "Zwei", and the line says so.
     await page.mouse.move(handle.x + 28, zwei.y + zwei.height - 4, { steps: 6 });
     await expect
-      .poll(async () => (await line.boundingBox())?.x ?? 0)
+      .poll(async () => (await solid.boundingBox())?.x ?? 0)
       .toBeGreaterThan((sameLevel?.x ?? 0) + 10);
 
     await page.mouse.up();
