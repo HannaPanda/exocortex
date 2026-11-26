@@ -51,6 +51,7 @@ import {
   loadOwnedConversation,
   PREVIEW_MAX_CHARS,
 } from './conversation-mapping';
+import { readRunWrites } from './run-changes';
 import { mapAiRunRow } from './run-mapper';
 
 const PLACEHOLDER_TITLE = 'Neue Unterhaltung';
@@ -171,6 +172,11 @@ export class ConversationsService {
       }),
     ]);
 
+    const runIds = [
+      ...new Set(messages.flatMap((message) => (message.runId === null ? [] : [message.runId]))),
+    ];
+    const runWrites = await readRunWrites(this.prisma, userId, runIds);
+
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
     // The detail response already carries the transcript, so the preview costs
     // no query here: it is the first user line of what was just read.
@@ -186,6 +192,7 @@ export class ConversationsService {
         lastRun === null
           ? null
           : mapAiRunRow(lastRun, await readerLocale(this.prisma, userId, headers)),
+      runWrites,
     };
   }
 

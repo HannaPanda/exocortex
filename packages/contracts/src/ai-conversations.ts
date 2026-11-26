@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { aiRunSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
+import { aiRunWrittenPagesSchema } from './ai-run-changes';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 export const aiConversationRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
@@ -144,6 +145,12 @@ export const aiConversationDetailResponseSchema = z.object({
    * on why it stopped (2026-10-13).
    */
   lastRun: aiRunSchema.nullable(),
+  /**
+   * The pages each run of this conversation wrote, for the line under its
+   * answer that names them and offers the way back (issue #248). Runs that
+   * wrote nothing are absent.
+   */
+  runWrites: z.array(aiRunWrittenPagesSchema).default([]),
 });
 export type AiConversationDetailResponse = z.infer<typeof aiConversationDetailResponseSchema>;
 

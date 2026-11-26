@@ -77,6 +77,9 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentOverviewService,
     DocumentMarkdownService,
     DocumentSnapshotService,
+    // Taking one AI run back restores blocks through the same path a person
+    // uses in the snapshot comparison (issue #248).
+    DocumentDiffService,
     DocumentActivityService,
     DocumentContentService,
     DocumentEditService,

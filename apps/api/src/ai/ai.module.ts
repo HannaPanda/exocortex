@@ -12,6 +12,7 @@ import { ConversationSearchService } from './conversation-search';
 import { ConversationSourcesService } from './conversation-sources.service';
 import { ConversationsController } from './conversations.controller';
 import { ConversationsService } from './conversations.service';
+import { RunChangesService } from './run-changes.service';
 import { RunInspectionService } from './run-inspection.service';
 
 @Module({
@@ -29,6 +30,7 @@ import { RunInspectionService } from './run-inspection.service';
     ConversationArchiveService,
     ConversationSourcesService,
     RunInspectionService,
+    RunChangesService,
   ],
   exports: [
     AiService,

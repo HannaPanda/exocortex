@@ -5,6 +5,7 @@ export * from './ai';
 export * from './ai-conversations';
 export * from './ai-diagnosis';
 export * from './ai-models';
+export * from './ai-run-changes';
 export * from './ai-run-inspection';
 export * from './ai-runtime';
 export * from './ai-trust';
