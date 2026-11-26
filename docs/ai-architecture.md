@@ -193,7 +193,8 @@ request. The model, title, reasoning level and vision companion override
 live on the conversation; every turn — user, assistant, tool, and compaction
 summaries — is its own `AiConversationMessage` row.
 
-- **`supersededAt`.** Set by `/clear` and by auto-compaction. A superseded
+- **`supersededAt`.** Set by `/clear`, by auto-compaction and by a requested
+  compaction (`/compact`). A superseded
   message stays in the table and in the UI's history (it is still "what
   actually happened"), but the worker never sends it to the provider again —
   only `supersededAt: null` rows enter the message list a run builds
@@ -284,7 +285,9 @@ state (ADR-004/005) where a conversation is an append-only list of rows, and
   `exo_chat_read` (`packages/mcp-tools/src/tools/chats.ts`), all read-only. The
   catalogue's blanket exemption for `/api/ai/conversations*` was narrowed to the
   writing routes: an agent starting a conversation from inside one is a loop, an
-  agent searching its own past is the opposite of one.
+  agent searching its own past is the opposite of one. The one writing tool is
+  `exo_chat_compact` (issue #287, ADR-093), on MCP only; see "Compaction on
+  request".
 
 ## Page context
 
@@ -765,7 +768,45 @@ provider will complain if the context is actually too large, which is better
 than silently discarding the user's latest question. A failed compaction (a
 provider error) is caught, logged at `warn`, and never fails the run.
 `ai.conversation.compacted` is published with the before/after token
-estimate. `/compact` is advisory only — see "Known limitations".
+estimate. An empty summary counts as a failed one: accepting it would retire
+the messages and put nothing in their place.
+
+## Compaction on request
+
+`/compact`, `POST /api/ai/conversations/:id/compact` and the MCP tool
+`exo_chat_compact` summarise the history because the person asked (issue #287,
+ADR-093). That is a different trigger from the one above, and it deliberately
+does not ask ADR-032's question:
+
+1. `requestConversationCompaction` (`apps/api/src/ai/conversation-compaction.ts`)
+   refuses nothing for being early. It answers `nothing_to_compact` when fewer
+   than two messages are in the context, `already_queued` while an earlier
+   request holds, and `queued` otherwise, always with the context's fill, the
+   workspace's `ai.compactionThresholdPercent` and `wouldCompactAutomatically`.
+   `/compact` turns that into one line plus "Nötig gewesen wäre das noch
+   nicht ..." when the automatic one would not have run yet.
+2. The claim is a conditional update of `AiConversation.compactRequestedAt`.
+   For `AI_CONVERSATION_COMPACTION_LEASE_MS` (two minutes) a new message or
+   command is refused with `ai_conversation_compacting` (409), `/compact`
+   itself excepted, and the panel's composer waits. A request is refused while
+   a run is open (`ai_conversation_locked`). Past the lease the request reads
+   as `compactionError: 'abandoned'` and the conversation is free again.
+3. The job goes to the `conversation-compaction` queue with the model the next
+   message would run on. `createConversationCompactionProcessor`
+   (`apps/worker/src/processors/conversation-compaction.ts`) resolves provider
+   and key with `providerFor`, as a run does: the compaction model setting
+   still wins and goes to OpenRouter, a workspace's own key pays, and an
+   unreadable one stops it (`key_unreadable`). `compactOnRequest`
+   (`apps/worker/src/compaction.ts`) summarises _every_ active message, with no
+   recent tail kept, because "summarise the conversation so far" is what was
+   asked.
+4. The worker clears `compactRequestedAt` and writes `compactionError` (null
+   on success). The panel hears `ai.conversation.compacted` or
+   `ai.conversation.compaction_failed` and polls the conversation every three
+   seconds while a request holds, in case the event was missed.
+
+The built-in AI has no tool for it: it always acts inside a run of its own
+conversation, and that run holds the conversation against the request.
 
 ## Vision companions
 
@@ -1018,11 +1059,10 @@ throttled engine and a genuinely rare topic produce the same short list.
 
 ## Known limitations
 
-- **`/compact` is advisory only.** Running it from the API process would
-  call a provider from inside `apps/api`, which the execution boundary above
-  forbids. It reports that auto-compaction happens automatically instead;
-  `/clear` covers the case where the user wants the context gone
-  immediately.
+- **A summariser call is not in the usage report.** Neither the automatic
+  compaction nor one somebody asked for writes an `ai_run` row or adds to a
+  run's usage, so their (small, capped at 1,500 output tokens) cost is paid by
+  the right key but counted nowhere.
 - **`POST /api/documents/:id/content` can lose against a live Hocuspocus
   session.** A document being edited collaboratively has its canonical state
   in memory in `apps/collaboration`; a programmatic content write snapshots

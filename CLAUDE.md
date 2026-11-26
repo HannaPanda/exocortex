@@ -912,6 +912,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the next call); `mayBeConversationPage` admits a page of the conversation's
   workspace or one reached through a share, never one of another workspace the
   caller is a member of, and the worker asks again before it names the page.
+- ADR-093: a requested compaction is the person's trigger, not the plan's.
+  `/compact`, `POST /api/ai/conversations/:id/compact` and `exo_chat_compact`
+  summarise every message still in the context however empty the window is,
+  and only say whether ADR-032's automatic compaction would have run anyway.
+  The worker writes it on the `conversation-compaction` queue with the key a
+  run would use; `compactRequestedAt` holds the conversation for at most two
+  minutes (`ai_conversation_compacting`), and the outcome is on the row and in
+  an event. MCP only: a run holds its own conversation against it.
 
 Full list: `docs/adr/`.
 

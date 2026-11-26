@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-307 routes are reachable from at least one client; 177 from all three.
+308 routes are reachable from at least one client; 177 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -221,6 +221,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/agent-profiles/:x/duplicate` | ✓ | · | ✓ | `exo_agent_profile_duplicate` |
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
+| `POST /api/ai/conversations/:x/compact` | · | · | ✓ | `exo_chat_compact` |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
@@ -430,6 +431,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `exo_attachment_upload_ticket_get` — mcp: Reads the state of a ticket from `exo_attachment_upload_ticket`, and only the caller's own. Same reason: the built-in AI can never hold one.
 - `exo_changeset_apply` — mcp: Applies a proposed changeset (issue #141, ADR-070). Deciding a proposal is a person's; the built-in AI would be approving what it or another run proposed, which is the review the proposal mode exists for.
 - `exo_changeset_reject` — mcp: Rejects a proposed changeset. Same reason: a decision on a proposal, and the built-in AI is never the one who decides.
+- `exo_chat_compact` — mcp: Summarises a conversation's history on request (issue #287). The built-in AI only ever acts from inside a run of its own conversation, and a conversation with an open run refuses a requested compaction (`ai_conversation_locked`), so the tool could never succeed there. Inside a run the automatic compaction is the one that applies (ADR-032), and it already compacts whenever a smaller prompt would change who can serve the next turn.
 - `exo_eval_attempt_review` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
 - `exo_eval_case_create` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could write the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
 - `exo_eval_case_delete` — mcp: An eval measures the built-in AI (issue #146, ADR-074). A run that could delete the cases it is measured by would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.
