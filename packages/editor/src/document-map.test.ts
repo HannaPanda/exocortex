@@ -21,6 +21,22 @@ function paragraph(text: string, blockId: string): ProseMirrorNode {
   };
 }
 
+function item(text: string, blockId: string, ...nested: ProseMirrorNode[]): ProseMirrorNode {
+  return {
+    type: 'listItem',
+    attrs: { [BLOCK_ID_ATTRIBUTE]: blockId },
+    content: [paragraph(text, `${blockId}p`), ...nested],
+  };
+}
+
+function list(
+  type: 'bulletList' | 'orderedList',
+  blockId: string,
+  items: ProseMirrorNode[],
+): ProseMirrorNode {
+  return { type, attrs: { [BLOCK_ID_ATTRIBUTE]: blockId }, content: items };
+}
+
 function doc(...content: ProseMirrorNode[]): ProseMirrorDocument {
   return { type: 'doc', content };
 }
@@ -189,6 +205,120 @@ describe('buildDocumentMap', () => {
     );
 
     expect(map.entries[0]?.fromBlockId).toBeNull();
+  });
+});
+
+describe('buildDocumentMap on long lists (issue #274)', () => {
+  // Thirty short points, the shape Stefan's page had: twelve thousand
+  // characters in total, no single point longer than a few hundred.
+  const points = Array.from({ length: 30 }, (_, index) =>
+    item(`Punkt ${index + 1}: ${'x'.repeat(300)}`, id('itemaaa', index)),
+  );
+
+  it('opens a list that fills the map into windows of its points', () => {
+    const map = buildDocumentMap(doc(list('bulletList', 'listaaaaaaa1', points)), {
+      maxEntries: 10,
+    });
+
+    expect(map.mode).toBe('ranges');
+    expect(map.entries.length).toBeGreaterThan(1);
+    // No entry is the list itself: each names its first and last point.
+    for (const entry of map.entries) {
+      expect(entry.fromBlockId).toMatch(/^itemaaa/);
+      expect(entry.toBlockId).toMatch(/^itemaaa/);
+      expect(entry.title).toMatch(/^Punkte? \d+/);
+      expect(entry.title).toContain('der Aufzählung in Block 1');
+    }
+    // Every point is covered exactly once, so none can go missing.
+    expect(map.entries.reduce((total, entry) => total + entry.blocks, 0)).toBe(30);
+  });
+
+  it('reads every window back as points with their markers, and all of them', () => {
+    const page = doc(list('bulletList', 'listaaaaaaa1', points));
+    const map = buildDocumentMap(page, { maxEntries: 10 });
+
+    const read = map.entries.map((entry) =>
+      serializeMarkdown(
+        extractBlockRange(
+          page,
+          entry.fromBlockId as string,
+          entry.toBlockId,
+        ) as ProseMirrorDocument,
+      ),
+    );
+
+    for (const markdown of read) expect(markdown.startsWith('- Punkt')).toBe(true);
+    const joined = read.join('');
+    for (let index = 1; index <= 30; index += 1) expect(joined).toContain(`Punkt ${index}:`);
+  });
+
+  it('keeps windows inside one list when two lists and a paragraph share the page', () => {
+    const page = doc(
+      list('bulletList', 'listaaaaaaa1', points),
+      paragraph('zwischen', 'parapara001'),
+      list(
+        'bulletList',
+        'listaaaaaaa2',
+        Array.from({ length: 40 }, (_, index) =>
+          item(`Zweite ${index}: ${'y'.repeat(300)}`, id('itembbb', index)),
+        ),
+      ),
+    );
+
+    const map = buildDocumentMap(page, { maxEntries: 20 });
+
+    // Both ends of a window are siblings, or it could not be read back.
+    for (const entry of map.entries) {
+      expect(extractBlockRange(page, entry.fromBlockId as string, entry.toBlockId)).not.toBeNull();
+    }
+    expect(map.entries.some((entry) => entry.title.includes('in Block 3'))).toBe(true);
+    expect(map.entries.some((entry) => entry.fromBlockId === 'parapara001')).toBe(true);
+    expect(map.entries.reduce((total, entry) => total + entry.blocks, 0)).toBe(71);
+  });
+
+  it('opens a point that holds a long list of its own, one level down', () => {
+    const nested = list(
+      'bulletList',
+      'listnested01',
+      Array.from({ length: 20 }, (_, index) =>
+        item(`Unterpunkt ${index}: ${'z'.repeat(300)}`, id('itemccc', index)),
+      ),
+    );
+    const page = doc(
+      list('bulletList', 'listaaaaaaa1', [
+        item('kurz', 'itemaaa00000'),
+        item('mit Unterliste', 'itemaaa00001', nested),
+      ]),
+    );
+
+    const map = buildDocumentMap(page, { maxEntries: 10 });
+
+    expect(map.entries.some((entry) => entry.fromBlockId?.startsWith('itemccc'))).toBe(true);
+    expect(map.entries.some((entry) => entry.title.includes('in Punkt 2'))).toBe(true);
+  });
+
+  it('counts on in a numbered list, so point 27 still reads "27."', () => {
+    const page = doc(list('orderedList', 'listaaaaaaa1', points));
+
+    const window = extractBlockRange(page, id('itemaaa', 26), id('itemaaa', 27));
+
+    expect(serializeMarkdown(window as ProseMirrorDocument)).toMatch(/^27\. Punkt 27:/);
+  });
+
+  it('leaves a short list whole, where it changes nothing', () => {
+    const page = doc(
+      ...Array.from({ length: 40 }, (_, index) =>
+        paragraph('x'.repeat(500), id('parapara', index)),
+      ),
+      list('bulletList', 'listaaaaaaa1', [
+        item('eins', 'itemaaa00000'),
+        item('zwei', 'itemaaa00001'),
+      ]),
+    );
+
+    const map = buildDocumentMap(page, { maxEntries: 10 });
+
+    expect(map.entries.some((entry) => entry.fromBlockId?.startsWith('itemaaa'))).toBe(false);
   });
 });
 

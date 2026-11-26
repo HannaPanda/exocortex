@@ -46,8 +46,13 @@ export function applyResponseBudget(
    * So a map that is only its own subject is not an answer. The content goes
    * back instead and the caller's own cap cuts it -- which loses the tail of
    * one enormous block and says so, where a map would lose the reader.
+   *
+   * One entry is the whole part however it counts its blocks: a map covers
+   * everything it maps, and since issue #274 an entry of a list counts points,
+   * so comparing its count with the part's top-level blocks would let a list
+   * that fits one window come back as a map of itself.
    */
-  const whole = map.entries.length === 1 && map.entries[0]?.blocks === map.totalBlocks;
+  const whole = map.entries.length === 1;
   if (whole && !wantsMap) {
     return { view: 'content', markdown, map: null, chars };
   }

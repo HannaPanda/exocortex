@@ -88,23 +88,81 @@ export function outlineBlocks(document: ProseMirrorDocument): TransclusionOutlin
   return entries;
 }
 
+/**
+ * How many addressable blocks a page holds, past the outline's cap too.
+ *
+ * The outline stops at `MAX_TRANSCLUSION_OUTLINE_BLOCKS`; a caller that says
+ * "and 240 more" from the capped list understates a page of a thousand blocks
+ * without noticing (issue #274). This is the number it should say instead.
+ */
+export function countAddressableBlocks(document: ProseMirrorDocument): number {
+  let count = 0;
+  const walk = (node: ProseMirrorNode): void => {
+    if (isValidBlockId(node.attrs?.[BLOCK_ID_ATTRIBUTE])) count += 1;
+    for (const child of node.content ?? []) walk(child);
+  };
+  for (const child of document.content ?? []) walk(child);
+  return count;
+}
+
 interface Located {
   /** The siblings the block sits among, which is where a section is cut from. */
   siblings: readonly ProseMirrorNode[];
   index: number;
+  /** The block those siblings belong to, `null` at the top of the document. */
+  parent: ProseMirrorNode | null;
 }
 
 function locate(document: ProseMirrorDocument, blockId: string): Located | null {
-  const search = (siblings: readonly ProseMirrorNode[]): Located | null => {
+  const search = (
+    siblings: readonly ProseMirrorNode[],
+    parent: ProseMirrorNode | null,
+  ): Located | null => {
     for (let index = 0; index < siblings.length; index += 1) {
       const node = siblings[index] as ProseMirrorNode;
-      if (node.attrs?.[BLOCK_ID_ATTRIBUTE] === blockId) return { siblings, index };
-      const inside = search(node.content ?? []);
+      if (node.attrs?.[BLOCK_ID_ATTRIBUTE] === blockId) return { siblings, index, parent };
+      const inside = search(node.content ?? [], node);
       if (inside !== null) return inside;
     }
     return null;
   };
-  return search(document.content ?? []);
+  return search(document.content ?? [], null);
+}
+
+/** The containers whose children are list items rather than blocks of their own. */
+const LIST_CONTAINER_TYPES = new Set(['bulletList', 'orderedList', 'taskList']);
+
+/**
+ * Siblings cut out of their parent, in a shape that can stand on its own (#274).
+ *
+ * A list item is only a list item inside a list. Handed back bare, it is not a
+ * valid top-level block, and its Markdown loses the marker: a window of three
+ * items read as three loose paragraphs, which is a different text from the one
+ * on the page. So items come back inside a list of their parent's kind. The
+ * wrapper carries the parent's attributes except its identifier, because the
+ * address of the whole list must not appear on a part of it; a numbered list
+ * keeps counting where the first item stood, so item 27 still reads "27.".
+ *
+ * Everything else is returned as it was cut.
+ */
+export function standaloneSiblings(
+  parent: ProseMirrorNode | null,
+  nodes: readonly ProseMirrorNode[],
+  firstIndex: number,
+): ProseMirrorNode[] {
+  if (parent === null || !LIST_CONTAINER_TYPES.has(parent.type)) return [...nodes];
+  const { [BLOCK_ID_ATTRIBUTE]: _listId, ...attrs } = parent.attrs ?? {};
+  const start = attrs.start;
+  return [
+    {
+      type: parent.type,
+      attrs:
+        parent.type === 'orderedList'
+          ? { ...attrs, start: (typeof start === 'number' ? start : 1) + firstIndex }
+          : attrs,
+      content: [...nodes],
+    },
+  ];
 }
 
 /**
@@ -118,7 +176,8 @@ function locate(document: ProseMirrorDocument, blockId: string): Located | null 
  * whenever a second one is added.
  *
  * Every other block addresses itself, with its children, which for a list or a
- * table is the whole structure.
+ * table is the whole structure. A list item comes back inside a one-item list
+ * of its own kind (`standaloneSiblings`), so it reads as the item it is.
  *
  * `null` when no block carries this identifier: the source was edited and the
  * block is gone. That is reported as a dead reference rather than papered over
@@ -133,7 +192,9 @@ export function extractBlockFragment(
 
   const node = found.siblings[found.index] as ProseMirrorNode;
   const level = headingLevel(node);
-  if (level === null) return { type: 'doc', content: [node] };
+  if (level === null) {
+    return { type: 'doc', content: standaloneSiblings(found.parent, [node], found.index) };
+  }
 
   const section: ProseMirrorNode[] = [node];
   for (let index = found.index + 1; index < found.siblings.length; index += 1) {

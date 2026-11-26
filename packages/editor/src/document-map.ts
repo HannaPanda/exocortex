@@ -2,7 +2,7 @@ import { BLOCK_ID_ATTRIBUTE, isValidBlockId } from './block-id';
 import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
 import { serializeMarkdown } from './markdown';
 import { serializePlainText } from './plain-text';
-import { extractBlockFragment } from './transclusion-fragment';
+import { extractBlockFragment, standaloneSiblings } from './transclusion-fragment';
 
 /**
  * Reading a page by address instead of by the pound (issue #118).
@@ -66,7 +66,10 @@ export interface DocumentMapEntry {
   title: string;
   /** Characters of Markdown this part holds. */
   chars: number;
-  /** Top-level blocks this part covers. */
+  /**
+   * Blocks this part covers: top-level blocks, or the points of a list for a
+   * window the map opened a list into (issue #274).
+   */
   blocks: number;
 }
 
@@ -241,6 +244,103 @@ function coarsen(entries: readonly DocumentMapEntry[], maxEntries: number): Docu
   return merged;
 }
 
+/** The lists whose items a map may open, and what a person calls each of them. */
+const LIST_NAMES: Readonly<Record<string, string>> = {
+  bulletList: 'Aufzählung',
+  orderedList: 'nummerierten Liste',
+  taskList: 'Aufgabenliste',
+};
+
+const LIST_ITEM_TYPES = new Set(['listItem', 'taskItem']);
+
+/**
+ * A run of siblings a window may be cut from.
+ *
+ * A window never crosses from one group into another, because its two ends
+ * are read back as siblings (`extractBlockRange`): the last top-level
+ * paragraph and the first point of a list are not a span, they are a shape.
+ */
+interface SiblingGroup {
+  /** The window's title, from the 1-based positions of its first and last block. */
+  label: (first: number, last: number) => string;
+  /** Where this group sits, for the groups opened inside it. */
+  where: string;
+}
+
+/** One block a window can hold, with the group it belongs to and its place in it. */
+interface Unit extends Measured {
+  group: SiblingGroup;
+  position: number;
+}
+
+const TOP_LEVEL: SiblingGroup = {
+  where: '',
+  label: (first, last) => `Blöcke ${first} bis ${last}`,
+};
+
+function isList(node: ProseMirrorNode): boolean {
+  return Object.hasOwn(LIST_NAMES, node.type);
+}
+
+function listGroup(list: ProseMirrorNode, where: string): SiblingGroup {
+  const name = `der ${LIST_NAMES[list.type] ?? 'Liste'} ${where}`;
+  return {
+    where: name,
+    label: (first, last) =>
+      first === last ? `Punkt ${first} ${name}` : `Punkte ${first} bis ${last} ${name}`,
+  };
+}
+
+function itemGroup(position: number, where: string): SiblingGroup {
+  const name = `in Punkt ${position} ${where}`;
+  return { where: name, label: (first, last) => `Blöcke ${first} bis ${last} ${name}` };
+}
+
+/** A list item measured the way it reads: with its marker, inside its list. */
+function measureItems(list: ProseMirrorNode): Measured[] {
+  return (list.content ?? []).map((item) => ({
+    node: item,
+    chars: serializeMarkdown({ type: 'doc', content: [{ ...list, content: [item] }] }).length,
+    blockId: blockIdOf(item),
+    level: null,
+  }));
+}
+
+/**
+ * The blocks a window map is cut from, with large lists opened (issue #274).
+ *
+ * A list is one block at the top of a page, and counted as one it made the
+ * map lie: thirty short points showed up as a single entry of twelve thousand
+ * characters, the size of a long text, with no way into it short of reading
+ * all of it. So a list that fills a window on its own is not a block here but
+ * the group of its points, each addressable on its own; and a point that
+ * fills a window and holds a list of its own is opened the same way, one level
+ * down. Everything else stays whole, which keeps the windows of a page without
+ * lists exactly what they were.
+ */
+function windowUnits(items: readonly Measured[], target: number): Unit[] {
+  const units: Unit[] = [];
+  const visit = (siblings: readonly Measured[], group: SiblingGroup): void => {
+    siblings.forEach((item, index) => {
+      const position = index + 1;
+      const { node } = item;
+      const opens = item.chars >= target && (node.content?.length ?? 0) > 0;
+      if (opens && isList(node)) {
+        const where = group === TOP_LEVEL ? `in Block ${position}` : group.where;
+        visit(measureItems(node), listGroup(node, where));
+        return;
+      }
+      if (opens && LIST_ITEM_TYPES.has(node.type) && (node.content ?? []).some(isList)) {
+        visit(measure(node.content ?? []), itemGroup(position, group.where));
+        return;
+      }
+      units.push({ ...item, group, position });
+    });
+  };
+  visit(items, TOP_LEVEL);
+  return units;
+}
+
 /**
  * The floor of the recursion: windows of sibling blocks.
  *
@@ -254,42 +354,46 @@ function coarsen(entries: readonly DocumentMapEntry[], maxEntries: number): Docu
  * produced a real loop: nine short paragraphs followed by a 2.8 million
  * character code block came back as one window covering all ten, whose map was
  * that same window again.
+ *
+ * A list that large is the exception: it is opened into windows of its points
+ * (`windowUnits`), because a list, unlike a code block, can be divided.
  */
 function rangeEntries(items: readonly Measured[], maxEntries: number): DocumentMapEntry[] {
   const total = sumChars(items);
   const target = Math.max(1, Math.ceil(total / maxEntries));
+  const units = windowUnits(items, target);
   const entries: DocumentMapEntry[] = [];
-  let window: Measured[] = [];
-  let startIndex = 0;
+  let window: Unit[] = [];
 
-  const flush = (endIndex: number): void => {
-    if (window.length === 0) return;
+  const flush = (): void => {
+    const first = window[0];
+    const last = window[window.length - 1];
+    if (first === undefined || last === undefined) return;
     const { from, to } = rangeOf(window);
-    const preview = textOf((window[0] as Measured).node).slice(0, RANGE_PREVIEW_CHARS);
+    const preview = textOf(first.node).slice(0, RANGE_PREVIEW_CHARS);
     entries.push({
       kind: 'range',
       fromBlockId: from,
       toBlockId: to,
       level: null,
       title:
-        `Blöcke ${startIndex + 1} bis ${endIndex + 1}` + (preview.length > 0 ? `: ${preview}` : ''),
+        first.group.label(first.position, last.position) +
+        (preview.length > 0 ? `: ${preview}` : ''),
       chars: sumChars(window),
       blocks: window.length,
     });
     window = [];
   };
 
-  for (let index = 0; index < items.length; index += 1) {
-    const item = items[index] as Measured;
-    // Close the window before a block that fills one on its own, so it stands
-    // alone instead of dragging its neighbours into an entry as big as the
-    // part they are supposed to divide.
-    if (window.length > 0 && item.chars >= target) flush(index - 1);
-    if (window.length === 0) startIndex = index;
-    window.push(item);
-    if (sumChars(window) >= target) flush(index);
+  for (const unit of units) {
+    // A window holds siblings only, and it closes before a block that fills
+    // one on its own, so that block stands alone instead of dragging its
+    // neighbours into an entry as big as the part they are supposed to divide.
+    if (window.length > 0 && (unit.group !== window[0]?.group || unit.chars >= target)) flush();
+    window.push(unit);
+    if (sumChars(window) >= target) flush();
   }
-  flush(items.length - 1);
+  flush();
   return entries;
 }
 
@@ -335,7 +439,10 @@ export function buildDocumentMap(
 
   if (cut === undefined) {
     const entries = rangeEntries(items, maxEntries);
-    return { mode: 'ranges', ...base, entries, coarsened: entries.length < items.length };
+    // Coarsened when a window holds more than one block; an opened list can
+    // give more entries than the part has top-level blocks.
+    const coarsened = entries.some((entry) => entry.blocks > 1);
+    return { mode: 'ranges', ...base, entries, coarsened };
   }
 
   const sections = cut.groups.map((group) => sectionEntry(group, cut.level));
@@ -361,6 +468,9 @@ export function buildDocumentMap(
  * that one block literally, heading or not. A map addresses its ranges that
  * way on purpose, so an entry can never resolve to more than it named.
  *
+ * Items of a list come back inside a list of the same kind, so a window of
+ * points reads as those points with their markers (`standaloneSiblings`).
+ *
  * `null` when either end is gone. Reported as a dead address rather than
  * answered with the nearest surviving block, for the reason ADR-045 gives.
  */
@@ -371,18 +481,26 @@ export function extractBlockRange(
 ): ProseMirrorDocument | null {
   if (toBlockId === null) return extractBlockFragment(document, fromBlockId);
 
-  const search = (siblings: readonly ProseMirrorNode[]): ProseMirrorDocument | null => {
+  const search = (
+    siblings: readonly ProseMirrorNode[],
+    parent: ProseMirrorNode | null,
+  ): ProseMirrorDocument | null => {
     const from = siblings.findIndex((node) => blockIdOf(node) === fromBlockId);
     const to = siblings.findIndex((node) => blockIdOf(node) === toBlockId);
     if (from !== -1 && to !== -1) {
-      return from <= to ? { type: 'doc', content: siblings.slice(from, to + 1) } : null;
+      return from <= to
+        ? {
+            type: 'doc',
+            content: standaloneSiblings(parent, siblings.slice(from, to + 1), from),
+          }
+        : null;
     }
     for (const node of siblings) {
-      const inside = search(node.content ?? []);
+      const inside = search(node.content ?? [], node);
       if (inside !== null) return inside;
     }
     return null;
   };
 
-  return search(document.content ?? []);
+  return search(document.content ?? [], null);
 }

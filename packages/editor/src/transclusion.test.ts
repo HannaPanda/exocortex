@@ -9,6 +9,7 @@ import { validateProseMirrorDocument } from './schema';
 import { parseTransclusionParams, parseTransclusionPromptValue } from './transclusion';
 import {
   collectTransclusions,
+  countAddressableBlocks,
   extractBlockFragment,
   materializeTransclusions,
   outlineBlocks,
@@ -136,6 +137,32 @@ describe('extractBlockFragment', () => {
     const fragment = extractBlockFragment(SOURCE, 'parastatus1');
     expect(fragment?.content).toHaveLength(1);
     expect(serializePlainText(fragment as ProseMirrorDocument)).toBe('Läuft seit gestern.');
+  });
+
+  it('gives a list item back inside its list, so it reads as a point (issue #274)', () => {
+    const point = (text: string, blockId: string) => ({
+      type: 'listItem',
+      attrs: { [BLOCK_ID_ATTRIBUTE]: blockId },
+      content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+    });
+    const page: ProseMirrorDocument = {
+      type: 'doc',
+      content: [
+        {
+          type: 'orderedList',
+          attrs: { [BLOCK_ID_ATTRIBUTE]: 'listaaaaaaa', start: 1 },
+          content: [point('eins', 'itemaaaaaa1'), point('zwei', 'itemaaaaaa2')],
+        },
+      ],
+    };
+
+    const fragment = extractBlockFragment(page, 'itemaaaaaa2') as ProseMirrorDocument;
+
+    expect(validateProseMirrorDocument(fragment).valid).toBe(true);
+    expect(serializeMarkdown(fragment)).toBe('2. zwei\n');
+    // The wrapper is not the list: the list's address stays on the list.
+    expect(fragment.content?.[0]?.attrs?.[BLOCK_ID_ATTRIBUTE]).toBeUndefined();
+    expect(countAddressableBlocks(page)).toBe(3);
   });
 
   it('finds a block nested inside another one', () => {
