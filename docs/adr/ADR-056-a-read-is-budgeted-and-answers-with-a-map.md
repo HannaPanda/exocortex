@@ -102,3 +102,45 @@ policy is ADR-057, and it bounds growth rather than size -- it does not split
 anything automatically, and it does not make a search hit addressable -- a hit still
 names a page rather than a section, which is the other half of the cost of that
 failed run and is sequenced with #110.
+
+## Addendum (2026-11-26, issue #274): a list is divided into its points
+
+A report from the built-in AI said a list of thirty points came back with one
+point missing and cut off mid-sentence. The run's timeline says otherwise: the
+tool answered the whole list, 12,210 characters, uncut. The point it looked for
+sat in a second list further down the same page, the search hit naming the page
+but no block (ADR-058: a keyword hit is not located), and the map offered both
+lists as single entries of twelve and thirteen thousand characters titled by
+their first point. Nothing was withheld; the map gave no way to tell where a
+point was, and a model read that as loss.
+
+The map told a second untruth as well. A list is one block at the top level,
+so a long one counted as one indivisible block: its size read like one long
+text, and a list larger than the tool's own cap would have been cut with a note
+saying the rest was unreachable, which for a list is false.
+
+So the floor of the recursion learns one more shape. When block windows are
+cut, a list that fills a window on its own is opened into its points, and a
+point that fills one and holds a list is opened one level further. A window
+never crosses from one sibling group into another, because its ends are read
+back as siblings exactly as before; the points are siblings, so
+`fromBlockId`/`toBlockId` on two points is an ordinary range for the read and
+for the write side alike (ADR-055). A list that does not fill a window, and
+every page without lists, maps exactly as it did. An entry's `blocks` counts
+the points it covers.
+
+A point, or a window of points, comes back inside a list of its own kind
+(`standaloneSiblings`): a bare list item is not a valid top-level block and its
+Markdown loses the marker, and a numbered list keeps counting where the window
+started. The wrapper does not carry the list's identifier.
+
+Two consequences outside the map. One entry is now "the whole part" however it
+counts, so `applyResponseBudget` answers content for a single entry rather than
+comparing its count with the part's top-level blocks. And `blocks: true`
+accepts a `blockId`, listing only the blocks inside that part, with
+`blocksTotal` beside the capped outline so a long flat list says how much it
+left out instead of how much the cap left out.
+
+Still not done: a keyword hit names no block, so a point a search finds is
+found by its page and then by the map. Locating a keyword hit is its own
+change on the search side, not part of this one.

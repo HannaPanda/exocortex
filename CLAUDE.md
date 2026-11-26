@@ -569,7 +569,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   beginning and invites reading on. The map is built by `buildDocumentMap` and
   recurses by one rule (page, section, subsection, block window, content); the
   floor is block windows addressed by `fromBlockId`/`toBlockId`, because a flat
-  section of 112,000 characters has no heading to cut at. A map is bounded too:
+  section of 112,000 characters has no heading to cut at. A list that fills a
+  window is opened into windows of its points, which read back inside a list
+  of their kind (#274). A map is bounded too:
   neighbours merge rather than the list growing. A read starts no new work, so
   no summary and no keywords are computed to fill one, and a caller that names
   no budget still gets the page.
