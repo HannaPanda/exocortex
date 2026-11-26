@@ -300,6 +300,16 @@ interface DropPlugin {
 
 export const blockDropKey = new PluginKey<DropPlugin>('exocortexBlockDrop');
 
+/**
+ * Whether a block is being carried right now. Anything that floats over the
+ * page (the formatting toolbar, for one) stays away meanwhile: the handle
+ * selects the block it lifts, and a toolbar drawn for that selection would sit
+ * exactly where the block is about to land and take the drop.
+ */
+export function isCarryingBlock(state: EditorState): boolean {
+  return (blockDropKey.getState(state)?.source ?? null) !== null;
+}
+
 const CLEARED: DropPlugin = { source: null, anchor: null };
 
 /** A candidate, measured: where its line goes on the screen. */

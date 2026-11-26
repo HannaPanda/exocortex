@@ -25,6 +25,7 @@ import {
   BLOCK_ID_ATTRIBUTE,
   type BlockCatalogEntry,
   collectBlockIdsInRange,
+  isCarryingBlock,
   isValidBlockId,
 } from '@exocortex/editor';
 import {
@@ -220,6 +221,8 @@ export function SelectionToolbar({
       shouldShow={({ editor: instance, state, from, to }) => {
         if (!instance.isEditable) return false;
         if (from === to) return false;
+        // A block being carried is selected too, but the toolbar would take its drop.
+        if (isCarryingBlock(state)) return false;
         if (instance.isActive('codeBlock')) return false;
         // An image or a divider is a node selection, not a text run.
         return state.doc.textBetween(from, to, ' ').trim().length > 0;
