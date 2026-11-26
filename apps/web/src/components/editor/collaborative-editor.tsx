@@ -4,7 +4,6 @@ import { type NodeViewProps } from '@tiptap/core';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import { CollaborationCaret } from '@tiptap/extension-collaboration-caret';
 import { FileHandler } from '@tiptap/extension-file-handler';
-import { NodeRange } from '@tiptap/extension-node-range';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { type Mark as PmMark, type Node as PmNode } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
@@ -86,6 +85,7 @@ import { attachmentMediaInfoResolverFor } from '@/lib/api/attachment-info';
 import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
+import { BlockNodeRange } from './node-range';
 import { PaletteFileUpload } from './palette-file-upload';
 import {
   type AskSavedQueryEmbed,
@@ -465,8 +465,9 @@ function EditorSurface({
           agentEditMarkers,
           // A peer requirement of the drag handle: dragging selects a whole node
           // range. Without it the handle is registered but never becomes visible,
-          // because the plugin cannot resolve a range to grab.
-          NodeRange,
+          // because the plugin cannot resolve a range to grab. The wrapper keeps
+          // Shift+Arrow for text selection (issue #251).
+          BlockNodeRange,
           // Drag-and-drop and paste. The block type is chosen from the MIME type,
           // so dropping a video produces a player and not a broken image.
           FileHandler.configure({
