@@ -333,7 +333,7 @@ What is deliberately still missing is listed under
 | API      | NestJS 12 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                                                                |
 | Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                                                                |
 | Jobs     | BullMQ 6 on Redis 8                                                                                                                  |
-| Storage  | S3-compatible (MinIO locally, any S3 provider through `S3_*`)                                                                         |
+| Storage  | S3-compatible (MinIO locally, any S3 provider through `S3_*`)                                                                        |
 | Auth     | Better Auth 1.7 with the Prisma adapter                                                                                              |
 | AI       | provider-neutral contracts, one Chat Completions transport for OpenRouter and subscription presets, a mock provider for offline work |
 | Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                                                                |
