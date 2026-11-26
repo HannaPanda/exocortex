@@ -284,6 +284,15 @@ export interface PageCoverProps {
 }
 
 /**
+ * A label in the cover's menu: printed where the cover is wide enough, and on
+ * a narrow one left to screen readers and the button's tooltip, so the four
+ * controls fit a phone as icons (issue #266).
+ */
+function CoverLabel({ children }: { children: React.ReactNode }) {
+  return <span className="sr-only @min-[36rem]/cover:not-sr-only">{children}</span>;
+}
+
+/**
  * The cover image above the page title: full width, fixed height, cropped with
  * `object-fit: cover`.
  *
@@ -390,7 +399,10 @@ export function PageCover({
   const busy = upload.isPending || updateDocument.isPending || generation.pending;
 
   return (
-    <div className="group/cover relative w-full" data-testid="page-cover">
+    // A container, so the menu can ask how wide the cover is rather than the
+    // window: below 36rem its labels go to screen readers and tooltips only
+    // (issue #266, the menu ran off the left edge of a phone).
+    <div className="group/cover @container/cover relative w-full" data-testid="page-cover">
       {input}
       <div
         ref={frameRef}
@@ -435,7 +447,7 @@ export function PageCover({
       {readOnly ? null : (
         <div
           className={cn(
-            'absolute right-4 bottom-3 flex items-center gap-1 rounded-md bg-card/90 p-1 shadow-sm backdrop-blur transition-opacity',
+            'absolute right-4 bottom-3 flex max-w-[calc(100%-2rem)] flex-wrap items-center justify-end gap-1 rounded-md bg-card/90 p-1 shadow-sm backdrop-blur transition-opacity',
             'focus-within:opacity-100',
             repositioning
               ? 'opacity-100'
@@ -445,16 +457,17 @@ export function PageCover({
           {repositioning ? (
             <>
               <span className="px-2 text-xs text-muted-foreground">{t('positionHint')}</span>
-              <Button variant="ghost" size="sm" onClick={() => setDraft(null)}>
-                <XIcon /> {t('cancel')}
+              <Button variant="ghost" size="sm" title={t('cancel')} onClick={() => setDraft(null)}>
+                <XIcon /> <CoverLabel>{t('cancel')}</CoverLabel>
               </Button>
               <Button
                 size="sm"
                 disabled={busy}
+                title={t('save')}
                 data-testid="save-cover-position"
                 onClick={() => void save()}
               >
-                <CheckIcon /> {t('save')}
+                <CheckIcon /> <CoverLabel>{t('save')}</CoverLabel>
               </Button>
             </>
           ) : (
@@ -463,37 +476,43 @@ export function PageCover({
                 variant="ghost"
                 size="sm"
                 disabled={busy}
+                title={t('reposition')}
                 data-testid="reposition-cover"
                 onClick={() => setDraft(position)}
               >
-                <MoveVerticalIcon /> {t('reposition')}
+                <MoveVerticalIcon /> <CoverLabel>{t('reposition')}</CoverLabel>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={busy}
+                title={upload.isPending ? t('uploading') : t('replace')}
                 data-testid="replace-cover"
                 onClick={choose}
               >
-                <ImageIcon /> {upload.isPending ? t('uploading') : t('replace')}
+                <ImageIcon />{' '}
+                <CoverLabel>{upload.isPending ? t('uploading') : t('replace')}</CoverLabel>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={busy}
+                title={generation.pending ? t('generating') : t('regenerate')}
                 data-testid="generate-cover"
                 onClick={() => setPromptOpen(true)}
               >
-                <SparklesIcon /> {generation.pending ? t('generating') : t('regenerate')}
+                <SparklesIcon />{' '}
+                <CoverLabel>{generation.pending ? t('generating') : t('regenerate')}</CoverLabel>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 disabled={busy}
+                title={t('remove')}
                 data-testid="remove-cover"
                 onClick={() => void remove()}
               >
-                <Trash2Icon /> {t('remove')}
+                <Trash2Icon /> <CoverLabel>{t('remove')}</CoverLabel>
               </Button>
             </>
           )}
