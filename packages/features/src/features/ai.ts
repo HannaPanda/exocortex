@@ -18,6 +18,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: { path: '/geteilt' },
   }),
   defineFeature({
+    id: 'chat-mitlesen',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#242'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'gedankengang',
     area: 'ki',
     since: '2026-10-14',

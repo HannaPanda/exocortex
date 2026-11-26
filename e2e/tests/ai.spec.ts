@@ -151,6 +151,72 @@ test.describe('AI side panel', () => {
     await expect(trace).toContainText('nicht gespeichert');
   });
 
+  /**
+   * Issue #242: the transcript follows an answer only until the reader
+   * scrolls up, and two jumps lead back to the start of the answer and to
+   * the end. The answer is long on purpose, so that it outgrows the panel
+   * while it is still arriving.
+   */
+  test('stops following when the reader scrolls up, and jumps back', async ({ page }) => {
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Mitlesen ${Date.now().toString(36)}`);
+
+    await page.getByTestId('context-tab-ai').click();
+    await page
+      .getByTestId('ai-input')
+      .fill(
+        'Schreibe eine nummerierte Liste mit 60 Punkten, je ein Satz über Wolken. Ohne Werkzeuge, ohne Einleitung.',
+      );
+    await page.getByTestId('ai-send').click();
+
+    const transcript = page.getByTestId('ai-transcript');
+    const metrics = (): Promise<{ top: number; distance: number; overflow: number }> =>
+      transcript.evaluate((element) => ({
+        top: element.scrollTop,
+        distance: element.scrollHeight - element.scrollTop - element.clientHeight,
+        overflow: element.scrollHeight - element.clientHeight,
+      }));
+
+    // Following: while the answer outgrows the panel, the end stays in view.
+    await expect
+      .poll(async () => (await metrics()).overflow, { timeout: AI_RUN_FINISH_TIMEOUT_MS })
+      .toBeGreaterThan(400);
+    await expect.poll(async () => (await metrics()).distance).toBeLessThan(40);
+    await expect(page.getByTestId('ai-jump-end')).toBeHidden();
+
+    // The reader scrolls up: the position stays where they put it.
+    await transcript.evaluate((element) => {
+      element.scrollTop = 0;
+    });
+    await expect(page.getByTestId('ai-jump-end')).toBeVisible();
+    await page.waitForTimeout(1_500);
+    expect((await metrics()).top).toBeLessThan(5);
+
+    // Back to the end, which follows again.
+    await page.getByTestId('ai-jump-end').click();
+    await expect.poll(async () => (await metrics()).distance).toBeLessThan(40);
+    await expect(page.getByTestId('ai-jump-end')).toBeHidden();
+
+    await waitForAiRun(page, 'ai:follow');
+
+    // A little way up, the start of the answer lies above: one jump to it.
+    await transcript.evaluate((element) => {
+      element.scrollTop = element.scrollHeight - element.clientHeight - 200;
+    });
+    const toStart = page.getByTestId('ai-jump-answer-start');
+    await expect(toStart).toBeVisible();
+    await toStart.click();
+    await expect
+      .poll(async () => {
+        const question = await page.getByTestId('ai-question').last().boundingBox();
+        const box = await transcript.boundingBox();
+        return question !== null && box !== null ? Math.abs(question.y - box.y) : 999;
+      })
+      .toBeLessThan(40);
+  });
+
   test('keeps quiet while a fast background job is materialized', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

@@ -1087,6 +1087,38 @@ container.
 7. The API's event-bus subscriber re-emits into the workspace room; the panel
    renders the deltas as they arrive.
 
+How the panel shows a run while it is live is shaped so that nothing on
+screen has to be taken back once it is over (issue #242):
+
+- **One bubble per turn.** The tracker keeps the streamed text per turn
+  (`stream-segments.ts`): an `ai.run.tool_call` event ends the turn, because
+  the worker stored that turn's text before it announced the call, and the
+  tool result before it reported the call finished. The same event
+  invalidates the conversation query, so the run's earlier turns and their
+  results appear where they will stay, and a live segment gives way to the
+  stored message that says the same, matched in order
+  (`buildStreamingMessages` in `panel-view.ts`). The trace stands once, above
+  the run's first stored answer, as a sibling in the transcript's one keyed
+  list, so it folds where it stands when the run ends.
+- **Settled Markdown is parsed once.** While an answer streams,
+  `splitSettledMarkdown` (`streaming-markdown.ts`) cuts it where a block is
+  over for good (a blank line that something new has followed, outside a
+  code fence, never inside a list), the pieces before the cut are parsed once
+  and handed back as the same objects, and `ChatBlock` is memoized on them;
+  only the tail is parsed again. `stabilizeStreamingTail` holds back a last
+  line that is only syntax (a `-` that would turn the sentence above into a
+  heading for a moment, an opening fence) and closes an emphasis, code span
+  or link that is still being written. No word waits: what is held back is
+  markup, and a finished answer is parsed whole as before.
+- **Following ends with the reader.** `useTranscriptFollow` keeps the end in
+  view, gliding unless reduced motion is asked for, until the reader scrolls
+  up; only a move upwards stops it, so growing text and a folding trace never
+  do. Two floating buttons then lead to the start of the latest answer (the
+  last question, `data-chat-question`) and back to the end, which resumes
+  following, and sending a message always does. They are no palette
+  commands: they move a scroll position inside the open panel and open no
+  place of their own.
+
 The panel never relies on that channel alone. For as long as it believes a run
 is in flight it polls `GET /api/ai/runs/:runId` every
 `AI_RUN_POLL_INTERVAL_MS`, refetches on window focus and on realtime
