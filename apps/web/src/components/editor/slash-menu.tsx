@@ -15,6 +15,7 @@ import { useBlockGroupLabel } from './block-labels';
 import {
   SuggestionKeyboard,
   SuggestionPopup,
+  useActiveOptionInView,
   useSuggestionAnchor,
   useSuggestionHighlight,
   useSuggestionSnapshot,
@@ -128,6 +129,9 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
   const t = useTranslations('editor.slashMenu');
   const groupLabel = useBlockGroupLabel();
   const sections = React.useMemo(() => groupBlockCatalog(items), [items]);
+  const listRef = React.useRef<HTMLDivElement>(null);
+  const activeId = `slash-option-${items[activeIndex]?.id ?? ''}`;
+  useActiveOptionInView(listRef, items.length === 0 ? '' : activeId);
 
   if (items.length === 0) {
     return (
@@ -142,11 +146,12 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
 
   return (
     <div
+      ref={listRef}
       role="listbox"
       aria-label={t('label')}
-      aria-activedescendant={`slash-option-${items[activeIndex]?.id ?? ''}`}
+      aria-activedescendant={activeId}
       data-testid="slash-menu"
-      className="max-h-80 w-72 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
+      className="max-h-[min(20rem,var(--available-height,20rem))] w-72 overflow-y-auto overscroll-contain rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
     >
       {sections.map((section) => (
         <div key={section.group} role="group" aria-label={groupLabel(section.group)}>

@@ -15,6 +15,7 @@ import { cn } from '@exocortex/ui';
 import {
   SuggestionKeyboard,
   SuggestionPopup,
+  useActiveOptionInView,
   useSuggestionAnchor,
   useSuggestionHighlight,
   useSuggestionSnapshot,
@@ -128,6 +129,7 @@ export function MentionMenu({
   const snapshot = useSuggestionSnapshot(editor, MentionPluginKey);
   const anchor = useSuggestionAnchor(editor, snapshot);
   const { index, setIndex } = useSuggestionHighlight(snapshot?.query ?? null);
+  const listRef = React.useRef<HTMLDivElement>(null);
 
   const items = React.useMemo((): MentionCandidate[] => {
     if (snapshot === null) return [];
@@ -167,6 +169,8 @@ export function MentionMenu({
     [editor, items, snapshot],
   );
 
+  useActiveOptionInView(listRef, items.length === 0 ? '' : `mention-option-${index}`);
+
   React.useEffect(() => {
     keyboard.publish({ count: items.length, index, setIndex, choose });
     return () => keyboard.publish(null);
@@ -185,11 +189,12 @@ export function MentionMenu({
         </div>
       ) : (
         <div
+          ref={listRef}
           role="listbox"
           aria-label={t('label')}
           aria-activedescendant={`mention-option-${index}`}
           data-testid="mention-menu"
-          className="max-h-72 w-64 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
+          className="max-h-[min(18rem,var(--available-height,18rem))] w-64 overflow-y-auto overscroll-contain rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
         >
           {items.map((candidate, position) => {
             const Icon = KIND_ICONS[candidate.kind];
