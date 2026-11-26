@@ -10,6 +10,7 @@ import { type PrismaClient } from '@exocortex/database';
 import {
   type CollectedTransclusion,
   collectTransclusions,
+  countAddressableBlocks,
   extractBlockRange,
   outlineBlocks,
   type ProseMirrorDocument,
@@ -91,6 +92,9 @@ export class DocumentFragmentService {
     const resolved = fragment !== null;
     const shown: ProseMirrorDocument = fragment ?? { type: 'doc', content: [] };
     const budgeted = applyResponseBudget(shown, serializeMarkdown(shown), query);
+    // The outline of what was addressed: the page, or the part a block names,
+    // so the points of one list can be listed without the rest of the page.
+    const outlined = blockId === null ? page : shown;
 
     return {
       documentId,
@@ -114,7 +118,8 @@ export class DocumentFragmentService {
       proseMirrorJson: (budgeted.view === 'content' ? shown : { type: 'doc', content: [] }) as {
         type: 'doc';
       },
-      blocks: query.outline ? (outlineBlocks(page) as DocumentOutlineBlock[]) : [],
+      blocks: query.outline ? (outlineBlocks(outlined) as DocumentOutlineBlock[]) : [],
+      blocksTotal: query.outline ? countAddressableBlocks(outlined) : 0,
       nested: collectTransclusions(shown).length,
     };
   }

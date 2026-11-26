@@ -83,8 +83,12 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     'Dieselbe Kennung in blockId und toBlockId meint dagegen genau diesen einen Block; steht ' +
     'dort eine Überschrift, antwortet das Werkzeug trotzdem mit ihrem ganzen Abschnitt und ' +
     'sagt dazu, dass es die Anfrage erweitert hat. ' +
-    'Mit blocks: true kommt statt der Karte die flache Liste aller adressierbaren Blöcke mit ' +
-    'Vorschau, was für eine lange Seite viel und meistens zu viel ist. ' +
+    'Eine lange Liste zählt dabei nicht als ein Block: die Karte teilt sie in Punktfenster ' +
+    '(blockId und toBlockId sind dann der erste und der letzte Punkt), und jeder Listenpunkt ' +
+    'lässt sich mit seiner eigenen Kennung lesen und mit exo_page_block_update schreiben. ' +
+    'Mit blocks: true kommt statt der Karte die flache Liste der adressierbaren Blöcke mit ' +
+    'Vorschau, Listenpunkte eingeschlossen; zusammen mit blockId nur die Blöcke in diesem Teil, ' +
+    'etwa die Punkte einer Liste. Für eine ganze lange Seite ist das viel und meistens zu viel. ' +
     'Am Ende jeder Antwort steht die Revision der Seite; genau dieser Wert gehört als ' +
     'expectedYjsUpdatedAt in den nächsten Schreibaufruf. ' +
     'Das ist auch die Adresse, mit der sich Inhalt einbetten lässt: ein Block ' +
@@ -101,7 +105,7 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
   domain: 'core',
   mutating: false,
   async execute(client, input) {
-    const wantsFlatList = input.blocks === true && input.blockId === undefined;
+    const wantsFlatList = input.blocks === true;
     const read = async (toBlockId: string | undefined) =>
       client.request({
         method: 'GET',
@@ -113,6 +117,7 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
           // answer whatever the page weighs. With one it wants the content, and
           // only its size decides.
           ...(input.blockId === undefined && !wantsFlatList ? { want: 'map' } : {}),
+          // With a block, the outline is that part's: the points of one list.
           ...(wantsFlatList ? { outline: 'true' } : {}),
           maxChars: String(PAGE_CONTENT_BUDGET_CHARS),
           maxEntries: String(PAGE_MAP_MAX_ENTRIES),
@@ -163,16 +168,25 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
           return `- ${block.blockId} (${kind}): ${block.preview}`;
         })
         .join('\n');
+      const shown = Math.min(result.blocks.length, MAX_OUTLINE_LINES);
+      const total = Math.max(result.blocksTotal, result.blocks.length);
+      // Never a list that just stops (issue #274): what is missing is counted,
+      // and the way to it is named.
       const more =
-        result.blocks.length > MAX_OUTLINE_LINES
-          ? `\n… und ${result.blocks.length - MAX_OUTLINE_LINES} weitere Blöcke. Die Karte ` +
-            '(derselbe Aufruf ohne blocks) ist vollständig und kürzer.'
+        total > shown
+          ? `\n… gekürzt: ${shown} von ${total} Blöcken stehen hier. Die übrigen erreichst du ` +
+            'über die Karte (derselbe Aufruf ohne blocks) oder, indem du mit blockId auf einen ' +
+            'Teil eingrenzt, etwa eine Liste, und dort blocks: true fragst.'
           : '';
+      const where =
+        input.blockId === undefined
+          ? `der Seite „${result.title}“`
+          : `in ${input.blockId} der Seite „${result.title}“`;
       return {
         ...answer(
           result.blocks.length === 0
-            ? `Die Seite „${result.title}“ hat keine adressierbaren Blöcke.`
-            : `Blöcke der Seite „${result.title}“:\n${lines}${more}`,
+            ? `Keine adressierbaren Blöcke ${where}.`
+            : `Blöcke ${where}:\n${lines}${more}`,
           result,
         ),
         data: result,

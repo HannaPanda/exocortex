@@ -25,6 +25,7 @@ const PAGE = {
   markdown: 'Kurzer Text.',
   proseMirrorJson: { type: 'doc' as const },
   blocks: [],
+  blocksTotal: 0,
   nested: 0,
 };
 
@@ -202,6 +203,47 @@ describe('pageBlockReadTool', () => {
     expect(calls[0]?.query).toMatchObject({ outline: 'true' });
     expect(result.text).toContain('abc12345 (heading2)');
     expect(result.text).toContain('def67890 (paragraph)');
+  });
+
+  it('lists the points of one list when blocks comes with a block (issue #274)', async () => {
+    const { client, calls } = fakeClient({
+      ...PAGE,
+      blockId: 'list00000001',
+      blocks: [
+        { blockId: 'list00000001', type: 'bulletList', level: null, preview: 'eins zwei' },
+        { blockId: 'item00000001', type: 'listItem', level: null, preview: 'eins' },
+        { blockId: 'item00000002', type: 'listItem', level: null, preview: 'zwei' },
+      ],
+      blocksTotal: 3,
+    });
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'list00000001',
+      blocks: true,
+    });
+
+    expect(calls[0]?.query).toMatchObject({ blockId: 'list00000001', outline: 'true' });
+    expect(calls[0]?.query).not.toHaveProperty('want');
+    expect(result.text).toContain('item00000002 (listItem): zwei');
+    expect(result.text).not.toContain('gekürzt');
+  });
+
+  it('counts what a long flat list leaves out and names the way to it', async () => {
+    // The outline is capped, so the number left out comes from blocksTotal,
+    // never from the capped list: 300 shown of 1,000 is not "240 more".
+    const blocks = Array.from({ length: 300 }, (_, index) => ({
+      blockId: `blk${String(index).padStart(9, '0')}`,
+      type: 'listItem',
+      level: null,
+      preview: `Punkt ${index}`,
+    }));
+    const { client } = fakeClient({ ...PAGE, blocks, blocksTotal: 1_000 });
+
+    const result = await pageBlockReadTool.run(client, { documentId: 'doc123456', blocks: true });
+
+    expect(result.text).toContain('gekürzt: 60 von 1000 Blöcken');
+    expect(result.text).toContain('blockId');
   });
 
   it('names the map as the way back when an address is gone', async () => {

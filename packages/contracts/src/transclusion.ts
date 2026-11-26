@@ -87,9 +87,10 @@ export const documentFragmentRequestSchema = responseBudgetSchema.extend({
    */
   toBlockId: blockIdSchema.optional(),
   /**
-   * Also list the page's addressable blocks, which is what the block picker
-   * needs. Off by default, because rendering a placed transclusion does not
-   * need the outline and a long page's outline is not small.
+   * Also list the addressable blocks, which is what the block picker needs:
+   * the page's, or with `blockId` those inside the addressed part. Off by
+   * default, because rendering a placed transclusion does not need the
+   * outline and a long page's outline is not small.
    */
   outline: z.coerce.boolean().optional().default(false),
 });
@@ -155,8 +156,18 @@ export const documentFragmentResponseSchema = z.object({
       typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'doc',
     { message: 'Expected a ProseMirror doc node' },
   ),
-  /** Empty unless `outline` was asked for. */
+  /**
+   * Empty unless `outline` was asked for. The addressable blocks of the page,
+   * or of the fragment when a block was named (issue #274): that is how the
+   * points of one list are listed without the rest of a long page.
+   */
   blocks: z.array(documentOutlineBlockSchema),
+  /**
+   * How many addressable blocks `blocks` was cut from. The outline is capped,
+   * and a caller that counts the capped list would understate what is left;
+   * `0` unless `outline` was asked for.
+   */
+  blocksTotal: z.number().int().nonnegative(),
   /**
    * Transclusions inside the fragment, which are shown as references and not
    * resolved any further. One level is what makes a cycle impossible rather
