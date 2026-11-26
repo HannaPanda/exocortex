@@ -43,6 +43,27 @@ async function exportMarkdown(page: Page, id: string): Promise<string> {
   return ((await response.json()) as { markdown: string }).markdown;
 }
 
+/** A 1x1 PNG: a cover only has to exist for the layout to make room for it. */
+const PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+/** The cover's menu, every control of it. */
+const COVER_CONTROLS = ['reposition-cover', 'replace-cover', 'generate-cover', 'remove-cover'];
+
+async function setCover(page: Page, id: string): Promise<void> {
+  const upload = await page.request.post(`/api/workspaces/${workspaceIdFrom(page)}/attachments`, {
+    multipart: { file: { name: 'titelbild.png', mimeType: 'image/png', buffer: PIXEL_PNG } },
+  });
+  expect(upload.status(), await upload.text()).toBe(201);
+  const attachmentId = ((await upload.json()) as { attachment: { id: string } }).attachment.id;
+  const cover = await page.request.patch(`/api/documents/${id}`, {
+    data: { coverAttachmentId: attachmentId },
+  });
+  expect(cover.ok(), await cover.text()).toBe(true);
+}
+
 /** Distance of a heading from the top of the page's scroll container. */
 async function headingOffset(page: Page, text: string): Promise<number> {
   const heading = await page.locator('.ProseMirror :is(h2, h3)', { hasText: text }).boundingBox();
@@ -60,13 +81,11 @@ async function headingOffset(page: Page, text: string): Promise<number> {
 test.describe('page outline', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('leaves a short page alone', async ({ page }) => {
-    await importPage(
-      page,
-      `Kurz ${Date.now().toString(36)}`,
-      '## Eins\n\nText.\n\n## Zwei\n\nText.\n',
-    );
-    await expect(page.locator('.ProseMirror h2').first()).toBeVisible();
+  // Since 1304e7c1 one heading is enough for an outline; a page without any
+  // has nothing to list.
+  test('leaves a page without headings alone', async ({ page }) => {
+    await importPage(page, `Kurz ${Date.now().toString(36)}`, 'Ein Absatz.\n\nUnd noch einer.\n');
+    await expect(page.locator('.ProseMirror p').first()).toBeVisible();
     await expect(page.getByTestId('page-outline-rail')).toHaveCount(0);
     await expect(page.getByTestId('page-outline-compact')).toHaveCount(0);
   });
@@ -179,6 +198,54 @@ test.describe('page outline', () => {
     await page.getByTestId('page-outline-pin').click();
     await expect(page.getByTestId('page-outline-rail')).toBeVisible();
   });
+
+  // Issue #266: the outline floats beside the scroll container, so at the top
+  // of the page it used to lie over the cover and over the cover's menu. It
+  // starts where the page's content starts and rises with it to the top edge.
+  test('starts below the cover and the title in every page width', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1000 });
+    const marker = Date.now().toString(36);
+    const id = await importPage(page, `Titelbild ${marker}`, longMarkdown(marker));
+    await setCover(page, id);
+    await page.reload();
+    await page.getByTestId('page-outline-rail').click();
+    await page.getByTestId('page-outline-pin').click();
+    await expect(page.getByTestId('page-outline-pinned')).toBeVisible();
+
+    // Whichever shape the room beside the text allows: the list at the
+    // narrow measure, the scale where the page is too wide to pin beside.
+    const outline = page
+      .getByTestId('page-outline-pinned')
+      .or(page.getByTestId('page-outline-rail'));
+    for (const layout of ['narrow', 'wide', 'full'] as const) {
+      const changed = await page.request.patch(`/api/documents/${id}`, { data: { layout } });
+      expect(changed.ok(), await changed.text()).toBe(true);
+      await page.reload();
+      await expect(page.getByTestId('page-cover-image')).toBeVisible();
+      await expect(outline).toBeVisible();
+
+      const title = await page.getByTestId('document-title').boundingBox();
+      const top = async (): Promise<number> => (await outline.boundingBox())?.y ?? -1;
+      expect(title).not.toBeNull();
+      await expect
+        .poll(top, { message: layout })
+        .toBeGreaterThanOrEqual((title?.y ?? 0) + (title?.height ?? 0));
+      // The menu is reachable: a trial click fails when anything lies on it.
+      await page.getByTestId('page-cover').hover();
+      for (const control of COVER_CONTROLS) {
+        await page.getByTestId(control).click({ trial: true, timeout: 5_000 });
+      }
+
+      // Scrolled into the text, it stays in view at the top edge as before.
+      await page.locator('.ProseMirror').hover();
+      await page.mouse.wheel(0, 1500);
+      const scroller = await page.locator('.exocortex-page-scroll').boundingBox();
+      await expect
+        .poll(async () => (await top()) - (scroller?.y ?? 0), { message: layout })
+        .toBeLessThan(40);
+      await expect(outline).toBeInViewport();
+    }
+  });
 });
 
 test.describe('page outline on a phone', () => {
@@ -196,5 +263,21 @@ test.describe('page outline on a phone', () => {
     expect(box !== null && box.x >= 0 && box.x + box.width <= 390).toBe(true);
     await popover.getByRole('button', { name: `Betrieb ${marker}` }).tap();
     await expect.poll(() => headingOffset(page, `Betrieb ${marker}`)).toBeLessThan(60);
+  });
+
+  // Issue #266, on a phone: the outline is a button at the bottom edge, so the
+  // cover's menu has to be reachable on its own, every control on screen.
+  test('leaves the cover menu on screen and reachable', async ({ page }) => {
+    const marker = Date.now().toString(36);
+    const id = await importPage(page, `Telefon Titelbild ${marker}`, longMarkdown(marker));
+    await setCover(page, id);
+    await page.reload();
+    await expect(page.getByTestId('page-cover-image')).toBeVisible();
+    await expect(page.getByTestId('page-outline-compact')).toBeVisible();
+    for (const control of COVER_CONTROLS) {
+      const box = await page.getByTestId(control).boundingBox();
+      expect(box !== null && box.x >= 0 && box.x + box.width <= 390, control).toBe(true);
+      await page.getByTestId(control).click({ trial: true, timeout: 5_000 });
+    }
   });
 });

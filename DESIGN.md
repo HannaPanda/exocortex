@@ -760,9 +760,18 @@ open there. Where the margin cannot even hold the scale (a phone, or a narrow
 window with a panel open), it becomes a compact button floating at the bottom
 edge, and that button steps aside while the editor has focus.
 
+The pinned list and the scale start where the content under the title starts,
+not at the top edge of the page area, and rise with the page while the reader
+scrolls until they reach 1.5rem from the top, where they stay (issue #266).
+At the top of a page they would otherwise lie over the cover and over the
+cover's menu. The cover's menu itself prints its labels only where the cover
+is at least 36rem wide; on a phone its four controls are icons, named by
+tooltip and accessible name, because the labelled row ran off the left edge.
+
 **The Outline-Is-Chrome Rule.** The outline is drawn into the document area
-beside the scroll container, never into the editor and never over the text:
-pinned only where there is room, and otherwise collapsed to the margin. It
+beside the scroll container, never into the editor and never over the text,
+the cover or the title: pinned only where there is room, and otherwise
+collapsed to the margin. It
 reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.
