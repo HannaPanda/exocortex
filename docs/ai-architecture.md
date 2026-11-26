@@ -641,6 +641,18 @@ before every turn:
    `cause` `size`, `account` or `unknown` and whose key it was, read from
    OpenRouter's message. The person sees whose settings to change instead of
    "no answer".
+6. A refusal of the key itself is not an outage either (issue #225). A 401
+   (unknown, revoked or disabled key) or 402 (no credits left on the account,
+   or a spending limit on the key) keeps the code `ai_provider_unavailable`
+   but carries the `keyRefused` diagnosis: `reason` `invalid` or `credits`,
+   the provider that refused (the one that served the turn, so OpenRouter
+   after a subscription fell back) and whether it was the workspace's own
+   key. Neither status ever hands the turn to another key: the subscription
+   fallback takes only 402/408/429/5xx from the preset, and a workspace key
+   is never swapped for the deployment's once it was resolved. The
+   provider's message reaches the log and the run's failure with the key,
+   and anything shaped like a provider key, replaced by `[key]`
+   (`redactKey`), because some providers quote the key they refused.
 
 A model without a snapshot sends no provider preference at all, which is what
 every request did before this existed.

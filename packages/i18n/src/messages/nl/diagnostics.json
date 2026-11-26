@@ -49,5 +49,13 @@
     "hintDeploymentKey": "Het verzoek liep via de sleutel van de installatie. Alleen de beheerder van de installatie kan het model vrijgeven. Tot die tijd helpt een ander model.",
     "unknown": "OpenRouter heeft elke opgevraagde provider van {model} geweigerd zonder een reden op te geven.",
     "hintUnknown": "Meestal is de opgeslagen providerlijst van het model verouderd en wordt deze binnenkort opnieuw geladen. Een nieuwe poging over een paar minuten of een ander model helpt je hier verder."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} heeft de sleutel geweigerd die voor deze werkruimte is ingesteld: deze is onbekend, ingetrokken of uitgeschakeld. Het verzoek aan {model} is daarom niet beantwoord.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} heeft de sleutel van de installatie geweigerd: deze is onbekend, ingetrokken of uitgeschakeld. Het verzoek aan {model} is daarom niet beantwoord.",
+    "creditsOwnKey": "Op het {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}}-account achter de sleutel van deze werkruimte is het saldo niet toereikend voor dit verzoek aan {model}, of er is een uitgavenlimiet voor de sleutel bereikt.",
+    "creditsDeploymentKey": "Op het {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}}-account van de installatie is het saldo niet toereikend voor dit verzoek aan {model}, of er is een uitgavenlimiet voor de sleutel bereikt.",
+    "hintOwnKey": "Er is geen andere sleutel ingesprongen, ook niet die van de installatie: deze sessie heeft niemand anders iets gekost. Degene die de sleutel heeft ingesteld, kan deze controleren bij {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} of vervangen in de werkruimte-instellingen onder „AI”.",
+    "hintDeploymentKey": "Dit kan alleen worden opgelost door degene die de installatie beheert. Tot die tijd kun je een model kiezen dat via een andere provider loopt."
   }
 }

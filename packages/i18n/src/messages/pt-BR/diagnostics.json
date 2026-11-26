@@ -49,5 +49,13 @@
     "hintDeploymentKey": "A solicitação foi feita usando a chave da instalação. Apenas quem administra a instalação pode liberar o modelo. Até lá, use outro modelo.",
     "unknown": "O OpenRouter recusou todos os provedores solicitados de {model} sem informar um motivo.",
     "hintUnknown": "Geralmente, a lista de provedores armazenada para o modelo está desatualizada e será recarregada em breve. Tentar novamente em alguns minutos ou escolher outro modelo pode resolver isso."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {O OpenRouter} cline {A Cline} other {{provider}}} recusou a chave configurada por este espaço de trabalho: ela é desconhecida, foi revogada ou está desativada. Por isso, a solicitação para {model} não foi respondida.",
+    "invalidDeploymentKey": "{provider, select, openrouter {O OpenRouter} cline {A Cline} other {{provider}}} recusou a chave da instalação: ela é desconhecida, foi revogada ou está desativada. Por isso, a solicitação para {model} não foi respondida.",
+    "creditsOwnKey": "Na conta {provider, select, openrouter {do OpenRouter} cline {da Cline} other {de {provider}}} vinculada à chave deste espaço de trabalho, o saldo não é suficiente para esta solicitação para {model}, ou um limite de gastos foi atingido na chave.",
+    "creditsDeploymentKey": "Na conta {provider, select, openrouter {do OpenRouter} cline {da Cline} other {de {provider}}} da instalação, o saldo não é suficiente para esta solicitação para {model}, ou um limite de gastos foi atingido na chave.",
+    "hintOwnKey": "Nenhuma outra chave foi usada como alternativa, nem mesmo a da instalação: esta execução não gerou custos para mais ninguém. Quem cadastrou a chave pode verificá-la {provider, select, openrouter {no OpenRouter} cline {na Cline} other {em {provider}}} ou substituí-la nas configurações do espaço de trabalho em „IA“.",
+    "hintDeploymentKey": "Apenas quem gerencia a instalação pode resolver isso. Até lá, você pode usar um modelo disponibilizado por outro provedor."
   }
 }

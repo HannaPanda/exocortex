@@ -49,5 +49,13 @@
     "hintDeploymentKey": "The request ran using the installation’s key. Only the administrator of this installation can enable the model. Until then, another model will help.",
     "unknown": "OpenRouter rejected every requested provider of {model} without providing a reason.",
     "hintUnknown": "Usually the model’s cached provider list is outdated and will be refreshed soon. Trying again in a few minutes or switching to another model will help here."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} rejected the key stored by this workspace: it is unknown, revoked, or disabled. The request to {model} was therefore not answered.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} rejected the installation’s key: it is unknown, revoked, or disabled. The request to {model} was therefore not answered.",
+    "creditsOwnKey": "The {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} account behind this workspace’s key does not have enough credits for this request to {model}, or a spending limit on the key has been reached.",
+    "creditsDeploymentKey": "The {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} account of the installation does not have enough credits for this request to {model}, or a spending limit on the key has been reached.",
+    "hintOwnKey": "No other key stepped in, not even the installation’s: this run did not cost anyone else anything. Whoever added the key should check it with {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} or replace it in the workspace settings under “AI”.",
+    "hintDeploymentKey": "Only whoever runs the installation can fix this. Until then, using a model that runs through a different provider will help."
   }
 }

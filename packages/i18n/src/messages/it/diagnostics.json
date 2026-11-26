@@ -49,5 +49,13 @@
     "hintDeploymentKey": "La richiesta è passata attraverso la chiave dell’installazione. Solo chi gestisce l’installazione può abilitare il modello. Nel frattempo, puoi provare con un altro modello.",
     "unknown": "OpenRouter ha rifiutato ogni provider richiesto di {model} senza indicare un motivo.",
     "hintUnknown": "Di solito l’elenco salvato dei provider del modello non è aggiornato e verrà ricaricato a breve. Riprovare tra qualche minuto o scegliere un altro modello può risolvere il problema."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ha rifiutato la chiave configurata per questa area di lavoro: è sconosciuta, revocata o disattivata. La richiesta a {model} non ha quindi ricevuto risposta.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ha rifiutato la chiave dell’installazione: è sconosciuta, revocata o disattivata. La richiesta a {model} non ha quindi ricevuto risposta.",
+    "creditsOwnKey": "Sul conto {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} associato alla chiave di questa area di lavoro il credito non è sufficiente per questa richiesta a {model}, oppure è stato raggiunto un limite di spesa impostato sulla chiave.",
+    "creditsDeploymentKey": "Sul conto {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} dell’installazione il credito non è sufficiente per questa richiesta a {model}, oppure è stato raggiunto un limite di spesa impostato sulla chiave.",
+    "hintOwnKey": "Non è subentrata nessun’altra chiave, nemmeno quella dell’installazione: questa esecuzione non è costata nulla a nessun altro. Chi ha inserito la chiave può verificarla su {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} o sostituirla nelle impostazioni dell’area di lavoro alla voce «IA».",
+    "hintDeploymentKey": "Il problema può essere risolto solo da chi gestisce l’installazione. Fino ad allora, puoi scegliere un modello che utilizza un altro fornitore."
   }
 }

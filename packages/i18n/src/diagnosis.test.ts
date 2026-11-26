@@ -132,6 +132,41 @@ describe('renderAiRunDiagnosis for a model nobody would serve', () => {
   });
 });
 
+describe('renderAiRunDiagnosis for a refused key (issue #225)', () => {
+  const t = serverTranslator('de', 'diagnostics');
+  const model = 'deepseek/deepseek-v4.1-flash';
+
+  it('says the workspace key was refused, and that no other key stepped in', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'keyRefused',
+      args: { reason: 'invalid', provider: 'openrouter', model, ownKey: true },
+    });
+    expect(text.split('\n')).toHaveLength(2);
+    expect(text).toContain('OpenRouter hat den Schlüssel abgelehnt, den dieser Arbeitsbereich');
+    expect(text).toContain('Es ist kein anderer Schlüssel eingesprungen');
+    expect(text).not.toContain('nicht erreichbar');
+  });
+
+  it('tells exhausted credits apart from a dead key', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'keyRefused',
+      args: { reason: 'credits', provider: 'openrouter', model, ownKey: true },
+    });
+    expect(text).toContain('OpenRouter-Konto hinter dem Schlüssel dieses Arbeitsbereichs');
+    expect(text).toContain('Guthaben');
+  });
+
+  it('sends a refused deployment key to whoever runs the installation', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'keyRefused',
+      args: { reason: 'invalid', provider: 'cline', model, ownKey: false },
+    });
+    expect(text).toContain('Cline hat den Schlüssel der Installation abgelehnt');
+    expect(text).toContain('wer die Installation betreibt');
+    expect(text).not.toContain('Arbeitsbereich');
+  });
+});
+
 describe('aiRunDiagnosisText', () => {
   const t = serverTranslator('de', 'diagnostics');
 

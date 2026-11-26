@@ -49,5 +49,13 @@
     "hintDeploymentKey": "La requête est passée par la clé de l’installation. Seule la personne qui gère l’installation peut autoriser le modèle. En attendant, un autre modèle peut dépanner.",
     "unknown": "OpenRouter a rejeté tous les fournisseurs sollicités pour {model}, sans donner de raison.",
     "hintUnknown": "La liste enregistrée des fournisseurs du modèle est généralement obsolète et sera bientôt actualisée. Réessaie dans quelques minutes ou choisis un autre modèle."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} a refusé la clé configurée pour cet espace de travail : elle est inconnue, révoquée ou désactivée. La requête envoyée à {model} n’a donc pas reçu de réponse.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} a refusé la clé de l’installation : elle est inconnue, révoquée ou désactivée. La requête envoyée à {model} n’a donc pas reçu de réponse.",
+    "creditsOwnKey": "Sur le compte {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} associé à la clé de cet espace de travail, le solde est insuffisant pour cette requête envoyée à {model}, ou un plafond de dépenses a été atteint sur la clé.",
+    "creditsDeploymentKey": "Sur le compte {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} de l’installation, le solde est insuffisant pour cette requête envoyée à {model}, ou un plafond de dépenses a été atteint sur la clé.",
+    "hintOwnKey": "Aucune autre clé n’a pris le relais, pas même celle de l’installation : cette exécution n’a rien coûté à personne d’autre. La personne qui a saisi la clé peut la vérifier chez {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ou la remplacer dans les paramètres de l’espace de travail, sous « IA ».",
+    "hintDeploymentKey": "Seule la personne administrant l’installation peut régler ce problème. En attendant, tu peux utiliser un modèle passant par un autre fournisseur."
   }
 }

@@ -109,6 +109,8 @@ class RunExecution {
   private readonly reasoning: ReasoningRelay;
   /** Whether the workspace's own key has paid for a turn of this run. */
   private readonly payer: OwnKeyPayer;
+  /** Who answered the turn in flight (its `start`), so whose key a refusal hit (#225). */
+  private turnProvider = '';
 
   constructor(input: RunExecutionInput) {
     this.input = input;
@@ -191,7 +193,7 @@ class RunExecution {
                 ...turn.failure,
                 diagnosis: incompleteTurnDiagnosis(this.incompleteTurnFacts(true)),
               }
-            : explainProviderRefusal(turn.failure, this.input.run.model, this.payer.paid);
+            : explainProviderRefusal(turn.failure, this.input, this.turnProvider);
         if (turn.text.length > 0) this.text = this.carriedText + turn.text;
         return;
       }
@@ -447,12 +449,13 @@ class RunExecution {
             usage = event.usage;
             break;
           case 'error':
-            failure = { code: event.code, message: event.message };
+            failure = { code: event.code, message: event.message, status: event.status };
             break;
           case 'done':
             finishReason = event.finishReason;
             break;
           case 'start':
+            this.turnProvider = event.provider;
             await this.payer.note(event.provider);
             break;
           default:

@@ -1,6 +1,7 @@
 import {
   type AiRunDiagnosis,
   type AiRunIncompleteTurnArgs,
+  type AiRunKeyRefusedArgs,
   type AiRunNoEligibleProviderArgs,
   type AiRunTimeoutArgs,
   type AiRunToolLoopArgs,
@@ -46,6 +47,8 @@ export function renderAiRunDiagnosis(t: DiagnosisTranslator, diagnosis: AiRunDia
       return renderIncompleteTurn(t, diagnosis.args);
     case 'noEligibleProvider':
       return renderNoEligibleProvider(t, diagnosis.args);
+    case 'keyRefused':
+      return renderKeyRefused(t, diagnosis.args);
   }
 }
 
@@ -175,6 +178,20 @@ function renderNoEligibleProvider(
         '\n',
       );
   }
+}
+
+/**
+ * Why the provider refused the key (issue #225): which key, what about it,
+ * and who can fix it. For a workspace's own key it also says that no other
+ * key stepped in, because that is the question a person paying for their own
+ * runs asks next.
+ */
+function renderKeyRefused(t: DiagnosisTranslator, args: AiRunKeyRefusedArgs): string {
+  const values = { provider: args.provider, model: args.model };
+  const whose = args.ownKey ? 'OwnKey' : 'DeploymentKey';
+  const headline = t(`keyRefused.${args.reason}${whose}`, values);
+  const hint = t(`keyRefused.hint${whose}`, values);
+  return [headline, hint].join('\n');
 }
 
 /** Whole seconds, or whole minutes once that is the honest unit. */

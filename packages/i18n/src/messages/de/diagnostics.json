@@ -49,5 +49,13 @@
     "hintDeploymentKey": "Die Anfrage lief über den Schlüssel der Installation. Freigeben kann das Modell nur, wer die Installation betreibt. Bis dahin hilft ein anderes Modell.",
     "unknown": "OpenRouter hat jeden angefragten Anbieter von {model} abgelehnt, ohne einen Grund zu nennen.",
     "hintUnknown": "Meist ist die gespeicherte Anbieterliste des Modells veraltet und wird bald neu geladen. Ein neuer Versuch in einigen Minuten oder ein anderes Modell kommt hier weiter."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} hat den Schlüssel abgelehnt, den dieser Arbeitsbereich hinterlegt hat: er ist unbekannt, widerrufen oder abgeschaltet. Die Anfrage an {model} wurde deshalb nicht beantwortet.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} hat den Schlüssel der Installation abgelehnt: er ist unbekannt, widerrufen oder abgeschaltet. Die Anfrage an {model} wurde deshalb nicht beantwortet.",
+    "creditsOwnKey": "Auf dem {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}}-Konto hinter dem Schlüssel dieses Arbeitsbereichs reicht das Guthaben nicht für diese Anfrage an {model}, oder am Schlüssel ist ein Ausgabenlimit erreicht.",
+    "creditsDeploymentKey": "Auf dem {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}}-Konto der Installation reicht das Guthaben nicht für diese Anfrage an {model}, oder am Schlüssel ist ein Ausgabenlimit erreicht.",
+    "hintOwnKey": "Es ist kein anderer Schlüssel eingesprungen, auch nicht der der Installation: dieser Lauf hat niemandem sonst etwas gekostet. Wer den Schlüssel eingetragen hat, prüft ihn bei {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} oder ersetzt ihn in den Arbeitsbereich-Einstellungen unter „KI“.",
+    "hintDeploymentKey": "Beheben kann das nur, wer die Installation betreibt. Bis dahin hilft ein Modell, das über einen anderen Anbieter läuft."
   }
 }

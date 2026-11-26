@@ -49,5 +49,13 @@
     "hintDeploymentKey": "La solicitud se realizó con la clave de la instalación. Solo quien administra la instalación puede habilitar el modelo. Mientras tanto, puedes usar otro modelo.",
     "unknown": "OpenRouter ha rechazado a todos los proveedores solicitados de {model} sin indicar ningún motivo.",
     "hintUnknown": "Por lo general, la lista guardada de proveedores del modelo está desactualizada y se recargará pronto. Prueba de nuevo en unos minutos o utiliza otro modelo."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ha rechazado la clave guardada por este espacio de trabajo: es desconocida, ha sido revocada o está desactivada. Por eso no se ha respondido a la solicitud a {model}.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ha rechazado la clave de la instalación: es desconocida, ha sido revocada o está desactivada. Por eso no se ha respondido a la solicitud a {model}.",
+    "creditsOwnKey": "En la cuenta de {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} vinculada a la clave de este espacio de trabajo no hay saldo suficiente para esta solicitud a {model}, o bien la clave ha alcanzado un límite de gasto.",
+    "creditsDeploymentKey": "En la cuenta de {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} de la instalación no hay saldo suficiente para esta solicitud a {model}, o bien la clave ha alcanzado un límite de gasto.",
+    "hintOwnKey": "No se ha recurrido a ninguna otra clave, ni siquiera a la de la instalación: esta ejecución no le ha costado nada a nadie más. La persona que configuró la clave puede comprobarla en {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} o sustituirla en los ajustes del espacio de trabajo, en «IA».",
+    "hintDeploymentKey": "Solo quien administra la instalación puede solucionar esto. Mientras tanto, puedes usar un modelo que funcione a través de otro proveedor."
   }
 }

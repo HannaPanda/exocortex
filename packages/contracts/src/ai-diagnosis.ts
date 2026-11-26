@@ -92,11 +92,34 @@ export const aiRunNoEligibleProviderArgsSchema = z.object({
 });
 export type AiRunNoEligibleProviderArgs = z.infer<typeof aiRunNoEligibleProviderArgsSchema>;
 
+/**
+ * The provider refused the key itself (issue #225). Before this existed a
+ * rejected or empty key read "the AI provider is currently unavailable",
+ * which sends the reader to wait for an outage that is not there.
+ *
+ * - `invalid`: the key is unknown, revoked or disabled (HTTP 401).
+ * - `credits`: the account behind it, or a limit set on the key, has no
+ *   money left for this request (HTTP 402).
+ *
+ * `ownKey` says whose key it was, because only its owner can fix it, and the
+ * run is never handed to another key instead: nobody else pays for it.
+ */
+export const aiRunKeyRefusedArgsSchema = z.object({
+  reason: z.enum(['invalid', 'credits']),
+  /** The provider that refused, `openrouter` or a subscription preset such as `cline`. */
+  provider: z.string(),
+  model: z.string(),
+  /** Whether the workspace's own key made the request, rather than the deployment's. */
+  ownKey: z.boolean(),
+});
+export type AiRunKeyRefusedArgs = z.infer<typeof aiRunKeyRefusedArgsSchema>;
+
 export const aiRunDiagnosisSchema = z.discriminatedUnion('key', [
   z.object({ key: z.literal('toolLoop'), args: aiRunToolLoopArgsSchema }),
   z.object({ key: z.literal('runTimeout'), args: aiRunTimeoutArgsSchema }),
   z.object({ key: z.literal('incompleteTurn'), args: aiRunIncompleteTurnArgsSchema }),
   z.object({ key: z.literal('noEligibleProvider'), args: aiRunNoEligibleProviderArgsSchema }),
+  z.object({ key: z.literal('keyRefused'), args: aiRunKeyRefusedArgsSchema }),
 ]);
 export type AiRunDiagnosis = z.infer<typeof aiRunDiagnosisSchema>;
 export type AiRunDiagnosisKey = AiRunDiagnosis['key'];

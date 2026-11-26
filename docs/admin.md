@@ -167,6 +167,15 @@ unless a turn falls back to OpenRouter (`ai.subscriptionFallback`), which the
 workspace key then pays for. The routing question asked before a run and the
 vision companion use the workspace key either way.
 
+A workspace key that OpenRouter refuses (401: unknown, revoked or disabled;
+402: no credits, or a spending limit on the key) fails the run with the
+`keyRefused` diagnosis, which tells the person that their workspace's key was
+refused and that no other key stepped in. Nothing falls back to the
+deployment key for a refused key. The one fallback that exists is older and
+different: a stored row that cannot be **decrypted** (a lost or rotated
+`CREDENTIAL_ENCRYPTION_KEY`) runs on the deployment key and is recorded as
+deployment-paid (ADR-023).
+
 | Key                                           | Type                           | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------------------------------------------- | ------------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ai.enabled`                                  | boolean                        | `true`                              | Master switch for the AI pipeline.                                                                                                                                                                                                                                                                                                                                                             |

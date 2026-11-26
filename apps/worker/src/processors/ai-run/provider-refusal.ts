@@ -1,5 +1,5 @@
 import { AI_NO_ELIGIBLE_PROVIDER, isAccountRestriction, isProviderPresetId } from '@exocortex/ai';
-import { type AiRunNoEligibleProviderArgs } from '@exocortex/contracts';
+import { type AiRunKeyRefusedArgs, type AiRunNoEligibleProviderArgs } from '@exocortex/contracts';
 
 import { type RunFailure } from './contract';
 import { type RunExecutionInput } from './execution-types';
@@ -65,17 +65,53 @@ export function noEligibleProviderFailure(
 }
 
 /**
- * A turn's failure as the run ends on it. A provider's routing refusal gets
- * its diagnosis here, read from the provider's own message: whether it named
- * the account's settings is the one thing that tells the person whose
- * settings to change. Every other failure passes through unchanged.
+ * The refusal an HTTP status says is about the key itself (issue #225): 401
+ * for a key the provider does not accept, 402 for an account or key limit
+ * with no money left. Anything else is about the request or the provider.
+ */
+export function keyRefusalReason(status: number | undefined): AiRunKeyRefusedArgs['reason'] | null {
+  if (status === 401) return 'invalid';
+  if (status === 402) return 'credits';
+  return null;
+}
+
+/**
+ * A turn's failure as the run ends on it, explained where the provider's
+ * answer allows it (ADR-059):
+ *
+ * - a routing refusal gets its diagnosis read from the provider's own
+ *   message: whether it named the account's settings is the one thing that
+ *   tells the person whose settings to change;
+ * - a refused key (issue #225) says whose key and what about it, instead of
+ *   "the provider is unavailable", which sends the reader to wait for an
+ *   outage that is not there.
+ *
+ * `servedBy` is the provider whose `start` event opened this turn, which is
+ * not the run's own one after a subscription fell back to OpenRouter; empty
+ * when none arrived, which leaves the run's own. With whether the workspace
+ * has a key of its own it says whose key the refusal was about. Every other
+ * failure passes through unchanged.
  */
 export function explainProviderRefusal(
   failure: RunFailure,
-  model: string,
-  ownKey: boolean,
+  input: Pick<RunExecutionInput, 'run' | 'workspaceKey'>,
+  servedBy: string,
 ): RunFailure {
-  if (failure.code !== AI_NO_ELIGIBLE_PROVIDER || failure.diagnosis !== undefined) return failure;
-  const cause = isAccountRestriction(failure.message) ? 'account' : 'unknown';
-  return noEligibleProviderFailure({ cause, model, ownKey }, failure.message);
+  if (failure.diagnosis !== undefined) return failure;
+  const provider = servedBy === '' ? input.run.provider : servedBy;
+  const model = input.run.model;
+  const ownKey = ownKeyPays(provider, input.workspaceKey);
+  if (failure.code === AI_NO_ELIGIBLE_PROVIDER) {
+    const cause = isAccountRestriction(failure.message) ? 'account' : 'unknown';
+    return noEligibleProviderFailure({ cause, model, ownKey }, failure.message);
+  }
+  const reason = keyRefusalReason(failure.status);
+  if (reason === null) return failure;
+  return {
+    ...failure,
+    diagnosis: {
+      key: 'keyRefused',
+      args: { reason, provider, model, ownKey },
+    },
+  };
 }

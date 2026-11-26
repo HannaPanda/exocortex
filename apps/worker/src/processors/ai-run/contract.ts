@@ -53,6 +53,11 @@ export interface RunFailure {
    * wherever the code alone says everything there is to say.
    */
   diagnosis?: AiRunDiagnosis;
+  /**
+   * The upstream's HTTP status when the provider refused before answering,
+   * which is what tells a refused key (401, 402) from an outage (issue #225).
+   */
+  status?: number;
 }
 
 /** What one exchange with the provider produced. */

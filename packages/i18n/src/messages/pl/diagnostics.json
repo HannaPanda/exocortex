@@ -49,5 +49,13 @@
     "hintDeploymentKey": "Zapytanie poszło przez klucz instalacji. Model może odblokować tylko osoba zarządzająca instalacją. Do tego czasu pomoże inny model.",
     "unknown": "OpenRouter odrzucił każdego zapytanego dostawcę {model} bez podania przyczyny.",
     "hintUnknown": "Najczęściej zapisana lista dostawców modelu jest nieaktualna i wkrótce zostanie odświeżona. Ponowna próba za kilka minut lub inny model rozwiąże ten problem."
+  },
+  "keyRefused": {
+    "invalidOwnKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} odrzucił klucz zapisany w tym obszarze roboczym: jest nieznany, unieważniony lub wyłączony. Z tego powodu zapytanie do {model} nie otrzymało odpowiedzi.",
+    "invalidDeploymentKey": "{provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} odrzucił klucz instalacji: jest nieznany, unieważniony lub wyłączony. Z tego powodu zapytanie do {model} nie otrzymało odpowiedzi.",
+    "creditsOwnKey": "Na koncie {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} powiązanym z kluczem tego obszaru roboczego brakuje środków na to zapytanie do {model} lub osiągnięto limit wydatków dla klucza.",
+    "creditsDeploymentKey": "Na koncie {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} instalacji brakuje środków na to zapytanie do {model} lub osiągnięto limit wydatków dla klucza.",
+    "hintOwnKey": "Żaden inny klucz nie został użyty w zastępstwie, w tym klucz instalacji: to uruchomienie nikogo innego nic nie kosztowało. Osoba, która dodała klucz, może sprawdzić go w serwisie {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} lub zmienić w ustawieniach obszaru roboczego w sekcji „AI”.",
+    "hintDeploymentKey": "Może to naprawić tylko osoba zarządzająca instalacją. Do tego czasu rozwiązaniem jest wybór modelu działającego u innego dostawcy."
   }
 }
