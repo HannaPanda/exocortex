@@ -59,6 +59,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'zeile-nach-dem-letzten-block',
+    area: 'seiten',
+    since: '2026-11-26',
+    references: ['#257'],
+    ui: {},
+    shortcuts: [
+      'Pfeil runter am Ende der Seite legt unter einem Bild, einer Tabelle oder einem Codeblock eine neue Zeile an',
+    ],
+  }),
+  defineFeature({
     id: 'bild-vergroessern',
     area: 'seiten',
     since: '2026-09-25',

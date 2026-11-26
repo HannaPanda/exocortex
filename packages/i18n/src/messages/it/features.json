@@ -81,6 +81,15 @@
     },
     "where": "Nell’editor, fai clic sulla riga vuota sotto un’immagine che segue un elenco e premi Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Continuare a scrivere dopo l’ultimo blocco",
+    "summary": "Se una pagina termina con un’immagine, una tabella, un blocco di codice, un database o un PDF, sotto rimane una riga vuota. Facendo clic al suo interno o premendo Freccia giù alla fine della pagina, viene creato un paragrafo e puoi semplicemente continuare a scrivere.",
+    "details": {
+      "p1": "Fai clic sotto l’ultimo blocco della pagina. Il cursore si troverà in una nuova riga vuota. Funziona allo stesso modo con la tastiera: seleziona un’immagine o un elemento incorporato alla fine della pagina, l’ultima riga di un blocco di codice o l’ultima riga di una tabella, quindi premi Freccia giù.",
+      "p2": "La riga viene creata solo quando la utilizzi. La sola apertura di una pagina non scrive nulla al suo interno e, se la pagina termina già con un paragrafo, non viene aggiunta una seconda riga vuota. Se sopra l’immagine è presente un elenco puntato, la nuova riga offre come di consueto la possibilità di proseguirlo con Tab."
+    },
+    "where": "Nell’editor, fai clic sotto l’ultimo blocco della pagina oppure premi Freccia giù alla fine della pagina."
+  },
   "bild-vergroessern": {
     "title": "Ingrandire le immagini ed eseguire lo zoom",
     "summary": "Un clic su un’immagine incorporata la apre a schermo intero sopra la pagina. Lì puoi ingrandirla ben oltre le dimensioni dello schermo e spostarla per leggere i dettagli in screenshot, diagrammi o mappe.",

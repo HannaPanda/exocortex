@@ -81,6 +81,15 @@
     },
     "where": "Im Editor in die leere Zeile unter einem Bild klicken, das auf eine Aufzählung folgt, und Tab drücken."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Nach dem letzten Block weiterschreiben",
+    "summary": "Endet eine Seite mit einem Bild, einer Tabelle, einem Codeblock, einer Datenbank oder einem PDF, bleibt darunter eine leere Zeile frei. Ein Klick hinein oder Pfeil runter am Ende der Seite legt dort einen Absatz an, und du schreibst einfach weiter.",
+    "details": {
+      "p1": "Klick unter den letzten Block der Seite. Der Cursor steht dann in einer neuen, leeren Zeile. Mit der Tastatur geht es genauso: ein ausgewähltes Bild oder eine Einbettung am Seitenende, die letzte Zeile eines Codeblocks oder die letzte Tabellenzeile, dann Pfeil runter.",
+      "p2": "Die Zeile entsteht erst, wenn du sie benutzt. Nur eine Seite öffnen schreibt nichts in sie hinein, und endet die Seite schon mit einem Absatz, kommt keine zweite leere Zeile dazu. Steht über dem Bild eine Aufzählung, bietet die neue Zeile wie gewohnt an, sie mit Tab fortzusetzen."
+    },
+    "where": "Im Editor unter den letzten Block der Seite klicken, oder am Seitenende Pfeil runter drücken."
+  },
   "bild-vergroessern": {
     "title": "Bilder vergrößern und hineinzoomen",
     "summary": "Ein Klick auf ein eingebettetes Bild öffnet es groß über der Seite. Dort zoomst du bis weit über die Bildschirmgröße hinein und schiebst das Bild herum, um Details in Screenshots, Diagrammen oder Karten zu lesen.",

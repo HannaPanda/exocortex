@@ -81,6 +81,15 @@
     },
     "where": "Klik in de editor in de lege regel onder een afbeelding die volgt op een lijst, en druk op Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Verderschrijven na het laatste blok",
+    "summary": "Eindigt een pagina met een afbeelding, tabel, codeblok, database of pdf, dan blijft daaronder een lege regel vrij. Klik erin of druk op pijl-omlaag aan het einde van de pagina om daar een alinea aan te maken en direct verder te schrijven.",
+    "details": {
+      "p1": "Klik onder het laatste blok van de pagina. De cursor staat dan in een nieuwe, lege regel. Met het toetsenbord werkt het net zo: selecteer een afbeelding of insluiting aan het pagina-einde, ga naar de laatste regel van een codeblok of de laatste tabelrij, en druk op pijl-omlaag.",
+      "p2": "De regel ontstaat pas als je hem gebruikt. Alleen een pagina openen schrijft er niets in, en eindigt de pagina al met een alinea, dan komt er geen tweede lege regel bij. Staat er boven de afbeelding een opsomming, dan biedt de nieuwe regel zoals gebruikelijk aan om deze met Tab voort te zetten."
+    },
+    "where": "Klik in de editor onder het laatste blok van de pagina, of druk aan het pagina-einde op pijl-omlaag."
+  },
   "bild-vergroessern": {
     "title": "Afbeeldingen vergroten en inzoomen",
     "summary": "Een klik op een ingebedde afbeelding opent deze groot over de pagina. Daar zoom je in tot ver voorbij de schermgrootte en verschuif je de afbeelding om details in screenshots, diagrammen of kaarten te bekijken.",

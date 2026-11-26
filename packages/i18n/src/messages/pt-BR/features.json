@@ -81,6 +81,15 @@
     },
     "where": "No editor, clique na linha vazia abaixo de uma imagem que segue uma lista e pressione Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Continuar escrevendo após o último bloco",
+    "summary": "Se uma página terminar com uma imagem, tabela, bloco de código, banco de dados ou PDF, uma linha vazia ficará disponível abaixo. Um clique nela ou a seta para baixo no final da página cria um parágrafo ali, e você pode simplesmente continuar escrevendo.",
+    "details": {
+      "p1": "Clique abaixo do último bloco da página. O cursor ficará então em uma linha nova e vazia. Pelo teclado funciona do mesmo jeito: com uma imagem ou incorporação selecionada no final da página, na última linha de um bloco de código ou na última linha de uma tabela, basta pressionar a seta para baixo.",
+      "p2": "A linha só é criada quando você a utiliza. Apenas abrir uma página não insere nada nela, e se a página já terminar com um parágrafo, nenhuma segunda linha vazia será adicionada. Se houver uma lista acima da imagem, a nova linha permitirá continuá-la usando Tab, como de costume."
+    },
+    "where": "No editor, clique abaixo do último bloco da página ou pressione a seta para baixo no final da página."
+  },
   "bild-vergroessern": {
     "title": "Ampliar imagens e dar zoom",
     "summary": "Um clique em uma imagem incorporada a abre em tamanho grande sobre a página. Lá você pode dar zoom muito além do tamanho da tela e arrastar a imagem para ver detalhes em capturas de tela, diagramas ou mapas.",

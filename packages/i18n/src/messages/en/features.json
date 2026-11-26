@@ -81,6 +81,15 @@
     },
     "where": "In the editor, click into the empty line below an image that follows a list, and press Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Keep writing after the last block",
+    "summary": "If a page ends with an image, a table, a code block, a database, or a PDF, an empty line remains below it. Clicking into it or pressing Down Arrow at the end of the page creates a paragraph there, and you simply keep writing.",
+    "details": {
+      "p1": "Click below the last block on the page. The cursor then sits in a new, empty line. It works just the same with the keyboard: select an image or an embed at the end of the page, the last line of a code block, or the last table row, then press Down Arrow.",
+      "p2": "The line is only created once you use it. Simply opening a page writes nothing into it, and if the page already ends with a paragraph, no second empty line is added. If there is a list above the image, the new line offers to continue it with Tab as usual."
+    },
+    "where": "In the editor, click below the last block on the page, or press Down Arrow at the end of the page."
+  },
   "bild-vergroessern": {
     "title": "Enlarge and zoom into images",
     "summary": "Clicking an embedded image opens it large over the page. There you can zoom in well beyond screen size and pan the image around to read details in screenshots, diagrams, or maps.",

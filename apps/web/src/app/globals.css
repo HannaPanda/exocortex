@@ -149,6 +149,16 @@
     @apply mt-3;
   }
 
+  /* A line to write in after the last block (issue #257,
+     `trailing-paragraph.ts` in `packages/editor`). While the page ends in a
+     picture, a table, a code block or anything else that is not a paragraph,
+     one paragraph's worth of space stays below it: the gap a paragraph would
+     keep plus its line. A click there makes the paragraph; until then nothing
+     is stored. Only while writing: a page being read keeps its length. */
+  .exocortex-editor .ProseMirror[contenteditable='true'][data-trailing-line] {
+    padding-block-end: calc(var(--spacing) * 3 + 1lh);
+  }
+
   /* Heading ladder: `text-section` / `text-subsection` / `text-body` plus
      weight, which is 1.375 / 1.125 / 0.9375 rem against a 0.9375 rem body. The
      sizes, leading and tracking come from the theme tokens in

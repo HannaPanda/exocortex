@@ -81,6 +81,15 @@
     },
     "where": "W edytorze kliknij pusty wiersz pod obrazem następującym po liście i naciśnij Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Pisanie po ostatnim bloku",
+    "summary": "Gdy strona kończy się obrazem, tabelą, blokiem kodu, bazą danych lub plikiem PDF, poniżej pozostaje pusty wiersz. Kliknięcie w niego lub naciśnięcie Strzałki w dół na końcu strony tworzy tam akapit, dzięki czemu możesz po prostu pisać dalej.",
+    "details": {
+      "p1": "Kliknij pod ostatnim blokiem strony. Kursor znajdzie się wtedy w nowym, pustym wierszu. Z klawiatury działa to tak samo: zaznaczony obraz lub osadzony element na końcu strony, ostatni wiersz bloku kodu lub ostatni wiersz tabeli, a potem Strzałka w dół.",
+      "p2": "Wiersz ten powstaje dopiero wtedy, gdy go użyjesz. Samo otwarcie strony nic do niej nie dopisuje, a jeśli strona już kończy się akapitem, nie pojawi się żaden drugi pusty wiersz. Jeśli nad obrazem znajduje się lista wypunktowana, nowy wiersz jak zwykle umożliwia kontynuowanie jej za pomocą klawisza Tab."
+    },
+    "where": "W edytorze kliknij pod ostatnim blokiem strony lub naciśnij Strzałkę w dół na końcu strony."
+  },
   "bild-vergroessern": {
     "title": "Powiększanie obrazów i przybliżanie",
     "summary": "Kliknięcie osadzonego obrazu otwiera go w powiększeniu nad stroną. Możesz przybliżać go daleko poza rozmiar ekranu i przesuwać, aby odczytać szczegóły na zrzutach ekranu, diagramach czy mapach.",

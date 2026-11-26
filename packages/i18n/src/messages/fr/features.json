@@ -81,6 +81,15 @@
     },
     "where": "Dans l’éditeur, cliquer sur la ligne vide sous une image qui suit une liste, puis appuyer sur Tab."
   },
+  "zeile-nach-dem-letzten-block": {
+    "title": "Continuer à écrire après le dernier bloc",
+    "summary": "Si une page se termine par une image, un tableau, un bloc de code, une base de données ou un PDF, une ligne vide reste disponible en dessous. Un clic dessus ou la flèche vers le bas à la fin de la page y crée un paragraphe, et tu peux simplement continuer à écrire.",
+    "details": {
+      "p1": "Clique sous le dernier bloc de la page. Le curseur se place alors dans une nouvelle ligne vide. Cela fonctionne de la même manière au clavier : sélectionne une image ou une intégration en bas de page, place-toi sur la dernière ligne d’un bloc de code ou d’un tableau, puis appuie sur Flèche bas.",
+      "p2": "La ligne n’est réellement créée que lorsque tu l’utilises. Le simple fait d’ouvrir une page n’y écrit rien, et si la page se termine déjà par un paragraphe, aucune seconde ligne vide ne s’ajoute. Si une liste à puces se trouve au-dessus de l’image, la nouvelle ligne propose comme d’habitude de la poursuivre avec Tab."
+    },
+    "where": "Dans l’éditeur, cliquer sous le dernier bloc de la page, ou appuyer sur Flèche bas en fin de page."
+  },
   "bild-vergroessern": {
     "title": "Agrandir les images et zoomer",
     "summary": "Un clic sur une image intégrée l’ouvre en grand par-dessus la page. Là, tu peux zoomer bien au-delà de la taille de l’écran et déplacer l’image pour lire les détails de captures d’écran, de diagrammes ou de cartes.",
