@@ -400,12 +400,36 @@ system prompt.
   and the chip is cleared afterwards so the passage is not silently attached to
   every following question. A selection taken from another page is dropped
   rather than carried along, because out of context it is an unlabelled quote.
+- **What is marked is offered, not handed over (issue #249).** The editor
+  reports its current selection into a second context beside the pending one
+  (`AiSelectionReporter`, `apps/web/src/components/editor/ai-selection-reporter.tsx`),
+  on read-only pages too, where the bubble menu is absent and a reader of a
+  shared page still wants to ask about a sentence (ADR-092). The chip row
+  draws it as a ghost offer, "Markierung mitschicken: „…“", like "Diese Seite
+  mitschicken", and only a click turns it into the pending selection; the
+  palette offers the same as "Markierung an den KI-Chat geben". Sending
+  whatever happened to be marked when Enter was pressed would be page text
+  leaving without anybody deciding it should. The offer survives the click
+  into the composer because ProseMirror keeps its selection on blur, and it
+  disappears once the selection collapses. Two contexts, so a moving caret
+  re-renders the chip row and not the shell.
+- **The pending chip says what it is.** Its first words in quotes, its size
+  measured like a pinned chip's (`etwa N Z.`, `gekürzt` above
+  `MESSAGE_SELECTION_MAX_CHARS`), and on hover the page it came from, its
+  block count and that it goes with the next message only. A pin icon marks
+  what stays; the quote icon marks what is used once.
 - **The selection lands in the transcript, not in one run's prompt.** It becomes
   a `SYSTEM` message (`↳ Ausgewählter Abschnitt …`) right before the question it
   belongs to, so the user can see exactly what was sent, later turns can refer
   back to it, and `/clear` and auto-compaction treat it like any other message.
-  It is capped at `MAX_SELECTION_CHARS` (4 000) and the cut is stated _in the
-  text_, so the model can tell an excerpt from the whole thing. This is document
+  It is capped at `MESSAGE_SELECTION_MAX_CHARS` (4 000, in
+  `@exocortex/contracts` so the chip row reads the same number) and the cut is
+  stated _in the text_, so the model can tell an excerpt from the whole thing.
+  Its block ids travel only while the turn names a page; without one they
+  would point the model's tools at blocks it was never told where to find.
+  It is classified like the open page's text: a passage from the person's own
+  page is not foreign text, and neither is one from a page shared with them,
+  because the shared page's text is not fenced either (ADR-030, ADR-092). This is document
   content leaving the system — but content the user picked, saw in a chip and
   sent on purpose, which is why it goes even when the page context is off.
 - **The id is checked.** Because the title and path now reach the prompt, a

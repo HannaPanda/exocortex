@@ -151,7 +151,7 @@ const EXEMPT = [
   {
     route: 'POST /api/ai/conversations/:x/messages',
     reason:
-      'Posts a message into a conversation. From inside a tool loop this is the assistant writing into its own transcript.',
+      'Posts a message into a conversation. From inside a tool loop this is the assistant writing into its own transcript. Its `selection` (issue #249) is the browser naming a passage by its block ids, which an agent already does directly: `exo_page_block_read` reads exactly those blocks, and `exo_chat_read` shows the selection a person sent.',
   },
   {
     route: 'POST /api/ai/conversations/:x/sources',
