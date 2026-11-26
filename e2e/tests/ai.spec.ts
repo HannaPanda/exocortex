@@ -421,6 +421,37 @@ test.describe('AI side panel', () => {
     await expect(boundary).toHaveCount(1, { timeout: 30_000 });
   });
 
+  test('summarises the history on /compact although the window is nearly empty', async ({
+    page,
+  }) => {
+    // One answer and one summary, both real provider calls (issue #287).
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Verdichten ${Date.now().toString(36)}`);
+    await page.getByTestId('context-tab-ai').click();
+
+    await page.getByTestId('ai-input').fill('Nenne drei Farben.');
+    await page.getByTestId('ai-send').click();
+    await waitForAiRun(page, 'ai:ask');
+
+    await page.getByTestId('ai-input').fill('/compact');
+    await page.getByTestId('ai-send').click();
+    // The command says it started and that it was not needed yet: one
+    // question is nowhere near the automatic threshold.
+    const transcript = page.getByTestId('ai-transcript');
+    await expect(transcript).toContainText('zusammengefasst', { timeout: 30_000 });
+    await expect(transcript).toContainText('Nötig gewesen wäre das noch nicht');
+
+    // The summary arrives from the worker and takes the old messages' place
+    // in the context; the cut above it says so, not "Kontext geleert".
+    const boundary = page.getByTestId('ai-context-boundary');
+    await expect(boundary).toHaveCount(1, { timeout: AI_RUN_FINISH_TIMEOUT_MS });
+    await expect(boundary).toContainText('Älterer Verlauf zusammengefasst');
+    // And the composer, held while the summary was written, is free again.
+    await expect(page.getByTestId('ai-input')).toBeEnabled({ timeout: 30_000 });
+  });
+
   /**
    * The promise the chip row makes (issue #75): a pinned source stays until it
    * is taken away, which is exactly what tells it apart from the open page.
