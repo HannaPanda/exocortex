@@ -304,9 +304,17 @@ system prompt.
   without tool support, or a legacy run with no `conversationId`) gets a block
   that tells the model to say it cannot read the page instead of inventing its
   content.
-- **Scoped to the run's workspace.** The lookup is `findFirst` on
-  `{ id, workspaceId }`: a stale or guessed `documentId` contributes nothing
-  and is logged, rather than leaking a title from elsewhere.
+- **Scoped to the run's workspace, or to a live share.** The lookup is
+  `findFirst` on `{ id, workspaceId }`: a stale or guessed `documentId`
+  contributes nothing and is logged, rather than leaking a title from
+  elsewhere. The one other workspace a page may come from is the one a share
+  reached it in (issue #234, ADR-092): `resolveOpenPageReach`
+  (`apps/worker/src/open-page.ts`) asks `findDocumentContext` as the run's
+  person when the run starts, reads the page where it lives, stops the
+  breadcrumb at the shared page and adds what the grant allows. A withdrawn
+  grant leaves the page out of the prompt, and every tool call is decided by
+  the grant again in the API. The run itself, its key and its budget stay the
+  conversation's workspace's.
 - **The breadcrumb is bounded.** Ancestors are walked up at most
   `MAX_PATH_DEPTH` (8) levels; a deeper path is rendered with a leading `…`
   so an elided path is not mistaken for a root-level one.

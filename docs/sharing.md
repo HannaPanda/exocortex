@@ -51,6 +51,27 @@ rather than about this request: whether the person a page is being shared with
 is already a member, what the realtime gateway should do with a socket, and what
 the functions above build on. Reach for it only with one of those in hand.
 
+## The chat on a shared page
+
+Issue #234, [ADR-092](adr/ADR-092-a-shared-page-is-context-for-the-readers-own-chat.md).
+A page shared with an account can be talked about in the chat panel at
+`/geteilt/<id>`. The conversation belongs to one of the reader's own
+workspaces (`resolveChatWorkspace` in `apps/web/src/components/ai/chat-workspace.ts`
+picks it, `shared-chat-note.tsx` says so above the transcript), and the shared
+page is its open page.
+
+| Where                                        | What it decides                                                               |
+| -------------------------------------------- | ----------------------------------------------------------------------------- |
+| `mayBeConversationPage` (`document-grants`)  | a page of the conversation's workspace, or one reached through a share        |
+| `ConversationsService.create`, `postMessage` | refuse any other page with `document_access_denied`                           |
+| `resolveOpenPageReach` (`apps/worker`)       | the grant is asked again when the run starts; no grant, no page in the prompt |
+| every tool route                             | `findDocumentContext` as the reader, so the grant decides each call, live     |
+
+Two things to keep in mind when changing it: the run's workspace is the
+reader's, so anything that reads `run.workspaceId` to find the open page has to
+go through `resolveOpenPageReach` instead; and a pinned source is still a page
+of the conversation's workspace, so a shared page is never offered as a pin.
+
 ## Adding a kind of grant
 
 `DocumentShareKind` has two members and a check constraint that says exactly one

@@ -902,6 +902,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   a run is refused before anything is sent (`ai_key_unreadable`, diagnosis
   `keyUnreadable`), a cover ends with `key_unreadable` and writes no row. Only
   a workspace without a key runs on the deployment's.
+- ADR-092: a shared page is context for the reader's own chat. The
+  conversation, the run, the key and the budget are one of the reader's own
+  workspaces; the page shared with them is its open page. Every tool call is
+  the reader's again, so `findDocumentContext` holds the run to the grant
+  (READ cannot write, `PAGE_ONLY` reaches no sub-page, a withdrawn grant fails
+  the next call); `mayBeConversationPage` admits a page of the conversation's
+  workspace or one reached through a share, never one of another workspace the
+  caller is a member of, and the worker asks again before it names the page.
 
 Full list: `docs/adr/`.
 

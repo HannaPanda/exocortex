@@ -333,6 +333,19 @@ grant publishes `document_share_changed` on the revocation channel of
 well as a narrowing; the collaboration server's re-authorization sweep already
 re-reads `findDocumentContext`, so a missed message costs at most 30 seconds.
 
+**The built-in AI on a shared page is the reader again** (issue #234,
+[ADR-092](adr/ADR-092-a-shared-page-is-context-for-the-readers-own-chat.md)).
+The chat runs in one of the reader's own workspaces and is paid from it; the
+shared page is only its open page. Every tool call carries a service token for
+the reader with no workspace claim, so the grant decides each call as it would
+decide the reader's own request: a READ grant cannot write, a `PAGE_ONLY`
+grant reaches no sub-page and no neighbour, the sharer's workspace answers
+search, tree and databases as to any non-member, and a withdrawn grant fails
+the next call. `mayBeConversationPage` admits a foreign page only when a share
+reached it, and the worker asks `findDocumentContext` again before the prompt
+names the page, cutting the breadcrumb at the shared page. A run confined to
+its workspace by an agent profile reaches no shared page at all.
+
 ## Upload tickets
 
 [ADR-064](adr/ADR-064-a-local-file-arrives-through-an-upload-ticket.md). An
