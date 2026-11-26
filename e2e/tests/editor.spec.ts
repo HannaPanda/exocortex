@@ -123,6 +123,60 @@ test.describe('editor', () => {
     await expect(page.getByTestId('editor-surface')).toContainText('Erste Aufgabe');
   });
 
+  /**
+   * The slash menu stays on screen at the bottom of a short page (issue #236).
+   *
+   * A page that fits the window cannot be scrolled, so a menu that opens
+   * downwards past the bottom edge leaves options nobody can reach, and a
+   * highlight that walks out of the list's own scroll box is just as lost.
+   */
+  for (const viewport of [
+    { name: 'a short window', width: 1280, height: 640 },
+    { name: 'a phone', width: 390, height: 640 },
+  ]) {
+    test(`keeps the slash menu reachable at the bottom of ${viewport.name}`, async ({ page }) => {
+      await openEditor(page);
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+
+      // Walk the caret down until it sits close to the bottom edge.
+      const surface = page.getByTestId('editor-surface');
+      const lastBlock = surface.locator(':scope > *').last();
+      for (let line = 0; line < 60; line += 1) {
+        const box = await lastBlock.boundingBox();
+        if (box !== null && box.y + box.height > viewport.height - 90) break;
+        await page.keyboard.press('Enter');
+      }
+
+      await page.keyboard.type('/');
+      const menu = page.getByTestId('slash-menu');
+      await expect(menu).toBeVisible();
+
+      const inside = async (locator: typeof menu): Promise<void> => {
+        const box = await locator.boundingBox();
+        expect(box).not.toBeNull();
+        if (box === null) return;
+        expect(box.y).toBeGreaterThanOrEqual(0);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
+        expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
+      };
+      await inside(menu);
+
+      // Up from the first option wraps to the last one, which has to scroll into
+      // the list's view, and back down to the first one again.
+      await page.keyboard.press('ArrowUp');
+      const active = menu.locator('[role="option"][aria-selected="true"]');
+      await expect(active).toBeInViewport({ ratio: 1 });
+      await inside(active);
+      await page.keyboard.press('ArrowDown');
+      await expect(active).toBeInViewport({ ratio: 1 });
+      await inside(active);
+
+      await page.keyboard.press('Escape');
+      await expect(menu).toBeHidden();
+    });
+  }
+
   test('inserts a toggle through the slash menu', async ({ page }) => {
     await openEditor(page);
 

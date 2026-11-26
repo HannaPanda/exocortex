@@ -80,7 +80,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                                         |
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
 | `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
-| `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`                                                                                                                                                                                         |
+| `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`, including where the popup goes and how far its list may grow                                                                                                                           |
 | `code-block-toolbar.tsx`        | language picker and copy                                                                                                                                                                                                              |
 | `table-toolbar.tsx`             | rows, columns, header, merge, and the confirmed "Tabelle löschen"                                                                                                                                                                     |
 | `block-prompt.tsx`              | value and file collection for catalog entries                                                                                                                                                                                         |
@@ -160,6 +160,18 @@ Two rules hold for this layer, both learned the hard way (docs/deviations.md 16�
   every plugin view; anything stateful belongs in `EditorChrome`.
 - **suggestion menus render from the plugin state**, never from the suggestion
   renderer's `onStart`/`onExit`, because those do not survive a plugin-view rebuild.
+
+A suggestion popup (`/`, `@`) is placed by `SuggestionPopup` with the same
+`@floating-ui/dom` the block handle uses (issue #236): below the typed
+character when the list fits, above it when that side has more room, and never
+taller than the side it lands on, published as `--available-height` and read by
+the list's `max-h`. That matters on a page shorter than the window, which has
+nothing to scroll, and on a phone whose on-screen keyboard shrinks the visual
+viewport (listened to separately, because the window is not resized). The
+arrow keys move a highlight while the focus stays in the editor, so
+`useActiveOptionInView` scrolls the list, and only the list, to keep the
+highlighted option visible. A new suggestion menu uses both rather than a
+fixed position of its own.
 
 ## Stable block identifiers
 
