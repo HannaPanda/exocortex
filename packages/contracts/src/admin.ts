@@ -162,6 +162,11 @@ export type AiUsageStatusCounts = z.infer<typeof aiUsageStatusCountsSchema>;
 export const aiUsageModelRowSchema = z.object({
   model: z.string(),
   provider: z.string(),
+  /**
+   * What the rows were (issue #252, ADR-090): runs of the built-in AI, or
+   * pictures drawn for page covers. A model that did both has a row of each.
+   */
+  kind: z.enum(['chat', 'image']).default('chat'),
   /** The registry's display name, or null for a model the registry no longer holds. */
   displayName: z.string().nullable(),
   runs: z.number().int().nonnegative(),

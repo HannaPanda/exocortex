@@ -188,3 +188,73 @@ describe('the usage report', () => {
     ).rejects.toThrow();
   });
 });
+
+/**
+ * Page covers in the report (issue #252, ADR-090). Their own window, in 2001,
+ * so the figures above stay what they were: a picture is an `ai_run` row of
+ * kind `IMAGE` and has to be counted, priced and attributed like a run.
+ */
+describe('the usage report with page covers', () => {
+  const COVER_FROM = new Date('2001-01-01T00:00:00.000Z');
+  const COVER_TO = new Date('2001-01-03T00:00:00.000Z');
+
+  beforeAll(async () => {
+    const base = {
+      workspaceId,
+      createdById: userId,
+      provider: 'openrouter',
+      model: 'mock/draws-and-chats',
+      messages: [],
+      createdAt: new Date(2001, 0, 1, 12, 0, 0),
+    };
+    await prisma.aiRun.createMany({
+      data: [
+        {
+          ...base,
+          kind: 'IMAGE',
+          status: 'COMPLETED',
+          inputTokens: 40,
+          outputTokens: 1_290,
+          cachedInputTokens: 0,
+          providerCostMicroUsd: 38_700,
+          durationMs: 9_000,
+          usedOwnKey: true,
+        },
+        {
+          ...base,
+          status: 'COMPLETED',
+          inputTokens: 1_000,
+          outputTokens: 100,
+          cachedInputTokens: 0,
+          providerCostMicroUsd: 1_000,
+          durationMs: 2_000,
+        },
+      ],
+    });
+  });
+
+  it('counts a cover, its price and whose key paid it', async () => {
+    const usage = await service.usage({
+      from: COVER_FROM.toISOString(),
+      to: COVER_TO.toISOString(),
+    });
+
+    expect(usage.runs).toBe(2);
+    expect(usage.cost.measuredMicroUsd).toBe(39_700);
+    expect(usage.cost.ownKeyRuns).toBe(1);
+    expect(usage.cost.ownKeyMicroUsd).toBe(38_700);
+  });
+
+  it('keeps the pictures of a model apart from its conversations', async () => {
+    const usage = await service.usage({
+      from: COVER_FROM.toISOString(),
+      to: COVER_TO.toISOString(),
+    });
+
+    const image = usage.byModel.find((row) => row.kind === 'image');
+    const chat = usage.byModel.find((row) => row.kind === 'chat');
+    expect(image).toMatchObject({ model: 'mock/draws-and-chats', runs: 1 });
+    expect(image?.cost.measuredMicroUsd).toBe(38_700);
+    expect(chat).toMatchObject({ model: 'mock/draws-and-chats', runs: 1 });
+  });
+});

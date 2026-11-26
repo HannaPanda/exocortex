@@ -182,7 +182,8 @@ function renderUsage(usage: AiUsageResponse): string {
                 ? 'keine beendeten'
                 : `${((row.completedRuns / finished) * 100).toFixed(0)} % erfolgreich`;
             return (
-              `- ${row.displayName ?? row.model} (${row.model}): ${String(row.runs)} Läufe, ` +
+              `- ${row.displayName ?? row.model} (${row.model}` +
+              `${row.kind === 'image' ? ', Titelbilder' : ''}): ${String(row.runs)} Läufe, ` +
               `${rate}, ${renderCost(row.cost)}, ` +
               `Median ${row.medianDurationMs === null ? 'unbekannt' : `${String(row.medianDurationMs)} ms`}`
             );
@@ -226,7 +227,8 @@ function renderUsage(usage: AiUsageResponse): string {
 export const aiUsageTool: AnyToolDefinition = defineTool({
   name: 'exo_ai_usage',
   description:
-    'Wertet die KI-Nutzung des Deployments über einen Zeitraum aus: Läufe nach Status, ' +
+    'Wertet die KI-Nutzung des Deployments über einen Zeitraum aus, KI-erzeugte Titelbilder ' +
+    'eingeschlossen: Läufe nach Status, ' +
     'Erfolgsquote, Kosten (gemeldet und geschätzt getrennt), Tokens rein/raus, Dauer als ' +
     'Median und 95. Perzentil, Aufschlüsselung nach Modell und die Fehlercodes mit ihrer ' +
     'Häufigkeit. Ohne Angabe die letzten 30 Tage. Braucht Administratorrechte.',

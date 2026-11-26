@@ -279,11 +279,12 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
         {usage.byModel.map((row) => {
           const finished = row.completedRuns + row.failedRuns;
           return (
-            <TableRow key={`${row.provider}:${row.model}`}>
+            <TableRow key={`${row.provider}:${row.model}:${row.kind}`}>
               <TableCell cell="title">
                 <div className="font-medium">{row.displayName ?? row.model}</div>
                 <div className="text-xs text-muted-foreground">
                   {row.model} · {row.provider}
+                  {row.kind === 'image' ? ` · ${t('kindImage')}` : null}
                 </div>
               </TableCell>
               <TableCell label={t('runs')} className="text-right tabular-nums">

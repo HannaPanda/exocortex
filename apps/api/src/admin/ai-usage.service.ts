@@ -94,7 +94,9 @@ function toCost(row: AggregateRow): AiUsageCost {
  * be more code, more round-trips and less readable than the five statements
  * below. The rest of the admin area stays on the query builder.
  *
- * Everything reads `ai_run` over a time window. Since issue #10 the figures are
+ * Everything reads `ai_run` over a time window, page covers included: each
+ * picture is a row of kind `IMAGE` (issue #252, ADR-090), so every figure
+ * below counts them without a second source. Since issue #10 the figures are
  * columns rather than JSON, so `createdAt` is the only predicate and the index
  * added with them serves it.
  */
@@ -234,6 +236,10 @@ export class AiUsageService {
   /**
    * The breakdown that answers "which model, at what price, how reliably".
    *
+   * Grouped by kind as well (issue #252): a page cover is a row of kind
+   * `IMAGE`, and an image model that also chats must not fold its pictures
+   * into its conversations.
+   *
    * The join against `ai_model` is a left join on the slug: a run keeps the
    * model string it was started with, and that model may since have left the
    * registry. Such a row still belongs in the table -- it cost money -- it just
@@ -244,6 +250,7 @@ export class AiUsageService {
       SELECT
         r."model" AS "model",
         r."provider" AS "provider",
+        LOWER(r."kind"::text) AS "kind",
         MAX(m."displayName") AS "displayName",
         COUNT(*) AS "runs",
         COUNT(*) FILTER (WHERE r."status" = 'COMPLETED') AS "completedRuns",
@@ -269,7 +276,7 @@ export class AiUsageService {
       FROM "ai_run" r
       LEFT JOIN "ai_model" m ON m."slug" = r."model"
       WHERE r."createdAt" >= ${from} AND r."createdAt" < ${to}
-      GROUP BY r."model", r."provider"
+      GROUP BY r."model", r."provider", r."kind"
       ORDER BY COUNT(*) DESC
     `;
   }
@@ -325,6 +332,7 @@ export class AiUsageService {
 interface ModelAggregateRow extends AggregateRow {
   model: string;
   provider: string;
+  kind: AiUsageModelRow['kind'];
   displayName: string | null;
   completedRuns: bigint;
   failedRuns: bigint;
@@ -342,6 +350,7 @@ function toModelRow(row: ModelAggregateRow): AiUsageModelRow {
   return {
     model: row.model,
     provider: row.provider,
+    kind: row.kind,
     displayName: row.displayName,
     runs: toInt(row.runs),
     completedRuns: toInt(row.completedRuns),
