@@ -281,8 +281,9 @@ its paragraph, the table rather than a cell, a selected image itself. The
 handle's menu offers the same two steps.
 
 In the web app the handle targets nested blocks with the left edge only
-(`NESTED_TARGETS` in `block-handle.tsx`, docs/deviations.md 17), and a drag
-closes the handle's menu. Covered by `block-drop.test.ts`,
+(`NESTED_TARGETS` in `block-handle.tsx`, docs/deviations.md 17). The handle's
+menu opens on release without movement, never on the press that may start a
+drag (issue #268), and a drag closes it. Covered by `block-drop.test.ts`,
 `move-block.test.ts` and `e2e/tests/block-drag.spec.ts`.
 
 ## Markdown

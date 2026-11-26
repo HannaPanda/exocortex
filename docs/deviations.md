@@ -291,10 +291,15 @@ Two more departures from the defaults, both from issue #243:
   `500 × depth`; a list item two levels deep was excluded there outright, and a
   single-line item is all top edge in its upper half, so on a list's first and
   last item the handle stayed on the block before and a drag moved that block.
-- The actions menu is controlled. It opens on the press that also starts a
-  drag, and its backdrop then took every `dragover`, so nothing could be
-  dropped; `onElementDragStart` closes it and keeps it closed until the drag
-  ends. Opening on release instead is issue #268.
+- The actions menu is controlled. Base UI opens a menu on the press of its
+  trigger, and on the handle a drag starts from that same press: the menu
+  stood in the way, and its backdrop took every `dragover`, so nothing could be
+  dropped. Since issue #268 `onOpenChange` refuses an open whose event is a
+  `mousedown` (`details.cancel()`), and the trigger's own `onClick` opens it
+  through the controlled `open` and `triggerId`, but only after a pointer
+  press, since a browser sends no `click` after a drag. A click without a
+  pointer press (Enter, Space) is still Base UI's own. `onElementDragStart`
+  still closes the menu and keeps it closed until the drag ends.
 
 ## 18. The toggle block is styled against its node view, not its HTML
 
