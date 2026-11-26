@@ -42,8 +42,6 @@ export const linePlaceholderKey = new PluginKey('linePlaceholder');
 export const LINE_PLACEHOLDER_CLASS = 'is-empty';
 export const LINE_PLACEHOLDER_ATTRIBUTE = 'data-placeholder';
 
-const GERMAN_PLACEHOLDER = 'Schreibe etwas oder tippe „/“ für Befehle …';
-
 /** Whether the whole page is a single empty paragraph. */
 function isEmptyPage(doc: PmNode): boolean {
   const only = doc.firstChild;
@@ -69,7 +67,11 @@ export function linePlaceholderPosition(state: EditorState, focused: boolean): n
 }
 
 export interface LinePlaceholderOptions {
-  /** The hint, in the reader's language. */
+  /**
+   * The hint, in the reader's language. The page editor reads it from the
+   * `editor` message namespace; this package keeps no interface text of its
+   * own here, so without it the line is marked but says nothing.
+   */
   placeholder: string;
 }
 
@@ -77,7 +79,7 @@ export const LinePlaceholder = Extension.create<LinePlaceholderOptions>({
   name: 'linePlaceholder',
 
   addOptions() {
-    return { placeholder: GERMAN_PLACEHOLDER };
+    return { placeholder: '' };
   },
 
   addProseMirrorPlugins() {
