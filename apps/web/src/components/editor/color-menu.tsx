@@ -16,6 +16,8 @@ import {
   DropdownMenuTrigger,
 } from '@exocortex/ui';
 
+import { type BlockTarget, runOnTarget } from './block-target';
+
 /**
  * Tailwind classes per colour name.
  *
@@ -56,10 +58,21 @@ const SWATCH_BACKGROUND: Readonly<Record<TextColorName, string>> = {
  * is unusable for anyone who cannot distinguish them.
  *
  * Split from the menu shell so the same list works as a dropdown in the selection
- * toolbar and as a submenu in the block handle.
+ * toolbar and as a submenu in the block handle. In the handle a colour covers
+ * the handle's whole block, whatever the caret was doing (issue #229).
  */
-export function ColorItems({ editor }: { editor: Editor }) {
+export function ColorItems({
+  editor,
+  target = null,
+}: {
+  editor: Editor;
+  /** The block to colour, or `null` for the selection (the toolbar). */
+  target?: BlockTarget | null;
+}) {
   const t = useTranslations('editor.colors');
+  const apply = (action: () => boolean): void => {
+    runOnTarget(editor, target, action);
+  };
   return (
     <>
       <DropdownMenuGroup>
@@ -68,10 +81,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
           <DropdownMenuItem
             key={`text-${name}`}
             data-testid={`text-color-${name}`}
-            onClick={() => {
-              if (name === 'default') editor.chain().focus().setTextColor('default').run();
-              else editor.chain().focus().setTextColor(name).run();
-            }}
+            onClick={() => apply(() => editor.chain().focus().setTextColor(name).run())}
           >
             <span
               aria-hidden
@@ -95,7 +105,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
           <DropdownMenuItem
             key={`background-${name}`}
             data-testid={`text-background-${name}`}
-            onClick={() => editor.chain().focus().setTextBackground(name).run()}
+            onClick={() => apply(() => editor.chain().focus().setTextBackground(name).run())}
           >
             <span
               aria-hidden
@@ -109,7 +119,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
       <DropdownMenuSeparator />
       <DropdownMenuItem
         data-testid="text-color-reset"
-        onClick={() => editor.chain().focus().unsetTextColor().run()}
+        onClick={() => apply(() => editor.chain().focus().unsetTextColor().run())}
       >
         {t('reset')}
       </DropdownMenuItem>

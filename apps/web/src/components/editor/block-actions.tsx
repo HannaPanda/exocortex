@@ -1,6 +1,5 @@
 'use client';
 
-import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
 import {
   ArrowDownIcon,
@@ -29,40 +28,10 @@ import {
 } from '@exocortex/ui';
 
 import { describeBlockRemoval, useBlockRemovalWarning } from './block-removal';
+import { type BlockTarget, currentRangeOf } from './block-target';
 import { ColorItems } from './color-menu';
 import { useDestructiveConfirm } from './destructive-confirm';
 import { TurnIntoItems } from './turn-into-menu';
-
-/** A block and where it starts, which is all any of these actions needs. */
-export interface BlockTarget {
-  node: PmNode;
-  pos: number;
-}
-
-/**
- * Where a block stands *now*, which is not where it stood when it was picked.
- *
- * The identifier is the reliable handle: a position is only a guess once
- * anything above the block has changed, and between picking a block and
- * confirming its deletion there is a dialog's worth of time for that to happen.
- */
-function currentRangeOf(editor: Editor, block: BlockTarget): { from: number; to: number } | null {
-  const blockId: unknown = block.node.attrs[BLOCK_ID_ATTRIBUTE];
-  if (typeof blockId !== 'string' || blockId.length === 0) {
-    const still = editor.state.doc.nodeAt(block.pos);
-    if (still === null || still.type !== block.node.type) return null;
-    return { from: block.pos, to: block.pos + still.nodeSize };
-  }
-
-  let range: { from: number; to: number } | null = null;
-  editor.state.doc.descendants((node, pos) => {
-    if (range !== null) return false;
-    if (node.attrs[BLOCK_ID_ATTRIBUTE] !== blockId) return true;
-    range = { from: pos, to: pos + node.nodeSize };
-    return false;
-  });
-  return range;
-}
 
 /**
  * The top-level block the cursor is in.
@@ -77,7 +46,10 @@ export function blockTargetFromSelection(editor: Editor): BlockTarget | null {
 }
 
 /**
- * Duplicate, copy-link and delete for one block.
+ * Turn into, colour, move, duplicate, copy-link and delete for one block.
+ *
+ * Every one of them acts on `target` when the handle opened the menu, never on
+ * the block holding the caret (issue #229).
  *
  * Shared by the drag handle in the gutter and by the selection toolbar, so both
  * offer exactly the same actions with one implementation.
@@ -165,7 +137,7 @@ export function BlockActionItems({
           <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
         </DropdownMenuSubTrigger>
         <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto">
-          <TurnIntoItems editor={editor} catalog={catalog} />
+          <TurnIntoItems editor={editor} catalog={catalog} target={target} />
         </DropdownMenuContent>
       </DropdownMenuSub>
 
@@ -175,7 +147,7 @@ export function BlockActionItems({
           <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
         </DropdownMenuSubTrigger>
         <DropdownMenuContent align="start" className="max-h-80 w-44 overflow-y-auto">
-          <ColorItems editor={editor} />
+          <ColorItems editor={editor} target={target} />
         </DropdownMenuContent>
       </DropdownMenuSub>
 

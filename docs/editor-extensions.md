@@ -67,8 +67,8 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | File                            | Purpose                                                                                                                                                                                                                               |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `selection-toolbar.tsx`         | formatting bar over a selection                                                                                                                                                                                                       |
-| `turn-into-menu.tsx`            | convert the current block                                                                                                                                                                                                             |
-| `color-menu.tsx`                | text and background colour                                                                                                                                                                                                            |
+| `turn-into-menu.tsx`            | convert the selected block, or the handle's block (issue #229)                                                                                                                                                                        |
+| `color-menu.tsx`                | text and background colour of the selection, or of the handle's whole block                                                                                                                                                           |
 | `link-menu.tsx`                 | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address                                                                                                              |
 | `link-bubble.tsx`               | bubble menu over the caret inside a link: open, edit, remove                                                                                                                                                                          |
 | `follow-link-context.tsx`       | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state                                                                                             |
@@ -77,7 +77,8 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
 | `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
 | `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 17)                                                                                                                                |
-| `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                                         |
+| `block-actions.tsx`             | turn into, colour, move, duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                |
+| `block-target.ts`               | the block a handle action is aimed at: found again by its id, then selected with `runOnBlock` before the selection command runs (issue #229)                                                                                          |
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
 | `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
 | `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`, including where the popup goes and how far its list may grow                                                                                                                           |
@@ -297,6 +298,32 @@ In the web app the handle targets nested blocks with the left edge only
 menu opens on release without movement, never on the press that may start a
 drag (issue #268), and a drag closes it. Covered by `block-drop.test.ts`,
 `move-block.test.ts` and `e2e/tests/block-drag.spec.ts`.
+
+## The handle's menu acts on its block
+
+"Umwandeln in" and "Farbe" in the handle's menu change the block the handle
+stands beside, wherever the caret is (issue #229). Both are written for the
+selection (the catalog's `run` and the `textColor` mark), and opening the menu
+moves no selection, so before #229 a conversion changed the block holding the
+caret and a colour on a collapsed caret only set a stored mark nobody saw.
+
+`runOnBlock` (`block-target.ts`) selects the block first and runs the ordinary
+command on that; `blockContentSelection` says what "the block" is:
+
+- a text block: all of its text;
+- a block holding others (a list item with its sub-items, a quote, a callout,
+  a toggle): from its first text block to its last, so a list toggle acts on
+  the list the item stands in, the quote toggle lifts the whole quote, and a
+  colour covers everything that moves with the block when it is dragged;
+- a block without text (a picture, a divider): the block as a node selection.
+
+Afterwards the caret stands collapsed at the end of what the block's text
+became, so writing continues there and no selection raises the formatting
+toolbar. Selecting changes no content, so `Strg+Z` takes the action back in
+one step. In the web app `runOnTarget` finds the block again by its id first,
+because the document may have moved since the handle picked it; the selection
+toolbar passes no target and keeps working on the selection the person made.
+Covered by `block-target.test.ts` and `e2e/tests/block-menu.spec.ts`.
 
 ## Continuing a list across a block
 

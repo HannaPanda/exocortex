@@ -16,20 +16,25 @@ import {
 
 import { BlockIcon } from './block-icon';
 import { useBlockGroupLabel } from './block-labels';
+import { type BlockTarget, runOnTarget } from './block-target';
 
 /**
  * The menu items of "in anderen Block umwandeln".
  *
  * Split out from the menu shell so the same list can be a standalone dropdown in
  * the selection toolbar and a submenu in the block handle, without duplicating
- * the entries.
+ * the entries. In the block handle it converts the handle's block, never the
+ * one holding the caret (issue #229).
  */
 export function TurnIntoItems({
   editor,
   catalog,
+  target = null,
 }: {
   editor: Editor;
   catalog: readonly BlockCatalogEntry[];
+  /** The block to convert, or `null` for the selection (the toolbar). */
+  target?: BlockTarget | null;
 }) {
   const groupLabel = useBlockGroupLabel();
   const sections = React.useMemo(
@@ -46,7 +51,7 @@ export function TurnIntoItems({
             <DropdownMenuItem
               key={entry.id}
               data-testid={`turn-into-${entry.id}`}
-              onClick={() => entry.run(editor)}
+              onClick={() => runOnTarget(editor, target, () => entry.run(editor))}
             >
               <BlockIcon name={entry.icon} />
               {entry.label}

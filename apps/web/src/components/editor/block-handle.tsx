@@ -11,7 +11,8 @@ import * as React from 'react';
 import { type BlockCatalogEntry } from '@exocortex/editor';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@exocortex/ui';
 
-import { BlockActionItems, type BlockTarget } from './block-actions';
+import { BlockActionItems } from './block-actions';
+import { type BlockTarget } from './block-target';
 
 /**
  * Width of the inner lane of the interaction gutter, in pixels.
