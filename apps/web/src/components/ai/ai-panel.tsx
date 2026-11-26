@@ -27,7 +27,6 @@ import {
   SHARED_CHAT_WORKSPACE_KEY,
 } from './chat-workspace';
 import { resolveModelChoice, useModelPreference } from './model-choice';
-import { activeConversationKey, parseConversationId } from './panel-state';
 import {
   buildCommandNotice,
   buildStreamingMessages,
@@ -40,6 +39,7 @@ import { currentPhaseLabel, useRunLabels } from './run-labels';
 import { type RunTraceStep } from './run-trace';
 import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
+import { useActiveConversation } from './use-active-conversation';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
 import { useConversationSettings } from './use-conversation-settings';
 import { usePinnedSources } from './use-pinned-sources';
@@ -153,10 +153,10 @@ function AiPanelBody({
   documentId: string | null;
   shared: SharedChat | null;
 }) {
-  const [activeConversationId, setActiveConversationId] = usePersistentState<string | null>(
-    activeConversationKey(workspaceId),
-    null,
-    parseConversationId,
+  // Per tab and per page, never shared between tabs (issue #231).
+  const [activeConversationId, setActiveConversationId] = useActiveConversation(
+    workspaceId,
+    documentId,
   );
 
   const t = useTranslations('ai.panel');

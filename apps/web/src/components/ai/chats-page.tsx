@@ -43,12 +43,12 @@ import {
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
-import { usePersistentState, writePersistentState } from '@/lib/use-persistent-state';
+import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { ChatList } from './chat-list';
 import { ChatReader } from './chat-reader';
 import { ChatSaveDialog } from './chat-save-dialog';
-import { activeConversationKey } from './panel-state';
+import { chooseConversationForPage } from './use-active-conversation';
 
 /**
  * `/chats`: the place a conversation can be found again (issue #69).
@@ -126,14 +126,15 @@ export function ChatsPage() {
    * Hands a conversation back to the panel and goes where it can be seen.
    *
    * Three steps, and all three are needed: the panel reads its active
-   * conversation out of `localStorage` per workspace, the context panel has to
+   * conversation per tab and per page (issue #231), so it is handed over for
+   * the page the conversation is about to open on; the context panel has to
    * be open for it to be on screen at all, and the panel only renders inside a
    * workspace route -- on the page the conversation was standing on, when it
    * still has one.
    */
   const continueInPanel = React.useCallback(
     (conversation: AiConversation): void => {
-      writePersistentState(activeConversationKey(conversation.workspaceId), conversation.id);
+      chooseConversationForPage(conversation.workspaceId, conversation.documentId, conversation.id);
       if (!context.open) setContext({ ...context, open: true });
       router.push(
         conversation.documentId === null
