@@ -47,6 +47,11 @@ export interface EditorWords {
   tableOfContents: { label: string; empty: string };
   toggle: { collapse: string; expand: string };
   embed: { frameTitle: string };
+  /**
+   * The placeholder of an empty line that can continue the list above it
+   * (issue #240): one for a list with bullets or numbers, one for tasks.
+   */
+  listContinuation: { hint: string; taskHint: string };
 }
 
 /** `2026-04-26T11:56:10.000Z` as `26.04.2026`, read in UTC. */
@@ -102,4 +107,8 @@ export const GERMAN_EDITOR_WORDS: EditorWords = {
   },
   toggle: { collapse: 'Abschnitt einklappen', expand: 'Abschnitt ausklappen' },
   embed: { frameTitle: 'Eingebetteter Inhalt' },
+  listContinuation: {
+    hint: 'Tab: Aufzählung fortsetzen, oder tippe „/“ für Befehle …',
+    taskHint: 'Tab: Aufgabenliste fortsetzen, oder tippe „/“ für Befehle …',
+  },
 };

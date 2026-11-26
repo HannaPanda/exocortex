@@ -25,6 +25,7 @@ export * from './fixtures';
 export * from './foreign-media';
 export * from './inline-styling';
 export * from './link-target';
+export * from './list-continuation';
 export * from './markdown';
 export * from './mathematics';
 export * from './media';

@@ -76,6 +76,7 @@ import {
   WIKI_LINK_IDENTITY_HTML_ATTRIBUTE,
   wikiLinkDocumentId,
 } from './link-target';
+import { ListContinuation } from './list-continuation';
 import { coreMarkdownAdapter } from './markdown/core-adapter';
 import { WIKI_LINK_SCHEME } from './markdown/serialize';
 import {
@@ -407,6 +408,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     schemaVersion: 1,
     extensions: [BlockDrop, MoveBlock],
   },
+  {
+    // Behaviour only, no schema: an empty line below a list, with a picture,
+    // a quote or a table in between, previews the next point and `Tab`
+    // continues the list (issue #240). The preview is a decoration.
+    name: 'list-continuation',
+    schemaVersion: 1,
+    extensions: [ListContinuation],
+  },
 ];
 
 export interface BuildEditorExtensionsOptions {
@@ -449,8 +458,14 @@ export interface BuildEditorExtensionsOptions {
 /** Names of the nodes built from `MEDIA_KINDS`; see `media.ts`. */
 const MEDIA_NODE_NAMES = new Set(['fileAttachment', 'video', 'audio', 'pdf']);
 
-/** Nodes whose own options carry `words`; see `editor-words.ts`. */
-const WORDED_NODE_NAMES = new Set([...MEDIA_NODE_NAMES, 'breadcrumb', 'tableOfContents', 'embed']);
+/** Nodes and extensions whose own options carry `words`; see `editor-words.ts`. */
+const WORDED_NODE_NAMES = new Set([
+  ...MEDIA_NODE_NAMES,
+  'breadcrumb',
+  'tableOfContents',
+  'embed',
+  'listContinuation',
+]);
 
 /** Hands the reader's words to the extension that shows them, if it shows any. */
 function withWords(extension: AnyExtension, words: EditorWords | undefined): AnyExtension {
