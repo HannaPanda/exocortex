@@ -17,7 +17,7 @@ import { currentTraceIds, withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
-import { type ResolvedAiKey } from '../ai-key';
+import { AI_KEY_UNREADABLE, type ResolvedAiKey, WorkspaceKeyUnreadableError } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
 import { type ExternalToolLoader } from '../external-mcp-tools';
 import { type ToolImageDescriber } from '../tool-images';
@@ -400,6 +400,38 @@ async function markRunning(input: {
 }
 
 /**
+ * The provider and the key for a run, or `null` when the run was refused
+ * because the workspace has a key of its own that this deployment cannot read
+ * (issue #260, ADR-091). Nothing steps in for that key, the subscription
+ * presets included: their fallback turns and the routing question would be
+ * paid for by the deployment's key instead, which is the bill nobody agreed
+ * to. Any other failure is thrown as before.
+ */
+async function resolveRunProvider(input: {
+  dependencies: Pick<AiRunDependencies, 'providerFor' | 'prisma' | 'bus'>;
+  run: AiRun;
+  payload: JobContext<typeof QUEUE_NAMES.ai>['payload'];
+  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
+}): Promise<Awaited<ReturnType<AiRunDependencies['providerFor']>> | null> {
+  try {
+    return await input.dependencies.providerFor(input.run.workspaceId, input.run.provider);
+  } catch (error: unknown) {
+    if (!(error instanceof WorkspaceKeyUnreadableError)) throw error;
+    await refuseRun({
+      prisma: input.dependencies.prisma,
+      bus: input.dependencies.bus,
+      run: input.run,
+      payload: input.payload,
+      logger: input.logger,
+      errorCode: AI_KEY_UNREADABLE,
+      reason: error.message,
+      diagnosis: { key: 'keyUnreadable', args: { reason: error.reason } },
+    });
+    return null;
+  }
+}
+
+/**
  * Keeps the run's trace id on its row (issue #145), so the inspector can
  * name the trace. Called from inside the run's span, the only place the id
  * exists; nothing is written when tracing is off.
@@ -443,11 +475,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
     // Whose key pays for this run, and therefore which provider makes the
     // call. Resolved before anything is asked of the provider, so the vision
-    // companion below is paid for by the same key as the answer itself.
-    const { provider, key, openRouter } = await dependencies.providerFor(
-      run.workspaceId,
-      run.provider,
-    );
+    // companion below is paid for by the same key as the answer itself. A
+    // workspace whose own key cannot be read gets no run at all (issue #260).
+    const resolved = await resolveRunProvider({ dependencies, run, payload, logger });
+    if (resolved === null) return;
+    const { provider, key, openRouter } = resolved;
     // A summary is written by the conversation's own model unless a
     // compaction model is configured, and that one is an OpenRouter slug: a
     // subscription endpoint would bill it outside the plan, or refuse it.

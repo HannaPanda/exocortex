@@ -5,7 +5,7 @@ import { type AiUsage, type Settings } from '@exocortex/contracts';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type RedisEventBus } from '@exocortex/queue';
 
-import { type ResolvedAiKey } from '../ai-key';
+import { type ResolvedAiKey, WorkspaceKeyUnreadableError } from '../ai-key';
 
 import { createDocumentCoverProcessor } from './document-cover';
 import { type ImageRunRecord } from './image-run';
@@ -66,14 +66,21 @@ function generatorThat(
   return { model: 'test/image', provider, generate: vi.fn(generate) };
 }
 
-function setup(input: { key: ResolvedAiKey; generator: ImageGenerator | null }) {
+function setup(input: {
+  key: ResolvedAiKey | WorkspaceKeyUnreadableError;
+  generator: ImageGenerator | null;
+  settings?: Settings;
+}) {
   const records: ImageRunRecord[] = [];
   const published: unknown[] = [];
   const imageGeneratorFor = vi.fn((_slug: string | null, _apiKey?: string) => input.generator);
   const upload = vi.fn(async () => ({ coverAttachmentId: 'att1' }));
   const processor = createDocumentCoverProcessor({
     imageGeneratorFor,
-    aiKeyFor: vi.fn(async () => input.key),
+    aiKeyFor: vi.fn(async () => {
+      if (input.key instanceof WorkspaceKeyUnreadableError) throw input.key;
+      return input.key;
+    }),
     recordImageRun: vi.fn(async (record: ImageRunRecord) => {
       records.push(record);
     }),
@@ -83,7 +90,7 @@ function setup(input: { key: ResolvedAiKey; generator: ImageGenerator | null }) 
         published.push(event.payload);
       }),
     } as unknown as RedisEventBus,
-    settings: async () => settings,
+    settings: async () => input.settings ?? settings,
   });
   return { processor, records, published, imageGeneratorFor, upload };
 }
@@ -173,6 +180,45 @@ describe('createDocumentCoverProcessor', () => {
       });
     },
   );
+
+  it.each(['undecryptable', 'noEncryptionKey'] as const)(
+    'ends on a workspace key it cannot read (%s) without drawing on the deployment key',
+    async (reason) => {
+      const generator = generatorThat(picture);
+      const { processor, records, published, imageGeneratorFor, upload } = setup({
+        key: new WorkspaceKeyUnreadableError(reason),
+        generator,
+      });
+
+      await processor(job());
+
+      // Issue #260: no generator is built at all, so no key of anybody's is
+      // spent, and nothing was asked of a model that the usage report could show.
+      expect(imageGeneratorFor).not.toHaveBeenCalled();
+      expect(generator.generate).not.toHaveBeenCalled();
+      expect(upload).not.toHaveBeenCalled();
+      expect(records).toHaveLength(0);
+      expect(published).toEqual([
+        expect.objectContaining({
+          status: 'failed',
+          errorDetail: { code: 'key_unreadable', reason },
+        }),
+      ]);
+      expect(JSON.stringify(published)).not.toContain(DEPLOYMENT_KEY);
+    },
+  );
+
+  it('still says image generation is off when the unreadable key does not matter', async () => {
+    const { processor, published } = setup({
+      key: new WorkspaceKeyUnreadableError('undecryptable'),
+      generator: generatorThat(picture),
+      settings: { ...settings, 'ai.imageGenerationEnabled': false },
+    });
+
+    await processor(job());
+
+    expect(published).toEqual([expect.objectContaining({ errorDetail: { code: 'unavailable' } })]);
+  });
 
   it('records what an answer without a picture cost', async () => {
     const { processor, records, published } = setup({

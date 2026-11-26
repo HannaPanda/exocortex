@@ -57,5 +57,13 @@
     "creditsDeploymentKey": "The {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} account of the installation does not have enough credits for this request to {model}, or a spending limit on the key has been reached.",
     "hintOwnKey": "No other key stepped in, not even the installation’s: this run did not cost anyone else anything. Whoever added the key should check it with {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} or replace it in the workspace settings under “AI”.",
     "hintDeploymentKey": "Only whoever runs the installation can fix this. Until then, using a model that runs through a different provider will help."
+  },
+  "keyUnreadable": {
+    "undecryptable": "This workspace has configured its own AI key, but this installation can no longer decrypt it. As a result, no request was sent and no other key was used as a fallback: this run did not cost anyone anything.",
+    "noEncryptionKey": "This workspace has configured its own AI key, but this installation is missing the key needed to read it. As a result, no request was sent and no other key was used as a fallback: this run did not cost anyone anything.",
+    "hint": {
+      "undecryptable": "Whoever manages the key can re-enter it in the workspace settings under “AI”. If it is removed there, requests will use the installation’s key again.",
+      "noEncryptionKey": "Only the person who runs this installation can fix this (the CREDENTIAL_ENCRYPTION_KEY setting). Afterwards, the workspace’s key must be re-entered."
+    }
   }
 }

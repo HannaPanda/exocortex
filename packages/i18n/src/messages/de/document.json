@@ -153,6 +153,10 @@
         "creditsOwnKey": "Auf dem OpenRouter-Konto hinter dem Schlüssel dieses Arbeitsbereichs reicht das Guthaben nicht für ein Titelbild, oder am Schlüssel ist ein Ausgabenlimit erreicht. Es ist kein anderer Schlüssel eingesprungen.",
         "creditsDeploymentKey": "Auf dem OpenRouter-Konto der Installation reicht das Guthaben nicht für ein Titelbild. Beheben kann das nur, wer die Installation betreibt."
       },
+      "key_unreadable": {
+        "undecryptable": "Dieser Arbeitsbereich hat einen eigenen KI-Schlüssel hinterlegt, den die Installation nicht mehr entschlüsseln kann. Es wurde kein Bild angefragt, und es ist kein anderer Schlüssel eingesprungen. Wer den Schlüssel verwaltet, trägt ihn in den Arbeitsbereich-Einstellungen unter „KI“ neu ein.",
+        "noEncryptionKey": "Dieser Arbeitsbereich hat einen eigenen KI-Schlüssel hinterlegt, aber der Installation fehlt der Schlüssel, mit dem sie ihn lesen könnte. Es wurde kein Bild angefragt, und es ist kein anderer Schlüssel eingesprungen. Beheben kann das nur, wer die Installation betreibt."
+      },
       "failed": "Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen."
     }
   },

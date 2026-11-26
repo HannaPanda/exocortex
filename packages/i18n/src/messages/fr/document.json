@@ -153,6 +153,10 @@
         "creditsOwnKey": "Le solde du compte OpenRouter associé à la clé de cet espace de travail est insuffisant pour générer une image de couverture, ou un plafond de dépenses a été atteint sur cette clé. Aucune autre clé n’a pris le relais.",
         "creditsDeploymentKey": "Le solde du compte OpenRouter de l’instance est insuffisant pour générer une image de couverture. Seule la personne administrant l’instance peut corriger cela."
       },
+      "key_unreadable": {
+        "undecryptable": "Cet espace de travail a configuré sa propre clé d’IA, mais l’installation ne peut plus la déchiffrer. Aucune image n’a été demandée et aucune autre clé n’a pris le relais. La personne qui gère la clé peut la saisir à nouveau dans les paramètres de l’espace de travail, sous « IA ».",
+        "noEncryptionKey": "Cet espace de travail a configuré sa propre clé d’IA, mais l’installation n’a pas la clé nécessaire pour la lire. Aucune image n’a été demandée et aucune autre clé n’a pris le relais. Seule la personne qui gère l’installation peut résoudre ce problème."
+      },
       "failed": "Impossible de générer l’image de couverture. Merci de réessayer."
     }
   },

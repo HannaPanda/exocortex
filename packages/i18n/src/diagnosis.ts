@@ -2,6 +2,7 @@ import {
   type AiRunDiagnosis,
   type AiRunIncompleteTurnArgs,
   type AiRunKeyRefusedArgs,
+  type AiRunKeyUnreadableArgs,
   type AiRunNoEligibleProviderArgs,
   type AiRunTimeoutArgs,
   type AiRunToolLoopArgs,
@@ -49,6 +50,8 @@ export function renderAiRunDiagnosis(t: DiagnosisTranslator, diagnosis: AiRunDia
       return renderNoEligibleProvider(t, diagnosis.args);
     case 'keyRefused':
       return renderKeyRefused(t, diagnosis.args);
+    case 'keyUnreadable':
+      return renderKeyUnreadable(t, diagnosis.args);
   }
 }
 
@@ -192,6 +195,16 @@ function renderKeyRefused(t: DiagnosisTranslator, args: AiRunKeyRefusedArgs): st
   const headline = t(`keyRefused.${args.reason}${whose}`, values);
   const hint = t(`keyRefused.hint${whose}`, values);
   return [headline, hint].join('\n');
+}
+
+/**
+ * Why a workspace that brought its own key got no answer (issue #260): the
+ * key is stored but this deployment cannot read it, nothing was sent, and no
+ * other key stepped in. The hint says who can fix it, because the two causes
+ * have two different people behind them.
+ */
+function renderKeyUnreadable(t: DiagnosisTranslator, args: AiRunKeyUnreadableArgs): string {
+  return [t(`keyUnreadable.${args.reason}`), t(`keyUnreadable.hint.${args.reason}`)].join('\n');
 }
 
 /** Whole seconds, or whole minutes once that is the honest unit. */

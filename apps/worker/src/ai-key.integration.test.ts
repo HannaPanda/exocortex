@@ -7,7 +7,7 @@ import { loadDotEnv, type WorkerEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
-import { createAiKeyResolver } from './ai-key';
+import { createAiKeyResolver, WorkspaceKeyUnreadableError } from './ai-key';
 
 /**
  * Whose key pays for a run (issue #52, AP7), against the real database.
@@ -62,6 +62,21 @@ async function storeWorkspaceKey(secret = workspaceSecret, key = encryptionKey):
   });
 }
 
+/** Issue #260: the refusal names its reason and carries neither key. */
+async function expectUnreadable(
+  attempt: Promise<unknown>,
+  reason: WorkspaceKeyUnreadableError['reason'],
+): Promise<void> {
+  const error = await attempt.then(
+    () => null,
+    (thrown: unknown) => thrown,
+  );
+  expect(error).toBeInstanceOf(WorkspaceKeyUnreadableError);
+  expect((error as WorkspaceKeyUnreadableError).reason).toBe(reason);
+  expect((error as Error).message).not.toContain(workspaceSecret);
+  expect((error as Error).message).not.toContain('sk-or-v1-deployment-key');
+}
+
 describe('resolving the key for a run', () => {
   it('uses the deployment key when the workspace has none', async () => {
     const resolve = createAiKeyResolver({ prisma, env: envWith({}), logger });
@@ -93,8 +108,33 @@ describe('resolving the key for a run', () => {
       .toBeGreaterThan(0);
   });
 
-  it('falls back to the deployment key when this deployment cannot decrypt at all', async () => {
+  it('refuses rather than paying with the deployment key when this deployment cannot decrypt at all', async () => {
     await storeWorkspaceKey();
+    const resolve = createAiKeyResolver({
+      prisma,
+      env: envWith({ CREDENTIAL_ENCRYPTION_KEY: undefined }),
+      logger,
+    });
+    await expectUnreadable(resolve(workspaceId), 'noEncryptionKey');
+  });
+
+  it('refuses rather than paying with the deployment key when a stored key cannot be decrypted', async () => {
+    await storeWorkspaceKey(workspaceSecret, randomBytes(32));
+    const resolve = createAiKeyResolver({ prisma, env: envWith({}), logger });
+    await expectUnreadable(resolve(workspaceId), 'undecryptable');
+  });
+
+  it('boots with an unusable encryption key instead of throwing, and refuses per workspace', async () => {
+    await storeWorkspaceKey();
+    const resolve = createAiKeyResolver({
+      prisma,
+      env: envWith({ CREDENTIAL_ENCRYPTION_KEY: 'far-too-short' }),
+      logger,
+    });
+    await expectUnreadable(resolve(workspaceId), 'noEncryptionKey');
+  });
+
+  it('still pays with the deployment key for a workspace without a key, whatever the encryption key', async () => {
     const resolve = createAiKeyResolver({
       prisma,
       env: envWith({ CREDENTIAL_ENCRYPTION_KEY: undefined }),
@@ -104,24 +144,5 @@ describe('resolving the key for a run', () => {
       apiKey: 'sk-or-v1-deployment-key',
       usedOwnKey: false,
     });
-  });
-
-  it('falls back rather than failing the run when a stored key cannot be decrypted', async () => {
-    await storeWorkspaceKey(workspaceSecret, randomBytes(32));
-    const resolve = createAiKeyResolver({ prisma, env: envWith({}), logger });
-    expect(await resolve(workspaceId)).toEqual({
-      apiKey: 'sk-or-v1-deployment-key',
-      usedOwnKey: false,
-    });
-  });
-
-  it('boots with an unusable encryption key instead of throwing', async () => {
-    await storeWorkspaceKey();
-    const resolve = createAiKeyResolver({
-      prisma,
-      env: envWith({ CREDENTIAL_ENCRYPTION_KEY: 'far-too-short' }),
-      logger,
-    });
-    expect((await resolve(workspaceId)).usedOwnKey).toBe(false);
   });
 });

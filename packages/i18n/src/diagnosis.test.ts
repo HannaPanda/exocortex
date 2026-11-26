@@ -167,6 +167,38 @@ describe('renderAiRunDiagnosis for a refused key (issue #225)', () => {
   });
 });
 
+describe('a workspace key that cannot be read (issue #260)', () => {
+  const t = serverTranslator('de', 'diagnostics');
+
+  it('says nothing was sent, nobody stepped in, and the owner enters the key again', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'keyUnreadable',
+      args: { reason: 'undecryptable' },
+    });
+    expect(text.split('\n')).toHaveLength(2);
+    expect(text).toContain('nicht mehr entschlüsseln');
+    expect(text).toContain('kein anderer Schlüssel eingesprungen');
+    expect(text).toContain('neu ein');
+  });
+
+  it('sends a missing encryption key to whoever runs the installation', () => {
+    const text = renderAiRunDiagnosis(t, {
+      key: 'keyUnreadable',
+      args: { reason: 'noEncryptionKey' },
+    });
+    expect(text).toContain('wer die Installation betreibt');
+    expect(text).toContain('kein anderer Schlüssel eingesprungen');
+  });
+
+  it('renders in the reader’s language', () => {
+    const text = renderAiRunDiagnosis(serverTranslator('en', 'diagnostics'), {
+      key: 'keyUnreadable',
+      args: { reason: 'undecryptable' },
+    });
+    expect(text).not.toContain('Schlüssel');
+  });
+});
+
 describe('aiRunDiagnosisText', () => {
   const t = serverTranslator('de', 'diagnostics');
 

@@ -57,5 +57,13 @@
     "creditsDeploymentKey": "Sul conto {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} dell’installazione il credito non è sufficiente per questa richiesta a {model}, oppure è stato raggiunto un limite di spesa impostato sulla chiave.",
     "hintOwnKey": "Non è subentrata nessun’altra chiave, nemmeno quella dell’installazione: questa esecuzione non è costata nulla a nessun altro. Chi ha inserito la chiave può verificarla su {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} o sostituirla nelle impostazioni dell’area di lavoro alla voce «IA».",
     "hintDeploymentKey": "Il problema può essere risolto solo da chi gestisce l’installazione. Fino ad allora, puoi scegliere un modello che utilizza un altro fornitore."
+  },
+  "keyUnreadable": {
+    "undecryptable": "Questa area di lavoro ha impostato una propria chiave IA, ma l’installazione non riesce più a decifrarla. Per questo motivo non è stata inviata alcuna richiesta e non è subentrata nessun’altra chiave: questa esecuzione non è costata nulla a nessuno.",
+    "noEncryptionKey": "Questa area di lavoro ha impostato una propria chiave IA, ma all’installazione manca la chiave per poterla leggere. Per questo motivo non è stata inviata alcuna richiesta e non è subentrata nessun’altra chiave: questa esecuzione non è costata nulla a nessuno.",
+    "hint": {
+      "undecryptable": "Chi gestisce la chiave può inserirla di nuovo nelle impostazioni dell’area di lavoro sotto «IA». Se viene rimossa da lì, le richieste torneranno a usare la chiave dell’installazione.",
+      "noEncryptionKey": "Questo problema può essere risolto solo da chi gestisce l’installazione (l’impostazione CREDENTIAL_ENCRYPTION_KEY). Successivamente, la chiave dell’area di lavoro dovrà essere inserita di nuovo."
+    }
   }
 }

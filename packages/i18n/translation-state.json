@@ -5848,6 +5848,22 @@
       "source": "cf73315e8d0eb009",
       "output": "9b997e66f001d5b3"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "63e15f9eaf5c7244"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "450fca3cb1620391"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "4bb5b1fd264613f4"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "28fcd751cf8de29d"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "35342508c1f0b029"
@@ -6835,6 +6851,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "0a203f7c0f728342"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "7a069190e13d948c"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "daf4bc56e7b0d2bb"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -29578,6 +29602,22 @@
       "source": "cf73315e8d0eb009",
       "output": "c7f080cd91dbc72c"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "025abf6eecc9aa6f"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "d6d4e758efad471a"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "515124345439ad4a"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "070ea034a966eb62"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "22416604e589f337"
@@ -30565,6 +30605,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "19aea4598e7d9d6f"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "3fd7bc0f73b32a06"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "c65aa9d09d6e98f6"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -53308,6 +53356,22 @@
       "source": "cf73315e8d0eb009",
       "output": "9ebfc3bd62e75fca"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "c6921c279ad74967"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "221ca4860770f4ed"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "2322ec8045ed783a"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "d742f43f01dc45da"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "4566a915b1673d83"
@@ -54295,6 +54359,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "7b652e6ea2019aea"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "cb63e9c5a70416f7"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "c9c70a9af8d3946d"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -77038,6 +77110,22 @@
       "source": "cf73315e8d0eb009",
       "output": "6e43c71e5bedc29e"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "74e9a25da070ab00"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "f8b8bd52a3878b5c"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "0bc5e3ff5fcf869d"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "2cb7a45ffdac0559"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "8accbb6731c4def9"
@@ -78025,6 +78113,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "d01da2800281c1d7"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "58b2014a42398288"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "ab9b344ea66fd550"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -100768,6 +100864,22 @@
       "source": "cf73315e8d0eb009",
       "output": "1b930d963723477f"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "1828236b348017c6"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "499e808f9ab45760"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "d6059945fb1aaed9"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "f63c77535225f158"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "66f6fb9be35964f3"
@@ -101755,6 +101867,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "5d5b298afc3cb86a"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "09f1286bc1a3ae11"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "9069f26025dce91a"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -124498,6 +124618,22 @@
       "source": "cf73315e8d0eb009",
       "output": "be6c1d69c6e9bf3c"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "198418ba972b8c39"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "5003d5662c61e152"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "4090813d0a41969a"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "55de722fa3313ff5"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "d1a301fc984a9d8b"
@@ -125485,6 +125621,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "680a5a9afe778796"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "f0d6e58b0c999154"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "aab0225b85bdf173"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",
@@ -148228,6 +148372,22 @@
       "source": "cf73315e8d0eb009",
       "output": "ce8cd595084321fb"
     },
+    "diagnostics.keyUnreadable.hint.noEncryptionKey": {
+      "source": "7a2d1fd09ef6825b",
+      "output": "957ae06e6df9cf18"
+    },
+    "diagnostics.keyUnreadable.hint.undecryptable": {
+      "source": "17a7af269140f03a",
+      "output": "fb3f3d9fe7d14ca3"
+    },
+    "diagnostics.keyUnreadable.noEncryptionKey": {
+      "source": "6abcf92b5ff2cac4",
+      "output": "7df962c7c08d648e"
+    },
+    "diagnostics.keyUnreadable.undecryptable": {
+      "source": "da9cb981a8749a23",
+      "output": "ac78d3e044198126"
+    },
     "diagnostics.noEligibleProvider.account": {
       "source": "3de13d7fe2c3c53c",
       "output": "ef09e247d83f0953"
@@ -149215,6 +149375,14 @@
     "document.cover.generationErrors.key_refused.invalidOwnKey": {
       "source": "091386bb9f18fac5",
       "output": "99f0f24c6f399ae2"
+    },
+    "document.cover.generationErrors.key_unreadable.noEncryptionKey": {
+      "source": "b719a07665aca05e",
+      "output": "14966632a0a27015"
+    },
+    "document.cover.generationErrors.key_unreadable.undecryptable": {
+      "source": "e03b1188d22d2a70",
+      "output": "2c66f22eedcf5f1f"
     },
     "document.cover.generationErrors.no_picture": {
       "source": "3b9bde0fd1d6586f",

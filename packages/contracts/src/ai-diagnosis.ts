@@ -114,12 +114,31 @@ export const aiRunKeyRefusedArgsSchema = z.object({
 });
 export type AiRunKeyRefusedArgs = z.infer<typeof aiRunKeyRefusedArgsSchema>;
 
+/**
+ * The workspace has a key of its own, but this deployment cannot read it
+ * (issue #260, ADR-091). Nothing was asked of any provider: before this
+ * existed the run went to the deployment's key instead, which is a bill
+ * nobody agreed to.
+ *
+ * - `undecryptable`: the stored row does not decrypt with this deployment's
+ *   `CREDENTIAL_ENCRYPTION_KEY` (rotated, restored from an older `.env`, or a
+ *   damaged row). The workspace's owner fixes it by entering the key again.
+ * - `noEncryptionKey`: the deployment has no usable encryption key at all, so
+ *   no stored key can be read and none can be entered again. Only whoever
+ *   runs the installation can fix that.
+ */
+export const aiRunKeyUnreadableArgsSchema = z.object({
+  reason: z.enum(['undecryptable', 'noEncryptionKey']),
+});
+export type AiRunKeyUnreadableArgs = z.infer<typeof aiRunKeyUnreadableArgsSchema>;
+
 export const aiRunDiagnosisSchema = z.discriminatedUnion('key', [
   z.object({ key: z.literal('toolLoop'), args: aiRunToolLoopArgsSchema }),
   z.object({ key: z.literal('runTimeout'), args: aiRunTimeoutArgsSchema }),
   z.object({ key: z.literal('incompleteTurn'), args: aiRunIncompleteTurnArgsSchema }),
   z.object({ key: z.literal('noEligibleProvider'), args: aiRunNoEligibleProviderArgsSchema }),
   z.object({ key: z.literal('keyRefused'), args: aiRunKeyRefusedArgsSchema }),
+  z.object({ key: z.literal('keyUnreadable'), args: aiRunKeyUnreadableArgsSchema }),
 ]);
 export type AiRunDiagnosis = z.infer<typeof aiRunDiagnosisSchema>;
 export type AiRunDiagnosisKey = AiRunDiagnosis['key'];

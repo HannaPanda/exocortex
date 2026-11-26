@@ -153,6 +153,10 @@
         "creditsOwnKey": "The OpenRouter account for this workspace’s key does not have enough credits for a cover image, or the key’s spending limit has been reached. No other key stepped in.",
         "creditsDeploymentKey": "The installation’s OpenRouter account does not have enough credits for a cover image. Only the person running this installation can fix this."
       },
+      "key_unreadable": {
+        "undecryptable": "This workspace has stored its own AI key, which the installation can no longer decrypt. No image was requested, and no fallback key was used. Whoever manages the key can re-enter it in the workspace settings under “AI”.",
+        "noEncryptionKey": "This workspace has stored its own AI key, but the installation is missing the key needed to read it. No image was requested, and no fallback key was used. Only whoever runs the installation can fix this."
+      },
       "failed": "The cover image could not be generated. Please try again."
     }
   },

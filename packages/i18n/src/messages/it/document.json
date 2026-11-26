@@ -153,6 +153,10 @@
         "creditsOwnKey": "Sul conto OpenRouter associato alla chiave di questa area di lavoro il credito non è sufficiente per un’immagine di copertina, oppure è stato raggiunto un limite di spesa per la chiave. Non è subentrata nessun’altra chiave.",
         "creditsDeploymentKey": "Sul conto OpenRouter dell’installazione il credito non è sufficiente per un’immagine di copertina. Solo chi gestisce l’installazione può risolvere il problema."
       },
+      "key_unreadable": {
+        "undecryptable": "Questa area di lavoro ha impostato una propria chiave IA che l’installazione non riesce più a decifrare. Non è stata richiesta alcuna immagine e non è subentrata nessun’altra chiave. Chi gestisce la chiave può inserirla di nuovo nelle impostazioni dell’area di lavoro alla voce «IA».",
+        "noEncryptionKey": "Questa area di lavoro ha impostato una propria chiave IA, ma all’installazione manca la chiave necessaria per leggerla. Non è stata richiesta alcuna immagine e non è subentrata nessun’altra chiave. Questo problema può essere risolto solo da chi gestisce l’installazione."
+      },
       "failed": "Impossibile generare l’immagine di copertina. Riprova più tardi."
     }
   },

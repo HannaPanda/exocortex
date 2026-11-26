@@ -102,6 +102,10 @@ function coverErrorText(
       return t(
         `generationErrors.key_refused.${detail.reason}${detail.ownKey ? 'OwnKey' : 'DeploymentKey'}`,
       );
+    case 'key_unreadable':
+      // The workspace's own key cannot be read (issue #260): nothing was
+      // drawn, nothing stepped in, and the reason says who can fix it.
+      return t(`generationErrors.key_unreadable.${detail.reason}`);
     default:
       return t(`generationErrors.${detail.code}`);
   }

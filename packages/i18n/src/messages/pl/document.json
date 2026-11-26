@@ -153,6 +153,10 @@
         "creditsOwnKey": "Na koncie OpenRouter powiązanym z kluczem tego obszaru roboczego brakuje środków na wygenerowanie okładki lub osiągnięto limit wydatków dla klucza. Żaden inny klucz go nie zastąpił.",
         "creditsDeploymentKey": "Na koncie OpenRouter tej instalacji brakuje środków na wygenerowanie okładki. Może to naprawić tylko osoba zarządzająca instalacją."
       },
+      "key_unreadable": {
+        "undecryptable": "Ten obszar roboczy ma zapisany własny klucz AI, którego ta instalacja nie może już odszyfrować. Żaden obraz nie został zażądany i żaden inny klucz go nie zastąpił. Osoba zarządzająca kluczem musi wprowadzić go ponownie w ustawieniach obszaru roboczego w sekcji „AI”.",
+        "noEncryptionKey": "Ten obszar roboczy ma zapisany własny klucz AI, ale instalacji brakuje klucza potrzebnego do jego odczytania. Żaden obraz nie został zażądany i żaden inny klucz go nie zastąpił. Problem ten może rozwiązać tylko osoba zarządzająca instalacją."
+      },
       "failed": "Nie udało się wygenerować okładki. Spróbuj ponownie."
     }
   },

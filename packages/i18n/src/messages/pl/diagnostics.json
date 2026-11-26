@@ -57,5 +57,13 @@
     "creditsDeploymentKey": "Na koncie {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} instalacji brakuje środków na to zapytanie do {model} lub osiągnięto limit wydatków dla klucza.",
     "hintOwnKey": "Żaden inny klucz nie został użyty w zastępstwie, w tym klucz instalacji: to uruchomienie nikogo innego nic nie kosztowało. Osoba, która dodała klucz, może sprawdzić go w serwisie {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} lub zmienić w ustawieniach obszaru roboczego w sekcji „AI”.",
     "hintDeploymentKey": "Może to naprawić tylko osoba zarządzająca instalacją. Do tego czasu rozwiązaniem jest wybór modelu działającego u innego dostawcy."
+  },
+  "keyUnreadable": {
+    "undecryptable": "Ten obszar roboczy ma zapisany własny klucz AI, ale instalacja nie może go już odszyfrować. Dlatego nie wysłano żadnego zapytania i nie użyto żadnego innego klucza: to uruchomienie nikogo nic nie kosztowało.",
+    "noEncryptionKey": "Ten obszar roboczy ma zapisany własny klucz AI, ale instalacji brakuje klucza potrzebnego do jego odczytania. Dlatego nie wysłano żadnego zapytania i nie użyto żadnego innego klucza: to uruchomienie nikogo nic nie kosztowało.",
+    "hint": {
+      "undecryptable": "Osoba zarządzająca kluczem może wprowadzić go ponownie w ustawieniach obszaru roboczego w sekcji „AI”. Po jego usunięciu zapytania będą ponownie realizowane przy użyciu klucza instalacji.",
+      "noEncryptionKey": "Może to naprawić tylko osoba zarządzająca instalacją (ustawienie CREDENTIAL_ENCRYPTION_KEY). Następnie należy ponownie wprowadzić klucz obszaru roboczego."
+    }
   }
 }

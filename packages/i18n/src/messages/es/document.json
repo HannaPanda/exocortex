@@ -153,6 +153,10 @@
         "creditsOwnKey": "En la cuenta de OpenRouter vinculada a la clave de este espacio de trabajo no hay saldo suficiente para una imagen de portada o la clave ha alcanzado un límite de gasto. No se ha recurrido a ninguna otra clave.",
         "creditsDeploymentKey": "En la cuenta de OpenRouter de la instalación no hay saldo suficiente para una imagen de portada. Solo la persona a cargo de la instalación puede solucionarlo."
       },
+      "key_unreadable": {
+        "undecryptable": "Este espacio de trabajo tiene guardada su propia clave de IA, pero la instalación ya no puede descifrarla. No se ha solicitado ninguna imagen y no se ha recurrido a otra clave. La persona que administre la clave debe volver a introducirla en los ajustes del espacio de trabajo, en «IA».",
+        "noEncryptionKey": "Este espacio de trabajo tiene guardada su propia clave de IA, pero a la instalación le falta la clave necesaria para poder leerla. No se ha solicitado ninguna imagen y no se ha recurrido a otra clave. Solo puede solucionarlo quien administre la instalación."
+      },
       "failed": "No se ha podido generar la imagen de portada. Inténtalo de nuevo."
     }
   },

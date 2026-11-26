@@ -23,6 +23,7 @@ import {
 import { loadWorkerEnv } from '@exocortex/config';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
+  type ApplicationEvent,
   type DocumentCoverErrorDetail,
   type DocumentTextMetadata,
   type JobPayloadMap,
@@ -51,6 +52,7 @@ import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, QueueRegistry, RedisEventBus, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { WorkspaceKeyUnreadableError } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
 import { ToolCallLedger } from '../tool-ledger';
 import { type ToolRunner } from '../tool-runner';
@@ -3134,6 +3136,68 @@ describe('ai runs', () => {
     expect(run.estimatedCostMicroUsd).toBe(18);
     expect(run.payloadsPrunedAt).toBeNull();
   }, 60_000);
+
+  /**
+   * Issue #260: a workspace whose own key this deployment cannot read gets no
+   * run at all, rather than one paid for by the deployment's key, and the run
+   * says why in the reader's words.
+   */
+  it.each(['undecryptable', 'noEncryptionKey'] as const)(
+    'refuses a run whose workspace key cannot be read (%s) without asking any provider',
+    async (reason) => {
+      const documentId = await createDocument();
+      const runId = await createRun(documentId);
+      const visionPreprocessorFor = vi.fn(() => null);
+      const events: ApplicationEvent[] = [];
+      const recordingBus = {
+        publish: async (event: ApplicationEvent) => {
+          events.push(event);
+          await bus.publish(event);
+        },
+      } as unknown as RedisEventBus;
+
+      const processor = createAiRunProcessor({
+        search: { hybrid: search, keyword: keywordSearch },
+        prisma,
+        providerFor: async () => {
+          throw new WorkspaceKeyUnreadableError(reason);
+        },
+        bus: recordingBus,
+        storage: fakeStorage(Buffer.from('unused')),
+        settings: stubSettings(),
+        toolRunnerFactory: null,
+        visionPreprocessorFor,
+        queues,
+        modelRegistry: async () => null,
+      });
+      await processor(
+        contextFor<'ai'>({ correlationId: 'test-ai-key', runId, workspaceId, userId }).context,
+      );
+
+      // Nothing was prepared on anybody's key: no vision companion, no start.
+      expect(visionPreprocessorFor).not.toHaveBeenCalled();
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+      expect(run.status).toBe('FAILED');
+      expect(run.errorCode).toBe('ai_key_unreadable');
+      expect(run.usedOwnKey).toBe(false);
+      expect(run.startedAt).toBeNull();
+      expect(run.errorDetailKey).toBe('keyUnreadable');
+      expect(run.errorDetailArgs).toEqual({ reason });
+      expect(run.errorDetail).toContain('kein anderer Schlüssel eingesprungen');
+      expect(events).toEqual([
+        expect.objectContaining({
+          type: 'ai.run.failed',
+          payload: expect.objectContaining({
+            runId,
+            errorCode: 'ai_key_unreadable',
+            detailKey: 'keyUnreadable',
+            detailArgs: { reason },
+          }),
+        }),
+      ]);
+    },
+    60_000,
+  );
 
   it('does not inject a system message when the page has no images', async () => {
     const documentId = await createDocument();

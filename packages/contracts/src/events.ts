@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
-import { aiRunDiagnosisArgsSchema } from './ai-diagnosis';
+import { aiRunDiagnosisArgsSchema, aiRunKeyUnreadableArgsSchema } from './ai-diagnosis';
 import { automationFailureReasonSchema } from './automations';
 import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
@@ -288,7 +288,9 @@ export const agentPageReadPayloadSchema = z.object({
  *
  * `unavailable`: no image model is set up. `no_picture`: the model answered
  * without an image, so it most likely cannot draw. `key_refused`: the key that
- * was to pay for the picture was refused (issue #252). `failed`: anything else.
+ * was to pay for the picture was refused (issue #252). `key_unreadable`: the
+ * workspace has a key of its own that this deployment cannot read, so nothing
+ * was drawn and no other key stepped in (issue #260). `failed`: anything else.
  */
 export const documentCoverErrorDetailSchema = z.discriminatedUnion('code', [
   z.object({ code: z.literal('unavailable') }),
@@ -299,6 +301,11 @@ export const documentCoverErrorDetailSchema = z.discriminatedUnion('code', [
     reason: z.enum(['invalid', 'credits']),
     /** Whether it was the workspace's own key. Nothing stepped in for it either way. */
     ownKey: z.boolean(),
+  }),
+  z.object({
+    code: z.literal('key_unreadable'),
+    /** Why the workspace's stored key cannot be read (issue #260); see `aiRunKeyUnreadableArgsSchema`. */
+    reason: aiRunKeyUnreadableArgsSchema.shape.reason,
   }),
   z.object({ code: z.literal('failed') }),
 ]);

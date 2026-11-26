@@ -10,7 +10,7 @@ import {
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
-import { type AiKeyResolver } from '../ai-key';
+import { type AiKeyResolver, WorkspaceKeyUnreadableError } from '../ai-key';
 
 import { keyRefusalReason } from './ai-run/provider-refusal';
 import { type ImageRunRecord, type ImageRunRecorder } from './image-run';
@@ -48,6 +48,10 @@ function coverErrorMessage(detail: DocumentCoverErrorDetail): string {
       return detail.reason === 'credits'
         ? `The ${detail.ownKey ? "workspace's" : "deployment's"} key has no credits left for a picture.`
         : `The ${detail.ownKey ? "workspace's" : "deployment's"} key was refused.`;
+    case 'key_unreadable':
+      return detail.reason === 'noEncryptionKey'
+        ? "The workspace's own key cannot be read: this deployment has no usable encryption key."
+        : "The workspace's own key cannot be decrypted and has to be entered again.";
     case 'failed':
       return 'The cover could not be generated.';
   }
@@ -108,8 +112,9 @@ export function coverFailure(error: unknown, model: string, ownKey: boolean): Co
  *
  * The picture is paid for like a run (issue #252, ADR-090): with the
  * workspace's own OpenRouter key when it has one, the deployment's only when
- * it has none. A key the provider refuses ends the cover with that reason;
- * no other key steps in.
+ * it has none. A key the provider refuses ends the cover with that reason, and
+ * so does a key of the workspace's that this deployment cannot read (issue
+ * #260); no other key steps in.
  *
  * Every picture that was asked of a model is recorded as an `ai_run` row of
  * kind `IMAGE`, whatever came of it, so the usage report shows what covers
@@ -158,6 +163,21 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
     try {
       key = await dependencies.aiKeyFor(payload.workspaceId);
     } catch (error: unknown) {
+      // A workspace key that cannot be read ends the cover, and the
+      // deployment's key does not step in (issue #260, ADR-091). Nothing was
+      // asked of a model, so nothing goes into the usage report. With image
+      // generation off the honest answer is still that it is off.
+      if (error instanceof WorkspaceKeyUnreadableError) {
+        logger.warn('Cover refused: the workspace key cannot be read', {
+          documentId: payload.documentId,
+          reason: error.reason,
+        });
+        await publish(
+          'failed',
+          enabled ? { code: 'key_unreadable', reason: error.reason } : { code: 'unavailable' },
+        );
+        return;
+      }
       logger.error('Could not resolve whose key pays for the cover', error, {
         documentId: payload.documentId,
       });

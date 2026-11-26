@@ -1,6 +1,13 @@
-import { AI_RUN_HEARTBEAT_STALE_MS, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
-import { type AiRun, type PrismaClient } from '@exocortex/database';
+import {
+  AI_RUN_HEARTBEAT_STALE_MS,
+  type AiRunDiagnosis,
+  type QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
+import { type AiRun, Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
+
+import { germanDiagnosis } from '../../diagnosis';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 
@@ -118,8 +125,9 @@ async function failDisabledRun(input: {
 
 /**
  * Ends a run before it starts and tells the clients why. For the runs that
- * must not run at all: AI switched off, or an eval attempt whose case can no
- * longer hold the run (issue #146).
+ * must not run at all: AI switched off, an eval attempt whose case can no
+ * longer hold the run (issue #146), or a workspace whose own key cannot be
+ * read (issue #260), which carries a diagnosis for the person.
  */
 export async function refuseRun(input: {
   prisma: PrismaClient;
@@ -130,11 +138,23 @@ export async function refuseRun(input: {
   errorCode: string;
   /** English, for the log and the event. */
   reason: string;
+  /** What the person reads, as facts rendered in their language (ADR-059). */
+  diagnosis?: AiRunDiagnosis;
 }): Promise<void> {
   const { prisma, bus, run, payload, logger } = input;
+  const diagnosis = input.diagnosis ?? null;
+  const detail = diagnosis === null ? null : germanDiagnosis(diagnosis);
+  const detailArgs: Record<string, unknown> | null = diagnosis?.args ?? null;
   await prisma.aiRun.update({
     where: { id: run.id },
-    data: { status: 'FAILED', errorCode: input.errorCode, finishedAt: new Date() },
+    data: {
+      status: 'FAILED',
+      errorCode: input.errorCode,
+      errorDetail: detail,
+      errorDetailKey: diagnosis?.key ?? null,
+      errorDetailArgs: detailArgs === null ? Prisma.DbNull : (detailArgs as Prisma.InputJsonObject),
+      finishedAt: new Date(),
+    },
   });
   await bus.publish({
     type: 'ai.run.failed',
@@ -146,9 +166,9 @@ export async function refuseRun(input: {
       status: 'failed',
       errorCode: input.errorCode,
       reason: input.reason,
-      detail: null,
-      detailKey: null,
-      detailArgs: null,
+      detail,
+      detailKey: diagnosis?.key ?? null,
+      detailArgs,
     },
   });
   logger.warn('AI run refused before it started', {

@@ -153,6 +153,10 @@
         "creditsOwnKey": "O saldo na conta do OpenRouter associada à chave deste espaço de trabalho não é suficiente para uma imagem de capa, ou o limite de gastos da chave foi atingido. Nenhuma outra chave pôde ser usada como alternativa.",
         "creditsDeploymentKey": "O saldo na conta do OpenRouter da instalação não é suficiente para uma imagem de capa. Isso só pode ser resolvido por quem administra a instalação."
       },
+      "key_unreadable": {
+        "undecryptable": "Este espaço de trabalho tem sua própria chave de IA configurada, que a instalação não consegue mais descriptografar. Nenhuma imagem foi solicitada e nenhuma outra chave foi usada como alternativa. Quem gerencia a chave deve inseri-la novamente nas configurações do espaço de trabalho em „IA”.",
+        "noEncryptionKey": "Este espaço de trabalho tem sua própria chave de IA configurada, mas a instalação não tem a chave necessária para lê-la. Nenhuma imagem foi solicitada e nenhuma outra chave foi usada como alternativa. Somente quem administra a instalação pode resolver isso."
+      },
       "failed": "Não foi possível gerar a imagem de capa. Tente novamente."
     }
   },

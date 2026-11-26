@@ -57,5 +57,13 @@
     "creditsDeploymentKey": "Sur le compte {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} de l’installation, le solde est insuffisant pour cette requête envoyée à {model}, ou un plafond de dépenses a été atteint sur la clé.",
     "hintOwnKey": "Aucune autre clé n’a pris le relais, pas même celle de l’installation : cette exécution n’a rien coûté à personne d’autre. La personne qui a saisi la clé peut la vérifier chez {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} ou la remplacer dans les paramètres de l’espace de travail, sous « IA ».",
     "hintDeploymentKey": "Seule la personne administrant l’installation peut régler ce problème. En attendant, tu peux utiliser un modèle passant par un autre fournisseur."
+  },
+  "keyUnreadable": {
+    "undecryptable": "Cet espace de travail a configuré sa propre clé d’IA, mais l’installation ne peut plus la déchiffrer. Rien n’a donc été demandé et aucune autre clé n’a pris le relais : cette exécution n’a rien coûté à personne.",
+    "noEncryptionKey": "Cet espace de travail a configuré sa propre clé d’IA, mais il manque à l’installation la clé permettant de la lire. Rien n’a donc été demandé et aucune autre clé n’a pris le relais : cette exécution n’a rien coûté à personne.",
+    "hint": {
+      "undecryptable": "La personne qui gère la clé peut la saisir à nouveau dans les paramètres de l’espace de travail, sous « IA ». Si elle y est supprimée, les requêtes passeront à nouveau par la clé de l’installation.",
+      "noEncryptionKey": "Seule la personne qui administre l’installation peut corriger cela (le paramètre CREDENTIAL_ENCRYPTION_KEY). Ensuite, la clé de l’espace de travail devra être saisie à nouveau."
+    }
   }
 }

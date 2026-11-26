@@ -153,6 +153,10 @@
         "creditsOwnKey": "Op het OpenRouter-account achter de sleutel van deze werkruimte is het tegoed niet toereikend voor een omslagafbeelding, of de uitgavenlimiet van de sleutel is bereikt. Er is geen andere sleutel ingevallen.",
         "creditsDeploymentKey": "Op het OpenRouter-account van de installatie is het tegoed niet toereikend voor een omslagafbeelding. Alleen degene die de installatie beheert, kan dit oplossen."
       },
+      "key_unreadable": {
+        "undecryptable": "Deze werkruimte heeft een eigen AI-sleutel opgeslagen die de installatie niet meer kan ontsleutelen. Er is geen afbeelding aangevraagd en er is geen andere sleutel ingevallen. Degene die de sleutel beheert, voert deze opnieuw in via de werkruimte-instellingen onder „AI”.",
+        "noEncryptionKey": "Deze werkruimte heeft een eigen AI-sleutel opgeslagen, maar de installatie mist de sleutel om deze te kunnen lezen. Er is geen afbeelding aangevraagd en er is geen andere sleutel ingevallen. Dit kan alleen worden opgelost door degene die de installatie beheert."
+      },
       "failed": "De omslagafbeelding kon niet worden gegenereerd. Probeer het opnieuw."
     }
   },

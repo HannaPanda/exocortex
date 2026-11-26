@@ -57,5 +57,13 @@
     "creditsDeploymentKey": "En la cuenta de {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} de la instalación no hay saldo suficiente para esta solicitud a {model}, o bien la clave ha alcanzado un límite de gasto.",
     "hintOwnKey": "No se ha recurrido a ninguna otra clave, ni siquiera a la de la instalación: esta ejecución no le ha costado nada a nadie más. La persona que configuró la clave puede comprobarla en {provider, select, openrouter {OpenRouter} cline {Cline} other {{provider}}} o sustituirla en los ajustes del espacio de trabajo, en «IA».",
     "hintDeploymentKey": "Solo quien administra la instalación puede solucionar esto. Mientras tanto, puedes usar un modelo que funcione a través de otro proveedor."
+  },
+  "keyUnreadable": {
+    "undecryptable": "Este espacio de trabajo tiene configurada su propia clave de IA, pero la instalación ya no puede descifrarla. Por eso no se ha enviado ninguna solicitud y tampoco se ha recurrido a otra clave: esta ejecución no le ha costado nada a nadie.",
+    "noEncryptionKey": "Este espacio de trabajo tiene configurada su propia clave de IA, pero la instalación no dispone de la clave necesaria para leerla. Por eso no se ha enviado ninguna solicitud y tampoco se ha recurrido a otra clave: esta ejecución no le ha costado nada a nadie.",
+    "hint": {
+      "undecryptable": "Quien gestione la clave puede volver a introducirla en los ajustes del espacio de trabajo, en «IA». Si se elimina de ahí, las solicitudes volverán a usar la clave de la instalación.",
+      "noEncryptionKey": "Esto solo lo puede solucionar quien administre la instalación (con el ajuste CREDENTIAL_ENCRYPTION_KEY). Después, habrá que volver a introducir la clave del espacio de trabajo."
+    }
   }
 }
