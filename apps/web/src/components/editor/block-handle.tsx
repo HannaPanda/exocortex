@@ -83,24 +83,40 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
    */
   const menuOpen = React.useRef(false);
   /**
-   * The menu's open state, held here so a drag can close it.
+   * The menu's open state, held here so the handle decides when it opens.
    *
-   * The menu opens when the button is pressed, and a drag starts from that
-   * same press. Left open, its backdrop lay over the page and took every
-   * `dragover`, so the block could not be dropped anywhere. Opening on
-   * release instead is issue #268; closing on the first movement is the part
-   * a drag cannot do without.
+   * Base UI opens a menu on the *press* of its trigger, and on this button a
+   * drag starts from that same press: the menu stood in the way of the block
+   * being carried, and its backdrop took every `dragover` (issue #243). So the
+   * press is refused and a pointer opens the menu on release, from `click`,
+   * which the browser never sends after a drag (issue #268). The keyboard is
+   * untouched: Enter and Space arrive as a `click` that no pointer pressed, and
+   * Base UI opens from that itself.
    */
   const [open, setOpen] = React.useState(false);
+  /** The trigger's id, which anchors the menu when this component opens it. */
+  const triggerId = React.useId();
   /** True from the first movement of a drag until it ends. */
   const dragging = React.useRef(false);
-  const changeOpen = React.useCallback((next: boolean): void => {
-    // The press opens the menu one frame late, which can be after the drag
-    // has already begun.
-    if (next && dragging.current) return;
-    menuOpen.current = next;
-    setOpen(next);
-  }, []);
+  /**
+   * The pointer press the next `click` belongs to, and whether the menu was
+   * open when it happened; `null` when a click comes from the keyboard.
+   */
+  const press = React.useRef<{ menuWasOpen: boolean } | null>(null);
+  const changeOpen = React.useCallback(
+    (next: boolean, details?: { reason: string; event: Event; cancel: () => void }): void => {
+      // A drag can begin before a late open request arrives.
+      if (next && dragging.current) return;
+      // The press of a pointer never opens the menu; its release does.
+      if (next && details?.reason === 'trigger-press' && details.event.type === 'mousedown') {
+        details.cancel();
+        return;
+      }
+      menuOpen.current = next;
+      setOpen(next);
+    },
+    [],
+  );
 
   /**
    * Must keep a stable identity for the lifetime of the editor.
@@ -167,8 +183,23 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
         <PlusIcon />
       </Button>
 
-      <DropdownMenu open={open} onOpenChange={changeOpen}>
+      <DropdownMenu open={open} triggerId={triggerId} onOpenChange={changeOpen}>
         <DropdownMenuTrigger
+          id={triggerId}
+          onPointerDown={() => {
+            press.current = { menuWasOpen: menuOpen.current };
+          }}
+          onKeyDown={() => {
+            press.current = null;
+          }}
+          onClick={() => {
+            const pressed = press.current;
+            press.current = null;
+            // A keyboard click is Base UI's to handle, and a press on the open
+            // menu's handle closed it: its release must not open it again.
+            if (pressed === null || pressed.menuWasOpen) return;
+            changeOpen(true);
+          }}
           render={
             <Button
               variant="ghost"

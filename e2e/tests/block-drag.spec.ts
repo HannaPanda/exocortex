@@ -142,6 +142,53 @@ test.describe('moving blocks', () => {
     await expect.poll(() => outline(page)).toEqual(['Eins', 'Zwei', '  Drei']);
   });
 
+  /*
+   * Issue #268: the menu opens when the handle is let go without moving, the
+   * way Notion does it, never on the press that may start a drag. Before, it
+   * opened on the press and stood in the way of the block being carried.
+   */
+  test('opens the handle menu on release, not on press, and not after a drag', async ({ page }) => {
+    await pageWith(page, ['Oben', 'Mitte', 'Unten'].join('\n\n'));
+    await expect(paragraph(page, 'Unten')).toBeVisible({ timeout: 30_000 });
+    const menuItem = page.getByTestId('block-duplicate');
+
+    // Pressed and held: nothing opens, however long the press lasts.
+    let handle = await grabHandle(page, paragraph(page, 'Mitte'));
+    await page.mouse.move(handle.x, handle.y);
+    await page.mouse.down();
+    await page.waitForTimeout(400);
+    await expect(menuItem).toHaveCount(0);
+    // Let go without moving: that is a click, and the menu opens.
+    await page.mouse.up();
+    await expect(menuItem).toBeVisible();
+    // A second click on the handle closes it again and does not reopen it.
+    await page.mouse.click(handle.x, handle.y);
+    await expect(menuItem).toHaveCount(0);
+
+    // Carried and dropped: the block moves and the menu stays shut.
+    handle = await grabHandle(page, paragraph(page, 'Unten'));
+    await page.mouse.move(handle.x, handle.y);
+    await page.mouse.down();
+    const oben = await paragraph(page, 'Oben').boundingBox();
+    if (oben === null) throw new Error('no layout');
+    await page.mouse.move(handle.x, oben.y + 3, { steps: 12 });
+    await expect(page.getByTestId('block-drop-line')).toBeVisible();
+    await page.mouse.up();
+    await expect
+      .poll(() => page.locator('.exocortex-editor p').allTextContents())
+      .toEqual(['Unten', 'Oben', 'Mitte']);
+    await page.waitForTimeout(400);
+    await expect(menuItem).toHaveCount(0);
+
+    // The keyboard opens it as before: Enter on the focused handle.
+    await grabHandle(page, paragraph(page, 'Mitte'));
+    await page.getByTestId('block-handle').focus();
+    await page.keyboard.press('Enter');
+    await expect(menuItem).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(menuItem).toHaveCount(0);
+  });
+
   test('moves a block with Strg+Umschalt+Pfeil and takes it back with Strg+Z', async ({ page }) => {
     await pageWith(page, ['1. Eins\n2. Zwei\n3. Drei', 'Unten'].join('\n\n'));
     await expect(paragraph(page, 'Zwei')).toBeVisible({ timeout: 30_000 });
