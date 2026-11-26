@@ -893,6 +893,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   or estimated price and `usedOwnKey`), so the usage report counts it without
   a second source and splits its model table by kind. Embeddings and memory
   jobs stay on the deployment key (ADR-023).
+- ADR-091: a workspace key that cannot be read stops the work. `aiKeyFor`
+  looks the row up first and throws `WorkspaceKeyUnreadableError`
+  (`undecryptable`, or `noEncryptionKey` for a deployment without a usable
+  `CREDENTIAL_ENCRYPTION_KEY`) instead of handing back the deployment's key;
+  a run is refused before anything is sent (`ai_key_unreadable`, diagnosis
+  `keyUnreadable`), a cover ends with `key_unreadable` and writes no row. Only
+  a workspace without a key runs on the deployment's.
 
 Full list: `docs/adr/`.
 

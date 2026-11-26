@@ -1,7 +1,9 @@
 # ADR-023: Settings have a scope, and credentials are not settings
 
 - Status: accepted, amended by ADR-090 (2026-11-26): page covers are paid for
-  by the workspace's key too, and recorded in `ai_run`
+  by the workspace's key too, and recorded in `ai_run`; amended by ADR-091
+  (2026-11-26): a stored key that cannot be read stops the run or the cover
+  instead of falling back to the deployment key
 - Date: 2026-09-12
 
 ## Context
@@ -107,6 +109,10 @@ decrypted falls back rather than failing the run, and the run is then recorded
 as deployment-paid, because a usage report that guesses is worse than one that
 undercounts BYOK.
 
+(Superseded by ADR-091: a workspace with a stored key that cannot be read gets
+no run and no cover, with the `keyUnreadable` diagnosis, rather than the
+deployment's key.)
+
 The boundary is **what a run spends**. An `AiRun` and the vision companion
 calls inside it are paid for by the workspace's key; the deployment-wide
 machinery around them (cover images, memory capture and consolidation, search
@@ -154,7 +160,9 @@ so the usage report can say how much of one total was somebody else's money.
 - **Losing `CREDENTIAL_ENCRYPTION_KEY` loses the stored keys, not the service.**
   Every workspace falls back to the deployment key and keeps working; the rows
   become unreadable and have to be entered again. That is the price of not
-  keeping a second copy of the key anywhere.
+  keeping a second copy of the key anywhere. (Since ADR-091 the workspaces
+  that brought a key stop instead of falling back, and say why; the others
+  keep working.)
 - **This is not multi-tenancy.** The admin area stays deployment-wide: users,
   the model registry, AI usage, agent sessions. A global admin still sees
   everything. What this ADR buys is configuration per workspace, which is the

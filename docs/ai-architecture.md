@@ -163,7 +163,7 @@ requesting user, so the generated file passes the ordinary permission and
 magic-byte checks and gets the ordinary downscaling. The finished cover reaches
 the browser as `document.updated`; `document.cover.generated` carries the
 outcome, with a code the browser words when it failed (`unavailable`,
-`no_picture`, `key_refused`, `failed`). One attempt only — a retry would
+`no_picture`, `key_refused`, `key_unreadable`, `failed`). One attempt only — a retry would
 be a second paid image.
 
 Who pays (issue #252, ADR-090): the processor asks `aiKeyFor(workspaceId)`
@@ -171,7 +171,10 @@ like a run does, so a workspace with its own OpenRouter key pays for its
 covers, and the deployment key only draws for a workspace without one. A 401
 or 402 from the image model ends the cover with `key_refused` (`invalid` or
 `credits`, plus whether it was the workspace's key); no second request is
-made with another key. The generator asks for `usage.include` and returns the
+made with another key. A workspace key this deployment cannot read
+(`WorkspaceKeyUnreadableError`, issue #260, ADR-091) ends the cover with
+`key_unreadable` before any generator is built, so no row is written. The
+generator asks for `usage.include` and returns the
 tokens and the reported price beside the picture; an answer without a picture
 keeps its usage on `AiImageEmptyError`, because it was paid for all the same.
 `createImageRunRecorder` (`apps/worker/src/processors/image-run.ts`) then
@@ -670,6 +673,14 @@ before every turn:
    provider's message reaches the log and the run's failure with the key,
    and anything shaped like a provider key, replaced by `[key]`
    (`redactKey`), because some providers quote the key they refused.
+7. A workspace key that this deployment cannot read never reaches a provider
+   at all (issue #260, ADR-091). `aiKeyFor` throws
+   `WorkspaceKeyUnreadableError` for a stored row that does not decrypt
+   (`undecryptable`) or a deployment without a usable
+   `CREDENTIAL_ENCRYPTION_KEY` (`noEncryptionKey`), and the run is refused
+   before it starts (`refuseRun`) with code `ai_key_unreadable` and the
+   `keyUnreadable` diagnosis. The deployment key never stands in for it,
+   subscription presets included.
 
 A model without a snapshot sends no provider preference at all, which is what
 every request did before this existed.

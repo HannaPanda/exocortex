@@ -72,4 +72,5 @@ model that also chats shows its pictures and its conversations apart.
   decrypted falls back to the deployment key, as ADR-023 decided, for covers
   as for runs, and the row then says the deployment paid. Whether that should
   rather fail is a decision for whoever answers for the bill, not part of this
-  record.
+  record. (Decided since, in ADR-091: it fails. A cover ends with
+  `key_unreadable`, nothing is asked of a model and no row is written.)

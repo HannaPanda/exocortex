@@ -153,8 +153,9 @@ CREDENTIAL_ENCRYPTION_KEY=$(openssl rand -base64 32)
 
 Without it the feature is simply off: the form says so, every workspace runs on
 `OPENROUTER_API_KEY`, and nothing refuses to boot. Losing the value later makes
-the stored rows unreadable; every workspace falls back to the deployment key
-and the owners enter theirs again.
+the stored rows unreadable: the workspaces that brought a key get no runs and
+no covers until the value is restored or their owners enter the key again
+(ADR-091); every other workspace keeps running on the deployment key.
 
 What a workspace key pays for is **runs**: the model call and the vision
 companion calls inside it, and since issue #252 (ADR-090) the **cover images**
@@ -173,10 +174,16 @@ A workspace key that OpenRouter refuses (401: unknown, revoked or disabled;
 `keyRefused` diagnosis, which tells the person that their workspace's key was
 refused and that no other key stepped in. A cover drawn on a refused key fails
 the same way (`key_refused` on `document.cover.generated`, worded in the
-browser). Nothing falls back to the deployment key for a refused key. The one fallback that exists is older and
-different: a stored row that cannot be **decrypted** (a lost or rotated
-`CREDENTIAL_ENCRYPTION_KEY`) runs on the deployment key and is recorded as
-deployment-paid (ADR-023).
+browser). Nothing falls back to the deployment key for a refused key, and
+since issue #260 (ADR-091) nothing falls back for a key that cannot be read
+either. A stored row that cannot be **decrypted** (a rotated or restored
+`CREDENTIAL_ENCRYPTION_KEY`, a damaged row) ends the run before anything is
+sent, with code `ai_key_unreadable` and the `keyUnreadable` diagnosis
+(`reason: undecryptable`), which tells the owner to enter the key again; a
+deployment with no usable `CREDENTIAL_ENCRYPTION_KEY` ends it the same way
+with `reason: noEncryptionKey`, which only the operator can fix. A cover ends
+with `key_unreadable` and the same reason. Removing the workspace's key is
+the deliberate way back onto the deployment key.
 
 | Key                                           | Type                           | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                                        |
 | --------------------------------------------- | ------------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
