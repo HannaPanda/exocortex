@@ -26,6 +26,8 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { splitSettledMarkdown, stabilizeStreamingTail } from './streaming-markdown';
+
 /**
  * How often a streaming answer is reparsed while it is still growing (issue
  * #21). Frequent enough that formatting appears almost immediately, infrequent
@@ -57,25 +59,62 @@ function parseChatMarkdown(markdown: string): ProseMirrorDocument {
   }
 }
 
+/** Parsed settled pieces of one streaming answer, by their source text. */
+type SettledCache = Map<string, readonly ProseMirrorNode[]>;
+
+/**
+ * The top-level blocks of an answer that is still arriving (issue #242).
+ *
+ * Every block that is over (see `splitSettledMarkdown`) is parsed once and
+ * then handed back as the very same object, which is what lets `ChatBlock`
+ * skip it on every later render; only the tail is parsed again, after
+ * `stabilizeStreamingTail` has held back the syntax that has not decided yet
+ * what it is. The cache is rebuilt from the pieces still in use, so it never
+ * holds more than the answer on screen.
+ */
+function parseStreamingBlocks(content: string, cache: SettledCache): readonly ProseMirrorNode[] {
+  const { settled, tail } = splitSettledMarkdown(content);
+  const next: SettledCache = new Map();
+  const blocks: ProseMirrorNode[] = [];
+  for (const piece of settled) {
+    const parsed = cache.get(piece) ?? next.get(piece) ?? parseChatMarkdown(piece).content ?? [];
+    next.set(piece, parsed);
+    blocks.push(...parsed);
+  }
+  cache.clear();
+  for (const [piece, parsed] of next) cache.set(piece, parsed);
+  blocks.push(...(parseChatMarkdown(stabilizeStreamingTail(tail)).content ?? []));
+  return blocks;
+}
+
+function parseBlocks(
+  content: string,
+  streaming: boolean,
+  cache: SettledCache,
+): readonly ProseMirrorNode[] {
+  return streaming
+    ? parseStreamingBlocks(content, cache)
+    : (parseChatMarkdown(content).content ?? []);
+}
+
 /**
  * Parses `content` into the chat's ProseMirror subset, throttled to roughly
  * once every {@link PARSE_THROTTLE_MS} while `streaming` is true and memoized
- * against the last parsed string. Always parses immediately once `streaming`
- * turns `false`, so the final render reflects the complete answer.
+ * against the last parsed string. Always parses immediately (and whole) once
+ * `streaming` turns `false`, so the final render reflects the complete answer.
  */
-function useChatMarkdownDocument(content: string, streaming: boolean): ProseMirrorDocument {
+function useChatMarkdownBlocks(content: string, streaming: boolean): readonly ProseMirrorNode[] {
   // The lazy initializer is a pure function of `content`; everything that
   // follows only ever mutates refs from inside an effect or a callback, never
   // synchronously during render (React's rules of components and hooks).
-  const [document, setDocument] = React.useState<ProseMirrorDocument>(() =>
-    parseChatMarkdown(content),
+  const [blocks, setBlocks] = React.useState<readonly ProseMirrorNode[]>(() =>
+    parseBlocks(content, streaming, new Map()),
   );
 
   const contentRef = React.useRef(content);
-  const cacheRef = React.useRef<{ content: string; document: ProseMirrorDocument }>({
-    content,
-    document,
-  });
+  const streamingRef = React.useRef(streaming);
+  const settledRef = React.useRef<SettledCache>(new Map());
+  const cacheRef = React.useRef<{ content: string; streaming: boolean }>({ content, streaming });
   const timerRef = React.useRef<number | null>(null);
   // `null` until the first parse; an unset "last parsed at" must not throttle
   // that first parse, which is why the effect below treats it as "long ago".
@@ -83,16 +122,18 @@ function useChatMarkdownDocument(content: string, streaming: boolean): ProseMirr
 
   const parseNow = React.useCallback(() => {
     const latest = contentRef.current;
-    if (cacheRef.current.content === latest) return;
-    const parsed = parseChatMarkdown(latest);
-    cacheRef.current = { content: latest, document: parsed };
+    const live = streamingRef.current;
+    if (cacheRef.current.content === latest && cacheRef.current.streaming === live) return;
+    const parsed = parseBlocks(latest, live, settledRef.current);
+    cacheRef.current = { content: latest, streaming: live };
     lastParseAtRef.current = Date.now();
-    setDocument(parsed);
+    setBlocks(parsed);
   }, []);
 
   React.useEffect(() => {
     contentRef.current = content;
-    if (cacheRef.current.content === content) return;
+    streamingRef.current = streaming;
+    if (cacheRef.current.content === content && cacheRef.current.streaming === streaming) return;
 
     if (!streaming) {
       if (timerRef.current !== null) {
@@ -128,7 +169,7 @@ function useChatMarkdownDocument(content: string, streaming: boolean): ProseMirr
     [],
   );
 
-  return document;
+  return blocks;
 }
 
 function headingTag(level: number): 'h4' | 'h5' | 'h6' {
@@ -401,9 +442,32 @@ export interface ChatMarkdownProps {
  * path from model text to raw HTML.
  */
 export function ChatMarkdown({ content, streaming = false, className }: ChatMarkdownProps) {
-  const document = useChatMarkdownDocument(content, streaming);
-  return <div className={className}>{renderBlockChildren(document.content, 'block')}</div>;
+  const blocks = useChatMarkdownBlocks(content, streaming);
+  return (
+    <div className={className}>
+      {blocks.map((node, index) => {
+        const key = `block-${String(index)}`;
+        return <ChatBlock key={key} node={node} blockKey={key} />;
+      })}
+    </div>
+  );
 }
+
+/**
+ * One top-level block of an answer. Memoized on the node's identity: a block
+ * that is over keeps its object while the answer streams on (see
+ * `parseStreamingBlocks`), so it is not rendered again for every fragment
+ * that arrives below it.
+ */
+const ChatBlock = React.memo(function ChatBlock({
+  node,
+  blockKey,
+}: {
+  node: ProseMirrorNode;
+  blockKey: string;
+}) {
+  return renderBlock(node, blockKey);
+});
 
 /**
  * The same renderer for a page somebody is reading rather than a chat bubble
