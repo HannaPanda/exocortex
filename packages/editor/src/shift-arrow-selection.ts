@@ -54,9 +54,9 @@ function insideIsolating($pos: ResolvedPos): boolean {
  * next text beyond, so the opaque block or the whole table is part of the
  * selection. The anchor never moves.
  *
- * `dir` is 1 for forward (right, down) and -1 for backward (left, up).
+ * `direction` is 1 for forward (right, down) and -1 for backward (left, up).
  */
-export function shiftArrowTarget(state: EditorState, dir: 1 | -1): TextSelection | null {
+export function shiftArrowTarget(state: EditorState, direction: 1 | -1): TextSelection | null {
   const { selection, doc } = state;
   if (!(selection instanceof TextSelection)) return null;
   const { $head, anchor } = selection;
@@ -64,10 +64,10 @@ export function shiftArrowTarget(state: EditorState, dir: 1 | -1): TextSelection
   // Moving between cells or columns is the table's and the browser's business.
   if (insideIsolating($head)) return null;
 
-  let $start = doc.resolve(dir > 0 ? $head.after() : $head.before());
+  let $start = doc.resolve(direction > 0 ? $head.after() : $head.before());
   let crossedTable = false;
   for (;;) {
-    const next = Selection.findFrom($start, dir, true);
+    const next = Selection.findFrom($start, direction, true);
     if (next === null) return null;
     const foreign = foreignIsolatingAncestor(next.$head, anchor);
     if (foreign === null) {
@@ -80,18 +80,20 @@ export function shiftArrowTarget(state: EditorState, dir: 1 | -1): TextSelection
         return !opaque;
       });
       if (!opaque && !crossedTable) return null;
-      return TextSelection.create(doc, anchor, dir > 0 ? next.from : next.to);
+      return TextSelection.create(doc, anchor, direction > 0 ? next.from : next.to);
     }
     crossedTable = true;
-    $start = doc.resolve(dir > 0 ? foreign.after : foreign.before);
+    $start = doc.resolve(direction > 0 ? foreign.after : foreign.before);
   }
 }
 
-/** Whether the head of the selection is at the edge of its paragraph in `dir`. */
-function atTextblockEdge(state: EditorState, dir: 1 | -1): boolean {
+/** Whether the head of the selection is at the edge of its paragraph in `direction`. */
+function atTextblockEdge(state: EditorState, direction: 1 | -1): boolean {
   const { $head } = state.selection;
   if (!$head.parent.inlineContent) return false;
-  return dir > 0 ? $head.parentOffset === $head.parent.content.size : $head.parentOffset === 0;
+  return direction > 0
+    ? $head.parentOffset === $head.parent.content.size
+    : $head.parentOffset === 0;
 }
 
 /**
@@ -109,15 +111,15 @@ export const ShiftArrowSelection = Extension.create({
   priority: 1000,
 
   addKeyboardShortcuts() {
-    const extend = (dir: 1 | -1, vertical: boolean): boolean => {
+    const extend = (direction: 1 | -1, vertical: boolean): boolean => {
       const { state, view } = this.editor;
       // The document is asked first: only a paragraph next to an opaque block
       // or a table needs the layout measured, every other press stays cheap.
-      const target = shiftArrowTarget(state, dir);
+      const target = shiftArrowTarget(state, direction);
       if (target === null) return false;
       const atEdge = vertical
-        ? view.endOfTextblock(dir > 0 ? 'down' : 'up')
-        : atTextblockEdge(state, dir);
+        ? view.endOfTextblock(direction > 0 ? 'down' : 'up')
+        : atTextblockEdge(state, direction);
       if (!atEdge) return false;
       view.dispatch(state.tr.setSelection(target).scrollIntoView());
       return true;
