@@ -431,6 +431,87 @@ test.describe('editor', () => {
     await expect(paragraph).toHaveText('Bleibt stehen');
   });
 
+  /**
+   * Issue #251: `Shift+ArrowDown` turned any text selection into a selection of
+   * whole blocks, anchored at the start of the paragraph (the drag handle's
+   * node range bound the key), and a selection growing sideways stopped in
+   * front of a divider, a formula or a table. The keymap is unit-tested in
+   * `packages/editor`; what only a browser proves is the native half: that
+   * the rest is the browser's own text selection, through lists and code.
+   */
+  test('Shift+arrow keys grow a text selection across every kind of block', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Auswahl ${Date.now().toString(36)}`);
+    const markdown = [
+      'Erster Absatz alpha',
+      '- Punkt eins\n- Punkt zwei',
+      '```js\ncode eins\ncode zwei\n```',
+      'Nach Code gamma',
+      '---',
+      'Nach Linie delta',
+      '$$\nx^2 + y^2\n$$',
+      'Nach Formel zeta',
+      '> Zitat eta',
+      '| a | b |\n| --- | --- |\n| 1 | 2 |',
+      'Ende omega',
+    ].join('\n\n');
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: `${markdown}\n`, mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    // A fresh load, so no marker of the write sits in the document.
+    await page.reload();
+    const paragraph = (text: string) => page.locator('.exocortex-editor p', { hasText: text });
+    await expect(paragraph('Ende omega')).toBeVisible({ timeout: 30_000 });
+
+    // The e2e project has no DOM library; this is the slice of it used here.
+    interface BrowserSelection {
+      getSelection(): { toString(): string } | null;
+    }
+    const selection = (): Promise<string> =>
+      page.evaluate(
+        () => (globalThis as unknown as BrowserSelection).getSelection()?.toString() ?? '',
+      );
+    const pressUntil = async (key: string, done: (text: string) => boolean): Promise<string> => {
+      for (let press = 0; press < 200; press += 1) {
+        await page.keyboard.press(key);
+        const text = await selection();
+        if (done(text)) return text;
+      }
+      return selection();
+    };
+
+    // Down from the middle of a line: the anchor stays where the caret was.
+    await paragraph('Erster Absatz alpha').click();
+    await page.keyboard.press('Home');
+    for (let step = 0; step < 6; step += 1) await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Shift+ArrowDown');
+    expect(await selection()).toMatch(/^ Absatz alpha/);
+    const down = await pressUntil('Shift+ArrowDown', (text) => text.includes('Ende'));
+    expect(down).toMatch(/^ Absatz alpha/);
+    for (const text of ['Punkt zwei', 'code zwei', 'Nach Linie delta', 'Zitat eta', 'Ende']) {
+      expect(down).toContain(text);
+    }
+    // And up again, past the anchor.
+    const up = await pressUntil('Shift+ArrowUp', (text) => text.startsWith('Erster'));
+    expect(up).toBe('Erster');
+
+    // Sideways from the end of a paragraph, over a divider, a formula and a table.
+    await paragraph('Nach Code gamma').click();
+    await page.keyboard.press('End');
+    const right = await pressUntil('Shift+ArrowRight', (text) => text.includes('Ende omega'));
+    expect(right).toContain('Nach Linie delta');
+    expect(right).toContain('Ende omega');
+    expect(right).not.toContain('gamma');
+
+    await paragraph('Ende omega').click();
+    await page.keyboard.press('End');
+    const left = await pressUntil('Shift+ArrowLeft', (text) => text.includes('Code gamma'));
+    expect(left).toContain('Nach Formel zeta');
+    expect(left).toMatch(/Ende omega$/);
+  });
+
   test('offers table controls inside a table', async ({ page }) => {
     await openEditor(page);
 
