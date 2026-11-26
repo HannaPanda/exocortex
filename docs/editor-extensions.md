@@ -198,6 +198,24 @@ indexes.
 Covered by `block-id.test.ts` (jsdom, 11 tests) including split, duplicate repair,
 the undo history and an HTML round trip.
 
+## Select all, one block at a time
+
+`Strg+A` widens step by step (`scoped-select-all.ts`, issue #261): the first
+press selects the text of the innermost code block, table cell, table header,
+callout or quote the caret is in, the next press the block around it, and only
+then does Tiptap's own `selectAll` take the page. Before this, `Strg+A` in a
+code block selected the whole page and the next keystroke replaced it. A plain
+paragraph is not a scope, so `Strg+A` in running text still means the page.
+
+The extension is behaviour only and has no schema; it sits in the registry
+(`scoped-select-all`) so every editor built from `buildEditorExtensions()` has
+it, and it runs ahead of the core keymap by priority. An empty block covers no
+text, so the plugin remembers which block the last press selected; otherwise the
+first press in an empty code block would fall through to the page. Adding a node
+to `SELECT_ALL_SCOPE_NODES` is the whole change for a new block with text of
+its own. Covered by `scoped-select-all.test.ts` and, for cutting and the Yjs
+undo, by the browser test in `e2e/tests/editor.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)

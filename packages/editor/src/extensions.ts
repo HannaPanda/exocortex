@@ -108,6 +108,7 @@ import { SCHEMA_V2_MIGRATION } from './schema-v2';
 import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
 import { SCHEMA_V5_MIGRATION } from './schema-v5';
+import { ScopedSelectAll } from './scoped-select-all';
 import {
   TableOfContents,
   tableOfContentsBlocks,
@@ -378,6 +379,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     name: 'block-id',
     schemaVersion: 1,
     extensions: [BlockId.configure({ types: [...ADDRESSABLE_BLOCK_TYPES] })],
+  },
+  {
+    // Behaviour only, no schema: `Strg+A` selects the code block, table cell,
+    // callout or quote before the page (issue #261). It lives in the registry
+    // so every editor built from it, not only the page editor, has it.
+    name: 'scoped-select-all',
+    schemaVersion: 1,
+    extensions: [ScopedSelectAll],
   },
 ];
 

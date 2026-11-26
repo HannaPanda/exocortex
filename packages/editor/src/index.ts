@@ -43,6 +43,7 @@ export * from './schema-v2';
 export * from './schema-v3';
 export * from './schema-v4';
 export * from './schema-v5';
+export * from './scoped-select-all';
 export * from './section-extract';
 export * from './section-links';
 export * from './table-of-contents';
