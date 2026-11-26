@@ -71,6 +71,16 @@
     },
     "where": "In the editor, drag by the handle to the left of a block, or use Strg+Umschalt+Pfeil hoch and runter."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Continue lists after an image",
+    "summary": "If an image, quote, or table follows a list, the empty line below offers to continue the list: a faint bullet shows where the next item would be, and Tab turns it into a real one. If you just start typing, the line stays a normal paragraph.",
+    "details": {
+      "p1": "Click into the empty line below the image. If it belongs to a list above, the list marker appears faintly (for a numbered list the next number, for a task list an empty checkbox) alongside the hint “Tab: Continue list”. Pressing Tab turns it into the next item; the image stays where it was. Strg+Z undoes this in a single step.",
+      "p2": "It continues the last list before the line, as long as there are at most two blocks in between and no heading. Directly below the list, the new item lands on the level of the last item, even in a sublist; across an image, on the level of the list next to the image. A numbered list continues counting, a task remains a task. If the image is inside an item and the empty line is below it, the line becomes the next item of that same list.",
+      "p3": "The suggestion is only a preview and is not saved to the document. To deliberately start a new list, type “- ” or “1. ” as before. In tables, Tab still moves to the next cell, and in a list, Tab indents an item as usual."
+    },
+    "where": "In the editor, click into the empty line below an image that follows a list, and press Tab."
+  },
   "bild-vergroessern": {
     "title": "Enlarge and zoom into images",
     "summary": "Clicking an embedded image opens it large over the page. There you can zoom in well beyond screen size and pan the image around to read details in screenshots, diagrams, or maps.",

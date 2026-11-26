@@ -71,6 +71,16 @@
     },
     "where": "In de editor slepen aan de greep links van een blok, of via Strg+Umschalt+Pfeil hoch en runter."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Lijsten voortzetten na een afbeelding",
+    "summary": "Staat er onder een lijst een afbeelding, citaat of tabel, dan biedt de lege regel eronder aan om de lijst voort te zetten: een lichtgekleurd opsommingsteken toont waar het volgende punt zou komen, en met Tab maak je er een echt punt van. Begin je gewoon te typen, dan blijft de regel een normale alinea.",
+    "details": {
+      "p1": "Klik in de lege regel onder de afbeelding. Hoort deze bij een lijst erboven, dan staat daar vaag het opsommingsteken (bij een genummerde lijst het volgende nummer, bij een takenlijst een leeg vakje) en de hint „Tab: lijst voortzetten”. Met Tab maak je er het volgende punt van; de afbeelding blijft waar hij stond. Met Strg+Z maak je dit in één stap ongedaan.",
+      "p2": "De laatste lijst vóór de regel wordt voortgezet, zolang er hoogstens twee blokken tussen staan en geen tussenkop. Direct onder de lijst komt het nieuwe punt op het niveau van het laatste punt terecht, ook in een sublijst; over een afbeelding heen op het niveau van de lijst naast de afbeelding. Een genummerde lijst telt door, een taak blijft een taak. Staat de afbeelding binnen een punt en de lege regel eronder, dan wordt de regel het volgende punt van dezelfde lijst.",
+      "p3": "De suggestie is slechts een voorbeeldweergave en belandt niet in het document. Wil je bewust een nieuwe lijst beginnen, typ dan zoals altijd „- ” of „1. ”. In tabellen ga je met Tab naar de volgende cel, en in een lijst spring je met Tab zoals gewoonlijk een niveau in."
+    },
+    "where": "Klik in de editor in de lege regel onder een afbeelding die volgt op een lijst, en druk op Tab."
+  },
   "bild-vergroessern": {
     "title": "Afbeeldingen vergroten en inzoomen",
     "summary": "Een klik op een ingebedde afbeelding opent deze groot over de pagina. Daar zoom je in tot ver voorbij de schermgrootte en verschuif je de afbeelding om details in screenshots, diagrammen of kaarten te bekijken.",

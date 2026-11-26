@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Eingebetteter Inhalt"
     },
+    "listContinuation": {
+      "hint": "Tab: Aufzählung fortsetzen, oder tippe „/“ für Befehle …",
+      "taskHint": "Tab: Aufgabenliste fortsetzen, oder tippe „/“ für Befehle …"
+    },
     "commentCount": "{count, plural, one {Kommentar} other {Kommentare}}"
   },
   "agentEdits": {

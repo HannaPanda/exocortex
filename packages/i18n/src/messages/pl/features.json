@@ -71,6 +71,16 @@
     },
     "where": "W edytorze: przeciągnij za uchwyt po lewej stronie bloku lub naciśnij Strg+Umschalt+Pfeil hoch i runter."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Kontynuowanie list po obrazie",
+    "summary": "Jeśli pod listą znajduje się obraz, cytat lub tabela, pusty wiersz poniżej proponuje kontynuację listy: blady punkt pokazuje, gdzie pojawiłby się kolejny element, a klawisz Tab zamienia go w prawdziwy punkt. Jeśli po prostu zaczniesz pisać, wiersz pozostanie zwykłym akapitem.",
+    "details": {
+      "p1": "Kliknij pusty wiersz pod obrazem. Jeśli należy on do listy powyżej, pojawi się tam blady punktor (w przypadku listy numerowanej kolejny numer, a w liście zadań puste pole wyboru) oraz podpowiedź „Tab: Kontynuuj listę”. Naciśnięcie Tab tworzy kolejny punkt; obraz pozostaje na swoim miejscu. Strg+Z cofa tę zmianę w jednym kroku.",
+      "p2": "Kontynuowana jest ostatnia lista przed tym wierszem, o ile między nimi znajdują się maksymalnie dwa bloki i żaden nagłówek. Bezpośrednio pod listą nowy punkt trafia na poziom ostatniego elementu, także w podliście; ponad obrazem – na poziom listy obok obrazu. Lista numerowana kontynuuje numerację, a zadanie pozostaje zadaniem. Jeśli obraz znajduje się wewnątrz punktu, a pusty wiersz pod nim, wiersz ten staje się kolejnym punktem tej samej listy.",
+      "p3": "Podpowiedź jest tylko podglądem i nie trafia do dokumentu. Aby celowo rozpocząć nową listę, wpisz jak dotychczas „- ” lub „1. ”. W tabelach klawisz Tab nadal przenosi do następnej komórki, a wewnątrz listy tworzy wcięcie punktu, jak zwykle."
+    },
+    "where": "W edytorze kliknij pusty wiersz pod obrazem następującym po liście i naciśnij Tab."
+  },
   "bild-vergroessern": {
     "title": "Powiększanie obrazów i przybliżanie",
     "summary": "Kliknięcie osadzonego obrazu otwiera go w powiększeniu nad stroną. Możesz przybliżać go daleko poza rozmiar ekranu i przesuwać, aby odczytać szczegóły na zrzutach ekranu, diagramach czy mapach.",

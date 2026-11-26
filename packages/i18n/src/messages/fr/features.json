@@ -71,6 +71,16 @@
     },
     "where": "Dans l’éditeur, glisser la poignée à gauche d’un bloc, ou utiliser Ctrl+Maj+Flèche vers le haut et vers le bas."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Poursuivre les listes après une image",
+    "summary": "Si une image, une citation ou un tableau se trouve sous une liste, la ligne vide suivante te propose de continuer la liste : une puce estompée montre où se situerait le point suivant, et Tab la transforme en véritable puce. Si tu commences simplement à écrire, la ligne reste un paragraphe normal.",
+    "details": {
+      "p1": "Clique sur la ligne vide sous l’image. Si elle se rattache à une liste située au-dessus, la puce y apparaît en estompé (le numéro suivant pour une liste numérotée, une case vide pour une liste de tâches) accompagnée de l’indication « Tab : Poursuivre la liste ». Appuie sur Tab pour en faire l’élément suivant ; l’image reste à sa place. Strg+Z annule cette action en une seule étape.",
+      "p2": "La dernière liste avant la ligne est prolongée, tant que deux blocs au maximum s’interposent et sans titre entre-temps. Juste sous la liste, le nouvel élément se place au niveau du dernier point, y compris dans une sous-liste ; par-dessus une image, au niveau de la liste jouxtant l’image. Une liste numérotée poursuit son décompte, une tâche reste une tâche. Si l’image se trouve à l’intérieur d’un point et la ligne vide dessous, la ligne devient le point suivant de cette même liste.",
+      "p3": "La suggestion n’est qu’un aperçu et n’est pas enregistrée dans le document. Pour commencer délibérément une nouvelle liste, saisis comme d’habitude « - » ou « 1. ». Dans les tableaux, Tab passe toujours à la cellule suivante, et dans une liste, Tab indente un élément comme d’habitude."
+    },
+    "where": "Dans l’éditeur, cliquer sur la ligne vide sous une image qui suit une liste, puis appuyer sur Tab."
+  },
   "bild-vergroessern": {
     "title": "Agrandir les images et zoomer",
     "summary": "Un clic sur une image intégrée l’ouvre en grand par-dessus la page. Là, tu peux zoomer bien au-delà de la taille de l’écran et déplacer l’image pour lire les détails de captures d’écran, de diagrammes ou de cartes.",

@@ -69,6 +69,10 @@ export function useEditorWords(): EditorWords {
       tableOfContents: { label: t('tableOfContents.label'), empty: t('tableOfContents.empty') },
       toggle: { collapse: t('toggle.collapse'), expand: t('toggle.expand') },
       embed: { frameTitle: t('embed.frameTitle') },
+      listContinuation: {
+        hint: t('listContinuation.hint'),
+        taskHint: t('listContinuation.taskHint'),
+      },
     };
   }, [t, format]);
 }

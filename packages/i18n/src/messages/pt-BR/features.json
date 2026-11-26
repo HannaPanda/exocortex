@@ -71,6 +71,16 @@
     },
     "where": "No editor, arraste pela alça à esquerda de um bloco, ou use Strg+Umschalt+Pfeil hoch e runter."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Continuar listas após uma imagem",
+    "summary": "Se houver uma imagem, citação ou tabela abaixo de uma lista, a linha vazia seguinte sugere continuar a lista: um marcador esmaecido mostra onde o próximo ficaria, e Tab o torna real. Se você simplesmente começar a digitar, a linha continuará sendo um parágrafo normal.",
+    "details": {
+      "p1": "Clique na linha vazia abaixo da imagem. Se ela pertencer a uma lista acima, o marcador aparecerá de forma esmaecida (o próximo número em uma lista numerada, uma caixa vazia em uma lista de tarefas) junto com a dica „Tab: Continuar lista“. Pressionar Tab transforma-o no próximo item; a imagem permanece onde estava. Ctrl+Z desfaz isso em uma única etapa.",
+      "p2": "A última lista antes da linha é continuada, desde que haja no máximo dois blocos intermediários e nenhum título. Diretamente abaixo da lista, o novo item fica no mesmo nível do último item, inclusive em uma sublista; através de uma imagem, no nível da lista ao lado da imagem. Uma lista numerada continua a contagem, e uma tarefa continua sendo uma tarefa. Se a imagem estiver dentro de um item e a linha vazia estiver abaixo dela, a linha se tornará o próximo item dessa mesma lista.",
+      "p3": "A sugestão é apenas uma prévia e não vai para o documento. Quem quiser começar deliberadamente uma nova lista digita „- “ ou „1. “ como antes. Em tabelas, Tab continua mudando para a próxima célula, e em uma lista, Tab recua um item como de costume."
+    },
+    "where": "No editor, clique na linha vazia abaixo de uma imagem que segue uma lista e pressione Tab."
+  },
   "bild-vergroessern": {
     "title": "Ampliar imagens e dar zoom",
     "summary": "Um clique em uma imagem incorporada a abre em tamanho grande sobre a página. Lá você pode dar zoom muito além do tamanho da tela e arrastar a imagem para ver detalhes em capturas de tela, diagramas ou mapas.",

@@ -8616,6 +8616,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "1bca8f5f592811a7"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "be49641753e8bb33"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "546e01e8f5329cd2"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "b538c39860b18c2e"
@@ -11711,6 +11719,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "94e7a59f9fa9768d"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "596392532b5ac310"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "290542ac0a248599"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "dac9000db4c469f7"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "83d9accd96d24605"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "f6a94914a077191b"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "9dc28270d38f9de1"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -32450,6 +32482,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "04527a2f0f2366d9"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "8bdd5cf15d756132"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "1447625ab2bd6a52"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "935663112e97477b"
@@ -35545,6 +35585,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "1d870f76c830f352"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "f001aada16797f6e"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "fbaf61e03990668f"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "44d7a1438f77732a"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "03812a0f24de8b9e"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "044d270bf6469835"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "0847bae4660c9327"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -56284,6 +56348,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "51b3e46bc635ec0c"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "a23f05db9a0f64f5"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "09681cf3eb3b902a"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "62d9cb3f8a9dcdb3"
@@ -59379,6 +59451,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "3c0eb079f72fcb06"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "479eeb07b40cab46"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "3f7e52ac0e38a5ea"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "f94e69ab3cc99ab1"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "3e125425483ddf29"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "1ff1c590a453fd9d"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "65583f81268c4a35"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -80118,6 +80214,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "74ab0732bfbc991f"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "213adc0a20401ca7"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "4deb251da2cd12bb"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "7a0edee8b59d7850"
@@ -83213,6 +83317,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "b6e54610efb6e742"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "61e949aa15f01498"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "0e34ac89bcd7fa4b"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "e73a5ebd5266dce6"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "180f0d15e29730b2"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "6750ab78cbd1577c"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "76efc583f93d9cd2"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -103952,6 +104080,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "78c8485aab40be84"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "4cf6e6066acec506"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "758564100d3d20dc"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "3f8029cba512ea18"
@@ -107047,6 +107183,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "c672c91da4f85935"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "9439c2202a4d959c"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "3e57d26e82c88643"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "e65bbe52c1787857"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "7a3e64b342efe0c6"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "7bf82732ee7b2133"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "ee2bcf567ee5987c"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -127786,6 +127946,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "0eeff16e7a6060c5"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "ccceb650a319d39e"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "766dbf56e29984ae"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "9a517b960659a1de"
@@ -130881,6 +131049,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "31647c9111aa47b7"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "28647f662cf5407f"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "62ae631d7ad3177d"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "48fd99a6434145bf"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "fa9a6cd99b63ceff"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "839bab95e8169145"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "961ca669fca68c07"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",
@@ -151620,6 +151812,14 @@
       "source": "7ecf51a9ddbe6e5f",
       "output": "6e47f04549a1829d"
     },
+    "editor.nodeViews.listContinuation.hint": {
+      "source": "28af5a9c37b8fc81",
+      "output": "ef1e5981335e5683"
+    },
+    "editor.nodeViews.listContinuation.taskHint": {
+      "source": "951181d44fcdb178",
+      "output": "3acd1bbff294f8a2"
+    },
     "editor.nodeViews.media.corrected": {
       "source": "6a8f78899af40ebb",
       "output": "fde704679c054928"
@@ -154715,6 +154915,30 @@
     "features.auftraege.where": {
       "source": "eae5bf05af43fd07",
       "output": "c9ae2987ba93baec"
+    },
+    "features.aufzaehlung-fortsetzen.details.p1": {
+      "source": "845f69429d64a326",
+      "output": "3395f40721c8eaa4"
+    },
+    "features.aufzaehlung-fortsetzen.details.p2": {
+      "source": "0b7ac8d0b856a586",
+      "output": "a308085ea5111506"
+    },
+    "features.aufzaehlung-fortsetzen.details.p3": {
+      "source": "6f55b35c009b64ae",
+      "output": "9bad7560e498371e"
+    },
+    "features.aufzaehlung-fortsetzen.summary": {
+      "source": "e1a688257d02602e",
+      "output": "c709ec01a07f2452"
+    },
+    "features.aufzaehlung-fortsetzen.title": {
+      "source": "042228aa604e8a06",
+      "output": "3cb3a606c6b7c89d"
+    },
+    "features.aufzaehlung-fortsetzen.where": {
+      "source": "b7daf0bc84a6fd39",
+      "output": "03553e04665597d3"
     },
     "features.automation-fehlermeldung.details.p1": {
       "source": "978b1dc99618e4de",

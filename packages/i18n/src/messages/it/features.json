@@ -71,6 +71,16 @@
     },
     "where": "Nell’editor trascinando la maniglia a sinistra di un blocco, oppure con Strg+Umschalt+Freccia su e giù."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Continuare gli elenchi dopo un’immagine",
+    "summary": "Se sotto un elenco c’è un’immagine, una citazione o una tabella, la riga vuota successiva propone di continuare l’elenco: un punto sbiadito mostra dove andrebbe la voce successiva e con Tab la rende effettiva. Se inizi semplicemente a digitare, la riga rimane un normale paragrafo.",
+    "details": {
+      "p1": "Fai clic sulla riga vuota sotto l’immagine. Se appartiene a un elenco precedente, compare in trasparenza il marcatore (in una lista numerata il numero successivo, in una lista di attività una casella vuota) e l’indicazione «Tab: Continua elenco». Con Tab si trasforma nella voce successiva; l’immagine rimane dov’era. Con Strg+Z puoi annullare l’operazione in un solo passaggio.",
+      "p2": "Viene continuato l’ultimo elenco precedente alla riga, purché ci siano al massimo due blocchi intermedi e nessun titolo. Direttamente sotto l’elenco, la nuova voce si posiziona al livello dell’ultima voce, anche in un sottoelenco; scavalcando un’immagine, al livello dell’elenco accanto all’immagine. Un elenco numerato continua il conteggio, un’attività rimane un’attività. Se l’immagine si trova all’interno di una voce e la riga vuota sotto di essa, la riga diventa la voce successiva dello stesso elenco.",
+      "p3": "Il suggerimento è solo un’anteprima e non viene inserito nel documento. Per iniziare intenzionalmente un nuovo elenco, digita semplicemente «- » o «1. » come sempre. Nelle tabelle Tab continua a passare alla cella successiva, e all’interno di un elenco Tab fa rientrare la voce come di consueto."
+    },
+    "where": "Nell’editor, fai clic sulla riga vuota sotto un’immagine che segue un elenco e premi Tab."
+  },
   "bild-vergroessern": {
     "title": "Ingrandire le immagini ed eseguire lo zoom",
     "summary": "Un clic su un’immagine incorporata la apre a schermo intero sopra la pagina. Lì puoi ingrandirla ben oltre le dimensioni dello schermo e spostarla per leggere i dettagli in screenshot, diagrammi o mappe.",

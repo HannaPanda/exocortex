@@ -49,6 +49,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'aufzaehlung-fortsetzen',
+    area: 'seiten',
+    since: '2026-11-26',
+    references: ['#240'],
+    ui: {},
+    shortcuts: [
+      'Tab in einer leeren Zeile unter einer Aufzählung setzt sie fort, auch über ein Bild hinweg',
+    ],
+  }),
+  defineFeature({
     id: 'bild-vergroessern',
     area: 'seiten',
     since: '2026-09-25',

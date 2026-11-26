@@ -823,6 +823,43 @@
     @apply pointer-events-none float-left h-0 text-muted-foreground;
   }
 
+  /* Continuing a list across a picture (issue #240, `list-continuation.ts` in
+     `packages/editor`). The empty line the caret stands in previews the next
+     point: indented to where that point's text will be, with a pale marker in
+     front of it and the `Tab` hint as its placeholder. A decoration only, so it
+     vanishes with the first character typed and the line stays a paragraph.
+     The steps match the lists below: `pl-5` for bullets and numbers, a 1rem
+     box plus `gap-2` for tasks. */
+  .exocortex-editor .ProseMirror .exocortex-list-ghost {
+    --exocortex-list-ghost-indent: calc(
+      var(--exocortex-list-ghost-lists, 0) * 1.25rem + var(--exocortex-list-ghost-tasks, 0) * 1.5rem
+    );
+    position: relative;
+    padding-inline-start: var(--exocortex-list-ghost-indent);
+  }
+
+  .exocortex-editor .ProseMirror .exocortex-list-ghost.is-empty::before {
+    content: attr(data-list-ghost-hint);
+  }
+
+  .exocortex-editor .ProseMirror .exocortex-list-ghost::after {
+    content: attr(data-list-ghost-marker);
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: calc(var(--exocortex-list-ghost-indent) - 1.25rem);
+    inline-size: 0.875rem;
+    text-align: end;
+    white-space: nowrap;
+    @apply pointer-events-none text-muted-foreground;
+  }
+
+  .exocortex-editor .ProseMirror .exocortex-list-ghost[data-list-ghost='task']::after {
+    content: '';
+    inset-block-start: calc((1lh - 1rem) / 2);
+    inset-inline-start: calc(var(--exocortex-list-ghost-indent) - 1.5rem);
+    @apply size-4 rounded-sm border border-current;
+  }
+
   /* Remote collaboration cursors (Tiptap CollaborationCaret). */
   .exocortex-editor .collaboration-carets__caret {
     @apply relative -mx-px border-r border-l border-current;

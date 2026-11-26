@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Embedded content"
     },
+    "listContinuation": {
+      "hint": "Tab: continue list, or type “/” for commands …",
+      "taskHint": "Tab: continue task list, or type “/” for commands …"
+    },
     "commentCount": "{count, plural, one {comment} other {comments}}"
   },
   "agentEdits": {

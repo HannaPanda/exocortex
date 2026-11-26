@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Contenido incrustado"
     },
+    "listContinuation": {
+      "hint": "Tab: continuar la lista o escribe «/» para ver comandos…",
+      "taskHint": "Tab: continuar la lista de tareas o escribe «/» para ver comandos…"
+    },
     "commentCount": "{count, plural, one {comentario} many {comentarios} other {comentarios}}"
   },
   "agentEdits": {

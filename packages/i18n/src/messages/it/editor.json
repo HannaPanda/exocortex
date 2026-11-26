@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Contenuto incorporato"
     },
+    "listContinuation": {
+      "hint": "Tab: continua l’elenco, oppure digita «/» per i comandi…",
+      "taskHint": "Tab: continua l’elenco di attività, oppure digita «/» per i comandi…"
+    },
     "commentCount": "{count, plural, one {commento} many {commenti} other {commenti}}"
   },
   "agentEdits": {

@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Ingesloten inhoud"
     },
+    "listContinuation": {
+      "hint": "Tab: lijst voortzetten, of typ ‘/’ voor opdrachten …",
+      "taskHint": "Tab: takenlijst voortzetten, of typ ‘/’ voor opdrachten …"
+    },
     "commentCount": "{count, plural, one {reactie} other {reacties}}"
   },
   "agentEdits": {

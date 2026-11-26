@@ -439,6 +439,10 @@
     "embed": {
       "frameTitle": "Osadzona zawartość"
     },
+    "listContinuation": {
+      "hint": "Tab: kontynuuj listę lub wpisz „/”, aby wyświetlić polecenia…",
+      "taskHint": "Tab: kontynuuj listę zadań lub wpisz „/”, aby wyświetlić polecenia…"
+    },
     "commentCount": "{count, plural, one {komentarz} few {komentarze} many {komentarzy} other {komentarza}}"
   },
   "agentEdits": {

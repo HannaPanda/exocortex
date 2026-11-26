@@ -71,6 +71,16 @@
     },
     "where": "En el editor, arrastra desde el tirador a la izquierda de un bloque, o usa Strg+Umschalt+Pfeil hoch y runter."
   },
+  "aufzaehlung-fortsetzen": {
+    "title": "Continuar listas después de una imagen",
+    "summary": "Si debajo de una lista hay una imagen, una cita o una tabla, la línea vacía que le sigue te ofrece continuar la lista: un punto tenue muestra dónde iría el siguiente elemento y Tab lo convierte en uno real. Si simplemente comienzas a escribir, la línea sigue siendo un párrafo normal.",
+    "details": {
+      "p1": "Haz clic en la línea vacía debajo de la imagen. Si pertenece a una lista anterior, aparecerá de forma tenue la viñeta (en una lista numerada, el siguiente número; en una lista de tareas, una casilla vacía) y el aviso «Tab: continuar lista». Al pulsar Tab, se convierte en el siguiente elemento; la imagen se queda donde estaba. Strg+Z lo deshace en un solo paso.",
+      "p2": "Se continúa la última lista antes de la línea, siempre que no haya más de dos bloques de por medio ni ningún encabezado. Justo debajo de la lista, el nuevo elemento queda en el nivel del último punto, incluso en una sublista; si hay una imagen de por medio, en el nivel de la lista junto a la imagen. Una lista numerada sigue contando, una tarea sigue siendo una tarea. Si la imagen está dentro de un elemento y la línea vacía debajo, la línea se convierte en el siguiente elemento de esa misma lista.",
+      "p3": "La sugerencia es solo una vista previa y no se guarda en el documento. Si prefieres empezar una nueva lista a propósito, escribe como siempre «- » o «1. ». En las tablas, Tab sigue pasando a la siguiente celda, y dentro de una lista, Tab sangra el elemento de la forma habitual."
+    },
+    "where": "En el editor, haz clic en la línea vacía debajo de una imagen que sigue a una lista y pulsa Tab."
+  },
   "bild-vergroessern": {
     "title": "Agrandar imágenes y hacer zoom",
     "summary": "Al hacer clic en una imagen incrustada, se abre en grande sobre la página. Allí puedes ampliarla mucho más allá del tamaño de la pantalla y moverla para leer detalles en capturas de pantalla, diagramas o mapas.",
