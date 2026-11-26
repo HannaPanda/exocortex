@@ -4,6 +4,7 @@ export * from './block-catalog';
 export * from './block-drop';
 export * from './block-id';
 export * from './block-range';
+export * from './block-target';
 export * from './breadcrumb';
 export * from './callout';
 export * from './changed-blocks';
