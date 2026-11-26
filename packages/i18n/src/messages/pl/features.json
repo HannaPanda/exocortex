@@ -683,6 +683,15 @@
     },
     "where": "Na udostępnionej stronie (menu konta, „Udostępnienia”, „Udostępnione dla mnie”) w sekcji AI po prawej stronie."
   },
+  "chat-mitlesen": {
+    "title": "Czytanie odpowiedzi w trakcie jej powstawania",
+    "summary": "Czat przewija się automatycznie, dopóki jesteś na samym dole. Gdy przewiniesz w górę, zatrzymuje się, a dwa przyciski pozwalają przejść do początku odpowiedzi lub wrócić na koniec. To, co już napisane, nie przeskakuje podczas dalszego pisania.",
+    "details": {
+      "p1": "Dopóki jesteś na końcu czatu, widok przesuwa się wraz z pojawianiem się nowego tekstu. Gdy tylko przewiniesz w górę, aby przeczytać coś wcześniejszego, widok zatrzymuje się, dopóki samodzielnie nie wrócisz na dół lub nie wybierzesz opcji „Na koniec czatu”. Przycisk „Do początku odpowiedzi” przenosi do twojego ostatniego pytania, tuż nad odpowiedzią. Jeśli w systemie masz włączone ograniczenie ruchu, widok przeskakuje zamiast płynnie się przesuwać.",
+      "p2": "Gdy AI korzysta z narzędzi, każda część odpowiedzi pojawia się na bieżąco w miejscu, w którym już pozostanie, z wynikami narzędzi pomiędzy nimi. Gotowe akapity, listy i bloki kodu nie są składane na nowo, a znaki formatowania wyświetlają się dopiero wtedy, gdy wiadomo, co oznaczają. Żadne słowo nie jest przy tym opóźniane."
+    },
+    "where": "W panelu AI obok każdej strony. Oba przyciski pojawiają się w prawym dolnym rogu czatu, gdy tylko przewiniesz w górę."
+  },
   "gedankengang": {
     "title": "Podgląd procesu myślenia AI",
     "summary": "Podczas generowania odpowiedzi widzisz nad nią, o czym myśli model i jakie narzędzia wywołuje – w kolejności, w jakiej to się odbywa. Wyświetlane jest tylko to, co model rzeczywiście przekazuje.",

@@ -11,6 +11,7 @@ import { Badge, cn, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/u
 import { runInspectorShortHref } from '@/components/runs/run-links';
 
 import { ChatMarkdown, CopyMarkdownButton } from './chat-markdown';
+import { QUESTION_ATTRIBUTE } from './use-transcript-follow';
 
 export interface ChatMessageProps {
   message: AiConversationMessage;
@@ -53,7 +54,8 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
   switch (message.role) {
     case 'user':
       return (
-        <div className="flex justify-end">
+        // Where "Zum Anfang der Antwort" lands (issue #242).
+        <div className="flex justify-end" {...{ [QUESTION_ATTRIBUTE]: '' }}>
           <p
             data-testid="ai-question"
             className="max-w-[85%] rounded-md bg-primary px-3 py-2 text-sm whitespace-pre-wrap break-words text-primary-foreground"

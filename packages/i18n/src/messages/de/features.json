@@ -683,6 +683,15 @@
     },
     "where": "Auf einer geteilten Seite (Kontomenü, „Freigaben“, „Mit mir geteilt“) im KI-Bereich rechts."
   },
+  "chat-mitlesen": {
+    "title": "Eine Antwort lesen, während sie noch entsteht",
+    "summary": "Der Chat rückt mit, solange du unten bist. Scrollst du nach oben, bleibt er stehen, und zwei Knöpfe bringen dich zum Anfang der Antwort oder zurück ans Ende. Was schon dasteht, springt beim Weiterschreiben nicht mehr um.",
+    "details": {
+      "p1": "Solange du am Ende des Chats bist, rückt die Ansicht mit, wenn neuer Text dazukommt. Sobald du nach oben scrollst, um etwas Früheres zu lesen, bleibt sie stehen, bis du selbst wieder unten ankommst oder „Zum Ende des Chats“ wählst. „Zum Anfang der Antwort“ springt zu deiner letzten Frage, direkt über der Antwort. Hast du in deinem System weniger Bewegung eingestellt, springt die Ansicht, statt zu gleiten.",
+      "p2": "Arbeitet die KI mit Werkzeugen, steht jeder Teil ihrer Antwort schon während des Laufs dort, wo er danach bleibt, mit den Werkzeugergebnissen dazwischen. Fertige Absätze, Listen und Codeblöcke werden nicht neu gesetzt, und Formatierungszeichen erscheinen erst, wenn feststeht, was sie bedeuten. Verzögert wird dabei kein Wort."
+    },
+    "where": "Im KI-Bereich neben jeder Seite. Die beiden Knöpfe erscheinen unten rechts im Chat, sobald du nach oben gescrollt hast."
+  },
   "gedankengang": {
     "title": "Zusehen, wie die KI denkt",
     "summary": "Während eine Antwort entsteht, siehst du über ihr, was das Modell dabei überlegt und welche Werkzeuge es aufruft, in der Reihenfolge, in der es passiert. Gezeigt wird nur, was das Modell wirklich liefert.",

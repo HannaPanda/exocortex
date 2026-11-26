@@ -683,6 +683,15 @@
     },
     "where": "Su una pagina condivisa (menu dell’account, «Condivisioni», «Condivise con me») nel pannello dell’IA a destra."
   },
+  "chat-mitlesen": {
+    "title": "Leggere una risposta mentre viene generata",
+    "summary": "La chat scorre insieme al testo finché rimani in fondo. Se scorri verso l’alto, la visuale si ferma e due pulsanti ti portano all’inizio della risposta o di nuovo alla fine. Ciò che è già scritto non salta mentre la risposta continua.",
+    "details": {
+      "p1": "Finché ti trovi alla fine della chat, la visuale scorre man mano che compare nuovo testo. Non appena scorri verso l’alto per rileggere qualcosa di precedente, si ferma finché non torni giù o selezioni „Alla fine della chat“. „All’inizio della risposta“ salta alla tua ultima domanda, proprio sopra la risposta. Se nel tuo sistema hai impostato una riduzione del movimento, la visuale salta invece di scorrere in modo fluido.",
+      "p2": "Se l’IA utilizza degli strumenti, ogni parte della sua risposta compare già durante l’elaborazione nella posizione in cui rimarrà, con i risultati degli strumenti in mezzo. Paragrafi, elenchi e blocchi di codice completati non vengono impaginati di nuovo, e i caratteri di formattazione compaiono solo quando è chiaro cosa significano. Nessuna parola subisce ritardi."
+    },
+    "where": "Nell’area IA accanto a ogni pagina. I due pulsanti compaiono in basso a destra nella chat non appena scorri verso l’alto."
+  },
   "gedankengang": {
     "title": "Guarda come pensa l’IA",
     "summary": "Mentre una risposta prende forma, vedi sopra di essa a cosa sta pensando il modello e quali strumenti chiama, nell’ordine in cui accade. Viene mostrato solo ciò che il modello fornisce effettivamente.",

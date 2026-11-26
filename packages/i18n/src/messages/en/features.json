@@ -683,6 +683,15 @@
     },
     "where": "On a shared page (account menu, “Shares”, “Shared with me”) in the AI panel on the right."
   },
+  "chat-mitlesen": {
+    "title": "Reading a response while it is still being written",
+    "summary": "The chat follows along as long as you stay at the bottom. If you scroll up, it stays put, and two buttons take you to the start of the response or back to the bottom. Content already rendered does not jump around as writing continues.",
+    "details": {
+      "p1": "As long as you are at the end of the chat, the view scrolls along when new text arrives. As soon as you scroll up to read something earlier, it stays put until you reach the bottom yourself again or choose “To bottom of chat”. “To start of response” jumps to your last question, right above the response. If your system is set to reduced motion, the view jumps instead of sliding.",
+      "p2": "When the AI works with tools, each part of its response already stays right where it belongs while it runs, with the tool results in between. Completed paragraphs, lists, and code blocks are not re-rendered, and formatting characters only appear once their meaning is settled. Not a single word is delayed in the process."
+    },
+    "where": "In the AI pane next to every page. The two buttons appear in the bottom right of the chat as soon as you scroll up."
+  },
   "gedankengang": {
     "title": "Watch the AI think",
     "summary": "While an answer is being generated, you can see above it what the model is thinking and which tools it is calling, in the order it happens. Only what the model actually provides is shown.",

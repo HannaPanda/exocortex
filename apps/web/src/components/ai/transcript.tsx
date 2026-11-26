@@ -6,17 +6,29 @@ import * as React from 'react';
 import { type AiConversationMessage } from '@exocortex/contracts';
 
 import { ChatMessage } from './chat-message';
-import { type FinishedRunTrace } from './run-trace';
+import { type RunTraceStep } from './run-trace';
 import { RunTraceView } from './run-trace-view';
+
+/** A run's thinking and tool calls (issue #195), live or folded after it ended. */
+export interface TranscriptTrace {
+  runId: string;
+  steps: readonly RunTraceStep[];
+  live: boolean;
+}
 
 export interface TranscriptProps {
   messages: readonly AiConversationMessage[];
   /**
-   * The last run's thinking and tool calls (issue #195), drawn above the
-   * assistant message that run wrote. Never stored, so only ever the one run
-   * this tab watched.
+   * The run this tab watched last, or is watching now. Never stored, so only
+   * ever that one run.
    */
-  finishedTrace?: FinishedRunTrace | null;
+  trace?: TranscriptTrace | null;
+  /** Keyed elements that follow the stored messages: notices, open questions. */
+  after?: readonly React.ReactElement[];
+  /** The run's turns the transcript does not carry yet (issue #242). */
+  streaming?: readonly AiConversationMessage[];
+  /** Whether the last of `streaming` is still being written. */
+  streamingLive?: boolean;
 }
 
 /**
@@ -33,30 +45,63 @@ export interface TranscriptProps {
  * outright; the automatic compaction replaces the older messages with a
  * summary, which is how it is told apart here: the first message below such a
  * boundary is that summary.
+ *
+ * Everything is one keyed list (issue #242). The trace stands once, above the
+ * run's first stored answer, or after everything stored while the run has
+ * none yet; being a sibling of the messages, it keeps its state (folded,
+ * scrolled) when it moves there and when the run ends. A turn still arriving
+ * comes last and gives way to the stored message that says the same.
  */
-export function Transcript({ messages, finishedTrace = null }: TranscriptProps) {
-  return (
-    <>
-      {messages.map((message, index) => {
-        const next = messages[index + 1] ?? null;
-        // A trailing `/clear` has nothing below it yet; the boundary belongs at
-        // the end of the transcript, and the next message arrives underneath it.
-        const boundary = message.superseded && (next === null || !next.superseded);
+export function Transcript({
+  messages,
+  trace = null,
+  after = [],
+  streaming = [],
+  streamingLive = false,
+}: TranscriptProps) {
+  const items: React.ReactElement[] = [];
+  const traceElement =
+    trace === null ? null : (
+      <RunTraceView key={`trace:${trace.runId}`} steps={trace.steps} live={trace.live} />
+    );
+  let tracePlaced = false;
 
-        return (
-          <React.Fragment key={message.id}>
-            {finishedTrace !== null &&
-            message.role === 'assistant' &&
-            message.runId === finishedTrace.runId ? (
-              <RunTraceView steps={finishedTrace.steps} live={false} />
-            ) : null}
-            <ChatMessage message={message} />
-            {boundary ? <ContextBoundary summarized={next?.isSummary ?? false} /> : null}
-          </React.Fragment>
-        );
-      })}
-    </>
-  );
+  messages.forEach((message, index) => {
+    const next = messages[index + 1] ?? null;
+    // A trailing `/clear` has nothing below it yet; the boundary belongs at
+    // the end of the transcript, and the next message arrives underneath it.
+    const boundary = message.superseded && (next === null || !next.superseded);
+
+    if (
+      traceElement !== null &&
+      !tracePlaced &&
+      message.role === 'assistant' &&
+      message.runId === trace?.runId
+    ) {
+      items.push(traceElement);
+      tracePlaced = true;
+    }
+    items.push(<ChatMessage key={message.id} message={message} />);
+    if (boundary) {
+      items.push(
+        <ContextBoundary key={`boundary:${message.id}`} summarized={next?.isSummary ?? false} />,
+      );
+    }
+  });
+
+  items.push(...after);
+  if (traceElement !== null && !tracePlaced) items.push(traceElement);
+  streaming.forEach((message, index) => {
+    items.push(
+      <ChatMessage
+        key={message.id}
+        message={message}
+        streaming={streamingLive && index === streaming.length - 1}
+      />,
+    );
+  });
+
+  return <>{items}</>;
 }
 
 function ContextBoundary({ summarized }: { summarized: boolean }) {

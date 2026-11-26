@@ -13,7 +13,10 @@
     "introTitle": "AI assistant",
     "introHint": "Ask a question or use /help for commands.",
     "boundarySummarized": "Older history summarized",
-    "boundaryCleared": "Context cleared"
+    "boundaryCleared": "Context cleared",
+    "jumpToEnd": "Jump to end of chat",
+    "jumpToAnswerStart": "Jump to start of answer",
+    "jumpLabel": "Jump in chat"
   },
   "message": {
     "superseded": "No longer part of the context.",

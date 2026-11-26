@@ -1,32 +1,70 @@
 import { type AiConversationMessage } from '@exocortex/contracts';
 
+import { type FinishedRunTrace, type RunTraceStep } from './run-trace';
+import { pendingSegments, type StreamSegments } from './stream-segments';
+import { type TranscriptTrace } from './transcript';
+
 /**
  * What the AI panel shows, derived from its queries, the run in flight and the
  * page it stands on. Pure functions, split out of `ai-panel.tsx` (issue #97).
  */
 
 /**
- * The assistant bubble for an answer that is still arriving, or `null` when
- * there is nothing in flight and nothing left over from one.
+ * The assistant bubbles for a run whose text the transcript does not carry
+ * yet, one per turn that wrote (issue #242), or none when nothing is in
+ * flight and nothing is left over from one. While the run is live the last
+ * one is the turn being written, empty until its first fragment arrives,
+ * because that is where the cursor belongs.
+ *
+ * They carry no `runId`: the link to the run belongs to the stored answer,
+ * which takes their place.
  */
-export function buildStreamingMessage(input: {
-  streamText: string;
+export function buildStreamingMessages(input: {
+  stream: StreamSegments;
+  messages: readonly AiConversationMessage[];
   activeRunId: string | null;
   conversationId: string | null;
-}): AiConversationMessage | null {
-  if (input.streamText.length === 0 && input.activeRunId === null) return null;
-  return {
-    id: `streaming-${input.activeRunId ?? 'done'}`,
+}): AiConversationMessage[] {
+  const { stream, activeRunId } = input;
+  if (stream.runId === null) return [];
+  const live = activeRunId !== null && activeRunId === stream.runId;
+  const stored = input.messages
+    .filter(
+      (message) =>
+        message.role === 'assistant' &&
+        message.runId === stream.runId &&
+        message.content.trim().length > 0,
+    )
+    .map((message) => message.content);
+  return pendingSegments(stream, stored, live).map(({ index, text }) => ({
+    id: `streaming-${stream.runId ?? 'done'}-${String(index)}`,
     conversationId: input.conversationId ?? '',
     role: 'assistant',
-    content: input.streamText,
+    content: text,
     toolName: null,
     toolCallId: null,
     isSummary: false,
     superseded: false,
-    runId: input.activeRunId,
+    runId: null,
     createdAt: new Date().toISOString(),
-  };
+  }));
+}
+
+/**
+ * The one trace the transcript shows (issue #195): the run in flight, or the
+ * one that ended last. Live or over, it is the same element, so it folds where
+ * it stands instead of being drawn anew (issue #242).
+ */
+export function resolveTranscriptTrace(input: {
+  activeRunId: string | null;
+  steps: readonly RunTraceStep[];
+  finished: FinishedRunTrace | null;
+}): TranscriptTrace | null {
+  if (input.activeRunId !== null) {
+    return { runId: input.activeRunId, steps: input.steps, live: true };
+  }
+  if (input.finished === null) return null;
+  return { runId: input.finished.runId, steps: input.finished.steps, live: false };
 }
 
 /**
@@ -85,11 +123,11 @@ export function describeTranscript(input: {
   query: { pending: boolean; errored: boolean };
   messageCount: number;
   commandNotice: AiConversationMessage | null;
-  streamingMessage: AiConversationMessage | null;
+  streamingCount: number;
 }): { loading: boolean; errored: boolean; showIntro: boolean } {
   const loading = input.open && input.query.pending;
   const errored = input.open && input.query.errored;
   const empty =
-    input.messageCount === 0 && input.commandNotice === null && input.streamingMessage === null;
+    input.messageCount === 0 && input.commandNotice === null && input.streamingCount === 0;
   return { loading, errored, showIntro: !loading && !errored && empty };
 }

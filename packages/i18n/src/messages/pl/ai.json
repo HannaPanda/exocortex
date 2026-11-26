@@ -13,7 +13,10 @@
     "introTitle": "Asystent AI",
     "introHint": "Zadaj pytanie lub wpisz /help, aby wyświetlić polecenia.",
     "boundarySummarized": "Starsza historia została podsumowana",
-    "boundaryCleared": "Kontekst wyczyszczony"
+    "boundaryCleared": "Kontekst wyczyszczony",
+    "jumpToEnd": "Na koniec czatu",
+    "jumpToAnswerStart": "Na początek odpowiedzi",
+    "jumpLabel": "Przejdź w czacie"
   },
   "message": {
     "superseded": "Nie jest już częścią kontekstu.",

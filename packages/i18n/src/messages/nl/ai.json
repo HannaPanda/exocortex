@@ -13,7 +13,10 @@
     "introTitle": "AI-assistent",
     "introHint": "Stel een vraag of gebruik /help voor commando’s.",
     "boundarySummarized": "Oudere geschiedenis samengevat",
-    "boundaryCleared": "Context gewist"
+    "boundaryCleared": "Context gewist",
+    "jumpToEnd": "Naar het einde van de chat",
+    "jumpToAnswerStart": "Naar het begin van het antwoord",
+    "jumpLabel": "In de chat springen"
   },
   "message": {
     "superseded": "Geen deel meer van de context.",

@@ -26,6 +26,15 @@ import {
   type RunTraceStep,
   toolEntries,
 } from './run-trace';
+import {
+  appendDelta,
+  currentTurnText,
+  EMPTY_STREAM,
+  endTurn,
+  replaceCurrentTurn,
+  startStream,
+  type StreamSegments,
+} from './stream-segments';
 
 /** One line of "what the model just did", as the panel renders it. */
 export interface ToolActivityEntry {
@@ -117,6 +126,7 @@ function useRunTraceEvents(
   setRunPhase: (phase: AiRunPhase) => void,
   setTrace: React.Dispatch<React.SetStateAction<RunTraceStep[]>>,
   markActivity: () => void,
+  onToolCall: () => void,
 ): void {
   // The silence gets a name (issue #6, point 5): reasoning produces no deltas
   // at all, and compaction used to report itself only once it was over.
@@ -146,7 +156,27 @@ function useRunTraceEvents(
       }),
     );
     markActivity();
+    onToolCall();
   });
+}
+
+/**
+ * A tool call ends the turn that asked for it, and by the time it is
+ * announced the worker has stored that turn's text; the result follows
+ * before the call is reported finished. Reloading the transcript then is
+ * what lets the panel show a run's earlier turns the way they will stay,
+ * instead of rearranging them once the run is over (issue #242).
+ */
+function useTurnBoundary(
+  conversationId: string | null,
+  setStream: React.Dispatch<React.SetStateAction<StreamSegments>>,
+): () => void {
+  const queryClient = useQueryClient();
+  return () => {
+    setStream(endTurn);
+    if (conversationId === null) return;
+    void queryClient.invalidateQueries({ queryKey: aiQueryKeys.conversation(conversationId) });
+  };
 }
 
 const NO_DIAGNOSIS: RunDiagnosisFields = {
@@ -158,6 +188,9 @@ const NO_DIAGNOSIS: RunDiagnosisFields = {
 /** What `AiPanel` reads back from the tracker. */
 export interface AiRunTracker {
   activeRunId: string | null;
+  /** The run's text per turn, until the transcript carries it (issue #242). */
+  stream: StreamSegments;
+  /** What the turn in flight has written so far. */
   streamText: string;
   toolActivity: ToolActivityEntry[];
   /** What the run in flight did so far, thinking and tool calls in order (issue #195). */
@@ -193,7 +226,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   const queryClient = useQueryClient();
 
   const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
-  const [streamText, setStreamText] = React.useState('');
+  const [stream, setStream] = React.useState<StreamSegments>(EMPTY_STREAM);
   const [trace, setTrace] = React.useState<RunTraceStep[]>([]);
   const [finishedTrace, setFinishedTrace] = React.useState<FinishedRunTrace | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
@@ -226,7 +259,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   if (transientStateKey !== activeConversationId) {
     setTransientStateKey(activeConversationId);
     setActiveRunId(null);
-    setStreamText('');
+    setStream(EMPTY_STREAM);
     setTrace([]);
     setFinishedTrace(null);
     setNotice(null);
@@ -263,13 +296,13 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
         if (activeConversationId !== null) {
           void queryClient
             .invalidateQueries({ queryKey: aiQueryKeys.conversation(activeConversationId) })
-            .then(() => setStreamText(''));
+            .then(() => setStream(EMPTY_STREAM));
         } else {
-          setStreamText('');
+          setStream(EMPTY_STREAM);
         }
         return;
       }
-      setStreamText('');
+      setStream(EMPTY_STREAM);
       if (status === 'cancelled') {
         setNotice(t('cancelled'));
         return;
@@ -325,13 +358,20 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   useRealtimeEvent('ai.run.progress', (event) => {
     if (event.payload.runId !== activeRunId) return;
     setSequenceState((current) => advanceAiRunSequence(current, event.payload.sequence));
-    setStreamText((current) => current + event.payload.delta);
+    setStream((current) => appendDelta(current, event.payload.delta));
     // Text arriving is itself the end of any named silence before it.
     setRunPhase('generating');
     setLastActivityAt(Date.now());
   });
 
-  useRunTraceEvents(activeRunId, setRunPhase, setTrace, () => setLastActivityAt(Date.now()));
+  const handleToolCall = useTurnBoundary(activeConversationId, setStream);
+  useRunTraceEvents(
+    activeRunId,
+    setRunPhase,
+    setTrace,
+    () => setLastActivityAt(Date.now()),
+    handleToolCall,
+  );
 
   useRealtimeEvent('ai.run.completed', (event) => {
     if (event.payload.runId !== activeRunId) return;
@@ -390,7 +430,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       : null;
   if (repairKey !== null && repairKey !== repairedTextKey) {
     setRepairedTextKey(repairKey);
-    setStreamText(runQuery.data?.resultText ?? '');
+    const reported = runQuery.data?.resultText ?? '';
+    setStream((current) => replaceCurrentTurn(current, reported));
   }
 
   // ... and ask for it right away rather than waiting out the poll interval.
@@ -421,7 +462,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   };
   /** Starts tracking a run the panel just created. */
   const beginRun = (runId: string): void => {
-    setStreamText('');
+    setStream(startStream(runId));
     setTrace([]);
     setFinishedTrace(null);
     setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
@@ -434,7 +475,8 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   return {
     activeRunId,
-    streamText,
+    stream,
+    streamText: currentTurnText(stream),
     toolActivity,
     trace,
     finishedTrace,

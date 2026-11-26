@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type AiConversationMessage } from '@exocortex/contracts';
+
 import { usePaletteRequest } from '@/components/palette/palette-requests';
 import { useDocumentSession } from '@/components/shell/document-session';
 import {
@@ -28,17 +30,41 @@ import { resolveModelChoice, useModelPreference } from './model-choice';
 import { activeConversationKey, parseConversationId } from './panel-state';
 import {
   buildCommandNotice,
-  buildStreamingMessage,
+  buildStreamingMessages,
   describeTranscript,
   resolvePageHandover,
+  resolveTranscriptTrace,
 } from './panel-view';
 import { RunActivity } from './run-activity';
 import { currentPhaseLabel, useRunLabels } from './run-labels';
+import { type RunTraceStep } from './run-trace';
 import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
 import { useConversationSettings } from './use-conversation-settings';
 import { usePinnedSources } from './use-pinned-sources';
+import { useTranscriptFollow } from './use-transcript-follow';
+
+/**
+ * Changes whenever something in the transcript did, which is when a
+ * transcript that follows has to move (issue #242).
+ */
+function transcriptContentKey(input: {
+  messages: readonly AiConversationMessage[];
+  streamingMessages: readonly AiConversationMessage[];
+  trace: readonly RunTraceStep[];
+  notices: readonly (string | null)[];
+}): string {
+  const lastStep = input.trace[input.trace.length - 1];
+  return [
+    input.messages.length,
+    input.messages[input.messages.length - 1]?.id ?? '',
+    ...input.streamingMessages.map((message) => `${message.id}:${String(message.content.length)}`),
+    input.trace.length,
+    lastStep?.kind === 'reasoning' ? lastStep.text.length : 0,
+    ...input.notices.map((notice) => notice ?? ''),
+  ].join('|');
+}
 
 export interface AiPanelProps {
   workspaceId: string | null;
@@ -173,8 +199,9 @@ function AiPanelBody({
     conversationQuery.data?.lastRun ?? null,
     activeRunId !== null || error !== null,
   );
-  const streamingMessage = buildStreamingMessage({
-    streamText,
+  const streamingMessages = buildStreamingMessages({
+    stream: run.stream,
+    messages,
     activeRunId,
     conversationId: activeConversationId,
   });
@@ -183,12 +210,25 @@ function AiPanelBody({
     query: { pending: conversationQuery.isPending, errored: conversationQuery.isError },
     messageCount: messages.length,
     commandNotice,
-    streamingMessage,
+    streamingCount: streamingMessages.length,
+  });
+  const trace = resolveTranscriptTrace({
+    activeRunId,
+    steps: run.trace,
+    finished: run.finishedTrace,
   });
 
-  React.useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages.length, streamText, commandNotice?.id, run.trace, notice]);
+  const shownError = error ?? lastRunFailure;
+  const follow = useTranscriptFollow(
+    scrollRef,
+    transcriptContentKey({
+      messages,
+      streamingMessages,
+      trace: run.trace,
+      notices: [commandNotice?.id ?? null, notice, shownError],
+    }),
+    activeConversationId,
+  );
 
   const modelChoice = resolveModelChoice({
     registry: modelsQuery.data ?? null,
@@ -283,7 +323,11 @@ function AiPanelBody({
         }
       }
 
-      if (response.run !== null) run.beginRun(response.run.id);
+      if (response.run !== null) {
+        run.beginRun(response.run.id);
+        // Whoever asks wants to see the answer arrive, wherever they were reading.
+        follow.follow();
+      }
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : t('requestFailed'));
     }
@@ -325,13 +369,13 @@ function AiPanelBody({
         showIntro={transcript.showIntro}
         messages={messages}
         commandNotice={commandNotice}
-        trace={run.trace}
-        finishedTrace={run.finishedTrace}
-        streamingMessage={streamingMessage}
+        trace={trace}
+        streamingMessages={streamingMessages}
         streaming={activeRunId !== null}
         notice={notice}
-        error={error ?? lastRunFailure}
+        error={shownError}
         conversationId={activeConversationId}
+        follow={follow}
       />
 
       {activeRunId !== null ? (

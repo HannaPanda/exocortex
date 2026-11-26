@@ -683,6 +683,15 @@
     },
     "where": "Em uma página compartilhada (menu da conta, “Compartilhamentos”, “Compartilhado comigo”) no painel de IA à direita."
   },
+  "chat-mitlesen": {
+    "title": "Acompanhar uma resposta enquanto ela é gerada",
+    "summary": "O chat rola automaticamente enquanto você estiver no final. Se rolar para cima, ele para, e dois botões levam você ao início da resposta ou de volta ao final. O que já apareceu na tela não se desloca enquanto o texto continua sendo escrito.",
+    "details": {
+      "p1": "Enquanto você estiver no final do chat, a visualização acompanha o novo texto à medida que ele chega. Assim que rolar para cima para ler algo anterior, ela para até você voltar manualmente ao final ou selecionar „Ir para o final do chat“. „Ir para o início da resposta“ pula para a sua última pergunta, logo acima da resposta. Se você configurou menos movimento no seu sistema, a visualização pula em vez de deslizar suavemente.",
+      "p2": "Se a IA usar ferramentas, cada parte da resposta já aparece durante a execução exatamente onde ficará no final, intercalada com os resultados das ferramentas. Parágrafos, listas e blocos de código concluídos não são renderizados novamente, e caracteres de formatação só surgem quando o significado deles já está definido. Nenhuma palavra sofre atraso."
+    },
+    "where": "Na área da IA ao lado de cada página. Os dois botões aparecem no canto inferior direito do chat assim que você rola para cima."
+  },
   "gedankengang": {
     "title": "Ver como a IA pensa",
     "summary": "Enquanto uma resposta é gerada, você vê acima dela o que o modelo está pensando e quais ferramentas ele chama, na ordem em que acontece. Só é exibido o que o modelo realmente fornece.",

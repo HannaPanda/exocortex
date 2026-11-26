@@ -683,6 +683,15 @@
     },
     "where": "Sur une page partagée (menu du compte, « Partages », « Partagé avec moi ») dans la zone IA sur la droite."
   },
+  "chat-mitlesen": {
+    "title": "Lire une réponse pendant qu’elle s’écrit",
+    "summary": "Le chat défile automatiquement tant que tu es tout en bas. Si tu remontes, il s’arrête, et deux boutons te permettent d’aller au début de la réponse ou de revenir à la fin. Ce qui est déjà affiché ne saute plus au fil de l’écriture.",
+    "details": {
+      "p1": "Tant que tu te trouves à la fin du chat, la vue défile au fur et à mesure que du texte s’ajoute. Dès que tu scrolles vers le haut pour relire un passage antérieur, elle reste immobile jusqu’à ce que tu reviennes toi-même en bas ou que tu choisisses « Aller à la fin du chat ». « Aller au début de la réponse » t’amène à ta dernière question, juste au-dessus de la réponse. Si tu as activé la réduction des animations dans ton système, la vue saute directement au lieu de glisser.",
+      "p2": "Quand l’IA utilise des outils, chaque partie de sa réponse s’affiche dès l’exécution là où elle restera par la suite, avec les résultats des outils intercalés. Les paragraphes, listes et blocs de code terminés ne sont pas recomposés, et les balises de mise en forme n’apparaissent que lorsque leur rendu final est certain. Aucun mot n’est retardé pour autant."
+    },
+    "where": "Dans le panneau de l’IA à côté de chaque page. Les deux boutons apparaissent en bas à droite du chat dès que tu as scrollé vers le haut."
+  },
   "gedankengang": {
     "title": "Voir l’IA réfléchir",
     "summary": "Pendant qu’une réponse se génère, tu vois au-dessus d’elle ce que le modèle pense et les outils qu’il appelle, dans l’ordre où cela se produit. Seul ce que le modèle fournit réellement est affiché.",

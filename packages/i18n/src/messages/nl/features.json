@@ -683,6 +683,15 @@
     },
     "where": "Op een gedeelde pagina (accountmenu, „Delingen”, „Met mij gedeeld”) in het AI-gedeelte rechts."
   },
+  "chat-mitlesen": {
+    "title": "Een antwoord meelezen terwijl het ontstaat",
+    "summary": "De chat scrolt automatisch mee zolang je onderaan bent. Scrol je omhoog, dan blijft hij staan, en twee knoppen brengen je naar het begin van het antwoord of terug naar het einde. Wat er al staat, verspringt niet meer tijdens het typen.",
+    "details": {
+      "p1": "Zolang je onderaan de chat bent, beweegt de weergave mee als er nieuwe tekst bijkomt. Zodra je omhoog scrolt om iets van eerder te lezen, blijft de weergave staan totdat je zelf weer beneden bent of „Naar het einde van de chat” kiest. „Naar het begin van het antwoord” springt naar je laatste vraag, direct boven het antwoord. Heb je in je systeem minder beweging ingesteld, dan springt de weergave in plaats van vloeiend te glijden.",
+      "p2": "Als de AI met tools werkt, staat elk deel van het antwoord al tijdens het uitvoeren op de plek waar het daarna blijft, met de toolresultaten ertussen. Voltooide alinea’s, lijsten en codeblokken worden niet opnieuw opgemaakt, en opmaaktekens verschijnen pas wanneer duidelijk is wat ze betekenen. Er wordt daarbij geen enkel woord vertraagd."
+    },
+    "where": "In het AI-gedeelte naast elke pagina. De twee knoppen verschijnen rechtsonder in de chat zodra je omhoog hebt gescrold."
+  },
   "gedankengang": {
     "title": "Meekijken hoe de AI denkt",
     "summary": "Terwijl een antwoord tot stand komt, zie je daarboven wat het model overweegt en welke tools het aanroept, in de volgorde waarin het gebeurt. Er wordt alleen getoond wat het model daadwerkelijk levert.",

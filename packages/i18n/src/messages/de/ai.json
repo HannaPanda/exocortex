@@ -13,7 +13,10 @@
     "introTitle": "KI-Assistenz",
     "introHint": "Stelle eine Frage oder nutze /help für Befehle.",
     "boundarySummarized": "Älterer Verlauf zusammengefasst",
-    "boundaryCleared": "Kontext geleert"
+    "boundaryCleared": "Kontext geleert",
+    "jumpToEnd": "Zum Ende des Chats",
+    "jumpToAnswerStart": "Zum Anfang der Antwort",
+    "jumpLabel": "Im Chat springen"
   },
   "message": {
     "superseded": "Nicht mehr Teil des Kontexts.",

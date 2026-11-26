@@ -13,7 +13,10 @@
     "introTitle": "Assistance IA",
     "introHint": "Pose une question ou utilise /help pour voir les commandes.",
     "boundarySummarized": "Historique plus ancien résumé",
-    "boundaryCleared": "Contexte effacé"
+    "boundaryCleared": "Contexte effacé",
+    "jumpToEnd": "Aller à la fin de la discussion",
+    "jumpToAnswerStart": "Aller au début de la réponse",
+    "jumpLabel": "Naviguer dans la discussion"
   },
   "message": {
     "superseded": "Ne fait plus partie du contexte.",

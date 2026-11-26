@@ -13,7 +13,10 @@
     "introTitle": "Assistente IA",
     "introHint": "Fai una domanda o usa /help per i comandi.",
     "boundarySummarized": "Cronologia precedente riassunta",
-    "boundaryCleared": "Contesto svuotato"
+    "boundaryCleared": "Contesto svuotato",
+    "jumpToEnd": "Alla fine della chat",
+    "jumpToAnswerStart": "All’inizio della risposta",
+    "jumpLabel": "Salta nella chat"
   },
   "message": {
     "superseded": "Non fa più parte del contesto.",
