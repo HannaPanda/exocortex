@@ -547,6 +547,8 @@ test.describe('editor', () => {
     const continued = page.locator('.exocortex-editor blockquote + ol');
     await expect(continued).toHaveAttribute('start', '3');
     await expect(ghost).toHaveCount(0);
+    // Apart from the typing, or the undo manager makes both one step.
+    await page.waitForTimeout(800);
     await page.keyboard.type('drei');
     await expect(continued.locator('li')).toHaveText('drei');
 
