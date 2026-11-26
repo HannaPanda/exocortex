@@ -692,6 +692,15 @@
     },
     "where": "In het AI-gedeelte naast elke pagina. De twee knoppen verschijnen rechtsonder in de chat zodra je omhoog hebt gescrold."
   },
+  "chat-je-tab": {
+    "title": "In meerdere tabbladen met verschillende chats werken",
+    "summary": "Elk browsertabblad heeft zijn eigen chat, en elke pagina onthoudt daarin welke chat er het laatst naast openstond. Wissel je in het ene tabblad van chat, dan blijven de andere tabbladen zoals ze zijn.",
+    "details": {
+      "p1": "Open je een pagina in twee tabbladen, dan kun je in elk een andere chat voeren. Een verandering in het ene tabblad heeft geen invloed op het andere, ook niet na het vernieuwen. Dupliceer je een tabblad, dan start de kopie met dezelfde pagina en dezelfde chat en gaat daarna haar eigen weg.",
+      "p2": "Binnen een tabblad verhuist de chat mee als je naar een pagina gaat waar je er nog geen had. Keer je terug naar een pagina, dan staat daar weer de chat die er het laatst naast openstond. Een compleet nieuw tabblad begint met de chat die je het laatst ergens hebt geselecteerd."
+    },
+    "where": "In het AI-gedeelte naast elke pagina, via de gesprekskiezer bovenaan de chat."
+  },
   "gedankengang": {
     "title": "Meekijken hoe de AI denkt",
     "summary": "Terwijl een antwoord tot stand komt, zie je daarboven wat het model overweegt en welke tools het aanroept, in de volgorde waarin het gebeurt. Er wordt alleen getoond wat het model daadwerkelijk levert.",

@@ -266,9 +266,20 @@ state (ADR-004/005) where a conversation is an append-only list of rows, and
   `exo_page_suggest_parent` uses. The conversation itself stays a list of rows.
 - **The panel.** The dropdown now offers the five most recent conversations and
   a link to `/chats`; `/chats?fortsetzen=<id>` and the "Im Panel fortsetzen"
-  button do the reverse — write the panel's per-workspace `localStorage` key
-  (`apps/web/src/components/ai/panel-state.ts`), open the context panel, and
-  navigate to the page the conversation was standing on.
+  button do the reverse — choose the conversation for the page it is about to
+  open on (`chooseConversationForPage`), open the context panel, and navigate
+  to the page the conversation was standing on.
+- **Which conversation a tab shows (issue #231).** The active conversation is
+  per browser tab and per page, never shared between tabs
+  (`apps/web/src/components/ai/panel-state.ts` holds the rules,
+  `use-active-conversation.ts` binds them). It lives in `sessionStorage`,
+  which a duplicated tab copies once and a reload keeps: a page's own entry is
+  the conversation last shown on it in this tab, and a page without one takes
+  the tab's, so the chat still walks along to a new page. A tab with neither
+  starts from `localStorage`'s `exocortex.ai.conversation.<workspaceId>`,
+  which an explicit choice writes and which nothing listens to: the `storage`
+  event that used to switch every open tab along is gone on purpose. Model and
+  thinking level stay per workspace in `localStorage`, as before.
 - **On the agent surfaces.** `exo_chat_list`, `exo_chat_search` and
   `exo_chat_read` (`packages/mcp-tools/src/tools/chats.ts`), all read-only. The
   catalogue's blanket exemption for `/api/ai/conversations*` was narrowed to the

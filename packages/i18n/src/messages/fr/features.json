@@ -692,6 +692,15 @@
     },
     "where": "Dans le panneau de l’IA à côté de chaque page. Les deux boutons apparaissent en bas à droite du chat dès que tu as scrollé vers le haut."
   },
+  "chat-je-tab": {
+    "title": "Travailler dans plusieurs onglets avec différents chats",
+    "summary": "Chaque onglet du navigateur a son propre chat, et chaque page s’y souvient du dernier chat ouvert à côté d’elle. Si tu changes de chat dans un onglet, les autres onglets ne sont pas modifiés.",
+    "details": {
+      "p1": "Si tu ouvres une page dans deux onglets, tu peux mener un chat différent dans chacun d’eux. Un changement dans un onglet n’affecte pas l’autre, même après rechargement. Si tu dupliques un onglet, la copie démarre avec la même page et le même chat, puis suit son propre chemin.",
+      "p2": "Au sein d’un même onglet, le chat te suit lorsque tu passes sur une page où tu n’en avais pas encore. Si tu reviens sur une page, tu y retrouves le chat qui y était ouvert en dernier. Un tout nouvel onglet commence avec le chat que tu as sélectionné en dernier, où que ce soit."
+    },
+    "where": "Dans le panneau d’IA à côté de chaque page, via le sélecteur de conversation en haut du chat."
+  },
   "gedankengang": {
     "title": "Voir l’IA réfléchir",
     "summary": "Pendant qu’une réponse se génère, tu vois au-dessus d’elle ce que le modèle pense et les outils qu’il appelle, dans l’ordre où cela se produit. Seul ce que le modèle fournit réellement est affiché.",

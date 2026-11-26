@@ -692,6 +692,15 @@
     },
     "where": "En el panel de la IA junto a cada página. Ambos botones aparecen abajo a la derecha en el chat en cuanto te desplazas hacia arriba."
   },
+  "chat-je-tab": {
+    "title": "Trabajar en varias pestañas con distintos chats",
+    "summary": "Cada pestaña del navegador tiene su propio chat y cada página recuerda en ella qué chat tuvo al lado por última vez. Si cambias de chat en una pestaña, las demás se quedan como están.",
+    "details": {
+      "p1": "Si abres una página en dos pestañas, puedes mantener un chat diferente en cada una. Un cambio en una pestaña no afecta a la otra, ni siquiera tras recargar. Si duplicas una pestaña, la copia empieza con la misma página y el mismo chat, y a partir de ahí sigue su propio camino.",
+      "p2": "Dentro de una pestaña, el chat te acompaña cuando vas a una página en la que aún no tenías ninguno. Si vuelves a una página, vuelve a aparecer el chat que estuvo abierto junto a ella por última vez. Una pestaña completamente nueva empieza con el chat que hayas seleccionado por última vez en cualquier lugar."
+    },
+    "where": "En el área de IA junto a cada página, mediante el selector de conversación en la parte superior del chat."
+  },
   "gedankengang": {
     "title": "Ver cómo piensa la IA",
     "summary": "Mientras se genera una respuesta, ves encima de ella lo que piensa el modelo y qué herramientas invoca, en el orden en que ocurre. Solo se muestra lo que el modelo proporciona realmente.",

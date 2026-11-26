@@ -25,6 +25,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'chat-je-tab',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#231'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'gedankengang',
     area: 'ki',
     since: '2026-10-14',

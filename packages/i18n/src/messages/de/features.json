@@ -692,6 +692,15 @@
     },
     "where": "Im KI-Bereich neben jeder Seite. Die beiden Knöpfe erscheinen unten rechts im Chat, sobald du nach oben gescrollt hast."
   },
+  "chat-je-tab": {
+    "title": "In mehreren Tabs mit verschiedenen Chats arbeiten",
+    "summary": "Jeder Browser-Tab hat seinen eigenen Chat, und jede Seite merkt sich darin, welcher Chat zuletzt neben ihr stand. Wechselst du in einem Tab den Chat, bleiben die anderen Tabs, wie sie sind.",
+    "details": {
+      "p1": "Öffnest du eine Seite in zwei Tabs, kannst du in jedem einen anderen Chat führen. Ein Wechsel im einen Tab erreicht den anderen nicht, auch nicht nach dem Neuladen. Duplizierst du einen Tab, startet die Kopie mit derselben Seite und demselben Chat und geht danach ihren eigenen Weg.",
+      "p2": "Innerhalb eines Tabs wandert der Chat mit, wenn du auf eine Seite gehst, auf der du noch keinen hattest. Kommst du auf eine Seite zurück, steht dort wieder der Chat, der zuletzt neben ihr lief. Ein ganz neuer Tab beginnt mit dem Chat, den du zuletzt irgendwo ausgewählt hast."
+    },
+    "where": "Im KI-Bereich neben jeder Seite, über die Auswahl der Unterhaltung oben im Chat."
+  },
   "gedankengang": {
     "title": "Zusehen, wie die KI denkt",
     "summary": "Während eine Antwort entsteht, siehst du über ihr, was das Modell dabei überlegt und welche Werkzeuge es aufruft, in der Reihenfolge, in der es passiert. Gezeigt wird nur, was das Modell wirklich liefert.",

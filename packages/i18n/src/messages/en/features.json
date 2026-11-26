@@ -692,6 +692,15 @@
     },
     "where": "In the AI pane next to every page. The two buttons appear in the bottom right of the chat as soon as you scroll up."
   },
+  "chat-je-tab": {
+    "title": "Working in multiple tabs with different chats",
+    "summary": "Each browser tab has its own chat, and each page in it remembers which chat was last open beside it. Switching chats in one tab leaves the other tabs untouched.",
+    "details": {
+      "p1": "If you open a page in two tabs, you can run a different chat in each one. A switch in one tab does not affect the other, even after reloading. If you duplicate a tab, the copy starts with the same page and the same chat, and then goes its own way.",
+      "p2": "Within a tab, the chat travels with you when you navigate to a page where you haven’t had one yet. If you return to a page, the chat that was last active beside it appears again. A brand-new tab starts with the chat you most recently selected anywhere."
+    },
+    "where": "In the AI panel next to each page, via the conversation selector at the top of the chat."
+  },
   "gedankengang": {
     "title": "Watch the AI think",
     "summary": "While an answer is being generated, you can see above it what the model is thinking and which tools it is calling, in the order it happens. Only what the model actually provides is shown.",

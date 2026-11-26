@@ -692,6 +692,15 @@
     },
     "where": "Nell’area IA accanto a ogni pagina. I due pulsanti compaiono in basso a destra nella chat non appena scorri verso l’alto."
   },
+  "chat-je-tab": {
+    "title": "Lavorare con chat diverse in più schede",
+    "summary": "Ogni scheda del browser ha la propria chat e ogni pagina ricorda quale chat era aperta per ultima accanto ad essa. Se cambi chat in una scheda, le altre schede rimangono invariate.",
+    "details": {
+      "p1": "Se apri una pagina in due schede, puoi usare una chat diversa in ciascuna di esse. Una modifica in una scheda non influisce sull’altra, nemmeno dopo aver ricaricato. Se duplichi una scheda, la copia si avvia con la stessa pagina e la stessa chat, per poi proseguire in modo indipendente.",
+      "p2": "All’interno di una scheda, la chat ti segue se passi a una pagina in cui non ne avevi ancora aperta una. Se torni a una pagina, ritroverai la chat aperta l’ultima volta accanto ad essa. Una scheda completamente nuova inizia con la chat selezionata per ultima, ovunque fosse."
+    },
+    "where": "Nell’area IA accanto a ogni pagina, tramite la selezione della conversazione in alto nella chat."
+  },
   "gedankengang": {
     "title": "Guarda come pensa l’IA",
     "summary": "Mentre una risposta prende forma, vedi sopra di essa a cosa sta pensando il modello e quali strumenti chiama, nell’ordine in cui accade. Viene mostrato solo ciò che il modello fornisce effettivamente.",

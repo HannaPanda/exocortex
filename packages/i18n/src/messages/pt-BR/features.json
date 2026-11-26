@@ -692,6 +692,15 @@
     },
     "where": "Na área da IA ao lado de cada página. Os dois botões aparecem no canto inferior direito do chat assim que você rola para cima."
   },
+  "chat-je-tab": {
+    "title": "Trabalhar em várias abas com chats diferentes",
+    "summary": "Cada aba do navegador tem seu próprio chat, e cada página se lembra de qual chat esteve ao lado dela por último. Se você trocar de chat em uma aba, as outras abas continuam como estão.",
+    "details": {
+      "p1": "Se você abrir uma página em duas abas, poderá manter um chat diferente em cada uma. Uma alteração em uma aba não afeta a outra, nem mesmo após recarregar. Se você duplicar uma aba, a cópia começará com a mesma página e o mesmo chat, seguindo seu próprio caminho a partir daí.",
+      "p2": "Dentro de uma mesma aba, o chat acompanha você se você navegar para uma página onde ainda não tinha nenhum chat aberto. Ao retornar a uma página, o chat que estava ao lado dela pela última vez reaparece. Uma aba totalmente nova começa com o chat que você selecionou mais recentemente em algum lugar."
+    },
+    "where": "Na área de IA ao lado de cada página, por meio do seletor de conversa na parte superior do chat."
+  },
   "gedankengang": {
     "title": "Ver como a IA pensa",
     "summary": "Enquanto uma resposta é gerada, você vê acima dela o que o modelo está pensando e quais ferramentas ele chama, na ordem em que acontece. Só é exibido o que o modelo realmente fornece.",

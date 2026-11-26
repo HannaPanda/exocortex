@@ -692,6 +692,15 @@
     },
     "where": "W panelu AI obok każdej strony. Oba przyciski pojawiają się w prawym dolnym rogu czatu, gdy tylko przewiniesz w górę."
   },
+  "chat-je-tab": {
+    "title": "Praca w wielu kartach z różnymi czatami",
+    "summary": "Każda karta przeglądarki ma swój własny czat, a każda strona zapamiętuje w niej, który czat był ostatnio otwarty obok niej. Jeśli zmienisz czat w jednej karcie, pozostałe karty pozostaną bez zmian.",
+    "details": {
+      "p1": "Gdy otworzysz stronę w dwóch kartach, możesz w każdej z nich prowadzić inny czat. Zmiana w jednej karcie nie wpływa na drugą, nawet po odświeżeniu. Po zduplikowaniu karty kopia zaczyna z tą samą stroną i tym samym czatem, a potem działa niezależnie.",
+      "p2": "W obrębie jednej karty czat podąża za tobą, gdy przechodzisz do strony, na której jeszcze żadnego nie było. Gdy wrócisz na stronę, pojawi się tam ponownie czat, który ostatnio obok niej działał. Zupełnie nowa karta zaczyna się od czatu wybranego ostatnio w dowolnym miejscu."
+    },
+    "where": "W sekcji AI obok każdej strony, poprzez wybór rozmowy u góry czatu."
+  },
   "gedankengang": {
     "title": "Podgląd procesu myślenia AI",
     "summary": "Podczas generowania odpowiedzi widzisz nad nią, o czym myśli model i jakie narzędzia wywołuje – w kolejności, w jakiej to się odbywa. Wyświetlane jest tylko to, co model rzeczywiście przekazuje.",

@@ -12076,6 +12076,26 @@
       "source": "b548b30f12ad6d1e",
       "output": "e266b0211ed6fa0d"
     },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "4a8029e94e966751"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "8ad67067bfdced2d"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "9c144bbda9261f8e"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "1d0125ad5d8369c1"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "054cd575a35c4e0f"
+    },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
       "output": "befc3dccc17edb50"
@@ -35997,6 +36017,26 @@
     "features.chat-archiv.where": {
       "source": "b548b30f12ad6d1e",
       "output": "8fbe91ebf9087854"
+    },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "5ba9f619f88315f3"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "0f26b7d40df51be8"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "9540469dde2d159b"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "f053f31bcbda3893"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "f5e3f02a26b9ab5d"
     },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
@@ -59920,6 +59960,26 @@
       "source": "b548b30f12ad6d1e",
       "output": "350d7d6ff4b91f58"
     },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "07e9d30736acb34f"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "5745a9b0c49cbd2c"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "3636d7451d90b3c8"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "e0bf9264a6bee240"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "60dbd1f6a4143ee6"
+    },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
       "output": "aa0556873bea4f56"
@@ -83841,6 +83901,26 @@
     "features.chat-archiv.where": {
       "source": "b548b30f12ad6d1e",
       "output": "a446b7838e60a9a1"
+    },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "dbbe0e205b7cd82c"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "3b47b840034b6eee"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "2a6ac64f0d081ae5"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "47cd1ebb997581d4"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "e53f12621b9a6660"
     },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
@@ -107764,6 +107844,26 @@
       "source": "b548b30f12ad6d1e",
       "output": "043825be7ba6df9b"
     },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "5127a874dd5bd8e8"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "f0154d1ecd6cf520"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "009e477fbbc18e4f"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "e84b822af9c7a3d6"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "023723a18766aea1"
+    },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
       "output": "8c69c1a3c8d4a9fb"
@@ -131686,6 +131786,26 @@
       "source": "b548b30f12ad6d1e",
       "output": "164052d2ffa1eddd"
     },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "96aa7689f3c588ec"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "2727ed68efd103e1"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "12c3ceaaca010e43"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "26504332083921d1"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "f4574e6d5a8a198f"
+    },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
       "output": "1867bb6a246719e2"
@@ -155607,6 +155727,26 @@
     "features.chat-archiv.where": {
       "source": "b548b30f12ad6d1e",
       "output": "88a37a01ff349361"
+    },
+    "features.chat-je-tab.details.p1": {
+      "source": "b104c341b44c453d",
+      "output": "39d304025d50a394"
+    },
+    "features.chat-je-tab.details.p2": {
+      "source": "5f3fa36dc37a5211",
+      "output": "7ab978137a5a6d45"
+    },
+    "features.chat-je-tab.summary": {
+      "source": "5e026af523b0a807",
+      "output": "001789caebe3049f"
+    },
+    "features.chat-je-tab.title": {
+      "source": "a24b14fcd6d92fb7",
+      "output": "39c95fd7238d61a1"
+    },
+    "features.chat-je-tab.where": {
+      "source": "b57581c78fec3761",
+      "output": "0ac71e50734a4eb7"
     },
     "features.chat-mitlesen.details.p1": {
       "source": "fd87b1d4c681ebcd",
