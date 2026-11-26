@@ -8,6 +8,7 @@ import { activeTickIndex, railTicks } from '@/components/editor/page-outline/out
 import {
   OutlineHeader,
   OutlineList,
+  OutlinePinNote,
   OutlineRail,
   outlineRows,
 } from '@/components/editor/page-outline/outline-view';
@@ -62,7 +63,7 @@ export function PageOutlinePattern() {
     <DsSection
       id="seitengliederung"
       title="Seitengliederung"
-      lead="Ab vier Überschriften und anderthalb Bildschirmen Länge steht am rechten Rand der Seite eine Skala: ein Strich je Überschrift, die Länge sagt die Ebene, Bernstein sagt, wo du bist. Ein Klick öffnet die Liste daneben. Ist neben der Textspalte Platz, lässt sie sich anpinnen; auf dem Handy wird die Skala zu einem kleinen Knopf unten rechts."
+      lead="Sobald eine Seite eine Überschrift hat, steht am rechten Rand eine Skala: ein Strich je Überschrift, die Länge sagt die Ebene, Bernstein sagt, wo du bist. Ein Klick öffnet die Liste daneben. Angepinnt nimmt sie sich in jeder Seitenbreite eine eigene Spalte, und der Text rückt zur Seite; ist das Fenster dafür zu schmal, sagt die Liste das an der Stelle der Nadel. Auf dem Handy wird die Skala zu einem kleinen Knopf unten rechts."
     >
       <DsExample
         id="seitengliederung-zustaende"
@@ -91,6 +92,20 @@ export function PageOutlinePattern() {
                 activeIndex={active}
                 onJump={(row) => setActive(row.index)}
               />
+            </nav>
+          </DsState>
+          <DsState label="Fenster zu schmal zum Anpinnen">
+            <nav
+              aria-label="Gliederung ohne Nadel (Beispiel)"
+              className="flex w-72 flex-col gap-1 rounded-lg border border-border-strong bg-popover p-1.5 shadow-md"
+            >
+              <OutlineHeader pinned={false} canPin={false} onPinnedChange={() => undefined} />
+              <OutlineList
+                rows={rows.slice(0, 3)}
+                activeIndex={active}
+                onJump={(row) => setActive(row.index)}
+              />
+              <OutlinePinNote />
             </nav>
           </DsState>
           <DsState label="Angepinnt">
