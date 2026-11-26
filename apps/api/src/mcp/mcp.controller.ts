@@ -8,11 +8,13 @@ import { type ApiEnv } from '@exocortex/config';
 import { agentSessionExternalIdSchema } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import {
+  COMPACT_ENDPOINT_DOMAINS,
   JSON_RPC_ERROR_CODES,
   type JsonRpcRequest,
   type JsonRpcResponse,
   LATEST_PROTOCOL_VERSION,
   type McpRequestHandler,
+  type ToolDomain,
   type ToolSurface,
 } from '@exocortex/mcp-tools';
 
@@ -75,6 +77,20 @@ export class McpController {
   @Post('research')
   async handleResearch(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
     await this.handle(request, reply, 'research');
+  }
+
+  /**
+   * The everyday part of the full surface: pages, search, databases,
+   * comments, history, inbox and templates (`COMPACT_ENDPOINT_DOMAINS`).
+   *
+   * For clients that refuse the whole catalogue. ChatGPT does: it completes
+   * OAuth, `initialize` and `tools/list` against `/api/mcp` and then reports
+   * that the connection could not be verified.
+   */
+  @Public()
+  @Post('compact')
+  async handleCompact(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
+    await this.handle(request, reply, 'mcp', COMPACT_ENDPOINT_DOMAINS);
   }
 
   /**
@@ -182,6 +198,12 @@ export class McpController {
     this.refuseStream(reply);
   }
 
+  @Public()
+  @Get('compact')
+  openCompactStream(@Res() reply: FastifyReply): void {
+    this.refuseStream(reply);
+  }
+
   /**
    * Ending a session. There is none to end, but a client that reaches for this
    * on shutdown deserves a plain "fine" rather than a 404 it has to interpret.
@@ -201,6 +223,12 @@ export class McpController {
   @Public()
   @Delete('memory')
   endMemorySession(@Res() reply: FastifyReply): void {
+    void reply.status(204).send();
+  }
+
+  @Public()
+  @Delete('compact')
+  endCompactSession(@Res() reply: FastifyReply): void {
     void reply.status(204).send();
   }
 
@@ -229,6 +257,7 @@ export class McpController {
     request: FastifyRequest,
     reply: FastifyReply,
     surface: ToolSurface,
+    domains?: readonly ToolDomain[],
   ): Promise<void> {
     const headers = request.headers as Record<string, string | string[] | undefined>;
 
@@ -251,7 +280,7 @@ export class McpController {
       return;
     }
 
-    const handler = await this.mcp.createHandler(caller, surface, sessionId);
+    const handler = await this.mcp.createHandler(caller, surface, sessionId, domains);
     const responses: JsonRpcResponse[] = [];
     for (const message of messages) {
       const response = await this.dispatch(handler, message, caller, surface);

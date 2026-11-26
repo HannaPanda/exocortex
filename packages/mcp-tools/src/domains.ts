@@ -41,6 +41,31 @@ import { type AnyToolDefinition, TOOL_DOMAINS, type ToolDomain } from './tool.js
 export const ALWAYS_OFFERED_DOMAINS: readonly ToolDomain[] = ['core', 'pages'];
 
 /**
+ * The domains `/api/mcp/compact` serves: the everyday work of a workspace and
+ * nothing that configures it.
+ *
+ * ChatGPT refuses a connector whose `tools/list` is the whole catalogue (242
+ * tools, 309 KB in November 2026): the OAuth flow, `initialize` and the list
+ * all succeed, and it then reports that the connection could not be verified
+ * and revokes the token. A connector created while the catalogue was small
+ * kept working on its cached list, which is why this surfaced only on a
+ * reconnect. Around 60 tools and 64 KB is accepted.
+ *
+ * As with the domains above, this is what the client is told about and never
+ * an authorization: the token and its scopes decide what a call may do.
+ */
+export const COMPACT_ENDPOINT_DOMAINS: readonly ToolDomain[] = [
+  'core',
+  'pages',
+  'databases',
+  'comments',
+  'history',
+  'lifecycle',
+  'inbox',
+  'templates',
+];
+
+/**
  * What each domain is, in the words the model is shown when it asks.
  *
  * German, because it is read by the model inside a German prompt and by a

@@ -17,6 +17,7 @@ import {
   createMcpRequestHandler,
   type McpRequestHandler,
   toolsFor,
+  type ToolDomain,
   type ToolSurface,
   WriteConfirmationGate,
 } from '@exocortex/mcp-tools';
@@ -210,7 +211,10 @@ export class McpService {
     caller: McpCaller,
     surface: ToolSurface,
     agentSessionId: string,
+    /** Narrows the surface to these domains (`/api/mcp/compact`). */
+    domains?: readonly ToolDomain[],
   ): Promise<McpRequestHandler> {
+    const whole = surface === 'mcp' && domains === undefined;
     const client = createFetchApiClient({
       // Loopback, not the public origin: this call must not leave the machine,
       // must not depend on nginx being up, and must not be counted as external
@@ -222,7 +226,7 @@ export class McpService {
 
     return createMcpRequestHandler({
       client,
-      tools: toolsFor(surface),
+      tools: toolsFor(surface, { domains }),
       // What groups this connection's writes (ADR-022). It holds no state
       // here: the id is stamped on the loopback calls and recorded in the
       // journal, so a second API process serves the same client unchanged.
@@ -230,15 +234,15 @@ export class McpService {
       // Resources and prompts only on the full surface. The research and
       // memory endpoints exist because a narrow catalogue is used better than
       // a wide one; handing them an attach menu of every recent page would
-      // give back exactly the breadth they were carved out to avoid.
-      context: surface === 'mcp',
+      // give back exactly the breadth they were carved out to avoid. The
+      // compact endpoint is narrow for the same reason.
+      context: whole,
       // And with them the third part, `resources/subscribe` (issue #48). The
       // set lives in `McpStreamsService` rather than here, because this
       // handler is built per request and a subscription has to outlive one.
-      subscriptions:
-        surface === 'mcp'
-          ? this.streams.subscriptionsFor(caller.session.userId, agentSessionId)
-          : undefined,
+      subscriptions: whole
+        ? this.streams.subscriptionsFor(caller.session.userId, agentSessionId)
+        : undefined,
       gate: this.gate,
       // `mcp.writeConfirmationRequired` widens the gate to every write. It was
       // written, shown in the admin area and documented, and then read by

@@ -867,12 +867,25 @@ its subscriptions in the memory of the process that answered. That is the one
 piece of state this endpoint holds, and it is why a second API process would
 need the set in Redis rather than in a `Map`.
 
-Two endpoints, differing only in which tools they serve:
+Four endpoints, differing only in which tools they serve:
 
-| URL | Tools | For |
-| --- | --- | --- | --- |
-| `https://exocortex.app/api/mcp` | the 53 `exo_` tools | a general-purpose agent |
-| `https://exocortex.app/api/mcp/research` | `search`, `fetch` | ChatGPT deep research |
+| URL                                      | Tools                                                     | For                                  |
+| ---------------------------------------- | --------------------------------------------------------- | ------------------------------------ |
+| `https://exocortex.app/api/mcp`          | every `exo_` tool on the `mcp` surface                    | a general-purpose agent              |
+| `https://exocortex.app/api/mcp/compact`  | the `exo_` tools of `COMPACT_ENDPOINT_DOMAINS` (about 60) | ChatGPT                              |
+| `https://exocortex.app/api/mcp/research` | `search`, `fetch`                                         | ChatGPT deep research                |
+| `https://exocortex.app/api/mcp/memory`   | `recall`, `remember`, `fetch`                             | a chat client using the agent memory |
+
+ChatGPT refuses the full endpoint: OAuth, `initialize` and `tools/list` all
+succeed, and it then reports that the connection could not be verified and
+revokes the token (242 tools, 309 KB in November 2026). The compact endpoint
+serves the everyday domains (pages, search, databases, comments, history,
+inbox, templates) and is accepted. A connector created while the catalogue was
+small keeps working on its cached list until it is reconnected.
+
+The POST body is read as JSON whatever its declared content type, because
+ChatGPT's connector check sends `application/octet-stream`; any other route
+still refuses an unknown type with 415.
 
 `tools/call` resolves a name against the list the connection was served, so the
 research endpoint cannot reach a writing tool by naming it.
@@ -905,7 +918,7 @@ resource, and every access token is audience-bound to it (RFC 8707). A token
 minted here is therefore useless anywhere else, and a token minted elsewhere is
 useless here.
 
-In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp`
+In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp/compact`
 (or `.../api/mcp/research` for deep research) and pick OAuth. The browser lands
 on `/anmelden` if signed out, then on `/verbinden`, which names the client and
 what it is asking for. **Nothing is issued until that page is answered.**
