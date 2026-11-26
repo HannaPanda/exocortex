@@ -402,6 +402,8 @@
       "overviewKeywords": "panoramica pagina panoramica sottopagine riepilogo",
       "aiRule": "Imposta regola IA",
       "aiRuleKeywords": "ia regola prompt di sistema istruzione sempre richiesta",
+      "selectionToAi": "Invia la selezione alla chat IA",
+      "selectionToAiKeywords": "ia chat selezione testo selezionato domanda contesto",
       "importMarkdown": "Importa Markdown",
       "importMarkdownKeywords": "importa importare markdown carica caricare",
       "createChild": "Crea sottopagina",

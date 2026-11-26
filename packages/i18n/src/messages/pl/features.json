@@ -731,6 +731,16 @@
     },
     "where": "W sekcji AI obok każdej strony, poprzez wybór rozmowy u góry czatu."
   },
+  "markierung-an-ki": {
+    "title": "Pokazywanie zaznaczonego fragmentu AI",
+    "summary": "Gdy zaznaczysz tekst na stronie, czat AI nad polem wprowadzania zaoferuje dołączenie dokładnie tego fragmentu. Po zatwierdzeniu pojawi się tam jako zaznaczenie z pierwszymi słowami, zostanie wysłany z twoją następną wiadomością, a wcześniej można go usunąć krzyżykiem.",
+    "details": {
+      "p1": "Zaznacz fragment w tekście. Nad polem wprowadzania czatu AI pojawi się wtedy „Dołącz zaznaczenie” z jego pierwszymi słowami. Dopiero kliknięcie go dołącza; wcześniej nic z tego nie zostanie wysłane, nawet jeśli od razu zaczniesz pisać. Ten sam fragment możesz przekazać za pomocą „Wyślij do AI” w menu nad zaznaczeniem lub za pomocą Strg + K i „Przekaż zaznaczenie do czatu AI”. Na stronach tylko do odczytu działa to dokładnie tak samo.",
+      "p2": "Dołączone zaznaczenie widnieje jako osobny wpis w cudzysłowie nad polem wprowadzania, wraz z jego rozmiarem. Po najechaniu kursorem zobaczysz, z której strony pochodzi. Dotyczy tylko następnej wiadomości i potem znika – inaczej niż przypięte źródła, które pozostają do momentu ich odpięcia. W historii czatu widać potem dokładnie, co zostało przesłane.",
+      "p3": "Zaznaczenie jest dołączane także wtedy, gdy tekst otwartej strony nie jest domyślnie przekazywany, ponieważ decydujesz o tym samodzielnie. Fragmenty dłuższe niż 4000 znaków są skracane, co jest widoczne przy zaznaczeniu jeszcze przed wysłaniem, a potem w tekście, który otrzymuje AI. AI otrzymuje ponadto identyfikatory zaznaczonych bloków i może za pomocą swoich narzędzi odczytywać lub zmieniać dokładnie te miejsca, o ile masz do tego uprawnienia na danej stronie."
+    },
+    "where": "W panelu AI obok każdej strony, nad polem wprowadzania, gdy tylko zaznaczysz coś w tekście."
+  },
   "gedankengang": {
     "title": "Podgląd procesu myślenia AI",
     "summary": "Podczas generowania odpowiedzi widzisz nad nią, o czym myśli model i jakie narzędzia wywołuje – w kolejności, w jakiej to się odbywa. Wyświetlane jest tylko to, co model rzeczywiście przekazuje.",

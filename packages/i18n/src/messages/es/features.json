@@ -731,6 +731,16 @@
     },
     "where": "En el área de IA junto a cada página, mediante el selector de conversación en la parte superior del chat."
   },
+  "markierung-an-ki": {
+    "title": "Mostrar a la IA una parte seleccionada",
+    "summary": "Si seleccionas texto en una página, el chat de la IA te ofrece encima del campo de entrada adjuntar justo esa parte. Al añadirla, aparece allí como selección con sus primeras palabras, se envía con tu próximo mensaje y se puede quitar antes con la cruz.",
+    "details": {
+      "p1": "Selecciona una parte del texto. Encima del campo de entrada del chat de la IA aparecerá entonces «Adjuntar selección» con las primeras palabras. Solo al hacer clic se añade; antes de eso no se envía nada, aunque empieces a escribir de inmediato. También puedes enviar esa misma parte con «Enviar a la IA» en el menú flotante sobre la selección o con Strg + K y «Pasar selección al chat de la IA». En las páginas donde solo tienes permisos de lectura, funciona exactamente igual.",
+      "p2": "La selección añadida aparece como una entrada propia entre comillas encima del campo de entrada, junto con su tamaño. Si pasas el cursor por encima, ves de qué página procede. Solo se aplica al siguiente mensaje y desaparece después, a diferencia de las fuentes fijadas, que permanecen hasta que las quites. En el historial del chat se indica después qué se adjuntó exactamente.",
+      "p3": "Una selección se envía incluso cuando el texto de la página abierta normalmente no se incluye, porque la has elegido tú. Si supera los 4.000 caracteres, se trunca, y esto se indica de antemano en la selección y después en el texto que recibe la IA. La IA también recibe los identificadores de los bloques seleccionados y puede leer o modificar justo esas partes con sus herramientas, siempre que tengas permisos suficientes en la página."
+    },
+    "where": "En el panel de la IA junto a cada página, encima del campo de entrada, en cuanto seleccionas algo de texto."
+  },
   "gedankengang": {
     "title": "Ver cómo piensa la IA",
     "summary": "Mientras se genera una respuesta, ves encima de ella lo que piensa el modelo y qué herramientas invoca, en el orden en que ocurre. Solo se muestra lo que el modelo proporciona realmente.",

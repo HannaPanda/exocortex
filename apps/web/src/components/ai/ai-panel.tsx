@@ -20,7 +20,7 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { AiPanelFooter, AiPanelHeader, AiPanelModelBar } from './ai-panel-chrome';
-import { useAiSelection } from './ai-selection';
+import { useAiSelection, useLiveSelection } from './ai-selection';
 import { AiTranscriptArea } from './ai-transcript-area';
 import { useStartedChat } from './chat-start';
 import {
@@ -34,6 +34,7 @@ import {
   buildStreamingMessages,
   composerBusy,
   describeTranscript,
+  liveSelectionOffer,
   resolvePageHandover,
   resolveTranscriptTrace,
 } from './panel-view';
@@ -283,6 +284,7 @@ function AiPanelBody({
     activeDatabaseView: documentSession.activeDatabaseView,
     handedOverSelection,
   });
+  const selectionOffer = useSelectionOffer(documentId, selection);
 
   const startNewConversation = React.useCallback(async (): Promise<string> => {
     const response = await createConversation.mutateAsync({
@@ -340,7 +342,7 @@ function AiPanelBody({
       });
       // One hand-over, one message. Leaving it in the chip row would silently
       // attach the same passage to every following question.
-      clearSelection();
+      clearSelection({ sent: true });
 
       if (response.command !== null) {
         const command = response.command;
@@ -448,7 +450,9 @@ function AiPanelBody({
         pageContextEnabled={settings.pageContextEnabled}
         onEnabledChange={settings.changePageContext}
         selection={selection}
-        onSelectionRemove={clearSelection}
+        onSelectionRemove={() => clearSelection()}
+        liveSelection={selectionOffer.offer}
+        onSelectionAdd={selectionOffer.take}
         pinned={pinnedSources.pinned}
         onPinRequest={() => setSourcePickerOpen(true)}
         onPinModeChange={pinnedSources.setMode}
@@ -468,4 +472,21 @@ function AiPanelBody({
       />
     </div>
   );
+}
+
+/**
+ * What is marked in the text right now, offered rather than sent (#249), and
+ * the click that takes the offer and makes it the pending selection.
+ */
+function useSelectionOffer(
+  documentId: string | null,
+  pending: { blockIds: string[]; text: string } | null,
+): { offer: { text: string } | null; take: () => void } {
+  const { handOver } = useAiSelection();
+  const live = useLiveSelection()?.live ?? null;
+  const offer = liveSelectionOffer({ documentId, live, pending });
+  const take = React.useCallback(() => {
+    if (offer !== null) handOver(offer);
+  }, [offer, handOver]);
+  return { offer, take };
 }

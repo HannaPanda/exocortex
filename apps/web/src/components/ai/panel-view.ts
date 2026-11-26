@@ -112,6 +112,25 @@ export function resolvePageHandover(input: {
 }
 
 /**
+ * Whether the chip row offers what is marked in the editor right now (#249).
+ *
+ * Only a passage of the page the route is on, for the same reason a handed-
+ * over one is dropped elsewhere, and only while it is not already the one
+ * waiting to be sent: an offer to add what is already there would read as
+ * "this is not included yet".
+ */
+export function liveSelectionOffer(input: {
+  documentId: string | null;
+  live: { documentId: string; blockIds: string[]; text: string } | null;
+  pending: { blockIds: string[]; text: string } | null;
+}): { documentId: string; blockIds: string[]; text: string } | null {
+  const { documentId, live, pending } = input;
+  if (live === null || documentId === null || live.documentId !== documentId) return null;
+  if (pending !== null && pending.text === live.text) return null;
+  return live;
+}
+
+/**
  * What the transcript area is showing: a failure, a skeleton, the introduction,
  * or the conversation itself.
  *

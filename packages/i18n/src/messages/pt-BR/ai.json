@@ -112,8 +112,13 @@
     "notStored": "A linha de raciocínio não é salva e sumirá após recarregar."
   },
   "context": {
-    "selection": "Seleção ({count, plural, one {# bloco} many {# blocos} other {# blocos}})",
+    "selection": "Seleção: “{excerpt}”",
+    "selectionSource": "De “{title}”",
+    "selectionBlocks": "{count, plural, one {# bloco} many {# blocos} other {# blocos}}",
+    "selectionOnce": "Enviado apenas com a sua próxima mensagem, depois não mais.",
     "selectionRemove": "Não enviar seleção",
+    "selectionAdd": "Incluir seleção: “{excerpt}”",
+    "selectionAddHint": "Isso foi selecionado no texto agora. Só será enviado se você incluir aqui.",
     "doNotSend": "Não enviar",
     "pageChip": "{collection, select, yes {Este banco de dados} other {Esta página}}: {title}",
     "pageRemove": "Não enviar {collection, select, yes {este banco de dados} other {esta página}}",

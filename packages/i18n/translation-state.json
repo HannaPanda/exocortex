@@ -2673,12 +2673,32 @@
       "output": "28a9a2d2c5b1577d"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "47c39733deae855a"
+      "source": "258680b1872812c6",
+      "output": "51d84ed415ada1ef"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "31ad2558d062da6b"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "3dea993bd37b6a34"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "d80d6e362dd320e9"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "c390817f486a4e90"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "1265d7ed7cf758bd"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "19f4d9002544f685"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -13076,6 +13096,30 @@
       "source": "768ea6d753d698ec",
       "output": "b6d00427a5e6479e"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "54a9e78391523c0f"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "f9fbabe1b2d9c15b"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "860262e7f76af0ef"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "2d40152fae1ae234"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "aba8c282ef43abc6"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "df3161099e392209"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "cb2eb7c58723dbcd"
@@ -20996,6 +21040,14 @@
       "source": "29dda86c15438e22",
       "output": "e557c56d98d12098"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "8265611e844d53bf"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "c625eac6e8a84149"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "0694a9b331cc0ef3"
@@ -26835,12 +26887,32 @@
       "output": "a2bf7397fda909d1"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "a9a1f71fa9e3b643"
+      "source": "258680b1872812c6",
+      "output": "3277851f1f4bc7c0"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "420d1fc573aebcf8"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "9284d33b79580762"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "e46bacf7fbb53ada"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "6084704fcee1e406"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "5f9f21d83b3081e6"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "4bce82accc8a1760"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -37238,6 +37310,30 @@
       "source": "768ea6d753d698ec",
       "output": "d14dff14927f2c7d"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "a6b92990a90a63b8"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "aebd5514e30cc4ae"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "d3c3dd39410b778c"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "5f7b5b5f9f483712"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "ffbb706b62e5a70d"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "89029fb94c076da4"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "9c75a6912a589b7c"
@@ -45158,6 +45254,14 @@
       "source": "29dda86c15438e22",
       "output": "d240d6d6fa0aa581"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "0837c6b22c26099f"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "9bf745b54083e1c3"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "531338a661607ece"
@@ -50997,12 +51101,32 @@
       "output": "80855f7c644fdc7d"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "894b8ab346e9042f"
+      "source": "258680b1872812c6",
+      "output": "df43f8efb6a97444"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "d14a41c5e6f4195c"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "cb47d602e93c802d"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "aac26eb8bac2b0fd"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "3921989253c05114"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "19dad56aadee90b2"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "41ccc02ce6457b87"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -61400,6 +61524,30 @@
       "source": "768ea6d753d698ec",
       "output": "256dd9390338e1b5"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "7e28175f9d55fef1"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "a4e8040a69b77167"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "f12fa4c8a14c83fa"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "590eb186f8973163"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "7df6feed1dcaacf5"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "d564b44864ba3b90"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "b0ff5f649c301f24"
@@ -69320,6 +69468,14 @@
       "source": "29dda86c15438e22",
       "output": "8c5a7b81f054a4aa"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "aca474cd449dc6a0"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "935b008baeab9f69"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "49e84c31ab13159a"
@@ -75159,12 +75315,32 @@
       "output": "cd819d317dc02be1"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "8b7354282c4cd91b"
+      "source": "258680b1872812c6",
+      "output": "5d0b8afdc1757e79"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "e0cef7bbd019153e"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "60b3ed5632d7779f"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "8932eb0fef66781e"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "028057821c4f8a71"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "451249ffda3d8433"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "d5dafbfabbbb1dd9"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -85562,6 +85738,30 @@
       "source": "768ea6d753d698ec",
       "output": "0cad2249eeb172b4"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "5e80961a632135bb"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "fdc798bcf0ca60f2"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "5f297b473e7b12ba"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "e85318a046661d21"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "6c599f340a329ee2"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "53e01401f42a1a94"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "bb3ef9a9e4799c31"
@@ -93482,6 +93682,14 @@
       "source": "29dda86c15438e22",
       "output": "f135d3f04e849da1"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "0b7f861b6167ed27"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "bf94f68cc0ad146a"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "b786eaf234c266a8"
@@ -99321,12 +99529,32 @@
       "output": "93fd2db78bc43a6d"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "fcc9bedea09b9f10"
+      "source": "258680b1872812c6",
+      "output": "f8fdd318e08cddd2"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "8865e4f104933095"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "6f3cdf98570c17f0"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "9a9231cb988313cb"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "a2dc220c02061019"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "fae4f50650daa697"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "b052ce99433fc14a"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -109724,6 +109952,30 @@
       "source": "768ea6d753d698ec",
       "output": "2f23ba3f979b1593"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "694a5c26d56c871f"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "de9e053d97a7d4ce"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "9274d121c5a7e238"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "455890c1e0f600f1"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "0bb3b5e6fa6a0e17"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "ad595e2ad9b0ed35"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "ed011983015f6a8f"
@@ -117644,6 +117896,14 @@
       "source": "29dda86c15438e22",
       "output": "bcdc24fe2ef913d9"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "52a04954c3215ee5"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "de1b827e61015eb1"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "9c8bc4c1b47e857d"
@@ -123483,12 +123743,32 @@
       "output": "e0733b43c7da076b"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "6e9582b0c1f0ed13"
+      "source": "258680b1872812c6",
+      "output": "d9eaa2100a2c4303"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "70ca27da08d807ec"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "943a0d92cee8945d"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "b5909bcae74e4c67"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "449e81c571eecd1e"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "706688abbf50e470"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "ff6859ca88d9876a"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -133886,6 +134166,30 @@
       "source": "768ea6d753d698ec",
       "output": "bb0d980d0f5d9c40"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "804912a18f87bdf3"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "823c1559c05c263a"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "426bd095963a92f9"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "84618062c7d7de41"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "69f60a1f04cd54a4"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "09fb75bbd05a0f45"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "46c096229796785b"
@@ -141806,6 +142110,14 @@
       "source": "29dda86c15438e22",
       "output": "7d8ccf891aad51ce"
     },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "36e1ecf23b07c0b8"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "55e3b8f411925ff9"
+    },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",
       "output": "7a543c4c0aa8fec7"
@@ -147645,12 +147957,32 @@
       "output": "a3b426ae7da4a42c"
     },
     "ai.context.selection": {
-      "source": "ac9a4851de215779",
-      "output": "1c9e96f8ec73cbb7"
+      "source": "258680b1872812c6",
+      "output": "574486d0d422dc99"
+    },
+    "ai.context.selectionAdd": {
+      "source": "303afdfd130247b2",
+      "output": "ec7e3be301b970c9"
+    },
+    "ai.context.selectionAddHint": {
+      "source": "f4a942bbc62b1cd7",
+      "output": "44172b6789f431e1"
+    },
+    "ai.context.selectionBlocks": {
+      "source": "8366b239659de512",
+      "output": "891e2383fe997731"
+    },
+    "ai.context.selectionOnce": {
+      "source": "eb4a759a73c04b99",
+      "output": "a2ae16e5c6134358"
     },
     "ai.context.selectionRemove": {
       "source": "bf1ecd772d3103de",
       "output": "92823b87a29aa76b"
+    },
+    "ai.context.selectionSource": {
+      "source": "3e74d1eda99efce8",
+      "output": "e0bd460e11d8be16"
     },
     "ai.context.sourceActions": {
       "source": "3eea64afdc3e3cd0",
@@ -158048,6 +158380,30 @@
       "source": "768ea6d753d698ec",
       "output": "319e0a1d0f642355"
     },
+    "features.markierung-an-ki.details.p1": {
+      "source": "4a5096731bcdf8d1",
+      "output": "34b6e4b6e480a844"
+    },
+    "features.markierung-an-ki.details.p2": {
+      "source": "fa462c3b2cfe1680",
+      "output": "eab7d87362099f13"
+    },
+    "features.markierung-an-ki.details.p3": {
+      "source": "18dd19a77a4ea8d2",
+      "output": "9d7ef6bf3dbe1871"
+    },
+    "features.markierung-an-ki.summary": {
+      "source": "23e691d86feee53f",
+      "output": "5c5df81c536c271a"
+    },
+    "features.markierung-an-ki.title": {
+      "source": "926bc2adbc62891f",
+      "output": "60c9142ef109d04d"
+    },
+    "features.markierung-an-ki.where": {
+      "source": "9e4071d56fd43a2f",
+      "output": "d34ada2619829815"
+    },
     "features.mcp-abonnements.details.p1": {
       "source": "dbb1cedf933a843f",
       "output": "803d8716e9c33365"
@@ -165967,6 +166323,14 @@
     "shell.paletteCommands.page.restoreKeywords": {
       "source": "29dda86c15438e22",
       "output": "34bab27d27781323"
+    },
+    "shell.paletteCommands.page.selectionToAi": {
+      "source": "d40fa811bdb4aa63",
+      "output": "70ef1599ba184ba1"
+    },
+    "shell.paletteCommands.page.selectionToAiKeywords": {
+      "source": "ffa9250bb000747d",
+      "output": "e3b12db8f9cd9202"
     },
     "shell.paletteCommands.page.share": {
       "source": "b909b4b71080adbf",

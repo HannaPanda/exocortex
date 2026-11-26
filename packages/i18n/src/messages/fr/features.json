@@ -731,6 +731,16 @@
     },
     "where": "Dans le panneau d’IA à côté de chaque page, via le sélecteur de conversation en haut du chat."
   },
+  "markierung-an-ki": {
+    "title": "Montrer un passage sélectionné à l’IA",
+    "summary": "Si tu sélectionnes du texte sur une page, le chat IA te propose, au-dessus du champ de saisie, d’inclure précisément ce passage. Une fois adoptée, la sélection y apparaît avec ses premiers mots, part avec ton prochain message et peut être retirée avant l’envoi grâce à la croix.",
+    "details": {
+      "p1": "Sélectionne un passage dans le texte. Au-dessus du champ de saisie du chat IA apparaît alors « Joindre la sélection » avec les premiers mots. Seul un clic dessus permet de l’intégrer ; rien n’est envoyé avant cela, même si tu commences tout de suite à écrire. Tu peux aussi transmettre ce même passage via « Envoyer à l’IA » dans le menu contextuel de la sélection ou avec Strg + K et « Envoyer la sélection au chat IA ». Cela fonctionne de la même manière sur les pages où tu n’as qu’un accès en lecture.",
+      "p2": "La sélection ajoutée s’affiche au-dessus du champ de saisie comme un élément distinct entre guillemets, accompagné de sa taille. En passant le curseur dessus, tu vois de quelle page elle provient. Elle ne vaut que pour le prochain message et disparaît ensuite, contrairement aux sources épinglées qui restent jusqu’à ce que tu les retires. Dans l’historique du chat, tu retrouves ensuite exactement ce qui a été transmis.",
+      "p3": "Une sélection est envoyée même si le texte de la page ouverte n’est pas transmis par ailleurs, puisque c’est toi qui l’as choisie. Au-delà de 4 000 caractères, elle est raccourcie, ce qui est indiqué dès la sélection et précisé dans le texte reçu par l’IA. L’IA reçoit également les identifiants des blocs sélectionnés et peut lire ou modifier précisément ces passages avec ses outils, dans la mesure où tes autorisations sur la page le permettent."
+    },
+    "where": "Dans le panneau de l’IA à côté de chaque page, au-dessus du champ de saisie, dès que tu as sélectionné du texte."
+  },
   "gedankengang": {
     "title": "Voir l’IA réfléchir",
     "summary": "Pendant qu’une réponse se génère, tu vois au-dessus d’elle ce que le modèle pense et les outils qu’il appelle, dans l’ordre où cela se produit. Seul ce que le modèle fournit réellement est affiché.",

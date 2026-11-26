@@ -402,6 +402,8 @@
       "overviewKeywords": "visão geral página de visão geral subpáginas resumo",
       "aiRule": "Definir regra de IA",
       "aiRuleKeywords": "ia regra prompt de sistema instrução sempre solicitação",
+      "selectionToAi": "Enviar seleção para o chat de IA",
+      "selectionToAiKeywords": "ia chat marcação seleção selecionado texto pergunta contexto",
       "importMarkdown": "Importar Markdown",
       "importMarkdownKeywords": "importar importação markdown carregar",
       "createChild": "Criar subpágina",

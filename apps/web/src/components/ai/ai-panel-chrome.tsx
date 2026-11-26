@@ -205,6 +205,8 @@ export function AiPanelFooter({
   onEnabledChange,
   selection,
   onSelectionRemove,
+  liveSelection,
+  onSelectionAdd,
   pinned,
   onPinRequest,
   onPinModeChange,
@@ -217,6 +219,9 @@ export function AiPanelFooter({
   onEnabledChange: (enabled: boolean) => void;
   selection: { blockIds: string[]; text: string } | null;
   onSelectionRemove: () => void;
+  /** What is marked in the text right now and not handed over yet (#249). */
+  liveSelection: { text: string } | null;
+  onSelectionAdd: () => void;
   pinned: AiConversationSourcesResponse | null;
   onPinRequest: () => void;
   onPinModeChange: (source: AiConversationSource, mode: AiConversationSourceMode) => void;
@@ -231,8 +236,10 @@ export function AiPanelFooter({
         isCollection={openDocument?.type === 'COLLECTION'}
         enabled={pageContextEnabled}
         onEnabledChange={onEnabledChange}
-        selectionBlockCount={selection === null ? null : Math.max(1, selection.blockIds.length)}
+        selection={selection}
         onSelectionRemove={onSelectionRemove}
+        liveSelection={liveSelection}
+        onSelectionAdd={onSelectionAdd}
         pinned={pinned}
         onPinRequest={onPinRequest}
         onPinModeChange={onPinModeChange}

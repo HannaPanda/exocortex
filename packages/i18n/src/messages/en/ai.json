@@ -112,8 +112,13 @@
     "notStored": "The thought process is not saved and will be gone after reloading."
   },
   "context": {
-    "selection": "Selection ({count, plural, one {# block} other {# blocks}})",
+    "selection": "Selection: “{excerpt}”",
+    "selectionSource": "From “{title}”",
+    "selectionBlocks": "{count, plural, one {# block} other {# blocks}}",
+    "selectionOnce": "Only included with your next message, not after that.",
     "selectionRemove": "Don’t include selection",
+    "selectionAdd": "Include selection: “{excerpt}”",
+    "selectionAddHint": "You just selected this in the text. It will only be included once you add it here.",
     "doNotSend": "Don’t include",
     "pageChip": "{collection, select, yes {This database} other {This page}}: {title}",
     "pageRemove": "Don’t include {collection, select, yes {this database} other {this page}}",

@@ -402,6 +402,8 @@
       "overviewKeywords": "przegląd strona przeglądu podstrony podsumowanie",
       "aiRule": "Ustaw regułę AI",
       "aiRuleKeywords": "ai reguła prompt systemowy instrukcja zawsze zapytanie",
+      "selectionToAi": "Przekaż zaznaczenie do czatu AI",
+      "selectionToAiKeywords": "ai sztuczna inteligencja czat zaznaczenie wybrano tekst pytanie kontekst",
       "importMarkdown": "Importuj Markdown",
       "importMarkdownKeywords": "import importuj markdown prześlij wgraj",
       "createChild": "Utwórz podstronę",

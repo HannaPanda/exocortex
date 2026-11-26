@@ -112,8 +112,13 @@
     "notStored": "Tok myślenia nie jest zapisywany i zniknie po przeładowaniu strony."
   },
   "context": {
-    "selection": "Zaznaczenie ({count, plural, one {# blok} few {# bloki} many {# bloków} other {# bloku}})",
+    "selection": "Zaznaczenie: „{excerpt}”",
+    "selectionSource": "Z „{title}”",
+    "selectionBlocks": "{count, plural, one {# blok} few {# bloki} many {# bloków} other {# bloku}}",
+    "selectionOnce": "Zostanie dołączone tylko do twojej następnej wiadomości.",
     "selectionRemove": "Nie dołączaj zaznaczenia",
+    "selectionAdd": "Dołącz zaznaczenie: „{excerpt}”",
+    "selectionAddHint": "To zaznaczony właśnie przez ciebie tekst. Zostanie dołączony dopiero po zatwierdzeniu tutaj.",
     "doNotSend": "Nie dołączaj",
     "pageChip": "{collection, select, yes {Ta baza danych} other {Ta strona}}: {title}",
     "pageRemove": "Nie dołączaj {collection, select, yes {tej bazy danych} other {tej strony}}",

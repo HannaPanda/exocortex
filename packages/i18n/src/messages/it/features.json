@@ -731,6 +731,16 @@
     },
     "where": "Nell’area IA accanto a ogni pagina, tramite la selezione della conversazione in alto nella chat."
   },
+  "markierung-an-ki": {
+    "title": "Mostrare all’IA una parte selezionata",
+    "summary": "Se selezioni del testo su una pagina, la chat dell’IA propone sopra il campo di inserimento di allegare proprio quel passaggio. Una volta inserita, la selezione compare lì con le sue prime parole, viene inviata con il tuo prossimo messaggio e può essere rimossa prima con la crocetta.",
+    "details": {
+      "p1": "Seleziona una parte del testo. Sopra il campo di inserimento della chat dell’IA comparirà quindi „Invia selezione“ con le prime parole. Solo facendo clic sopra verrà aggiunta; prima di allora non viene inviato nulla, anche se inizi subito a scrivere. Puoi passare la stessa selezione anche con „Invia all’IA“ nel menu sopra la selezione o con Strg + K e „Invia selezione alla chat dell’IA“. Funziona allo stesso modo anche sulle pagine per cui hai solo i permessi di lettura.",
+      "p2": "La selezione acquisita compare come elemento distinto tra virgolette sopra il campo di inserimento, insieme alla sua dimensione. Passandoci sopra con il cursore, vedi da quale pagina proviene. È valida solo per il messaggio successivo e poi scompare, a differenza delle fonti fissate che rimangono finché non le rimuovi. Nella cronologia della chat viene poi indicato cosa è stato inviato esattamente.",
+      "p3": "La selezione viene inviata anche se il testo della pagina aperta non verrebbe altrimenti incluso, poiché l’hai scelta esplicitamente. Se supera i 4.000 caratteri viene accorciata, e questo viene segnalato già prima sulla selezione e poi nel testo ricevuto dall’IA. L’IA riceve inoltre gli identificativi dei blocchi selezionati e può leggere o modificare proprio quei punti con i suoi strumenti, nei limiti dei permessi che hai sulla pagina."
+    },
+    "where": "Nell’area dell’IA accanto a ogni pagina, sopra il campo di inserimento, non appena selezioni qualcosa nel testo."
+  },
   "gedankengang": {
     "title": "Guarda come pensa l’IA",
     "summary": "Mentre una risposta prende forma, vedi sopra di essa a cosa sta pensando il modello e quali strumenti chiama, nell’ordine in cui accade. Viene mostrato solo ciò che il modello fornisce effettivamente.",

@@ -402,6 +402,8 @@
       "overviewKeywords": "overview overview page subpages summary",
       "aiRule": "Set AI rule",
       "aiRuleKeywords": "ai rule system prompt instruction always prompt",
+      "selectionToAi": "Send selection to AI chat",
+      "selectionToAiKeywords": "ai chat selection selected text question context",
       "importMarkdown": "Import Markdown",
       "importMarkdownKeywords": "import import markdown upload",
       "createChild": "Create subpage",

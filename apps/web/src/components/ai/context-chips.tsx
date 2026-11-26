@@ -15,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import {
   type AiConversationSource,
   type AiConversationSourcesResponse,
+  MESSAGE_SELECTION_MAX_CHARS,
 } from '@exocortex/contracts';
 import {
   Badge,
@@ -35,9 +36,12 @@ export interface ContextChipsProps {
   /** Whether the page is disclosed to the model. */
   enabled: boolean;
   onEnabledChange: (enabled: boolean) => void;
-  /** Number of blocks in the passage handed over from the editor; `null` when there is none. */
-  selectionBlockCount: number | null;
+  /** The passage handed over from the editor, sent with the next message; `null` when there is none. */
+  selection: { blockIds: readonly string[]; text: string } | null;
   onSelectionRemove: () => void;
+  /** What is marked in the text right now and not handed over yet (issue #249). */
+  liveSelection: { text: string } | null;
+  onSelectionAdd: () => void;
   /** The pinned sources and the shared budget, or `null` before a conversation exists. */
   pinned: AiConversationSourcesResponse | null;
   onPinRequest: () => void;
@@ -71,6 +75,17 @@ function useCostLabel(): (source: AiConversationSource) => string {
   };
 }
 
+/** How many characters of a passage a chip quotes; the chip's width cuts it further. */
+const EXCERPT_CHARS = 80;
+
+/** The opening words of a passage, on one line, for a chip. */
+export function excerptOf(text: string): string {
+  const collapsed = text.replace(/\s+/g, ' ').trim();
+  return collapsed.length > EXCERPT_CHARS
+    ? `${collapsed.slice(0, EXCERPT_CHARS - 1)}\u2026`
+    : collapsed;
+}
+
 /**
  * The row above the composer that says what the assistant is given.
  *
@@ -83,14 +98,21 @@ function useCostLabel(): (source: AiConversationSource) => string {
  * open page changes as the user walks around, while a pinned source stays until
  * it is taken away. A pinned chip therefore also says what it costs, because
  * the one that carries its text costs that on every single turn.
+ *
+ * A handed-over selection is the third kind and the shortest-lived: it goes
+ * with the next message and is gone after it (issue #249). What is merely
+ * marked in the text is not a chip at all but an offer, drawn like "Diese
+ * Seite mitschicken", so "is marked" and "will be sent" never look alike.
  */
 export function ContextChips({
   documentTitle,
   isCollection,
   enabled,
   onEnabledChange,
-  selectionBlockCount,
+  selection,
   onSelectionRemove,
+  liveSelection,
+  onSelectionAdd,
   pinned,
   onPinRequest,
   onPinModeChange,
@@ -107,7 +129,13 @@ export function ContextChips({
   const canPin = pinned === null || pinned.budget.maxSources > 0;
   const full = pinned !== null && sources.length >= pinned.budget.maxSources;
 
-  if (documentTitle === null && selectionBlockCount === null && sources.length === 0 && !canPin) {
+  if (
+    documentTitle === null &&
+    selection === null &&
+    liveSelection === null &&
+    sources.length === 0 &&
+    !canPin
+  ) {
     return null;
   }
 
@@ -119,29 +147,17 @@ export function ContextChips({
       className="flex min-w-0 flex-wrap items-center gap-1.5 px-2 pt-2"
       data-testid="ai-context-chips"
     >
-      {selectionBlockCount === null ? null : (
-        <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
-          <TextQuoteIcon aria-hidden />
-          <span className="min-w-0 truncate">{t('selection', { count: selectionBlockCount })}</span>
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="size-4 shrink-0 rounded-sm"
-                  aria-label={t('selectionRemove')}
-                  data-testid="ai-selection-remove"
-                  disabled={disabled}
-                  onClick={onSelectionRemove}
-                >
-                  <XIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>{t('doNotSend')}</TooltipContent>
-          </Tooltip>
-        </Badge>
+      {selection === null ? null : (
+        <SelectionChip
+          selection={selection}
+          documentTitle={documentTitle}
+          onRemove={onSelectionRemove}
+          disabled={disabled}
+        />
+      )}
+
+      {liveSelection === null ? null : (
+        <SelectionOffer text={liveSelection.text} onAdd={onSelectionAdd} disabled={disabled} />
       )}
 
       {documentTitle === null ? null : enabled ? (
@@ -272,5 +288,100 @@ export function ContextChips({
         </Tooltip>
       )}
     </div>
+  );
+}
+
+/** The passage that goes with the next message, and only with that one. */
+function SelectionChip({
+  selection,
+  documentTitle,
+  onRemove,
+  disabled,
+}: {
+  selection: { blockIds: readonly string[]; text: string };
+  documentTitle: string | null;
+  onRemove: () => void;
+  disabled: boolean;
+}) {
+  const t = useTranslations('ai.context');
+  return (
+    <Badge
+      variant="outline"
+      className="max-w-full gap-1 py-1 pr-1 pl-1.5"
+      data-testid="ai-selection-chip"
+    >
+      <TextQuoteIcon aria-hidden className="shrink-0" />
+      <span
+        className="min-w-0 truncate"
+        title={[
+          documentTitle === null ? null : t('selectionSource', { title: documentTitle }),
+          t('selectionBlocks', { count: Math.max(1, selection.blockIds.length) }),
+          t('selectionOnce'),
+        ]
+          .filter((line) => line !== null)
+          .join('\n')}
+      >
+        {t('selection', { excerpt: excerptOf(selection.text) })}
+      </span>
+      <span className="shrink-0 text-muted-foreground">
+        ·{' '}
+        {selection.text.length > MESSAGE_SELECTION_MAX_CHARS
+          ? t('costCharsTruncated', { chars: MESSAGE_SELECTION_MAX_CHARS })
+          : t('costChars', { chars: selection.text.length })}
+      </span>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="size-4 shrink-0 rounded-sm"
+              aria-label={t('selectionRemove')}
+              data-testid="ai-selection-remove"
+              disabled={disabled}
+              onClick={onRemove}
+            >
+              <XIcon />
+            </Button>
+          }
+        />
+        <TooltipContent>{t('doNotSend')}</TooltipContent>
+      </Tooltip>
+    </Badge>
+  );
+}
+
+/** What is marked in the text right now: an offer, drawn like "Diese Seite mitschicken". */
+function SelectionOffer({
+  text,
+  onAdd,
+  disabled,
+}: {
+  text: string;
+  onAdd: () => void;
+  disabled: boolean;
+}) {
+  const t = useTranslations('ai.context');
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 max-w-full min-w-0 gap-1 px-1.5 text-xs text-muted-foreground"
+            data-testid="ai-selection-add"
+            disabled={disabled}
+            onClick={onAdd}
+          >
+            <PlusIcon />
+            <span className="min-w-0 truncate">
+              {t('selectionAdd', { excerpt: excerptOf(text) })}
+            </span>
+          </Button>
+        }
+      />
+      <TooltipContent>{t('selectionAddHint')}</TooltipContent>
+    </Tooltip>
   );
 }

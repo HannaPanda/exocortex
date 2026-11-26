@@ -112,8 +112,13 @@
     "notStored": "Le raisonnement n’est pas enregistré et disparaîtra après le rechargement."
   },
   "context": {
-    "selection": "Sélection ({count, plural, one {# bloc} many {# blocs} other {# blocs}})",
+    "selection": "Sélection : « {excerpt} »",
+    "selectionSource": "De « {title} »",
+    "selectionBlocks": "{count, plural, one {# bloc} many {# de blocs} other {# blocs}}",
+    "selectionOnce": "Envoyé uniquement avec ton prochain message, plus après.",
     "selectionRemove": "Ne pas inclure la sélection",
+    "selectionAdd": "Joindre la sélection : « {excerpt} »",
+    "selectionAddHint": "C’est ce que tu viens de sélectionner dans le texte. Ce ne sera envoyé que si tu l’ajoutes ici.",
     "doNotSend": "Ne pas inclure",
     "pageChip": "{collection, select, yes {Cette base de données} other {Cette page}} : {title}",
     "pageRemove": "Ne pas inclure {collection, select, yes {cette base de données} other {cette page}}",

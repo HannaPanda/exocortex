@@ -731,6 +731,16 @@
     },
     "where": "In het AI-gedeelte naast elke pagina, via de gesprekskiezer bovenaan de chat."
   },
+  "markierung-an-ki": {
+    "title": "De AI een geselecteerd stuk tekst laten zien",
+    "summary": "Selecteer je tekst op een pagina, dan biedt de AI-chat boven het invoerveld aan om precies dat gedeelte mee te sturen. Eenmaal toegevoegd staat het daar als selectie met de eerste woorden, gaat het mee met je volgende bericht en kun je het vooraf weer met het kruisje verwijderen.",
+    "details": {
+      "p1": "Selecteer een stuk tekst. Boven het invoerveld van de AI-chat verschijnt dan „Selectie meesturen” met de eerste woorden. Pas na een klik daarop wordt het toegevoegd; daarvoor gaat er niets van mee, ook als je meteen begint te typen. Hetzelfde gedeelte geef je ook door via „Naar AI sturen” in het menu boven de selectie of met Strg + K en „Selectie aan de AI-chat doorgeven”. Op pagina’s die je alleen mag lezen, werkt het precies zo.",
+      "p2": "De toegevoegde selectie staat als een eigen item met aanhalingstekens boven het invoerveld, samen met de omvang ervan. Beweeg je de muis erover, dan zie je van welke pagina deze afkomstig is. De selectie geldt alleen voor het volgende bericht en verdwijnt daarna, anders dan vastgezette bronnen die blijven staan totdat je ze verwijdert. In de geschiedenis van de chat zie je achteraf precies wat er is meegestuurd.",
+      "p3": "Een selectie gaat ook mee wanneer de tekst van de geopende pagina normaal gesproken niet wordt meegestuurd, omdat je deze zelf hebt gekozen. Meer dan 4.000 tekens worden ingekort; dat staat van tevoren al bij de selectie aangegeven en achteraf in de tekst die de AI ontvangt. De AI ontvangt bovendien de id’s van de geselecteerde blokken en kan precies die gedeelten met haar tools lezen of bewerken, voor zover je daartoe bevoegd bent op de pagina."
+    },
+    "where": "In het AI-gedeelte naast elke pagina, boven het invoerveld, zodra je iets in de tekst hebt geselecteerd."
+  },
   "gedankengang": {
     "title": "Meekijken hoe de AI denkt",
     "summary": "Terwijl een antwoord tot stand komt, zie je daarboven wat het model overweegt en welke tools het aanroept, in de volgorde waarin het gebeurt. Er wordt alleen getoond wat het model daadwerkelijk levert.",

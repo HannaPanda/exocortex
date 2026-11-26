@@ -731,6 +731,16 @@
     },
     "where": "Im KI-Bereich neben jeder Seite, über die Auswahl der Unterhaltung oben im Chat."
   },
+  "markierung-an-ki": {
+    "title": "Der KI eine markierte Stelle zeigen",
+    "summary": "Markierst du Text auf einer Seite, bietet der KI-Chat über dem Eingabefeld an, genau diese Stelle mitzuschicken. Übernommen steht sie als Auswahl mit ihren ersten Worten dort, geht mit deiner nächsten Nachricht mit und lässt sich vorher mit dem Kreuz wieder entfernen.",
+    "details": {
+      "p1": "Markier eine Stelle im Text. Über dem Eingabefeld des KI-Chats erscheint dann „Markierung mitschicken“ mit den ersten Worten. Erst ein Klick darauf übernimmt sie; vorher geht nichts davon mit, auch wenn du gleich losschreibst. Dieselbe Stelle übergibst du auch mit „An KI schicken“ im Menü über der Markierung oder mit Strg + K und „Markierung an den KI-Chat geben“. Auf Seiten, die du nur lesen darfst, geht es genauso.",
+      "p2": "Die übernommene Auswahl steht als eigener Eintrag mit Anführungszeichen über dem Eingabefeld, zusammen mit ihrer Größe. Fährst du darüber, siehst du, von welcher Seite sie stammt. Sie gilt nur für die nächste Nachricht und verschwindet danach, anders als angeheftete Quellen, die bleiben, bis du sie abnimmst. Im Verlauf des Chats steht danach, was genau mitgeschickt wurde.",
+      "p3": "Eine Auswahl geht auch dann mit, wenn der Text der offenen Seite sonst nicht mitgegeben wird, weil du sie selbst ausgesucht hast. Mehr als 4.000 Zeichen werden gekürzt, und das steht schon vorher an der Auswahl und danach im Text, den die KI bekommt. Die KI bekommt außerdem die Kennungen der markierten Blöcke und kann genau diese Stellen mit ihren Werkzeugen lesen oder ändern, soweit du das auf der Seite darfst."
+    },
+    "where": "Im KI-Bereich neben jeder Seite, über dem Eingabefeld, sobald du im Text etwas markiert hast."
+  },
   "gedankengang": {
     "title": "Zusehen, wie die KI denkt",
     "summary": "Während eine Antwort entsteht, siehst du über ihr, was das Modell dabei überlegt und welche Werkzeuge es aufruft, in der Reihenfolge, in der es passiert. Gezeigt wird nur, was das Modell wirklich liefert.",

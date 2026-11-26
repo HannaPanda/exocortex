@@ -6,6 +6,7 @@ import {
   buildCommandNotice,
   buildStreamingMessages,
   describeTranscript,
+  liveSelectionOffer,
   resolvePageHandover,
   summaryFollows,
 } from './panel-view';
@@ -117,6 +118,35 @@ describe('resolvePageHandover', () => {
         handedOverSelection: selection,
       }),
     ).toEqual({ databaseViewId: null, selection: null });
+  });
+});
+
+describe('liveSelectionOffer', () => {
+  const live = { documentId: 'p1', blockIds: ['b1'], text: 'Absatz' };
+
+  it('offers what is marked on the page the route is on', () => {
+    expect(liveSelectionOffer({ documentId: 'p1', live, pending: null })).toBe(live);
+  });
+
+  it('offers nothing from another page, and nothing without a page', () => {
+    expect(liveSelectionOffer({ documentId: 'p2', live, pending: null })).toBeNull();
+    expect(liveSelectionOffer({ documentId: null, live, pending: null })).toBeNull();
+  });
+
+  it('offers nothing when that passage is already the one waiting to be sent', () => {
+    expect(
+      liveSelectionOffer({ documentId: 'p1', live, pending: { blockIds: ['b1'], text: 'Absatz' } }),
+    ).toBeNull();
+  });
+
+  it('offers a different passage beside the one already handed over', () => {
+    expect(
+      liveSelectionOffer({
+        documentId: 'p1',
+        live,
+        pending: { blockIds: ['b2'], text: 'Anderes' },
+      }),
+    ).toBe(live);
   });
 });
 

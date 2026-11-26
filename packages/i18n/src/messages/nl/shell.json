@@ -402,6 +402,8 @@
       "overviewKeywords": "overzicht overzichtspagina subpagina’s samenvatting",
       "aiRule": "AI-regel instellen",
       "aiRuleKeywords": "ai regel systeemprompt instructie altijd prompt",
+      "selectionToAi": "Selectie naar de AI-chat sturen",
+      "selectionToAiKeywords": "ai chat selectie gemarkeerd tekst vraag context",
       "importMarkdown": "Markdown importeren",
       "importMarkdownKeywords": "import importeren markdown uploaden",
       "createChild": "Subpagina maken",

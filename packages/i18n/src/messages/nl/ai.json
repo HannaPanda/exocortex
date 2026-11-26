@@ -112,8 +112,13 @@
     "notStored": "De redenering wordt niet opgeslagen en is na het vernieuwen verdwenen."
   },
   "context": {
-    "selection": "Selectie ({count, plural, one {# blok} other {# blokken}})",
+    "selection": "Selectie: „{excerpt}”",
+    "selectionSource": "Uit „{title}”",
+    "selectionBlocks": "{count, plural, one {# blok} other {# blokken}}",
+    "selectionOnce": "Wordt alleen meegestuurd met je volgende bericht, daarna niet meer.",
     "selectionRemove": "Selectie niet meesturen",
+    "selectionAdd": "Selectie meesturen: „{excerpt}”",
+    "selectionAddHint": "Dit heb je net in de tekst geselecteerd. Het wordt pas meegestuurd als je het hier overneemt.",
     "doNotSend": "Niet meesturen",
     "pageChip": "{collection, select, yes {Deze database} other {Deze pagina}}: {title}",
     "pageRemove": "{collection, select, yes {Deze database} other {Deze pagina}} niet meesturen",

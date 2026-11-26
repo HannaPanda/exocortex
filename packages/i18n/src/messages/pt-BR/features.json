@@ -731,6 +731,16 @@
     },
     "where": "Na área de IA ao lado de cada página, por meio do seletor de conversa na parte superior do chat."
   },
+  "markierung-an-ki": {
+    "title": "Mostrar um trecho selecionado à IA",
+    "summary": "Ao selecionar um texto em uma página, o chat com IA oferece acima do campo de entrada a opção de enviar exatamente esse trecho. Uma vez incluído, ele aparece como uma seleção com suas primeiras palavras, é enviado com a sua próxima mensagem e pode ser removido antes pelo botão de fechar.",
+    "details": {
+      "p1": "Selecione um trecho no texto. Acima do campo de entrada do chat com IA, aparecerá „Incluir seleção“ com as primeiras palavras. É preciso clicar nele para incluí-lo; antes disso, nada é enviado, mesmo que você comece a digitar logo em seguida. Você também pode enviar o mesmo trecho com „Enviar para a IA“ no menu sobre a seleção ou com Strg + K e „Enviar seleção para o chat com IA“. Em páginas que você só tem permissão para ler, funciona da mesma forma.",
+      "p2": "A seleção incluída fica como um item próprio entre aspas acima do campo de entrada, junto com o seu tamanho. Se você passar o cursor por cima, verá de qual página ela veio. Ela vale apenas para a próxima mensagem e desaparece depois, ao contrário de fontes fixadas, que permanecem até você removê-las. No histórico do chat, fica registrado exatamente o que foi enviado.",
+      "p3": "Uma seleção também é enviada mesmo que o texto da página aberta não seja incluído normalmente, porque foi você quem a escolheu. Trechos com mais de 4.000 caracteres são encurtados, e isso é indicado na própria seleção com antecedência e, depois, no texto recebido pela IA. A IA também recebe os identificadores dos blocos selecionados e pode ler ou alterar exatamente esses trechos com suas ferramentas, desde que você tenha permissão para isso na página."
+    },
+    "where": "Na área de IA ao lado de cada página, acima do campo de entrada, assim que você selecionar algo no texto."
+  },
   "gedankengang": {
     "title": "Ver como a IA pensa",
     "summary": "Enquanto uma resposta é gerada, você vê acima dela o que o modelo está pensando e quais ferramentas ele chama, na ordem em que acontece. Só é exibido o que o modelo realmente fornece.",

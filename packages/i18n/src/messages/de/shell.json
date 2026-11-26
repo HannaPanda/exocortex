@@ -402,6 +402,8 @@
       "overviewKeywords": "übersicht übersichtsseite unterseiten zusammenfassung",
       "aiRule": "KI-Regel festlegen",
       "aiRuleKeywords": "ki regel systemprompt anweisung immer anfrage",
+      "selectionToAi": "Markierung an den KI-Chat geben",
+      "selectionToAiKeywords": "ki chat markierung auswahl markiert text frage kontext",
       "importMarkdown": "Markdown importieren",
       "importMarkdownKeywords": "import importieren markdown hochladen",
       "createChild": "Unterseite erstellen",

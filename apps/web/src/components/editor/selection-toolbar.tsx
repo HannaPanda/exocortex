@@ -24,7 +24,6 @@ import * as React from 'react';
 import {
   BLOCK_ID_ATTRIBUTE,
   type BlockCatalogEntry,
-  collectBlockIdsInRange,
   isCarryingBlock,
   isValidBlockId,
 } from '@exocortex/editor';
@@ -41,6 +40,7 @@ import {
 import { useAiSelection } from '@/components/ai/ai-selection';
 import { useCommentAnchor } from '@/components/comments/comment-anchor';
 
+import { selectedPassage } from './ai-selection-reporter';
 import { BlockActionItems } from './block-actions';
 import { ColorMenu } from './color-menu';
 import { EmojiMenu } from './emoji-menu';
@@ -192,10 +192,8 @@ export function SelectionToolbar({
    * a chip above the composer, and only the next submitted message carries it.
    */
   const sendSelectionToAi = (): void => {
-    const { from, to } = editor.state.selection;
-    const text = editor.state.doc.textBetween(from, to, '\n', ' ').trim();
-    if (text.length === 0) return;
-    handOver({ documentId, blockIds: collectBlockIdsInRange(editor.state.doc, from, to), text });
+    const passage = selectedPassage(editor, documentId);
+    if (passage !== null) handOver(passage);
   };
 
   /*

@@ -40,6 +40,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'markierung-an-ki',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#249', 'ADR-015'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'chat-je-tab',
     area: 'ki',
     since: '2026-11-26',

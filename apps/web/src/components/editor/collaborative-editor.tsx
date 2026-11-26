@@ -65,6 +65,7 @@ import {
 } from '@/components/editor/page-link-context';
 import { PageLinkNodeView } from '@/components/editor/page-link-node-view';
 import { PageOutline } from '@/components/editor/page-outline/page-outline';
+import { AiSelectionReporter } from '@/components/editor/ai-selection-reporter';
 import { SelectionToolbar } from '@/components/editor/selection-toolbar';
 import {
   createSlashExtension,
@@ -726,6 +727,9 @@ function EditorChrome({
           the panel, in both directions. Read-only pages get them too — a marker
           is a pointer to a discussion, not an editing affordance. */}
       <CommentMarkers editor={editor} documentId={documentId} />
+      {/* Renders nothing: it offers what is marked to the AI chat (#249), on
+          read-only pages too, where the bubble menu is not there. */}
+      <AiSelectionReporter editor={editor} documentId={documentId} />
       {/* Renders nothing either: it tells the text which of its `[[Titel]]`
           references point at a page that exists (issue #24). */}
       <WikiLinkMarkers editor={editor} workspaceId={workspaceId} />

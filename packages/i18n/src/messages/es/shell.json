@@ -402,6 +402,8 @@
       "overviewKeywords": "resumen página de resumen subpáginas sumario",
       "aiRule": "Definir regla de IA",
       "aiRuleKeywords": "ia regla prompt de sistema instrucción siempre petición",
+      "selectionToAi": "Enviar selección al chat de IA",
+      "selectionToAiKeywords": "ia chat selección seleccionado texto pregunta contexto",
       "importMarkdown": "Importar Markdown",
       "importMarkdownKeywords": "importar importación markdown subir",
       "createChild": "Crear subpágina",

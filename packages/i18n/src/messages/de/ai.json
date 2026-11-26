@@ -112,8 +112,13 @@
     "notStored": "Der Gedankengang wird nicht gespeichert und ist nach dem Neuladen weg."
   },
   "context": {
-    "selection": "Auswahl ({count, plural, one {# Block} other {# Blöcke}})",
+    "selection": "Auswahl: „{excerpt}“",
+    "selectionSource": "Aus „{title}“",
+    "selectionBlocks": "{count, plural, one {# Block} other {# Blöcke}}",
+    "selectionOnce": "Geht nur mit deiner nächsten Nachricht mit, danach nicht mehr.",
     "selectionRemove": "Auswahl nicht mitschicken",
+    "selectionAdd": "Markierung mitschicken: „{excerpt}“",
+    "selectionAddHint": "Das hast du gerade im Text markiert. Es geht erst mit, wenn du es hier übernimmst.",
     "doNotSend": "Nicht mitschicken",
     "pageChip": "{collection, select, yes {Diese Datenbank} other {Diese Seite}}: {title}",
     "pageRemove": "{collection, select, yes {Diese Datenbank} other {Diese Seite}} nicht mitschicken",

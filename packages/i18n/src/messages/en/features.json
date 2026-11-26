@@ -731,6 +731,16 @@
     },
     "where": "In the AI panel next to each page, via the conversation selector at the top of the chat."
   },
+  "markierung-an-ki": {
+    "title": "Show the AI a selected passage",
+    "summary": "When you select text on a page, the AI chat offers above the input field to send along exactly this passage. Once accepted, it appears there as a selection showing its first words, is sent with your next message, and can be removed beforehand with the cross icon.",
+    "details": {
+      "p1": "Select a passage in the text. “Include selection” with the first few words will then appear above the AI chat input field. Only clicking it accepts the selection; beforehand, nothing of it is sent along, even if you start typing right away. You can also pass the same passage using “Send to AI” in the menu above the selection or with Ctrl + K and “Give selection to AI chat”. It works just the same on pages where you only have read permissions.",
+      "p2": "The accepted selection appears as its own entry in quotation marks above the input field, along with its size. Hovering over it shows which page it came from. It only applies to the next message and disappears afterwards, unlike pinned sources, which stay until you remove them. The chat history will afterwards show exactly what was sent along.",
+      "p3": "A selection is also sent along when the open page’s text is otherwise not included, because you chose it yourself. Selections longer than 4,000 characters are truncated, which is noted beforehand on the selection itself and afterwards in the text the AI receives. The AI also gets the identifiers of the selected blocks and can read or modify exactly those spots using its tools, as far as your permissions on the page allow."
+    },
+    "where": "In the AI pane next to each page, above the input field, as soon as you have selected text."
+  },
   "gedankengang": {
     "title": "Watch the AI think",
     "summary": "While an answer is being generated, you can see above it what the model is thinking and which tools it is calling, in the order it happens. Only what the model actually provides is shown.",
