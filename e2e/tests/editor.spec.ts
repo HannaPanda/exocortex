@@ -394,8 +394,14 @@ test.describe('editor', () => {
     // keeps the code and its replacement two steps, as they are for a person.
     await page.waitForTimeout(800);
 
+    // The e2e project has no DOM library; this is the slice of it used here.
+    interface BrowserSelection {
+      getSelection(): { toString(): string } | null;
+    }
     const selection = (): Promise<string> =>
-      page.evaluate(() => document.getSelection()?.toString() ?? '');
+      page.evaluate(
+        () => (globalThis as unknown as BrowserSelection).getSelection()?.toString() ?? '',
+      );
 
     // First press: the code, and nothing above it.
     await page.keyboard.press('Control+a');
