@@ -888,7 +888,23 @@ describe('ConversationsService.postMessage', () => {
   });
 
   describe('/compact', () => {
-    it('returns the advisory message without enqueueing anything', async () => {
+    /** Two turns written straight into the transcript, so no run is started. */
+    async function seedTurns(conversationId: string): Promise<void> {
+      const now = Date.now();
+      for (const [index, role] of (['USER', 'ASSISTANT', 'USER', 'ASSISTANT'] as const).entries()) {
+        await prisma.aiConversationMessage.create({
+          data: {
+            conversationId,
+            role,
+            content: `Nachricht ${index}`,
+            estimatedTokens: 5,
+            createdAt: new Date(now + index),
+          },
+        });
+      }
+    }
+
+    it('says there is nothing to summarise in an empty conversation and queues nothing', async () => {
       const conversationId = await createConversation();
       const response = await service.postMessage({
         conversationId,
@@ -897,7 +913,89 @@ describe('ConversationsService.postMessage', () => {
         correlationId: 'test-compact-1',
       });
       expect(response.run).toBeNull();
-      expect(response.command?.message).toContain('/clear');
+      expect(response.command?.message).toContain('nichts zusammenzufassen');
+      const row = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      expect(row.compactRequestedAt).toBeNull();
+    });
+
+    it('queues a summary on request although the window is nearly empty, and says so (issue #287)', async () => {
+      const conversationId = await createConversation();
+      await seedTurns(conversationId);
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/compact' },
+        correlationId: 'test-compact-2',
+      });
+      expect(response.run).toBeNull();
+      expect(response.command?.message).toContain('4 Nachrichten');
+      expect(response.command?.message).toContain('Nötig gewesen wäre das noch nicht');
+
+      const detail = await service.get(conversationId, ownerId);
+      expect(detail.conversation.compactRequestedAt).not.toBeNull();
+      expect(detail.conversation.compactionError).toBeNull();
+
+      // The history is held until the worker is done: no new turn races it ...
+      await expect(
+        service.postMessage({
+          conversationId,
+          userId: ownerId,
+          request: { content: 'Noch eine Frage' },
+          correlationId: 'test-compact-3',
+        }),
+      ).rejects.toMatchObject({ code: 'ai_conversation_compacting' });
+      // ... and asking again queues nothing twice.
+      const again = await service.compact({
+        conversationId,
+        userId: ownerId,
+        correlationId: 'test-compact-4',
+      });
+      expect(again.status).toBe('already_queued');
+    });
+
+    it('gives a request back once it outlived its lease, and reports it as abandoned', async () => {
+      const conversationId = await createConversation();
+      await seedTurns(conversationId);
+      await prisma.aiConversation.update({
+        where: { id: conversationId },
+        data: { compactRequestedAt: new Date(Date.now() - 10 * 60_000) },
+      });
+
+      const detail = await service.get(conversationId, ownerId);
+      expect(detail.conversation.compactRequestedAt).toBeNull();
+      expect(detail.conversation.compactionError).toBe('abandoned');
+
+      const response = await service.compact({
+        conversationId,
+        userId: ownerId,
+        correlationId: 'test-compact-5',
+      });
+      expect(response).toMatchObject({ status: 'queued', messagesToSummarize: 4 });
+      expect(response.wouldCompactAutomatically).toBe(false);
+    });
+
+    it('refuses while a run is open on the conversation, and for anybody but its owner', async () => {
+      const conversationId = await createConversation();
+      await seedTurns(conversationId);
+      await expect(
+        service.compact({ conversationId, userId: otherMemberId, correlationId: 'test-compact-6' }),
+      ).rejects.toBeDefined();
+
+      await prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: ownerId,
+          status: 'RUNNING',
+          provider: 'test-lock-provider',
+          model: 'test-lock-model',
+          messages: [],
+          conversationId,
+        },
+      });
+      await expect(
+        service.compact({ conversationId, userId: ownerId, correlationId: 'test-compact-7' }),
+      ).rejects.toMatchObject({ code: 'ai_conversation_locked' });
     });
   });
 });

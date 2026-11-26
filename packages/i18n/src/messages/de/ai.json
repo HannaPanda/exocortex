@@ -46,7 +46,7 @@
     "model": "Modell dieser Unterhaltung wechseln",
     "think": "Denkstufe wählen",
     "vision": "Vision-Begleitmodell überschreiben",
-    "compact": "Kontext jetzt zusammenfassen",
+    "compact": "Bisherigen Verlauf jetzt zusammenfassen",
     "context": "Seitenkontext und angeheftete Quellen anzeigen oder umschalten",
     "rules": "Aktive Regelseiten anzeigen",
     "tools": "Verfügbare Werkzeuge anzeigen",
@@ -82,6 +82,12 @@
     "gapHint": "Ein Teil des Textes ging unterwegs verloren. Die Vorschau wurde vom Server neu geladen.",
     "cancelled": "Lauf abgebrochen.",
     "compacted": "Älterer Verlauf wurde zusammengefasst.",
+    "compactionFailed": {
+      "nothing_to_compact": "Es gab nichts zusammenzufassen: im Kontext stand höchstens eine Nachricht.",
+      "provider_failed": "Der Verlauf konnte nicht zusammengefasst werden, das Modell hat nicht geantwortet. Er bleibt, wie er war; versuch es mit /compact noch einmal.",
+      "key_unreadable": "Der Verlauf wurde nicht zusammengefasst: der eigene KI-Schlüssel dieses Arbeitsbereichs lässt sich nicht lesen.",
+      "abandoned": "Das Zusammenfassen wurde abgebrochen. Der Verlauf bleibt, wie er war; versuch es mit /compact noch einmal."
+    },
     "cancelFailed": "Der Lauf konnte nicht abgebrochen werden.",
     "failed": "Die KI-Antwort konnte nicht erzeugt werden.",
     "errors": {

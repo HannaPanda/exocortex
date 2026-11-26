@@ -1,4 +1,5 @@
 import {
+  type AiConversationCompactResponse,
   type AiMutationPolicy,
   aiReasoningLevelSchema,
   CHAT_COMMANDS,
@@ -55,6 +56,12 @@ export interface ChatCommandContext {
    * reported like any other and a withdrawn one is not.
    */
   openPageTitle: string | null;
+  /**
+   * Queues a summary of the conversation's history (issue #287). A closure
+   * rather than the queue itself: the decision, the claim and the job live in
+   * `requestConversationCompaction`, which the REST route uses too.
+   */
+  requestCompaction: () => Promise<AiConversationCompactResponse>;
 }
 
 type ChatCommandHandler = (context: ChatCommandContext) => Promise<ChatCommandResult>;
@@ -191,14 +198,34 @@ const setVision: ChatCommandHandler = async (context) => {
 };
 
 /**
- * Compacting synchronously here would call the provider from inside the API
- * process, which rule 6 forbids. Compaction already runs automatically in the
- * worker before every provider call once the context passes its threshold (see
- * compaction.ts); `/clear` is the only way to force it immediately
- * (docs/ai-architecture.md).
+ * Summarises the history now, because the person asked (issue #287).
+ *
+ * The summariser is a provider call, so the worker writes it; the answer here
+ * says that it started, and the summary itself arrives in the transcript a
+ * few seconds later. Not the automatic compaction's question (ADR-032): a
+ * request is carried out however empty the window is, and the hint only says
+ * whether it would have been needed yet.
  */
-const compact: ChatCommandHandler = (context) =>
-  Promise.resolve(answer(context, 'compact', context.t('compact.automatic')));
+const compact: ChatCommandHandler = async (context) => {
+  const { t } = context;
+  const result = await context.requestCompaction();
+  if (result.status === 'nothing_to_compact') {
+    return answer(context, 'compact', t('compact.nothing'));
+  }
+  if (result.status === 'already_queued') {
+    return answer(context, 'compact', t('compact.alreadyRunning'));
+  }
+  const started = t('compact.started', { count: result.messagesToSummarize });
+  if (result.wouldCompactAutomatically) return answer(context, 'compact', started);
+  const hint =
+    result.contextUsagePercent === null
+      ? t('compact.notNeededYet', { threshold: result.thresholdPercent })
+      : t('compact.notNeededYetAt', {
+          percent: result.contextUsagePercent,
+          threshold: result.thresholdPercent,
+        });
+  return answer(context, 'compact', `${started} ${hint}`);
+};
 
 /** Reports, and optionally switches, whether the open page reaches the prompt. */
 const pageContext: ChatCommandHandler = async (context) => {

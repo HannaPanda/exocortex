@@ -566,6 +566,16 @@
     },
     "where": "The capacity indicator below the input field in chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Summarize chat history on demand",
+    "summary": "If you type /compact into the AI chat, the history so far is summarized immediately, even if the window is far from full. The summary replaces it in the context, but it still remains readable.",
+    "details": {
+      "p1": "A long conversation that has changed direction carries along everything prior: each reply becomes more expensive, and old tangents distract. With /compact, you decide for yourself that now is a good moment to draw a line. All messages in the context are turned into a summary with decisions, facts, names, and open tasks, and the conversation continues from there.",
+      "p2": "Summarizing takes a few seconds and runs in the background. The response to the command tells you how many messages it affects and whether automatic compaction would have done it anyway. While it is running, the input field waits; afterwards, the summary appears in the chat, and a line shows where the history is no longer part of the context.",
+      "p3": "Agents can trigger the same via MCP with exo_chat_compact for a conversation that belongs to you. The built-in AI does not do this on its own: while it is responding, the chat is busy, and automatic compaction kicks in there anyway as soon as it changes anything."
+    },
+    "where": "In the AI chat: type /compact into the input field."
+  },
   "ki-laeufe": {
     "title": "Monitor and cancel running responses",
     "summary": "A run has a state you can query, complete with tool calls and errors, and it can be canceled. That way, even a response working for ten minutes is not something you can only wait on.",

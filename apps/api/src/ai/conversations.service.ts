@@ -9,6 +9,7 @@ import {
 } from '@exocortex/auth';
 import {
   type AiConversation,
+  type AiConversationCompactResponse,
   type AiConversationDetailResponse,
   type CreateAiConversationRequest,
   type PostConversationMessageRequest,
@@ -38,7 +39,9 @@ import {
 } from './ai-model-resolver.service';
 import { runChatCommand } from './chat-command-runner';
 import { parseChatCommand, type ParsedChatCommand } from './chat-commands';
+import { requestConversationCompaction } from './conversation-compaction';
 import {
+  compactionHolds,
   CONVERSATION_SELECT,
   conversationMessageToContract,
   type ConversationRow,
@@ -110,6 +113,23 @@ function deriveTitle(content: string): string {
   const collapsed = content.replace(/\s+/g, ' ').trim();
   if (collapsed.length === 0) return PLACEHOLDER_TITLE;
   return collapsed.length > TITLE_MAX_CHARS ? collapsed.slice(0, TITLE_MAX_CHARS) : collapsed;
+}
+
+/**
+ * While the history is being summarised on request, nothing else may touch
+ * it: a run would read the messages the summary is about to retire, and
+ * `/clear` would retire them under it (issue #287). `/compact` itself passes
+ * and answers that it is already running.
+ */
+function assertNotCompacting(
+  conversation: ConversationRow,
+  command: ParsedChatCommand | null,
+): void {
+  if (command?.name === 'compact' || !compactionHolds(conversation.compactRequestedAt)) return;
+  throw new AppError(
+    'ai_conversation_compacting',
+    "The conversation's history is being summarised",
+  );
 }
 
 /**
@@ -351,23 +371,16 @@ export class ConversationsService {
   }): Promise<PostConversationMessageResponse> {
     const conversation = await this.loadOwned(input.conversationId, input.userId);
 
-    const pendingRun = await this.prisma.aiRun.findFirst({
-      where: { conversationId: conversation.id, status: { in: ['PENDING', 'RUNNING'] } },
-      select: { id: true },
-    });
-    if (pendingRun !== null) {
-      throw new AppError(
-        'ai_conversation_locked',
-        'A run for this conversation is still in progress',
-      );
-    }
+    await this.assertNoRunOpen(conversation.id);
 
     const parsedCommand = parseChatCommand(input.request.content);
+    assertNotCompacting(conversation, parsedCommand);
     if (parsedCommand !== null) {
       return this.executeCommand({
         conversation,
         command: parsedCommand,
         userId: input.userId,
+        correlationId: input.correlationId,
         headers: input.headers ?? {},
       });
     }
@@ -519,10 +532,62 @@ export class ConversationsService {
     };
   }
 
+  /**
+   * Summarises the conversation's history now, because its owner asked
+   * (issue #287): `POST /api/ai/conversations/:id/compact`, `exo_chat_compact`
+   * and `/compact` all end here.
+   */
+  async compact(input: {
+    conversationId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<AiConversationCompactResponse> {
+    const conversation = await this.loadOwned(input.conversationId, input.userId);
+    await this.assertNoRunOpen(conversation.id);
+    return this.requestCompaction(conversation, input.userId, input.correlationId);
+  }
+
+  private async requestCompaction(
+    conversation: ConversationRow,
+    userId: string,
+    correlationId: string,
+  ): Promise<AiConversationCompactResponse> {
+    const { contextUsagePercent } = conversationToContract(
+      conversation,
+      await this.resolveFallbackContextWindow(),
+      '',
+    );
+    return requestConversationCompaction(
+      {
+        prisma: this.prisma,
+        queues: this.queues,
+        logger: this.logger,
+        modelResolver: this.modelResolver,
+        settings: this.settings,
+      },
+      { conversation, userId, correlationId, contextUsagePercent },
+    );
+  }
+
+  /** A conversation takes one thing at a time: a new turn or a command waits for the open run. */
+  private async assertNoRunOpen(conversationId: string): Promise<void> {
+    const pendingRun = await this.prisma.aiRun.findFirst({
+      where: { conversationId, status: { in: ['PENDING', 'RUNNING'] } },
+      select: { id: true },
+    });
+    if (pendingRun !== null) {
+      throw new AppError(
+        'ai_conversation_locked',
+        'A run for this conversation is still in progress',
+      );
+    }
+  }
+
   private async executeCommand(input: {
     conversation: ConversationRow;
     command: ParsedChatCommand;
     userId: string;
+    correlationId: string;
     headers: ReaderLocaleHeaders;
   }): Promise<PostConversationMessageResponse> {
     const { conversation, command } = input;
@@ -545,6 +610,8 @@ export class ConversationsService {
       conversation,
       command,
       openPageTitle,
+      requestCompaction: () =>
+        this.requestCompaction(conversation, input.userId, input.correlationId),
     });
     return { run: null, command: result, userMessage: null };
   }

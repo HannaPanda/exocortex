@@ -18,7 +18,11 @@
     "set": "Vision-begeleidend model ingesteld op {model}."
   },
   "compact": {
-    "automatic": "De context wordt automatisch samengevat zodra deze de limiet bereikt. Gebruik /clear om hem direct te wissen."
+    "started": "{count, plural, one {Het # bericht in de context wordt nu samengevat.} other {De # berichten in de context worden nu samengevat.}} De samenvatting verschijnt zo meteen hier in de chat en vervangt ze in de context; ze blijven wel gewoon leesbaar.",
+    "notNeededYet": "Het was nog niet nodig: er wordt pas automatisch samengevat vanaf {threshold, number}%.",
+    "notNeededYetAt": "Het was nog niet nodig: de context is voor {percent, number}% gevuld, er wordt pas automatisch samengevat vanaf {threshold, number}%.",
+    "alreadyRunning": "De geschiedenis wordt al samengevat. De samenvatting verschijnt zo meteen hier in de chat.",
+    "nothing": "Er valt nog niets samen te vatten: er staat hoogstens één bericht in de context."
   },
   "context": {
     "noPage": "Er is momenteel geen pagina geopend.",
@@ -54,7 +58,7 @@
       "model": "Model van dit gesprek wijzigen",
       "think": "Denkniveau kiezen",
       "vision": "Vision-begeleidend model overschrijven",
-      "compact": "Context nu samenvatten",
+      "compact": "Eerdere geschiedenis nu samenvatten",
       "context": "Paginacontext en vastgezette bronnen weergeven of in-/uitschakelen",
       "rules": "Actieve regelpagina’s weergeven",
       "tools": "Beschikbare gereedschappen weergeven",

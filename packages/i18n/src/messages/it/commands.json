@@ -18,7 +18,11 @@
     "set": "Modello vision complementare impostato su {model}."
   },
   "compact": {
-    "automatic": "Il contesto viene riassunto automaticamente non appena raggiunge il limite. Usa /clear per svuotarlo subito."
+    "started": "{count, plural, one {Il # messaggio nel contesto viene ora riassunto.} many {I # messaggi nel contesto vengono ora riassunti.} other {I # messaggi nel contesto vengono ora riassunti.}} Il riassunto apparirà a breve qui nella chat e li sostituirà nel contesto; rimarranno comunque leggibili.",
+    "notNeededYet": "Non era ancora necessario: la sintesi automatica si attiva solo a partire dal {threshold, number} %.",
+    "notNeededYetAt": "Non era ancora necessario: il contesto è pieno al {percent, number} %, la sintesi automatica si attiva solo a partire dal {threshold, number} %.",
+    "alreadyRunning": "La cronologia è già in fase di sintesi. Il riassunto apparirà a breve qui nella chat.",
+    "nothing": "Non c’è ancora nulla da riassumere: nel contesto c’è al massimo un messaggio."
   },
   "context": {
     "noPage": "Al momento non ci sono pagine aperte.",
@@ -54,7 +58,7 @@
       "model": "Cambia il modello di questa conversazione",
       "think": "Scegli il livello di riflessione",
       "vision": "Sovrascrivi il modello vision complementare",
-      "compact": "Riassumi il contesto adesso",
+      "compact": "Riassumi subito la cronologia finora",
       "context": "Mostra o attiva/disattiva il contesto della pagina e le fonti fissate",
       "rules": "Mostra le pagine di regole attive",
       "tools": "Mostra gli strumenti disponibili",

@@ -18,7 +18,11 @@
     "set": "Modelo visual complementar definido para {model}."
   },
   "compact": {
-    "automatic": "O contexto é resumido automaticamente assim que atinge o limite. Use /clear para limpá-lo imediatamente."
+    "started": "{count, plural, one {A # mensagem no contexto está sendo resumida agora.} many {As # mensagens no contexto estão sendo resumidas agora.} other {As # mensagens no contexto estão sendo resumidas agora.}} O resumo vai aparecer aqui no chat em instantes e substituí-las no contexto; ainda assim, elas continuam legíveis.",
+    "notNeededYet": "Ainda não era necessário: o resumo automático só acontece a partir de {threshold, number}%.",
+    "notNeededYetAt": "Ainda não era necessário: o contexto está em {percent, number}%, e o resumo automático só acontece a partir de {threshold, number}%.",
+    "alreadyRunning": "O histórico já está sendo resumido. O resumo vai aparecer aqui no chat em instantes.",
+    "nothing": "Ainda não há nada para resumir: há no máximo uma mensagem no contexto."
   },
   "context": {
     "noPage": "Nenhuma página aberta no momento.",
@@ -54,7 +58,7 @@
       "model": "Alterar o modelo desta conversa",
       "think": "Escolher nível de pensamento",
       "vision": "Substituir modelo visual complementar",
-      "compact": "Resumir contexto agora",
+      "compact": "Resumir o histórico atual agora",
       "context": "Exibir ou alternar contexto da página e fontes fixadas",
       "rules": "Exibir páginas de regras ativas",
       "tools": "Exibir ferramentas disponíveis",

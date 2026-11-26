@@ -18,7 +18,11 @@
     "set": "Ustawiono model pomocniczy Vision na {model}."
   },
   "compact": {
-    "automatic": "Kontekst zostanie automatycznie podsumowany po osiągnięciu limitu. Użyj /clear, aby wyczyścić go natychmiast."
+    "started": "{count, plural, one {Ta # wiadomość w kontekście jest teraz podsumowywana.} few {Te # wiadomości w kontekście są teraz podsumowywane.} many {Tych # wiadomości w kontekście jest teraz podsumowywanych.} other {Te # wiadomości w kontekście są teraz podsumowywane.}} Podsumowanie pojawi się za chwilę tutaj na czacie i zastąpi je w kontekście; nadal będzie można je przeczytać.",
+    "notNeededYet": "To nie było jeszcze konieczne: automatyczne podsumowanie następuje dopiero od {threshold, number}%.",
+    "notNeededYetAt": "To nie było jeszcze konieczne: kontekst jest zapełniony w {percent, number}%, automatyczne podsumowanie następuje dopiero od {threshold, number}%.",
+    "alreadyRunning": "Historia jest już podsumowywana. Podsumowanie pojawi się za chwilę tutaj na czacie.",
+    "nothing": "Nie ma jeszcze czego podsumowywać: w kontekście znajduje się co najwyżej jedna wiadomość."
   },
   "context": {
     "noPage": "Żadna strona nie jest obecnie otwarta.",
@@ -54,7 +58,7 @@
       "model": "Zmień model w tej rozmowie",
       "think": "Wybierz poziom myślenia",
       "vision": "Zastąp model pomocniczy Vision",
-      "compact": "Podsumuj kontekst teraz",
+      "compact": "Podsumuj dotychczasową historię teraz",
       "context": "Pokaż lub przełącz kontekst strony i przypięte źródła",
       "rules": "Pokaż aktywne strony reguł",
       "tools": "Pokaż dostępne narzędzia",

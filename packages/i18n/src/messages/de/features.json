@@ -566,6 +566,16 @@
     },
     "where": "Die Auslastungsanzeige unter dem Eingabefeld im Chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Den Chatverlauf auf Wunsch zusammenfassen",
+    "summary": "Tippst du /compact in den KI-Chat, wird der bisherige Verlauf sofort zusammengefasst, auch wenn das Fenster noch lange nicht voll ist. Die Zusammenfassung ersetzt ihn im Kontext, lesbar bleibt er trotzdem.",
+    "details": {
+      "p1": "Ein langes Gespräch, das die Richtung gewechselt hat, schleppt alles Frühere mit: jede Antwort wird teurer, und alte Nebenwege lenken ab. Mit /compact sagst du selbst, dass jetzt ein guter Moment für einen Strich ist. Alle Nachrichten im Kontext werden zu einer Zusammenfassung mit Entscheidungen, Fakten, Namen und offenen Aufgaben, und das Gespräch geht von dort aus weiter.",
+      "p2": "Das Zusammenfassen dauert ein paar Sekunden und läuft im Hintergrund. Die Antwort auf den Befehl sagt dir, wie viele Nachrichten es betrifft und ob die automatische Verdichtung es ohnehin schon getan hätte. Solange es läuft, wartet das Eingabefeld; danach steht die Zusammenfassung im Chat, und eine Linie zeigt, ab wo der Verlauf nicht mehr im Kontext ist.",
+      "p3": "Agenten können dasselbe über MCP mit exo_chat_compact anstoßen, für eine Unterhaltung, die dir gehört. Die eingebaute KI tut es nicht selbst: während sie antwortet, ist der Chat belegt, und dort greift ohnehin die automatische Verdichtung, sobald sie etwas ändert."
+    },
+    "where": "Im KI-Chat: /compact ins Eingabefeld tippen."
+  },
   "ki-laeufe": {
     "title": "Laufende Antworten beobachten und abbrechen",
     "summary": "Ein Lauf hat einen Zustand, den man abfragen kann, samt Werkzeugaufrufen und Fehlern, und er lässt sich abbrechen. Damit ist auch eine Antwort, die zehn Minuten arbeitet, nichts, worauf man nur warten kann.",

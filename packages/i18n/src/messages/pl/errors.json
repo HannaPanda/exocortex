@@ -34,6 +34,7 @@
     "ai_image_unavailable": "Generowanie obrazów nie jest skonfigurowane dla tej instancji. Model generowania obrazów można ustawić w panelu administratora.",
     "ai_tool_limit_exceeded": "AI wykonała zbyt wiele wywołań narzędzi.",
     "ai_conversation_locked": "W tym czacie trwa jeszcze generowanie odpowiedzi.",
+    "ai_conversation_compacting": "Historia tego czatu jest właśnie podsumowywana. Za chwilę możesz pisać dalej.",
     "ai_conversation_cursor_invalid": "Nie udało się przewinąć listy dalej.",
     "document_content_conflict": "Strona została w międzyczasie zmodyfikowana.",
     "document_content_lossy": "Dołączenie spowodowałoby utratę baz danych osadzonych na tej stronie.",

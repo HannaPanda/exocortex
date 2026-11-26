@@ -566,6 +566,16 @@
     },
     "where": "L’indicatore di utilizzo sotto il campo di input nella chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Riassumere la cronologia della chat su richiesta",
+    "summary": "Se digiti /compact nella chat con l’IA, la cronologia precedente viene riassunta immediatamente, anche se la finestra non è ancora affatto piena. Il riassunto la sostituisce nel contesto, ma rimane comunque leggibile.",
+    "details": {
+      "p1": "Una conversazione lunga che ha cambiato direzione si trascina dietro tutto ciò che c’era prima: ogni risposta diventa più costosa e i vecchi argomenti secondari distraggono. Con /compact puoi decidere tu che è il momento giusto per tirare una riga. Tutti i messaggi nel contesto vengono condensati in un riassunto con decisioni, fatti, nomi e compiti aperti, e la conversazione prosegue da lì.",
+      "p2": "La generazione del riassunto richiede alcuni secondi e viene eseguita in background. La risposta al comando ti dice quanti messaggi riguarda e se la compattazione automatica lo avrebbe già fatto comunque. Mentre è in corso, il campo di immissione attende; dopodiché il riassunto compare nella chat e una linea indica da dove la cronologia non fa più parte del contesto.",
+      "p3": "Gli agenti possono avviare la stessa operazione tramite MCP con exo_chat_compact, per una conversazione che ti appartiene. L’IA integrata non lo fa da sola: mentre risponde, la chat è occupata, e lì interviene comunque la compattazione automatica non appena viene modificato qualcosa."
+    },
+    "where": "Nella chat con l’IA: digita /compact nel campo di immissione."
+  },
   "ki-laeufe": {
     "title": "Monitorare e interrompere le risposte in corso",
     "summary": "Un’esecuzione ha uno stato interrogabile, comprensivo di chiamate agli strumenti ed errori, e può essere interrotta. In questo modo anche una risposta che richiede dieci minuti di elaborazione non costringe a un’attesa passiva.",

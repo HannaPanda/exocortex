@@ -46,7 +46,7 @@
     "model": "Cambia modello per questa conversazione",
     "think": "Scegli livello di riflessione",
     "vision": "Sostituisci modello Vision associato",
-    "compact": "Sintetizza subito il contesto",
+    "compact": "Riassumi la cronologia precedente adesso",
     "context": "Mostra o attiva/disattiva contesto della pagina e fonti fissate",
     "rules": "Mostra pagine delle regole attive",
     "tools": "Mostra strumenti disponibili",
@@ -82,6 +82,12 @@
     "gapHint": "Una parte del testo è andata persa durante il trasferimento. L’anteprima è stata ricaricata dal server.",
     "cancelled": "Esecuzione annullata.",
     "compacted": "La cronologia precedente è stata sintetizzata.",
+    "compactionFailed": {
+      "nothing_to_compact": "Non c’era nulla da riassumere: nel contesto c’era al massimo un messaggio.",
+      "provider_failed": "Impossibile riassumere la cronologia: il modello non ha risposto. Rimane invariata; riprova con /compact.",
+      "key_unreadable": "La cronologia non è stata riassunta: impossibile leggere la chiave IA personalizzata di questa area di lavoro.",
+      "abandoned": "Il riassunto è stato interrotto. La cronologia rimane invariata; riprova con /compact."
+    },
     "cancelFailed": "Impossibile annullare l’esecuzione.",
     "failed": "Impossibile generare la risposta dell’IA.",
     "errors": {

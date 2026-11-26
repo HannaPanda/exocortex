@@ -46,7 +46,7 @@
     "model": "Cambiar el modelo de esta conversación",
     "think": "Elegir nivel de reflexión",
     "vision": "Reemplazar modelo complementario de visión",
-    "compact": "Resumir el contexto ahora",
+    "compact": "Resumir el historial previo ahora",
     "context": "Mostrar o alternar el contexto de la página y las fuentes fijadas",
     "rules": "Mostrar páginas de reglas activas",
     "tools": "Mostrar herramientas disponibles",
@@ -82,6 +82,12 @@
     "gapHint": "Parte del texto se perdió por el camino. Se ha vuelto a cargar la vista previa desde el servidor.",
     "cancelled": "Ejecución cancelada.",
     "compacted": "Se ha resumido el historial anterior.",
+    "compactionFailed": {
+      "nothing_to_compact": "No había nada que resumir: en el contexto había como máximo un mensaje.",
+      "provider_failed": "No se pudo resumir el historial; el modelo no respondió. Se mantiene como estaba; inténtalo de nuevo con /compact.",
+      "key_unreadable": "No se resumió el historial: no se puede leer la clave de IA propia de este espacio de trabajo.",
+      "abandoned": "Se canceló el resumen. El historial se mantiene como estaba; inténtalo de nuevo con /compact."
+    },
     "cancelFailed": "No se ha podido cancelar la ejecución.",
     "failed": "No se ha podido generar la respuesta de la IA.",
     "errors": {

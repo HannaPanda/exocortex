@@ -46,7 +46,7 @@
     "model": "Switch model for this conversation",
     "think": "Choose thinking level",
     "vision": "Override companion vision model",
-    "compact": "Summarize context now",
+    "compact": "Summarize previous history now",
     "context": "Show or toggle page context and pinned sources",
     "rules": "Show active rule pages",
     "tools": "Show available tools",
@@ -82,6 +82,12 @@
     "gapHint": "Part of the text was lost along the way. The preview was reloaded from the server.",
     "cancelled": "Run cancelled.",
     "compacted": "Older history was summarized.",
+    "compactionFailed": {
+      "nothing_to_compact": "There was nothing to summarize: the context contained at most one message.",
+      "provider_failed": "The history could not be summarized because the model did not respond. It remains as it was; try again with /compact.",
+      "key_unreadable": "The history was not summarized: this workspace’s custom AI key cannot be read.",
+      "abandoned": "Summarization was canceled. The history remains as it was; try again with /compact."
+    },
     "cancelFailed": "The run could not be cancelled.",
     "failed": "The AI response could not be generated.",
     "errors": {

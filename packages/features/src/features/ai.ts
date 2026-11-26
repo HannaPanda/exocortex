@@ -138,6 +138,14 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'verlauf-zusammenfassen',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#287', 'ADR-032', 'ADR-093'],
+    ui: {},
+    tools: ['exo_chat_compact'],
+  }),
+  defineFeature({
     id: 'ki-regeln',
     area: 'ki',
     since: '2026-08-06',

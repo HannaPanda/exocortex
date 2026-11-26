@@ -566,6 +566,16 @@
     },
     "where": "De bezettingsweergave onder het invoerveld in de chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "De chatgeschiedenis op verzoek samenvatten",
+    "summary": "Typ je /compact in de AI-chat, dan wordt de eerdere geschiedenis meteen samengevat, zelfs als het venster nog lang niet vol is. De samenvatting vervangt hem in de context, maar hij blijft gewoon leesbaar.",
+    "details": {
+      "p1": "Een lang gesprek dat van richting is veranderd, sleept alles van vroeger mee: elk antwoord wordt duurder en oude zijpaden leiden af. Met /compact geef je zelf aan dat dit een goed moment is om een streep te trekken. Alle berichten in de context worden samengevat met beslissingen, feiten, namen en openstaande taken, en het gesprek gaat vanaf dat punt verder.",
+      "p2": "Het samenvatten duurt een paar seconden en gebeurt op de achtergrond. Het antwoord op het commando vertelt je hoeveel berichten het betreft en of de automatische compressie het anders al had gedaan. Zolang het loopt, wacht het invoerveld; daarna staat de samenvatting in de chat en toont een lijn vanaf waar de geschiedenis niet meer in de context zit.",
+      "p3": "Agents kunnen hetzelfde via MCP initiëren met exo_chat_compact, voor een gesprek dat van jou is. De ingebouwde AI doet het niet zelf: terwijl die antwoordt, is de chat bezet en daar grijpt de automatische compressie sowieso in zodra er iets verandert."
+    },
+    "where": "In de AI-chat: /compact in het invoerveld typen."
+  },
   "ki-laeufe": {
     "title": "Lopende antwoorden volgen en afbreken",
     "summary": "Een run heeft een status die je kunt opvragen, inclusief tool-aanroepen en fouten, en kan worden afgebroken. Daarmee is ook een antwoord dat tien minuten bezig is, niets waar je alleen maar op kunt wachten.",

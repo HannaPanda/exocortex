@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import {
   type AiConversation,
+  type AiConversationCompactionError,
+  aiConversationCompactResponseSchema,
   type AiConversationDetailResponse,
   aiConversationDetailResponseSchema,
   aiConversationListResponseSchema,
@@ -24,11 +26,16 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * decided three weeks ago asks the person to repeat it, which is exactly the
  * problem the `/chats` area exists to solve.
  *
- * Read-only, all four of them. The exemption for the writing half stands, and
- * it now covers the pinned sources too (issue #75): what a conversation
+ * Read-only, the first four of them. The exemption for the writing half
+ * stands, and it now covers the pinned sources too (issue #75): what a conversation
  * carries with it is the person's decision about what leaves their workspace,
  * and a tool that could pin a page would be the run widening its own context.
  * Reading that list is the opposite, and `exo_chat_context` is it.
+ *
+ * The one writing tool is `exo_chat_compact` (issue #287): what `/compact`
+ * does, for an agent working on somebody's behalf. MCP only, because the
+ * built-in AI is always inside a run of its own conversation, and a run holds
+ * the conversation against exactly this.
  */
 
 const MAX_LISTED = 40;
@@ -157,7 +164,8 @@ export const chatReadTool: AnyToolDefinition = defineTool({
     });
     const header =
       `**${result.conversation.title}** · ${String(result.conversation.messageCount)} Nachrichten · ` +
-      `zuletzt ${result.conversation.lastMessageAt} · ${contextLine(result.conversation)}`;
+      `zuletzt ${result.conversation.lastMessageAt} · ${contextLine(result.conversation)}` +
+      compactionLine(result.conversation);
     const body = result.messages
       .slice(0, MAX_TRANSCRIPT_MESSAGES)
       .map((message) => {
@@ -171,6 +179,66 @@ export const chatReadTool: AnyToolDefinition = defineTool({
         ? `\n\n_${String(result.messages.length - MAX_TRANSCRIPT_MESSAGES)} weitere Nachrichten nicht gezeigt._`
         : '';
     return { text: `${header}\n\n${body}${cut}${lastRunLine(result.lastRun)}`, data: result };
+  },
+});
+
+/** How a requested compaction ended, for a reader of the conversation. */
+const COMPACTION_ERROR_LINE: Record<AiConversationCompactionError, string> = {
+  nothing_to_compact: 'es gab nichts zusammenzufassen',
+  provider_failed: 'das Modell hat nicht geantwortet',
+  key_unreadable: 'der eigene KI-Schlüssel des Arbeitsbereichs ist nicht lesbar',
+  abandoned: 'abgebrochen',
+};
+
+/** Whether a requested compaction is running or how the last one failed; empty otherwise. */
+function compactionLine(conversation: AiConversation): string {
+  if (conversation.compactRequestedAt !== null) {
+    return ` · Zusammenfassung läuft seit ${conversation.compactRequestedAt}`;
+  }
+  if (conversation.compactionError !== null) {
+    return ` · letzte angeforderte Zusammenfassung ohne Ergebnis: ${COMPACTION_ERROR_LINE[conversation.compactionError]}`;
+  }
+  return '';
+}
+
+export const chatCompactTool: AnyToolDefinition = defineTool({
+  name: 'exo_chat_compact',
+  description:
+    'Fasst den bisherigen Verlauf einer eigenen KI-Unterhaltung jetzt zusammen, wie /compact im ' +
+    'Chat: alle Nachrichten im Kontext werden durch eine Zusammenfassung ersetzt, bleiben aber ' +
+    'lesbar. Läuft im Hintergrund und braucht einige Sekunden; das Ergebnis zeigt exo_chat_read ' +
+    '(eine Nachricht als Zusammenfassung, oder ein Fehler am Kopf). Auch wenn das Fenster noch nicht ' +
+    'voll ist; die Antwort sagt dazu, ob die automatische Verdichtung schon gegriffen hätte.',
+  inputSchema: z.object({
+    conversationId: idSchema,
+  }),
+  // Not on the built-in AI's surface: a run holds its own conversation, and a
+  // compaction is refused while a run is open on it (SURFACE_EXEMPT).
+  surfaces: ['mcp'],
+  domain: 'chats',
+  mutating: true,
+  target: (input) => `conversation:${input.conversationId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/ai/conversations/${input.conversationId}/compact`,
+      responseSchema: aiConversationCompactResponseSchema,
+    });
+    const fill =
+      result.contextUsagePercent === null
+        ? 'Füllstand unbekannt'
+        : `Kontext zu ${String(result.contextUsagePercent)} % gefüllt`;
+    const automatic = result.wouldCompactAutomatically
+      ? 'die automatische Verdichtung hätte ohnehin gegriffen'
+      : `automatisch erst ab ${String(result.thresholdPercent)} %`;
+    const text =
+      result.status === 'queued'
+        ? `${String(result.messagesToSummarize)} Nachrichten werden zusammengefasst (${fill}, ${automatic}). ` +
+          'Das Ergebnis zeigt exo_chat_read in einigen Sekunden.'
+        : result.status === 'already_queued'
+          ? 'Für diese Unterhaltung läuft schon eine Zusammenfassung.'
+          : 'Nichts zusammenzufassen: im Kontext steht höchstens eine Nachricht.';
+    return { text, data: result };
   },
 });
 
@@ -253,4 +321,5 @@ export const CHAT_TOOLS: readonly AnyToolDefinition[] = [
   chatSearchTool,
   chatReadTool,
   chatContextTool,
+  chatCompactTool,
 ];

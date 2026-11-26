@@ -46,7 +46,7 @@
     "model": "Zmień model dla tej rozmowy",
     "think": "Wybierz poziom myślenia",
     "vision": "Zastąp model pomocniczy wizji",
-    "compact": "Podsumuj kontekst teraz",
+    "compact": "Podsumuj dotychczasową historię teraz",
     "context": "Pokaż lub przełącz kontekst strony i przypięte źródła",
     "rules": "Pokaż aktywne strony reguł",
     "tools": "Pokaż dostępne narzędzia",
@@ -82,6 +82,12 @@
     "gapHint": "Część tekstu została utracona po drodze. Podgląd został ponownie załadowany z serwera.",
     "cancelled": "Działanie anulowane.",
     "compacted": "Starsza historia została podsumowana.",
+    "compactionFailed": {
+      "nothing_to_compact": "Nie było nic do podsumowania: w kontekście znajdowała się co najwyżej jedna wiadomość.",
+      "provider_failed": "Nie udało się podsumować historii, model nie odpowiedział. Pozostaje bez zmian; spróbuj ponownie za pomocą /compact.",
+      "key_unreadable": "Historia nie została podsumowana: nie można odczytać własnego klucza AI tego obszaru roboczego.",
+      "abandoned": "Podsumowywanie zostało przerwane. Historia pozostaje bez zmian; spróbuj ponownie za pomocą /compact."
+    },
     "cancelFailed": "Nie udało się anulować działania.",
     "failed": "Nie udało się wygenerować odpowiedzi AI.",
     "errors": {

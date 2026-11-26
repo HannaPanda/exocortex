@@ -18,7 +18,11 @@
     "set": "Modèle de vision d’accompagnement défini sur {model}."
   },
   "compact": {
-    "automatic": "Le contexte est automatiquement condensé dès qu’il atteint la limite. Utilise /clear pour le vider immédiatement."
+    "started": "{count, plural, one {Le message présent dans le contexte va maintenant être résumé.} many {Les # messages présents dans le contexte vont maintenant être résumés.} other {Les # messages présents dans le contexte vont maintenant être résumés.}} Le résumé apparaîtra ici dans le chat et les remplacera dans le contexte ; ils restent néanmoins lisibles.",
+    "notNeededYet": "Ce n’était pas encore nécessaire : le résumé automatique ne se déclenche qu’à partir de {threshold, number} %.",
+    "notNeededYetAt": "Ce n’était pas encore nécessaire : le contexte est rempli à {percent, number} %, le résumé automatique ne se déclenche qu’à partir de {threshold, number} %.",
+    "alreadyRunning": "L’historique est déjà en cours de résumé. Le résumé apparaîtra ici dans le chat.",
+    "nothing": "Il n’y a encore rien à résumer : le contexte ne contient tout au plus qu’un seul message."
   },
   "context": {
     "noPage": "Aucune page n’est ouverte actuellement.",
@@ -54,7 +58,7 @@
       "model": "Changer le modèle de cette conversation",
       "think": "Choisir le niveau de réflexion",
       "vision": "Remplacer le modèle de vision d’accompagnement",
-      "compact": "Condenser le contexte maintenant",
+      "compact": "Résumer l’historique actuel dès maintenant",
       "context": "Afficher ou basculer le contexte de page et les sources épinglées",
       "rules": "Afficher les pages de règles actives",
       "tools": "Afficher les outils disponibles",

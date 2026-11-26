@@ -34,6 +34,7 @@
     "ai_image_unavailable": "Afbeeldingen genereren is niet ingesteld voor deze instantie. In het beheergedeelte kan een afbeeldingsmodel worden ingesteld.",
     "ai_tool_limit_exceeded": "De AI heeft te veel tool-aanroepen gebruikt.",
     "ai_conversation_locked": "Er loopt in deze chat nog een antwoord.",
+    "ai_conversation_compacting": "De geschiedenis van deze chat wordt momenteel samengevat. Je kunt zo weer verder schrijven.",
     "ai_conversation_cursor_invalid": "De lijst kon niet verder worden doorgebladerd.",
     "document_content_conflict": "De pagina is tussentijds gewijzigd.",
     "document_content_lossy": "Toevoegen zou ertoe leiden dat ingesloten databases op deze pagina verloren gaan.",

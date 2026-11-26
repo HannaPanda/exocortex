@@ -34,6 +34,7 @@
     "ai_image_unavailable": "La génération d’images n’est pas configurée pour cette instance. Il est possible d’ajouter un modèle d’image dans l’espace d’administration.",
     "ai_tool_limit_exceeded": "L’IA a effectué trop d’appels d’outils.",
     "ai_conversation_locked": "Une réponse est encore en cours dans ce chat.",
+    "ai_conversation_compacting": "L’historique de ce chat est en train d’être résumé. Tu pourras continuer à écrire dans un instant.",
     "ai_conversation_cursor_invalid": "Impossible de faire défiler la liste plus loin.",
     "document_content_conflict": "La page a été modifiée entre-temps.",
     "document_content_lossy": "L’ajout entraînerait la perte des bases de données intégrées sur cette page.",

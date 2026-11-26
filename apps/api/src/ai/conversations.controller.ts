@@ -11,6 +11,8 @@ import {
   AI_CONVERSATION_SEARCH_LIMIT,
   type AiConversation,
   aiConversationArchivedFilterSchema,
+  type AiConversationCompactResponse,
+  aiConversationCompactResponseSchema,
   type AiConversationDeleteResponse,
   aiConversationDeleteResponseSchema,
   type AiConversationDetailResponse,
@@ -260,6 +262,24 @@ export class ConversationsController {
     @Param('sourceId') sourceId: string,
   ): Promise<AiConversationSourcesResponse> {
     return this.conversationSources.remove({ conversationId, sourceId, userId: session.userId });
+  }
+
+  /**
+   * Summarises the conversation's history now (issue #287), the route behind
+   * `/compact` and `exo_chat_compact`. Answers at once; the summary arrives as
+   * a message and an `ai.conversation.compacted` event.
+   */
+  @Post(':conversationId/compact')
+  @ApiCreatedResponse({ schema: openApiResponseSchema(aiConversationCompactResponseSchema) })
+  async compact(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+  ): Promise<AiConversationCompactResponse> {
+    return this.conversations.compact({
+      conversationId,
+      userId: session.userId,
+      correlationId: currentCorrelationId(),
+    });
   }
 
   @Post(':conversationId/messages')

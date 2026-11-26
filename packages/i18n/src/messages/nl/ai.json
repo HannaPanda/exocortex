@@ -46,7 +46,7 @@
     "model": "Model van dit gesprek wijzigen",
     "think": "Denkniveau kiezen",
     "vision": "Vision-begeleidend model overschrijven",
-    "compact": "Context nu samenvatten",
+    "compact": "Eerdere geschiedenis nu samenvatten",
     "context": "Paginacontext en vastgezette bronnen weergeven of omschakelen",
     "rules": "Actieve regelpagina’s weergeven",
     "tools": "Beschikbare tools weergeven",
@@ -82,6 +82,12 @@
     "gapHint": "Een deel van de tekst is onderweg verloren gegaan. Het voorbeeld is opnieuw geladen vanaf de server.",
     "cancelled": "Uitvoering geannuleerd.",
     "compacted": "Oudere geschiedenis is samengevat.",
+    "compactionFailed": {
+      "nothing_to_compact": "Er viel niets samen te vatten: er stond hoogstens één bericht in de context.",
+      "provider_failed": "De geschiedenis kon niet worden samengevat, het model reageerde niet. Hij blijft zoals hij was; probeer het opnieuw met /compact.",
+      "key_unreadable": "De geschiedenis is niet samengevat: de eigen AI-sleutel van deze werkruimte kan niet worden gelezen.",
+      "abandoned": "Het samenvatten is afgebroken. De geschiedenis blijft zoals hij was; probeer het opnieuw met /compact."
+    },
     "cancelFailed": "De uitvoering kon niet worden geannuleerd.",
     "failed": "Het AI-antwoord kon niet worden gegenereerd.",
     "errors": {

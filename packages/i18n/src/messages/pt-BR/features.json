@@ -566,6 +566,16 @@
     },
     "where": "O indicador de uso abaixo do campo de entrada no chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Resumir o histórico do chat sob demanda",
+    "summary": "Se você digitar /compact no chat de IA, o histórico até o momento será resumido imediatamente, mesmo que a janela de contexto ainda esteja longe de lotar. O resumo o substitui no contexto, mas ele continua legível.",
+    "details": {
+      "p1": "Uma conversa longa que mudou de rumo carrega tudo o que veio antes: cada resposta fica mais cara, e desvios antigos causam distração. Com /compact, você decide que agora é um bom momento para passar uma régua. Todas as mensagens no contexto são condensadas em um resumo com decisões, fatos, nomes e tarefas pendentes, e a conversa continua a partir dali.",
+      "p2": "A geração do resumo leva alguns segundos e acontece em segundo plano. A resposta ao comando informa quantas mensagens foram afetadas e se a compactação automática já teria feito isso de qualquer forma. Enquanto o processo roda, o campo de entrada aguarda; depois, o resumo aparece no chat, e uma linha indica a partir de onde o histórico anterior deixou de fazer parte do contexto.",
+      "p3": "Agentes podem acionar o mesmo processo via MCP com exo_chat_compact em conversas que pertencem a você. A IA integrada não faz isso por conta própria: enquanto ela responde, o chat fica ocupado, e ali a compactação automática já entra em ação assim que algo é alterado."
+    },
+    "where": "No chat de IA: digite /compact no campo de entrada."
+  },
   "ki-laeufe": {
     "title": "Acompanhar e cancelar respostas em andamento",
     "summary": "Uma execução tem um estado consultável, com chamadas de ferramentas e erros, e pode ser cancelada. Assim, uma resposta que trabalha por dez minutos não é algo diante do qual resta apenas esperar.",

@@ -46,7 +46,7 @@
     "model": "Changer le modèle de cette conversation",
     "think": "Choisir le niveau de réflexion",
     "vision": "Remplacer le modèle Vision associé",
-    "compact": "Résumer le contexte maintenant",
+    "compact": "Résumer l’historique actuel maintenant",
     "context": "Afficher ou basculer le contexte de la page et les sources épinglées",
     "rules": "Afficher les pages de règles actives",
     "tools": "Afficher les outils disponibles",
@@ -82,6 +82,12 @@
     "gapHint": "Une partie du texte a été perdue en route. L’aperçu a été rechargé depuis le serveur.",
     "cancelled": "Exécution annulée.",
     "compacted": "L’historique plus ancien a été résumé.",
+    "compactionFailed": {
+      "nothing_to_compact": "Il n’y avait rien à résumer : le contexte ne contenait tout au plus qu’un seul message.",
+      "provider_failed": "Impossible de résumer l’historique, le modèle n’a pas répondu. Il reste inchangé ; réessaie avec /compact.",
+      "key_unreadable": "L’historique n’a pas été résumé : la clé d’IA propre à cet espace de travail ne peut pas être lue.",
+      "abandoned": "Le résumé a été interrompu. L’historique reste inchangé ; réessaie avec /compact."
+    },
     "cancelFailed": "Impossible d’annuler l’exécution.",
     "failed": "Impossible de générer la réponse de l’IA.",
     "errors": {

@@ -18,7 +18,11 @@
     "set": "Vision-Begleitmodell auf {model} gesetzt."
   },
   "compact": {
-    "automatic": "Der Kontext wird automatisch zusammengefasst, sobald er das Limit erreicht. Nutze /clear, um ihn sofort zu leeren."
+    "started": "{count, plural, one {Die # Nachricht im Kontext wird jetzt zusammengefasst.} other {Die # Nachrichten im Kontext werden jetzt zusammengefasst.}} Die Zusammenfassung erscheint gleich hier im Chat und ersetzt sie im Kontext; lesbar bleiben sie trotzdem.",
+    "notNeededYet": "Nötig gewesen wäre das noch nicht: automatisch wird erst ab {threshold, number} % zusammengefasst.",
+    "notNeededYetAt": "Nötig gewesen wäre das noch nicht: der Kontext ist zu {percent, number} % gefüllt, automatisch wird erst ab {threshold, number} % zusammengefasst.",
+    "alreadyRunning": "Der Verlauf wird schon zusammengefasst. Die Zusammenfassung erscheint gleich hier im Chat.",
+    "nothing": "Es gibt noch nichts zusammenzufassen: im Kontext steht höchstens eine Nachricht."
   },
   "context": {
     "noPage": "Es ist gerade keine Seite geöffnet.",
@@ -54,7 +58,7 @@
       "model": "Modell dieser Unterhaltung wechseln",
       "think": "Denkstufe wählen",
       "vision": "Vision-Begleitmodell überschreiben",
-      "compact": "Kontext jetzt zusammenfassen",
+      "compact": "Bisherigen Verlauf jetzt zusammenfassen",
       "context": "Seitenkontext und angeheftete Quellen anzeigen oder umschalten",
       "rules": "Aktive Regelseiten anzeigen",
       "tools": "Verfügbare Werkzeuge anzeigen",

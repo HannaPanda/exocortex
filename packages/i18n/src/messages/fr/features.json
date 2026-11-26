@@ -566,6 +566,16 @@
     },
     "where": "L’indicateur de remplissage sous le champ de saisie dans le chat."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Résumer l’historique de discussion à la demande",
+    "summary": "Si tu tapes /compact dans le chat IA, l’historique jusqu’ici est immédiatement résumé, même si la fenêtre est encore loin d’être pleine. Le résumé le remplace dans le contexte, mais il reste tout de même lisible.",
+    "details": {
+      "p1": "Une longue conversation qui a changé de direction traîne tout le passé avec elle : chaque réponse devient plus coûteuse, et les anciennes digressions créent des distractions. Avec /compact, tu décides toi-même que le moment est venu de tirer un trait. Tous les messages du contexte sont condensés en un résumé regroupant décisions, faits, noms et tâches en cours, et la discussion reprend à partir de là.",
+      "p2": "Le résumé prend quelques secondes et s’exécute en arrière-plan. La réponse à la commande t’indique combien de messages sont concernés et si la condensation automatique l’aurait déjà fait de toute façon. Pendant l’exécution, le champ de saisie patiente ; ensuite, le résumé apparaît dans le chat et une ligne indique à partir d’où l’historique ne fait plus partie du contexte.",
+      "p3": "Les agents peuvent déclencher la même chose via MCP avec exo_chat_compact, pour une conversation qui t’appartient. L’IA intégrée ne le fait pas d’elle-même : pendant qu’elle répond, le chat est occupé, et c’est de toute façon la condensation automatique qui s’applique dès qu’elle modifie quelque chose."
+    },
+    "where": "Dans le chat IA : taper /compact dans le champ de saisie."
+  },
   "ki-laeufe": {
     "title": "Observer et interrompre les réponses en cours",
     "summary": "Une exécution possède un état consultable, avec les appels d’outils et les erreurs, et peut être interrompue. Ainsi, même une réponse qui travaille pendant dix minutes n’est pas quelque chose que l’on ne peut qu’attendre passivement.",

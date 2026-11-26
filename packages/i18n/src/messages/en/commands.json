@@ -18,7 +18,11 @@
     "set": "Vision companion model set to {model}."
   },
   "compact": {
-    "automatic": "Context is automatically summarized once it reaches the limit. Use /clear to clear it immediately."
+    "started": "{count, plural, one {Summarizing the # message in the context now.} other {Summarizing the # messages in the context now.}} The summary will appear right here in the chat and replace them in the context; they will still remain readable.",
+    "notNeededYet": "That wasn’t needed yet: automatic compaction only starts at {threshold, number}%.",
+    "notNeededYetAt": "That wasn’t needed yet: the context is {percent, number}% full, automatic compaction only starts at {threshold, number}%.",
+    "alreadyRunning": "The history is already being summarized. The summary will appear right here in the chat.",
+    "nothing": "There is nothing to summarize yet: there is at most one message in the context."
   },
   "context": {
     "noPage": "No page is currently open.",
@@ -54,7 +58,7 @@
       "model": "Switch model for this conversation",
       "think": "Choose thinking level",
       "vision": "Override vision companion model",
-      "compact": "Summarize context now",
+      "compact": "Summarize previous history now",
       "context": "Show or toggle page context and pinned sources",
       "rules": "Show active rule pages",
       "tools": "Show available tools",

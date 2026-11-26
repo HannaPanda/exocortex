@@ -566,6 +566,16 @@
     },
     "where": "Wskaźnik wykorzystania pod polem wprowadzania na czacie."
   },
+  "verlauf-zusammenfassen": {
+    "title": "Podsumowywanie historii czatu na żądanie",
+    "summary": "Gdy wpiszesz /compact w czacie AI, dotychczasowa historia zostanie natychmiast podsumowana, nawet jeśli okno kontekstu jest jeszcze dalekie od zapełnienia. Podsumowanie zastępuje ją w kontekście, ale historia pozostaje czytelna.",
+    "details": {
+      "p1": "Długa rozmowa, która zmieniła kierunek, ciągnie za sobą wszystko z przeszłości: każda odpowiedź staje się droższa, a stare wątki poboczne rozpraszają uwagę. Za pomocą /compact decydujesz, że nadszedł dobry moment na postawienie kreski. Wszystkie wiadomości w kontekście zostają skondensowane w podsumowanie z decyzjami, faktami, nazwiskami i otwartymi zadaniami, a rozmowa toczy się dalej od tego miejsca.",
+      "p2": "Podsumowywanie trwa kilka sekund i działa w tle. Odpowiedź na polecenie informuje, ilu wiadomości to dotyczy i czy automatyczna kompresja i tak by tego wkrótce nie zrobiła. Gdy proces trwa, pole wprowadzania czeka; potem podsumowanie pojawia się na czacie, a linia wskazuje miejsce, od którego historia nie znajduje się już w kontekście.",
+      "p3": "Agenci mogą uruchomić to samo przez MCP za pomocą exo_chat_compact dla rozmowy, która należy do ciebie. Wbudowana AI nie robi tego sama: podczas generowania odpowiedzi czat jest zajęty, a tam i tak wkracza automatyczna kompresja, gdy tylko zajdą zmiany."
+    },
+    "where": "W czacie AI: wpisz /compact w polu wprowadzania tekstu."
+  },
   "ki-laeufe": {
     "title": "Obserwowanie i przerywanie trwających odpowiedzi",
     "summary": "Przebieg ma stan, który można sprawdzić, wraz z wywołaniami narzędzi i błędami, i można go przerwać. Dzięki temu nawet odpowiedź trwająca dziesięć minut nie jest czymś, na co można tylko bezczynnie czekać.",

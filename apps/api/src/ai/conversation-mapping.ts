@@ -1,6 +1,9 @@
 import { assertPolicy, canReadWorkspace, type WorkspaceAccessService } from '@exocortex/auth';
 import {
+  AI_CONVERSATION_COMPACTION_LEASE_MS,
   type AiConversation,
+  type AiConversationCompactionError,
+  aiConversationCompactionErrorSchema,
   type AiConversationMessage,
   type AiConversationRole,
   contextUsagePercentOf,
@@ -41,6 +44,8 @@ export const CONVERSATION_SELECT = {
   visionCompanionSlug: true,
   estimatedTokens: true,
   measuredInputTokens: true,
+  compactRequestedAt: true,
+  compactionError: true,
   lastMessageAt: true,
   createdAt: true,
   archivedAt: true,
@@ -61,6 +66,8 @@ export interface ConversationRow {
   visionCompanionSlug: string | null;
   estimatedTokens: number;
   measuredInputTokens: number | null;
+  compactRequestedAt: Date | null;
+  compactionError: string | null;
   lastMessageAt: Date;
   createdAt: Date;
   archivedAt: Date | null;
@@ -119,6 +126,32 @@ export async function loadConversationPreviews(
   return new Map(rows.map((row) => [row.conversationId, collapse(row.content, PREVIEW_MAX_CHARS)]));
 }
 
+/**
+ * Whether a requested compaction still holds the conversation (issue #287).
+ * A request past its lease is over, whether or not a worker ever said so.
+ */
+export function compactionHolds(requestedAt: Date | null, now: number = Date.now()): boolean {
+  return requestedAt !== null && now - requestedAt.getTime() <= AI_CONVERSATION_COMPACTION_LEASE_MS;
+}
+
+/**
+ * The requested compaction as a reader sees it: still running, or how the
+ * last one ended. A request that outlived its lease without a worker settling
+ * it is reported as `abandoned`, never as running for ever.
+ */
+function compactionState(conversation: ConversationRow): {
+  compactRequestedAt: string | null;
+  compactionError: AiConversationCompactionError | null;
+} {
+  const requestedAt = conversation.compactRequestedAt;
+  if (requestedAt !== null && compactionHolds(requestedAt)) {
+    return { compactRequestedAt: requestedAt.toISOString(), compactionError: null };
+  }
+  if (requestedAt !== null) return { compactRequestedAt: null, compactionError: 'abandoned' };
+  const parsed = aiConversationCompactionErrorSchema.safeParse(conversation.compactionError);
+  return { compactRequestedAt: null, compactionError: parsed.success ? parsed.data : null };
+}
+
 export function conversationToContract(
   conversation: ConversationRow,
   fallbackContextWindowTokens: number | null,
@@ -146,6 +179,7 @@ export function conversationToContract(
     contextTokensMeasured,
     contextWindowTokens,
     contextUsagePercent: contextUsagePercentOf(contextTokens, contextWindowTokens),
+    ...compactionState(conversation),
     messageCount: conversation._count.messages,
     lastMessageAt: conversation.lastMessageAt.toISOString(),
     createdAt: conversation.createdAt.toISOString(),

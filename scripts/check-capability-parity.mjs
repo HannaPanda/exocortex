@@ -110,6 +110,11 @@ const SURFACE_EXEMPT = [
       "An eval measures the built-in AI (issue #146, ADR-074). A run that could judge its own attempts would be grading or funding itself; the API refuses every eval write from a run's service token for the same reason.",
   },
   {
+    tool: 'exo_chat_compact',
+    reason:
+      "Summarises a conversation's history on request (issue #287). The built-in AI only ever acts from inside a run of its own conversation, and a conversation with an open run refuses a requested compaction (`ai_conversation_locked`), so the tool could never succeed there. Inside a run the automatic compaction is the one that applies (ADR-032), and it already compacts whenever a smaller prompt would change who can serve the next turn.",
+  },
+  {
     tool: 'exo_workflow_delete',
     reason:
       "Deleting takes a workflow's versions and finished runs with it (issue #160, ADR-075), which is the record of what was reviewed and what ran. The built-in AI may draft, revise and copy workflows (issue #165, ADR-080), but removing the record of them is a person's or an admin token's, and the API refuses it from a run's service token.",

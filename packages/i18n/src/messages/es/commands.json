@@ -18,7 +18,11 @@
     "set": "Modelo complementario de visión establecido en {model}."
   },
   "compact": {
-    "automatic": "El contexto se resumirá automáticamente en cuanto alcance el límite. Usa /clear para vaciarlo de inmediato."
+    "started": "{count, plural, one {Se está resumiendo # mensaje del contexto.} many {Se están resumiendo # mensajes del contexto.} other {Se están resumiendo # mensajes del contexto.}} El resumen aparecerá aquí mismo en el chat y los sustituirá en el contexto; aun así, se podrán seguir leyendo.",
+    "notNeededYet": "Aún no era necesario: la compactación automática se activa a partir del {threshold, number} %.",
+    "notNeededYetAt": "Aún no era necesario: el contexto está al {percent, number} %, y la compactación automática se activa a partir del {threshold, number} %.",
+    "alreadyRunning": "Ya se está resumiendo el historial. El resumen aparecerá aquí mismo en el chat.",
+    "nothing": "Aún no hay nada que resumir: en el contexto solo hay un mensaje como máximo."
   },
   "context": {
     "noPage": "No hay ninguna página abierta en este momento.",
@@ -54,7 +58,7 @@
       "model": "Cambiar el modelo de esta conversación",
       "think": "Elegir nivel de pensamiento",
       "vision": "Anular modelo complementario de visión",
-      "compact": "Resumir el contexto ahora",
+      "compact": "Resumir el historial hasta ahora",
       "context": "Mostrar o alternar el contexto de la página y las fuentes fijadas",
       "rules": "Mostrar páginas de reglas activas",
       "tools": "Mostrar herramientas disponibles",

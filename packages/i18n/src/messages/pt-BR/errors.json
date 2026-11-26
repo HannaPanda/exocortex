@@ -34,6 +34,7 @@
     "ai_image_unavailable": "A geração de imagens não está configurada para esta instância. Um modelo de imagem pode ser definido na área de administração.",
     "ai_tool_limit_exceeded": "A IA fez muitas chamadas de ferramentas.",
     "ai_conversation_locked": "Ainda há uma resposta em andamento nesta conversa.",
+    "ai_conversation_compacting": "O histórico desta conversa está sendo resumido agora. Em instantes você poderá continuar escrevendo.",
     "ai_conversation_cursor_invalid": "Não foi possível avançar na lista.",
     "document_content_conflict": "A página foi modificada nesse meio-tempo.",
     "document_content_lossy": "Anexar causaria a perda de bancos de dados incorporados nesta página.",

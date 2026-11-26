@@ -34,6 +34,7 @@
     "ai_image_unavailable": "La generación de imágenes no está configurada para esta instancia. Se puede configurar un modelo de imagen en el panel de administración.",
     "ai_tool_limit_exceeded": "La IA ha realizado demasiadas llamadas a herramientas.",
     "ai_conversation_locked": "Todavía hay una respuesta en curso en este chat.",
+    "ai_conversation_compacting": "El historial de este chat se está resumiendo. Enseguida podrás seguir escribiendo.",
     "ai_conversation_cursor_invalid": "No se ha podido seguir avanzando en la lista.",
     "document_content_conflict": "La página se ha modificado mientras tanto.",
     "document_content_lossy": "Añadir contenido haría que se perdieran las bases de datos incrustadas en esta página.",
