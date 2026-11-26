@@ -372,6 +372,59 @@ test.describe('editor', () => {
     await expect(page.locator('.exocortex-editor pre .hljs-keyword').first()).toBeVisible();
   });
 
+  /**
+   * Issue #261: `Strg+A` in a code block selected the whole page, so the next
+   * keystroke replaced it. The keymap is unit-tested in `packages/editor`; what
+   * only a browser proves is the rest of the promise: the native selection,
+   * cutting and the Yjs undo that brings the code back.
+   */
+  test('Strg+A in a code block selects the code before the page', async ({ page }) => {
+    await openEditor(page);
+    const paragraph = page.locator('.exocortex-editor > p').first();
+    const code = page.locator('.exocortex-editor pre');
+
+    await page.keyboard.type('Bleibt stehen');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('``` ');
+    await expect(code).toHaveCount(1);
+    await page.keyboard.type('const a = 1;');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('const b = 2;');
+    // The undo manager groups edits closer than its capture timeout; a pause
+    // keeps the code and its replacement two steps, as they are for a person.
+    await page.waitForTimeout(800);
+
+    const selection = (): Promise<string> =>
+      page.evaluate(() => document.getSelection()?.toString() ?? '');
+
+    // First press: the code, and nothing above it.
+    await page.keyboard.press('Control+a');
+    await expect.poll(selection).toBe('const a = 1;\nconst b = 2;');
+
+    // Typing replaces the code only, and Strg+Z brings it back.
+    await page.keyboard.type('neu');
+    await expect(code).toHaveText('neu');
+    await expect(paragraph).toHaveText('Bleibt stehen');
+    await page.keyboard.press('Control+z');
+    await expect(code).toHaveText('const a = 1;\nconst b = 2;');
+
+    // Cutting takes the code only.
+    await page.keyboard.press('Control+a');
+    await expect.poll(selection).toBe('const a = 1;\nconst b = 2;');
+    await page.keyboard.press('Control+x');
+    await expect(code).toHaveText('');
+    await expect(paragraph).toHaveText('Bleibt stehen');
+
+    // In an empty code block the first press still stays inside it, and the
+    // second one takes the page.
+    await page.keyboard.press('Control+a');
+    await expect.poll(selection).toBe('');
+    await page.keyboard.press('Control+a');
+    await expect.poll(selection).toContain('Bleibt stehen');
+    await page.keyboard.press('ArrowRight');
+    await expect(paragraph).toHaveText('Bleibt stehen');
+  });
+
   test('offers table controls inside a table', async ({ page }) => {
     await openEditor(page);
 
