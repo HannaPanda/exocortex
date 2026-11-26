@@ -55,7 +55,10 @@ What is deliberately still missing is listed under
 - deterministic Markdown export and import (frontmatter, task lists, tables,
   wiki links, callouts, stable block ids), with the choice of exporting a
   transclusion as the reference or as the text it shows
-- attachments in S3-compatible storage with magic-byte MIME verification,
+- attachments in S3-compatible storage (MinIO locally; the deployment keeps
+  them in an external bucket at Hetzner since issue #272, with the local MinIO
+  as the way back and every backup snapshot mirroring the bucket) with
+  magic-byte MIME verification,
   downscaled image previews, and text extraction from PDFs (Docling locally,
   with OCR for scans) and from twelve office formats -- Word, Excel,
   PowerPoint, OpenDocument, RTF, EPUB, CSV -- through a local library call
@@ -330,7 +333,7 @@ What is deliberately still missing is listed under
 | API      | NestJS 12 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                                                                |
 | Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                                                                |
 | Jobs     | BullMQ 6 on Redis 8                                                                                                                  |
-| Storage  | S3-compatible (MinIO locally)                                                                                                        |
+| Storage  | S3-compatible (MinIO locally, any S3 provider through `S3_*`)                                                                         |
 | Auth     | Better Auth 1.7 with the Prisma adapter                                                                                              |
 | AI       | provider-neutral contracts, one Chat Completions transport for OpenRouter and subscription presets, a mock provider for offline work |
 | Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                                                                |
@@ -486,6 +489,9 @@ Deliberately absent, while the architecture leaves room for each:
 - stdio MCP servers, OAuth-only MCP servers and servers on a private address.
   The built-in AI reaches only public `https` servers with no credential, a
   bearer token or a named header (ADR-086, issue #196)
+- uploads above 25 MB. A file still passes through the API's memory; direct
+  multipart uploads into the bucket and an incremental backup of the objects are
+  the next steps of issue #272
 - horizontal scaling beyond one host. The Redis event bus is the boundary that
   makes it possible, and nothing has been run against a second instance
 

@@ -98,6 +98,54 @@ read -r documents yjs workspaces users attachments < <(count_in_scratch \
   || backup_die "eXocortex-Restore leer: $documents Dokumente, $yjs Yjs-States, $workspaces Workspaces, $users Nutzer."
 backup_log "eXocortex OK: $documents Dokumente, $yjs Yjs-States, $workspaces Workspaces, $users Nutzer, $attachments Anhänge aus $exo_latest."
 
+# --- eXocortex: the uploads ----------------------------------------------------
+# Two questions. Does the snapshot hold every object the restored database
+# points at? And can a restore write them into a bucket again? The second is
+# answered by running the real restore script against a throwaway MinIO that
+# has no published port beyond loopback and is removed with its data at exit.
+
+if grep -qF objects.tar.gz.gpg "$work/MANIFEST.txt"; then
+  fetch_verified "$exo_root" "$exo_latest" objects.tar.gz.gpg
+  tar tzf "$work/objects.tar.gz" | grep -v '/$' | sed 's#^\./##' | sort > "$work/archive-keys"
+  count_in_scratch exocortex-postgres "$exo_user" exocortex_restore_test \
+    'select "storageKey" from attachment where "deletedAt" is null
+     union all
+     select "previewKey" from attachment where "deletedAt" is null and "previewKey" is not null' \
+    | sort > "$work/database-keys"
+  missing="$(comm -23 "$work/database-keys" "$work/archive-keys" | wc -l)"
+  archived="$(wc -l < "$work/archive-keys")"
+  (( missing == 0 )) \
+    || backup_die "$missing Objekte, auf die die Datenbank zeigt, fehlen im Snapshot (erstes: $(comm -23 "$work/database-keys" "$work/archive-keys" | head -n 1))."
+
+  restore_password="$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9')"
+  restore_minio="exocortex-restore-test-minio"
+  docker rm -f "$restore_minio" >/dev/null 2>&1 || true
+  cleanup_restore_minio() { docker rm -f "$restore_minio" >/dev/null 2>&1 || true; }
+  trap 'cleanup_restore_minio; cleanup' EXIT
+  # --rm drops the anonymous /data volume with the container.
+  MINIO_ROOT_PASSWORD="$restore_password" docker run -d --rm --name "$restore_minio" \
+    -p 127.0.0.1::9000 -e MINIO_ROOT_USER=restoretest -e MINIO_ROOT_PASSWORD \
+    "$(backup_mc_image)" server /data >/dev/null
+  restore_port="$(docker port "$restore_minio" 9000/tcp | head -n 1 | sed 's/.*://')"
+  for _ in $(seq 1 30); do
+    curl -fsS "http://127.0.0.1:$restore_port/minio/health/ready" >/dev/null 2>&1 && break
+    sleep 1
+  done
+  umask 077
+  printf 'S3_ENDPOINT=http://127.0.0.1:%s\nS3_BUCKET=restore-test\nS3_ACCESS_KEY_ID=restoretest\nS3_SECRET_ACCESS_KEY=%s\n' \
+    "$restore_port" "$restore_password" > "$work/restore.env"
+  backup_object_store "$work/restore.env"
+  backup_mc "$work" ro mb --quiet store/restore-test >/dev/null
+  "$REPO_ROOT/deploy/backup-restore-objects.sh" "$work/objects.tar.gz" "$work/restore.env"
+  restored="$(backup_mc "$work" ro ls --recursive store/restore-test | wc -l)"
+  (( restored == archived )) \
+    || backup_die "Rückschreiben unvollständig: $restored von $archived Objekten im Test-Bucket."
+  cleanup_restore_minio
+  backup_log "Uploads OK: $archived Objekte im Snapshot, alle $(wc -l < "$work/database-keys") Verweise der Datenbank enthalten, $restored in einen Bucket zurückgeschrieben."
+else
+  backup_log "Snapshot $exo_latest trägt noch das alte MinIO-Volume (uploads.tar.gz.gpg), Uploads nicht geprüft."
+fi
+
 # --- Automation stack --------------------------------------------------------
 
 stack_root="${BACKUP_STACK_REMOTE_ROOT:-/Backups/automation-stack}"

@@ -56,9 +56,13 @@ services:
     container_name: exocortex-minio
     restart: unless-stopped
     command: ['server', '/data', '--console-address', ':9001']
+    # Its own credentials, falling back to the S3_* ones a development setup
+    # points at it. A deployment whose S3_* name an external bucket (issue
+    # #272) must keep MinIO on MINIO_ROOT_*: otherwise the next `up` would
+    # restart the local fallback under the external provider's keys.
     environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-exocortex}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-exocortex-dev-secret}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-${S3_ACCESS_KEY_ID:-exocortex}}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-${S3_SECRET_ACCESS_KEY:-exocortex-dev-secret}}
     ports:
       - '127.0.0.1:${MINIO_HOST_PORT:-9110}:9000'
       - '127.0.0.1:${MINIO_CONSOLE_HOST_PORT:-9111}:9001'
@@ -80,7 +84,7 @@ services:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      mc alias set local http://minio:9000 ${S3_ACCESS_KEY_ID:-exocortex} ${S3_SECRET_ACCESS_KEY:-exocortex-dev-secret} &&
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-${S3_ACCESS_KEY_ID:-exocortex}} ${MINIO_ROOT_PASSWORD:-${S3_SECRET_ACCESS_KEY:-exocortex-dev-secret}} &&
       mc mb --ignore-existing local/${S3_BUCKET:-exocortex} &&
       mc anonymous set none local/${S3_BUCKET:-exocortex} &&
       echo 'MinIO bucket ready'

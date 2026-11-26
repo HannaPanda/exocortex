@@ -33,6 +33,52 @@ backup_env_value() {
   sed -n "s/^$key=//p" "$file" | tail -n 1 | tr -d '"'"'"
 }
 
+# --- Object storage -----------------------------------------------------------
+# The uploads live in whatever S3-compatible bucket the deployment's S3_*
+# variables name: the local MinIO once, an external provider since issue #272.
+# Both directions (backup and restore) go through `mc`, run from the image the
+# compose file already pulls for MinIO, so nothing new is installed on the host
+# and no image is pulled at backup time.
+
+backup_mc_image() {
+  local image
+  image="$(sed -n 's/^ *image: *\(pgsty\/silo:[^ ]*\).*/\1/p' "$REPO_ROOT/docker-compose.yml" | head -n 1)"
+  printf '%s\n' "${BACKUP_MC_IMAGE:-${image:-pgsty/silo:RELEASE.2026-11-12T00-00-00Z}}"
+}
+
+# Percent-encodes stdin for the userinfo part of a URL. Read from stdin, never
+# from an argument, so a secret does not appear in the process list.
+backup_urlencode() {
+  python3 -c 'import sys, urllib.parse; sys.stdout.write(urllib.parse.quote(sys.stdin.read(), safe=""))'
+}
+
+# Points the `store` alias at the bucket an env file names (default: the
+# deployment's .env) and sets BACKUP_OBJECT_BUCKET. The alias travels as
+# MC_HOST_store in the environment, so the keys never reach a command line.
+backup_object_store() {
+  local env_file=${1:-$REPO_ROOT/.env} endpoint key secret
+  endpoint="$(backup_env_value S3_ENDPOINT "$env_file")"
+  key="$(backup_env_value S3_ACCESS_KEY_ID "$env_file" | tr -d '\n' | backup_urlencode)"
+  secret="$(backup_env_value S3_SECRET_ACCESS_KEY "$env_file" | tr -d '\n' | backup_urlencode)"
+  BACKUP_OBJECT_BUCKET="$(backup_env_value S3_BUCKET "$env_file")"
+  [[ -n "$endpoint" && -n "$key" && -n "$secret" && -n "$BACKUP_OBJECT_BUCKET" ]] \
+    || backup_die "S3_ENDPOINT, S3_BUCKET oder die Schlüssel fehlen in $env_file."
+  MC_HOST_store="${endpoint%%://*}://${key}:${secret}@${endpoint#*://}"
+  export MC_HOST_store
+}
+
+# Runs `mc` with the `store` alias and one host directory mounted at /objects.
+# Usage: backup_mc <host-dir> <ro|rw> <mc arguments...>
+# Host network, because the local MinIO only listens on 127.0.0.1; the caller's
+# uid, so the files it writes belong to the caller and not to root.
+backup_mc() {
+  local dir=$1 mode=$2
+  shift 2
+  docker run --rm --network host --user "$(id -u):$(id -g)" \
+    -e MC_HOST_store -e MC_CONFIG_DIR=/tmp/mc \
+    -v "$dir:/objects:$mode" --entrypoint mc "$(backup_mc_image)" "$@"
+}
+
 backup_begin() {
   BACKUP_NAME="$1"
   BACKUP_REMOTE_ROOT="$2"

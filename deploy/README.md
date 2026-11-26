@@ -17,7 +17,7 @@ Internet ──► nginx :443 (TLS)
 Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
                └─ /api/, /health/  → 127.0.0.1:3211   exocortex-api
 
-Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
+Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 (fallback since #272) · Mailpit 1026/8026
 Docker (127.0.0.1 only, web research): SearXNG 8090 · Steel 3000 (shared automation stack)
 Docker (per job, no network, fed by a pipe): render and project builds
                ▲ started only by exocortex-sandbox, asked over /run/exocortex-sandbox/broker.sock
@@ -676,8 +676,10 @@ and answers `503` when any of them is down.
 
 ## Backups
 
-Losing PostgreSQL loses documents. Losing MinIO loses attachments but not documents.
-Both are covered by `deploy/backup-to-mega.sh`, which runs every six hours from
+Losing PostgreSQL loses documents. Losing the object storage loses attachments
+but not documents. Since 2026-11-26 (issue #272) the attachments live in an
+external S3 bucket at Hetzner, not in the local MinIO; see "Object storage"
+below. Both are covered by `deploy/backup-to-mega.sh`, which runs every six hours from
 `exocortex-backup.timer` and writes one folder per run to MEGA under
 `/Backups/exocortex/<UTC-Zeitstempel>/`. The automation stack next door is covered
 by the same machinery, see "The rest of the host" below.
@@ -687,14 +689,21 @@ One eXocortex snapshot holds:
 | File                 | Contents                                                                                                                                     |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `database.dump.gpg`  | `pg_dump -Fc` of the whole database, including the canonical `yjsState` blobs, every snapshot, the memory workspace, accounts and API tokens |
-| `uploads.tar.gz.gpg` | the raw `exocortex-minio-data` volume, so object metadata survives                                                                           |
+| `objects.tar.gz.gpg` | every object of the bucket `S3_*` names, one file per key, mirrored with `mc` from the image the compose file runs MinIO with                |
 | `config.tar.gz.gpg`  | `.env`, the systemd units, the nginx site, `~/.claude/exocortex-memory.json`                                                                 |
 | `MANIFEST.txt`       | sizes, SHA-256 sums, versions, git commit — plain text, readable without the passphrase                                                      |
 
-Snapshots are full, not incremental: a run is about 36 MB and takes eight
-seconds, which is cheaper than the machinery an incremental scheme needs, and it
-keeps a restore down to two commands. Revisit that when the uploads pass ~20 GB;
-`restic` over `rclone` is the next step, not a bigger shell script.
+Snapshots before 2026-11-26 carry `uploads.tar.gz.gpg` instead, the raw
+`exocortex-minio-data` volume. Packing that volume after the switch would have
+missed every file uploaded since, without a single error, which is why the
+snapshot now reads the bucket the application writes to, whichever it is.
+
+Snapshots are full, not incremental: a run is about 45 MB and downloads the
+whole bucket, which is cheaper than the machinery an incremental scheme needs.
+That ends with the large imports issue #272 prepares; its step 2 replaces the
+objects part with an incremental backup. A run refuses to publish a snapshot
+whose bucket mirror came back empty while the database lists attachments: that
+is a wrong bucket or wrong keys, not an empty deployment.
 
 Everything is encrypted with GPG (symmetric, AES256). The passphrase lives in
 `/etc/exocortex/backup-passphrase` (`root:johanna`, `0640`) and in the Second
@@ -744,6 +753,10 @@ against the manifest checksum, restores the dumps into throwaway databases and
 fails unless the tables a restore needs come back populated:
 
 - eXocortex: documents, Yjs states, workspaces, users,
+- eXocortex uploads: every `storageKey` and `previewKey` of a live attachment in
+  the restored database has its object in `objects.tar.gz.gpg`, and
+  `deploy/backup-restore-objects.sh` writes the archive into a throwaway MinIO
+  (loopback port, removed with its data afterwards) with every object arriving,
 - Windmill: scripts and schedules,
 - Infisical: secrets, projects, users.
 
@@ -755,7 +768,7 @@ journal tail to Telegram through `hermes send`.
 ```bash
 # 1. Fetch and decrypt
 mega-get /Backups/exocortex/<stamp>/database.dump.gpg .
-mega-get /Backups/exocortex/<stamp>/uploads.tar.gz.gpg .
+mega-get /Backups/exocortex/<stamp>/objects.tar.gz.gpg .
 gpg --batch --pinentry-mode loopback \
   --passphrase-file /etc/exocortex/backup-passphrase \
   --decrypt --output database.dump database.dump.gpg
@@ -765,21 +778,62 @@ sudo systemctl stop exocortex-api exocortex-worker exocortex-collaboration exoco
 docker exec -i exocortex-postgres pg_restore -U exocortex -d exocortex \
   --clean --if-exists --no-owner < database.dump
 
-# 3. Uploads, with MinIO stopped so it does not fight the extraction
+# 3. Uploads, into the bucket the .env names. Overwrites and deletes nothing,
+#    so it also fills the gaps of a bucket that lost only part of its objects.
 gpg --batch --pinentry-mode loopback \
   --passphrase-file /etc/exocortex/backup-passphrase \
-  --decrypt uploads.tar.gz.gpg > uploads.tar.gz
-docker stop exocortex-minio
-docker run --rm -v exocortex-minio-data:/data -v "$PWD:/in" alpine \
-  sh -c 'rm -rf /data/* && tar xzf /in/uploads.tar.gz -C /data'
-docker start exocortex-minio
+  --decrypt --output objects.tar.gz objects.tar.gz.gpg
+deploy/backup-restore-objects.sh objects.tar.gz
 sudo systemctl start exocortex-collaboration exocortex-api exocortex-worker exocortex-web
 ```
+
+A snapshot from before 2026-11-26 holds `uploads.tar.gz.gpg`, the raw MinIO
+volume. It goes back into the volume with MinIO stopped
+(`docker run --rm -v exocortex-minio-data:/data -v "$PWD:/in" alpine sh -c 'rm -rf /data/* && tar xzf /in/uploads.tar.gz -C /data'`),
+and from there into the external bucket with the same `mc mirror` as below.
 
 Restoring the database is enough to get the documents back; the attachments are
 independent and can follow later. Open editing sessions must be reconnected
 afterwards: the collaboration server holds a Yjs document in memory that no
 longer matches the database (ADR-016).
+
+## Object storage
+
+Since 2026-11-26 (issue #272, step 1) attachments, previews and rendered files
+live in an external S3 bucket at Hetzner Object Storage (EU), not
+on this host's disk. The application only knows the `S3_*` variables in `.env`;
+endpoint, bucket and keys are on the Brain page "Hetzner Object Storage
+(eXocortex)" and nowhere in this repository. Path style or virtual-hosted style
+both work there; the deployment uses `S3_FORCE_PATH_STYLE=false` and the
+location as `S3_REGION`.
+
+The local MinIO (`exocortex-minio`, volume `exocortex-minio-data`) keeps running
+with the state of the switch and is the way back. Its credentials are
+`MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD` in `.env`, deliberately apart from
+`S3_*`: the compose file falls back to `S3_*` only when they are empty, and with
+`S3_*` naming the external bucket the next `docker compose up` would otherwise
+restart MinIO under the external provider's keys.
+
+Switching back to MinIO:
+
+```bash
+# 1. Copy what was uploaded since the switch from the bucket into MinIO, with
+#    `mc` from the MinIO image: two aliases, src (external) and dst (MinIO),
+#    passed as MC_HOST_src / MC_HOST_dst in the environment, never on the
+#    command line.
+docker run --rm --network host -e MC_HOST_src -e MC_HOST_dst -e MC_CONFIG_DIR=/tmp/mc \
+  --entrypoint mc pgsty/silo:<tag from docker-compose.yml> mirror src/<bucket> dst/exocortex
+# 2. Point S3_* in .env at MinIO again: S3_ENDPOINT=http://127.0.0.1:9110,
+#    S3_REGION=us-east-1, S3_BUCKET=exocortex, S3_FORCE_PATH_STYLE=true and the
+#    MinIO keys from MINIO_ROOT_*.
+# 3. bash scripts/deploy.sh (or restart the four units)
+```
+
+Switching to another provider is the same move the other way round: `mc
+mirror` from the current bucket into the new one, compare both (count, sizes,
+SHA-256 per object), change `S3_*`, roll out, and mirror once more for whatever
+arrived between the copy and the restart. Nothing needs the old bucket to be
+empty or gone.
 
 ## Before making the deployment public
 

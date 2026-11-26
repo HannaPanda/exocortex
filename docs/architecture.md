@@ -15,7 +15,7 @@
                  └───────────┘  └───┬────────┘  └───┬───────────────┘
                                     │               │
                              ┌──────▼───────────────▼──────┐
-                             │ PostgreSQL · Redis · MinIO   │
+                             │ PostgreSQL · Redis · S3      │
                              └──────▲───────────────────────┘
                                     │
                              ┌──────┴─────┐
@@ -186,6 +186,26 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   installs it through the upload route above, so the generated file is subject
   to the same checks. See `docs/ai-architecture.md` for the generator.
 
+## Object storage
+
+Attachments, their previews and rendered files are objects in one S3-compatible
+bucket, named by the `S3_*` variables and reached only through `ObjectStorage`
+(`packages/storage`). Which provider answers is configuration, not code:
+development uses the MinIO from `docker-compose.yml`, the deployment has used an
+external bucket at Hetzner Object Storage since issue #272 (the endpoint and the
+keys live in `.env` and nowhere else). Keys are always built by the server
+(`buildAttachmentKey`), and every download goes through the API, so a bucket is
+never public and its address never reaches a page. The presigned `downloadUrl`
+an upload answers with is the one exception a client sees, valid for five
+minutes.
+
+The compose file gives MinIO its own credentials (`MINIO_ROOT_USER`,
+`MINIO_ROOT_PASSWORD`) that fall back to `S3_*` while those point at it. A
+deployment that moves to an external bucket keeps the local MinIO as the way
+back, and `deploy/README.md` ("Object storage") holds the switch in both
+directions. The backup reads the same `S3_*` bucket, so it follows the
+application wherever its files are.
+
 ## Image attachments have two objects
 
 Every uploaded image whose original is over 400 KB also gets a downscaled WebP
@@ -336,9 +356,17 @@ also be taken away again while the socket stays open: the server sends
 
 ### A new storage backend
 
-Implement `ObjectStorage` (`packages/storage/src/object-storage.ts`) and provide it
-in `apps/api/src/platform/platform.module.ts`. Object keys must stay
-server-derived (`buildAttachmentKey`); clients never choose keys.
+Another S3-compatible provider needs no code: set `S3_ENDPOINT`, `S3_REGION`,
+`S3_BUCKET`, the keys and `S3_FORCE_PATH_STYLE` (false unless the provider only
+speaks path style), move the objects with `mc mirror` and compare them before
+switching (`deploy/README.md`, "Object storage").
+
+Anything else implements `ObjectStorage` (`packages/storage/src/object-storage.ts`)
+and is provided in `apps/api/src/platform/platform.module.ts` and in
+`apps/worker/src/runtime.ts`. Object keys must stay server-derived
+(`buildAttachmentKey`); clients never choose keys. The backup
+(`deploy/backup-to-mega.sh`) speaks S3 through `mc` and would need a path of its
+own.
 
 ### A new REST endpoint
 
