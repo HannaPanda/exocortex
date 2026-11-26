@@ -1,10 +1,19 @@
 import { EditorState, TextSelection } from '@tiptap/pm/state';
 import { describe, expect, it } from 'vitest';
 
-import { type CollaborationEditNotice, EDIT_NOTICE_TYPE } from '@exocortex/contracts';
+import {
+  type AiRunChangedBlock,
+  type CollaborationEditNotice,
+  EDIT_NOTICE_TYPE,
+} from '@exocortex/contracts';
 import { BLOCK_ID_ATTRIBUTE, getExocortexSchema } from '@exocortex/editor';
 
-import { blocksAtSelection, markerStates, readEditNotice } from './agent-edit-state';
+import {
+  blocksAtSelection,
+  markerStates,
+  readEditNotice,
+  runHighlightEntries,
+} from './agent-edit-state';
 
 const schema = getExocortexSchema();
 
@@ -83,5 +92,38 @@ describe('markerStates', () => {
         new Set(['paraaaaaaaa1']),
       ),
     ).toEqual(new Map([['paraaaaaaaa1', 'failed']]));
+  });
+});
+
+describe('runHighlightEntries', () => {
+  const block = (overrides: Partial<AiRunChangedBlock>): AiRunChangedBlock => ({
+    blockId: 'b',
+    group: 0,
+    change: 'changed',
+    state: 'revertible',
+    nodeType: 'paragraph',
+    excerpt: null,
+    ...overrides,
+  });
+
+  it('marks what the run left as changed and what somebody changed since as a conflict', () => {
+    expect(
+      runHighlightEntries([
+        block({ blockId: 'a' }),
+        block({ blockId: 'b', change: 'added', state: 'changed_since' }),
+      ]),
+    ).toEqual([
+      { id: 'a', state: 'changed' },
+      { id: 'b', state: 'conflict' },
+    ]);
+  });
+
+  it('marks nothing for a block that is gone or already back', () => {
+    expect(
+      runHighlightEntries([
+        block({ blockId: 'a', change: 'removed' }),
+        block({ blockId: 'b', state: 'reverted' }),
+      ]),
+    ).toEqual([]);
   });
 });

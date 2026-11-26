@@ -450,7 +450,9 @@
     "conflict": "Alterado simultaneamente por {name}",
     "failed": "Alteração de {name} não aplicada",
     "someAgent": "um agente",
-    "somePerson": "alguém"
+    "somePerson": "alguém",
+    "runChanged": "Alterado nesta execução de IA",
+    "runChangedSince": "Alterado por alguém desde a execução de IA"
   },
   "pageOutline": {
     "label": "Sumário",

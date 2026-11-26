@@ -450,7 +450,9 @@
     "conflict": "Changed concurrently by {name}",
     "failed": "Changes by {name} not applied",
     "someAgent": "an agent",
-    "somePerson": "someone"
+    "somePerson": "someone",
+    "runChanged": "Changed in this AI run",
+    "runChangedSince": "Changed by someone since the AI run"
   },
   "pageOutline": {
     "label": "Outline",

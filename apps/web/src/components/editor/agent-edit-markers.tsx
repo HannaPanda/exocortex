@@ -9,6 +9,7 @@ import { type Editor } from '@tiptap/react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type AiRunChangesResponse } from '@exocortex/contracts';
 import { BLOCK_ID_ATTRIBUTE, isValidBlockId } from '@exocortex/editor';
 
 import {
@@ -16,7 +17,10 @@ import {
   blocksAtSelection,
   markerStates,
   readEditNotice,
+  runHighlightEntries,
 } from '@/components/editor/agent-edit-state';
+import { apiRequest } from '@/lib/api/client';
+import { subscribeRunHighlight, takeRunHighlight } from '@/lib/run-highlight';
 
 /**
  * Markers for changes that did not come from this editor (issue #112).
@@ -65,6 +69,13 @@ const HOLD_MS: Readonly<Record<AgentEditState, number>> = {
   failed: 8000,
   conflict: 10_000,
 };
+
+/**
+ * How long the blocks of one run stand marked when somebody asks to see them
+ * (issue #248): longer than a live notice, because the reader came here to
+ * look, and may have to scroll first.
+ */
+const RUN_HOLD_MS = 12_000;
 
 /** The decay, matching `--duration-settle` in `packages/ui/src/tokens.css`. */
 const SETTLE_MS = 480;
@@ -152,9 +163,11 @@ export function createAgentEditMarkers(): Extension {
 export function AgentEditMarkers({
   editor,
   provider,
+  documentId,
 }: {
   editor: Editor;
   provider: HocuspocusProvider;
+  documentId: string;
 }) {
   const t = useTranslations('editor.agentEdits');
   const lastTypedAt = React.useRef(0);
@@ -178,6 +191,7 @@ export function AgentEditMarkers({
   React.useEffect(() => {
     const timers = new Set<ReturnType<typeof setTimeout>>();
     let serial = 0;
+    let disposed = false;
 
     const publish = (update: (markers: Map<string, AgentEditMarker>) => void): void => {
       if (editor.isDestroyed) return;
@@ -199,7 +213,7 @@ export function AgentEditMarkers({
      * only while it is still the one that was placed: a newer change to the
      * same block owns the block from then on.
      */
-    const retire = (id: string, marker: AgentEditMarker): void => {
+    const retire = (id: string, marker: AgentEditMarker, holdMs: number): void => {
       const owns = (markers: Map<string, AgentEditMarker>): boolean =>
         markers.get(id)?.serial === marker.serial;
       const remove = (): void =>
@@ -212,7 +226,23 @@ export function AgentEditMarkers({
         });
         later(SETTLE_MS, remove);
       };
-      later(HOLD_MS[marker.state], settle);
+      later(holdMs, settle);
+    };
+
+    /** Places one batch of markers and starts each one's clock. */
+    const place = (
+      entries: readonly { id: string; state: AgentEditState; label: string }[],
+      holdMs: (state: AgentEditState) => number,
+    ): void => {
+      serial += 1;
+      const placed = new Map<string, AgentEditMarker>();
+      for (const entry of entries) {
+        placed.set(entry.id, { state: entry.state, label: entry.label, settling: false, serial });
+      }
+      publish((markers) => {
+        for (const [id, marker] of placed) markers.set(id, marker);
+      });
+      for (const [id, marker] of placed) retire(id, marker, holdMs(marker.state));
     };
 
     const onStateless = ({ payload }: { payload: string }): void => {
@@ -224,26 +254,73 @@ export function AgentEditMarkers({
       const typing = Date.now() - lastTypedAt.current < TYPING_WINDOW_MS;
       const underCursor = typing ? blocksAtSelection(editor.state) : new Set<string>();
 
-      serial += 1;
-      const placed = new Map<string, AgentEditMarker>();
-      for (const [id, state] of markerStates(notice, underCursor)) {
-        placed.set(id, { state, label: t(state, { name }), settling: false, serial });
-      }
-      publish((markers) => {
-        for (const [id, marker] of placed) markers.set(id, marker);
-      });
+      place(
+        [...markerStates(notice, underCursor)].map(([id, state]) => ({
+          id,
+          state,
+          label: t(state, { name }),
+        })),
+        (state) => HOLD_MS[state],
+      );
+    };
 
-      for (const [id, marker] of placed) retire(id, marker);
+    /**
+     * "Auf der Seite zeigen" from the chat (issue #248): the blocks one run
+     * changed, read from the run, not from a live notice. What still stands
+     * as the run left it is marked as changed; what somebody changed since is
+     * marked as such, because an undo will leave it alone. Same decorations,
+     * nothing stored, nothing locked, gone after a while like any marker.
+     */
+    const showRun = (): void => {
+      const request = takeRunHighlight(documentId);
+      if (request === null) return;
+      void apiRequest<AiRunChangesResponse>(`/api/ai/runs/${request.runId}/changes`)
+        .then((changes) => {
+          if (disposed) return;
+          const page = changes.pages.find((entry) => entry.documentId === documentId);
+          const entries = runHighlightEntries(page?.blocks ?? []).map((entry) => ({
+            ...entry,
+            label: entry.state === 'conflict' ? t('runChangedSince') : t('runChanged'),
+          }));
+          if (entries.length === 0) return;
+          place(entries, () => RUN_HOLD_MS);
+          scrollToBlock(editor, entries[0]?.id ?? null);
+        })
+        .catch(() => {
+          // A highlight is a courtesy; the page itself is unaffected.
+        });
     };
 
     provider.on('stateless', onStateless);
+    const unsubscribe = subscribeRunHighlight(showRun);
+    showRun();
     return () => {
+      disposed = true;
       provider.off('stateless', onStateless);
+      unsubscribe();
       for (const timer of timers) clearTimeout(timer);
       // Markers belong to this provider; a new connection starts clean.
       publish((markers) => markers.clear());
     };
-  }, [editor, provider, t]);
+  }, [editor, provider, documentId, t]);
 
   return null;
+}
+
+/** Brings the first marked block into view, once the editor holds it. */
+function scrollToBlock(editor: Editor, blockId: string | null): void {
+  if (blockId === null || editor.isDestroyed) return;
+  let found: number | null = null;
+  editor.state.doc.descendants((node, position) => {
+    if (found !== null) return false;
+    if (node.attrs[BLOCK_ID_ATTRIBUTE] === blockId) {
+      found = position;
+      return false;
+    }
+    return true;
+  });
+  if (found === null) return;
+  const element = editor.view.nodeDOM(found);
+  if (element instanceof HTMLElement)
+    element.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }

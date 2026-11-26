@@ -3,10 +3,11 @@
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type AiConversationMessage } from '@exocortex/contracts';
+import { type AiConversationMessage, type AiRunWrittenPages } from '@exocortex/contracts';
 
 import { ChatMessage } from './chat-message';
 import { summaryFollows } from './panel-view';
+import { RunChangesLine } from './run-changes-line';
 import { type RunTraceStep } from './run-trace';
 import { RunTraceView } from './run-trace-view';
 
@@ -30,6 +31,15 @@ export interface TranscriptProps {
   streaming?: readonly AiConversationMessage[];
   /** Whether the last of `streaming` is still being written. */
   streamingLive?: boolean;
+  /**
+   * The pages each run wrote (issue #248): a line under the run's last
+   * message names them and offers the way back.
+   */
+  runWrites?: readonly AiRunWrittenPages[];
+  /** The run still writing, whose line offers no undo yet. */
+  activeRunId?: string | null;
+  /** For the undo, which reloads this conversation afterwards. */
+  conversationId?: string | null;
 }
 
 /**
@@ -59,8 +69,12 @@ export function Transcript({
   after = [],
   streaming = [],
   streamingLive = false,
+  runWrites = [],
+  activeRunId = null,
+  conversationId = null,
 }: TranscriptProps) {
   const items: React.ReactElement[] = [];
+  const writesByRun = new Map(runWrites.map((writes) => [writes.runId, writes]));
   const traceElement =
     trace === null ? null : (
       <RunTraceView key={`trace:${trace.runId}`} steps={trace.steps} live={trace.live} />
@@ -83,6 +97,17 @@ export function Transcript({
       tracePlaced = true;
     }
     items.push(<ChatMessage key={message.id} message={message} />);
+    const writes = message.runId === null ? undefined : writesByRun.get(message.runId);
+    if (writes !== undefined && next?.runId !== message.runId) {
+      items.push(
+        <RunChangesLine
+          key={`changes:${writes.runId}`}
+          writes={writes}
+          running={writes.runId === activeRunId}
+          conversationId={conversationId}
+        />,
+      );
+    }
     if (boundary) {
       items.push(
         <ContextBoundary

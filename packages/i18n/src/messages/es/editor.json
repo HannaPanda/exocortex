@@ -450,7 +450,9 @@
     "conflict": "Modificado a la vez por {name}",
     "failed": "No se aplicó la modificación de {name}",
     "someAgent": "un agente",
-    "somePerson": "alguien"
+    "somePerson": "alguien",
+    "runChanged": "Modificado en esta ejecución de IA",
+    "runChangedSince": "Modificado por alguien desde la ejecución de IA"
   },
   "pageOutline": {
     "label": "Esquema",

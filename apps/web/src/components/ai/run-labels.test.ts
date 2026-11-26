@@ -5,6 +5,7 @@ import { messagesFor } from '@exocortex/i18n/catalog';
 
 import {
   currentPhaseLabel,
+  currentToolPage,
   resolveRunLabel,
   type RunLabel,
   type RunTranslator,
@@ -24,6 +25,7 @@ const entry = (overrides: Partial<ToolActivityEntry>): ToolActivityEntry => ({
   toolName: 'exo_page_read',
   status: 'started',
   target: null,
+  subject: null,
   ...overrides,
 });
 
@@ -72,5 +74,27 @@ describe('currentPhaseLabel', () => {
     );
     expect(german(currentPhaseLabel(done, 'Hallo', null))).toBe('Antwort wird geschrieben');
     expect(german(currentPhaseLabel([], '', null))).toBe('Antwort wird erzeugt');
+  });
+});
+
+describe('currentToolPage', () => {
+  it('names the page a running call writes to', () => {
+    expect(currentToolPage([entry({ target: 'document:abc', subject: 'document:abc' })])).toEqual({
+      documentId: 'abc',
+      writing: true,
+    });
+  });
+
+  it('names the page a running call only reads', () => {
+    expect(currentToolPage([entry({ subject: 'document:abc' })])).toEqual({
+      documentId: 'abc',
+      writing: false,
+    });
+  });
+
+  it('names nothing once the call is over or when it is about no page', () => {
+    expect(currentToolPage([entry({ status: 'succeeded', target: 'document:abc' })])).toBeNull();
+    expect(currentToolPage([entry({ target: 'workspace:w1' })])).toBeNull();
+    expect(currentToolPage([])).toBeNull();
   });
 });

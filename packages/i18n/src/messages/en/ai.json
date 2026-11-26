@@ -67,7 +67,15 @@
     },
     "target": {
       "document": "Page {id}",
+      "documentTitled": "“{title}”",
       "workspace": "Workspace {id}"
+    },
+    "page": {
+      "writing": "Writing to “{title}”",
+      "reading": "Reading “{title}”",
+      "writingUnknown": "Writing to a page",
+      "readingUnknown": "Reading a page",
+      "untitled": "Untitled"
     },
     "phase": {
       "tool": "Running tool {tool}{hasTarget, select, yes { ({target})} other {}}",
@@ -103,6 +111,45 @@
       "ai_stream_interrupted": "The provider closed the connection before the answer finished. Write “continue” and the next run will pick up from there.",
       "ai_empty_answer": "The model returned an empty answer. Write “continue” and the next run will pick up from there."
     }
+  },
+  "runChanges": {
+    "changed": "{count, plural, one {Changed page:} other {Changed pages:}}",
+    "pageTitle": "“{title}”",
+    "untitled": "Untitled",
+    "showOnPage": "Open page and show what this run changed there",
+    "undo": "Undo…",
+    "dialogTitle": "Undo this AI run",
+    "dialogDescription": "Only changes that are still exactly as the AI left them will be undone. Anything someone has changed since then will be kept and listed here.",
+    "reading": "Reading changes…",
+    "failedTitle": "Could not read the changes from this run",
+    "failedDescription": "Try again. The pages themselves are not affected.",
+    "nothingTitle": "This run didn’t change anything",
+    "nothingDescription": "There is nothing to undo.",
+    "summary": "{revertible, plural, =0 {No changes are still as the AI left them.} one {One change can be undone.} other {# changes can be undone.}}{changedSince, plural, =0 {} one { One was changed since and will be kept.} other { # were changed since and will be kept.}}",
+    "states": {
+      "revertible": "Will be undone",
+      "changed_since": "Changed since, kept",
+      "reverted": "Already restored"
+    },
+    "kinds": {
+      "added": "Added {type}:",
+      "changed": "Changed {type}:",
+      "removed": "Removed {type}:"
+    },
+    "block": "Block",
+    "excerpt": "“{text}”",
+    "skipped": {
+      "no_snapshot": "There is no version from before this run, for example because the page was only renamed or moved. You can find earlier versions in the page history.",
+      "not_recorded": "Individual blocks were not recorded for this page because the run is older than this feature. You can find the version from before the run in the page history.",
+      "unavailable": "This page no longer exists, or you don’t have access to read it."
+    },
+    "done": "Undone on {pages, plural, one {one page} other {# pages}}.",
+    "doneKept": "{count, plural, one {One change was kept because someone changed it since.} other {# changes were kept because someone changed them since.}}",
+    "revertFailed": "Could not undo the changes.",
+    "notYours": "Only the person who started this run can undo it.",
+    "close": "Close",
+    "reverting": "Undoing…",
+    "revert": "{count, plural, one {Undo one change} other {Undo # changes}}"
   },
   "trace": {
     "reasoningTitle": "Thought process",

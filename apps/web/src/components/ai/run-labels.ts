@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { type AiRunPhase } from '@exocortex/contracts';
 
+import { useDocument } from '@/lib/api/document-queries';
+
 import { type ToolActivityEntry } from './use-ai-run-tracker';
 
 /**
@@ -78,21 +80,64 @@ export function currentPhaseLabel(
   return { key: streamText.length > 0 ? 'phase.writing' : 'phase.generating' };
 }
 
+/**
+ * The page the run's current tool call is about, while that call runs
+ * (issue #248): what the pulse names and links to. `writing` when the call
+ * changes the page (its target is the page), reading otherwise. `null` when
+ * no call is running or the running one is not about a page.
+ */
+export function currentToolPage(
+  toolActivity: readonly ToolActivityEntry[],
+): { documentId: string; writing: boolean } | null {
+  const last = toolActivity[toolActivity.length - 1];
+  if (last === undefined || last.status !== 'started') return null;
+  const target = describeToolTarget(last.target);
+  if (target?.kind === 'document') return { documentId: target.id, writing: true };
+  const subject = describeToolTarget(last.subject);
+  if (subject?.kind === 'document') return { documentId: subject.id, writing: false };
+  return null;
+}
+
+/**
+ * The pulse's phase when the page has a line of its own below it
+ * (issue #248): the tool keeps its name, the page is said once, by title.
+ */
+export function phaseWithoutPage(
+  toolActivity: readonly ToolActivityEntry[],
+  streamText: string,
+  phase: AiRunPhase | null,
+): RunLabel {
+  const label = currentPhaseLabel(toolActivity, streamText, phase);
+  return currentToolPage(toolActivity) === null ? label : { ...label, target: null };
+}
+
 /** The slice of a translator bound to `ai.run` that resolving a label needs. */
 export type RunTranslator = (
-  key: RunLabelKey | 'target.document' | 'target.workspace',
+  key: RunLabelKey | 'target.document' | 'target.documentTitled' | 'target.workspace',
   values?: Record<string, string>,
 ) => string;
 
-/** A run label in words, given a translator bound to `ai.run`. */
-export function resolveRunLabel(t: RunTranslator, label: RunLabel): string {
+/**
+ * A run label in words, given a translator bound to `ai.run`. A page the
+ * reader can open is named by its title (issue #248); `titleOf` answers
+ * `null` for one it cannot, which keeps the id.
+ */
+export function resolveRunLabel(
+  t: RunTranslator,
+  label: RunLabel,
+  titleOf: (documentId: string) => string | null = () => null,
+): string {
   const target = label.target ?? null;
-  const targetText =
-    target === null
-      ? ''
-      : target.kind === 'raw'
-        ? target.text
-        : t(`target.${target.kind}`, { id: target.id });
+  let targetText = '';
+  if (target?.kind === 'raw') targetText = target.text;
+  else if (target?.kind === 'workspace') targetText = t('target.workspace', { id: target.id });
+  else if (target?.kind === 'document') {
+    const title = titleOf(target.id);
+    targetText =
+      title === null
+        ? t('target.document', { id: target.id })
+        : t('target.documentTitled', { title });
+  }
   return t(label.key, {
     tool: label.tool ?? '',
     hasTarget: target === null ? 'no' : 'yes',
@@ -101,7 +146,27 @@ export function resolveRunLabel(t: RunTranslator, label: RunLabel): string {
 }
 
 /** `resolveRunLabel` with the reader's language already bound. */
-export function useRunLabels(): (label: RunLabel) => string {
+export function useRunLabels(): (
+  label: RunLabel,
+  titleOf?: (documentId: string) => string | null,
+) => string {
   const t = useTranslations('ai.run');
-  return React.useCallback((label: RunLabel) => resolveRunLabel(t, label), [t]);
+  return React.useCallback(
+    (label: RunLabel, titleOf?: (documentId: string) => string | null) =>
+      resolveRunLabel(t, label, titleOf),
+    [t],
+  );
+}
+
+/**
+ * The title of a page a run line names, when the reader may open it. Read
+ * through the ordinary document query, so the same page named twenty times in
+ * one trace is asked for once, and a page the reader cannot see stays an id.
+ */
+export function usePageTitle(documentId: string | null): string | null {
+  // Only something shaped like an id is asked for: a target the panel was
+  // handed in a fixture or by an older worker is named as it came.
+  const askable = documentId !== null && /^[a-z0-9]{16,40}$/.test(documentId);
+  const document = useDocument(askable ? documentId : undefined);
+  return document.data?.title ?? null;
 }

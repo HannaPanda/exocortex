@@ -67,7 +67,15 @@
     },
     "target": {
       "document": "Pagina {id}",
+      "documentTitled": "„{title}”",
       "workspace": "Werkruimte {id}"
+    },
+    "page": {
+      "writing": "Schrijft in „{title}”",
+      "reading": "Leest „{title}”",
+      "writingUnknown": "Schrijft in een pagina",
+      "readingUnknown": "Leest een pagina",
+      "untitled": "Zonder titel"
     },
     "phase": {
       "tool": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} wordt uitgevoerd",
@@ -103,6 +111,45 @@
       "ai_stream_interrupted": "De provider heeft de verbinding verbroken voordat het antwoord klaar was. Typ „verder”, dan gaat de volgende run daar verder.",
       "ai_empty_answer": "Het model heeft een leeg antwoord gegeven. Typ „verder”, dan gaat de volgende run daar verder."
     }
+  },
+  "runChanges": {
+    "changed": "{count, plural, one {Gewijzigde pagina:} other {Gewijzigde pagina’s:}}",
+    "pageTitle": "„{title}”",
+    "untitled": "Zonder titel",
+    "showOnPage": "Pagina openen en tonen wat deze sessie daar heeft gewijzigd",
+    "undo": "Ongedaan maken …",
+    "dialogTitle": "Deze AI-sessie ongedaan maken",
+    "dialogDescription": "Alleen wijzigingen die nog precies zo zijn als de AI ze heeft achtergelaten, worden teruggedraaid. Wat sindsdien door iemand is gewijzigd, blijft behouden en wordt hier vermeld.",
+    "reading": "Wijzigingen worden gelezen …",
+    "failedTitle": "De wijzigingen van deze sessie konden niet worden gelezen",
+    "failedDescription": "Probeer het opnieuw. De pagina’s zelf zijn hierdoor niet beïnvloed.",
+    "nothingTitle": "Deze sessie heeft niets gewijzigd",
+    "nothingDescription": "Er valt niets terug te draaien.",
+    "summary": "{revertible, plural, =0 {Geen enkele wijziging staat er nog precies zo als de AI deze heeft achtergelaten.} one {Eén wijziging kan worden teruggedraaid.} other {# wijzigingen kunnen worden teruggedraaid.}}{changedSince, plural, =0 {} one { Eén wijziging is sindsdien door iemand aangepast en blijft behouden.} other { # wijzigingen zijn sindsdien door iemand aangepast en blijven behouden.}}",
+    "states": {
+      "revertible": "Wordt teruggedraaid",
+      "changed_since": "Sindsdien gewijzigd, blijft behouden",
+      "reverted": "Is al zoals voorheen"
+    },
+    "kinds": {
+      "added": "{type} nieuw:",
+      "changed": "{type} gewijzigd:",
+      "removed": "{type} verwijderd:"
+    },
+    "block": "Blok",
+    "excerpt": "„{text}”",
+    "skipped": {
+      "no_snapshot": "Er is hier geen versie van vóór deze sessie beschikbaar, bijvoorbeeld omdat de pagina alleen is hernoemd of verplaatst. Eerdere versies vind je in de paginageschiedenis.",
+      "not_recorded": "Voor deze pagina zijn de afzonderlijke blokken niet vastgelegd, omdat de sessie ouder is dan deze functie. De versie van vóór de sessie vind je in de paginageschiedenis.",
+      "unavailable": "Deze pagina bestaat niet meer of je hebt geen leesrechten."
+    },
+    "done": "Op {pages, plural, one {één pagina} other {# pagina’s}} teruggedraaid.",
+    "doneKept": "{count, plural, one {Eén wijziging is behouden, omdat deze sindsdien door iemand is gewijzigd.} other {# wijzigingen zijn behouden, omdat ze sindsdien door iemand zijn gewijzigd.}}",
+    "revertFailed": "Het terugdraaien is mislukt.",
+    "notYours": "Alleen degene voor wie deze sessie heeft gewerkt, kan dit terugdraaien.",
+    "close": "Sluiten",
+    "reverting": "Wordt teruggedraaid …",
+    "revert": "{count, plural, one {Eén wijziging terugdraaien} other {# wijzigingen terugdraaien}}"
   },
   "trace": {
     "reasoningTitle": "Redenering",

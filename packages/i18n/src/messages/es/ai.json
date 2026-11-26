@@ -67,7 +67,15 @@
     },
     "target": {
       "document": "Página {id}",
+      "documentTitled": "«{title}»",
       "workspace": "Espacio de trabajo {id}"
+    },
+    "page": {
+      "writing": "Escribiendo en «{title}»",
+      "reading": "Leyendo «{title}»",
+      "writingUnknown": "Escribiendo en una página",
+      "readingUnknown": "Leyendo una página",
+      "untitled": "Sin título"
     },
     "phase": {
       "tool": "Ejecutando herramienta {tool}{hasTarget, select, yes { ({target})} other {}}",
@@ -103,6 +111,45 @@
       "ai_stream_interrupted": "El proveedor interrumpió la conexión antes de terminar la respuesta. Escribe «continúa» y la siguiente ejecución seguirá desde ahí.",
       "ai_empty_answer": "El modelo devolvió una respuesta vacía. Escribe «continúa» y la siguiente ejecución seguirá desde ahí."
     }
+  },
+  "runChanges": {
+    "changed": "{count, plural, one {Página modificada:} many {Páginas modificadas:} other {Páginas modificadas:}}",
+    "pageTitle": "«{title}»",
+    "untitled": "Sin título",
+    "showOnPage": "Abrir la página y mostrar qué modificó esta ejecución allí",
+    "undo": "Deshacer…",
+    "dialogTitle": "Deshacer esta ejecución de la IA",
+    "dialogDescription": "Solo se revertirá lo que siga tal como lo dejó la IA. Lo que alguien haya modificado desde entonces se mantendrá y se indicará aquí.",
+    "reading": "Leyendo cambios…",
+    "failedTitle": "No se han podido leer los cambios de esta ejecución",
+    "failedDescription": "Inténtalo de nuevo. Las páginas no se han visto afectadas.",
+    "nothingTitle": "Esta ejecución no modificó nada",
+    "nothingDescription": "No hay nada que deshacer.",
+    "summary": "{revertible, plural, =0 {Ningún cambio sigue tal como lo dejó la IA.} one {Se puede revertir un cambio.} many {Se pueden revertir # cambios.} other {Se pueden revertir # cambios.}}{changedSince, plural, =0 {} one { Alguien ha modificado uno desde entonces; ese se mantendrá.} many { Alguien ha modificado # desde entonces; se mantendrán.} other { Alguien ha modificado # desde entonces; se mantendrán.}}",
+    "states": {
+      "revertible": "Se revertirá",
+      "changed_since": "Modificado desde entonces, se mantiene",
+      "reverted": "Ya está como antes"
+    },
+    "kinds": {
+      "added": "{type} nuevo:",
+      "changed": "{type} modificado:",
+      "removed": "{type} eliminado:"
+    },
+    "block": "Bloque",
+    "excerpt": "«{text}»",
+    "skipped": {
+      "no_snapshot": "No hay ninguna versión anterior a la ejecución, tal vez porque la página solo se renombró o se movió. Puedes encontrar versiones anteriores en el historial de la página.",
+      "not_recorded": "No se registraron los bloques individuales de esta página porque la ejecución es anterior a esta función. Puedes encontrar la versión previa a la ejecución en el historial de la página.",
+      "unavailable": "Esta página ya no existe o no tienes permiso para leerla."
+    },
+    "done": "Revertido en {pages, plural, one {una página} many {# páginas} other {# páginas}}.",
+    "doneKept": "{count, plural, one {Se mantuvo un cambio porque alguien lo modificó desde entonces.} many {Se mantuvieron # cambios porque alguien los modificó desde entonces.} other {Se mantuvieron # cambios porque alguien los modificó desde entonces.}}",
+    "revertFailed": "No se ha podido deshacer.",
+    "notYours": "Solo puede deshacer los cambios la persona para quien trabajó esta ejecución.",
+    "close": "Cerrar",
+    "reverting": "Revirtiendo…",
+    "revert": "{count, plural, one {Deshacer un cambio} many {Deshacer # cambios} other {Deshacer # cambios}}"
   },
   "trace": {
     "reasoningTitle": "Razonamiento",

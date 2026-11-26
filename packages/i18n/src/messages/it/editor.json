@@ -450,7 +450,9 @@
     "conflict": "Modificato contemporaneamente da {name}",
     "failed": "Modifica da parte di {name} non applicata",
     "someAgent": "un agente",
-    "somePerson": "qualcuno"
+    "somePerson": "qualcuno",
+    "runChanged": "Modificato in questa sessione IA",
+    "runChangedSince": "Modificato da qualcuno dopo la sessione IA"
   },
   "pageOutline": {
     "label": "Struttura",

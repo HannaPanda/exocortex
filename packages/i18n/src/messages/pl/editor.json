@@ -450,7 +450,9 @@
     "conflict": "Zmieniono jednocześnie przez: {name}",
     "failed": "Nie zastosowano zmiany od: {name}",
     "someAgent": "agenta",
-    "somePerson": "kogoś"
+    "somePerson": "kogoś",
+    "runChanged": "Zmieniono w tym przebiegu AI",
+    "runChangedSince": "Zmieniono przez kogoś od czasu przebiegu AI"
   },
   "pageOutline": {
     "label": "Spis treści",

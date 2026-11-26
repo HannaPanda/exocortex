@@ -51,7 +51,7 @@ export function ChatReader({
     );
   }
 
-  const { conversation, messages } = detail.data;
+  const { conversation, messages, runWrites } = detail.data;
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="chat-reader">
       <header className="flex flex-col gap-2 border-b border-border p-3">
@@ -95,7 +95,11 @@ export function ChatReader({
           <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <>
-            <Transcript messages={messages} />
+            <Transcript
+              messages={messages}
+              runWrites={runWrites}
+              conversationId={conversation.id}
+            />
             <ConversationCheckpoints conversationId={conversation.id} />
           </>
         )}

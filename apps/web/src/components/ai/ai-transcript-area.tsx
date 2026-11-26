@@ -4,7 +4,7 @@ import { ArrowDownIcon, ArrowUpIcon, SparklesIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type * as React from 'react';
 
-import { type AiConversationMessage } from '@exocortex/contracts';
+import { type AiConversationMessage, type AiRunWrittenPages } from '@exocortex/contracts';
 import {
   Button,
   ErrorState,
@@ -45,6 +45,8 @@ export function AiTranscriptArea({
   error,
   conversationId,
   follow,
+  runWrites = [],
+  activeRunId = null,
 }: {
   scrollRef: React.RefObject<HTMLDivElement | null>;
   errored: boolean;
@@ -63,6 +65,9 @@ export function AiTranscriptArea({
   /** For the questions this chat's runs wait on (issue #140). */
   conversationId: string | null;
   follow: TranscriptFollow;
+  /** What each run wrote, for the line under its answer (issue #248). */
+  runWrites?: readonly AiRunWrittenPages[];
+  activeRunId?: string | null;
 }) {
   const t = useTranslations('ai.transcript');
   const after: React.ReactElement[] = [];
@@ -109,6 +114,9 @@ export function AiTranscriptArea({
               after={after}
               streaming={streamingMessages}
               streamingLive={streaming}
+              runWrites={runWrites}
+              activeRunId={activeRunId}
+              conversationId={conversationId}
             />
           </>
         )}

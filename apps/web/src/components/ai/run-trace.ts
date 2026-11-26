@@ -63,6 +63,7 @@ export function appendToolEvent(
           ...announced.entry,
           status: event.status,
           target: event.target ?? announced.entry.target,
+          subject: event.subject ?? announced.entry.subject,
         },
       };
       return next;

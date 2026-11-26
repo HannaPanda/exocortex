@@ -39,7 +39,7 @@ import {
   resolveTranscriptTrace,
 } from './panel-view';
 import { RunActivity } from './run-activity';
-import { currentPhaseLabel, useRunLabels } from './run-labels';
+import { currentToolPage, phaseWithoutPage, useRunLabels } from './run-labels';
 import { type RunTraceStep } from './run-trace';
 import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
@@ -432,11 +432,14 @@ function AiPanelBody({
         error={shownError}
         conversationId={activeConversationId}
         follow={follow}
+        runWrites={conversationQuery.data?.runWrites}
+        activeRunId={activeRunId}
       />
 
       {activeRunId !== null ? (
         <RunActivity
-          phaseLabel={runLabel(currentPhaseLabel(toolActivity, streamText, run.runPhase))}
+          phaseLabel={runLabel(phaseWithoutPage(toolActivity, streamText, run.runPhase))}
+          page={currentToolPage(toolActivity)}
           elapsedMs={run.elapsedMs}
           quiet={run.runQuiet}
           gapDetected={run.gapDetected}

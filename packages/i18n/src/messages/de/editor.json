@@ -450,7 +450,9 @@
     "conflict": "Gleichzeitig von {name} geändert",
     "failed": "Änderung von {name} nicht übernommen",
     "someAgent": "einem Agenten",
-    "somePerson": "jemandem"
+    "somePerson": "jemandem",
+    "runChanged": "In diesem KI-Lauf geändert",
+    "runChangedSince": "Seit dem KI-Lauf von jemandem geändert"
   },
   "pageOutline": {
     "label": "Gliederung",

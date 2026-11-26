@@ -734,7 +734,7 @@ function EditorChrome({
           references point at a page that exists (issue #24). */}
       <WikiLinkMarkers editor={editor} workspaceId={workspaceId} />
       {/* Renders nothing: it marks what an agent just changed, and who (#112). */}
-      <AgentEditMarkers editor={editor} provider={provider} />
+      <AgentEditMarkers editor={editor} provider={provider} documentId={documentId} />
       {/* Draws into the document area beside the scroll container, not here,
           and only on a long page (issue #194). */}
       <PageOutline editor={editor} />

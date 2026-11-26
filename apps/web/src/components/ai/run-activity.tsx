@@ -1,9 +1,13 @@
 'use client';
 
-import { XIcon } from 'lucide-react';
+import { BookOpenIcon, FilePenLineIcon, XIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import { Button, cn } from '@exocortex/ui';
+
+import { useDocument } from '@/lib/api/document-queries';
+import { documentHref } from '@/lib/document-href';
 
 export interface RunActivityProps {
   /** What the run is doing right now, e.g. "Werkzeug exo_page_write (Seite abc) wird ausgeführt". */
@@ -15,6 +19,11 @@ export interface RunActivityProps {
   gapDetected: boolean;
   onCancel: () => void;
   cancelling: boolean;
+  /**
+   * The page the tool call in flight is about (issue #248), so the reader
+   * sees where the run is working and can go there. `null` between calls.
+   */
+  page?: { documentId: string; writing: boolean } | null;
 }
 
 /** Minutes and zero-padded seconds, or `null` minutes below one minute. */
@@ -38,6 +47,7 @@ export function RunActivity({
   gapDetected,
   onCancel,
   cancelling,
+  page = null,
 }: RunActivityProps) {
   const t = useTranslations('ai.run');
   const { minutes, seconds } = splitElapsed(elapsedMs);
@@ -84,8 +94,47 @@ export function RunActivity({
           what a long silence actually means: still allowed, still cancellable.
           Without this, a legitimate three-minute tool call and a dead run look
           exactly alike. */}
+      {page === null ? null : <RunPageLine documentId={page.documentId} writing={page.writing} />}
       {quiet ? <p data-testid="ai-run-quiet-hint">{t('quietHint')}</p> : null}
       {gapDetected ? <p data-testid="ai-run-gap-hint">{t('gapHint')}</p> : null}
+    </div>
+  );
+}
+
+/**
+ * "Schreibt in „Titel“" or "Liest „Titel“", linked (issue #248). It names
+ * where the call in flight is, nothing more: there is no "being edited"
+ * state on the page itself (ADR-065), and a write still lands as one
+ * transaction whose blocks the editor then marks. A page the reader cannot
+ * open is named without a title and without a link.
+ */
+function RunPageLine({ documentId, writing }: { documentId: string; writing: boolean }) {
+  const t = useTranslations('ai.run.page');
+  const document = useDocument(documentId);
+  const Icon = writing ? FilePenLineIcon : BookOpenIcon;
+  const title = document.data?.title;
+  const text =
+    title === undefined
+      ? t(writing ? 'writingUnknown' : 'readingUnknown')
+      : t(writing ? 'writing' : 'reading', { title: title.length > 0 ? title : t('untitled') });
+  return (
+    <div
+      className="flex min-w-0 items-center gap-1.5 pl-3.5"
+      data-testid="ai-run-page"
+      data-writing={writing ? 'true' : 'false'}
+      data-document-id={documentId}
+    >
+      <Icon aria-hidden className="size-3 shrink-0" />
+      {document.data === undefined ? (
+        <span className="truncate">{text}</span>
+      ) : (
+        <Link
+          href={documentHref(document.data.workspaceId, documentId, document.data.type)}
+          className="truncate underline-offset-2 hover:text-foreground hover:underline"
+        >
+          {text}
+        </Link>
+      )}
     </div>
   );
 }

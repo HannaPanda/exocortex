@@ -450,7 +450,9 @@
     "conflict": "Tegelijkertijd gewijzigd door {name}",
     "failed": "Wijziging van {name} niet toegepast",
     "someAgent": "een agent",
-    "somePerson": "iemand"
+    "somePerson": "iemand",
+    "runChanged": "Gewijzigd in deze AI-uitvoering",
+    "runChangedSince": "Gewijzigd door iemand sinds de AI-uitvoering"
   },
   "pageOutline": {
     "label": "Overzicht",

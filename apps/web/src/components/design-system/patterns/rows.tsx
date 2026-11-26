@@ -495,12 +495,18 @@ const FIXTURE_TRACE_DONE: readonly RunTraceStep[] = [
   {
     kind: 'tool',
     key: 't1',
-    entry: { key: 't1', toolName: 'exo_page_read', status: 'succeeded', target: 'document:k2' },
+    entry: {
+      key: 't1',
+      toolName: 'exo_page_read',
+      status: 'succeeded',
+      target: 'document:k2',
+      subject: null,
+    },
   },
   {
     kind: 'tool',
     key: 't2',
-    entry: { key: 't2', toolName: 'exo_web_fetch', status: 'refused', target: null },
+    entry: { key: 't2', toolName: 'exo_web_fetch', status: 'refused', target: null, subject: null },
   },
   {
     kind: 'reasoning',
@@ -515,7 +521,7 @@ const FIXTURE_TRACE_LIVE: readonly RunTraceStep[] = [
   {
     kind: 'tool',
     key: 't3',
-    entry: { key: 't3', toolName: 'exo_search', status: 'started', target: null },
+    entry: { key: 't3', toolName: 'exo_search', status: 'started', target: null, subject: null },
   },
 ];
 
@@ -523,11 +529,17 @@ const FIXTURE_TRACE_TOOLS: readonly RunTraceStep[] = [
   {
     kind: 'tool',
     key: 't1',
-    entry: { key: 't1', toolName: 'exo_search', status: 'succeeded', target: null },
+    entry: { key: 't1', toolName: 'exo_search', status: 'succeeded', target: null, subject: null },
   },
   {
     kind: 'tool',
     key: 't2',
-    entry: { key: 't2', toolName: 'exo_page_write', status: 'failed', target: 'document:k2' },
+    entry: {
+      key: 't2',
+      toolName: 'exo_page_write',
+      status: 'failed',
+      target: 'document:k2',
+      subject: null,
+    },
   },
 ];

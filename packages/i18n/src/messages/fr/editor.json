@@ -450,7 +450,9 @@
     "conflict": "Modifié simultanément par {name}",
     "failed": "Modification de {name} non appliquée",
     "someAgent": "un agent",
-    "somePerson": "quelqu’un"
+    "somePerson": "quelqu’un",
+    "runChanged": "Modifié lors de cette exécution de l’IA",
+    "runChangedSince": "Modifié par quelqu’un depuis l’exécution de l’IA"
   },
   "pageOutline": {
     "label": "Plan",

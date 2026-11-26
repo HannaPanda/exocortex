@@ -67,7 +67,15 @@
     },
     "target": {
       "document": "Strona {id}",
+      "documentTitled": "„{title}”",
       "workspace": "Obszar roboczy {id}"
+    },
+    "page": {
+      "writing": "Pisze w „{title}”",
+      "reading": "Czyta „{title}”",
+      "writingUnknown": "Pisze na stronie",
+      "readingUnknown": "Czyta stronę",
+      "untitled": "Bez tytułu"
     },
     "phase": {
       "tool": "Uruchamianie narzędzia {tool}{hasTarget, select, yes { ({target})} other {}}",
@@ -103,6 +111,45 @@
       "ai_stream_interrupted": "Dostawca przerwał połączenie, zanim odpowiedź została ukończona. Wpisz „dalej”, aby kolejne uruchomienie podjęło pracę w tym miejscu.",
       "ai_empty_answer": "Model zwrócił pustą odpowiedź. Wpisz „dalej”, aby kolejne uruchomienie podjęło pracę w tym miejscu."
     }
+  },
+  "runChanges": {
+    "changed": "{count, plural, one {Zmieniona strona:} few {Zmienione strony:} many {Zmienionych stron:} other {Zmienione strony:}}",
+    "pageTitle": "„{title}”",
+    "untitled": "Bez tytułu",
+    "showOnPage": "Otwórz stronę i zobacz zmiany z tego uruchomienia",
+    "undo": "Cofnij…",
+    "dialogTitle": "Cofnij to uruchomienie AI",
+    "dialogDescription": "Cofnięte zostaną tylko te elementy, które nadal wyglądają tak, jak zostawiła je AI. Zmiany wprowadzone później przez inne osoby zostaną zachowane i wymienione tutaj.",
+    "reading": "Wczytywanie zmian…",
+    "failedTitle": "Nie udało się odczytać zmian z tego uruchomienia",
+    "failedDescription": "Spróbuj ponownie. Nie ma to wpływu na same strony.",
+    "nothingTitle": "To uruchomienie nic nie zmieniło",
+    "nothingDescription": "Nie ma nic do cofnięcia.",
+    "summary": "{revertible, plural, =0 {Żadna ze zmian nie jest już w stanie pozostawionym przez AI.} one {Można cofnąć jedną zmianę.} few {Można cofnąć # zmiany.} many {Można cofnąć # zmian.} other {Można cofnąć # zmiany.}}{changedSince, plural, =0 {} one { Jedna zmiana została później zmodyfikowana i zostanie zachowana.} few { # zmiany zostały później zmodyfikowane i zostaną zachowane.} many { # zmian zostało później zmodyfikowanych i zostanie zachowanych.} other { # zmiany zostało później zmodyfikowanych i zostanie zachowanych.}}",
+    "states": {
+      "revertible": "Zostanie cofnięte",
+      "changed_since": "Zmieniono później, zostanie zachowane",
+      "reverted": "Już w stanie pierwotnym"
+    },
+    "kinds": {
+      "added": "Dodano ({type}):",
+      "changed": "Zmieniono ({type}):",
+      "removed": "Usunięto ({type}):"
+    },
+    "block": "Blok",
+    "excerpt": "„{text}”",
+    "skipped": {
+      "no_snapshot": "Brak stanu sprzed tego uruchomienia, na przykład dlatego, że strona została tylko zmieniona lub przeniesiona. Starsze wersje znajdziesz w historii strony.",
+      "not_recorded": "Dla tej strony nie zarejestrowano poszczególnych bloków, ponieważ to uruchomienie jest starsze niż ta funkcja. Stan sprzed uruchomienia znajdziesz w historii strony.",
+      "unavailable": "Ta strona już nie istnieje lub nie masz uprawnień do jej odczytu."
+    },
+    "done": "Cofnięto na {pages, plural, one {jednej stronie} few {# stronach} many {# stronach} other {# strony}}.",
+    "doneKept": "{count, plural, one {Jedna zmiana została zachowana, ponieważ później ktoś ją zmodyfikował.} few {# zmiany zostały zachowane, ponieważ później ktoś je zmodyfikował.} many {# zmian zostało zachowanych, ponieważ później ktoś je zmodyfikował.} other {# zmiany zostało zachowanych, ponieważ później ktoś je zmodyfikował.}}",
+    "revertFailed": "Cofanie nie powiodło się.",
+    "notYours": "Zmiany może cofnąć tylko osoba, dla której wykonano to uruchomienie.",
+    "close": "Zamknij",
+    "reverting": "Cofanie…",
+    "revert": "{count, plural, one {Cofnij jedną zmianę} few {Cofnij # zmiany} many {Cofnij # zmian} other {Cofnij # zmiany}}"
   },
   "trace": {
     "reasoningTitle": "Tok myślenia",

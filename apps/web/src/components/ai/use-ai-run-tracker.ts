@@ -49,6 +49,11 @@ export interface ToolActivityEntry {
   status: 'started' | 'succeeded' | 'failed' | 'refused' | 'retried';
   /** Compact identifier of what the call touched, e.g. `document:<id>`. */
   target: string | null;
+  /**
+   * The page the call is about, read or written, as `document:<id>`
+   * (issue #189); what the pulse names while the call runs (issue #248).
+   */
+  subject: string | null;
 }
 
 /**
@@ -99,7 +104,12 @@ export function runFailureText(
 /** A retried turn becomes a line of its own, in order with the tool calls around it. */
 function withRetryLine(current: RunTraceStep[], phase: AiRunPhase): RunTraceStep[] {
   if (phase !== 'retrying') return current;
-  return appendToolEvent(current, -1, { toolName: '', status: 'retried', target: null });
+  return appendToolEvent(current, -1, {
+    toolName: '',
+    status: 'retried',
+    target: null,
+    subject: null,
+  });
 }
 
 /**
@@ -153,6 +163,7 @@ function useRunTraceEvents(
         toolName: event.payload.toolName,
         status: event.payload.status,
         target: event.payload.target,
+        subject: event.payload.subject,
       }),
     );
     markActivity();

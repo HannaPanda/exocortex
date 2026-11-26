@@ -67,7 +67,15 @@
     },
     "target": {
       "document": "Pagina {id}",
+      "documentTitled": "«{title}»",
       "workspace": "Area di lavoro {id}"
+    },
+    "page": {
+      "writing": "Scrive in «{title}»",
+      "reading": "Legge «{title}»",
+      "writingUnknown": "Scrive in una pagina",
+      "readingUnknown": "Legge una pagina",
+      "untitled": "Senza titolo"
     },
     "phase": {
       "tool": "Esecuzione dello strumento {tool}{hasTarget, select, yes { ({target})} other {}}",
@@ -103,6 +111,45 @@
       "ai_stream_interrupted": "Il provider ha interrotto la connessione prima che la risposta fosse completa. Scrivi «continua» e l’esecuzione successiva riprenderà da lì.",
       "ai_empty_answer": "Il modello ha restituito una risposta vuota. Scrivi «continua» e l’esecuzione successiva riprenderà da lì."
     }
+  },
+  "runChanges": {
+    "changed": "{count, plural, one {Pagina modificata:} many {Pagine modificate:} other {Pagine modificate:}}",
+    "pageTitle": "«{title}»",
+    "untitled": "Senza titolo",
+    "showOnPage": "Apri la pagina e mostra cosa ha modificato questa esecuzione",
+    "undo": "Annulla …",
+    "dialogTitle": "Annulla questa esecuzione dell’IA",
+    "dialogDescription": "Verrà annullato solo ciò che è rimasto esattamente come lasciato dall’IA. Le modifiche apportate da qualcuno nel frattempo rimarranno invariate e verranno indicate qui.",
+    "reading": "Lettura delle modifiche …",
+    "failedTitle": "Impossibile leggere le modifiche di questa esecuzione",
+    "failedDescription": "Riprova. Le pagine stesse non hanno subito conseguenze.",
+    "nothingTitle": "Questa esecuzione non ha modificato nulla",
+    "nothingDescription": "Non c’è nulla da annullare.",
+    "summary": "{revertible, plural, =0 {Nessuna modifica è rimasta come lasciata dall’IA.} one {Una modifica può essere annullata.} many {# modifiche possono essere annullate.} other {# modifiche possono essere annullate.}}{changedSince, plural, =0 {} one { Una è stata modificata da qualcuno nel frattempo e rimarrà invariata.} many { # sono state modificate da qualcuno nel frattempo e rimarranno invariate.} other { # sono state modificate da qualcuno nel frattempo e rimarranno invariate.}}",
+    "states": {
+      "revertible": "Verrà annullata",
+      "changed_since": "Modificata nel frattempo, rimane invariata",
+      "reverted": "Già ripristinata allo stato precedente"
+    },
+    "kinds": {
+      "added": "{type} nuovo:",
+      "changed": "{type} modificato:",
+      "removed": "{type} rimosso:"
+    },
+    "block": "Blocco",
+    "excerpt": "«{text}»",
+    "skipped": {
+      "no_snapshot": "Non è presente alcuno stato precedente a questa esecuzione, ad esempio perché la pagina è stata solo rinominata o spostata. Puoi trovare le versioni precedenti nella cronologia della pagina.",
+      "not_recorded": "Per questa pagina i singoli blocchi non sono stati registrati, poiché l’esecuzione è precedente a questa funzionalità. Puoi trovare lo stato precedente nella cronologia della pagina.",
+      "unavailable": "Questa pagina non esiste più oppure non hai i permessi per leggerla."
+    },
+    "done": "Annullato su {pages, plural, one {una pagina} many {# pagine} other {# pagine}}.",
+    "doneKept": "{count, plural, one {Una modifica è rimasta invariata perché qualcuno l’ha modificata nel frattempo.} many {# modifiche sono rimaste invariate perché qualcuno le ha modificate nel frattempo.} other {# modifiche sono rimaste invariate perché qualcuno le ha modificate nel frattempo.}}",
+    "revertFailed": "L’annullamento non è andato a buon fine.",
+    "notYours": "Solo chi ha avviato questa esecuzione può annullarla.",
+    "close": "Chiudi",
+    "reverting": "Annullamento in corso …",
+    "revert": "{count, plural, one {Annulla una modifica} many {Annulla # modifiche} other {Annulla # modifiche}}"
   },
   "trace": {
     "reasoningTitle": "Ragionamento",

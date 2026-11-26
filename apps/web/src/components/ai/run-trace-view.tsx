@@ -13,7 +13,7 @@ import * as React from 'react';
 
 import { cn, sectionLabelClassName } from '@exocortex/ui';
 
-import { toolActivityLine, useRunLabels } from './run-labels';
+import { toolActivityLine, usePageTitle, useRunLabels } from './run-labels';
 import { hasReasoning, type RunTraceStep, toolEntries } from './run-trace';
 import { type ToolActivityEntry } from './use-ai-run-tracker';
 
@@ -47,7 +47,6 @@ const STATUS_ICON: Record<ToolActivityEntry['status'], typeof CheckIcon> = {
  */
 export function RunTraceView({ steps, live }: RunTraceViewProps) {
   const t = useTranslations('ai.trace');
-  const runLabel = useRunLabels();
   const bodyId = React.useId();
   const bodyRef = React.useRef<HTMLOListElement | null>(null);
   const followRef = React.useRef(true);
@@ -129,11 +128,7 @@ export function RunTraceView({ steps, live }: RunTraceViewProps) {
                 {step.text.trim()}
               </li>
             ) : (
-              <ToolStep
-                key={step.key}
-                entry={step.entry}
-                label={runLabel(toolActivityLine(step.entry))}
-              />
+              <ToolStep key={step.key} entry={step.entry} />
             ),
           )}
           {reasoned && !live ? (
@@ -145,7 +140,13 @@ export function RunTraceView({ steps, live }: RunTraceViewProps) {
   );
 }
 
-function ToolStep({ entry, label }: { entry: ToolActivityEntry; label: string }) {
+function ToolStep({ entry }: { entry: ToolActivityEntry }) {
+  const runLabel = useRunLabels();
+  const line = toolActivityLine(entry);
+  // The page is named by its title where the reader may open it (#248).
+  const documentId = line.target?.kind === 'document' ? line.target.id : null;
+  const title = usePageTitle(documentId);
+  const label = runLabel(line, (id) => (id === documentId ? title : null));
   const Icon = STATUS_ICON[entry.status];
   return (
     <li

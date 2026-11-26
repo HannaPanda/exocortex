@@ -13,7 +13,12 @@ describe('run trace', () => {
     let steps: RunTraceStep[] = [];
     steps = appendReasoning(steps, 1, 'Ich ');
     steps = appendReasoning(steps, 1, 'schaue nach.');
-    steps = appendToolEvent(steps, 0, { toolName: 'exo_search', status: 'started', target: null });
+    steps = appendToolEvent(steps, 0, {
+      toolName: 'exo_search',
+      status: 'started',
+      target: null,
+      subject: null,
+    });
     steps = appendReasoning(steps, 2, 'Gefunden.');
 
     expect(
@@ -27,11 +32,13 @@ describe('run trace', () => {
       toolName: 'exo_page_read',
       status: 'started',
       target: null,
+      subject: null,
     });
     steps = appendToolEvent(steps, 0, {
       toolName: 'exo_page_read',
       status: 'succeeded',
       target: 'document:abc',
+      subject: null,
     });
 
     expect(toolEntries(steps)).toEqual([
@@ -39,15 +46,31 @@ describe('run trace', () => {
         toolName: 'exo_page_read',
         status: 'succeeded',
         target: 'document:abc',
+        subject: null,
       }),
     ]);
   });
 
   it('keeps two parallel calls of one tool apart, in order', () => {
     let steps: RunTraceStep[] = [];
-    steps = appendToolEvent(steps, 0, { toolName: 'get', status: 'started', target: 'a' });
-    steps = appendToolEvent(steps, 0, { toolName: 'get', status: 'started', target: 'b' });
-    steps = appendToolEvent(steps, 0, { toolName: 'get', status: 'failed', target: 'a' });
+    steps = appendToolEvent(steps, 0, {
+      toolName: 'get',
+      status: 'started',
+      target: 'a',
+      subject: null,
+    });
+    steps = appendToolEvent(steps, 0, {
+      toolName: 'get',
+      status: 'started',
+      target: 'b',
+      subject: null,
+    });
+    steps = appendToolEvent(steps, 0, {
+      toolName: 'get',
+      status: 'failed',
+      target: 'a',
+      subject: null,
+    });
 
     const entries = toolEntries(steps);
     expect(entries.map((entry) => [entry.target, entry.status])).toEqual([
@@ -59,14 +82,29 @@ describe('run trace', () => {
 
   it('does not match an outcome to a call of an earlier iteration', () => {
     let steps: RunTraceStep[] = [];
-    steps = appendToolEvent(steps, 0, { toolName: 'get', status: 'started', target: null });
-    steps = appendToolEvent(steps, 1, { toolName: 'get', status: 'succeeded', target: null });
+    steps = appendToolEvent(steps, 0, {
+      toolName: 'get',
+      status: 'started',
+      target: null,
+      subject: null,
+    });
+    steps = appendToolEvent(steps, 1, {
+      toolName: 'get',
+      status: 'succeeded',
+      target: null,
+      subject: null,
+    });
 
     expect(toolEntries(steps).map((entry) => entry.status)).toEqual(['started', 'succeeded']);
   });
 
   it('says whether there was any thinking at all', () => {
-    const toolsOnly = appendToolEvent([], 0, { toolName: 'get', status: 'started', target: null });
+    const toolsOnly = appendToolEvent([], 0, {
+      toolName: 'get',
+      status: 'started',
+      target: null,
+      subject: null,
+    });
     expect(hasReasoning(toolsOnly)).toBe(false);
     expect(hasReasoning(appendReasoning(toolsOnly, 1, 'Hm.'))).toBe(true);
   });

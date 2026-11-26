@@ -1,6 +1,10 @@
 import { type EditorState } from '@tiptap/pm/state';
 
-import { type CollaborationEditNotice, collaborationEditNoticeSchema } from '@exocortex/contracts';
+import {
+  type AiRunChangedBlock,
+  type CollaborationEditNotice,
+  collaborationEditNoticeSchema,
+} from '@exocortex/contracts';
 import { BLOCK_ID_ATTRIBUTE, isValidBlockId } from '@exocortex/editor';
 
 /**
@@ -52,4 +56,20 @@ export function markerStates(
     );
   }
   return states;
+}
+
+/**
+ * Which blocks to mark when somebody asks to see what one run changed
+ * (issue #248), and how. A block the run removed has no place left to mark;
+ * one that still stands as the run left it is `changed`; one somebody changed
+ * since is a `conflict`, because an undo will leave it alone. A change that is
+ * already back is not the run's any more and is not marked.
+ */
+export function runHighlightEntries(
+  blocks: readonly AiRunChangedBlock[],
+): { id: string; state: AgentEditState }[] {
+  return blocks.flatMap((block) => {
+    if (block.change === 'removed' || block.state === 'reverted') return [];
+    return [{ id: block.blockId, state: block.state === 'changed_since' ? 'conflict' : 'changed' }];
+  });
 }
