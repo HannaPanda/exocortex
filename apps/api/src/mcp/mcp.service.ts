@@ -211,9 +211,13 @@ export class McpService {
     caller: McpCaller,
     surface: ToolSurface,
     agentSessionId: string,
-    /** Narrows the surface to these domains (`/api/mcp/compact`). */
-    domains?: readonly ToolDomain[],
+    /**
+     * Narrows the surface to these domains (`/api/mcp/compact`), and names
+     * the hidden tools `exo_tool_execute` may still run (issue #256).
+     */
+    narrowing?: { domains: readonly ToolDomain[]; executable?: readonly string[] },
   ): Promise<McpRequestHandler> {
+    const domains = narrowing?.domains;
     const whole = surface === 'mcp' && domains === undefined;
     const client = createFetchApiClient({
       // Loopback, not the public origin: this call must not leave the machine,
@@ -227,6 +231,12 @@ export class McpService {
     return createMcpRequestHandler({
       client,
       tools: toolsFor(surface, { domains }),
+      // The rest of the surface, findable and partly callable through two
+      // meta-tools. Searched in the same surface's catalogue, so a narrowed
+      // connection can never discover more than the full one would list.
+      ...(narrowing?.executable === undefined
+        ? {}
+        : { discovery: { catalogue: toolsFor(surface), executable: narrowing.executable } }),
       // What groups this connection's writes (ADR-022). It holds no state
       // here: the id is stamped on the loopback calls and recorded in the
       // journal, so a second API process serves the same client unchanged.

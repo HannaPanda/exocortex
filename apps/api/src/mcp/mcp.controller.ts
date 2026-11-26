@@ -9,11 +9,13 @@ import { agentSessionExternalIdSchema } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import {
   COMPACT_ENDPOINT_DOMAINS,
+  COMPACT_ENDPOINT_EXECUTABLE,
   JSON_RPC_ERROR_CODES,
   type JsonRpcRequest,
   type JsonRpcResponse,
   LATEST_PROTOCOL_VERSION,
   type McpRequestHandler,
+  TOOL_EXECUTE_NAME,
   type ToolDomain,
   type ToolSurface,
 } from '@exocortex/mcp-tools';
@@ -90,7 +92,12 @@ export class McpController {
   @Public()
   @Post('compact')
   async handleCompact(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
-    await this.handle(request, reply, 'mcp', COMPACT_ENDPOINT_DOMAINS);
+    await this.handle(request, reply, 'mcp', {
+      domains: COMPACT_ENDPOINT_DOMAINS,
+      // What the rest of the catalogue is reachable through (issue #256):
+      // `exo_tool_search` finds it, `exo_tool_execute` runs this short list.
+      executable: COMPACT_ENDPOINT_EXECUTABLE,
+    });
   }
 
   /**
@@ -257,7 +264,7 @@ export class McpController {
     request: FastifyRequest,
     reply: FastifyReply,
     surface: ToolSurface,
-    domains?: readonly ToolDomain[],
+    narrowing?: { domains: readonly ToolDomain[]; executable?: readonly string[] },
   ): Promise<void> {
     const headers = request.headers as Record<string, string | string[] | undefined>;
 
@@ -280,7 +287,7 @@ export class McpController {
       return;
     }
 
-    const handler = await this.mcp.createHandler(caller, surface, sessionId, domains);
+    const handler = await this.mcp.createHandler(caller, surface, sessionId, narrowing);
     const responses: JsonRpcResponse[] = [];
     for (const message of messages) {
       const response = await this.dispatch(handler, message, caller, surface);
@@ -325,6 +332,14 @@ export class McpController {
       typeof message.params.name === 'string'
         ? message.params.name
         : undefined;
+    // The tool an `exo_tool_execute` call is really about (issue #256), so the
+    // line names what ran and not only the envelope it came in.
+    const callArguments =
+      toolName === TOOL_EXECUTE_NAME && isRecord(message.params) ? message.params.arguments : null;
+    const targetTool =
+      isRecord(callArguments) && typeof callArguments.tool === 'string'
+        ? callArguments.tool.slice(0, 100)
+        : undefined;
 
     // One line per call, so "two agents wrote from two systems" is a question
     // the log can answer.
@@ -335,6 +350,7 @@ export class McpController {
       credentialId: caller.credentialId,
       userId: caller.session.userId,
       ...(toolName === undefined ? {} : { tool: toolName }),
+      ...(targetTool === undefined ? {} : { targetTool }),
     });
 
     try {
