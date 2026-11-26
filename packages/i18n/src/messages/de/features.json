@@ -928,7 +928,8 @@
     "details": {
       "p1": "Manche Clients laufen auf deinem Rechner und können einen lokalen Prozess starten, andere laufen in der Cloud und kennen nur eine Adresse. Für die zweite Sorte gibt es MCP über HTTP unter einer festen Adresse, mit einem eigenen Anmeldeserver davor.",
       "p2": "Beim Verbinden landest du auf einer Zustimmungsseite, auf der steht, wer sich verbinden will und worauf. Erst dein Klick erteilt den Zugang. Diese Seite ist die eigentliche Sperre, nicht das Protokoll: ohne sie käme jeder, der die Adresse kennt, wenigstens bis zur Anmeldung.",
-      "p3": "Erteilte Verbindungen stehen danach in deiner Liste und lassen sich jederzeit kappen. Der HTTP-Zugang nimmt ausschließlich Zugangstoken an, nie dein Browser-Sitzungscookie, damit eine fremde Webseite nicht in deinem Namen mitreden kann."
+      "p3": "Erteilte Verbindungen stehen danach in deiner Liste und lassen sich jederzeit kappen. Der HTTP-Zugang nimmt ausschließlich Zugangstoken an, nie dein Browser-Sitzungscookie, damit eine fremde Webseite nicht in deinem Namen mitreden kann.",
+      "p4": "ChatGPT lehnt den ganzen Werkzeugkatalog ab und bekommt deshalb eine schmale Adresse mit den alltäglichen Werkzeugen. Was dort fehlt, kann es mit exo_tool_search nachschlagen. Ausführen lässt sich darüber vorerst nur eine kleine Auswahl (die Liste der Entitäten und die Seitenbreite), mit denselben Rechten wie ein direkter Aufruf und nie etwas, das löscht oder sich nicht zurücknehmen lässt."
     },
     "where": "Die Zustimmungsseite erscheint beim Verbinden."
   },

@@ -928,7 +928,8 @@
     "details": {
       "p1": "Alcuni client funzionano sul tuo computer e possono avviare un processo locale, altri girano nel cloud e conoscono solo un indirizzo. Per questo secondo tipo esiste MCP su HTTP a un indirizzo fisso, preceduto da un proprio server di autenticazione.",
       "p2": "Durante la connessione arrivi su una pagina di consenso in cui è indicato chi vuole connettersi e a cosa. Solo il tuo clic concede l’accesso. Questa pagina è il vero blocco, non il protocollo: senza di essa, chiunque conosca l’indirizzo arriverebbe almeno fino alla schermata di accesso.",
-      "p3": "Le connessioni concesse compaiono poi nel tuo elenco e possono essere revocate in qualsiasi momento. L’accesso HTTP accetta esclusivamente token di accesso, mai il cookie di sessione del browser, affinché una pagina web esterna non possa agire a tuo nome."
+      "p3": "Le connessioni concesse compaiono poi nel tuo elenco e possono essere revocate in qualsiasi momento. L’accesso HTTP accetta esclusivamente token di accesso, mai il cookie di sessione del browser, affinché una pagina web esterna non possa agire a tuo nome.",
+      "p4": "ChatGPT rifiuta l’intero catalogo degli strumenti e riceve quindi un indirizzo ridotto con gli strumenti quotidiani. Ciò che manca lì può cercarlo con exo_tool_search. Per ora è possibile eseguire tramite questo solo una piccola selezione (l’elenco delle entità e la larghezza della pagina), con gli stessi permessi di una chiamata diretta e mai nulla che elimini o che non possa essere annullato."
     },
     "where": "La pagina di consenso compare durante la connessione."
   },

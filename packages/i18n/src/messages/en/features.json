@@ -928,7 +928,8 @@
     "details": {
       "p1": "Some clients run on your computer and can start a local process; others run in the cloud and only know an address. For the second kind, MCP over HTTP is available at a fixed address, fronted by its own login server.",
       "p2": "When connecting, you land on an approval page stating who wants to connect and to what. Only your click grants access. This page is the actual barrier, not the protocol: without it, anyone who knows the address could at least reach the login screen.",
-      "p3": "Granted connections then appear in your list and can be cut at any time. The HTTP access exclusively accepts access tokens, never your browser session cookie, ensuring an external website cannot speak on your behalf."
+      "p3": "Granted connections then appear in your list and can be cut at any time. The HTTP access exclusively accepts access tokens, never your browser session cookie, ensuring an external website cannot speak on your behalf.",
+      "p4": "ChatGPT rejects the entire tool catalog and therefore receives a slimmed-down address with everyday tools. Whatever is missing there, it can look up using exo_tool_search. For now, only a small selection can be executed through it (the list of entities and the page width), with the same permissions as a direct call and never anything that deletes or cannot be undone."
     },
     "where": "The approval page appears upon connecting."
   },

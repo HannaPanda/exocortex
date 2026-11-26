@@ -10,3 +10,8 @@ export * from './resources.js';
 export * from './subscriptions.js';
 export * from './tool.js';
 export * from './tool-routing.js';
+export {
+  TOOL_EXECUTE_NAME,
+  TOOL_SEARCH_NAME,
+  type ToolDispatchRefusal,
+} from './tools/tool-discovery.js';

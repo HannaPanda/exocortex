@@ -180,6 +180,16 @@ const SURFACE_EXEMPT = [
       "Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.",
   },
   {
+    tool: 'exo_tool_search',
+    reason:
+      'Finds tools the connection was not listed (issue #256). Only `/api/mcp/compact` is listed less than its surface, because ChatGPT refuses the whole catalogue; the full MCP endpoint and stdio list everything and have nothing to find, and the built-in loop opens a missing domain with `exo_toolbox`. It reaches no route and is built per connection, never put in the catalogue.',
+  },
+  {
+    tool: 'exo_tool_execute',
+    reason:
+      "Runs a tool `exo_tool_search` found, through the connection's own dispatcher, and only the short list `COMPACT_ENDPOINT_EXECUTABLE` names (issue #256). Same reason as the search: a surface that lists everything has nothing to reach indirectly, and the built-in loop calls an opened tool directly. It reaches no route of its own; every call is the target tool's.",
+  },
+  {
     tool: 'exo_attachment_upload_ticket',
     reason:
       'Hands out an address a script POSTs a local file to (ADR-064). The built-in AI runs in the worker with no files of its own and no shell to run a script in, so on that surface the address could not be used by anything. What it would upload, it can already write with `exo_attachment_upload`.',

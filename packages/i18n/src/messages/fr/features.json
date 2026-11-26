@@ -928,7 +928,8 @@
     "details": {
       "p1": "Certains clients s’exécutent sur ton ordinateur et peuvent lancer un processus local, d’autres tournent dans le cloud et ne connaissent qu’une adresse. Pour cette seconde catégorie, il existe MCP via HTTP à une adresse fixe, précédé de son propre serveur d’authentification.",
       "p2": "Lors de la connexion, tu arrives sur une page de consentement qui indique qui souhaite se connecter et à quoi. Seul ton clic accorde l’accès. Cette page constitue le véritable verrou, pas le protocole : sans elle, quiconque connaît l’adresse parviendrait au moins jusqu’à l’écran de connexion.",
-      "p3": "Les connexions accordées apparaissent ensuite dans ta liste et peuvent être coupées à tout moment. L’accès HTTP n’accepte que des jetons d’accès, jamais le cookie de session de ton navigateur, afin qu’un site web tiers ne puisse pas agir en ton nom."
+      "p3": "Les connexions accordées apparaissent ensuite dans ta liste et peuvent être coupées à tout moment. L’accès HTTP n’accepte que des jetons d’accès, jamais le cookie de session de ton navigateur, afin qu’un site web tiers ne puisse pas agir en ton nom.",
+      "p4": "ChatGPT refuse l’ensemble du catalogue d’outils et reçoit donc une adresse allégée contenant les outils du quotidien. Ce qui y manque peut être recherché avec exo_tool_search. Pour l’instant, seule une sélection restreinte peut être exécutée par ce biais (la liste des entités et la largeur de page), avec les mêmes droits qu’un appel direct et jamais rien qui supprime ou soit irréversible."
     },
     "where": "La page de consentement apparaît lors de la connexion."
   },

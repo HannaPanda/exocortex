@@ -6,6 +6,7 @@ import { getMcpPrompt, listMcpPrompts } from './prompts.js';
 import { listMcpResources, listMcpResourceTemplates, readMcpResource } from './resources.js';
 import { MAX_RESOURCE_SUBSCRIPTIONS, type ResourceSubscriptions } from './subscriptions.js';
 import { type AnyToolDefinition, ToolInputValidationError, type ToolResult } from './tool.js';
+import { createToolDiscoveryTools } from './tools/tool-discovery.js';
 
 /**
  * The MCP method dispatch, with no transport in it.
@@ -143,6 +144,18 @@ export interface McpRequestHandlerOptions {
    * should not invent one.
    */
   agentSession?: { externalId: string; transport: 'stdio' | 'http' };
+  /**
+   * Finding and calling tools this connection is not listed (issue #256).
+   *
+   * Set, the connection also lists `exo_tool_search`, which looks through
+   * the tools of `catalogue` that `tools` left out, and `exo_tool_execute`,
+   * which runs the ones named in `executable` through this handler's own
+   * `callTool`. Everything else stays where `tools` puts it: a name that is
+   * neither listed nor executable is still not callable. Only the compact
+   * endpoint sets it; a connection that lists the whole surface has nothing
+   * to discover.
+   */
+  discovery?: { catalogue: readonly AnyToolDefinition[]; executable: readonly string[] };
   serverInfo?: { name: string; version: string };
   logger?: McpProtocolLogger;
 }
@@ -180,7 +193,21 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
   const context = options.context ?? false;
   const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
-  const byName = new Map(tools.map((tool) => [tool.name, tool]));
+  const listed: readonly AnyToolDefinition[] =
+    options.discovery === undefined
+      ? tools
+      : [
+          ...tools,
+          ...createToolDiscoveryTools({
+            catalogue: options.discovery.catalogue,
+            listed: tools.map((tool) => tool.name),
+            executable: options.discovery.executable,
+            // The same function a direct `tools/call` ends in, so an indirect
+            // call is validated, gated and journalled exactly like one.
+            dispatch: callTool,
+          }),
+        ];
+  const byName = new Map(listed.map((tool) => [tool.name, tool]));
 
   // Stamped here rather than only at `initialize`, because over HTTP every
   // message arrives as its own request with its own handler and its own
@@ -215,14 +242,26 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
     try {
       return await tool.run(client, rawInput);
     } catch (error) {
+      // The code beside the text, so a client can tell a refusal from a
+      // typo without reading German (issue #256).
       if (error instanceof ExocortexApiError) {
-        return { text: describeApiError(error), isError: true };
+        return {
+          text: describeApiError(error),
+          isError: true,
+          data: { error: error.code, status: error.status },
+        };
       }
       if (error instanceof ToolInputValidationError) {
-        const paths = error.issues.map(
-          (issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`,
-        );
-        return { text: `Ungültige Eingabe:\n${paths.join('\n')}`, isError: true };
+        const issues = error.issues.map((issue) => ({
+          path: issue.path.join('.') || '(root)',
+          message: issue.message,
+        }));
+        const paths = issues.map((issue) => `${issue.path}: ${issue.message}`);
+        return {
+          text: `Ungültige Eingabe:\n${paths.join('\n')}`,
+          isError: true,
+          data: { error: 'invalid_input', issues },
+        };
       }
       throw error;
     }
@@ -284,7 +323,7 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
         return respond({});
 
       case 'tools/list':
-        return respond({ tools: toMcpToolList(tools) });
+        return respond({ tools: toMcpToolList(listed) });
 
       case 'tools/call': {
         const params = isRecord(request.params) ? request.params : {};

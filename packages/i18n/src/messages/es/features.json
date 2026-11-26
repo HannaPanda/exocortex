@@ -928,7 +928,8 @@
     "details": {
       "p1": "Algunos clientes se ejecutan en tu equipo y pueden iniciar un proceso local; otros funcionan en la nube y solo conocen una dirección. Para este segundo grupo existe MCP sobre HTTP en una dirección fija, protegido por su propio servidor de inicio de sesión.",
       "p2": "Al conectarte, accedes a una página de consentimiento donde se indica quién quiere conectarse y a qué. Solo tu clic concede el acceso. Esta página es el auténtico filtro, no el protocolo: sin ella, cualquiera que conociera la dirección llegaría al menos hasta la pantalla de inicio de sesión.",
-      "p3": "Las conexiones autorizadas aparecen después en tu lista y pueden revocarse en cualquier momento. El acceso por HTTP solo admite tokens de acceso, nunca la cookie de sesión de tu navegador, evitando así que un sitio web ajeno actúe en tu nombre."
+      "p3": "Las conexiones autorizadas aparecen después en tu lista y pueden revocarse en cualquier momento. El acceso por HTTP solo admite tokens de acceso, nunca la cookie de sesión de tu navegador, evitando así que un sitio web ajeno actúe en tu nombre.",
+      "p4": "ChatGPT rechaza el catálogo de herramientas completo, por lo que recibe una dirección reducida con las herramientas habituales. Lo que falte ahí, puede buscarlo con exo_tool_search. Por ahora, a través de él solo se puede ejecutar una pequeña selección (la lista de entidades y el ancho de página), con los mismos permisos que una llamada directa y nunca nada que elimine contenido o no se pueda deshacer."
     },
     "where": "La página de consentimiento aparece al conectar."
   },

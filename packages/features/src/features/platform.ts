@@ -23,8 +23,9 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     id: 'mcp-ueber-http',
     area: 'agenten',
     since: '2026-08-11',
-    references: ['ADR-018'],
+    references: ['ADR-018', '#256'],
     ui: { path: '/verbinden' },
+    tools: ['exo_tool_search', 'exo_tool_execute'],
     claims: { screens: ['/verbinden'] },
   }),
   defineFeature({

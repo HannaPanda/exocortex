@@ -928,7 +928,8 @@
     "details": {
       "p1": "Sommige clients draaien op je computer en kunnen een lokaal proces starten, andere draaien in de cloud en kennen alleen een adres. Voor die tweede soort is er MCP via HTTP onder een vast adres, met een eigen inlogserver ervoor.",
       "p2": "Bij het verbinden kom je op een toestemmingspagina terecht waarop staat wie er verbinding wil maken en waarmee. Pas jouw klik verleent toegang. Deze pagina is de eigenlijke blokkade, niet het protocol: zonder deze pagina zou iedereen die het adres kent op z’n minst tot het inloggen komen.",
-      "p3": "Verleende verbindingen staan daarna in je lijst en kunnen op elk moment worden verbroken. De HTTP-toegang accepteert uitsluitend toegangstokens, nooit je browser-sessiecookie, zodat een externe webpagina niet namens jou kan meepraten."
+      "p3": "Verleende verbindingen staan daarna in je lijst en kunnen op elk moment worden verbroken. De HTTP-toegang accepteert uitsluitend toegangstokens, nooit je browser-sessiecookie, zodat een externe webpagina niet namens jou kan meepraten.",
+      "p4": "ChatGPT wijst de volledige toolcatalogus af en krijgt daarom een beknopt adres met de alledaagse tools. Wat daar ontbreekt, kan het opzoeken met exo_tool_search. Voorlopig kan daarmee slechts een kleine selectie worden uitgevoerd (de lijst met entiteiten en de paginabreedte), met dezelfde rechten als een directe aanroep en nooit iets dat verwijdert of niet ongedaan kan worden gemaakt."
     },
     "where": "De toestemmingspagina verschijnt bij het verbinden."
   },

@@ -928,7 +928,8 @@
     "details": {
       "p1": "Niektórzy klienci działają na twoim komputerze i mogą uruchomić lokalny proces, inni działają w chmurze i znają tylko adres. Dla tego drugiego typu dostępny jest protokół MCP przez HTTP pod stałym adresem, poprzedzony osobnym serwerem logowania.",
       "p2": "Podczas łączenia trafiasz na stronę zgody z informacją, kto i do czego chce się połączyć. Dostęp zostaje przyznany dopiero po twoim kliknięciu. To ta strona stanowi właściwą blokadę, a nie protokół: bez niej każdy, kto zna adres, dotarłby przynajmniej do etapu logowania.",
-      "p3": "Zatwierdzone połączenia trafiają na twoją listę i można je w każdej chwili przerwać. Dostęp przez HTTP przyjmuje wyłącznie tokeny dostępu, nigdy ciasteczko sesyjne przeglądarki, dzięki czemu obca strona internetowa nie może działać w twoim imieniu."
+      "p3": "Zatwierdzone połączenia trafiają na twoją listę i można je w każdej chwili przerwać. Dostęp przez HTTP przyjmuje wyłącznie tokeny dostępu, nigdy ciasteczko sesyjne przeglądarki, dzięki czemu obca strona internetowa nie może działać w twoim imieniu.",
+      "p4": "ChatGPT odrzuca cały katalog narzędzi, dlatego otrzymuje ograniczony adres z narzędziami codziennego użytku. To, czego tam brakuje, może wyszukać za pomocą exo_tool_search. Na razie można za jego pośrednictwem wykonać tylko niewielki wybór (listę encji i szerokość strony), z tymi samymi uprawnieniami co bezpośrednie wywołanie i nigdy nic, co usuwa dane lub czego nie da się cofnąć."
     },
     "where": "Strona zgody pojawia się podczas łączenia."
   },
