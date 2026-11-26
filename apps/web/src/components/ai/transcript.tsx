@@ -6,6 +6,7 @@ import * as React from 'react';
 import { type AiConversationMessage } from '@exocortex/contracts';
 
 import { ChatMessage } from './chat-message';
+import { summaryFollows } from './panel-view';
 import { type RunTraceStep } from './run-trace';
 import { RunTraceView } from './run-trace-view';
 
@@ -84,7 +85,10 @@ export function Transcript({
     items.push(<ChatMessage key={message.id} message={message} />);
     if (boundary) {
       items.push(
-        <ContextBoundary key={`boundary:${message.id}`} summarized={next?.isSummary ?? false} />,
+        <ContextBoundary
+          key={`boundary:${message.id}`}
+          summarized={summaryFollows(messages, index + 1)}
+        />,
       );
     }
   });

@@ -213,6 +213,36 @@ export interface AiRunTracker {
 }
 
 /**
+ * What a compaction says about itself once it is over: the automatic one
+ * before a turn, and the one somebody asked for with `/compact` (issue #287),
+ * which may also end without a summary. Either way the transcript is read
+ * again, because a summary or a freed composer is in it.
+ */
+function useCompactionEvents(
+  activeConversationId: string | null,
+  setNotice: (notice: string | null) => void,
+): void {
+  const t = useTranslations('ai.run');
+  const queryClient = useQueryClient();
+
+  useRealtimeEvent('ai.conversation.compacted', (event) => {
+    if (event.payload.conversationId !== activeConversationId) return;
+    setNotice(t('compacted'));
+    void queryClient.invalidateQueries({
+      queryKey: aiQueryKeys.conversation(event.payload.conversationId),
+    });
+  });
+
+  useRealtimeEvent('ai.conversation.compaction_failed', (event) => {
+    if (event.payload.conversationId !== activeConversationId) return;
+    setNotice(t(`compactionFailed.${event.payload.errorCode}`));
+    void queryClient.invalidateQueries({
+      queryKey: aiQueryKeys.conversation(event.payload.conversationId),
+    });
+  });
+}
+
+/**
  * Everything about the run that is in flight right now.
  *
  * Split out of `AiPanel` because it is a state machine, not a rendering
@@ -387,13 +417,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     });
   });
 
-  useRealtimeEvent('ai.conversation.compacted', (event) => {
-    if (event.payload.conversationId !== activeConversationId) return;
-    setNotice(t('compacted'));
-    void queryClient.invalidateQueries({
-      queryKey: aiQueryKeys.conversation(event.payload.conversationId),
-    });
-  });
+  useCompactionEvents(activeConversationId, setNotice);
 
   // Elapsed time counts from the latest confirmed sign of life: the run's
   // own start, the last realtime event this panel received, or -- covering a

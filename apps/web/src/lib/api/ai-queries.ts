@@ -246,6 +246,11 @@ export function useAiConversation(
     queryFn: () =>
       apiRequest<AiConversationDetailResponse>(`/api/ai/conversations/${conversationId ?? ''}`),
     enabled: conversationId !== null,
+    // While a requested compaction holds the conversation (issue #287), ask
+    // again now and then: the event that ends it is the fast path, this is
+    // what frees the composer when that event was missed.
+    refetchInterval: (query) =>
+      (query.state.data?.conversation.compactRequestedAt ?? null) === null ? false : 3_000,
   });
 }
 

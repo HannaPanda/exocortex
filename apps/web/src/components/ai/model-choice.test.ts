@@ -67,6 +67,8 @@ function conversation(input: Partial<AiConversation>): AiConversation {
     contextTokensMeasured: false,
     contextWindowTokens: null,
     contextUsagePercent: null,
+    compactRequestedAt: null,
+    compactionError: null,
     messageCount: 2,
     archivedAt: null,
     ...input,

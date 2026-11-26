@@ -7,6 +7,7 @@ import {
   buildStreamingMessages,
   describeTranscript,
   resolvePageHandover,
+  summaryFollows,
 } from './panel-view';
 import { appendDelta, EMPTY_STREAM, endTurn, startStream } from './stream-segments';
 
@@ -145,5 +146,29 @@ describe('describeTranscript', () => {
       errored: false,
       showIntro: false,
     });
+  });
+});
+
+describe('summaryFollows', () => {
+  const row = (superseded: boolean, isSummary = false) => ({ superseded, isSummary });
+
+  it('finds the summary an automatic compaction wrote below the tail it kept', () => {
+    // Retired, retired | kept, kept, summary: the boundary sits after index 1.
+    const messages = [row(true), row(true), row(false), row(false), row(false, true)];
+    expect(summaryFollows(messages, 2)).toBe(true);
+  });
+
+  it('finds the summary a requested compaction left as the only message in the context', () => {
+    expect(summaryFollows([row(true), row(true), row(false, true)], 2)).toBe(true);
+  });
+
+  it('reads a /clear as cleared, even when an older summary was cleared with it', () => {
+    const messages = [row(true), row(true, true), row(false), row(false)];
+    expect(summaryFollows(messages, 2)).toBe(false);
+  });
+
+  it('stops at the next boundary instead of borrowing a later summary', () => {
+    const messages = [row(true), row(false), row(true), row(false, true)];
+    expect(summaryFollows(messages, 1)).toBe(false);
   });
 });

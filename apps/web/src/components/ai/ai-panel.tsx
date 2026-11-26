@@ -31,6 +31,7 @@ import { resolveModelChoice, useModelPreference } from './model-choice';
 import {
   buildCommandNotice,
   buildStreamingMessages,
+  composerBusy,
   describeTranscript,
   resolvePageHandover,
   resolveTranscriptTrace,
@@ -189,6 +190,9 @@ function AiPanelBody({
   } = run;
 
   const conversation = conversationQuery.data?.conversation ?? null;
+  // A run is answering, or a summary somebody asked for with `/compact` is
+  // being written (issue #287): either way the composer waits.
+  const busy = composerBusy(activeRunId, conversation);
   const settings = useConversationSettings({
     conversationId: activeConversationId,
     conversation,
@@ -288,7 +292,7 @@ function AiPanelBody({
   });
 
   const handleSubmit = async (content: string): Promise<void> => {
-    if (activeRunId !== null) return;
+    if (busy) return;
     setError(null);
     setNotice(null);
     setCommandNotice(null);
@@ -408,7 +412,7 @@ function AiPanelBody({
         onPinRequest={() => setSourcePickerOpen(true)}
         onPinModeChange={pinnedSources.setMode}
         onPinRemove={pinnedSources.remove}
-        busy={activeRunId !== null}
+        busy={busy}
         onSubmit={handleSubmit}
       />
       <SourcePicker

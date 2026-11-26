@@ -1,4 +1,4 @@
-import { type AiConversationMessage } from '@exocortex/contracts';
+import { type AiConversation, type AiConversationMessage } from '@exocortex/contracts';
 
 import { type FinishedRunTrace, type RunTraceStep } from './run-trace';
 import { pendingSegments, type StreamSegments } from './stream-segments';
@@ -130,4 +130,35 @@ export function describeTranscript(input: {
   const empty =
     input.messageCount === 0 && input.commandNotice === null && input.streamingCount === 0;
   return { loading, errored, showIntro: !loading && !errored && empty };
+}
+
+/**
+ * Whether the context that starts at `from` opens with a summary of what came
+ * before. The summary is written after the messages it keeps, not before them
+ * (`apps/worker/src/compaction.ts`), so it is looked for in the whole stretch
+ * that is still in the context rather than in the next message only: an
+ * automatic compaction keeps its recent tail and puts the summary below it,
+ * and the boundary used to read "Kontext geleert" there.
+ */
+export function summaryFollows(
+  messages: readonly Pick<AiConversationMessage, 'superseded' | 'isSummary'>[],
+  from: number,
+): boolean {
+  for (const message of messages.slice(from)) {
+    if (message.superseded) return false;
+    if (message.isSummary) return true;
+  }
+  return false;
+}
+
+/**
+ * Whether the composer has to wait: a run is answering, or a compaction
+ * somebody asked for is still holding the conversation (issue #287), during
+ * which the API refuses a new message anyway.
+ */
+export function composerBusy(
+  activeRunId: string | null,
+  conversation: Pick<AiConversation, 'compactRequestedAt'> | null,
+): boolean {
+  return activeRunId !== null || (conversation?.compactRequestedAt ?? null) !== null;
 }
