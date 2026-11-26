@@ -1258,8 +1258,9 @@ numbers the stretches of consecutive changes between blocks the write left
 alone. `journalWrittenBlocks` computes it inside the write's transaction from
 the snapshot and the stored content (`apps/api/src/common/agent-journal-blocks.ts`).
 
-- **While it works.** The pulse names the page of the tool call in flight
-  (`currentToolPage` in `run-labels.ts`): "Schreibt in „Titel“" when the call's
+- **While it works.** The pulse names the page of the run's latest tool call
+  until the next one (`currentToolPage` in `run-labels.ts`; a read lasts
+  milliseconds, the thinking after it seconds): "Schreibt in „Titel“" when the call's
   `target` is the page, "Liest „Titel“" when only its `subject` is, linked. The
   trace names pages by title where the reader may open them. No page carries an
   editing state (ADR-065).

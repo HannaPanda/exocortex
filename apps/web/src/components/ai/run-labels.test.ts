@@ -92,8 +92,15 @@ describe('currentToolPage', () => {
     });
   });
 
-  it('names nothing once the call is over or when it is about no page', () => {
-    expect(currentToolPage([entry({ status: 'succeeded', target: 'document:abc' })])).toBeNull();
+  it('keeps naming the page after the call, until the next one', () => {
+    expect(currentToolPage([entry({ status: 'succeeded', target: 'document:abc' })])).toEqual({
+      documentId: 'abc',
+      writing: true,
+    });
+  });
+
+  it('names nothing for a call that did not reach a page or is about none', () => {
+    expect(currentToolPage([entry({ status: 'refused', target: 'document:abc' })])).toBeNull();
     expect(currentToolPage([entry({ target: 'workspace:w1' })])).toBeNull();
     expect(currentToolPage([])).toBeNull();
   });

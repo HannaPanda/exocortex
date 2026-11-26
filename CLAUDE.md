@@ -928,7 +928,7 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   `restoreBlocks`, anything else is named and left alone, with no grace window.
   Reading a run's changes is `exo_ai_run_changes` on both surfaces; the undo
   (`POST /api/ai/runs/:id/revert`) is the browser's and the requester's only.
-  The pulse names the page of the call in flight; there is still no editing
+  The pulse names the page of the latest tool call; there is still no editing
   state (ADR-065).
 
 Full list: `docs/adr/`.

@@ -68,9 +68,10 @@ page and one decision at a time. Only the person the run worked for may take it
 back; any member who may read the run may read its changes.
 
 **What is shown while a run works names a place, not a state.** The pulse
-under a running chat says "Schreibt in „Titel“" or "Liest „Titel“" for the tool
-call in flight, from the `target` and `subject` the worker already publishes
-(ADR-084), and links to the page. There is still no "is being edited" state on
+under a running chat says "Schreibt in „Titel“" or "Liest „Titel“" for the
+run's latest tool call until the next one (a read lasts milliseconds, the
+thinking after it seconds), from the `target` and `subject` the worker already
+publishes (ADR-084), and links to the page. There is still no "is being edited" state on
 the page and nothing is locked (ADR-065): a write lands as one transaction and
 the editor marks its blocks afterwards. "Auf der Seite zeigen" asks the editor
 for the run's blocks once, from the run's changes, and marks them with the same

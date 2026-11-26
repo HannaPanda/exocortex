@@ -81,16 +81,18 @@ export function currentPhaseLabel(
 }
 
 /**
- * The page the run's current tool call is about, while that call runs
- * (issue #248): what the pulse names and links to. `writing` when the call
- * changes the page (its target is the page), reading otherwise. `null` when
- * no call is running or the running one is not about a page.
+ * The page the run's latest tool call is about (issue #248): what the pulse
+ * names and links to while the run goes on. `writing` when the call changes
+ * the page (its target is the page), reading otherwise. Not only while the
+ * call is in flight: a read takes milliseconds and the model's thinking after
+ * it takes seconds, so the page stays named until the next call. `null` when
+ * the latest call is about no page, or did not reach it (failed, refused).
  */
 export function currentToolPage(
   toolActivity: readonly ToolActivityEntry[],
 ): { documentId: string; writing: boolean } | null {
   const last = toolActivity[toolActivity.length - 1];
-  if (last === undefined || last.status !== 'started') return null;
+  if (last === undefined || last.status === 'failed' || last.status === 'refused') return null;
   const target = describeToolTarget(last.target);
   if (target?.kind === 'document') return { documentId: target.id, writing: true };
   const subject = describeToolTarget(last.subject);

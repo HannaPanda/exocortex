@@ -20,8 +20,8 @@ export interface RunActivityProps {
   onCancel: () => void;
   cancelling: boolean;
   /**
-   * The page the tool call in flight is about (issue #248), so the reader
-   * sees where the run is working and can go there. `null` between calls.
+   * The page the run's latest tool call is about (issue #248), so the reader
+   * sees where the run is working and can go there.
    */
   page?: { documentId: string; writing: boolean } | null;
 }
@@ -103,7 +103,7 @@ export function RunActivity({
 
 /**
  * "Schreibt in „Titel“" or "Liest „Titel“", linked (issue #248). It names
- * where the call in flight is, nothing more: there is no "being edited"
+ * where the run's latest call went, nothing more: there is no "being edited"
  * state on the page itself (ADR-065), and a write still lands as one
  * transaction whose blocks the editor then marks. A page the reader cannot
  * open is named without a title and without a link.
