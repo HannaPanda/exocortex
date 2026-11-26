@@ -4,7 +4,7 @@ import fastifyMultipart from '@fastify/multipart';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { type FastifyInstance } from 'fastify';
+import { errorCodes as fastifyErrorCodes, type FastifyInstance } from 'fastify';
 
 import { type ApiEnv } from '@exocortex/config';
 import { createCorrelationId, type Logger, startTracing } from '@exocortex/logger';
@@ -130,6 +130,34 @@ async function bootstrap(): Promise<void> {
       return;
     }
     done();
+  });
+
+  // The MCP endpoint reads its body as JSON whatever the declared type.
+  // ChatGPT's connector check posts to it with a content type Fastify has no
+  // parser for (it is not `application/json`), and the 415 Fastify answered
+  // with came before authentication and before the JSON-RPC handler, so the
+  // check failed and ChatGPT reported that the connection could not be
+  // verified. Everywhere else an unknown type is still refused with 415.
+  fastify.addContentTypeParser('*', { parseAs: 'string' }, (request, body, done) => {
+    if (!request.url.startsWith('/api/mcp')) {
+      done(new fastifyErrorCodes.FST_ERR_CTP_INVALID_MEDIA_TYPE(request.headers['content-type']));
+      return;
+    }
+    logger.info('MCP body without a JSON content type', {
+      contentType: request.headers['content-type'] ?? null,
+    });
+    const text = typeof body === 'string' ? body : body.toString('utf8');
+    if (text.trim().length === 0) {
+      done(null, undefined);
+      return;
+    }
+    try {
+      done(null, JSON.parse(text) as unknown);
+    } catch {
+      // Not JSON: the handler answers it as an invalid JSON-RPC request,
+      // after authentication, which is what a client probing us expects.
+      done(null, undefined);
+    }
   });
 
   await fastify.register(fastifyHelmet, {
