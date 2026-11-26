@@ -512,6 +512,59 @@ test.describe('editor', () => {
     expect(left).toMatch(/Ende omega$/);
   });
 
+  /**
+   * Issue #240: below a list and a block in between, the empty line previews
+   * the next point and `Tab` continues the list. The rules are unit-tested in
+   * `packages/editor`; what only a browser proves is that the preview is drawn,
+   * that the browser hands `Tab` to the editor instead of moving the focus, and
+   * that the Yjs undo takes the continuation back in one step.
+   */
+  test('Tab continues a numbered list across a quote', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Liste ${Date.now().toString(36)}`);
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: '1. eins\n2. zwei\n\n> Zitat dazwischen\n\nweg\n', mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    // A fresh load, so no marker of the write sits in the document.
+    await page.reload();
+    const line = page.locator('.exocortex-editor p', { hasText: 'weg' });
+    await expect(line).toBeVisible({ timeout: 30_000 });
+
+    // Empty the last line: the caret now stands below the quote.
+    await line.click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Shift+Home');
+    await page.keyboard.press('Backspace');
+    const ghost = page.locator('.exocortex-editor p.exocortex-list-ghost');
+    await expect(ghost).toHaveAttribute('data-list-ghost-marker', '3.');
+    await expect(ghost).toHaveAttribute('data-placeholder', /.+/);
+    await page.waitForTimeout(800);
+
+    // Tab makes it the third point, in a list that counts on after the quote.
+    await page.keyboard.press('Tab');
+    const continued = page.locator('.exocortex-editor blockquote + ol');
+    await expect(continued).toHaveAttribute('start', '3');
+    await expect(ghost).toHaveCount(0);
+    await page.keyboard.type('drei');
+    await expect(continued.locator('li')).toHaveText('drei');
+
+    // One undo step for the typing, one for the continuation.
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(continued.locator('li')).toHaveText('');
+    await page.keyboard.press('Control+z');
+    await expect(continued).toHaveCount(0);
+    await expect(page.locator('.exocortex-editor ol')).toHaveCount(1);
+
+    // Typing instead keeps the line a paragraph.
+    await expect(ghost).toHaveCount(1);
+    await page.keyboard.type('Absatz');
+    await expect(page.locator('.exocortex-editor blockquote + p')).toHaveText('Absatz');
+    await expect(ghost).toHaveCount(0);
+  });
+
   test('offers table controls inside a table', async ({ page }) => {
     await openEditor(page);
 

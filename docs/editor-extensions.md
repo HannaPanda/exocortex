@@ -286,6 +286,37 @@ menu opens on release without movement, never on the press that may start a
 drag (issue #268), and a drag closes it. Covered by `block-drop.test.ts`,
 `move-block.test.ts` and `e2e/tests/block-drag.spec.ts`.
 
+## Continuing a list across a block
+
+An empty line below a list, with a picture, a quote or a table in between,
+offers to continue the list (issue #240). `ListContinuation`
+(`list-continuation.ts`, registry entry `list-continuation`, behaviour only)
+answers two things from one function, `findListContinuation`:
+
+- **The preview.** While the caret stands in such a line, a node decoration
+  (`.exocortex-list-ghost`) indents it to where the new point's text will be,
+  draws the point's marker pale in front of it (bullet, next number, empty task
+  box) and replaces the placeholder with the `Tab` hint from
+  `EditorWords.listContinuation`. It is a decoration only: nothing reaches the
+  Yjs state, and the first character typed removes it, so the line stays a
+  paragraph. The look lives in `globals.css` and uses the placeholder's token.
+- **`Tab`.** Turns the line into the next point in one transaction (one undo
+  step); the line keeps its block id and the caret stays in it. Everywhere the
+  function says no, `Tab` returns false and keeps its old meaning: nesting a
+  point, the next table cell, the code block.
+
+The rules: the last list before the line counts, across at most
+`LIST_CONTINUATION_MAX_GAP` (2) blocks, and a heading ends the connection.
+Directly after the list the point goes to the level of the last point, into a
+sub-list if the list ends in one; across a block it goes to the level of the
+list beside that block, because a sub-point there would need an empty point
+above it. A numbered list continues with its next number (`start`), a task list
+with an unchecked task. An empty line inside a point below a picture (what
+`Strg+Enter` and an inserted image leave) becomes the next point of the same
+list, taking whatever follows it in the point along. Table cells are excluded.
+`- ` and `1. ` still start a list of their own. Covered by
+`list-continuation.test.ts` and `e2e/tests/editor.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)
