@@ -49,7 +49,9 @@ function writePinned(pinned: boolean): void {
  * the reader does with it writes to the document. Three shapes, chosen by the
  * room right of the text column (`outlinePlacement`): the list pinned beside
  * the page, the collapsed scale in the margin, or on a phone a compact button
- * floating at the bottom edge. Short pages get none of them.
+ * floating at the bottom edge. A page without headings gets none of them.
+ * The list and the scale start below the page head (cover, its menu, title)
+ * and rise with it to the top edge while the reader scrolls (issue #266).
  */
 export const PageOutline = React.memo(function PageOutline({ editor }: { editor: Editor }) {
   const t = useTranslations('editor.pageOutline');
@@ -116,7 +118,9 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
         aria-label={t('label')}
         data-testid="page-outline-pinned"
         style={edge}
-        className="pointer-events-auto absolute top-6 flex max-h-[calc(100%-3rem)] w-60 flex-col gap-1"
+        // `--outline-top` follows the page head (issue #266, `placeTop` in
+        // `use-outline-tracking.ts`); the list ends 1.5rem above the bottom.
+        className="pointer-events-auto absolute top-[var(--outline-top,1.5rem)] flex max-h-[calc(100%-var(--outline-top,1.5rem)-1.5rem)] w-60 flex-col gap-1"
       >
         {header}
         <div ref={pinnedListRef} className="min-h-0 overflow-y-auto">
@@ -138,7 +142,10 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   return createPortal(
     <div
       style={edge}
-      className={cn('pointer-events-none absolute', compact ? 'bottom-4' : 'top-6')}
+      className={cn(
+        'pointer-events-none absolute',
+        compact ? 'bottom-4' : 'top-[var(--outline-top,1.5rem)]',
+      )}
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger

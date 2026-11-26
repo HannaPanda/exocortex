@@ -100,6 +100,24 @@ export function activeTickIndex(ticks: readonly RailTick[], active: number | nul
   return null;
 }
 
+/** Distance of the outline from the top edge of the page area, in pixels (1.5rem). */
+export const OUTLINE_TOP = 24;
+
+/**
+ * Where the top of the pinned list and the scale sit, in pixels from the top
+ * of the page area (issue #266).
+ *
+ * The outline floats beside the scroll container, so it does not scroll; the
+ * cover and the title above the text do. At the top of a page the outline
+ * therefore starts where the content under the title starts (`contentTop`,
+ * measured from the top of the scrolled content), rises with it while the
+ * reader scrolls, and stays at `OUTLINE_TOP` from then on, the way it always
+ * did. A page without a cover or with a short title barely moves it.
+ */
+export function outlineTop(contentTop: number, scrollTop: number): number {
+  return Math.max(OUTLINE_TOP, Math.round(contentTop - scrollTop));
+}
+
 /** How the outline is offered, decided by the room beside the text column. */
 export type OutlinePlacement = 'pinned' | 'rail' | 'compact';
 

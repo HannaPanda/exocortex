@@ -9,6 +9,7 @@ import {
   activeHeadingIndex,
   type OutlinePlacement,
   outlinePlacement,
+  outlineTop,
   outlineWanted,
 } from './outline-geometry';
 
@@ -63,6 +64,10 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
   const entriesRef = React.useRef(entries);
   const topsRef = React.useRef<(number | null)[]>([]);
   const holdRef = React.useRef<{ index: number; until: number } | null>(null);
+  /** Where the content under the cover and the title starts, in scrolled-content pixels. */
+  const contentTopRef = React.useRef(0);
+  /** The host again, as a ref: its style is written on every scroll frame. */
+  const hostRef = React.useRef<HTMLElement | null>(null);
 
   // The elements exist once the editor view is attached to the page.
   React.useEffect(() => {
@@ -72,6 +77,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
       const host = dom?.closest<HTMLElement>('[data-outline-host]') ?? null;
       const page = dom?.closest<HTMLElement>('.exocortex-page') ?? null;
       if (scroller === null || host === null || page === null) return false;
+      hostRef.current = host;
       setElements({ scroller, host, page });
       return true;
     };
@@ -79,6 +85,16 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     const frame = window.requestAnimationFrame(() => void resolve());
     return () => window.cancelAnimationFrame(frame);
   }, [editor]);
+
+  /**
+   * Moves the outline's top edge with the page head (issue #266). Written as a
+   * custom property on the host rather than kept in state, so scrolling past
+   * the cover re-renders nothing; `page-outline.tsx` reads `--outline-top`.
+   */
+  const placeTop = React.useCallback((scroller: HTMLElement) => {
+    const top = outlineTop(contentTopRef.current, scroller.scrollTop);
+    hostRef.current?.style.setProperty('--outline-top', `${String(top)}px`);
+  }, []);
 
   const updateActive = React.useCallback((scroller: HTMLElement) => {
     const hold = holdRef.current;
@@ -113,6 +129,18 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
       return element.getBoundingClientRect().top - scrollerRect.top + scroller.scrollTop;
     });
 
+    // The content starts below the title and its margin; everything above it
+    // (cover, cover menu, symbol, title) is the page head the outline leaves
+    // free. Without a title the editor's own top edge is the start.
+    const title = page.querySelector<HTMLElement>('.exocortex-page-title');
+    const contentEdge =
+      title === null
+        ? editor.view.dom.getBoundingClientRect().top
+        : title.getBoundingClientRect().bottom +
+          (Number.parseFloat(getComputedStyle(title).marginBottom) || 0);
+    contentTopRef.current = contentEdge - scrollerRect.top + scroller.scrollTop;
+    placeTop(scroller);
+
     // The room right of the text: the page box minus its own right padding is
     // where the text ends, the scroller's client width is where the visible
     // area ends (the scrollbar is outside it).
@@ -133,7 +161,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
         : next,
     );
     updateActive(scroller);
-  }, [editor, elements, updateActive]);
+  }, [editor, elements, placeTop, updateActive]);
 
   // Document changes, local, remote or from an agent, all arrive as `update`.
   React.useEffect(() => {
@@ -169,6 +197,10 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     const observer = new ResizeObserver(schedule);
     observer.observe(elements.scroller);
     observer.observe(editor.view.dom);
+    // The page box grows with the head too (a title wrapping onto a second
+    // line, the overview arriving), which moves the content without resizing
+    // the editor.
+    observer.observe(elements.page);
     measure();
     void document.fonts.ready.then(schedule);
     return () => {
@@ -185,6 +217,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
       if (frame !== null) return;
       frame = window.requestAnimationFrame(() => {
         frame = null;
+        placeTop(scroller);
         updateActive(scroller);
       });
     };
@@ -199,7 +232,17 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
       scroller.removeEventListener('scrollend', onScrollEnd);
       if (frame !== null) window.cancelAnimationFrame(frame);
     };
-  }, [elements, updateActive]);
+  }, [elements, placeTop, updateActive]);
+
+  // The host outlives the editor (it is the document area), so the property
+  // is taken back when the outline goes, not left for the next page.
+  React.useEffect(() => {
+    if (elements === null) return;
+    const { host } = elements;
+    return () => {
+      host.style.removeProperty('--outline-top');
+    };
+  }, [elements]);
 
   /**
    * Scrolls the page so the heading sits just below the reading line's top

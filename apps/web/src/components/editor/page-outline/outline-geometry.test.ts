@@ -5,7 +5,9 @@ import { type PageOutlineEntry } from '@exocortex/editor';
 import {
   activeHeadingIndex,
   activeTickIndex,
+  OUTLINE_TOP,
   outlinePlacement,
+  outlineTop,
   outlineWanted,
   PINNED_WIDTH,
   railTicks,
@@ -74,6 +76,22 @@ describe('outlinePlacement', () => {
     expect(outlinePlacement(PINNED_WIDTH + 31, true)).toBe('rail');
     expect(outlinePlacement(PINNED_WIDTH + 100, false)).toBe('rail');
     expect(outlinePlacement(20, true)).toBe('compact');
+  });
+});
+
+describe('outlineTop', () => {
+  it('starts where the content under the cover and the title starts', () => {
+    expect(outlineTop(420, 0)).toBe(420);
+  });
+
+  it('rises with the content and then stays at the top edge', () => {
+    expect(outlineTop(420, 300)).toBe(120);
+    expect(outlineTop(420, 396)).toBe(OUTLINE_TOP);
+    expect(outlineTop(420, 2000)).toBe(OUTLINE_TOP);
+  });
+
+  it('never sits higher than the top edge on a page whose content starts above it', () => {
+    expect(outlineTop(10, 0)).toBe(OUTLINE_TOP);
   });
 });
 
