@@ -16,8 +16,8 @@ import {
   createFetchApiClient,
   createMcpRequestHandler,
   type McpRequestHandler,
-  toolsFor,
   type ToolDomain,
+  toolsFor,
   type ToolSurface,
   WriteConfirmationGate,
 } from '@exocortex/mcp-tools';
