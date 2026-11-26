@@ -61,6 +61,16 @@
     },
     "where": "Dans l’éditeur, taper « / » ou ouvrir le menu à gauche d’un bloc."
   },
+  "bloecke-verschieben": {
+    "title": "Déplacer des blocs et des éléments de liste",
+    "summary": "À l’aide de la poignée à gauche d’un bloc, glisse-le vers un autre endroit, y compris un élément de liste individuel et ses sous-éléments. Une ligne indique où il atterrira lors du glisser-déposer, et son indentation montre à quel niveau.",
+    "details": {
+      "p1": "Saisis le bloc par la poignée à six points et glisse-le vers le haut ou vers le bas. Le bloc déplacé s’estompe et une ligne ambrée apparaît entre les blocs : c’est là qu’il se placera lorsque tu relâcheras. Là où rien ne peut être déposé, aucune ligne n’apparaît et rien ne se passe.",
+      "p2": "Pour les listes, la ligne indique en plus le niveau. Si tu déplaces la souris vers la droite, la ligne s’indente et l’élément devient un sous-élément de celui situé au-dessus ; vers la gauche, elle se désindente et l’élément quitte la sous-liste. Un élément numéroté reste numéroté, une tâche reste une tâche, et la numérotation s’ajuste automatiquement après le dépôt.",
+      "p3": "Sans souris, utilise Ctrl+Maj+Flèche vers le haut ou vers le bas : le bloc où se trouve le curseur échange sa place avec son voisin, ou un élément de liste au sein de sa liste. Ces deux mêmes actions figurent dans le menu de la poignée sous « Déplacer vers le haut » et « Déplacer vers le bas ». Chaque déplacement peut être annulé en une seule étape avec Ctrl+Z."
+    },
+    "where": "Dans l’éditeur, glisser la poignée à gauche d’un bloc, ou utiliser Ctrl+Maj+Flèche vers le haut et vers le bas."
+  },
   "bild-vergroessern": {
     "title": "Agrandir les images et zoomer",
     "summary": "Un clic sur une image intégrée l’ouvre en grand par-dessus la page. Là, tu peux zoomer bien au-delà de la taille de l’écran et déplacer l’image pour lire les détails de captures d’écran, de diagrammes ou de cartes.",

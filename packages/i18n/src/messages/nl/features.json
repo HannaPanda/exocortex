@@ -61,6 +61,16 @@
     },
     "where": "Typ in de editor \"/\", of open het menu links naast een blok."
   },
+  "bloecke-verschieben": {
+    "title": "Blokken en lijstitems verplaatsen",
+    "summary": "Via de greep links van een blok sleep je het naar een andere plek, ook een afzonderlijk lijstitem inclusief de subitems. Een lijn laat tijdens het slepen zien waar het terechtkomt, en het inspringen toont op welk niveau.",
+    "details": {
+      "p1": "Pak het blok vast bij de greep met de zes stippen en sleep het omhoog of omlaag. Het gesleepte blok vervaagt en tussen de blokken verschijnt een amberkleurige lijn: daar belandt het zodra je loslaat. Waar niets kan worden geplaatst, verschijnt geen lijn en gebeurt er ook niets.",
+      "p2": "Bij lijsten toont de lijn bovendien het niveau. Beweeg je de muis tijdens het slepen naar rechts, dan springt de lijn in en wordt het item een subitem van het item erboven; naar links springt het uit en verlaat het item de sublijst. Een genummerd item blijft genummerd, een taak blijft een taak, en de nummering loopt na het neerzetten vanzelf weer juist door.",
+      "p3": "Zonder muis gebruik je Strg+Umschalt+Pfeil hoch of runter: het blok waarin de cursor staat, wisselt van plek met zijn buur, en een lijstitem binnen zijn eigen lijst. Dezelfde twee acties vind je in het menu bij de greep als „Naar boven verplaatsen” en „Naar beneden verplaatsen”. Elke verplaatsing maak je met Strg+Z in één stap ongedaan."
+    },
+    "where": "In de editor slepen aan de greep links van een blok, of via Strg+Umschalt+Pfeil hoch en runter."
+  },
   "bild-vergroessern": {
     "title": "Afbeeldingen vergroten en inzoomen",
     "summary": "Een klik op een ingebedde afbeelding opent deze groot over de pagina. Daar zoom je in tot ver voorbij de schermgrootte en verschuif je de afbeelding om details in screenshots, diagrammen of kaarten te bekijken.",

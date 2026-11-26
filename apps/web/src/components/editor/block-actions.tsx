@@ -2,15 +2,28 @@
 
 import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
-import { ChevronRightIcon, CopyIcon, LinkIcon, Trash2Icon } from 'lucide-react';
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  LinkIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { BLOCK_ID_ATTRIBUTE, type BlockCatalogEntry } from '@exocortex/editor';
+import {
+  BLOCK_ID_ATTRIBUTE,
+  type BlockCatalogEntry,
+  movableBlockAt,
+  moveBlockTransaction,
+} from '@exocortex/editor';
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
 } from '@exocortex/ui';
@@ -122,6 +135,19 @@ export function BlockActionItems({
     });
   };
 
+  /**
+   * One place up or down among its neighbours (issue #243), the menu twin of
+   * `Strg+Umschalt+Pfeil`. Opened from the selection toolbar it moves the block
+   * the keyboard would move, a list item rather than its whole list.
+   */
+  const move = (direction: 1 | -1): void => {
+    const block = target ?? movableBlockAt(editor.state);
+    if (block === null) return;
+    const tr = moveBlockTransaction(editor.state, block.pos, direction);
+    if (tr !== null) editor.view.dispatch(tr);
+    editor.commands.focus();
+  };
+
   /** Deep link built from the stable block id, never from a document offset. */
   const copyLink = async (): Promise<void> => {
     const blockId = resolve()?.node.attrs[BLOCK_ID_ATTRIBUTE];
@@ -153,6 +179,15 @@ export function BlockActionItems({
         </DropdownMenuContent>
       </DropdownMenuSub>
 
+      <DropdownMenuSeparator />
+      <DropdownMenuItem data-testid="block-move-up" onClick={() => move(-1)}>
+        <ArrowUpIcon /> {t('moveUp')}
+        <DropdownMenuShortcut>{t('moveUpShortcut')}</DropdownMenuShortcut>
+      </DropdownMenuItem>
+      <DropdownMenuItem data-testid="block-move-down" onClick={() => move(1)}>
+        <ArrowDownIcon /> {t('moveDown')}
+        <DropdownMenuShortcut>{t('moveDownShortcut')}</DropdownMenuShortcut>
+      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem data-testid="block-duplicate" onClick={duplicate}>
         <CopyIcon /> {t('duplicate')}

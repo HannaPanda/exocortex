@@ -39,6 +39,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/seite/:x'] },
   }),
   defineFeature({
+    id: 'bloecke-verschieben',
+    area: 'seiten',
+    since: '2026-11-26',
+    references: ['#243'],
+    ui: {},
+    shortcuts: [
+      'Strg+Umschalt+Pfeil hoch oder runter verschiebt den Block, in dem der Cursor steht',
+    ],
+  }),
+  defineFeature({
     id: 'bild-vergroessern',
     area: 'seiten',
     since: '2026-09-25',

@@ -8016,6 +8016,22 @@
       "source": "9d400c3de6767a46",
       "output": "02cdaabfca805d6a"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "40bb50da160cdc21"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "4e0f12ef9ffe1cf6"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "c66feb5eb8f217c7"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "fefb2efe74e4a1fc"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "788bef32c529ff05"
@@ -11939,6 +11955,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "6fe03ddbae1bce4e"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "2a76fca70011ac40"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "b082d9a0962d6a44"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "6e706d55b8659d8e"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "11aea69099d25e0e"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "69dcdaaa859c1475"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "ca2e0d35f8f91777"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -31810,6 +31850,22 @@
       "source": "9d400c3de6767a46",
       "output": "88f77287cbdba827"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "d6cd9f644becb5b1"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "ec3152910e9ae059"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "943212296331cdb6"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "7fcac08e4af0e2c2"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "da63a039c3cb4b76"
@@ -35733,6 +35789,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "510c52afecc754d9"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "7389ebfa14a4e128"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "56413e3f9b0b3e4c"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "ac5d891d6b91c434"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "5b1961001939e702"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "717d0138d226e16b"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "751416bb3d6f4e95"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -55604,6 +55684,22 @@
       "source": "9d400c3de6767a46",
       "output": "9d726e2b316de2ac"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "290fce9d5fb134e9"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "2be53f9d8cca46b3"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "e6df7f9d09a22c3c"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "898f9d11bbb05a04"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "d23fb3aa0a0aeac1"
@@ -59527,6 +59623,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "6162f4dfd4c90ed4"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "dd7e3253547b5a39"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "64182bc0555ae29c"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "fe543887aa3878bd"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "b94263b33683317f"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "dc0f780545ad6dc7"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "3a34f007a76d8333"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -79398,6 +79518,22 @@
       "source": "9d400c3de6767a46",
       "output": "3b30f34b8e9b7d0d"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "d32203c0c59fac32"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "787dc582ece4edd9"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "9491978a5b93e235"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "39acc73466a56f72"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "7713564936d728f3"
@@ -83321,6 +83457,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "1338ca4263ec6474"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "65b4109523c1c5bf"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "7f2521c9136b4c91"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "1976f0177b77b784"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "05bb679121004e30"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "70bfbdd73940740e"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "1ee05a464d420398"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -103192,6 +103352,22 @@
       "source": "9d400c3de6767a46",
       "output": "92b14b074d5dc6a2"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "39124a30543bd580"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "4e0f12ef9ffe1cf6"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "da9b9097d57b1ca4"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "fefb2efe74e4a1fc"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "17dbff1e2dab331d"
@@ -107115,6 +107291,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "e87f24cfd57f8b74"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "412b06f97b54d14c"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "98ff0c90329b9704"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "d2ad2e555f7c28ee"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "84a2b587b95f02a1"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "561c5580b5edc730"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "39879eb102973eb3"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -126986,6 +127186,22 @@
       "source": "9d400c3de6767a46",
       "output": "a79453e5df831ab7"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "497a9c47d8258bd1"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "4e0f12ef9ffe1cf6"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "b2392f8ccc49ee8e"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "fefb2efe74e4a1fc"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "f70f6bcd8e6a9dab"
@@ -130909,6 +131125,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "ccdbe41d093961b5"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "1f47b59eb4646600"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "2bce3e8d99be49e7"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "9fd77e788709a213"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "7cbdd8386bf18a1b"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "a8ebf42f18ee6335"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "e5ed02914424d48c"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",
@@ -150780,6 +151020,22 @@
       "source": "9d400c3de6767a46",
       "output": "88f77287cbdba827"
     },
+    "editor.blockActions.moveDown": {
+      "source": "cff6c98a4f1bc0d6",
+      "output": "b063a2b49f639a40"
+    },
+    "editor.blockActions.moveDownShortcut": {
+      "source": "f07344e43f6c9f23",
+      "output": "4e0f12ef9ffe1cf6"
+    },
+    "editor.blockActions.moveUp": {
+      "source": "eb839bf5eab9992c",
+      "output": "971b6d4927a96a8f"
+    },
+    "editor.blockActions.moveUpShortcut": {
+      "source": "27b7e86af97221fe",
+      "output": "fefb2efe74e4a1fc"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "fc3d5340f61e343e"
@@ -154703,6 +154959,30 @@
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
       "output": "02a5696ba603563b"
+    },
+    "features.bloecke-verschieben.details.p1": {
+      "source": "f6cf30fbb09d2d73",
+      "output": "50f6d1b244bd974c"
+    },
+    "features.bloecke-verschieben.details.p2": {
+      "source": "d7dd517f1bc12e22",
+      "output": "8ae7c459a52f6a5f"
+    },
+    "features.bloecke-verschieben.details.p3": {
+      "source": "cad110a436b611ed",
+      "output": "08b558aa22f3b1b3"
+    },
+    "features.bloecke-verschieben.summary": {
+      "source": "f3369274b68f5623",
+      "output": "68588f4f8e4e9a8e"
+    },
+    "features.bloecke-verschieben.title": {
+      "source": "78d8d4553b0ae60b",
+      "output": "a8ddcd5c8af2a96b"
+    },
+    "features.bloecke-verschieben.where": {
+      "source": "1ab2e10ad202e01a",
+      "output": "23065795d3ed3a18"
     },
     "features.bloecke.details.p1": {
       "source": "ad9abe61a881fcfb",

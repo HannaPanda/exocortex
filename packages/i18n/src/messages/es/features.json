@@ -61,6 +61,16 @@
     },
     "where": "En el editor, escribe «/» o abre el menú a la izquierda de un bloque."
   },
+  "bloecke-verschieben": {
+    "title": "Mover bloques y elementos de lista",
+    "summary": "Arrastra desde el tirador a la izquierda de un bloque para moverlo a otro lugar, incluido un elemento de lista individual con sus subelementos. Una línea te muestra al arrastrar dónde quedará, y su sangría indica en qué nivel.",
+    "details": {
+      "p1": "Agarra el bloque por el tirador de seis puntos y arrástralo hacia arriba o hacia abajo. El bloque arrastrado se vuelve tenue y aparece una línea de color ámbar entre los bloques: ahí es donde quedará al soltarlo. Donde no se pueda soltar nada, no aparecerá ninguna línea y no ocurrirá nada.",
+      "p2": "En las listas, la línea muestra además el nivel. Si mueves el ratón hacia la derecha al arrastrar, la línea se sangra y el elemento pasa a ser un subelemento del elemento superior; hacia la izquierda, disminuye la sangría y el elemento sale de la sublista. Un elemento numerado sigue numerado, una tarea sigue siendo una tarea y la numeración se reajusta automáticamente al soltar.",
+      "p3": "Sin ratón, puedes usar Strg+Umschalt+Pfeil hoch o runter: el bloque donde esté el cursor se intercambia con su vecino, o un elemento de lista dentro de su lista. Estas dos mismas acciones están disponibles en el menú del tirador como «Mover hacia arriba» y «Mover hacia abajo». Cada desplazamiento se deshace en un solo paso con Strg+Z."
+    },
+    "where": "En el editor, arrastra desde el tirador a la izquierda de un bloque, o usa Strg+Umschalt+Pfeil hoch y runter."
+  },
   "bild-vergroessern": {
     "title": "Agrandar imágenes y hacer zoom",
     "summary": "Al hacer clic en una imagen incrustada, se abre en grande sobre la página. Allí puedes ampliarla mucho más allá del tamaño de la pantalla y moverla para leer detalles en capturas de pantalla, diagramas o mapas.",

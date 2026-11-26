@@ -61,6 +61,16 @@
     },
     "where": "Nell’editor digita \"/\", oppure apri il menu a sinistra di un blocco."
   },
+  "bloecke-verschieben": {
+    "title": "Spostare blocchi e voci di elenco",
+    "summary": "Usa la maniglia a sinistra di un blocco per trascinarlo in un’altra posizione, inclusa una singola voce di elenco con i suoi sottopunti. Durante il trascinamento, una linea mostra dove verrà posizionato e il rientro indica a quale livello.",
+    "details": {
+      "p1": "Afferra il blocco dalla maniglia a sei punti e trascinalo verso l’alto o verso il basso. Il blocco trascinato diventa semitrasparente e tra i blocchi compare una linea color ambra: lì è dove finirà quando rilasci. Dove non è possibile posizionarlo non compare alcuna linea e non succede nulla.",
+      "p2": "Negli elenchi, la linea mostra anche il livello di rientro. Se sposti il mouse verso destra durante il trascinamento, la linea rientra e la voce diventa un sottopunto dell’elemento sovrastante; verso sinistra si sposta verso l’esterno e la voce lascia la sottolista. Una voce numerata rimane numerata, un’attività rimane un’attività e i numeri si aggiornano automaticamente nell’ordine corretto dopo il rilascio.",
+      "p3": "Senza mouse puoi usare Strg+Umschalt+Freccia su o giù: il blocco in cui si trova il cursore si scambia con il vicino, mentre una voce di elenco si sposta all’interno della propria lista. Le stesse due azioni sono disponibili nel menu della maniglia come „Sposta su“ e „Sposta giù“. Ogni spostamento si annulla in un solo passaggio con Strg+Z."
+    },
+    "where": "Nell’editor trascinando la maniglia a sinistra di un blocco, oppure con Strg+Umschalt+Freccia su e giù."
+  },
   "bild-vergroessern": {
     "title": "Ingrandire le immagini ed eseguire lo zoom",
     "summary": "Un clic su un’immagine incorporata la apre a schermo intero sopra la pagina. Lì puoi ingrandirla ben oltre le dimensioni dello schermo e spostarla per leggere i dettagli in screenshot, diagrammi o mappe.",

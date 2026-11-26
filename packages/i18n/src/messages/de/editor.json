@@ -161,7 +161,11 @@
     "color": "Farbe",
     "duplicate": "Duplizieren",
     "copyLink": "Link zum Block kopieren",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "moveUp": "Nach oben verschieben",
+    "moveDown": "Nach unten verschieben",
+    "moveUpShortcut": "Strg+Umschalt+↑",
+    "moveDownShortcut": "Strg+Umschalt+↓"
   },
   "blockRemoval": {
     "title": {

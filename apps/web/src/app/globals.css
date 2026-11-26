@@ -234,6 +234,21 @@
     @apply bg-warning/14;
   }
 
+  /* Dragging a block (issue #243), in the page tree's words: the carried
+     block fades as a dragged tree row does, and the line that says "it lands
+     here" is the tree's amber drop line. Its left end is where the dropped
+     block's text will start, so its indentation names the level. The line is
+     drawn by `packages/editor/src/block-drop.ts` into the editor's positioned
+     parent, which is why it is not scoped to `.exocortex-editor`. No motion:
+     it jumps to the next place, because the place is the state. */
+  .exocortex-editor .exocortex-drag-source {
+    @apply opacity-40 select-none;
+  }
+
+  .exocortex-drop-line {
+    @apply pointer-events-none absolute z-50 h-0.5 -translate-y-1/2 rounded-full bg-primary;
+  }
+
   /* A block a write from outside the editor just changed (issue #112): an
      agent, or somebody using the API. A decoration like the comment marker,
      never stored. The wash fires at full strength and settles over

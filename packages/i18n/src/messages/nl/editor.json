@@ -161,7 +161,11 @@
     "color": "Kleur",
     "duplicate": "Dupliceren",
     "copyLink": "Link naar blok kopiëren",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "moveUp": "Omhoog verplaatsen",
+    "moveDown": "Omlaag verplaatsen",
+    "moveUpShortcut": "Ctrl+Shift+↑",
+    "moveDownShortcut": "Ctrl+Shift+↓"
   },
   "blockRemoval": {
     "title": {

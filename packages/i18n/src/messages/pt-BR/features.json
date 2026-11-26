@@ -61,6 +61,16 @@
     },
     "where": "No editor, digite \"/\" ou abra o menu à esquerda de um bloco."
   },
+  "bloecke-verschieben": {
+    "title": "Mover blocos e itens de lista",
+    "summary": "Pela alça à esquerda de um bloco, você pode arrastá-lo para outro lugar, inclusive um item de lista individual com seus subitens. Uma linha mostra onde ele vai cair ao arrastar, e o recuo indica em qual nível.",
+    "details": {
+      "p1": "Pegue o bloco pela alça de seis pontos e arraste-o para cima ou para baixo. O bloco arrastado fica esmaecido e uma linha âmbar surge entre os blocos: é ali que ele vai ficar ao soltar. Onde não for possível soltar nada, nenhuma linha aparece e nada acontece.",
+      "p2": "Em listas, a linha também mostra o nível. Se você mover o mouse para a direita ao arrastar, a linha recua e o item se torna um subitem do item acima; para a esquerda, o recuo diminui e o item sai da sublista. Um item numerado continua numerado, uma tarefa continua como tarefa, e a numeração se ajusta automaticamente após soltar.",
+      "p3": "Sem o mouse, use Strg+Umschalt+Pfeil hoch ou runter: o bloco onde o cursor estiver troca de lugar com o vizinho, ou um item de lista dentro de sua própria lista. Os mesmos dois passos estão disponíveis no menu da alça como „Mover para cima“ e „Mover para baixo“. Qualquer movimentação pode ser desfeita com Strg+Z em um único passo."
+    },
+    "where": "No editor, arraste pela alça à esquerda de um bloco, ou use Strg+Umschalt+Pfeil hoch e runter."
+  },
   "bild-vergroessern": {
     "title": "Ampliar imagens e dar zoom",
     "summary": "Um clique em uma imagem incorporada a abre em tamanho grande sobre a página. Lá você pode dar zoom muito além do tamanho da tela e arrastar a imagem para ver detalhes em capturas de tela, diagramas ou mapas.",
