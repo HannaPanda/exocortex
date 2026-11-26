@@ -339,7 +339,8 @@
       "tokens": "Tokens rein/raus",
       "cost": "Kosten",
       "median": "Median",
-      "estimated": "geschätzt"
+      "estimated": "geschätzt",
+      "kindImage": "Titelbilder"
     },
     "noRunsTitle": "Keine Läufe in diesem Zeitraum",
     "noRunsDescription": "Sobald die KI benutzt wird, steht hier, welches Modell was gekostet hat.",

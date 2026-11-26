@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "Het genereren van afbeeldingen is niet ingesteld voor deze instantie.",
       "no_picture": "Het model „{model}” heeft geen afbeelding opgeleverd. Het kan waarschijnlijk geen afbeeldingen genereren; in het beheergedeelte kun je een geschikt model instellen.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter heeft de sleutel geweigerd die voor deze werkruimte is opgeslagen: deze is onbekend, ingetrokken of uitgeschakeld. Er is geen andere sleutel ingevallen. Degene die hem heeft ingevoerd, kan hem vervangen in de werkruimte-instellingen onder „AI”.",
+        "invalidDeploymentKey": "OpenRouter heeft de sleutel van de installatie geweigerd. Alleen degene die de installatie beheert, kan dit oplossen.",
+        "creditsOwnKey": "Op het OpenRouter-account achter de sleutel van deze werkruimte is het tegoed niet toereikend voor een omslagafbeelding, of de uitgavenlimiet van de sleutel is bereikt. Er is geen andere sleutel ingevallen.",
+        "creditsDeploymentKey": "Op het OpenRouter-account van de installatie is het tegoed niet toereikend voor een omslagafbeelding. Alleen degene die de installatie beheert, kan dit oplossen."
+      },
       "failed": "De omslagafbeelding kon niet worden gegenereerd. Probeer het opnieuw."
     }
   },

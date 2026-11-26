@@ -956,7 +956,7 @@
     "title": "Des clés de fournisseur propres à chaque espace de travail",
     "summary": "Un espace de travail peut enregistrer sa propre clé de fournisseur au lieu d’utiliser celle de l’installation. La clé est stockée de manière chiffrée et ne peut plus être lue ensuite.",
     "details": {
-      "p1": "Dans les paramètres d’un espace de travail, tu enregistres une clé propre pour le fournisseur de modèles. Toutes les exécutions d’IA de cet espace passent alors par ce compte et apparaissent sur sa facture, plutôt que sur celle de l’installation.",
+      "p1": "Dans les paramètres d’un espace de travail, tu peux enregistrer ta propre clé pour le fournisseur de modèles. Toutes les exécutions de l’IA de cet espace passent alors par ce compte et apparaissent sur sa facture plutôt que sur celle de l’installation, tout comme les images de couverture que l’IA génère pour ses pages. Si le fournisseur rejette la clé, aucun autre ne prend le relais : la requête échoue avec ce motif.",
       "p2": "C’est conçu pour le cas où plusieurs personnes ou plusieurs projets partagent une même installation et où chaque partie prend en charge ses propres coûts. Sans clé propre, celle de l’installation est utilisée implicitement ; personne n’a donc l’obligation de configurer quoi que ce soit.",
       "p3": "La clé est stockée chiffrée et ne peut plus être lue par la suite, même pas par l’administration ; tu peux uniquement la remplacer ou la supprimer. La clé de déchiffrement se trouve dans la configuration du serveur et non dans la base de données."
     },

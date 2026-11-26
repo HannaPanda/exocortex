@@ -287,11 +287,19 @@ export const agentPageReadPayloadSchema = z.object({
  * language (`document.cover.generationErrors`, issue #98).
  *
  * `unavailable`: no image model is set up. `no_picture`: the model answered
- * without an image, so it most likely cannot draw. `failed`: anything else.
+ * without an image, so it most likely cannot draw. `key_refused`: the key that
+ * was to pay for the picture was refused (issue #252). `failed`: anything else.
  */
 export const documentCoverErrorDetailSchema = z.discriminatedUnion('code', [
   z.object({ code: z.literal('unavailable') }),
   z.object({ code: z.literal('no_picture'), model: z.string() }),
+  z.object({
+    code: z.literal('key_refused'),
+    /** `invalid` for a key OpenRouter does not accept (401), `credits` for one with no money left (402). */
+    reason: z.enum(['invalid', 'credits']),
+    /** Whether it was the workspace's own key. Nothing stepped in for it either way. */
+    ownKey: z.boolean(),
+  }),
   z.object({ code: z.literal('failed') }),
 ]);
 export type DocumentCoverErrorDetail = z.infer<typeof documentCoverErrorDetailSchema>;

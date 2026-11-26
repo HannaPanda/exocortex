@@ -122,7 +122,17 @@ export interface WorkerRuntime {
    * working and says so instead of every job failing on a missing dependency.
    */
   mailer: Mailer;
-  imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
+  /**
+   * An image generator for one model slug, optionally paid for with a
+   * workspace's own key (issue #252), on the same terms as the vision
+   * companion below.
+   */
+  imageGeneratorFor: (modelSlug: string | null, apiKey?: string) => ImageGenerator | null;
+  /**
+   * Whose OpenRouter key pays for a call made for this workspace (ADR-023,
+   * ADR-090): its own when it has a readable one, the deployment's otherwise.
+   */
+  aiKeyFor: AiKeyResolver;
   /**
    * A vision companion for one model slug, optionally paid for with a
    * workspace's own key. Without a key it is the deployment's, cached per
@@ -276,6 +286,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     bus,
     provider,
     providerFor,
+    aiKeyFor,
     storage: createStorage(env, logger),
     search,
     keywordSearch,

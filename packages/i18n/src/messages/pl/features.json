@@ -956,7 +956,7 @@
     "title": "Własne klucze dostawców dla każdego obszaru roboczego",
     "summary": "Obszar roboczy może zapisać własny klucz dostawcy zamiast korzystać z klucza instalacji. Klucz jest przechowywany w postaci zaszyfrowanej i nie można go później odczytać.",
     "details": {
-      "p1": "W ustawieniach obszaru roboczego zapisujesz własny klucz do dostawcy modeli. Wszystkie uruchomienia AI w tym obszarze przechodzą wtedy przez to konto i pojawiają się na jego rachunku, a nie na rachunku instalacji.",
+      "p1": "W ustawieniach obszaru roboczego możesz podać własny klucz dostawcy modeli. Wszystkie uruchomienia AI w tym obszarze będą wtedy korzystać z tego konta i pojawiać się na jego rachunku zamiast na rachunku instalacji – tak samo jak obrazy nagłówkowe generowane przez AI dla jego stron. Jeśli dostawca odrzuci klucz, żaden inny go nie zastąpi: żądanie zakończy się niepowodzeniem z tego powodu.",
       "p2": "Rozwiązanie to stworzono z myślą o sytuacji, gdy kilka osób lub projektów dzieli jedną instalację i każda strona ponosi własne koszty. Bez własnego klucza po cichu używany jest klucz instalacji, więc nikt nie musi niczego konfigurować.",
       "p3": "Klucz jest przechowywany w postaci zaszyfrowanej i nie można go później odczytać, nawet z poziomu administracji; można go jedynie zastąpić lub usunąć. Klucz do odszyfrowania znajduje się w konfiguracji serwera, a nie w bazie danych."
     },

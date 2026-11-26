@@ -1,0 +1,219 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { AiImageEmptyError, AiProviderError, type ImageGenerator } from '@exocortex/ai';
+import { type AiUsage, type Settings } from '@exocortex/contracts';
+import { type ExocortexApiClient } from '@exocortex/mcp-tools';
+import { type RedisEventBus } from '@exocortex/queue';
+
+import { type ResolvedAiKey } from '../ai-key';
+
+import { createDocumentCoverProcessor } from './document-cover';
+import { type ImageRunRecord } from './image-run';
+
+/**
+ * Who pays for a cover and what the usage report learns about it (issue #252).
+ *
+ * No database and no provider: the key resolver, the generator, the API
+ * client and the recorder are stubs, so every branch is a question of what
+ * was asked of whom. The keys are placeholders, never real secrets.
+ */
+
+const WORKSPACE_KEY = 'workspace-test-key';
+const DEPLOYMENT_KEY = 'deployment-test-key';
+
+const settings = {
+  'ai.enabled': true,
+  'ai.imageGenerationEnabled': true,
+  'ai.imageModelSlug': 'test/image',
+  'ai.timeoutMs': 1_000,
+} as unknown as Settings;
+
+const usage: AiUsage = {
+  inputTokens: 40,
+  outputTokens: 1_290,
+  cachedInputTokens: 0,
+  provider: 'openrouter',
+  servedBy: 'Google',
+  model: 'test/image',
+  providerCostMicroUsd: 38_700,
+  durationMs: 9_000,
+};
+
+const logger = {
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
+
+function job() {
+  return {
+    payload: {
+      correlationId: 'c1',
+      documentId: 'doc1',
+      workspaceId: 'ws1',
+      userId: 'u1',
+      prompt: 'Berge im Morgennebel',
+    },
+    logger,
+  } as unknown as Parameters<ReturnType<typeof createDocumentCoverProcessor>>[0];
+}
+
+function generatorThat(
+  generate: ImageGenerator['generate'],
+  provider = 'openrouter',
+): ImageGenerator {
+  return { model: 'test/image', provider, generate: vi.fn(generate) };
+}
+
+function setup(input: { key: ResolvedAiKey; generator: ImageGenerator | null }) {
+  const records: ImageRunRecord[] = [];
+  const published: unknown[] = [];
+  const imageGeneratorFor = vi.fn((_slug: string | null, _apiKey?: string) => input.generator);
+  const upload = vi.fn(async () => ({ coverAttachmentId: 'att1' }));
+  const processor = createDocumentCoverProcessor({
+    imageGeneratorFor,
+    aiKeyFor: vi.fn(async () => input.key),
+    recordImageRun: vi.fn(async (record: ImageRunRecord) => {
+      records.push(record);
+    }),
+    apiClientFor: () => ({ upload }) as unknown as ExocortexApiClient,
+    bus: {
+      publish: vi.fn(async (event: { payload: unknown }) => {
+        published.push(event.payload);
+      }),
+    } as unknown as RedisEventBus,
+    settings: async () => settings,
+  });
+  return { processor, records, published, imageGeneratorFor, upload };
+}
+
+const picture = async () => ({
+  data: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+  mimeType: 'image/png',
+  model: 'test/image',
+  usage,
+});
+
+describe('createDocumentCoverProcessor', () => {
+  it("draws with the workspace's own key and records that it paid", async () => {
+    const { processor, records, published, imageGeneratorFor } = setup({
+      key: { apiKey: WORKSPACE_KEY, usedOwnKey: true },
+      generator: generatorThat(picture),
+    });
+
+    await processor(job());
+
+    expect(imageGeneratorFor).toHaveBeenCalledWith('test/image', WORKSPACE_KEY);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      workspaceId: 'ws1',
+      documentId: 'doc1',
+      userId: 'u1',
+      provider: 'openrouter',
+      model: 'test/image',
+      usedOwnKey: true,
+      status: 'COMPLETED',
+      errorCode: null,
+      usage: { providerCostMicroUsd: 38_700 },
+    });
+    expect(published).toEqual([expect.objectContaining({ status: 'ready', errorDetail: null })]);
+  });
+
+  it("uses the deployment's key only for a workspace without one", async () => {
+    const { processor, records, imageGeneratorFor } = setup({
+      key: { apiKey: DEPLOYMENT_KEY, usedOwnKey: false },
+      generator: generatorThat(picture),
+    });
+
+    await processor(job());
+
+    expect(imageGeneratorFor).toHaveBeenCalledWith('test/image', undefined);
+    expect(records[0]).toMatchObject({ usedOwnKey: false, status: 'COMPLETED' });
+  });
+
+  it.each([
+    [401, 'invalid'],
+    [402, 'credits'],
+  ] as const)(
+    'ends on a refused workspace key (%i) without asking the deployment key',
+    async (status, reason) => {
+      const { processor, records, published, imageGeneratorFor, upload } = setup({
+        key: { apiKey: WORKSPACE_KEY, usedOwnKey: true },
+        generator: generatorThat(async () => {
+          throw new AiProviderError(
+            'ai_image_unavailable',
+            `Image model responded with ${status}`,
+            {
+              status,
+            },
+          );
+        }),
+      });
+
+      await processor(job());
+
+      expect(imageGeneratorFor).toHaveBeenCalledTimes(1);
+      expect(imageGeneratorFor).toHaveBeenCalledWith('test/image', WORKSPACE_KEY);
+      expect(upload).not.toHaveBeenCalled();
+      expect(published).toEqual([
+        expect.objectContaining({
+          status: 'failed',
+          errorDetail: { code: 'key_refused', reason, ownKey: true },
+        }),
+      ]);
+      expect(records[0]).toMatchObject({
+        status: 'FAILED',
+        usedOwnKey: true,
+        usage: null,
+        diagnosis: {
+          key: 'keyRefused',
+          args: { reason, provider: 'openrouter', model: 'test/image', ownKey: true },
+        },
+      });
+    },
+  );
+
+  it('records what an answer without a picture cost', async () => {
+    const { processor, records, published } = setup({
+      key: { apiKey: DEPLOYMENT_KEY, usedOwnKey: false },
+      generator: generatorThat(async () => {
+        throw new AiImageEmptyError('no picture', usage);
+      }),
+    });
+
+    await processor(job());
+
+    expect(published).toEqual([
+      expect.objectContaining({ errorDetail: { code: 'no_picture', model: 'test/image' } }),
+    ]);
+    expect(records[0]).toMatchObject({
+      status: 'FAILED',
+      errorCode: 'ai_image_empty',
+      usage: { providerCostMicroUsd: 38_700 },
+    });
+  });
+
+  it('records nothing when no picture was asked for', async () => {
+    const { processor, records, published } = setup({
+      key: { apiKey: DEPLOYMENT_KEY, usedOwnKey: false },
+      generator: null,
+    });
+
+    await processor(job());
+
+    expect(records).toHaveLength(0);
+    expect(published).toEqual([expect.objectContaining({ errorDetail: { code: 'unavailable' } })]);
+  });
+
+  it("never counts the offline generator as the workspace's spending", async () => {
+    const { processor, records } = setup({
+      key: { apiKey: WORKSPACE_KEY, usedOwnKey: true },
+      generator: generatorThat(picture, 'mock'),
+    });
+
+    await processor(job());
+
+    expect(records[0]).toMatchObject({ provider: 'mock', usedOwnKey: false });
+  });
+});

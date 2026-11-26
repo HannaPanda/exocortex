@@ -2123,8 +2123,17 @@ enum AiRunStatus {
   TIMED_OUT
 }
 
+/// What an `ai_run` row records (issue #252, ADR-090). `CHAT` is a run of the
+/// built-in AI; `IMAGE` is one picture drawn for a page cover, written by the
+/// cover job once the call is over so its cost reaches the usage report.
+enum AiRunKind {
+  CHAT
+  IMAGE
+}
+
 model AiRun {
   id              String        @id @default(cuid(2))
+  kind            AiRunKind     @default(CHAT)
   workspaceId     String
   workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   documentId      String?

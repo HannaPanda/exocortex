@@ -956,7 +956,7 @@
     "title": "Eigene Anbieter-Schlüssel je Arbeitsbereich",
     "summary": "Ein Arbeitsbereich kann seinen eigenen Anbieter-Schlüssel hinterlegen, statt den der Installation zu benutzen. Der Schlüssel wird verschlüsselt abgelegt und ist danach nicht mehr auslesbar.",
     "details": {
-      "p1": "In den Einstellungen eines Arbeitsbereichs hinterlegst du einen eigenen Schlüssel für den Modellanbieter. Alle KI-Läufe dieses Bereichs gehen dann über dieses Konto und tauchen auf dessen Rechnung auf, statt auf der der Installation.",
+      "p1": "In den Einstellungen eines Arbeitsbereichs hinterlegst du einen eigenen Schlüssel für den Modellanbieter. Alle KI-Läufe dieses Bereichs gehen dann über dieses Konto und tauchen auf dessen Rechnung auf, statt auf der der Installation, und ebenso die Titelbilder, die die KI für seine Seiten malt. Lehnt der Anbieter den Schlüssel ab, springt kein anderer ein: die Anfrage scheitert mit diesem Grund.",
       "p2": "Gedacht ist das für den Fall, dass mehrere Leute oder mehrere Projekte sich eine Installation teilen und jede Seite ihre eigenen Kosten trägt. Ohne eigenen Schlüssel wird stillschweigend der der Installation benutzt, es muss also niemand etwas einrichten.",
       "p3": "Der Schlüssel wird verschlüsselt abgelegt und ist danach nicht mehr auslesbar, auch nicht von der Verwaltung; du kannst ihn nur ersetzen oder entfernen. Der Schlüssel zum Entschlüsseln liegt in der Serverkonfiguration und nicht in der Datenbank."
     },

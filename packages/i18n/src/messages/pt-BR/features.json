@@ -956,7 +956,7 @@
     "title": "Chaves próprias de provedor por espaço de trabalho",
     "summary": "Um espaço de trabalho pode registrar sua própria chave de provedor em vez de usar a chave da instalação. A chave é gravada criptografada e não pode mais ser lida depois.",
     "details": {
-      "p1": "Nas configurações de um espaço de trabalho, você registra uma chave própria para o provedor do modelo. Todas as execuções de IA desse espaço passam então por essa conta e constam na fatura dela, em vez de aparecerem na fatura da instalação.",
+      "p1": "Nas configurações de um espaço de trabalho, você adiciona sua própria chave para o provedor do modelo. Todas as execuções de IA desse espaço passam então por essa conta e aparecem na fatura dela, em vez de na da instalação, assim como as imagens de capa que a IA cria para suas páginas. Se o provedor recusar a chave, nenhum outro a substituirá: a solicitação falha por esse motivo.",
       "p2": "Isso foi pensado para casos em que várias pessoas ou vários projetos compartilham uma instalação e cada lado arca com seus próprios custos. Sem uma chave própria, a chave da instalação é usada silenciosamente; ninguém precisa configurar nada obrigatoriamente.",
       "p3": "A chave é gravada criptografada e não pode mais ser lida depois, nem mesmo pela administração; você só pode substituí-la ou removê-la. A chave de descriptografia fica na configuração do servidor, e não no banco de dados."
     },

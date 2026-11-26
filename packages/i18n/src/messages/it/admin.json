@@ -339,7 +339,8 @@
       "tokens": "Token input/output",
       "cost": "Costo",
       "median": "Mediana",
-      "estimated": "stimato"
+      "estimated": "stimato",
+      "kindImage": "Immagini di copertina"
     },
     "noRunsTitle": "Nessuna esecuzione in questo periodo",
     "noRunsDescription": "Non appena l’IA viene utilizzata, qui troverai quanto è costato ciascun modello.",

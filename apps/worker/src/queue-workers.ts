@@ -23,6 +23,7 @@ import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createDocumentOverviewProcessor } from './processors/document-overview';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
+import { createImageRunRecorder } from './processors/image-run';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMailDeliveryProcessor } from './processors/mail-delivery';
 import { createMaintenanceProcessor } from './processors/maintenance';
@@ -265,6 +266,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     reminderNotifier,
     pushSender,
     imageGeneratorFor,
+    aiKeyFor,
     pdfDocumentInfo,
     pdfExtractorChain,
     officeExtractor,
@@ -325,6 +327,8 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     concurrency: 1,
     handler: createDocumentCoverProcessor({
       imageGeneratorFor,
+      aiKeyFor,
+      recordImageRun: createImageRunRecorder({ prisma, logger }),
       apiClientFor,
       bus,
       settings: readSettings,

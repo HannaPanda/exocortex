@@ -956,7 +956,7 @@
     "title": "Claves de proveedor propias por cada espacio de trabajo",
     "summary": "Un espacio de trabajo puede registrar su propia clave de proveedor en lugar de emplear la de la instalación. La clave se almacena cifrada y ya no se puede volver a consultar.",
     "details": {
-      "p1": "En los ajustes de un espacio de trabajo puedes registrar una clave propia para el proveedor del modelo. Todas las ejecuciones de IA de ese espacio se facturarán entonces a esa cuenta y constarán en su factura, en vez de en la de la instalación.",
+      "p1": "En los ajustes de un espacio de trabajo puedes configurar tu propia clave para el proveedor del modelo. Todas las ejecuciones de IA de este espacio pasarán entonces por esa cuenta y aparecerán en su factura, en lugar de en la de la instalación, al igual que las imágenes de portada que la IA genere para sus páginas. Si el proveedor rechaza la clave, ningún otro tomará el relevo: la solicitud fallará por ese motivo.",
       "p2": "Está pensado para casos en los que varias personas o proyectos comparten una misma instalación y cada parte asume sus propios costes. Si no se indica una clave propia, se utilizará automáticamente la de la instalación, de modo que nadie tiene la obligación de configurar nada.",
       "p3": "La clave se almacena de forma cifrada y ya no se puede volver a leer, ni siquiera desde la administración; únicamente es posible sustituirla o eliminarla. La clave necesaria para descifrarla reside en la configuración del servidor y nunca en la base de datos."
     },

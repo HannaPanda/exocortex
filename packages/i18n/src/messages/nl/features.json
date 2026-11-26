@@ -956,7 +956,7 @@
     "title": "Eigen providersleutels per werkruimte",
     "summary": "Een werkruimte kan een eigen providersleutel opslaan in plaats van die van de installatie te gebruiken. De sleutel wordt versleuteld opgeslagen en kan daarna niet meer worden uitgelezen.",
     "details": {
-      "p1": "In de instellingen van een werkruimte sla je een eigen sleutel voor de modelprovider op. Alle AI-taken van deze werkruimte lopen dan via dat account en verschijnen op die factuur, in plaats van op die van de installatie.",
+      "p1": "In de instellingen van een werkruimte sla je een eigen sleutel voor de modelprovider op. Alle AI-runs van deze werkruimte verlopen dan via dit account en verschijnen op de factuur daarvan, in plaats van op die van de installatie, net zoals de omslagafbeeldingen die de AI voor zijn pagina’s maakt. Wijst de provider de sleutel af, dan springt er geen andere in: de aanvraag mislukt met deze reden.",
       "p2": "Dit is bedoeld voor het geval dat meerdere mensen of projecten één installatie delen en elke partij haar eigen kosten draagt. Zonder eigen sleutel wordt stilzwijgend die van de installatie gebruikt; niemand hoeft dus per se iets in te stellen.",
       "p3": "De sleutel wordt versleuteld opgeslagen en kan daarna niet meer worden uitgelezen, ook niet via het beheer; je kunt hem alleen vervangen of verwijderen. De sleutel voor het ontsleutelen bevindt zich in de serverconfiguratie en niet in de database."
     },

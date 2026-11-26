@@ -339,7 +339,8 @@
       "tokens": "Tokens in/uit",
       "cost": "Kosten",
       "median": "Mediaan",
-      "estimated": "geschat"
+      "estimated": "geschat",
+      "kindImage": "Omslagafbeeldingen"
     },
     "noRunsTitle": "Geen runs in deze periode",
     "noRunsDescription": "Zodra de AI wordt gebruikt, zie je hier welk model wat heeft gekost.",

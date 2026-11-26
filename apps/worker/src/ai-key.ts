@@ -13,8 +13,9 @@ import { type Logger } from '@exocortex/logger';
  *
  * The boundary is deliberately "what a run spends". An `AiRun` and the vision
  * companion calls inside it are paid for by the workspace's key when it has
- * one; the deployment-wide machinery around it (search embeddings, cover
- * images, memory capture and consolidation) stays on the deployment key.
+ * one, and so is a page cover drawn for the workspace (issue #252, ADR-090);
+ * the deployment-wide machinery around them (search embeddings, memory
+ * capture and consolidation) stays on the deployment key.
  * Embeddings must, under ADR-020: index and query have to live in one vector
  * space, and two accounts embedding under two keys against one index is the
  * failure that looks exactly like a healthy deployment finding nothing.

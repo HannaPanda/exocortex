@@ -339,7 +339,8 @@
       "tokens": "Tokens entrée/sortie",
       "cost": "Coût",
       "median": "Médiane",
-      "estimated": "estimé"
+      "estimated": "estimé",
+      "kindImage": "Images de couverture"
     },
     "noRunsTitle": "Aucune exécution sur cette période",
     "noRunsDescription": "Dès que l’IA sera utilisée, tu verras ici ce que chaque modèle a coûté.",

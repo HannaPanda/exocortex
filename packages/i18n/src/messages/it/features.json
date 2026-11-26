@@ -956,7 +956,7 @@
     "title": "Chiavi fornitore dedicate per ciascuna area di lavoro",
     "summary": "Un’area di lavoro può registrare una propria chiave fornitore invece di usare quella dell’installazione. La chiave viene memorizzata in modo crittografato e non è più leggibile in seguito.",
     "details": {
-      "p1": "Nelle impostazioni di un’area di lavoro puoi inserire una chiave specifica per il fornitore del modello. Tutte le esecuzioni IA di quell’area passano allora attraverso quell’account e compaiono sulla sua fattura, anziché su quella dell’installazione.",
+      "p1": "Nelle impostazioni di un’area di lavoro puoi inserire una tua chiave per il provider del modello. Tutte le esecuzioni dell’IA di quest’area passeranno quindi attraverso questo account e compariranno sulla sua fattura, anziché su quella dell’installazione, così come le immagini di copertina che l’IA crea per le sue pagine. Se il provider rifiuta la chiave, nessun altro subentrerà: la richiesta fallirà con questo motivo.",
       "p2": "Questa opzione è pensata per i casi in cui più persone o più progetti condividono la stessa installazione e ciascuna parte sostiene i propri costi. Senza una chiave dedicata viene usata silenziosamente quella dell’installazione, quindi nessuno ha l’obbligo di configurare nulla.",
       "p3": "La chiave viene memorizzata in modo crittografato e successivamente non è più leggibile, nemmeno dall’amministrazione; puoi solo sostituirla o rimuoverla. La chiave per la decrittografia si trova nella configurazione del server e non nel database."
     },

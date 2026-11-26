@@ -956,7 +956,7 @@
     "title": "Custom provider keys per workspace",
     "summary": "A workspace can store its own provider key instead of using the installation’s key. The key is stored encrypted and cannot be read out afterwards.",
     "details": {
-      "p1": "In the settings of a workspace, you can store a dedicated key for the model provider. All AI runs for this workspace then go through that account and appear on its bill, instead of the installation’s.",
+      "p1": "In the settings of a workspace, you can store your own key for the model provider. All AI runs in this workspace will then go through this account and appear on its bill instead of the installation’s, and the same goes for the cover images the AI generates for its pages. If the provider rejects the key, no fallback is used: the request fails for that reason.",
       "p2": "This is intended for cases where multiple people or multiple projects share an installation and each side covers its own costs. Without a custom key, the installation’s key is used silently, so nobody has to configure anything.",
       "p3": "The key is stored encrypted and cannot be read out afterwards, not even by administration; you can only replace or remove it. The key for decryption resides in the server configuration and not in the database."
     },

@@ -2690,6 +2690,9 @@ describe('cover generation', () => {
     };
   }
 
+  // A workspace without a key of its own: the deployment's pays (ADR-090).
+  const deploymentKey = async () => ({ apiKey: 'deployment-test-key', usedOwnKey: false });
+
   const payload = {
     correlationId: 'test-cover',
     documentId: 'doc123456',
@@ -2704,6 +2707,8 @@ describe('cover generation', () => {
 
     await createDocumentCoverProcessor({
       imageGeneratorFor: () => new MockImageGenerator(),
+      aiKeyFor: deploymentKey,
+      recordImageRun: async () => {},
       apiClientFor: () => uploadingClient(uploads),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
@@ -2727,6 +2732,8 @@ describe('cover generation', () => {
 
     await createDocumentCoverProcessor({
       imageGeneratorFor: () => null,
+      aiKeyFor: deploymentKey,
+      recordImageRun: async () => {},
       apiClientFor: () => uploadingClient(uploads),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': null }),
@@ -2741,12 +2748,15 @@ describe('cover generation', () => {
     const published: Published[] = [];
     const textOnly = {
       model: 'openai/text-only',
+      provider: 'openrouter',
       generate: () =>
         Promise.reject(new AiProviderError('ai_image_empty', 'no image in the answer')),
     };
 
     await createDocumentCoverProcessor({
       imageGeneratorFor: () => textOnly,
+      aiKeyFor: deploymentKey,
+      recordImageRun: async () => {},
       apiClientFor: () => uploadingClient([]),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
@@ -2763,12 +2773,15 @@ describe('cover generation', () => {
     const published: Published[] = [];
     const failing = {
       model: 'broken',
+      provider: 'openrouter',
       generate: () => Promise.reject(new Error('provider is down')),
     };
 
     // No rejection: the job ends successfully and the browser is told why.
     await createDocumentCoverProcessor({
       imageGeneratorFor: () => failing,
+      aiKeyFor: deploymentKey,
+      recordImageRun: async () => {},
       apiClientFor: () => uploadingClient([]),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),

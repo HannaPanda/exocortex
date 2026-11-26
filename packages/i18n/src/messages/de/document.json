@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "Die Bilderzeugung ist für diese Instanz nicht eingerichtet.",
       "no_picture": "Das Modell „{model}“ hat kein Bild geliefert. Es kann vermutlich keine Bilder erzeugen; im Administrationsbereich lässt sich ein bildfähiges Modell eintragen.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter hat den Schlüssel abgelehnt, den dieser Arbeitsbereich hinterlegt hat: er ist unbekannt, widerrufen oder abgeschaltet. Es ist kein anderer Schlüssel eingesprungen. Wer ihn eingetragen hat, ersetzt ihn in den Arbeitsbereich-Einstellungen unter „KI“.",
+        "invalidDeploymentKey": "OpenRouter hat den Schlüssel der Installation abgelehnt. Beheben kann das nur, wer die Installation betreibt.",
+        "creditsOwnKey": "Auf dem OpenRouter-Konto hinter dem Schlüssel dieses Arbeitsbereichs reicht das Guthaben nicht für ein Titelbild, oder am Schlüssel ist ein Ausgabenlimit erreicht. Es ist kein anderer Schlüssel eingesprungen.",
+        "creditsDeploymentKey": "Auf dem OpenRouter-Konto der Installation reicht das Guthaben nicht für ein Titelbild. Beheben kann das nur, wer die Installation betreibt."
+      },
       "failed": "Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen."
     }
   },

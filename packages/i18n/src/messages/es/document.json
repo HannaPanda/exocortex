@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "La generación de imágenes no está configurada para esta instancia.",
       "no_picture": "El modelo «{model}» no ha devuelto ninguna imagen. Es probable que no pueda generar imágenes; puedes configurar un modelo compatible en el panel de administración.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter ha rechazado la clave configurada en este espacio de trabajo: es desconocida, está revocada o desactivada. No se ha recurrido a ninguna otra clave. Quien la introdujo puede sustituirla en los ajustes del espacio de trabajo, en «IA».",
+        "invalidDeploymentKey": "OpenRouter ha rechazado la clave de la instalación. Solo la persona a cargo de la instalación puede solucionarlo.",
+        "creditsOwnKey": "En la cuenta de OpenRouter vinculada a la clave de este espacio de trabajo no hay saldo suficiente para una imagen de portada o la clave ha alcanzado un límite de gasto. No se ha recurrido a ninguna otra clave.",
+        "creditsDeploymentKey": "En la cuenta de OpenRouter de la instalación no hay saldo suficiente para una imagen de portada. Solo la persona a cargo de la instalación puede solucionarlo."
+      },
       "failed": "No se ha podido generar la imagen de portada. Inténtalo de nuevo."
     }
   },

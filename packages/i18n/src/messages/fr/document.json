@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "La génération d’images n’est pas configurée pour cette instance.",
       "no_picture": "Le modèle « {model} » n’a renvoyé aucune image. Il ne peut probablement pas en générer ; il est possible d’enregistrer un modèle compatible dans la zone d’administration.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter a refusé la clé enregistrée pour cet espace de travail : elle est inconnue, révoquée ou désactivée. Aucune autre clé n’a pris le relais. La personne qui l’a ajoutée peut la remplacer dans les paramètres de l’espace de travail, sous « IA ».",
+        "invalidDeploymentKey": "OpenRouter a refusé la clé de l’instance. Seule la personne administrant l’instance peut corriger cela.",
+        "creditsOwnKey": "Le solde du compte OpenRouter associé à la clé de cet espace de travail est insuffisant pour générer une image de couverture, ou un plafond de dépenses a été atteint sur cette clé. Aucune autre clé n’a pris le relais.",
+        "creditsDeploymentKey": "Le solde du compte OpenRouter de l’instance est insuffisant pour générer une image de couverture. Seule la personne administrant l’instance peut corriger cela."
+      },
       "failed": "Impossible de générer l’image de couverture. Merci de réessayer."
     }
   },

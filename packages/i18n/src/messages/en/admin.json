@@ -339,7 +339,8 @@
       "tokens": "Tokens in/out",
       "cost": "Cost",
       "median": "Median",
-      "estimated": "estimated"
+      "estimated": "estimated",
+      "kindImage": "Cover images"
     },
     "noRunsTitle": "No runs in this period",
     "noRunsDescription": "As soon as the AI is used, you’ll see here which model cost what.",

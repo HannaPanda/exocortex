@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "Image generation is not set up for this instance.",
       "no_picture": "The model “{model}” returned no image. It probably cannot generate images; an image-capable model can be configured in the administration area.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter rejected the key configured for this workspace: it is unknown, revoked, or disabled. No other key stepped in. Whoever added it can replace it in the workspace settings under “AI”.",
+        "invalidDeploymentKey": "OpenRouter rejected the installation’s key. Only the person running this installation can fix this.",
+        "creditsOwnKey": "The OpenRouter account for this workspace’s key does not have enough credits for a cover image, or the key’s spending limit has been reached. No other key stepped in.",
+        "creditsDeploymentKey": "The installation’s OpenRouter account does not have enough credits for a cover image. Only the person running this installation can fix this."
+      },
       "failed": "The cover image could not be generated. Please try again."
     }
   },

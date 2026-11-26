@@ -55,7 +55,10 @@ const MICRO_USD_PER_MTOK_DIVISOR = 1_000_000;
  * slightly overstates a heavily cached run. That direction is the safe one for
  * a figure that is already flagged as an estimate.
  */
-function estimateCostMicroUsd(usage: AiUsage | null, modelRow: ResolvedModelRow): number | null {
+export function estimateCostMicroUsd(
+  usage: AiUsage | null,
+  modelRow: Pick<ResolvedModelRow, 'inputMicroUsdPerMTok' | 'outputMicroUsdPerMTok'>,
+): number | null {
   if (usage === null) return null;
   const { inputMicroUsdPerMTok, outputMicroUsdPerMTok } = modelRow;
   if (inputMicroUsdPerMTok === null || outputMicroUsdPerMTok === null) return null;

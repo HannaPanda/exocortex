@@ -339,7 +339,8 @@
       "tokens": "Tokeny wej./wyj.",
       "cost": "Koszty",
       "median": "Mediana",
-      "estimated": "szacowane"
+      "estimated": "szacowane",
+      "kindImage": "Zdjęcia na okładkę"
     },
     "noRunsTitle": "Brak uruchomień w tym okresie",
     "noRunsDescription": "Gdy tylko AI zostanie użyte, pojawi się tutaj informacja, ile kosztował dany model.",

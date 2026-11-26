@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "La generazione di immagini non è configurata per questa istanza.",
       "no_picture": "Il modello «{model}» non ha restituito alcuna immagine. Probabilmente non può generare immagini; nell’area di amministrazione è possibile impostare un modello adatto.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter ha rifiutato la chiave configurata per questa area di lavoro: è sconosciuta, revocata o disattivata. Non è subentrata nessun’altra chiave. Chi l’ha inserita può sostituirla nelle impostazioni dell’area di lavoro alla voce «IA».",
+        "invalidDeploymentKey": "OpenRouter ha rifiutato la chiave dell’installazione. Solo chi gestisce l’installazione può risolvere il problema.",
+        "creditsOwnKey": "Sul conto OpenRouter associato alla chiave di questa area di lavoro il credito non è sufficiente per un’immagine di copertina, oppure è stato raggiunto un limite di spesa per la chiave. Non è subentrata nessun’altra chiave.",
+        "creditsDeploymentKey": "Sul conto OpenRouter dell’installazione il credito non è sufficiente per un’immagine di copertina. Solo chi gestisce l’installazione può risolvere il problema."
+      },
       "failed": "Impossibile generare l’immagine di copertina. Riprova più tardi."
     }
   },

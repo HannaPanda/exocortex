@@ -29,7 +29,7 @@ export function createMediaFactories(
   env: WorkerEnv,
   logger: Logger,
 ): {
-  imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
+  imageGeneratorFor: (modelSlug: string | null, apiKey?: string) => ImageGenerator | null;
   visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   pdfDocumentInfo: PdfDocumentInfoReader;
   pdfExtractorChain: (settings: Settings) => readonly DocumentTextExtractor[];
@@ -37,9 +37,22 @@ export function createMediaFactories(
 } {
   // Image generation: the model comes from the settings, so an admin can point
   // it at a different one without a restart; the generators are cached per slug
-  // exactly like the vision companions below.
+  // exactly like the vision companions below. A picture a workspace pays for
+  // with its own key (issue #252) gets a generator of its own, uncached for the
+  // same reason as the vision companion's: the cache is keyed by model, not by
+  // secret.
   const imageGeneratorCache = new Map<string, ImageGenerator | null>();
-  const imageGeneratorFor = (modelSlug: string | null): ImageGenerator | null => {
+  const imageGeneratorFor = (modelSlug: string | null, apiKey?: string): ImageGenerator | null => {
+    if (apiKey !== undefined && apiKey !== (env.OPENROUTER_API_KEY ?? '')) {
+      return createImageGenerator({
+        providerId: env.AI_PROVIDER,
+        logger,
+        appUrl: env.APP_URL,
+        apiKey,
+        baseUrl: env.OPENROUTER_BASE_URL,
+        model: modelSlug,
+      });
+    }
     const cacheKey = modelSlug ?? '';
     if (!imageGeneratorCache.has(cacheKey)) {
       imageGeneratorCache.set(

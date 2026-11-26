@@ -88,6 +88,25 @@ function useCoverRequests(choose: () => void, openPrompt: () => void, enabled: b
   usePaletteRequest('generate-cover', openPrompt, enabled);
 }
 
+/** A failed cover in the reader's language, from the worker's code (issue #98). */
+function coverErrorText(
+  t: ReturnType<typeof useTranslations<'document.cover'>>,
+  detail: DocumentCoverErrorDetail,
+): string {
+  switch (detail.code) {
+    case 'no_picture':
+      return t('generationErrors.no_picture', { model: detail.model });
+    case 'key_refused':
+      // Whose key and why (issue #252): nothing stepped in for it, so the
+      // reader has to know who can fix it.
+      return t(
+        `generationErrors.key_refused.${detail.reason}${detail.ownKey ? 'OwnKey' : 'DeploymentKey'}`,
+      );
+    default:
+      return t(`generationErrors.${detail.code}`);
+  }
+}
+
 /**
  * The AI half: send a prompt, then wait for the worker to say it is over.
  *
@@ -128,13 +147,7 @@ function useCoverGeneration(documentId: string) {
   };
 
   const error =
-    failure === null
-      ? null
-      : 'text' in failure
-        ? failure.text
-        : failure.detail.code === 'no_picture'
-          ? t('generationErrors.no_picture', { model: failure.detail.model })
-          : t(`generationErrors.${failure.detail.code}`);
+    failure === null ? null : 'text' in failure ? failure.text : coverErrorText(t, failure.detail);
 
   return { pending, error, start };
 }

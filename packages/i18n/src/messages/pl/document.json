@@ -147,6 +147,12 @@
     "generationErrors": {
       "unavailable": "Generowanie obrazów nie jest skonfigurowane dla tej instancji.",
       "no_picture": "Model „{model}” nie zwrócił żadnego obrazu. Prawdopodobnie nie obsługuje generowania obrazów; w panelu administracyjnym można ustawić model z obsługą obrazów.",
+      "key_refused": {
+        "invalidOwnKey": "OpenRouter odrzucił klucz zapisany w tym obszarze roboczym: jest nieznany, unieważniony lub wyłączony. Żaden inny klucz go nie zastąpił. Osoba, która go dodała, może go wymienić w ustawieniach obszaru roboczego w sekcji „AI”.",
+        "invalidDeploymentKey": "OpenRouter odrzucił klucz tej instalacji. Może to naprawić tylko osoba zarządzająca instalacją.",
+        "creditsOwnKey": "Na koncie OpenRouter powiązanym z kluczem tego obszaru roboczego brakuje środków na wygenerowanie okładki lub osiągnięto limit wydatków dla klucza. Żaden inny klucz go nie zastąpił.",
+        "creditsDeploymentKey": "Na koncie OpenRouter tej instalacji brakuje środków na wygenerowanie okładki. Może to naprawić tylko osoba zarządzająca instalacją."
+      },
       "failed": "Nie udało się wygenerować okładki. Spróbuj ponownie."
     }
   },
