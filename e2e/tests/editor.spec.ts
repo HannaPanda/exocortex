@@ -622,14 +622,6 @@ test.describe('editor', () => {
   });
 
   /**
-   * Issue #257: below a last block that is not a paragraph there is a line to
-   * write in, and it is made on use. The rules are unit-tested in
-   * `packages/editor`, including that opening a page writes nothing; what only
-   * a browser proves is that the space is really there to click into, that
-   * the list continuation of #240 is offered in the line it makes, and that
-   * the real arrow key reaches it from inside a table.
-   */
-  /**
    * Issue #227: the hint stands in the one empty line being written in, set
    * apart from text, and nowhere else. The rules are unit-tested in
    * `packages/editor`; what only a browser proves is the real focus, the real
@@ -690,7 +682,9 @@ test.describe('editor', () => {
       await second.keyboard.press('End');
       await second.keyboard.press('ArrowDown');
       await second.keyboard.type('von nebenan');
-      await expect(point).toHaveText('von nebenan');
+      // The other tab's caret wears a name label inside the point, so the
+      // line's text is matched from its start.
+      await expect(point).toHaveText(/^von nebenan/);
       await expect(hinted).toHaveCount(0);
     } finally {
       await second.close();
@@ -709,6 +703,14 @@ test.describe('editor', () => {
     expect(stored).not.toContain('/“');
   });
 
+  /**
+   * Issue #257: below a last block that is not a paragraph there is a line to
+   * write in, and it is made on use. The rules are unit-tested in
+   * `packages/editor`, including that opening a page writes nothing; what only
+   * a browser proves is that the space is really there to click into, that
+   * the list continuation of #240 is offered in the line it makes, and that
+   * the real arrow key reaches it from inside a table.
+   */
   test('a page ending in a picture keeps a line to write in', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
