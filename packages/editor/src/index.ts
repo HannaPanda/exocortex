@@ -46,6 +46,7 @@ export * from './schema-v5';
 export * from './scoped-select-all';
 export * from './section-extract';
 export * from './section-links';
+export * from './shift-arrow-selection';
 export * from './table-of-contents';
 export * from './toggle';
 export * from './transclusion';

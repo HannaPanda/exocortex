@@ -109,6 +109,7 @@ import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
 import { SCHEMA_V5_MIGRATION } from './schema-v5';
 import { ScopedSelectAll } from './scoped-select-all';
+import { ShiftArrowSelection } from './shift-arrow-selection';
 import {
   TableOfContents,
   tableOfContentsBlocks,
@@ -387,6 +388,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     name: 'scoped-select-all',
     schemaVersion: 1,
     extensions: [ScopedSelectAll],
+  },
+  {
+    // Behaviour only, no schema: `Shift+Pfeil` grows a text selection across
+    // images, formulas, dividers and whole tables, where the browser stops or
+    // loses the anchor (issue #251). Every other press stays native.
+    name: 'shift-arrow-selection',
+    schemaVersion: 1,
+    extensions: [ShiftArrowSelection],
   },
 ];
 

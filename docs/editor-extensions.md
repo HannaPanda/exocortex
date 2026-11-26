@@ -216,6 +216,33 @@ to `SELECT_ALL_SCOPE_NODES` is the whole change for a new block with text of
 its own. Covered by `scoped-select-all.test.ts` and, for cutting and the Yjs
 undo, by the browser test in `e2e/tests/editor.spec.ts`.
 
+## Selecting with Shift and the arrow keys
+
+`Shift+Pfeil` is the browser's own text selection, and stays that way wherever
+the browser gets it right: inside a paragraph, across lists, quotes, callouts
+and code blocks (issue #251). Two things used to take it away:
+
+- The drag handle needs `@tiptap/extension-node-range`, whose keymap bound
+  `Shift+ArrowUp/Down` unconditionally and turned any text selection into a
+  selection of whole blocks, anchored at the start of the paragraph. The page
+  editor uses `BlockNodeRange` (`apps/web/src/components/editor/node-range.ts`)
+  instead, which only grows a block range that already exists and leaves every
+  text selection to the browser. Do not add the bare `NodeRange` back.
+- At an opaque block (image, file, formula, embed, divider) Chromium stops a
+  growing selection for good or drops its anchor, Firefox cannot go down past an
+  image, and a table entered from outside catches the head in a cell and loses
+  the anchor in both. `ShiftArrowSelection` (`shift-arrow-selection.ts`, registry
+  entry `shift-arrow-selection`, ahead of the table keymap by priority) takes
+  over exactly those presses: at the edge of a paragraph (left/right) or on its
+  first or last line (up/down, measured by `view.endOfTextblock`), when the way
+  to the next text crosses an opaque block or a table that does not hold the
+  anchor, the head jumps to that text and the block or the whole table becomes
+  part of the selection. Every other press is untouched. Selecting between
+  table cells stays the table's own cell selection.
+
+Covered by `shift-arrow-selection.test.ts`, `node-range.test.ts` in the web app
+and the browser test in `e2e/tests/editor.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)
