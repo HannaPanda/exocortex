@@ -284,6 +284,18 @@ means moving the pointer off the block the actions belong to.
 Any further prop of `DragHandle` (`computePositionConfig`, `onElementDragStart`,
 `onElementDragEnd`) has to be a module constant or memoised for the same reason.
 
+Two more departures from the defaults, both from issue #243:
+
+- `nested` is not `true` but `NESTED_TARGETS`, edge detection on the left edge
+  only. The default also prefers the outer block near the _top_ edge, by
+  `500 × depth`; a list item two levels deep was excluded there outright, and a
+  single-line item is all top edge in its upper half, so on a list's first and
+  last item the handle stayed on the block before and a drag moved that block.
+- The actions menu is controlled. It opens on the press that also starts a
+  drag, and its backdrop then took every `dragover`, so nothing could be
+  dropped; `onElementDragStart` closes it and keeps it closed until the drag
+  ends. Opening on release instead is issue #268.
+
 ## 18. The toggle block is styled against its node view, not its HTML
 
 Tiptap's `Details` extension renders native `<details>`/`<summary>` from

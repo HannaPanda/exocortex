@@ -243,6 +243,45 @@ and code blocks (issue #251). Two things used to take it away:
 Covered by `shift-arrow-selection.test.ts`, `node-range.test.ts` in the web app
 and the browser test in `e2e/tests/editor.spec.ts`.
 
+## Moving blocks: the drop line and the keyboard
+
+A block dragged by its handle lands where a line says it will (issue #243).
+`BlockDrop` (`block-drop.ts`, registry entry `block-move`, behaviour only)
+takes every drop of whole blocks away from ProseMirror's `dropPoint`; dragging
+selected text keeps the old behaviour.
+
+- The pointer's height picks the gap between two _drop leaves_ (text blocks,
+  opaque blocks, a whole table). Every position in that gap where the dragged
+  content fits is a candidate level (`blockDropCandidates`): the end of a
+  sub-list, the end of the item holding it, the end of the list, the page.
+  Places inside the dragged blocks and in front of a list item's own text are
+  never offered.
+- A list item where only a block fits gets a list of its source's kind around
+  it (`dropWrapType`): that is how an item becomes a sub-item, and why a
+  numbered item stays numbered and a task stays a task.
+- The pointer's horizontal position picks the level: the block is carried
+  sideways with the pointer, so the candidate whose text start is nearest to
+  where the carried block's text would be wins, and a place that needs no new
+  list beats one that does at the same indentation.
+- The line (`.exocortex-drop-line`, the page tree's amber line) starts where
+  the dropped block's text will start and runs to its container's right edge.
+  The carried blocks get `.exocortex-drag-source`. No candidate under the
+  pointer means no line and no drop.
+- The drop is one transaction: `deleteRange` on the source (so an emptied
+  sub-list goes with its last item), then the insertion mapped through it.
+  Block ids travel with the blocks, and `Strg+Z` takes it back in one step.
+
+`MoveBlock` (`move-block.ts`, same registry entry) is the keyboard half:
+`Mod-Shift-ArrowUp/Down` swaps the block the cursor is in with its neighbour.
+`movableBlockAt` names the block a person would grab: the list item rather than
+its paragraph, the table rather than a cell, a selected image itself. The
+handle's menu offers the same two steps.
+
+In the web app the handle targets nested blocks with the left edge only
+(`NESTED_TARGETS` in `block-handle.tsx`, docs/deviations.md 17), and a drag
+closes the handle's menu. Covered by `block-drop.test.ts`,
+`move-block.test.ts` and `e2e/tests/block-drag.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)

@@ -34,6 +34,9 @@ What is deliberately still missing is listed under
   remote cursors, offline editing and resynchronization
 - a marker on the blocks an agent just changed, naming the agent, stronger when
   it lands where you are typing (ADR-065)
+- moving blocks and single list items by their handle, with a line that shows
+  where and at which level the block lands (carried to the right it becomes a
+  sub-item), and `Strg+Umschalt+Pfeil` as the keyboard way (issue #243)
 - a floating outline on long pages: a scale of the headings in the right
   margin with the current section marked, a list to jump from, pinnable
   beside the text where it fits, and "Zu Abschnitt springen" in the palette;
