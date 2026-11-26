@@ -42,19 +42,43 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 /**
+ * How the AI chat's transcript moves while an answer arrives (issue #282).
+ *
+ * `follow` keeps the newest line in view until the reader scrolls up (issue
+ * #242), and is the default. `answerStart` brings the question to the top of
+ * the transcript once, when the answer starts, and then leaves the view
+ * alone: the answer grows downwards out of sight and is read from its first
+ * line.
+ */
+export const CHAT_SCROLL_MODES = ['follow', 'answerStart'] as const;
+export const chatScrollModeSchema = z.enum(CHAT_SCROLL_MODES);
+export type ChatScrollMode = z.infer<typeof chatScrollModeSchema>;
+export const DEFAULT_CHAT_SCROLL_MODE: ChatScrollMode = 'follow';
+
+/**
  * The account's own settings that belong to the person rather than to a
- * workspace or a device. One field today; the object is the shape so the next
- * one does not need a route of its own.
+ * workspace or a device: the interface language and how the AI chat scrolls.
  *
  * `locale: null` means the account never chose. It is a different answer from
  * `'de'`: an undecided account follows its browser, a decided one does not.
  */
 export const userPreferencesSchema = z.object({
   locale: localeSchema.nullable(),
+  chatScroll: chatScrollModeSchema,
 });
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
-export const updateUserPreferencesRequestSchema = z.object({
-  locale: localeSchema.nullable(),
-});
+/**
+ * A change to some of them: a field left out stays as it is, so a client
+ * that only knows the language cannot reset the scrolling, and the reverse.
+ * `locale: null` is not "leave it", it clears the choice.
+ */
+export const updateUserPreferencesRequestSchema = z
+  .object({
+    locale: localeSchema.nullable().optional(),
+    chatScroll: chatScrollModeSchema.optional(),
+  })
+  .refine((value) => value.locale !== undefined || value.chatScroll !== undefined, {
+    message: 'At least one field must be provided',
+  });
 export type UpdateUserPreferencesRequest = z.infer<typeof updateUserPreferencesRequestSchema>;

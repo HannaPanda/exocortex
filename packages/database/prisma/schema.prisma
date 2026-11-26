@@ -30,14 +30,14 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id                     String    @id @default(cuid(2))
+  id                     String         @id @default(cuid(2))
   name                   String
-  email                  String    @unique
-  emailVerified          Boolean   @default(false)
+  email                  String         @unique
+  emailVerified          Boolean        @default(false)
   image                  String?
   /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
   /// administers the deployment, a workspace ADMIN administers one workspace.
-  role                   UserRole  @default(USER)
+  role                   UserRole       @default(USER)
   /// When set, the account exists but may not act: sign-in is refused and every
   /// credential is rejected. Deliberately not a deletion -- documents point at
   /// their author through `createdById`/`updatedById`, so removing the row would
@@ -56,8 +56,13 @@ model User {
   /// added later needs no migration. Taste belongs to the viewer, not to a
   /// workspace, which is why this is on the account.
   knowledgeMapAppearance Json?
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  /// How the AI chat's transcript moves while an answer arrives (issue #282):
+  /// it follows the newest line (`FOLLOW`, the behaviour of #242), or it
+  /// brings the question to the top once and then stays put
+  /// (`ANSWER_START`). The reader's habit, not a workspace's, hence here.
+  chatScroll             ChatScrollMode @default(FOLLOW)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
 
   sessions                    Session[]
   accounts                    Account[]
@@ -135,6 +140,12 @@ model User {
 enum UserRole {
   USER
   ADMIN
+}
+
+/// See `User.chatScroll` (issue #282).
+enum ChatScrollMode {
+  FOLLOW
+  ANSWER_START
 }
 
 model Session {

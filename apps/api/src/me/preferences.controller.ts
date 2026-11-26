@@ -15,10 +15,10 @@ import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 import { PreferencesService } from './preferences.service';
 
 /**
- * The account's personal settings (issue #98): the interface language for
- * now. `PATCH` because a later field must not be reset by a client that only
- * knows this one; today the body has a single field and it is required, so
- * "leave it alone" cannot be confused with "never chose", which is `null`.
+ * The account's personal settings: the interface language (issue #98) and how
+ * the AI chat scrolls (issue #282). `PATCH` because a field must not be reset
+ * by a client that only knows the other one: a field left out stays as it is,
+ * and "leave it alone" (absent) is never confused with "never chose" (`null`).
  */
 @ApiTags('me')
 @Controller('api/me/preferences')

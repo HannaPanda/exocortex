@@ -15,6 +15,7 @@ import {
 import { API_ERROR_CODES, API_ERROR_STATUS } from './errors';
 import { applicationEventSchema, workspaceRoom } from './events';
 import { JOB_SCHEMAS, QUEUE_NAMES } from './jobs';
+import { updateUserPreferencesRequestSchema, userPreferencesSchema } from './locale';
 import { WORKSPACE_ROLE_RANK } from './primitives';
 import { updateWorkspaceRequestSchema } from './workspaces';
 
@@ -202,6 +203,23 @@ describe('workspace roles', () => {
     expect(WORKSPACE_ROLE_RANK.GUEST).toBeLessThan(WORKSPACE_ROLE_RANK.MEMBER);
     expect(WORKSPACE_ROLE_RANK.MEMBER).toBeLessThan(WORKSPACE_ROLE_RANK.ADMIN);
     expect(WORKSPACE_ROLE_RANK.ADMIN).toBeLessThan(WORKSPACE_ROLE_RANK.OWNER);
+  });
+});
+
+describe('user preferences contract (issue #282)', () => {
+  it('changes only what a request names, and refuses one that names nothing', () => {
+    expect(() => updateUserPreferencesRequestSchema.parse({})).toThrow();
+    expect(updateUserPreferencesRequestSchema.parse({ chatScroll: 'answerStart' })).toEqual({
+      chatScroll: 'answerStart',
+    });
+    expect(updateUserPreferencesRequestSchema.parse({ locale: null })).toEqual({ locale: null });
+  });
+
+  it('knows exactly the two ways the chat scrolls', () => {
+    expect(() => updateUserPreferencesRequestSchema.parse({ chatScroll: 'bottom' })).toThrow();
+    expect(userPreferencesSchema.parse({ locale: 'de', chatScroll: 'follow' }).chatScroll).toBe(
+      'follow',
+    );
   });
 });
 

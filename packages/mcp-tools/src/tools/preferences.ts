@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  type ChatScrollMode,
   KNOWLEDGE_MAP_POINT_COLOURS,
   KNOWLEDGE_MAP_PULSE_COLOURS,
   knowledgeMapAppearancePatchSchema,
@@ -8,14 +9,16 @@ import {
   knowledgeMapAppearanceResponseSchema,
   LOCALE_ENDONYMS,
   updateUserPreferencesRequestSchema,
+  type UserPreferences,
   userPreferencesSchema,
 } from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 /**
- * The account's personal settings (issue #98): the interface language, and
- * how the knowledge map looks (issue #189).
+ * The account's personal settings: the interface language (issue #98), how
+ * the AI chat scrolls while an answer arrives (issue #282), and how the
+ * knowledge map looks (issue #189).
  *
  * On both agent surfaces like everything a person can set in the browser
  * (ADR-025). An agent answering "stell mir die Oberfläche auf Englisch" needs
@@ -28,12 +31,26 @@ function describeLocale(locale: string | null): string {
   return `${name} (${locale})`;
 }
 
+function describeChatScroll(mode: ChatScrollMode): string {
+  return mode === 'answerStart'
+    ? 'am Antwortanfang bleiben (answerStart): die Frage rückt beim Start einer Antwort einmal nach oben, danach bewegt sich die Ansicht nicht mehr von selbst'
+    : 'mitlaufen (follow): die Ansicht folgt der wachsenden Antwort, bis man hochscrollt';
+}
+
+function renderPreferences(result: UserPreferences): string {
+  return [
+    `Sprache der Oberfläche: ${describeLocale(result.locale)}.`,
+    `Scrollen im KI-Chat: ${describeChatScroll(result.chatScroll)}.`,
+  ].join('\n');
+}
+
 export const userPreferencesTool: AnyToolDefinition = defineTool({
   name: 'exo_me_preferences',
   description:
-    'Zeigt die persönlichen Einstellungen dieses Kontos, die auf jedem Gerät gelten: derzeit ' +
-    'die Sprache der Oberfläche. locale null heißt, dass nie eine gewählt wurde; dann richtet ' +
-    'sich die Oberfläche nach dem Browser.',
+    'Zeigt die persönlichen Einstellungen dieses Kontos, die auf jedem Gerät gelten: die ' +
+    'Sprache der Oberfläche und wie der KI-Chat scrollt, während eine Antwort entsteht. locale ' +
+    'null heißt, dass nie eine gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. ' +
+    'chatScroll ist follow (mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben).',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
@@ -44,21 +61,24 @@ export const userPreferencesTool: AnyToolDefinition = defineTool({
       path: '/api/me/preferences',
       responseSchema: userPreferencesSchema,
     });
-    return { text: `Sprache der Oberfläche: ${describeLocale(result.locale)}.`, data: result };
+    return { text: renderPreferences(result), data: result };
   },
 });
 
 export const userPreferencesSetTool: AnyToolDefinition = defineTool({
   name: 'exo_me_preferences_set',
   description:
-    'Stellt die Sprache der Oberfläche für dieses Konto ein, auf allen Geräten. Mögliche Werte: ' +
-    'de, en, es, fr, it, nl, pl, pt-BR, oder null, um die eigene Wahl zu löschen und wieder dem ' +
-    'Browser zu folgen. Übersetzt wird nur die Oberfläche, nie die Inhalte der Seiten.',
+    'Ändert persönliche Einstellungen dieses Kontos, auf allen Geräten. Nur was genannt ist, ' +
+    'ändert sich. locale: de, en, es, fr, it, nl, pl, pt-BR, oder null, um die eigene Wahl zu ' +
+    'löschen und wieder dem Browser zu folgen; übersetzt wird nur die Oberfläche, nie die ' +
+    'Inhalte der Seiten. chatScroll: follow (der KI-Chat läuft mit der wachsenden Antwort mit, ' +
+    'Standard) oder answerStart (die Frage rückt beim Start einer Antwort einmal nach oben, ' +
+    'danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter).',
   inputSchema: updateUserPreferencesRequestSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
   mutating: true,
-  target: () => 'user-preferences:locale',
+  target: () => 'user-preferences',
   async execute(client, input) {
     const result = await client.request({
       method: 'PATCH',
@@ -66,7 +86,7 @@ export const userPreferencesSetTool: AnyToolDefinition = defineTool({
       body: input,
       responseSchema: userPreferencesSchema,
     });
-    return { text: `Sprache der Oberfläche: ${describeLocale(result.locale)}.`, data: result };
+    return { text: renderPreferences(result), data: result };
   },
 });
 
