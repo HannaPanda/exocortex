@@ -125,18 +125,56 @@ test.describe('AI side panel', () => {
       .fill(
         'Ein Zug fährt um 9:14 los und braucht 2 h 53 min mit 17 min Verspätung. Ein zweiter fährt 41 min später und ist 12 % schneller. Wer ist zuerst da? Antworte in einem Satz, ohne Werkzeuge.',
       );
+    // Watched from inside the page: at low effort the thinking can arrive in
+    // one burst a few hundred milliseconds before the run ends (measured
+    // 2026-11-26), which a polling `expect` steps over. A mutation observer
+    // sees every frame, so "it was there while the run was live" is a fact
+    // rather than a race.
+    await page.evaluate(() => {
+      // The e2e workspace compiles without the DOM library, so the page's
+      // globals are named here (see `narrow-and-touch.spec.ts`).
+      interface PageGlobals {
+        __thinkingSeenLive?: boolean;
+        document: { body: object; querySelector: (selector: string) => object | null };
+        MutationObserver: new (callback: () => void) => {
+          observe: (target: object, options: { childList: boolean; subtree: boolean }) => void;
+        };
+      }
+      const globals = globalThis as unknown as PageGlobals;
+      globals.__thinkingSeenLive = false;
+      const check = (): void => {
+        const live = globals.document.querySelector('[data-testid="ai-run-activity"]') !== null;
+        const thinking =
+          globals.document.querySelector('[data-testid="ai-run-trace-reasoning"]') !== null;
+        if (live && thinking) globals.__thinkingSeenLive = true;
+      };
+      new globals.MutationObserver(check).observe(globals.document.body, {
+        childList: true,
+        subtree: true,
+      });
+    });
     await page.getByTestId('ai-send').click();
 
     const trace = page.getByTestId('ai-run-trace');
     const toggle = page.getByTestId('ai-run-trace-toggle');
     await expect(page.getByTestId('ai-run-activity')).toBeVisible({ timeout: 30_000 });
-    await expect(
-      page.getByTestId('ai-run-trace-reasoning').first(),
-      'the default model streamed no reasoning; see the comment above this test',
-    ).toBeVisible({ timeout: AI_RUN_FINISH_TIMEOUT_MS });
-    // Visible thinking already says the trace is open. Its toggle is not
-    // asked separately: a one-sentence answer can be over, and the trace
-    // folded, between two assertions.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () =>
+              (globalThis as unknown as { __thinkingSeenLive?: boolean }).__thinkingSeenLive ===
+              true,
+          ),
+        {
+          message: 'the default model streamed no reasoning; see the comment above this test',
+          timeout: AI_RUN_FINISH_TIMEOUT_MS,
+        },
+      )
+      .toBe(true);
+    // Thinking that arrived names the trace. Its open state is not asked
+    // here: a one-sentence answer can be over, and the trace folded, between
+    // two assertions.
     await expect(toggle).toContainText('Gedankengang');
 
     // The run may well be over by now: a one-sentence answer takes a few
