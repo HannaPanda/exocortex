@@ -67,7 +67,10 @@ describe('block catalog execution', () => {
       instance.destroy();
       editor = null;
     }
-  });
+    // One real jsdom editor per catalog entry: under a second alone, but past
+    // the default 5 s when build.sh runs every workspace's tests at once on a
+    // loaded host, which made the gate red for no reason in the code.
+  }, 30_000);
 
   it('inserts a toggle with a summary and a content child', () => {
     const instance = createEditor();
