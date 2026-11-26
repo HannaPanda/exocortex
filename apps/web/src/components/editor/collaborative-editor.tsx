@@ -30,6 +30,7 @@ import { ErrorState, LoadingState } from '@exocortex/ui';
 import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node-view';
 import { ImageLightboxArea } from '@/components/document/image-lightbox-area';
 import { AgentEditMarkers, createAgentEditMarkers } from '@/components/editor/agent-edit-markers';
+import { AiSelectionReporter } from '@/components/editor/ai-selection-reporter';
 import { BlockHandle } from '@/components/editor/block-handle';
 import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
@@ -65,7 +66,6 @@ import {
 } from '@/components/editor/page-link-context';
 import { PageLinkNodeView } from '@/components/editor/page-link-node-view';
 import { PageOutline } from '@/components/editor/page-outline/page-outline';
-import { AiSelectionReporter } from '@/components/editor/ai-selection-reporter';
 import { SelectionToolbar } from '@/components/editor/selection-toolbar';
 import {
   createSlashExtension,
