@@ -561,7 +561,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   range is not touched at all, so it keeps its identifiers and its history; the
   finished document is validated before it is stored, because a fragment that is
   valid alone may not be valid where it was placed; and ambiguity is refused
-  with the candidates named, never resolved by picking one.
+  with the candidates named, never resolved by picking one. List items aimed
+  at a list or its item join that list, and a deletion removes the block and
+  any list it leaves empty, never an empty paragraph in its place (#247).
 - ADR-056: a read carries a budget, and a page over it answers with its map
   instead of its text -- never with a prefix, because a prefix reads like a
   beginning and invites reading on. The map is built by `buildDocumentMap` and

@@ -99,3 +99,36 @@ session the whole document, exactly as `exo_page_write` does today.
 - A narrow write is deliberately not `destructive` in the confirmation gate.
   The gate exists for a call that can lose content the caller never read;
   naming one block is the opposite of that.
+
+## Addendum (2026-11-26, issue #247): lists and deletion
+
+Two shapes surprised everybody who used the block write on a list. List items
+appended to a list arrived as a second list beside it, because the incoming
+Markdown is a document whose top level is a list, and that list was inserted
+as a sibling. And deleting had no spelling of its own: `replace` with empty
+Markdown parsed into one empty paragraph, which took the block's place as a
+shell of no characters that the next empty write replaced with another shell.
+
+**List items aimed at a list join it.** When the addressed block is a list, an
+item, or the paragraph that is an item's text, and the incoming Markdown is
+exactly one list, its _items_ are inserted -- at the end or start of the list,
+or right after or before the item, or in the item's place for `replace` --
+rather than the list. This happens inside `applyBlockRangeEditToYDoc`, so the
+collaboration server, handed the same range and the same document, makes the
+same decision. Only the addressed list is written to, so two neighbouring lists
+are never merged. A bullet and a numbered list hold the same kind of item and
+accept each other's; a task list does not, and the mismatch is refused
+(`list_kind_mismatch`) rather than a checkbox invented or dropped. Anything but
+list items beside an item, and list items mixed with other blocks aimed at a
+list, are refused (`list_expects_items`), in keeping with "ambiguity is refused,
+never resolved".
+
+**Deleting removes.** `mode: "delete"` on the block route, and empty Markdown on
+any `replace`, become the fragment without blocks that already meant "delete
+the range". A list item or list container left without children goes with it,
+up the tree, so deleting the last entry removes the list. Only list containers
+cascade: an empty quote or table cell is still refused by the validation,
+because removing it would take something nobody named. Deleting the text of an
+item that has sub-items is refused (`list_item_text`) with the item's id,
+because either answer -- an item without text, or the sub-items gone too -- is
+a guess.
