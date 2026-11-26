@@ -5,6 +5,9 @@ import * as React from 'react';
 /** How close to the bottom still counts as "at the end". */
 const AT_END_PX = 32;
 
+/** How long after a wheel, touch, key or scrollbar press a move up counts as the reader's. */
+const READER_INPUT_MS = 1_000;
+
 /** Marks the question that starts the exchange "Zum Anfang der Antwort" jumps to. */
 export const QUESTION_ATTRIBUTE = 'data-chat-question';
 
@@ -44,8 +47,9 @@ export interface TranscriptFollow {
  * get a reader back (issue #242).
  *
  * It follows until the reader scrolls up, and only the reader can stop it:
- * an answer that grows or a section that folds never does, because neither
- * moves the scroll position up by itself. Reaching the end again, by hand or
+ * an answer that grows, a section that folds or a bubble swapped for its
+ * stored copy never does, because a move up only counts right after the
+ * reader touched the transcript. Reaching the end again, by hand or
  * with the button, resumes it. Following glides unless the person asked for
  * reduced motion, and the first position of a conversation is taken without
  * any movement at all, since there is nothing to follow yet.
@@ -81,22 +85,44 @@ export function useTranscriptFollow(
   React.useEffect(() => {
     const element = scrollRef.current;
     if (element === null) return;
+    // When the reader last touched the transcript: wheel, touch, keys, or
+    // the scrollbar (a press on the scrolling element itself).
+    let touchedAt = Number.NEGATIVE_INFINITY;
+    const touched = (): void => {
+      touchedAt = Date.now();
+    };
+    const pressed = (event: PointerEvent): void => {
+      if (event.target === element) touched();
+    };
     const onScroll = (): void => {
       const top = element.scrollTop;
+      const movedUp = top < lastTopRef.current - 1;
+      lastTopRef.current = top;
       if (distanceToEnd(element) <= AT_END_PX) {
         if (!followingRef.current) setFollowing(true);
-      } else if (top < lastTopRef.current - 1 && followingRef.current) {
-        // Only a reader moves the position up: growing content leaves it
-        // where it is, and following only ever moves it down. A glide that
-        // is still under way stops where the reader is.
+      } else if (movedUp && followingRef.current && Date.now() - touchedAt < READER_INPUT_MS) {
+        // Only the reader stops it. Content can move the position up as
+        // well, when something above folds or the answer is swapped for its
+        // stored copy, so a move up counts only right after the reader did
+        // something. A glide that is still under way stops where they are.
         setFollowing(false);
         element.scrollTo({ top, behavior: 'auto' });
       }
-      lastTopRef.current = top;
       measure();
     };
-    element.addEventListener('scroll', onScroll, { passive: true });
-    return () => element.removeEventListener('scroll', onScroll);
+    const listeners: [keyof HTMLElementEventMap, EventListener][] = [
+      ['wheel', touched],
+      ['touchmove', touched],
+      ['keydown', touched],
+      ['pointerdown', pressed as EventListener],
+      ['scroll', onScroll],
+    ];
+    for (const [type, listener] of listeners) {
+      element.addEventListener(type, listener, { passive: true });
+    }
+    return () => {
+      for (const [type, listener] of listeners) element.removeEventListener(type, listener);
+    };
   }, [scrollRef, setFollowing, measure]);
 
   React.useLayoutEffect(() => {
