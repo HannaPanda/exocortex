@@ -629,6 +629,86 @@ test.describe('editor', () => {
    * the list continuation of #240 is offered in the line it makes, and that
    * the real arrow key reaches it from inside a table.
    */
+  /**
+   * Issue #227: the hint stands in the one empty line being written in, set
+   * apart from text, and nowhere else. The rules are unit-tested in
+   * `packages/editor`; what only a browser proves is the real focus, the real
+   * Yjs undo, a second tab writing into the line, and that nothing of it is
+   * stored.
+   */
+  test('the empty-line hint follows the caret and leaves nothing behind', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Hinweis ${Date.now().toString(36)}`);
+    const surface = page.getByTestId('editor-surface');
+    const hinted = surface.locator('.is-empty');
+    await surface.click();
+
+    // A line left empty keeps no hint: only the one the caret is in has it.
+    await page.keyboard.type('eins');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await expect(hinted).toHaveCount(1);
+    await expect(surface.locator(':scope > p')).toHaveCount(3);
+    await expect(surface.locator(':scope > p').nth(2)).toHaveClass(/is-empty/);
+    // The e2e project is typed against Node alone, hence the cast.
+    const slant = await hinted.evaluate((line) => {
+      const view = globalThis as unknown as {
+        getComputedStyle: (node: object, pseudo: string) => { fontStyle: string };
+      };
+      return view.getComputedStyle(line, '::before').fontStyle;
+    });
+    expect(slant).toBe('italic');
+
+    // Typing removes it, the undo brings it back in the same line.
+    await page.waitForTimeout(800);
+    await page.keyboard.type('x');
+    await expect(hinted).toHaveCount(0);
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(surface.locator(':scope > p').nth(2)).toHaveClass(/is-empty/);
+    await expect(hinted).toHaveCount(1);
+
+    // In a list point, and gone with the focus.
+    await page.keyboard.type('- a');
+    await page.keyboard.press('Enter');
+    const point = surface.locator('ul > li').nth(1);
+    await expect(point.locator('p')).toHaveClass(/is-empty/);
+    await expect(hinted).toHaveCount(1);
+    await page.getByTestId('document-title').focus();
+    await expect(hinted).toHaveCount(0);
+    await point.click();
+    await expect(hinted).toHaveCount(1);
+
+    // A second tab writes into the line this one is waiting in.
+    const second = await page.context().newPage();
+    try {
+      await second.goto(page.url());
+      const there = second.getByTestId('editor-surface');
+      await expect(there.locator('ul > li')).toHaveCount(2, { timeout: 30_000 });
+      await there.locator('ul > li').first().click();
+      await second.keyboard.press('End');
+      await second.keyboard.press('ArrowDown');
+      await second.keyboard.type('von nebenan');
+      await expect(point).toHaveText('von nebenan');
+      await expect(hinted).toHaveCount(0);
+    } finally {
+      await second.close();
+    }
+
+    // Nothing of the hint is stored.
+    await expect
+      .poll(async () => {
+        const exported = await page.request.get(`/api/documents/${documentId}/export/markdown`);
+        return exported.text();
+      })
+      .toContain('von nebenan');
+    const stored = await (
+      await page.request.get(`/api/documents/${documentId}/export/markdown`)
+    ).text();
+    expect(stored).not.toContain('/“');
+  });
+
   test('a page ending in a picture keeps a line to write in', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

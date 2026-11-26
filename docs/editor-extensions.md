@@ -325,6 +325,30 @@ because the document may have moved since the handle picked it; the selection
 toolbar passes no target and keeps working on the selection the person made.
 Covered by `block-target.test.ts` and `e2e/tests/block-menu.spec.ts`.
 
+## The hint in the empty line
+
+„Schreibe etwas oder tippe „/“ für Befehle …“ is `LinePlaceholder`
+(`line-placeholder.ts`, issue #227), added by the page editor with the hint in
+the reader's language; it is not in the registry because a read-only editor
+never shows it. It is a node decoration (`is-empty`, `data-placeholder`), drawn
+by `globals.css` as `::before`, so it never reaches the Yjs state, the text,
+the Markdown or the clipboard.
+
+Where it stands, all of it in `linePlaceholderPosition`: in the paragraph the
+caret is in, only while the caret is collapsed and the paragraph has no
+content at all (a hard break, a formula or a mention count), and only while
+the editor has the focus, except on a page that is nothing but one empty line.
+Tiptap's `Placeholder` is deliberately not used: it keeps its decorations in a
+state field and recomputes only the top-level blocks a transaction touched,
+with a range one position short, so a top-level line the caret left kept its
+hint. The decoration here is derived from the state on every update and keeps
+nothing between transactions, so typing, `Enter`, a paste, an undo or a change
+from another tab cannot leave one behind. Tiptap dispatches a transaction on
+focus and blur, which is what redraws it when the focus moves. The look (muted
+and italic) is DESIGN.md's Hint-Is-Not-Ink Rule. The list continuation below
+swaps the text through the same class. Covered by `line-placeholder.test.ts`
+and `e2e/tests/editor.spec.ts`.
+
 ## Continuing a list across a block
 
 An empty line below a list, with a picture, a quote or a table in between,
