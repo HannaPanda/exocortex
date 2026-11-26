@@ -899,6 +899,35 @@ serves the everyday domains (pages, search, databases, comments, history,
 inbox, templates) and is accepted. A connector created while the catalogue was
 small keeps working on its cached list until it is reconnected.
 
+The compact endpoint also lists two meta-tools (issue #256, a spike), so the
+rest of the catalogue is not simply gone for ChatGPT:
+
+- `exo_tool_search({ query, limit? })` looks through the `mcp` tools the
+  connection was _not_ listed, with a plain word match over name, description
+  and domain (no embeddings). It answers at most ten, five by default: name,
+  description, `operation` (`read`/`write`), `destructive`, `domain` and
+  `executable`; only an executable tool comes with its `inputSchema`.
+- `exo_tool_execute({ tool, arguments })` runs one of
+  `COMPACT_ENDPOINT_EXECUTABLE` (in `packages/mcp-tools/src/domains.ts`; for
+  the spike `exo_entity_list` and `exo_page_set_layout`). It dispatches into
+  the connection's own `callTool`, so the target's schema, the confirmation
+  gate, the agent session journal and the loopback credential apply exactly
+  as on a direct call; it declares no `target` of its own, because the gate
+  keys on the tool that writes. A refusal is a tool result with `isError`
+  and `structuredContent.error`: `tool_unknown`, `tool_directly_exposed`,
+  `tool_recursive`, `tool_irreversible` (nothing destructive or irreversible
+  is ever dispatched, whatever the list says) or `tool_not_allowed`. Invalid
+  arguments answer `invalid_input` with the issues, an API refusal its error
+  code; both hold for every tool since, not only an indirect one.
+- The log line of every call names the envelope as `tool` and, for
+  `exo_tool_execute`, the tool that ran as `targetTool`.
+
+`createMcpRequestHandler` builds both per connection from its `discovery`
+option; they are not in the catalogue, so the full endpoint, stdio and the
+built-in loop (which has `exo_toolbox`) do not list them. The two together add
+about 2 KB to the compact `tools/list` (63 tools and 70.9 KB before, 65 and
+72.9 KB after).
+
 The POST body is read as JSON whatever its declared content type, because
 ChatGPT's connector check sends `application/octet-stream`; any other route
 still refuses an unknown type with 415.
