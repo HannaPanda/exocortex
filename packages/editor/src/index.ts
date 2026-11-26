@@ -1,6 +1,7 @@
 import './tiptap-augmentations';
 
 export * from './block-catalog';
+export * from './block-drop';
 export * from './block-id';
 export * from './block-range';
 export * from './breadcrumb';
@@ -30,6 +31,7 @@ export * from './media';
 export * from './media-info';
 export * from './mention';
 export * from './migrations';
+export * from './move-block';
 export * from './page-edit';
 export * from './page-link';
 export * from './page-link-identity';

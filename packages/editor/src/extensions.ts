@@ -28,6 +28,7 @@ import {
   listBlocks,
   tableBlocks,
 } from './block-catalog';
+import { BlockDrop } from './block-drop';
 import { ADDRESSABLE_BLOCK_TYPES, BlockId } from './block-id';
 import {
   Breadcrumb,
@@ -91,6 +92,7 @@ import {
 } from './media';
 import { type MediaInfoResolver } from './media-info';
 import { Mention, mentionMarkdownAdapter, mentionPlainTextAdapter } from './mention';
+import { MoveBlock } from './move-block';
 import {
   PageLink,
   pageLinkBlocks,
@@ -396,6 +398,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     name: 'shift-arrow-selection',
     schemaVersion: 1,
     extensions: [ShiftArrowSelection],
+  },
+  {
+    // Behaviour only, no schema: a dragged block lands where a line says it
+    // will, at the level the pointer picks, and `Strg+Umschalt+Pfeil` moves a
+    // block without a mouse (issue #243).
+    name: 'block-move',
+    schemaVersion: 1,
+    extensions: [BlockDrop, MoveBlock],
   },
 ];
 
