@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { type ApplicationEvent, type ApplicationEventType } from '@exocortex/contracts';
-import { type Prisma, type PrismaClient, type PrismaTransactionClient } from '@exocortex/database';
+import { Prisma, type PrismaClient, type PrismaTransactionClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { PRISMA } from '../platform/platform-tokens';
 
+import { journalWrittenBlocks } from './agent-journal-blocks';
 import {
   currentAgentSession,
   currentAutomation,
@@ -237,6 +238,13 @@ export class OutboxService {
       select: { id: true },
     });
 
+    // Which blocks the write changed, so one run can later be taken back
+    // block by block without overwriting what somebody wrote since (#248).
+    const blocks =
+      input.snapshotBeforeId === undefined
+        ? null
+        : await journalWrittenBlocks(tx, documentId, input.snapshotBeforeId);
+
     await tx.agentWriteJournal.create({
       data: {
         sessionId: session.id,
@@ -246,6 +254,8 @@ export class OutboxService {
         actorId,
         action: input.type,
         snapshotBeforeId: input.snapshotBeforeId ?? null,
+        writtenBlocks:
+          blocks === null ? Prisma.DbNull : (blocks as unknown as Prisma.InputJsonArray),
         correlationId: input.correlationId,
       },
     });

@@ -57,4 +57,5 @@ export * from './toggle';
 export * from './trailing-paragraph';
 export * from './transclusion';
 export * from './transclusion-fragment';
+export * from './written-blocks';
 export * from './yjs';

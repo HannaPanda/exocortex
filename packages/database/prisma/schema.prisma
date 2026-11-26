@@ -2855,6 +2855,15 @@ model AgentWriteJournal {
   /// is exactly why those cannot be reverted in bulk.
   snapshotBeforeId String?
 
+  /// The top-level blocks this write changed, as `[{ id, after }]` where
+  /// `after` is a fingerprint of the block as the write left it, or `null`
+  /// when the write removed it (issue #248). Fingerprints, never content: the
+  /// snapshot above is where the content is. What lets one AI run be taken
+  /// back block by block while naming every block somebody changed since.
+  /// `NULL` for a write that took no snapshot, for rows from before the
+  /// column existed, and for a state that did not derive.
+  writtenBlocks Json?
+
   correlationId String
   createdAt     DateTime @default(now())
 
