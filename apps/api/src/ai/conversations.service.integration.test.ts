@@ -715,6 +715,27 @@ describe('ConversationsService.postMessage', () => {
       expect(marker.content).toContain('Nur dieser Satz.');
     });
 
+    it('keeps the words but not the block ids when the turn names no page (#249)', async () => {
+      const conversationId = await createConversation();
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: {
+          content: 'Was heißt das?',
+          documentId: null,
+          selection: { blockIds: ['abcdefgh1234'], text: 'Ein Satz ohne Seite.' },
+        },
+        correlationId: 'test-selection-5',
+      });
+
+      const marker = await prisma.aiConversationMessage.findFirstOrThrow({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(marker.content).toContain('Ein Satz ohne Seite.');
+      expect(marker.content).not.toContain('abcdefgh1234');
+    });
+
     it('adds nothing to the transcript when no selection was handed over', async () => {
       const conversationId = await createConversation();
       const documentId = await createDocument('Seite ohne Auswahl');

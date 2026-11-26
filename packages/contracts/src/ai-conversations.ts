@@ -177,6 +177,16 @@ export type UpdateAiConversationRequest = z.infer<typeof updateAiConversationReq
  * address the passage later (`exo_page_read` returns the same identifiers)
  * instead of guessing where in the page it came from.
  */
+/**
+ * How much of a handed-over selection reaches the transcript (issue #249).
+ *
+ * A selection is meant to be "this bit here", not a way to smuggle a whole
+ * page past the page-context switch. The request may carry more (the schema
+ * below allows 20 000), and the API cuts it here and says so in the text; the
+ * chip row reads the same number to say so before anything is sent.
+ */
+export const MESSAGE_SELECTION_MAX_CHARS = 4_000;
+
 export const messageSelectionSchema = z.object({
   blockIds: z.array(z.string().trim().min(1).max(64)).max(500).default([]),
   text: z.string().trim().min(1).max(20_000),

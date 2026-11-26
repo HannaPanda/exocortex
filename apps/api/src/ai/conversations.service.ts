@@ -12,6 +12,7 @@ import {
   type AiConversationCompactResponse,
   type AiConversationDetailResponse,
   type CreateAiConversationRequest,
+  MESSAGE_SELECTION_MAX_CHARS,
   type PostConversationMessageRequest,
   type PostConversationMessageResponse,
   QUEUE_NAMES,
@@ -63,14 +64,12 @@ function formatContextSwitch(documentTitle: string | null): string {
 }
 
 /**
- * Hard cap on a handed-over selection.
- *
- * A selection is meant to be "this bit here", not a way to smuggle a whole page
- * past the page-context switch. Beyond the cap it is cut and the cut is stated
- * in the text itself, so the model knows it is looking at an excerpt -- the same
- * rule the ALWAYS rule budget follows in `buildSystemPrompt`.
+ * Hard cap on a handed-over selection. Beyond it the selection is cut and the
+ * cut is stated in the text itself, so the model knows it is looking at an
+ * excerpt -- the same rule the ALWAYS rule budget follows in
+ * `buildSystemPrompt`. Shared with the chip row, which says so before sending.
  */
-const MAX_SELECTION_CHARS = 4_000;
+const MAX_SELECTION_CHARS = MESSAGE_SELECTION_MAX_CHARS;
 
 /**
  * The transcript entry that carries a handed-over selection.
@@ -428,7 +427,10 @@ export class ConversationsService {
       preludeContents.push(
         formatSelection({
           text: selection.text,
-          blockIds: selection.blockIds,
+          // Block ids address a page. Without a page this conversation may
+          // name, they would point the model's tools at blocks it was never
+          // shown where to find, so only the words travel (issue #249).
+          blockIds: boundDocumentId === null ? [] : selection.blockIds,
           // Named from the bound page even when the page context is off: the
           // user picked this passage by hand and can see it in the chip row, so
           // saying where it came from discloses nothing they did not send.
