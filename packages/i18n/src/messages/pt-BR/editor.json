@@ -458,6 +458,7 @@
     "openAt": "Abrir sumário, você está em “{section}”",
     "pin": "Fixar sumário ao lado da página",
     "unpin": "Desafixar sumário",
+    "pinUnavailable": "A janela é estreita demais para fixar: quando fixado, o índice precisa de uma coluna própria ao lado do texto.",
     "untitled": "Título sem texto",
     "collapsed": "{count, plural, =0 {recolhido} one {recolhido, # título dentro} many {recolhido, # títulos dentro} other {recolhido, # títulos dentro}}"
   }

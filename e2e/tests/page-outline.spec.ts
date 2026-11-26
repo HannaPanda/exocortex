@@ -212,11 +212,8 @@ test.describe('page outline', () => {
     await page.getByTestId('page-outline-pin').click();
     await expect(page.getByTestId('page-outline-pinned')).toBeVisible();
 
-    // Whichever shape the room beside the text allows: the list at the
-    // narrow measure, the scale where the page is too wide to pin beside.
-    const outline = page
-      .getByTestId('page-outline-pinned')
-      .or(page.getByTestId('page-outline-rail'));
+    // Pinned in every page width since issue #267.
+    const outline = page.getByTestId('page-outline-pinned');
     for (const layout of ['narrow', 'wide', 'full'] as const) {
       const changed = await page.request.patch(`/api/documents/${id}`, { data: { layout } });
       expect(changed.ok(), await changed.text()).toBe(true);
@@ -245,6 +242,82 @@ test.describe('page outline', () => {
         .toBeLessThan(40);
       await expect(outline).toBeInViewport();
     }
+  });
+});
+
+// Issue #267: the pin depended on the margin the text left, which a wide or
+// full-width page in an ordinary window never leaves. Pinned, the list takes
+// a column of its own in every page width; the text moves aside, never under.
+test.describe('page outline pinned in every page width', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  for (const layout of ['narrow', 'wide', 'full'] as const) {
+    test(`can be pinned at page width ${layout} without covering the text`, async ({ page }) => {
+      const marker = Date.now().toString(36);
+      const id = await importPage(page, `Spalte ${layout} ${marker}`, longMarkdown(marker));
+      const changed = await page.request.patch(`/api/documents/${id}`, { data: { layout } });
+      expect(changed.ok(), await changed.text()).toBe(true);
+      await setCover(page, id);
+      await page.reload();
+      await expect(page.getByTestId('editor-surface')).toBeVisible();
+
+      await page.getByTestId('page-outline-rail').click();
+      await expect(page.getByTestId('page-outline-pin-note')).toHaveCount(0);
+      await page.getByTestId('page-outline-pin').click();
+      const pinned = page.getByTestId('page-outline-pinned');
+      await expect(pinned).toBeVisible();
+
+      // Beside the text with air between, at the top and scrolled into it.
+      const besideText = async (): Promise<number> => {
+        const text = await page.locator('.ProseMirror').boundingBox();
+        const box = await pinned.boundingBox();
+        if (text === null || box === null) return -1;
+        return box.x - (text.x + text.width);
+      };
+      await expect.poll(besideText, { message: layout }).toBeGreaterThanOrEqual(16);
+      await page.locator('.ProseMirror').hover();
+      await page.mouse.wheel(0, 1500);
+      await expect.poll(besideText, { message: layout }).toBeGreaterThanOrEqual(16);
+      await expect(pinned).toBeInViewport();
+
+      // The cover still spans the whole page area, the column included.
+      // (Less a scrollbar at most; without the bleed it would end 16rem short.)
+      await page.mouse.wheel(0, -3000);
+      const cover = await page.getByTestId('page-cover').boundingBox();
+      const area = await page.locator('.exocortex-page-scroll').boundingBox();
+      expect(cover !== null && area !== null).toBe(true);
+      expect((cover?.width ?? 0) + 20).toBeGreaterThan(area?.width ?? 0);
+
+      // Unpinned, the column is given back to the page.
+      await page.getByTestId('page-outline-pin').click();
+      await expect(page.getByTestId('page-outline-rail')).toBeVisible();
+      await expect(pinned).toHaveCount(0);
+    });
+  }
+
+  test('says why it cannot be pinned in a window too narrow for the column', async ({ page }) => {
+    const marker = Date.now().toString(36);
+    await importPage(page, `Zu schmal ${marker}`, longMarkdown(marker));
+    await page.getByTestId('page-outline-rail').click();
+    await page.getByTestId('page-outline-pin').click();
+    await expect(page.getByTestId('page-outline-pinned')).toBeVisible();
+
+    // A window narrower than the column plus a readable measure.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await expect(page.getByTestId('page-outline-pinned')).toHaveCount(0);
+    const trigger = page
+      .getByTestId('page-outline-rail')
+      .or(page.getByTestId('page-outline-compact'));
+    await trigger.click();
+    const popover = page.getByTestId('page-outline-popover');
+    await expect(popover.getByTestId('page-outline-pin-note')).toBeVisible();
+    await expect(popover.getByTestId('page-outline-pin')).toHaveCount(0);
+
+    // The choice is kept: back in a wide window the list is pinned again.
+    await page.keyboard.press('Escape');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(page.getByTestId('page-outline-pinned')).toBeVisible();
+    await page.getByTestId('page-outline-pin').click();
   });
 });
 

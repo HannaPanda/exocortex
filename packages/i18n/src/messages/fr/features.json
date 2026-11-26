@@ -106,7 +106,7 @@
     "details": {
       "p1": "L’échelle affiche la structure de la page, avec des traits plus longs pour les niveaux supérieurs. Le trait ambré correspond à la section où tu te trouves actuellement et se déplace lors du défilement. Une page sans titre n’a pas de plan.",
       "p2": "Une section repliée apparaît une seule fois dans le plan, accompagnée du nombre de titres qu’elle contient. Y accéder ne la déplie pas : l’état replié d’une section fait partie intégrante de la page, et naviguer ne modifie rien à la page.",
-      "p3": "S’il y a assez d’espace à côté de la page, tu peux épingler le plan à l’aide de l’épingle en haut ; il reste alors ouvert jusqu’à ce que tu le détaches. Sur mobile, la graduation devient un petit bouton en bas à droite, qui s’efface lors de la saisie. Tu peux aussi t’en passer avec la palette de commandes : « Aller à la section »."
+      "p3": "Avec l’épingle en haut, le plan peut être épinglé, quelle que soit la largeur de la page : il obtient alors sa propre colonne à droite, le texte se décale sur le côté, et il reste ouvert jusqu’à ce que tu le détaches. Si la fenêtre est trop étroite pour cela, c’est indiqué dans le plan. Sur mobile, la règle devient un petit bouton en bas à droite qui disparaît pendant la saisie. Tu peux aussi t’en servir sans souris via la palette de commandes : « Aller à la section »."
     },
     "where": "Sur une page avec des titres, clique sur l’échelle située sur le bord droit, ou fais Strg + K puis « Aller à la section »."
   },

@@ -401,8 +401,13 @@ export function PageCover({
   return (
     // A container, so the menu can ask how wide the cover is rather than the
     // window: below 36rem its labels go to screen readers and tooltips only
-    // (issue #266, the menu ran off the left edge of a phone).
-    <div className="group/cover @container/cover relative w-full" data-testid="page-cover">
+    // (issue #266, the menu ran off the left edge of a phone). No `w-full`:
+    // its width is the block's own, so the negative margin globals.css gives
+    // it beside a pinned outline widens it across that column (issue #267).
+    <div
+      className="exocortex-page-cover group/cover @container/cover relative"
+      data-testid="page-cover"
+    >
       {input}
       <div
         ref={frameRef}

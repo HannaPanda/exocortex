@@ -143,6 +143,20 @@ export function OutlineHeader({
 }
 
 /**
+ * Why there is no pin (issue #267): pinning takes a column beside the page,
+ * and a window too narrow for that column and a readable text says so here,
+ * at the place the reader looks for the pin.
+ */
+export function OutlinePinNote() {
+  const t = useTranslations('editor.pageOutline');
+  return (
+    <p className="px-2 pb-1 text-meta text-muted-foreground" data-testid="page-outline-pin-note">
+      {t('pinUnavailable')}
+    </p>
+  );
+}
+
+/**
  * The list of headings. Arrow keys, Home and End move between them; Enter or
  * Space jumps. The current section carries `aria-current="location"` and the
  * selected treatment from the page tree (`accent-strong`, full ink, weight

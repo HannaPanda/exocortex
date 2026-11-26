@@ -106,7 +106,7 @@
     "details": {
       "p1": "De schaal toont de structuur van de pagina, met langere streepjes voor hogere niveaus. Het amberkleurige streepje geeft het gedeelte aan waar je je nu bevindt en beweegt mee tijdens het scrollen. Een pagina zonder koppen heeft geen overzicht.",
       "p2": "Een ingeklapte sectie staat eenmaal in het overzicht, met het aantal koppen erin. Ernaartoe springen klapt de sectie niet uit: of een sectie ingeklapt is, hoort bij de pagina, en navigeren verandert niets aan de pagina.",
-      "p3": "Is er naast de pagina genoeg ruimte, dan kun je het overzicht vastpinnen met de speld bovenaan; dan blijft het geopend tot je het weer losmaakt. Op de mobiele telefoon verandert de schaalverdeling in een kleine knop rechtsonder, die tijdens het typen verdwijnt. Via het opdrachtpalet kan het ook zonder muis: „Naar sectie springen”."
+      "p3": "Met de speld bovenaan kun je het overzicht vastpinnen, bij elke paginabreedte: het krijgt dan een eigen kolom aan de rechterkant, de tekst schuift opzij en het blijft openstaan tot je het weer losmaakt. Als het venster daarvoor te smal is, staat dat in het overzicht aangegeven. Op mobiel verandert de schaal in een kleine knop rechtsonder die verdwijnt tijdens het typen. Via het opdrachtpalet kan het ook zonder muis: „Naar sectie springen”."
     },
     "where": "Klik op een pagina met koppen op de schaal aan de rechterrand, of gebruik Strg + K en „Naar sectie springen”."
   },

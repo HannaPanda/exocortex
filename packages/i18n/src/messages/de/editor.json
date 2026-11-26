@@ -458,6 +458,7 @@
     "openAt": "Gliederung öffnen, du bist bei „{section}“",
     "pin": "Gliederung neben der Seite anpinnen",
     "unpin": "Gliederung lösen",
+    "pinUnavailable": "Zum Anpinnen ist das Fenster zu schmal: angepinnt braucht die Gliederung eine eigene Spalte neben dem Text.",
     "untitled": "Überschrift ohne Text",
     "collapsed": "{count, plural, =0 {eingeklappt} one {eingeklappt, # Überschrift darin} other {eingeklappt, # Überschriften darin}}"
   }

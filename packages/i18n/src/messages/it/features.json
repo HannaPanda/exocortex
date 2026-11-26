@@ -106,7 +106,7 @@
     "details": {
       "p1": "La scala mostra la struttura della pagina, con tratti più lunghi per i livelli superiori. Il tratto color ambra indica la sezione in cui ti trovi attualmente e si sposta mentre scorri. Una pagina senza intestazioni non ha alcuna struttura.",
       "p2": "Una sezione compressa compare una sola volta nella struttura, insieme al numero di intestazioni al suo interno. Raggiungerla con un salto non la espande: lo stato compresso fa parte della pagina e la navigazione non modifica i contenuti della pagina.",
-      "p3": "Se c’è abbastanza spazio accanto alla pagina, puoi fissare la struttura con la puntina in alto; in questo modo rimarrà aperta finché non la sblocchi. Sullo smartphone, la scala diventa un piccolo pulsante in basso a destra che scompare durante la scrittura. Puoi navigare anche senza mouse tramite la tavolozza dei comandi: «Vai alla sezione»."
+      "p3": "Con la puntina in alto puoi fissare la struttura, con qualsiasi larghezza della pagina: otterrà una colonna dedicata a destra, il testo si sposterà lateralmente e rimarrà aperta finché non la sblocchi. Se la finestra è troppo stretta per questo, viene indicato nella struttura. Sul telefono, la scala diventa un piccolo pulsante in basso a destra, che scompare durante la scrittura. Puoi farlo anche senza mouse tramite la tavolozza dei comandi: «Vai alla sezione»."
     },
     "where": "Su una pagina con intestazioni fai clic sulla scala sul bordo destro, oppure premi Strg + K e seleziona «Vai alla sezione»."
   },

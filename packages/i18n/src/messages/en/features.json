@@ -106,7 +106,7 @@
     "details": {
       "p1": "The scale shows the structure of the page, with longer ticks for higher heading levels. The amber tick is the section you are currently in, moving along as you scroll. A page without headings has no outline.",
       "p2": "A collapsed section appears once in the outline, showing the number of headings inside it. Jumping there does not expand it: whether a section is collapsed belongs to the page, and navigating does not change the page.",
-      "p3": "If there is enough space next to the page, you can pin the outline using the pin icon at the top; it then stays open until you unpin it. On mobile, the scale turns into a small button at the bottom right that disappears while writing. You can also do it without a mouse via the command palette: “Jump to section”."
+      "p3": "Use the pin at the top to pin the outline at any page width: it then gets its own column on the right, the text shifts aside, and it stays open until you unpin it again. If the window is too narrow for this, a note appears in the outline. On mobile, the gauge turns into a small button at the bottom right that disappears while writing. You can also do it without a mouse via the command palette: “Jump to section”."
     },
     "where": "On a page with headings, click the scale on the right edge, or press Strg + K and “Jump to section”."
   },

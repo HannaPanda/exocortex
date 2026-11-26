@@ -106,7 +106,7 @@
     "details": {
       "p1": "Die Skala zeigt die Struktur der Seite, längere Striche für höhere Ebenen. Der amberfarbene Strich ist der Abschnitt, in dem du gerade bist, und wandert beim Scrollen mit. Eine Seite ohne Überschrift hat keine Gliederung.",
       "p2": "Ein eingeklappter Abschnitt steht einmal in der Gliederung, mit der Zahl der Überschriften darin. Ein Sprung dorthin klappt ihn nicht auf: ob ein Abschnitt eingeklappt ist, gehört zur Seite, und Navigieren ändert an der Seite nichts.",
-      "p3": "Ist neben der Seite genug Platz, lässt sich die Gliederung mit der Nadel oben anpinnen; dann bleibt sie offen stehen, bis du sie wieder löst. Auf dem Handy wird aus der Skala ein kleiner Knopf unten rechts, der beim Schreiben verschwindet. Über die Befehlspalette geht es auch ohne Maus: „Zu Abschnitt springen“."
+      "p3": "Mit der Nadel oben lässt sich die Gliederung anpinnen, in jeder Seitenbreite: dann bekommt sie eine eigene Spalte rechts, der Text rückt zur Seite, und sie bleibt offen stehen, bis du sie wieder löst. Ist das Fenster dafür zu schmal, steht das in der Gliederung. Auf dem Handy wird aus der Skala ein kleiner Knopf unten rechts, der beim Schreiben verschwindet. Über die Befehlspalette geht es auch ohne Maus: „Zu Abschnitt springen“."
     },
     "where": "Auf einer Seite mit Überschriften die Skala am rechten Rand anklicken, oder Strg + K und „Zu Abschnitt springen“."
   },

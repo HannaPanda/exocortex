@@ -5,11 +5,13 @@ import { type PageOutlineEntry } from '@exocortex/editor';
 import {
   activeHeadingIndex,
   activeTickIndex,
+  canPinOutline,
   OUTLINE_TOP,
   outlinePlacement,
   outlineTop,
   outlineWanted,
-  PINNED_WIDTH,
+  PINNED_LANE,
+  PINNED_MIN_PAGE,
   railTicks,
 } from './outline-geometry';
 
@@ -71,11 +73,31 @@ describe('railTicks', () => {
 });
 
 describe('outlinePlacement', () => {
-  it('pins only where the list fits beside the text', () => {
-    expect(outlinePlacement(PINNED_WIDTH + 32, true)).toBe('pinned');
-    expect(outlinePlacement(PINNED_WIDTH + 31, true)).toBe('rail');
-    expect(outlinePlacement(PINNED_WIDTH + 100, false)).toBe('rail');
-    expect(outlinePlacement(20, true)).toBe('compact');
+  // Issue #267: a full-width page leaves no margin at all, and the pin used
+  // to vanish with it. Pinning takes its own column, so the margin the text
+  // happens to leave says nothing about whether it can be pinned.
+  it('pins whatever the margin beside the text, wherever the area holds a column', () => {
+    const room = PINNED_LANE + PINNED_MIN_PAGE;
+    expect(outlinePlacement(0, room, true)).toBe('pinned');
+    expect(outlinePlacement(400, room, true)).toBe('pinned');
+    expect(outlinePlacement(400, room - 1, true)).toBe('rail');
+  });
+
+  it('offers the scale in a margin and a button where there is none', () => {
+    expect(outlinePlacement(400, 2000, false)).toBe('rail');
+    expect(outlinePlacement(40, 2000, false)).toBe('rail');
+    expect(outlinePlacement(39, 2000, false)).toBe('compact');
+    expect(outlinePlacement(20, 390, true)).toBe('compact');
+  });
+});
+
+describe('canPinOutline', () => {
+  it('keeps the narrowest readable page beside the pinned column', () => {
+    expect(canPinOutline(PINNED_LANE + PINNED_MIN_PAGE)).toBe(true);
+    expect(canPinOutline(PINNED_LANE + PINNED_MIN_PAGE - 1)).toBe(false);
+    // A phone never pins; a tablet held upright does.
+    expect(canPinOutline(390)).toBe(false);
+    expect(canPinOutline(768)).toBe(true);
   });
 });
 

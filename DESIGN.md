@@ -755,8 +755,16 @@ name. A collapsed section is listed once, with the number of headings it
 holds, and a jump to it lands on its heading without unfolding it. Whether a
 section is folded is stored in the document, and navigation never writes.
 
-Where the room right of the text holds it, the list can be pinned and stays
-open there. Where the margin cannot even hold the scale (a phone, or a narrow
+The list can be pinned in every page width, and pinned it takes a column of
+the page area for itself (16rem: the 15rem list and a 1rem gap): the scroll
+container gives the column up as right padding, so the page centres in what
+is left, a full-width page simply ends where the column begins, and a
+database breaking out of the measure stops short of the list (issue #267).
+Before that, pinning depended on the margin the text happened to leave, which
+a full-width page never leaves, so the pin came and went with the page width.
+The only window that cannot pin is one too narrow for the column and a 20rem
+measure beside it; its popover says so where the pin would be, rather than
+leaving the reader to look for a control that is not there. Where the margin cannot even hold the scale (a phone, or a narrow
 window with a panel open), it becomes a compact button floating at the bottom
 edge, and that button steps aside while the editor has focus.
 
@@ -770,8 +778,8 @@ tooltip and accessible name, because the labelled row ran off the left edge.
 
 **The Outline-Is-Chrome Rule.** The outline is drawn into the document area
 beside the scroll container, never into the editor and never over the text,
-the cover or the title: pinned only where there is room, and otherwise
-collapsed to the margin. It
+the cover or the title: pinned only in a column the page gives up for it,
+and otherwise collapsed to the margin. It
 reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.

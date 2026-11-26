@@ -7,6 +7,7 @@ import { type PageOutlineEntry, readPageOutline, sameOutline } from '@exocortex/
 
 import {
   activeHeadingIndex,
+  canPinOutline,
   type OutlinePlacement,
   outlinePlacement,
   outlineTop,
@@ -20,13 +21,34 @@ const JUMP_HOLD_MS = 900;
 /** Quiet time after a change before the outline is read and measured again. */
 const SETTLE_MS = 120;
 
+/** What the measurement decides from: see `measure` in `useOutlineTracking`. */
+interface OutlineLayout {
+  wanted: boolean;
+  /** Pixels between the text's right edge and the visible area's. */
+  free: number;
+  /** The visible width of the scroll area, a pinned list's column included. */
+  room: number;
+  scrollbarWidth: number;
+}
+
+const NO_LAYOUT: OutlineLayout = { wanted: false, free: 0, room: 0, scrollbarWidth: 0 };
+
+function sameLayout(a: OutlineLayout, b: OutlineLayout): boolean {
+  return (
+    a.wanted === b.wanted &&
+    a.free === b.free &&
+    a.room === b.room &&
+    a.scrollbarWidth === b.scrollbarWidth
+  );
+}
+
 export interface OutlineTracking {
   entries: readonly PageOutlineEntry[];
   /** Index into `entries` of the section being read, or `null` above the first. */
   activeIndex: number | null;
   wanted: boolean;
   placement: OutlinePlacement;
-  /** Whether the room beside the text would hold the pinned list. */
+  /** Whether the scroll area is wide enough to give the pinned list a column. */
   canPin: boolean;
   /** The document area the outline is drawn into, beside the scroll container. */
   host: HTMLElement | null;
@@ -54,7 +76,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     readPageOutline(editor.state.doc),
   );
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
-  const [layout, setLayout] = React.useState({ wanted: false, free: 0, scrollbarWidth: 0 });
+  const [layout, setLayout] = React.useState(NO_LAYOUT);
   const [elements, setElements] = React.useState<{
     scroller: HTMLElement;
     host: HTMLElement;
@@ -143,23 +165,19 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
 
     // The room right of the text: the page box minus its own right padding is
     // where the text ends, the scroller's client width is where the visible
-    // area ends (the scrollbar is outside it).
+    // area ends (the scrollbar is outside it). `room` includes the column a
+    // pinned list takes, so taking it does not change the answer.
     const pageRect = page.getBoundingClientRect();
     const paddingRight = Number.parseFloat(getComputedStyle(page).paddingRight) || 0;
     const textRight = pageRect.right - paddingRight;
     const visibleRight = scrollerRect.left + scroller.clientWidth;
-    const next = {
+    const next: OutlineLayout = {
       wanted: outlineWanted(entriesRef.current),
       free: Math.max(0, Math.floor(visibleRight - textRight)),
+      room: scroller.clientWidth,
       scrollbarWidth: scroller.offsetWidth - scroller.clientWidth,
     };
-    setLayout((previous) =>
-      previous.wanted === next.wanted &&
-      previous.free === next.free &&
-      previous.scrollbarWidth === next.scrollbarWidth
-        ? previous
-        : next,
-    );
+    setLayout((previous) => (sameLayout(previous, next) ? previous : next));
     updateActive(scroller);
   }, [editor, elements, placeTop, updateActive]);
 
@@ -285,8 +303,8 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     entries,
     activeIndex,
     wanted: layout.wanted,
-    placement: outlinePlacement(layout.free, pinRequested),
-    canPin: outlinePlacement(layout.free, true) === 'pinned',
+    placement: outlinePlacement(layout.free, layout.room, pinRequested),
+    canPin: canPinOutline(layout.room),
     host: elements?.host ?? null,
     scrollbarWidth: layout.scrollbarWidth,
     jump,

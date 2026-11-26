@@ -11,10 +11,11 @@ import { cn, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 import { useLatest, usePaletteContribution } from '@/components/palette/contributions';
 import { keywordsOf, type PaletteCommand } from '@/components/palette/palette-command';
 
-import { activeTickIndex, OUTLINE_GAP, railTicks } from './outline-geometry';
+import { activeTickIndex, OUTLINE_GAP, PINNED_LANE, railTicks } from './outline-geometry';
 import {
   OutlineHeader,
   OutlineList,
+  OutlinePinNote,
   OutlineRail,
   type OutlineRow,
   outlineRows,
@@ -52,6 +53,8 @@ function writePinned(pinned: boolean): void {
  * floating at the bottom edge. A page without headings gets none of them.
  * The list and the scale start below the page head (cover, its menu, title)
  * and rise with it to the top edge while the reader scrolls (issue #266).
+ * Pinned, the list takes a column of the page area for itself, whatever the
+ * page width, and the page is laid out in what is left (issue #267).
  */
 export const PageOutline = React.memo(function PageOutline({ editor }: { editor: Editor }) {
   const t = useTranslations('editor.pageOutline');
@@ -70,6 +73,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   const activeRow = rows.find((row) => row.index === activeIndex) ?? null;
 
   useOutlineCommands(rows, jump);
+  useOutlineLane(host, wanted && placement === 'pinned');
 
   const setPinned = (pinned: boolean): void => {
     writePinned(pinned);
@@ -105,6 +109,9 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   const header = (
     <OutlineHeader pinned={placement === 'pinned'} canPin={canPin} onPinnedChange={setPinned} />
   );
+  // Where the window is too narrow to give the list a column, the popover
+  // says so instead of leaving the reader to look for a missing pin.
+  const pinNote = canPin ? null : <OutlinePinNote />;
   const triggerLabel =
     activeRow === null
       ? t('open')
@@ -187,6 +194,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
                 activeRef={activeRowRef}
               />
             </div>
+            {pinNote}
           </nav>
         </PopoverContent>
       </Popover>
@@ -194,6 +202,23 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
     host,
   );
 });
+
+/**
+ * Takes the pinned list's column off the page area (issue #267): the host
+ * carries `--outline-lane`, and globals.css turns it into the scroll
+ * container's right padding, so the page centres in what is left and nothing
+ * of it, a database breaking out of the measure included, runs under the
+ * list. A layout effect, so the text never shows for a frame under the list.
+ */
+function useOutlineLane(host: HTMLElement | null, pinned: boolean): void {
+  React.useLayoutEffect(() => {
+    if (host === null || !pinned) return;
+    host.style.setProperty('--outline-lane', `${String(PINNED_LANE)}px`);
+    return () => {
+      host.style.removeProperty('--outline-lane');
+    };
+  }, [host, pinned]);
+}
 
 function useEditorFocused(editor: Editor): boolean {
   const [focused, setFocused] = React.useState(() => editor.isFocused);

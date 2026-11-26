@@ -106,7 +106,7 @@
     "details": {
       "p1": "La escala muestra la estructura de la página, con líneas más largas para los niveles superiores. La línea de color ámbar indica la sección en la que te encuentras y se desplaza al hacer scroll. Una página sin encabezados no tiene esquema.",
       "p2": "Una sección plegada aparece una sola vez en el esquema, junto con el número de encabezados que contiene. Saltar hasta ella no la despliega: que una sección esté plegada forma parte de la página, y navegar no cambia nada en la página.",
-      "p3": "Si hay suficiente espacio junto a la página, puedes fijar el esquema con la chincheta superior; así permanecerá abierto hasta que lo desclaves. En el móvil, la escala se convierte en un pequeño botón abajo a la derecha que desaparece al escribir. También puedes usarlo sin ratón a través de la paleta de comandos: «Saltar a sección»."
+      "p3": "Con la chincheta de arriba puedes fijar el índice en cualquier ancho de página: así obtiene su propia columna a la derecha, el texto se desplaza a un lado y permanece visible hasta que vuelvas a desanclarlo. Si la ventana es demasiado estrecha para ello, se indica en el propio índice. En el móvil, la escala se convierte en un pequeño botón abajo a la derecha que desaparece al escribir. A través de la paleta de comandos también funciona sin ratón: «Ir a la sección»."
     },
     "where": "En una página con encabezados, haz clic en la escala del borde derecho, o usa Strg + K y «Ir a sección»."
   },

@@ -127,16 +127,46 @@ export const PINNED_WIDTH = 240;
 export const RAIL_LANE = 40;
 /** Air kept between the text column and anything beside it, in pixels. */
 export const OUTLINE_GAP = 16;
+/**
+ * The column a pinned outline takes from the page area, in pixels (16rem): the
+ * list and the air on its inner side. The scroll container gives it up as
+ * right padding (`--outline-lane`, globals.css), so the page, its gutter and
+ * a database that breaks out of the measure are all laid out in what is left.
+ */
+export const PINNED_LANE = PINNED_WIDTH + OUTLINE_GAP;
+/**
+ * The narrowest page box that is still worth pinning beside, in pixels: the
+ * 20rem measure globals.css calls the narrowest still worth reading, plus the
+ * page's plain padding (1.5rem) on both sides.
+ */
+export const PINNED_MIN_PAGE = 368;
+
+/**
+ * Whether the outline can be pinned in a scroll area this wide (`room`, the
+ * visible width beside the scrollbar). Pinning makes its own room by taking a
+ * column off the page area (issue #267), so the page width (narrow, wide or
+ * full) does not matter, only whether the text keeps a readable measure in
+ * what is left. Asked of the area as a whole and never of the room the text
+ * leaves free: that room grows once the column is taken, and an answer that
+ * moved with it would switch the pin off and on again.
+ */
+export function canPinOutline(room: number): boolean {
+  return room - PINNED_LANE >= PINNED_MIN_PAGE;
+}
 
 /**
  * `free` is the room between the right edge of the text and the right edge of
- * the visible scroll area. The outline is only ever drawn into room that is
- * there: a pinned list over the text would be the permanent overlay the issue
- * rules out, so a narrow window falls back to the scale, and a phone to a
- * compact button that floats like every other floating control.
+ * the visible scroll area, `room` the visible width of the scroll area. The
+ * outline is never drawn over the text: a pinned list takes a column of its
+ * own, the scale needs a lane in the margin, and where there is neither a
+ * phone gets a compact button that floats like every other floating control.
  */
-export function outlinePlacement(free: number, pinRequested: boolean): OutlinePlacement {
-  if (pinRequested && free >= PINNED_WIDTH + 2 * OUTLINE_GAP) return 'pinned';
+export function outlinePlacement(
+  free: number,
+  room: number,
+  pinRequested: boolean,
+): OutlinePlacement {
+  if (pinRequested && canPinOutline(room)) return 'pinned';
   if (free >= RAIL_LANE) return 'rail';
   return 'compact';
 }

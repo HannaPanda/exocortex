@@ -458,6 +458,7 @@
     "openAt": "Overzicht openen, je bent bij „{section}”",
     "pin": "Overzicht naast de pagina vastzetten",
     "unpin": "Overzicht losmaken",
+    "pinUnavailable": "Het venster is te smal om vast te pinnen: vastgepind heeft het overzicht een eigen kolom naast de tekst nodig.",
     "untitled": "Kop zonder tekst",
     "collapsed": "{count, plural, =0 {ingeklapt} one {ingeklapt, # kop erin} other {ingeklapt, # koppen erin}}"
   }

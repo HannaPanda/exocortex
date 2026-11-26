@@ -106,7 +106,7 @@
     "details": {
       "p1": "A escala mostra a estrutura da página, com traços mais longos para níveis superiores. O traço âmbar indica a seção onde você está agora e acompanha a rolagem. Uma página sem títulos não tem estrutura.",
       "p2": "Uma seção recolhida aparece uma vez na estrutura, acompanhada da contagem de títulos contidos nela. Pular para ela não a expande: o recolhimento de uma seção faz parte da página, e navegar por ela não altera a página.",
-      "p3": "Se houver espaço suficiente ao lado da página, você pode fixar a estrutura com o alfinete no topo; ela continuará aberta até ser desfixada. No celular, a escala vira um botão pequeno no canto inferior direito, que desaparece ao escrever. Pela paleta de comandos também funciona sem mouse: „Ir para a seção“."
+      "p3": "Com o alfinete no topo, você pode fixar o sumário em qualquer largura de página: ele ganha uma coluna própria à direita, o texto se ajusta para o lado e ele permanece aberto até você desafixá-lo. Se a janela for estreita demais para isso, haverá um aviso no próprio sumário. No celular, a barra vira um pequeno botão no canto inferior direito, que desaparece ao escrever. Pela paleta de comandos também dá para navegar sem mouse: „Pular para seção“."
     },
     "where": "Em uma página com títulos, clique na escala na borda direita, ou pressione Strg + K e selecione “Ir para a seção”."
   },

@@ -8852,6 +8852,10 @@
       "source": "09d336799ca2049d",
       "output": "f5da50edac77b891"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "e8f4ccb76866ca25"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "1f628600de85f211"
@@ -13357,8 +13361,8 @@
       "output": "d32133b3739034c8"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "dc4a04954a7de35a"
+      "source": "cee37dcc4d31f3c4",
+      "output": "0afc4b1bb92308ff"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -32738,6 +32742,10 @@
       "source": "09d336799ca2049d",
       "output": "5448911ee1f40787"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "ddf5c62fa93ed301"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "d3da08c9aeae7f32"
@@ -37243,8 +37251,8 @@
       "output": "cea02fb65fa3a311"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "8ecda476124a03cc"
+      "source": "cee37dcc4d31f3c4",
+      "output": "5584c3b6a1b2a03b"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -56624,6 +56632,10 @@
       "source": "09d336799ca2049d",
       "output": "4482a0a6da3c52d9"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "3b95e0c69829c231"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "8749b29e6984bcae"
@@ -61129,8 +61141,8 @@
       "output": "17dbd07d04fb5047"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "104b66dd187973e8"
+      "source": "cee37dcc4d31f3c4",
+      "output": "fd9823039330e2df"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -80510,6 +80522,10 @@
       "source": "09d336799ca2049d",
       "output": "7c380a854bfc0cc6"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "52ed1d8e5e4b4c51"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "cce8323609ec6bc9"
@@ -85015,8 +85031,8 @@
       "output": "b5d093dc2033e1bb"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "9b125ee9afd8ba88"
+      "source": "cee37dcc4d31f3c4",
+      "output": "6a8a8d5c91d5b43a"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -104396,6 +104412,10 @@
       "source": "09d336799ca2049d",
       "output": "673e20b56e44ae42"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "571f0348c4bed884"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "26f55e6ff5afcf3c"
@@ -108901,8 +108921,8 @@
       "output": "257a341711fb9466"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "061fc2b66c97e7be"
+      "source": "cee37dcc4d31f3c4",
+      "output": "752271ab71af557f"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -128282,6 +128302,10 @@
       "source": "09d336799ca2049d",
       "output": "8adf53d6ae4cd3da"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "b8516b205781eac7"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "f2cb9215a6409565"
@@ -132787,8 +132811,8 @@
       "output": "0b5a1b446a976588"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "7879edfd9bf8281a"
+      "source": "cee37dcc4d31f3c4",
+      "output": "4d2cef9051212aa4"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",
@@ -152168,6 +152192,10 @@
       "source": "09d336799ca2049d",
       "output": "2b3b6fdeb93137af"
     },
+    "editor.pageOutline.pinUnavailable": {
+      "source": "31e287f624b7d7e2",
+      "output": "ed7d5e578f445d8c"
+    },
     "editor.pageOutline.unpin": {
       "source": "79acb831213e5812",
       "output": "b46bbc08b7ad73d3"
@@ -156673,8 +156701,8 @@
       "output": "4cbe00ae979a0f97"
     },
     "features.seitengliederung.details.p3": {
-      "source": "eedaa90f94e2210c",
-      "output": "6c8726278daa56c9"
+      "source": "cee37dcc4d31f3c4",
+      "output": "66a66f8ee69a5f85"
     },
     "features.seitengliederung.summary": {
       "source": "a16fafefb9055a21",

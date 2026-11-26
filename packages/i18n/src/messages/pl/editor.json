@@ -458,6 +458,7 @@
     "openAt": "Otwórz spis treści, jesteś w sekcji „{section}”",
     "pin": "Przypnij spis treści obok strony",
     "unpin": "Odepnij spis treści",
+    "pinUnavailable": "Okno jest zbyt wąskie, aby przypiąć: przypięty spis treści wymaga osobnej kolumny obok tekstu.",
     "untitled": "Nagłówek bez tekstu",
     "collapsed": "{count, plural, =0 {zwinięte} one {zwinięte, # nagłówek wewnątrz} few {zwinięte, # nagłówki wewnątrz} many {zwinięte, # nagłówków wewnątrz} other {zwinięte, # nagłówka wewnątrz}}"
   }

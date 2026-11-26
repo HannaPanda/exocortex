@@ -38,6 +38,23 @@
     container-type: inline-size;
   }
 
+  /*
+   * A pinned page outline takes a column of the page area (issue #267). The
+   * host beside the scroll container carries `--outline-lane` while the list
+   * is pinned (`page-outline.tsx`); as the scroll container's right padding it
+   * shrinks `100cqi` as well, so the page centres in what is left, its gutter
+   * follows, and a database breaking out of the measure stops short of the
+   * list. The cover stays a banner across the whole area: the outline starts
+   * below it (issue #266).
+   */
+  [data-outline-host] > .exocortex-page-scroll {
+    padding-right: var(--outline-lane, 0px);
+  }
+
+  [data-outline-host] > .exocortex-page-scroll > .exocortex-page-cover {
+    margin-right: calc(-1 * var(--outline-lane, 0px));
+  }
+
   .exocortex-page {
     /* 68ch is the reading measure from DESIGN.md; max-w-3xl ran ~85ch. */
     --page-measure: 68ch;

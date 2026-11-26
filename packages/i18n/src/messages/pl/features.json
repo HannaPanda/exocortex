@@ -106,7 +106,7 @@
     "details": {
       "p1": "Podziałka pokazuje strukturę strony: dłuższe kreski oznaczają wyższe poziomy nagłówków. Bursztynowa kreska wskazuje sekcję, w której aktualnie się znajdujesz, i przesuwa się wraz z przewijaniem. Strona bez nagłówków nie ma spisu.",
       "p2": "Zwinięta sekcja pojawia się w spisie treści raz, z liczbą zawartych w niej nagłówków. Przejście do niej nie powoduje jej rozwinięcia: to, czy sekcja jest zwinięta, jest częścią strony, a nawigacja nie zmienia zawartości strony.",
-      "p3": "Gdy obok strony jest dość miejsca, spis treści można przypiąć pinezką u góry; pozostanie wtedy otwarty, dopóki go nie odepniesz. Na telefonie podziałka zamienia się w mały przycisk w prawym dolnym rogu, który znika podczas pisania. Z palety poleceń można nawigować także bez myszy: „Przejdź do sekcji”."
+      "p3": "Za pomocą szpilki u góry możesz przypiąć spis treści przy dowolnej szerokości strony: zyskuje on wtedy osobną kolumnę po prawej stronie, tekst przesuwa się w bok, a spis pozostaje otwarty, dopóki go nie odepniesz. Jeśli okno jest na to zbyt wąskie, pojawi się o tym informacja w spisie treści. Na telefonie podziałka zamienia się w mały przycisk w prawym dolnym rogu, który znika podczas pisania. Za pomocą palety poleceń zrobisz to także bez myszy: „Przejdź do sekcji”."
     },
     "where": "Na stronie z nagłówkami kliknij podziałkę przy prawej krawędzi albo naciśnij Strg + K i wybierz „Przejdź do sekcji”."
   },
