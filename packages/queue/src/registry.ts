@@ -67,6 +67,12 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.documentOverview]: {
     attempts: 1,
   },
+  // A requested compaction (issue #287) is one paid summariser call whose
+  // outcome the processor writes onto the conversation itself; a second
+  // attempt would buy the same summary twice. Asking again is the person's.
+  [QUEUE_NAMES.conversationCompaction]: {
+    attempts: 1,
+  },
   // A notification ages out of usefulness faster than anything else in this
   // list (issue #30, ADR-048): three quick attempts are worth it because a
   // push service does have bad minutes, but the fourth would arrive long

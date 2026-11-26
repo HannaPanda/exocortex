@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
+import { aiConversationCompactionErrorSchema } from './ai-conversations';
 import { aiRunDiagnosisArgsSchema, aiRunKeyUnreadableArgsSchema } from './ai-diagnosis';
 import { automationFailureReasonSchema } from './automations';
 import { commentSchema } from './comments';
@@ -37,6 +38,7 @@ export const APPLICATION_EVENT_TYPES = [
   'database.view.changed',
   'database.row.updated',
   'ai.conversation.compacted',
+  'ai.conversation.compaction_failed',
   'ai.run.tool_call',
   'ai.run.phase',
   'ai.run.reasoning',
@@ -192,6 +194,15 @@ export const aiConversationCompactedPayloadSchema = z.object({
   summarizedMessages: z.number().int().nonnegative(),
   estimatedTokensBefore: z.number().int().nonnegative(),
   estimatedTokensAfter: z.number().int().nonnegative(),
+});
+
+/**
+ * A requested compaction ended without a summary (issue #287). The success
+ * is `ai.conversation.compacted`, the same event the automatic one sends.
+ */
+export const aiConversationCompactionFailedPayloadSchema = z.object({
+  conversationId: idSchema,
+  errorCode: aiConversationCompactionErrorSchema,
 });
 
 export const aiRunToolCallPayloadSchema = z.object({
@@ -551,6 +562,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('database.view.changed', databaseChangedPayloadSchema),
   envelope('database.row.updated', databaseRowUpdatedPayloadSchema),
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
+  envelope('ai.conversation.compaction_failed', aiConversationCompactionFailedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
   envelope('ai.run.phase', aiRunPhasePayloadSchema),
   envelope('ai.run.reasoning', aiRunReasoningPayloadSchema),

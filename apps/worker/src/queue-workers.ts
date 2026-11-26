@@ -20,6 +20,7 @@ import { createAiRunProcessor } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createAutomationProcessor } from './processors/automation';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
+import { createConversationCompactionProcessor } from './processors/conversation-compaction';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createDocumentOverviewProcessor } from './processors/document-overview';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
@@ -40,7 +41,7 @@ import { type WorkerRuntime } from './runtime';
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the seventeen of them only share this much.
+ * its own payload type, so the eighteen of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -48,7 +49,7 @@ export interface QueueWorker {
 }
 
 /**
- * The seventeen queues this process listens on, in three groups.
+ * The eighteen queues this process listens on, in three groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -66,7 +67,7 @@ export function startQueueWorkers(
   ];
 }
 
-/** Materialization, search indexing, the AI runs and the maintenance sweeps. */
+/** Materialization, search indexing, the AI runs, requested compactions and the maintenance sweeps. */
 /**
  * Who answers the tool routing (issue #206): OpenRouter's Decisions API with
  * the key that pays for the run, or nobody under the mock provider and
@@ -249,7 +250,25 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     }),
   });
 
-  return [materialization, indexing, ai, maintenance];
+  // A compaction somebody asked for (issue #287): one summariser call per
+  // request, paid like the run the next message would be. Concurrency 1,
+  // because nobody waits on two at once and a burst only meets rate limits.
+  // One attempt: the processor settles the request itself, and a retry would
+  // buy the same summary twice.
+  const conversationCompaction = createTypedWorker({
+    name: QUEUE_NAMES.conversationCompaction,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createConversationCompactionProcessor({
+      prisma,
+      bus,
+      settings: readSettings,
+      providerFor,
+    }),
+  });
+
+  return [materialization, indexing, ai, maintenance, conversationCompaction];
 }
 
 /** Everything that turns a file, a page or a calendar into something else. */

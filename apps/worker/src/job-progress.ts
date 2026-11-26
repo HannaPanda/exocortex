@@ -50,6 +50,10 @@ export interface JobProgressEvent {
     // Nor does a workflow step: a run's progress is its history, read from
     // the run, and a step is over before a bar could move (issue #161).
     | typeof QUEUE_NAMES.workflow
+    // Nor does a requested compaction: it is one summariser call, and it
+    // reports through `ai.conversation.compacted` or
+    // `ai.conversation.compaction_failed` (issue #287).
+    | typeof QUEUE_NAMES.conversationCompaction
   >;
   workspaceId: string;
   correlationId: string;

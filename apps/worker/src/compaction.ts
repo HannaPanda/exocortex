@@ -1,5 +1,5 @@
 import { type AiProvider, estimateConversationTokens, estimateMessageTokens } from '@exocortex/ai';
-import { type PrismaClient } from '@exocortex/database';
+import { type AiConversationMessage, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type RedisEventBus } from '@exocortex/queue';
 
@@ -105,6 +105,47 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     return { compacted: false, summarizedMessages: 0 };
   }
 
+  const outcome = await summarizeAndSupersede({
+    ...input,
+    active,
+    toSummarize,
+    usedTokens,
+  });
+  if (!outcome.ok) {
+    // A failed compaction must never fail the run: losing a compaction is
+    // recoverable, losing the user's question is not.
+    input.logger.warn('Compaction failed; the run proceeds with the uncompacted context', {
+      conversationId: input.conversationId,
+      reason: outcome.reason,
+    });
+    return { compacted: false, summarizedMessages: 0 };
+  }
+  return { compacted: true, summarizedMessages: outcome.summarizedMessages };
+}
+
+type SummaryOutcome = { ok: true; summarizedMessages: number } | { ok: false; reason: string };
+
+/**
+ * Writes one summary of `toSummarize` and retires those messages, in one
+ * transaction once the summariser has answered. The part both triggers share:
+ * the automatic one before a turn and the one a person asked for (issue #287).
+ * Never throws for a provider failure; it says so instead.
+ */
+async function summarizeAndSupersede(input: {
+  prisma: PrismaClient;
+  provider: AiProvider;
+  bus: RedisEventBus;
+  runId: string | null;
+  conversationId: string;
+  workspaceId: string;
+  systemPromptTokens: number;
+  summaryModel: string;
+  correlationId: string;
+  active: AiConversationMessage[];
+  toSummarize: AiConversationMessage[];
+  usedTokens: number;
+}): Promise<SummaryOutcome> {
+  const { active, toSummarize } = input;
   const transcript = toSummarize
     .map((message) => `${message.role}: ${message.content}`)
     .join('\n\n');
@@ -136,13 +177,12 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     });
     summaryText = result.text;
   } catch (error) {
-    // A failed compaction must never fail the run: losing a compaction is
-    // recoverable, losing the user's question is not.
-    input.logger.warn('Compaction failed; the run proceeds with the uncompacted context', {
-      conversationId: input.conversationId,
-      reason: error instanceof Error ? error.message : String(error),
-    });
-    return { compacted: false, summarizedMessages: 0 };
+    return { ok: false, reason: error instanceof Error ? error.message : String(error) };
+  }
+  if (summaryText.trim().length === 0) {
+    // An empty summary would retire the messages and replace them with
+    // nothing, which is a `/clear` nobody asked for.
+    return { ok: false, reason: 'The summariser answered with an empty text' };
   }
 
   const summaryContent = `Zusammenfassung des bisherigen Verlaufs:\n\n${summaryText}`;
@@ -183,10 +223,63 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     payload: {
       conversationId: input.conversationId,
       summarizedMessages: summarizedIds.size,
-      estimatedTokensBefore: usedTokens,
+      estimatedTokensBefore: input.usedTokens,
       estimatedTokensAfter: input.systemPromptTokens + messageTokensAfter,
     },
   });
 
-  return { compacted: true, summarizedMessages: summarizedIds.size };
+  return { ok: true, summarizedMessages: summarizedIds.size };
+}
+
+export interface CompactOnRequestInput {
+  prisma: PrismaClient;
+  provider: AiProvider;
+  bus: RedisEventBus;
+  conversationId: string;
+  workspaceId: string;
+  summaryModel: string;
+  correlationId: string;
+}
+
+export type CompactOnRequestResult =
+  | { outcome: 'compacted'; summarizedMessages: number }
+  | { outcome: 'nothing_to_compact' }
+  | { outcome: 'provider_failed'; reason: string };
+
+/**
+ * The compaction a person asked for (issue #287): `/compact`, or
+ * `exo_chat_compact`.
+ *
+ * A different trigger from `compactIfNeeded`, and deliberately not the same
+ * question. The automatic one asks whether a smaller prompt would change who
+ * can serve the next turn (ADR-032) and keeps a recent tail verbatim, because
+ * nobody asked it to touch the thread being worked on. A person who asks for
+ * the history to be summarised has answered that question already, so there
+ * is no budget here and no tail: every message still in the context goes into
+ * one summary, which is what "summarise the conversation so far" means. Two
+ * messages are the least worth summarising, as in the automatic case.
+ */
+export async function compactOnRequest(
+  input: CompactOnRequestInput,
+): Promise<CompactOnRequestResult> {
+  const active = await input.prisma.aiConversationMessage.findMany({
+    where: { conversationId: input.conversationId, supersededAt: null },
+    orderBy: { createdAt: 'asc' },
+  });
+  if (active.length < 2) return { outcome: 'nothing_to_compact' };
+
+  const outcome = await summarizeAndSupersede({
+    ...input,
+    runId: null,
+    // Nothing of a system prompt is counted: no turn is being built.
+    systemPromptTokens: 0,
+    active,
+    toSummarize: active,
+    usedTokens: estimateConversationTokens(
+      active.map((message) => ({ role: message.role, content: message.content })),
+    ),
+  });
+  return outcome.ok
+    ? { outcome: 'compacted', summarizedMessages: outcome.summarizedMessages }
+    : { outcome: 'provider_failed', reason: outcome.reason };
 }

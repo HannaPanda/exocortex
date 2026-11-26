@@ -28,6 +28,7 @@ export const QUEUE_NAMES = {
   push: 'push',
   mail: 'mail',
   workflow: 'workflow',
+  conversationCompaction: 'conversation-compaction',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -48,6 +49,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.push,
   QUEUE_NAMES.mail,
   QUEUE_NAMES.workflow,
+  QUEUE_NAMES.conversationCompaction,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -660,6 +662,28 @@ export const workflowJobSchema = z.discriminatedUnion('kind', [
 ]);
 export type WorkflowJob = z.infer<typeof workflowJobSchema>;
 
+/**
+ * A person asked for a conversation's history to be summarised now (issue
+ * #287), with `/compact` or `exo_chat_compact`.
+ *
+ * Its own queue rather than a run on `ai`: nothing is answered, no tool is
+ * offered and no budget of a run applies, and a run row would put a turn into
+ * the transcript that nobody asked a question for. The API resolves the model
+ * exactly as it would for the next message and hands it over, so the worker
+ * summarises with what that message would have been answered by, and pays
+ * with the same key (ADR-090, ADR-091).
+ */
+export const conversationCompactionJobSchema = jobBase.extend({
+  conversationId: idSchema,
+  workspaceId: idSchema,
+  userId: idSchema,
+  /** The slug the next message would run on; the compaction model setting still wins. */
+  model: z.string().min(1).max(200),
+  /** That model's `provider` column: a subscription preset or OpenRouter (issue #187). */
+  provider: z.string().min(1).max(64),
+});
+export type ConversationCompactionJob = z.infer<typeof conversationCompactionJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -678,6 +702,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.push]: pushDeliveryJobSchema,
   [QUEUE_NAMES.mail]: mailDeliveryJobSchema,
   [QUEUE_NAMES.workflow]: workflowJobSchema,
+  [QUEUE_NAMES.conversationCompaction]: conversationCompactionJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -698,4 +723,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.push]: PushDeliveryJob;
   [QUEUE_NAMES.mail]: MailDeliveryJob;
   [QUEUE_NAMES.workflow]: WorkflowJob;
+  [QUEUE_NAMES.conversationCompaction]: ConversationCompactionJob;
 };

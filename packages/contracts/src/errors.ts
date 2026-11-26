@@ -48,6 +48,8 @@ export const API_ERROR_CODES = [
   'ai_image_unavailable',
   'ai_tool_limit_exceeded',
   'ai_conversation_locked',
+  /** The conversation's history is being summarised on request (issue #287). */
+  'ai_conversation_compacting',
   /** The pagination cursor of a conversation listing is not one this API issued. */
   'ai_conversation_cursor_invalid',
   'document_content_conflict',
@@ -344,6 +346,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   ai_image_unavailable: 503,
   ai_tool_limit_exceeded: 429,
   ai_conversation_locked: 409,
+  ai_conversation_compacting: 409,
   ai_conversation_cursor_invalid: 400,
   document_content_conflict: 409,
   document_block_not_found: 404,

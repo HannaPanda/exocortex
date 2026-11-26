@@ -2020,6 +2020,13 @@ model AiConversation {
   /// as sent, system prompt and tool schemas included (issue #193). NULL until
   /// a turn is measured, and again after `/clear` or a compaction.
   measuredInputTokens Int?
+  /// Somebody asked for the history to be summarised now (issue #287) and the
+  /// worker has not finished. Holds the conversation against new messages for
+  /// at most `AI_CONVERSATION_COMPACTION_LEASE_MS`; cleared by the worker.
+  compactRequestedAt  DateTime?
+  /// Why the last requested compaction left no summary
+  /// (`aiConversationCompactionErrorSchema`); null after one that did.
+  compactionError     String?
   lastMessageAt       DateTime         @default(now())
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt

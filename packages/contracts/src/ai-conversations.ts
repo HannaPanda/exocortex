@@ -7,6 +7,36 @@ import { idSchema, isoDateTimeSchema } from './primitives';
 export const aiConversationRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
 export type AiConversationRole = z.infer<typeof aiConversationRoleSchema>;
 
+/**
+ * Why a requested compaction ended without a summary (issue #287).
+ *
+ * - `nothing_to_compact`: fewer than two messages were still in the context
+ *   when the worker looked.
+ * - `provider_failed`: the summariser answered with an error or not at all.
+ * - `key_unreadable`: the workspace's own key could not be read (ADR-091);
+ *   nothing was sent.
+ * - `abandoned`: the job ended without saying how, or the request outlived
+ *   its lease without a worker taking it.
+ */
+export const aiConversationCompactionErrorSchema = z.enum([
+  'nothing_to_compact',
+  'provider_failed',
+  'key_unreadable',
+  'abandoned',
+]);
+export type AiConversationCompactionError = z.infer<typeof aiConversationCompactionErrorSchema>;
+
+/**
+ * How long a requested compaction holds its conversation (issue #287).
+ *
+ * While it holds, a new message is refused (`ai_conversation_compacting`), so
+ * the summary never races a run over the same messages. The summariser's own
+ * timeout is one minute; past twice that the request is treated as lost and
+ * the conversation is free again, so a job that vanished can never lock a
+ * chat for good.
+ */
+export const AI_CONVERSATION_COMPACTION_LEASE_MS = 120_000;
+
 export const aiConversationSchema = z.object({
   id: idSchema,
   workspaceId: idSchema,
@@ -46,6 +76,14 @@ export const aiConversationSchema = z.object({
    * the same as empty.
    */
   contextUsagePercent: z.number().min(0).max(100).nullable(),
+  /**
+   * When somebody asked for the history to be summarised and the worker has
+   * not finished yet (issue #287); null otherwise, and null again once the
+   * request outlived `AI_CONVERSATION_COMPACTION_LEASE_MS`.
+   */
+  compactRequestedAt: isoDateTimeSchema.nullable(),
+  /** Why the last requested compaction left no summary; null after one that did. */
+  compactionError: aiConversationCompactionErrorSchema.nullable(),
   messageCount: z.number().int().nonnegative(),
   lastMessageAt: isoDateTimeSchema,
   createdAt: isoDateTimeSchema,
@@ -279,7 +317,7 @@ export const CHAT_COMMANDS = [
     description: 'Denkstufe wählen',
   },
   { name: 'vision', argument: 'slug|off', description: 'Vision-Begleitmodell überschreiben' },
-  { name: 'compact', argument: null, description: 'Kontext jetzt zusammenfassen' },
+  { name: 'compact', argument: null, description: 'Bisherigen Verlauf jetzt zusammenfassen' },
   {
     name: 'context',
     argument: 'on|off',
@@ -306,6 +344,35 @@ export const chatCommandResultSchema = z.object({
   conversationChanged: z.boolean(),
 });
 export type ChatCommandResult = z.infer<typeof chatCommandResultSchema>;
+
+/**
+ * The answer to `POST /api/ai/conversations/:id/compact` (issue #287).
+ *
+ * A person's request is its own trigger: it does not ask the question the
+ * automatic compaction asks (ADR-032, "would a smaller prompt change who can
+ * serve this"), so `queued` is the ordinary answer even far below the
+ * threshold. `wouldCompactAutomatically` says whether the automatic one
+ * would have run anyway, which is what the short hint after the command
+ * reads. The summary arrives later as an `isSummary` message and the
+ * `ai.conversation.compacted` event; a failure as `compactionError` on the
+ * conversation and `ai.conversation.compaction_failed`.
+ */
+export const aiConversationCompactResponseSchema = z.object({
+  conversationId: idSchema,
+  /**
+   * `queued`: the worker summarises now. `already_queued`: an earlier request
+   * still holds. `nothing_to_compact`: fewer than two messages are in the
+   * context, so there is nothing a summary could replace.
+   */
+  status: z.enum(['queued', 'already_queued', 'nothing_to_compact']),
+  /** Messages the summary will replace: every one still in the context. */
+  messagesToSummarize: z.number().int().nonnegative(),
+  contextUsagePercent: z.number().min(0).max(100).nullable(),
+  /** `ai.compactionThresholdPercent` in force for this conversation's workspace. */
+  thresholdPercent: z.number().int().min(0).max(100),
+  wouldCompactAutomatically: z.boolean(),
+});
+export type AiConversationCompactResponse = z.infer<typeof aiConversationCompactResponseSchema>;
 
 /** Exactly one of `run` / `command` is set. */
 export const postConversationMessageResponseSchema = z.object({
