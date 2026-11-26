@@ -1,6 +1,7 @@
 # ADR-023: Settings have a scope, and credentials are not settings
 
-- Status: accepted
+- Status: accepted, amended by ADR-090 (2026-11-26): page covers are paid for
+  by the workspace's key too, and recorded in `ai_run`
 - Date: 2026-09-12
 
 ## Context
@@ -113,6 +114,9 @@ embeddings) stays on the deployment key. Embeddings must: ADR-020 needs index
 and query in one vector space, and two accounts embedding under two keys
 against one index is the failure mode that looks exactly like a healthy
 deployment returning nothing.
+
+(Since ADR-090 a page cover is paid for by the workspace's key as well; the
+memory jobs and the embeddings stay where this paragraph puts them.)
 
 Storing a key is OWNER-only (`canManageWorkspaceCredentials`), a rung above the
 ADMIN bar for settings. A prompt or a model is how the people here work; a

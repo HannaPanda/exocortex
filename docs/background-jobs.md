@@ -45,8 +45,12 @@ writes through the REST API instead of Prisma: it mints a service token for
 generated cover passes exactly the permission checks, the magic-byte check and
 the downscaling an uploaded one does (ADR-014). It is also the one job enqueued
 with `attempts: 1`, because every retry would be a second paid image; failures
-are reported to the browser as `document.cover.generated` with a German reason
-and the job then ends successfully.
+are reported to the browser as `document.cover.generated` with a reason code
+and the job then ends successfully. The picture is paid for by the workspace's
+own key when it has one (`aiKeyFor`, ADR-090), and every picture asked of a
+model leaves one `ai_run` row of kind `IMAGE` for the usage report; the
+processor writes that row itself, through Prisma, because it is bookkeeping
+about the worker's own call and not a change to a page.
 
 `AiRunJob` gained no new fields for the tool loop or conversations: it still
 carries only `{ correlationId, runId, workspaceId, userId }`. The worker reads

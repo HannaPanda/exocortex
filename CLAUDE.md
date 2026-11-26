@@ -885,6 +885,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   (`exo_tool_routing_set`), because it is the emergency stop. Only the
   person's own last messages leave the deployment. The run timeline names
   who chose (`tool_routing`).
+- ADR-090: a picture is paid for like a run and counted as one. A cover is
+  drawn on `aiKeyFor(workspaceId)`, the workspace's own key when it has one;
+  a refused key (401/402) ends it with `key_refused` and nothing steps in.
+  Every picture asked of a model is an `ai_run` row of kind `IMAGE` (written
+  once when the call is over, with workspace, page, model, tokens, reported
+  or estimated price and `usedOwnKey`), so the usage report counts it without
+  a second source and splits its model table by kind. Embeddings and memory
+  jobs stay on the deployment key (ADR-023).
 
 Full list: `docs/adr/`.
 

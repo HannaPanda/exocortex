@@ -157,10 +157,11 @@ the stored rows unreadable; every workspace falls back to the deployment key
 and the owners enter theirs again.
 
 What a workspace key pays for is **runs**: the model call and the vision
-companion calls inside it. Cover images, memory capture and consolidation, and
-above all search embeddings stay on the deployment key. Embeddings have to
-(ADR-020: one vector space for index and query), the rest is a boundary worth
-knowing about when a bill arrives. `AiRun.usedOwnKey` records which key paid,
+companion calls inside it, and since issue #252 (ADR-090) the **cover images**
+drawn for the workspace's pages, the overview pages' automatic ones included.
+Memory capture and consolidation, and above all search embeddings stay on the
+deployment key. Embeddings have to (ADR-020: one vector space for index and
+query), the rest is a boundary worth knowing about when a bill arrives. `AiRun.usedOwnKey` records which key paid,
 and the usage report shows the share under "Kosten". A run on a subscription
 preset (`provider: cline`) is paid by the deployment's plan and stays `false`,
 unless a turn falls back to OpenRouter (`ai.subscriptionFallback`), which the
@@ -170,8 +171,9 @@ vision companion use the workspace key either way.
 A workspace key that OpenRouter refuses (401: unknown, revoked or disabled;
 402: no credits, or a spending limit on the key) fails the run with the
 `keyRefused` diagnosis, which tells the person that their workspace's key was
-refused and that no other key stepped in. Nothing falls back to the
-deployment key for a refused key. The one fallback that exists is older and
+refused and that no other key stepped in. A cover drawn on a refused key fails
+the same way (`key_refused` on `document.cover.generated`, worded in the
+browser). Nothing falls back to the deployment key for a refused key. The one fallback that exists is older and
 different: a stored row that cannot be **decrypted** (a lost or rotated
 `CREDENTIAL_ENCRYPTION_KEY`) runs on the deployment key and is recorded as
 deployment-paid (ADR-023).
@@ -453,7 +455,10 @@ The seeded companion for the text-only models is `qwen/qwen3.7-flash`.
 `exo_ai_usage` (issue #10). Everything on it is derived from `ai_run` over the
 requested window: run counts per status, success rate, cost, tokens in and out,
 median and 95th-percentile duration, a breakdown per model, an error-code table
-and a daily series stacked by outcome. The range defaults to thirty days and may
+and a daily series stacked by outcome. Page covers are in every figure: each
+picture asked of an image model is an `ai_run` row of kind `IMAGE` (issue #252,
+ADR-090), and the per-model table lists a model's pictures and its runs as two
+rows (`kind`: `image` / `chat`). The range defaults to thirty days and may
 not exceed a year.
 
 Three decisions are worth knowing before reading the numbers.

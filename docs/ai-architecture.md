@@ -162,8 +162,25 @@ to `POST /api/documents/:id/cover` with a service token minted for the
 requesting user, so the generated file passes the ordinary permission and
 magic-byte checks and gets the ordinary downscaling. The finished cover reaches
 the browser as `document.updated`; `document.cover.generated` carries the
-outcome, with a German reason when it failed. One attempt only — a retry would
+outcome, with a code the browser words when it failed (`unavailable`,
+`no_picture`, `key_refused`, `failed`). One attempt only — a retry would
 be a second paid image.
+
+Who pays (issue #252, ADR-090): the processor asks `aiKeyFor(workspaceId)`
+like a run does, so a workspace with its own OpenRouter key pays for its
+covers, and the deployment key only draws for a workspace without one. A 401
+or 402 from the image model ends the cover with `key_refused` (`invalid` or
+`credits`, plus whether it was the workspace's key); no second request is
+made with another key. The generator asks for `usage.include` and returns the
+tokens and the reported price beside the picture; an answer without a picture
+keeps its usage on `AiImageEmptyError`, because it was paid for all the same.
+`createImageRunRecorder` (`apps/worker/src/processors/image-run.ts`) then
+writes one `ai_run` row of kind `IMAGE` per picture asked of a model, whatever
+came of it: workspace, page, requester, configured model, provider, tokens,
+reported price or the registry's estimate, duration, `usedOwnKey`, and the
+`keyRefused` diagnosis for a refused key. That row is how covers reach the
+usage report. Writing it never fails the cover. Refusal texts from the image
+model pass through `redactKey` like every other provider refusal.
 
 ## Conversations and messages
 
