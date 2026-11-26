@@ -457,6 +457,16 @@ never full-bleed, no matter how wide the window.
 **The Meta-Is-Muted Rule.** Anything that is not content is `muted-foreground` at
 0.75rem. Timestamps, counts and status never compete with the text they describe.
 
+**The Hint-Is-Not-Ink Rule.** A hint drawn inside the writing surface, where
+the reader's own text will stand (the editor's „Schreibe etwas oder tippe
+„/“ …“ and the `Tab` hint of a list continuation), is `muted-foreground` and
+italic, and it stands only in the one empty line the caret is in while the
+editor has the focus. On this canvas the muted ink is 0.832 against the text's
+0.933, close enough that a muted sentence after a bullet read as a real point
+(issue #227); the slant is the second carrier, so the two never look alike.
+It is a decoration and never content, so it cannot be selected, copied or
+saved.
+
 **The Values-Are-Monospace Rule.** Numbers and identifiers wear the mono face
 with tabular figures (`.exocortex-numeric`): timestamps, counts, versions, IDs,
 keyboard keys, the search readout. Labels and prose never do. A count that keeps

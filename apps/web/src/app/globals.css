@@ -826,11 +826,16 @@
     @apply bg-accent-strong;
   }
 
-  /* Placeholder on every empty block, not only on an empty document: the hint is
-     what tells a new user that „/“ exists. */
+  /* The hint in the empty line being written in (`line-placeholder.ts` in
+     `packages/editor`, issue #227): it is what tells a new user that „/“
+     exists. Muted and italic, because on this canvas the muted ink sits close
+     to the text's own, and inside a list a muted sentence after a bullet read
+     as a real point. The slant is a second carrier besides the colour
+     (DESIGN.md, the Hint-Is-Not-Ink Rule). Selecting the line never selects
+     it: it is drawn, not written. */
   .exocortex-editor .ProseMirror .is-empty::before {
     content: attr(data-placeholder);
-    @apply pointer-events-none float-left h-0 text-muted-foreground;
+    @apply pointer-events-none float-left h-0 text-muted-foreground italic select-none;
   }
 
   /* Continuing a list across a picture (issue #240, `list-continuation.ts` in
