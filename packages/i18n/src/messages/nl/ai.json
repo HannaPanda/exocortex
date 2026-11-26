@@ -2,7 +2,10 @@
   "panel": {
     "chooseWorkspace": "Kies een werkruimte.",
     "requestFailed": "Het verzoek kon niet worden gestart.",
-    "newChat": "Nieuwe chat"
+    "newChat": "Nieuwe chat",
+    "sharedRunsIn": "Deze chat draait in je werkruimte „{workspace}” en wordt van daaruit betaald. Op de gedeelde pagina mag de AI precies wat je deling toestaat.",
+    "sharedWorkspaceLabel": "Werkruimte voor deze chat",
+    "sharedNeedsWorkspace": "Voor de AI-chat op een gedeelde pagina heb je een eigen werkruimte nodig."
   },
   "transcript": {
     "unavailableTitle": "Chat niet beschikbaar",

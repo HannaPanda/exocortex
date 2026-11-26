@@ -644,6 +644,16 @@
     },
     "where": "La pagina «Chat» nella navigazione."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Parlare con l’IA di una pagina che qualcuno ha condiviso con te",
+    "summary": "Su una pagina condivisa, la chat si svolge nella tua area di lavoro: con la tua chiave, il tuo budget e nel tuo elenco di conversazioni. La pagina condivisa è la pagina aperta e l’IA può fare su di essa esattamente ciò che la tua condivisione consente.",
+    "details": {
+      "p1": "Se apri una pagina condivisa con te da qualcuno, a destra trovi la solita chat. Tuttavia, non appartiene all’area di lavoro della pagina, ma a una delle tue: lì risiede la conversazione, lì viene pagata e conteggiata l’esecuzione, e lì valgono la tua scelta del modello e le tue pagine di regole. Chi ha condiviso la pagina non vede la tua chat e non la paga. Se hai più aree di lavoro, selezioni sopra la chat in quale farla funzionare.",
+      "p2": "Ciò che l’IA può fare sulla pagina è stabilito dalla condivisione, rivalutata a ogni singola chiamata dello strumento. Con una condivisione in sola lettura può leggere la pagina, ma non modificarla. Se è condivisa solo la pagina, non può accedere a sottopagine né a pagine adiacenti; se la pagina è condivisa con tutti i suoi elementi secondari, può accedere anche alle sottopagine. Nell’area di lavoro da cui proviene la pagina, non ha accesso a nient’altro: nessuna ricerca, nessun albero delle pagine, nessun’altra pagina o database.",
+      "p3": "Se la condivisione viene revocata, l’effetto è immediato, anche durante una chat in corso: la successiva chiamata dello strumento sulla pagina non andrà a buon fine e una nuova esecuzione non menzionerà affatto la pagina. Come ovunque, l’inclusione automatica del testo della pagina è regolata dall’impostazione «Includi il testo della pagina aperta» della tua area di lavoro."
+    },
+    "where": "Su una pagina condivisa (menu dell’account, «Condivisioni», «Condivise con me») nel pannello dell’IA a destra."
+  },
   "gedankengang": {
     "title": "Guarda come pensa l’IA",
     "summary": "Mentre una risposta prende forma, vedi sopra di essa a cosa sta pensando il modello e quali strumenti chiama, nell’ordine in cui accade. Viene mostrato solo ciò che il modello fornisce effettivamente.",

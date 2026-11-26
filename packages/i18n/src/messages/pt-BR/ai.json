@@ -2,7 +2,10 @@
   "panel": {
     "chooseWorkspace": "Escolha um espaço de trabalho.",
     "requestFailed": "Não foi possível iniciar a solicitação.",
-    "newChat": "Novo chat"
+    "newChat": "Novo chat",
+    "sharedRunsIn": "Este chat é executado no seu espaço de trabalho “{workspace}” e é pago por lá. Na página compartilhada, a IA só pode fazer exatamente o que o seu compartilhamento permitir.",
+    "sharedWorkspaceLabel": "Espaço de trabalho para este chat",
+    "sharedNeedsWorkspace": "Você precisa de um espaço de trabalho próprio para usar o chat de IA em uma página compartilhada."
   },
   "transcript": {
     "unavailableTitle": "Chat indisponível",

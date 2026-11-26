@@ -2,7 +2,10 @@
   "panel": {
     "chooseWorkspace": "Choose a workspace.",
     "requestFailed": "The request could not be started.",
-    "newChat": "New chat"
+    "newChat": "New chat",
+    "sharedRunsIn": "This chat runs in your workspace “{workspace}” and is billed there. On the shared page, the AI can only do what your share allows.",
+    "sharedWorkspaceLabel": "Workspace for this chat",
+    "sharedNeedsWorkspace": "You need your own workspace to use AI chat on a shared page."
   },
   "transcript": {
     "unavailableTitle": "Chat unavailable",

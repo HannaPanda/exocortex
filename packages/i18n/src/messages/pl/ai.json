@@ -2,7 +2,10 @@
   "panel": {
     "chooseWorkspace": "Wybierz obszar roboczy.",
     "requestFailed": "Nie udało się rozpocząć zapytania.",
-    "newChat": "Nowy czat"
+    "newChat": "Nowy czat",
+    "sharedRunsIn": "Ten czat działa w twoim obszarze roboczym „{workspace}” i z niego jest opłacany. Na udostępnionej stronie AI może robić dokładnie to, na co pozwala twoje udostępnienie.",
+    "sharedWorkspaceLabel": "Obszar roboczy dla tego czatu",
+    "sharedNeedsWorkspace": "Do czatu AI na udostępnionej stronie potrzebujesz własnego obszaru roboczego."
   },
   "transcript": {
     "unavailableTitle": "Czat niedostępny",

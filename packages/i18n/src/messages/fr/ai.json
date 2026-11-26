@@ -2,7 +2,10 @@
   "panel": {
     "chooseWorkspace": "Choisis un espace de travail.",
     "requestFailed": "La requête n’a pas pu être lancée.",
-    "newChat": "Nouveau chat"
+    "newChat": "Nouveau chat",
+    "sharedRunsIn": "Ce chat s’exécute dans ton espace de travail « {workspace} » et est facturé depuis celui-ci. Sur la page partagée, l’IA peut uniquement faire ce que ton partage autorise.",
+    "sharedWorkspaceLabel": "Espace de travail pour ce chat",
+    "sharedNeedsWorkspace": "Pour utiliser le chat IA sur une page partagée, tu as besoin de ton propre espace de travail."
   },
   "transcript": {
     "unavailableTitle": "Chat indisponible",

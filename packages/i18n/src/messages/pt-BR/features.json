@@ -644,6 +644,16 @@
     },
     "where": "A página \"Chats\" na navegação."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Conversar com a IA sobre uma página compartilhada com você",
+    "summary": "Em uma página compartilhada, o chat é executado no seu próprio espaço de trabalho: com a sua chave, o seu orçamento e na sua lista de conversas. A página compartilhada é a página aberta, e a IA só pode fazer nela exatamente o que o seu compartilhamento permitir.",
+    "details": {
+      "p1": "Ao abrir uma página compartilhada com você, o chat habitual aparece à direita. No entanto, ele não pertence ao espaço de trabalho da página, mas a um dos seus: a conversa fica salva lá, a execução é paga e contabilizada lá, e valem a sua escolha de modelo e as suas páginas de regras. Quem compartilhou a página não vê o seu chat nem paga por ele. Se você tiver vários espaços de trabalho, escolha acima do chat em qual deles ele será executado.",
+      "p2": "O que a IA pode fazer na página é determinado pelo compartilhamento, a cada chamada individual de ferramenta. Com uma permissão apenas de leitura, ela pode ler a página, mas não alterá-la. Se apenas a página foi compartilhada, ela não acessa subpáginas nem páginas vizinhas; se a página foi compartilhada com tudo o que está abaixo dela, ela também acessa as subpáginas. No espaço de trabalho de origem da página, ela não acessa mais nada: sem busca, sem árvore de páginas, sem outras páginas ou bancos de dados.",
+      "p3": "Se o compartilhamento for revogado, isso entra em vigor imediatamente, mesmo no meio de uma conversa: a próxima chamada de ferramenta na página falha e uma nova execução nem sequer cita a página. Se o texto da página é incluído automaticamente ou não, depende, como sempre, da configuração “Incluir o texto da página aberta” do seu próprio espaço de trabalho."
+    },
+    "where": "Em uma página compartilhada (menu da conta, “Compartilhamentos”, “Compartilhado comigo”) no painel de IA à direita."
+  },
   "gedankengang": {
     "title": "Ver como a IA pensa",
     "summary": "Enquanto uma resposta é gerada, você vê acima dela o que o modelo está pensando e quais ferramentas ele chama, na ordem em que acontece. Só é exibido o que o modelo realmente fornece.",

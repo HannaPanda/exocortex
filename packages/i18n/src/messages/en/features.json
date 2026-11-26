@@ -644,6 +644,16 @@
     },
     "where": "The \"Chats\" page in navigation."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Talk with the AI about a page someone shared with you",
+    "summary": "On a shared page, the chat runs in your own workspace: using your key, your budget, and in your list of conversations. The shared page is the open page, and the AI is allowed to do on it exactly what your share permits.",
+    "details": {
+      "p1": "When you open a page someone has shared with you, you’ll find the familiar chat on the right. However, it doesn’t belong to the page’s workspace, but to one of your own: that’s where the conversation lives, where the run is paid for and counted, and where your model choice and rule pages apply. The person who shared the page cannot see your chat and doesn’t pay for it. If you have multiple workspaces, you can choose above the chat which one it runs in.",
+      "p2": "What the AI is allowed to do on the page is determined by the share, evaluated fresh with every single tool call. With read-only access, it can read the page, but not edit it. If only the page itself is shared, it cannot reach any subpages or neighboring pages; if the page is shared with everything beneath it, it can reach the subpages as well. It cannot access anything else in the workspace the page originates from: no search, no page tree, no other pages or databases.",
+      "p3": "If the share is revoked, this takes effect immediately, even in the middle of an ongoing chat: the next tool call on the page fails, and a new run will no longer mention the page at all. Whether the text of the page is automatically included is controlled, as everywhere else, by your own workspace’s “Include open page text” setting."
+    },
+    "where": "On a shared page (account menu, “Shares”, “Shared with me”) in the AI panel on the right."
+  },
   "gedankengang": {
     "title": "Watch the AI think",
     "summary": "While an answer is being generated, you can see above it what the model is thinking and which tools it is calling, in the order it happens. Only what the model actually provides is shown.",

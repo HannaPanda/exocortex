@@ -13,11 +13,17 @@ import {
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { useDocument } from '@/lib/api/document-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { AiPanelFooter, AiPanelHeader, AiPanelModelBar } from './ai-panel-chrome';
 import { useAiSelection } from './ai-selection';
 import { AiTranscriptArea } from './ai-transcript-area';
+import {
+  parseWorkspaceId,
+  resolveChatWorkspace,
+  SHARED_CHAT_WORKSPACE_KEY,
+} from './chat-workspace';
 import { resolveModelChoice, useModelPreference } from './model-choice';
 import { activeConversationKey, parseConversationId } from './panel-state';
 import {
@@ -28,6 +34,7 @@ import {
 } from './panel-view';
 import { RunActivity } from './run-activity';
 import { currentPhaseLabel, useRunLabels } from './run-labels';
+import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
 import { useConversationSettings } from './use-conversation-settings';
@@ -38,8 +45,72 @@ export interface AiPanelProps {
   documentId: string | null;
 }
 
+/** A shared page's chat, told which of the reader's workspaces it runs in (issue #234). */
+interface SharedChat {
+  workspaceName: string;
+  choices: readonly { id: string; name: string }[];
+  onChoose: (workspaceId: string) => void;
+}
+
 /**
- * AI side panel.
+ * AI side panel, and the decision which workspace it runs in.
+ *
+ * The route names the workspace everywhere except on a page somebody shared
+ * with the reader (issue #234). There the chat runs in one of the reader's
+ * own workspaces, which pays for it and keeps the conversation, and the
+ * shared page is the open page of that conversation. What the assistant may
+ * do on it is decided by the API, as the reader, on every call.
+ */
+export function AiPanel({ workspaceId: routeWorkspaceId, documentId }: AiPanelProps) {
+  const t = useTranslations('ai.panel');
+  const workspaces = useWorkspaces();
+  const openPage = useDocument(documentId ?? undefined);
+  const [remembered, remember] = usePersistentState<string | null>(
+    SHARED_CHAT_WORKSPACE_KEY,
+    null,
+    parseWorkspaceId,
+  );
+
+  const chat = resolveChatWorkspace({
+    routeWorkspaceId,
+    documentId,
+    documentWorkspaceId: openPage.isError ? null : openPage.data?.workspaceId,
+    workspaces: workspaces.data,
+    remembered,
+  });
+
+  if (chat.kind === 'member' || chat.kind === 'shared') {
+    return (
+      <AiPanelBody
+        // A different workspace is a different panel: its own active
+        // conversation, its own model preference, its own list.
+        key={chat.workspaceId}
+        workspaceId={chat.workspaceId}
+        documentId={documentId}
+        shared={
+          chat.kind === 'shared'
+            ? { workspaceName: chat.workspaceName, choices: chat.choices, onChoose: remember }
+            : null
+        }
+      />
+    );
+  }
+
+  let message: string | null = null;
+  if (chat.kind === 'no_own_workspace') message = t('sharedNeedsWorkspace');
+  else if (chat.kind === 'none') message = t('chooseWorkspace');
+  return (
+    <div
+      className="flex min-h-0 flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground"
+      data-testid="ai-panel"
+    >
+      {message}
+    </div>
+  );
+}
+
+/**
+ * The panel itself, for one workspace.
  *
  * Server state (models, conversations, messages) lives entirely in TanStack
  * Query; the only local state is the in-flight streaming assistant buffer,
@@ -47,7 +118,15 @@ export interface AiPanelProps {
  * the deliberate difference from the previous version, which mirrored the
  * transcript into a local array and lost it on every reload.
  */
-export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
+function AiPanelBody({
+  workspaceId,
+  documentId,
+  shared,
+}: {
+  workspaceId: string;
+  documentId: string | null;
+  shared: SharedChat | null;
+}) {
   const [activeConversationId, setActiveConversationId] = usePersistentState<string | null>(
     activeConversationKey(workspaceId),
     null,
@@ -134,7 +213,6 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   });
 
   const startNewConversation = React.useCallback(async (): Promise<string> => {
-    if (workspaceId === null) throw new Error('A workspace is required to start a conversation');
     const response = await createConversation.mutateAsync({
       workspaceId,
       documentId,
@@ -157,7 +235,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   ]);
 
   // "Neuer Chat" from the palette, which also opens the panel this is in.
-  usePaletteRequest('new-chat', () => void startNewConversation(), workspaceId !== null);
+  usePaletteRequest('new-chat', () => void startNewConversation(), true);
 
   const pinnedSources = usePinnedSources({
     conversationId: activeConversationId,
@@ -166,7 +244,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   });
 
   const handleSubmit = async (content: string): Promise<void> => {
-    if (workspaceId === null || activeRunId !== null) return;
+    if (activeRunId !== null) return;
     setError(null);
     setNotice(null);
     setCommandNotice(null);
@@ -211,17 +289,6 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     }
   };
 
-  if (workspaceId === null) {
-    return (
-      <div
-        className="flex min-h-0 flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground"
-        data-testid="ai-panel"
-      >
-        {t('chooseWorkspace')}
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="ai-panel">
       <AiPanelHeader
@@ -230,6 +297,15 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         onSelect={setActiveConversationId}
         onCreateNew={() => void startNewConversation()}
       />
+
+      {shared === null ? null : (
+        <SharedChatNote
+          workspaceId={workspaceId}
+          workspaceName={shared.workspaceName}
+          choices={shared.choices}
+          onChoose={shared.onChoose}
+        />
+      )}
 
       <AiPanelModelBar
         pending={modelsQuery.isPending}
@@ -282,16 +358,16 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         busy={activeRunId !== null}
         onSubmit={handleSubmit}
       />
-      {workspaceId === null ? null : (
-        <SourcePicker
-          workspaceId={workspaceId}
-          openDocumentId={documentId}
-          openDocumentIsCollection={openDocument?.type === 'COLLECTION'}
-          open={sourcePickerOpen}
-          onOpenChange={setSourcePickerOpen}
-          onPick={pinnedSources.add}
-        />
-      )}
+      <SourcePicker
+        workspaceId={workspaceId}
+        // A pinned source belongs to the conversation's workspace, and a
+        // shared page does not: it is the open page, never a pin.
+        openDocumentId={shared === null ? documentId : null}
+        openDocumentIsCollection={shared === null && openDocument?.type === 'COLLECTION'}
+        open={sourcePickerOpen}
+        onOpenChange={setSourcePickerOpen}
+        onPick={pinnedSources.add}
+      />
     </div>
   );
 }

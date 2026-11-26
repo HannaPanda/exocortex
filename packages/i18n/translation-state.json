@@ -2896,6 +2896,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "e3f5789436a22832"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "459a638f8628c32a"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "6b05a949970b6e72"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "c99dc9d0acab73da"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "dd9e881230ebf6e0"
@@ -12567,6 +12579,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "53b50856eaf84b72"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "64dc71dd3f7e098d"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "c9e4cb8f821d1704"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "7bcfde8c0f2ce29a"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "106a24a54923abf1"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "8ec7e400bc1a31fd"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "a7244a27779be40b"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -26650,6 +26686,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "b530ac5ac6e89e68"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "3f0bfe488458d961"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "15148a9ca4775443"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "ac7373db50226201"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "d25388373c2413d4"
@@ -36321,6 +36369,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "d575931d13213c3c"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "c88fab259f8259c8"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "0deac05c01821dce"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "ac0ca4add57467e5"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "e7fc843948249354"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "99fb29365eb4f31e"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "0a3d54707f9dcd32"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -50404,6 +50476,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "662d01127e911ac9"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "6052204295a530d0"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "6932cf110a8c9fb9"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "a01bf64e192ec34e"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "fb834a1cee125186"
@@ -60075,6 +60159,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "0e6e6a7988134212"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "ec48c9921e3ada86"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "0e0997ec305ad978"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "86dd84396ac02fd3"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "635e09270b768f9a"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "4a5cd388cfe9dbbb"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "43f520dfb042bdad"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -74158,6 +74266,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "24b7558c1a47106c"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "1435b297afbe364c"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "98afcc803fa560ba"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "9eead7debe812430"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "85e475670cc12c94"
@@ -83829,6 +83949,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "e31bc6c2ff6caed5"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "0e72037fcd50bed4"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "660fa451255bb3e0"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "610594dd207d0111"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "ebd0c92b969925d9"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "124be86e185585ee"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "a5d49f4de7eede50"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -97912,6 +98056,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "f3d908b27f2d428b"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "93c180c1f21cae4f"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "67684622d21b4740"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "29c69eb50a3e5b37"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "455a150f59425d98"
@@ -107583,6 +107739,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "0bcdb7217d294940"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "d30bee550c088ea3"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "4edd52caf1f26f20"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "da03ab4fb820bffc"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "46d3c1f092f01d28"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "5c5475f13d41c33d"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "47110179b84a9740"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -121666,6 +121846,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "4195c7ccd4246451"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "c1f369fa7f365e39"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "d4e0e8fb00f63676"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "2c225b5148c2ea94"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "fc4729795d723c32"
@@ -131337,6 +131529,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "87848b8bcd7f8af8"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "d3b4192d285ed2c2"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "931901e073e51c4e"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "8d4808251281b5a9"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "716d4c9501913636"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "b2c3b227c611601f"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "3f2184aa8df287f5"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",
@@ -145420,6 +145636,18 @@
       "source": "f5ce6c7e00755d5f",
       "output": "4e0096824a2d1f10"
     },
+    "ai.panel.sharedNeedsWorkspace": {
+      "source": "2cee150aad072399",
+      "output": "99cb545736cd1013"
+    },
+    "ai.panel.sharedRunsIn": {
+      "source": "21be984dd7183160",
+      "output": "3d637dd38371ded9"
+    },
+    "ai.panel.sharedWorkspaceLabel": {
+      "source": "5b96fb74ba960373",
+      "output": "54fe51f44846b9ed"
+    },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
       "output": "52b0d2b603a868b5"
@@ -155091,6 +155319,30 @@
     "features.kalenderansicht.where": {
       "source": "c641774004399bbb",
       "output": "f6fae332986af6f5"
+    },
+    "features.ki-chat-geteilte-seiten.details.p1": {
+      "source": "ffa99b5fa42cbfbe",
+      "output": "608eff2d279ff50b"
+    },
+    "features.ki-chat-geteilte-seiten.details.p2": {
+      "source": "ac8765a76a3c0a29",
+      "output": "a9791d8a9c38622e"
+    },
+    "features.ki-chat-geteilte-seiten.details.p3": {
+      "source": "4f1d9d166c8d4ca2",
+      "output": "812102d4f31c0a5d"
+    },
+    "features.ki-chat-geteilte-seiten.summary": {
+      "source": "422e76f59588a19b",
+      "output": "15fac29f37850e76"
+    },
+    "features.ki-chat-geteilte-seiten.title": {
+      "source": "346eb84ecb2ea5f1",
+      "output": "d43b77cf126e392b"
+    },
+    "features.ki-chat-geteilte-seiten.where": {
+      "source": "bdf81acca925dfbe",
+      "output": "698b21161f349667"
     },
     "features.ki-chat.details.p1": {
       "source": "97b9b5ebf135e0b3",

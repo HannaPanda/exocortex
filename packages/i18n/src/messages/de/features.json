@@ -644,6 +644,16 @@
     },
     "where": "Die Seite \"Chats\" in der Navigation."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Mit der KI über eine Seite reden, die jemand mit dir geteilt hat",
+    "summary": "Auf einer geteilten Seite läuft der Chat in deinem eigenen Arbeitsbereich: mit deinem Schlüssel, deinem Budget und in deiner Liste der Unterhaltungen. Die geteilte Seite ist die offene Seite, und die KI darf auf ihr genau das, was deine Freigabe erlaubt.",
+    "details": {
+      "p1": "Öffnest du eine Seite, die dir jemand freigegeben hat, steht rechts der gewohnte Chat. Er gehört aber nicht zum Arbeitsbereich der Seite, sondern zu einem deiner eigenen: dort liegt die Unterhaltung, dort wird der Lauf bezahlt und gezählt, und dort gelten deine Modellwahl und deine Regelseiten. Wer die Seite geteilt hat, sieht deinen Chat nicht und bezahlt ihn nicht. Hast du mehrere Arbeitsbereiche, wählst du über dem Chat aus, in welchem er läuft.",
+      "p2": "Was die KI auf der Seite tun darf, entscheidet die Freigabe, und zwar bei jedem einzelnen Werkzeugaufruf neu. Mit einer Freigabe zum Lesen kann sie die Seite lesen, aber nicht ändern. Ist nur die Seite freigegeben, erreicht sie keine Unterseite und keine Nachbarseite; ist die Seite mit allem darunter freigegeben, erreicht sie auch die Unterseiten. Im Arbeitsbereich, aus dem die Seite stammt, kommt sie an nichts sonst heran: keine Suche, kein Seitenbaum, keine anderen Seiten oder Datenbanken.",
+      "p3": "Wird die Freigabe zurückgezogen, gilt das sofort, auch mitten in einem laufenden Chat: der nächste Werkzeugaufruf auf der Seite scheitert, und ein neuer Lauf nennt die Seite gar nicht mehr. Ob der Text der Seite automatisch mitgeht, regelt wie überall die Einstellung „Den Text der offenen Seite mitgeben“ deines eigenen Arbeitsbereichs."
+    },
+    "where": "Auf einer geteilten Seite (Kontomenü, „Freigaben“, „Mit mir geteilt“) im KI-Bereich rechts."
+  },
   "gedankengang": {
     "title": "Zusehen, wie die KI denkt",
     "summary": "Während eine Antwort entsteht, siehst du über ihr, was das Modell dabei überlegt und welche Werkzeuge es aufruft, in der Reihenfolge, in der es passiert. Gezeigt wird nur, was das Modell wirklich liefert.",

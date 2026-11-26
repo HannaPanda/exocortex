@@ -644,6 +644,16 @@
     },
     "where": "Strona „Czaty” w nawigacji."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Rozmowa z AI o stronie, którą ktoś ci udostępnił",
+    "summary": "Na udostępnionej stronie czat działa w twoim własnym obszarze roboczym: z twoim kluczem, twoim budżetem i na twojej liście rozmów. Udostępniona strona jest otwartą stroną, a AI może na niej robić dokładnie to, na co pozwala twoje udostępnienie.",
+    "details": {
+      "p1": "Gdy otwierasz stronę, którą ktoś ci udostępnił, po prawej stronie widać znajomy czat. Nie należy on jednak do obszaru roboczego tej strony, lecz do jednego z twoich własnych: tam zapisywana jest rozmowa, tam bieg jest rozliczany i rejestrowany oraz tam obowiązują twój wybór modelu i twoje strony z regułami. Osoba, która udostępniła stronę, nie widzi twojego czatu ani za niego nie płaci. Jeśli masz kilka obszarów roboczych, możesz nad czatem wybrać, w którym z nich ma działać.",
+      "p2": "O tym, co AI może zrobić na stronie, decyduje udostępnienie – przy każdym pojedynczym wywołaniu narzędzia od nowa. Z udostępnieniem do odczytu może czytać stronę, ale nie może jej modyfikować. Jeśli udostępniono tylko tę stronę, AI nie ma dostępu do żadnej podstrony ani strony sąsiedniej; jeśli stronę udostępniono wraz ze wszystkimi elementami poniżej, ma dostęp również do podstron. W obszarze roboczym, z którego pochodzi strona, AI nie ma dostępu do niczego innego: ani do wyszukiwania, ani do drzewa stron, ani do innych stron czy baz danych.",
+      "p3": "Cofnięcie udostępnienia działa natychmiast, nawet w trakcie trwającego czatu: kolejne wywołanie narzędzia na tej stronie zakończy się niepowodzeniem, a nowy bieg w ogóle już o tej stronie nie wspomni. To, czy tekst strony jest automatycznie dołączany, zależy – tak jak wszędzie – od ustawienia „Dołączaj tekst otwartej strony” w twoim własnym obszarze roboczym."
+    },
+    "where": "Na udostępnionej stronie (menu konta, „Udostępnienia”, „Udostępnione dla mnie”) w sekcji AI po prawej stronie."
+  },
   "gedankengang": {
     "title": "Podgląd procesu myślenia AI",
     "summary": "Podczas generowania odpowiedzi widzisz nad nią, o czym myśli model i jakie narzędzia wywołuje – w kolejności, w jakiej to się odbywa. Wyświetlane jest tylko to, co model rzeczywiście przekazuje.",

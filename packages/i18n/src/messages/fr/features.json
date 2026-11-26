@@ -644,6 +644,16 @@
     },
     "where": "La page « Chats » dans la navigation."
   },
+  "ki-chat-geteilte-seiten": {
+    "title": "Discuter avec l’IA d’une page partagée avec toi",
+    "summary": "Sur une page partagée, le chat s’exécute dans ton propre espace de travail : avec ta clé, ton budget et dans ta liste de conversations. La page partagée est la page ouverte, et l’IA n’a le droit d’y faire que ce que ton partage autorise.",
+    "details": {
+      "p1": "Si tu ouvres une page partagée avec toi, tu retrouves le chat habituel sur la droite. Il n’appartient toutefois pas à l’espace de travail de la page, mais à l’un des tiens : c’est là que se trouve la conversation, que l’exécution est payée et décomptée, et que ton choix de modèle et tes pages de règles s’appliquent. La personne qui a partagé la page ne voit pas ton chat et ne le paie pas. Si tu as plusieurs espaces de travail, tu choisis au-dessus du chat dans lequel il s’exécute.",
+      "p2": "Ce que l’IA a le droit de faire sur la page dépend du partage, et ce à chaque appel d’outil. Avec un partage en lecture seule, elle peut lire la page, mais pas la modifier. Si seule la page est partagée, elle ne peut accéder à aucune sous-page ni page voisine ; si la page est partagée avec tout son contenu sous-jacent, elle accède aussi aux sous-pages. Dans l’espace de travail d’où provient la page, elle n’a accès à rien d’autre : pas de recherche, pas d’arborescence des pages, aucune autre page ni base de données.",
+      "p3": "Si le partage est révoqué, cela prend effet immédiatement, même au milieu d’un chat en cours : le prochain appel d’outil sur la page échoue, et une nouvelle exécution ne mentionne plus du tout la page. L’inclusion automatique ou non du texte de la page dépend, comme partout ailleurs, du paramètre « Transmettre le texte de la page ouverte » de ton propre espace de travail."
+    },
+    "where": "Sur une page partagée (menu du compte, « Partages », « Partagé avec moi ») dans la zone IA sur la droite."
+  },
   "gedankengang": {
     "title": "Voir l’IA réfléchir",
     "summary": "Pendant qu’une réponse se génère, tu vois au-dessus d’elle ce que le modèle pense et les outils qu’il appelle, dans l’ordre où cela se produit. Seul ce que le modèle fournit réellement est affiché.",
