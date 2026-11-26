@@ -4,7 +4,6 @@ import { type NodeViewProps } from '@tiptap/core';
 import { Collaboration } from '@tiptap/extension-collaboration';
 import { CollaborationCaret } from '@tiptap/extension-collaboration-caret';
 import { FileHandler } from '@tiptap/extension-file-handler';
-import { Placeholder } from '@tiptap/extension-placeholder';
 import { type Mark as PmMark, type Node as PmNode } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
 import { type Editor, EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
@@ -21,6 +20,7 @@ import {
   BREADCRUMB_PATH_ATTRIBUTE,
   type BreadcrumbCrumb,
   buildEditorExtensions,
+  LinePlaceholder,
   type LinkTarget,
   parseLinkHref,
   YJS_DOCUMENT_FIELD,
@@ -452,12 +452,10 @@ function EditorSurface({
             render: renderCaret,
             selectionRender: renderCaretSelection,
           }),
-          Placeholder.configure({
-            placeholder: ({ node }) => (node.type.name === 'paragraph' ? placeholder : ''),
-            // Every empty block gets the hint, not only the first one.
-            showOnlyCurrent: true,
-            includeChildren: true,
-          }),
+          // The hint in the empty line being written in, and only there
+          // (issue #227). Not Tiptap's `Placeholder`: that one left the hint
+          // behind in lines the caret had passed.
+          LinePlaceholder.configure({ placeholder }),
           slashExtension,
           mentionExtension,
           commentMarkers,

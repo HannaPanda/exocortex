@@ -25,6 +25,7 @@ export * from './extensions';
 export * from './fixtures';
 export * from './foreign-media';
 export * from './inline-styling';
+export * from './line-placeholder';
 export * from './link-target';
 export * from './list-continuation';
 export * from './markdown';
