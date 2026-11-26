@@ -621,6 +621,70 @@ test.describe('editor', () => {
     await expect(ghost).toHaveCount(0);
   });
 
+  /**
+   * Issue #257: below a last block that is not a paragraph there is a line to
+   * write in, and it is made on use. The rules are unit-tested in
+   * `packages/editor`, including that opening a page writes nothing; what only
+   * a browser proves is that the space is really there to click into, that
+   * the list continuation of #240 is offered in the line it makes, and that
+   * the real arrow key reaches it from inside a table.
+   */
+  test('a page ending in a picture keeps a line to write in', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Zeile ${Date.now().toString(36)}`);
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: '- eins\n- zwei\n\n![Symbol](/icons/icon-192.png)\n', mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    const image = surface.locator(':scope > img');
+    await expect(image).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => image.evaluate((img) => img.naturalHeight)).toBeGreaterThan(0);
+
+    // Opening the page made no paragraph: the line is only drawn.
+    await expect(surface).toHaveAttribute('data-trailing-line', '');
+    await expect(surface.locator(':scope > p')).toHaveCount(0);
+
+    // A click into the space below the picture makes the line, and the list
+    // above offers to continue in it (#240).
+    const box = await image.boundingBox();
+    if (box === null) throw new Error('image has no layout');
+    await page.mouse.click(box.x + 24, box.y + box.height + 16);
+    const line = surface.locator(':scope > img + p');
+    await expect(line).toHaveCount(1);
+    await expect(surface).not.toHaveAttribute('data-trailing-line');
+    await expect(line).toHaveClass(/exocortex-list-ghost/);
+    await expect(line).toHaveAttribute('data-list-ghost-marker', '•');
+
+    await page.keyboard.type('weiter');
+    await expect(line).toHaveText('weiter');
+    await expect(surface.locator(':scope > p')).toHaveCount(1);
+  });
+
+  test('arrow down leaves a table at the end of the page into a new line', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Tabelle ${Date.now().toString(36)}`);
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: '| a | b |\n| - | - |\n| unten | rechts |\n', mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    const cell = surface.locator('td', { hasText: 'unten' });
+    await expect(cell).toBeVisible({ timeout: 30_000 });
+    await expect(surface).toHaveAttribute('data-trailing-line', '');
+
+    // From the first cell of the last row, not only the last cell.
+    await cell.click();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.type('danach');
+    await expect(surface.locator(':scope > p')).toHaveText('danach');
+    await expect(cell).toHaveText('unten');
+  });
+
   test('offers table controls inside a table', async ({ page }) => {
     await openEditor(page);
 

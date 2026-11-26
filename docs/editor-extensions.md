@@ -329,6 +329,40 @@ list, taking whatever follows it in the point along. Table cells are excluded.
 `- ` and `1. ` still start a list of their own. Covered by
 `list-continuation.test.ts` and `e2e/tests/editor.spec.ts`.
 
+## A line after the last block
+
+A page that ends in a block other than a paragraph (a picture, a table, a code
+block, a database, a PDF, a list) keeps a line below it to write in (issue
+#257). `TrailingParagraph` (`trailing-paragraph.ts`, registry entry
+`trailing-paragraph`, behaviour only) makes the paragraph there **on use and
+never in advance**:
+
+- **The line is drawn, not stored.** While `needsTrailingParagraph` holds, the
+  editor carries `data-trailing-line`, and `globals.css` reserves one
+  paragraph's worth of space below the last block (only while the page is
+  being written). Tiptap's `TrailingNode` is deliberately not used: it would
+  write an empty paragraph into the Yjs state whenever a page is opened, which
+  is the write nobody made that once left a blank line behind on every visit
+  (see `collaboration-connection.ts`). A gap cursor is not used either: it
+  cannot stand after a code block or a callout, and the empty line below a list
+  and a picture has to be a real paragraph for the list continuation above to
+  be offered in it.
+- **A click** on the editor's own surface below the last block appends one
+  paragraph and puts the caret into it. A click on a block, its controls or a
+  node view stays that block's, and a modifier key leaves the press to the
+  browser.
+- **Arrow down** does the same from the bottom of the page
+  (`arrowDownLeavesPage`): from a selected picture or embed, from any cell of a
+  table's last row, or from the last line of the text the page ends in, as long
+  as nothing selectable follows. It runs after the suggestion menus' keys and
+  before the table's own arrow handling.
+
+One transaction, one undo step. Once the page ends in a paragraph there is
+nothing left to do, so a second click never makes a second empty line; a line
+made and left empty stays, as one made with `Enter` would. Covered by
+`trailing-paragraph.test.ts` (including that opening a page writes nothing to
+the Yjs state) and `e2e/tests/editor.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)
