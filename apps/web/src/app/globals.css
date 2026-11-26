@@ -240,13 +240,29 @@
      block's text will start, so its indentation names the level. The line is
      drawn by `packages/editor/src/block-drop.ts` into the editor's positioned
      parent, which is why it is not scoped to `.exocortex-editor`. No motion:
-     it jumps to the next place, because the place is the state. */
+     it jumps to the next place, because the place is the state. Notion's
+     version (Stefan, #243) reads the level from the line's start, a fainter
+     run before it and the tinted row of the neighbour; so does this one. */
   .exocortex-editor .exocortex-drag-source {
     @apply opacity-40 select-none;
   }
 
   .exocortex-drop-line {
-    @apply pointer-events-none absolute z-50 h-0.5 -translate-y-1/2 rounded-full bg-primary;
+    @apply pointer-events-none absolute z-50 h-0.5 -translate-y-1/2 rounded-full bg-primary/35;
+  }
+
+  /* Faint from the shallowest level the gap offers, solid from the level the
+     block lands on: the solid start is the answer, the faint run says that
+     moving left would lift it out. */
+  .exocortex-drop-line > span {
+    @apply absolute inset-y-0 right-0 rounded-full bg-primary;
+    left: var(--drop-level-offset, 0px);
+  }
+
+  /* The row the dropped block will follow, or sit under as a sub-item: the
+     page tree tints the row a page is dropped into the same way. */
+  .exocortex-editor .exocortex-drop-anchor {
+    @apply rounded-sm bg-accent;
   }
 
   /* A block a write from outside the editor just changed (issue #112): an

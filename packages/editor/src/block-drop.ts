@@ -291,9 +291,16 @@ export function blockDropTransaction(
 interface DropPlugin {
   /** The dragged blocks, faded while they are carried. */
   source: BlockDropSource | null;
+  /**
+   * The block the dropped one will follow, or sit under as a sub-item: its row
+   * is tinted, so the level reads from the neighbour as well as from the line.
+   */
+  anchor: number | null;
 }
 
 export const blockDropKey = new PluginKey<DropPlugin>('exocortexBlockDrop');
+
+const CLEARED: DropPlugin = { source: null, anchor: null };
 
 /** A candidate, measured: where its line goes on the screen. */
 interface MeasuredCandidate {
@@ -301,6 +308,14 @@ interface MeasuredCandidate {
   left: number;
   right: number;
   top: number;
+  /** The text block whose row is tinted while this place is aimed at. */
+  anchor: number | null;
+  /**
+   * Where the shallowest level of the same gap starts: the line is drawn
+   * faint from there to `left`, the reach of the levels the pointer could
+   * still move to, and solid from `left` on.
+   */
+  trackLeft: number;
 }
 
 /** What one drag remembers between `dragover` events. */
@@ -371,7 +386,27 @@ function measure(
     top = beforeBottom ?? afterTop ?? reference.top;
   }
   const left = reference.left + (candidate.wrap === null ? 0 : indent);
-  return { candidate, left, right: Math.max(right, left + 24), top };
+  return {
+    candidate,
+    left,
+    right: Math.max(right, left + 24),
+    top,
+    anchor: before === null ? null : anchorOf(view.state.doc, candidate.pos - before.nodeSize),
+    trackLeft: left,
+  };
+}
+
+/**
+ * The row that says "after this" or "under this": the block right before the
+ * place, a list item by its own text. A whole list or another container
+ * before the place has no single row, and nothing is tinted.
+ */
+function anchorOf(doc: PmNode, pos: number): number | null {
+  const node = doc.nodeAt(pos);
+  if (node === null) return null;
+  if (LIST_ITEM_TYPES.has(node.type.name))
+    return node.firstChild?.isTextblock === true ? pos + 1 : null;
+  return isDropLeaf(node) ? pos : null;
 }
 
 function outerRect(view: EditorView, pos: number): DOMRect | null {
@@ -469,7 +504,7 @@ class BlockDropView {
       indent,
       target: null,
     };
-    this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, { source }));
+    this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, { source, anchor: null }));
     return this.session;
   }
 
@@ -494,7 +529,10 @@ class BlockDropView {
     const measured = blockDropCandidates(doc, gap, content, session.source, session.wrap)
       .map((candidate) => measure(view, candidate, session.indent))
       .filter((entry): entry is MeasuredCandidate => entry !== null);
-    return closest(measured, x - session.grabOffset);
+    const best = closest(measured, x - session.grabOffset);
+    if (best === null) return null;
+    const trackLeft = Math.min(...measured.map((entry) => entry.left));
+    return { ...best, trackLeft };
   }
 
   dragover(event: DragEvent): void {
@@ -502,6 +540,7 @@ class BlockDropView {
     const session = this.begin(event);
     if (session === null) return;
     session.target = this.aim(session, event.clientX, event.clientY);
+    this.setAnchor(session, session.target?.anchor ?? null);
     if (session.target === null) {
       this.hideLine();
       // Nowhere to land here, so nothing lands: the browser shows a refusal
@@ -524,11 +563,11 @@ class BlockDropView {
     this.session = null;
     this.hideLine();
     if (tr === null) {
-      this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, { source: null }));
+      this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, CLEARED));
       return true;
     }
     this.view.focus();
-    this.view.dispatch(tr.setMeta(blockDropKey, { source: null }).setMeta('uiEvent', 'drop'));
+    this.view.dispatch(tr.setMeta(blockDropKey, CLEARED).setMeta('uiEvent', 'drop'));
     return true;
   }
 
@@ -538,7 +577,18 @@ class BlockDropView {
     this.session = null;
     // The view may be gone already when a drag ends after navigation.
     if (this.view.isDestroyed) return;
-    this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, { source: null }));
+    this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, CLEARED));
+  }
+
+  /** Tints the row of the place aimed at, dispatching only when it changes. */
+  private setAnchor(session: DragSession, anchor: number | null): void {
+    const { source } = session;
+    // Dropped right where it is: the carried block is no neighbour of itself.
+    const own = anchor !== null && anchor >= source.from && anchor < source.to;
+    const next = own ? null : anchor;
+    const current = blockDropKey.getState(this.view.state)?.anchor ?? null;
+    if (current === next) return;
+    this.view.dispatch(this.view.state.tr.setMeta(blockDropKey, { source, anchor: next }));
   }
 
   private drawLine(target: MeasuredCandidate): void {
@@ -549,14 +599,17 @@ class BlockDropView {
       this.line.className = 'exocortex-drop-line';
       this.line.setAttribute('aria-hidden', 'true');
       this.line.dataset.testid = 'block-drop-line';
+      // The solid part: the level the block lands on.
+      this.line.appendChild(parent.ownerDocument.createElement('span'));
       parent.appendChild(this.line);
     }
     const parentRect = parent.getBoundingClientRect();
     const originLeft = parentRect.left - parent.scrollLeft;
     const originTop = parentRect.top - parent.scrollTop;
-    this.line.style.left = `${target.left - originLeft}px`;
+    this.line.style.left = `${target.trackLeft - originLeft}px`;
     this.line.style.top = `${target.top - originTop}px`;
-    this.line.style.width = `${target.right - target.left}px`;
+    this.line.style.width = `${target.right - target.trackLeft}px`;
+    this.line.style.setProperty('--drop-level-offset', `${target.left - target.trackLeft}px`);
     this.line.dataset.level = String(this.view.state.doc.resolve(target.candidate.pos).depth);
   }
 
@@ -579,14 +632,15 @@ export const BlockDrop = Extension.create({
       new Plugin<DropPlugin>({
         key: blockDropKey,
         state: {
-          init: () => ({ source: null }),
+          init: () => CLEARED,
           apply(tr, value) {
             const meta = tr.getMeta(blockDropKey) as DropPlugin | undefined;
             if (meta !== undefined) return meta;
             if (value.source === null || !tr.docChanged) return value;
             const from = tr.mapping.map(value.source.from, 1);
             const to = tr.mapping.map(value.source.to, -1);
-            return { source: from < to ? { from, to } : null };
+            // The tint is redrawn by the next `dragover`.
+            return { source: from < to ? { from, to } : null, anchor: null };
           },
         },
         view: (view) => {
@@ -600,9 +654,17 @@ export const BlockDrop = Extension.create({
         },
         props: {
           decorations(state) {
-            const source = blockDropKey.getState(state)?.source ?? null;
+            const { source, anchor } = blockDropKey.getState(state) ?? CLEARED;
             if (source === null) return null;
             const decorations: Decoration[] = [];
+            const anchorNode = anchor === null ? null : state.doc.nodeAt(anchor);
+            if (anchor !== null && anchorNode !== null) {
+              decorations.push(
+                Decoration.node(anchor, anchor + anchorNode.nodeSize, {
+                  class: 'exocortex-drop-anchor',
+                }),
+              );
+            }
             state.doc.nodesBetween(source.from, source.to, (node, pos) => {
               if (pos < source.from) return true;
               decorations.push(

@@ -265,6 +265,9 @@ selected text keeps the old behaviour.
   list beats one that does at the same indentation.
 - The line (`.exocortex-drop-line`, the page tree's amber line) starts where
   the dropped block's text will start and runs to its container's right edge.
+  Before that start it runs on faintly from the shallowest level the same gap
+  offers, and the row the block will follow or sit under is tinted
+  (`.exocortex-drop-anchor`), the way Notion shows the level.
   The carried blocks get `.exocortex-drag-source`. No candidate under the
   pointer means no line and no drop.
 - The drop is one transaction: `deleteRange` on the source (so an emptied
