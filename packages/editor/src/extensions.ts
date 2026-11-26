@@ -126,6 +126,7 @@ import {
   toggleMarkdownAdapter,
   togglePlainTextAdapter,
 } from './toggle';
+import { TrailingParagraph } from './trailing-paragraph';
 import {
   Transclusion,
   transclusionBlocks,
@@ -415,6 +416,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     name: 'list-continuation',
     schemaVersion: 1,
     extensions: [ListContinuation],
+  },
+  {
+    // Behaviour only, no schema: below a last block that is not a paragraph
+    // there is a line to click into, and arrow down reaches it; the paragraph
+    // is made on use, never when the page opens (issue #257).
+    name: 'trailing-paragraph',
+    schemaVersion: 1,
+    extensions: [TrailingParagraph],
   },
 ];
 

@@ -52,6 +52,7 @@ export * from './section-links';
 export * from './shift-arrow-selection';
 export * from './table-of-contents';
 export * from './toggle';
+export * from './trailing-paragraph';
 export * from './transclusion';
 export * from './transclusion-fragment';
 export * from './yjs';
