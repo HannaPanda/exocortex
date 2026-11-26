@@ -19,9 +19,20 @@ test.beforeAll(() => {
   requireSeedCredentials();
 });
 
+/** The conversations this test created, deleted again however it ended. */
+const created: string[] = [];
+
+test.afterEach(async ({ request, baseURL }) => {
+  for (const id of created.splice(0)) {
+    await request.delete(`/api/ai/conversations/${id}/permanent`, {
+      headers: { origin: baseURL as string },
+    });
+  }
+});
+
 async function choose(page: Page, title: string): Promise<void> {
   await page.getByTestId('ai-conversation-switcher').click();
-  await page.getByRole('menuitem').filter({ hasText: title }).first().click();
+  await page.getByRole('menu').getByText(title, { exact: true }).click();
   await expect(page.getByTestId('ai-conversation-switcher')).toContainText(title);
 }
 
@@ -44,53 +55,48 @@ test('keeps a chat chosen in one tab out of the other, and each page keeps its o
   const urlA = page.url();
 
   const titles = { first: `Tabchat eins ${suffix}`, second: `Tabchat zwei ${suffix}` };
-  const ids: string[] = [];
   for (const title of [titles.first, titles.second]) {
-    const created = await page.request.post('/api/ai/conversations', {
+    const response = await page.request.post('/api/ai/conversations', {
       data: { workspaceId, documentId: pageA, title },
       headers: { origin },
     });
-    expect(created.ok(), await created.text()).toBe(true);
-    ids.push(((await created.json()) as { conversation: { id: string } }).conversation.id);
+    expect(response.ok(), await response.text()).toBe(true);
+    created.push(((await response.json()) as { conversation: { id: string } }).conversation.id);
   }
 
-  try {
-    await openPanel(page);
-    await choose(page, titles.first);
+  // The panel listed the workspace's conversations before these existed.
+  await page.reload();
+  await openPanel(page);
+  await choose(page, titles.first);
 
-    // A second tab of the same browser starts from the latest choice ...
-    const other = await page.context().newPage();
-    await other.goto(urlA);
-    await openPanel(other);
-    await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
+  // A second tab of the same browser starts from the latest choice ...
+  const other = await page.context().newPage();
+  await other.goto(urlA);
+  await openPanel(other);
+  await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
 
-    // ... and goes its own way from then on.
-    await choose(other, titles.second);
-    await page.bringToFront();
-    await expect(page.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
-    await page.reload();
-    await openPanel(page);
-    await expect(page.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
-    await other.reload();
-    await openPanel(other);
-    await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
+  // ... and goes its own way from then on.
+  await choose(other, titles.second);
+  await page.bringToFront();
+  await expect(page.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
+  await page.reload();
+  await openPanel(page);
+  await expect(page.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
+  await other.reload();
+  await openPanel(other);
+  await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
 
-    // Inside one tab the chat walks along to a page that has none yet, and a
-    // page that had one gets it back.
-    await createPage(other, `Chat je Tab B ${suffix}`);
-    await openPanel(other);
-    await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
-    await choose(other, titles.first);
-    await other.goto(urlA);
-    await openPanel(other);
-    await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
-    await other.goBack();
-    await openPanel(other);
-    await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
-    await other.close();
-  } finally {
-    for (const id of ids) {
-      await page.request.delete(`/api/ai/conversations/${id}/permanent`, { headers: { origin } });
-    }
-  }
+  // Inside one tab the chat walks along to a page that has none yet, and a
+  // page that had one gets it back.
+  await createPage(other, `Chat je Tab B ${suffix}`);
+  await openPanel(other);
+  await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
+  await choose(other, titles.first);
+  await other.goto(urlA);
+  await openPanel(other);
+  await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.second);
+  await other.goBack();
+  await openPanel(other);
+  await expect(other.getByTestId('ai-conversation-switcher')).toContainText(titles.first);
+  await other.close();
 });
