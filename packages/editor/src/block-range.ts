@@ -56,7 +56,25 @@ export type BlockRangeRefusal =
   /** Both blocks exist, but not as siblings, so they do not describe a range. */
   | 'block_range_not_siblings'
   /** The end of the range sits before its start. */
-  | 'block_range_inverted';
+  | 'block_range_inverted'
+  /**
+   * Items for a list of the other kind: task items for a bullet or numbered
+   * list, or the reverse (issue #247). Converting one into the other would
+   * guess at a checkbox nobody asked for.
+   */
+  | 'list_kind_mismatch'
+  /**
+   * Something other than list items, aimed at a list item, or list items mixed
+   * with other blocks, aimed at a list (issue #247). Where the items end and
+   * the rest begins would be a guess.
+   */
+  | 'list_expects_items'
+  /**
+   * The paragraph is the text of a list item that has more under it. Deleting
+   * it would leave an item without its text, and deleting the item instead
+   * would take the sub-items with it, which nobody named (issue #247).
+   */
+  | 'list_item_text';
 
 export class BlockRangeError extends Error {
   public readonly reason: BlockRangeRefusal;
@@ -150,8 +168,172 @@ export function resolveBlockRange(doc: Y.Doc, edit: BlockRangeEdit): ResolvedBlo
   return { ...start, count: end.index - start.index + 1 };
 }
 
+// --- Lists (issue #247) ---------------------------------------------------
+
+/** Each list container, and the one kind of item it holds. */
+const LIST_ITEM_OF: Readonly<Record<string, string>> = {
+  bulletList: 'listItem',
+  orderedList: 'listItem',
+  taskList: 'taskItem',
+};
+const LIST_ITEMS = new Set(['listItem', 'taskItem']);
+
+function isListContainer(node: YNode | null): node is Y.XmlElement {
+  return node instanceof Y.XmlElement && LIST_ITEM_OF[node.nodeName] !== undefined;
+}
+
+function isListItem(node: unknown): node is Y.XmlElement {
+  return node instanceof Y.XmlElement && LIST_ITEMS.has(node.nodeName);
+}
+
+/** Where new nodes go, and how many existing ones they take the place of. */
+interface Insertion {
+  parent: YParent;
+  index: number;
+  deleteCount: number;
+  /** The incoming list's items rather than the incoming blocks themselves. */
+  itemsOnly: boolean;
+}
+
+function idOrEmpty(node: Y.XmlElement): string {
+  return blockIdOf(node) ?? '';
+}
+
+/** The list type an incoming document consists of, when it is exactly one list. */
+function incomingList(document: ProseMirrorDocument): string | null {
+  const content = document.content ?? [];
+  if (content.length !== 1) return null;
+  const only = content[0]?.type ?? '';
+  return LIST_ITEM_OF[only] === undefined ? null : only;
+}
+
+function containsList(document: ProseMirrorDocument): boolean {
+  return (document.content ?? []).some((node) => LIST_ITEM_OF[node.type] !== undefined);
+}
+
+function refuseKindMismatch(itemKind: string, list: string, anchor: Y.XmlElement): never {
+  const wanted = itemKind === 'taskItem' ? 'task items ("- [ ] …")' : 'list items ("- …")';
+  throw new BlockRangeError(
+    'list_kind_mismatch',
+    idOrEmpty(anchor),
+    `This list holds ${itemKind === 'taskItem' ? 'task items' : 'list items'}, ` +
+      `and a ${list} cannot become one of them; send ${wanted}`,
+  );
+}
+
 /**
- * Applies a ranged edit to a live `Y.Doc`.
+ * How a block edit lands when it is aimed at a list (issue #247).
+ *
+ * Without this, list items appended to a list became a *second* list beside it
+ * -- the incoming Markdown is a document, its top level is a list, and that
+ * list was inserted as a sibling -- and list items appended to an item were
+ * refused outright, because a list cannot stand directly inside a list.
+ *
+ * The rule: whoever addresses a list, or one of its items, and sends nothing
+ * but list items gets new entries *in that list*, at that position, with any
+ * nesting the items carry. Neighbouring lists are never merged, because only
+ * the addressed list is ever written to. Anything that does not fit that rule
+ * unambiguously is refused rather than placed by guesswork (ADR-055).
+ *
+ * `null` means the edit is not about a list and goes through unchanged.
+ */
+function listInsertion(
+  range: ResolvedBlockRange,
+  document: ProseMirrorDocument,
+  placement: BlockRangeEdit['placement'],
+): Insertion | null {
+  if (range.count !== 1) return null;
+  const target = range.parent.get(range.index) as YNode;
+  const list = incomingList(document);
+
+  if (isListContainer(target)) {
+    if (placement === 'replace') return null;
+    if (list === null) {
+      if (!containsList(document)) return null;
+      throw new BlockRangeError(
+        'list_expects_items',
+        idOrEmpty(target),
+        'List items and other blocks in one write aimed at a list: send the items alone, ' +
+          'which join the list, and the rest in a second write',
+      );
+    }
+    const itemKind = LIST_ITEM_OF[target.nodeName] as string;
+    if (LIST_ITEM_OF[list] !== itemKind) refuseKindMismatch(itemKind, list, target);
+    const index = placement === 'before' ? 0 : target.length;
+    return { parent: target, index, deleteCount: 0, itemsOnly: true };
+  }
+
+  // A list item, or the paragraph that is its text: `exo_page_read` writes
+  // both identifiers behind the line, and either means "this entry".
+  const itemText =
+    range.index === 0 && isListItem(range.parent) && placement !== 'replace' && list !== null;
+  const item = isListItem(target) ? target : itemText ? (range.parent as Y.XmlElement) : null;
+  if (item === null) return null;
+
+  if (list === null) {
+    throw new BlockRangeError(
+      'list_expects_items',
+      idOrEmpty(item),
+      'Only list items can stand beside a list item; send them as "- …"',
+    );
+  }
+  if (LIST_ITEM_OF[list] !== item.nodeName) refuseKindMismatch(item.nodeName, list, item);
+
+  const container = item.parent as Y.XmlElement;
+  const at = container.toArray().indexOf(item);
+  return {
+    parent: container,
+    index: placement === 'after' ? at + 1 : at,
+    deleteCount: placement === 'replace' ? 1 : 0,
+    itemsOnly: true,
+  };
+}
+
+/**
+ * Deletes a range, and every list the deletion leaves without items.
+ *
+ * "Delete" has to mean gone (issue #247): an item without its text is not an
+ * item, and a list without items is an empty shell nobody can address any more
+ * once its last entry is gone. Only list containers go along; a quote or a
+ * table cell that would end up empty is left for the validation to refuse,
+ * because removing those would take something with it that was not named.
+ */
+function deleteRange(range: ResolvedBlockRange): void {
+  const { parent } = range;
+  if (isListItem(parent) && range.index === 0 && range.count < parent.length) {
+    const itemId = idOrEmpty(parent);
+    throw new BlockRangeError(
+      'list_item_text',
+      itemId,
+      `This block is the text of a list item with more under it; delete the item itself ` +
+        `(${itemId}) to remove it with its sub-items, or replace the text instead`,
+    );
+  }
+  parent.delete(range.index, range.count);
+
+  let current: YParent = parent;
+  while (
+    current instanceof Y.XmlElement &&
+    current.length === 0 &&
+    (isListItem(current) || isListContainer(current))
+  ) {
+    const above: unknown = current.parent;
+    if (!(above instanceof Y.XmlElement || above instanceof Y.XmlFragment)) break;
+    above.delete(above.toArray().indexOf(current), 1);
+    current = above;
+  }
+}
+
+/** The ids of the nodes an edit put on the page, for the response. */
+function idsOf(nodes: readonly (Y.XmlElement | Y.XmlText)[]): string[] {
+  return nodes
+    .map((node) => (node instanceof Y.XmlElement ? blockIdOf(node) : null))
+    .filter((id): id is string => id !== null);
+}
+
+/**
+ * Applies a ranged edit to a live `Y.Doc`, and answers with the identifiers of
+ * the blocks it put on the page.
  *
  * One transaction, so a connected editor sees one change rather than a delete
  * followed by an insert, and the document is never briefly missing the
@@ -161,7 +343,7 @@ export function applyBlockRangeEditToYDoc(
   target: Y.Doc,
   document: ProseMirrorDocument,
   edit: BlockRangeEdit,
-): void {
+): string[] {
   /*
    * A document with no blocks is a deletion (issue #118): the range goes and
    * nothing takes its place. It is spelled this way rather than with a fourth
@@ -184,17 +366,24 @@ export function applyBlockRangeEditToYDoc(
 
   const range = resolveBlockRange(target, edit);
   if (deletion) {
-    target.transact(() => {
-      range.parent.delete(range.index, range.count);
-    });
-    return;
+    target.transact(() => deleteRange(range));
+    return [];
   }
+
+  const insertion: Insertion = listInsertion(range, document, edit.placement) ?? {
+    parent: range.parent,
+    index: edit.placement === 'after' ? range.index + range.count : range.index,
+    deleteCount: edit.placement === 'replace' ? range.count : 0,
+    itemsOnly: false,
+  };
 
   const source = prosemirrorJSONToYDoc(getExocortexSchema(), document, YJS_DOCUMENT_FIELD);
   try {
-    const nodes = source
-      .getXmlFragment(YJS_DOCUMENT_FIELD)
-      .toArray()
+    const top = source.getXmlFragment(YJS_DOCUMENT_FIELD).toArray();
+    // The items of the incoming list rather than the list: they join the one
+    // on the page, with whatever is nested inside them.
+    const incoming = insertion.itemsOnly ? (top[0] as Y.XmlElement).toArray() : top;
+    const nodes = incoming
       .filter(
         (node): node is Y.XmlElement | Y.XmlText =>
           node instanceof Y.XmlElement || node instanceof Y.XmlText,
@@ -202,14 +391,11 @@ export function applyBlockRangeEditToYDoc(
       .map((node) => node.clone());
 
     target.transact(() => {
-      if (edit.placement === 'replace') {
-        range.parent.delete(range.index, range.count);
-        range.parent.insert(range.index, nodes);
-        return;
-      }
-      const at = edit.placement === 'before' ? range.index : range.index + range.count;
-      range.parent.insert(at, nodes);
+      if (insertion.deleteCount > 0)
+        insertion.parent.delete(insertion.index, insertion.deleteCount);
+      insertion.parent.insert(insertion.index, nodes);
     });
+    return idsOf(nodes);
   } finally {
     source.destroy();
   }
@@ -242,7 +428,7 @@ export function applyBlockRangeEditToState(
 ): AppliedBlockRange {
   const doc = yjsStateToDocument(state);
   try {
-    applyBlockRangeEditToYDoc(doc, document, edit);
+    const blockIds = applyBlockRangeEditToYDoc(doc, document, edit);
     const yjsState = Y.encodeStateAsUpdate(doc);
     const proseMirrorJson = yjsStateToProseMirrorJson(yjsState);
     const validation = validateProseMirrorDocument(proseMirrorJson);
@@ -255,9 +441,7 @@ export function applyBlockRangeEditToState(
       yjsState,
       proseMirrorJson,
       plainText: serializePlainText(proseMirrorJson),
-      blockIds: (document.content ?? [])
-        .map((node) => node.attrs?.[BLOCK_ID_ATTRIBUTE])
-        .filter((id): id is string => typeof id === 'string'),
+      blockIds,
     };
   } finally {
     doc.destroy();
