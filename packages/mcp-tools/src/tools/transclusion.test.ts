@@ -43,6 +43,7 @@ const MAP = {
       title: 'Tumorambulanz Klinikum Dortmund',
       chars: 2_480,
       blocks: 9,
+      location: null,
     },
   ],
 };
@@ -203,6 +204,45 @@ describe('pageBlockReadTool', () => {
     expect(calls[0]?.query).toMatchObject({ outline: 'true' });
     expect(result.text).toContain('abc12345 (heading2)');
     expect(result.text).toContain('def67890 (paragraph)');
+  });
+
+  it('words where a window of list points sits (issue #274)', async () => {
+    const entry = (path: number[], points: boolean, first: number, last: number) => ({
+      kind: 'range' as const,
+      fromBlockId: 'item00000001',
+      toBlockId: 'item00000002',
+      level: null,
+      title: 'Erster Punkt',
+      chars: 900,
+      blocks: last - first + 1,
+      location: { path, points, first, last },
+    });
+    const { client } = fakeClient({
+      ...PAGE,
+      view: 'map',
+      chars: 28_000,
+      map: {
+        ...MAP,
+        mode: 'ranges' as const,
+        entries: [
+          entry([1], true, 3, 7),
+          entry([4, 28], false, 1, 5),
+          entry([4, 28, 2], true, 9, 9),
+        ],
+      },
+    });
+
+    const result = await pageBlockReadTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain(
+      '- Punkte 3 bis 7 der Liste in Block 1: Erster Punkt — ^item00000001',
+    );
+    expect(result.text).toContain(
+      '- Blöcke 1 bis 5 in Punkt 28 der Liste in Block 4: Erster Punkt',
+    );
+    expect(result.text).toContain(
+      '- Punkt 9 der Liste in Block 2 in Punkt 28 der Liste in Block 4: Erster Punkt',
+    );
   });
 
   it('lists the points of one list when blocks comes with a block (issue #274)', async () => {

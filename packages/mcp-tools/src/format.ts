@@ -44,6 +44,29 @@ export function truncateWithSize(text: string, maxLength: number): string {
   );
 }
 
+/**
+ * Where a window inside a list sits, in words (issue #274).
+ *
+ * The map carries positions, not a sentence; the path alternates the block
+ * that is a list and the point opened inside it, read here from the inside
+ * out: "Punkte 3 bis 7 der Liste in Block 2 in Punkt 28 der Liste in Block 4".
+ */
+function locationLabel(location: NonNullable<DocumentMapEntryDto['location']>): string {
+  const { path, points, first, last } = location;
+  const span = points
+    ? first === last
+      ? `Punkt ${first}`
+      : `Punkte ${first} bis ${last}`
+    : `Blöcke ${first} bis ${last}`;
+  const containers: string[] = [];
+  for (let index = path.length - 1; index >= 0; index -= 1) {
+    containers.push(
+      index % 2 === 0 ? `der Liste in Block ${path[index]}` : `in Punkt ${path[index]}`,
+    );
+  }
+  return [span, ...containers].join(' ');
+}
+
 function renderEntry(entry: DocumentMapEntryDto): string {
   const address =
     entry.fromBlockId === null
@@ -53,7 +76,11 @@ function renderEntry(entry: DocumentMapEntryDto): string {
         : `^${entry.fromBlockId} bis ^${entry.toBlockId}`;
   const kind = entry.level === null ? '' : `H${entry.level} `;
   const size = `${groupDigits(entry.chars)} Zeichen, ${groupDigits(entry.blocks)} Blöcke`;
-  return `- ${kind}${entry.title} — ${address} (${size})`;
+  const title =
+    entry.location === null
+      ? entry.title
+      : `${locationLabel(entry.location)}${entry.title.length > 0 ? `: ${entry.title}` : ''}`;
+  return `- ${kind}${title} — ${address} (${size})`;
 }
 
 /**

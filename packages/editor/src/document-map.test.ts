@@ -226,9 +226,13 @@ describe('buildDocumentMap on long lists (issue #274)', () => {
     for (const entry of map.entries) {
       expect(entry.fromBlockId).toMatch(/^itemaaa/);
       expect(entry.toBlockId).toMatch(/^itemaaa/);
-      expect(entry.title).toMatch(/^Punkte? \d+/);
-      expect(entry.title).toContain('der Aufzählung in Block 1');
+      // Where it sits is data: the list is block 1, and these are its points.
+      expect(entry.location).toMatchObject({ path: [1], points: true });
+      expect(entry.title).toMatch(/^Punkt \d+:/);
     }
+    // Consecutive windows, covering points 1 to 30 without a gap.
+    expect(map.entries[0]?.location?.first).toBe(1);
+    expect(map.entries.at(-1)?.location?.last).toBe(30);
     // Every point is covered exactly once, so none can go missing.
     expect(map.entries.reduce((total, entry) => total + entry.blocks, 0)).toBe(30);
   });
@@ -271,7 +275,7 @@ describe('buildDocumentMap on long lists (issue #274)', () => {
     for (const entry of map.entries) {
       expect(extractBlockRange(page, entry.fromBlockId as string, entry.toBlockId)).not.toBeNull();
     }
-    expect(map.entries.some((entry) => entry.title.includes('in Block 3'))).toBe(true);
+    expect(map.entries.some((entry) => entry.location?.path[0] === 3)).toBe(true);
     expect(map.entries.some((entry) => entry.fromBlockId === 'parapara001')).toBe(true);
     expect(map.entries.reduce((total, entry) => total + entry.blocks, 0)).toBe(71);
   });
@@ -294,7 +298,17 @@ describe('buildDocumentMap on long lists (issue #274)', () => {
     const map = buildDocumentMap(page, { maxEntries: 10 });
 
     expect(map.entries.some((entry) => entry.fromBlockId?.startsWith('itemccc'))).toBe(true);
-    expect(map.entries.some((entry) => entry.title.includes('in Punkt 2'))).toBe(true);
+    // The second point is opened: its own blocks, and the points of its list.
+    expect(
+      map.entries.some(
+        (entry) => entry.location?.points === false && entry.location.path.join() === '1,2',
+      ),
+    ).toBe(true);
+    expect(
+      map.entries.some(
+        (entry) => entry.location?.points === true && entry.location.path.join() === '1,2,2',
+      ),
+    ).toBe(true);
   });
 
   it('counts on in a numbered list, so point 27 still reads "27."', () => {

@@ -101,6 +101,7 @@ describe('pageReadTool', () => {
             title: 'Tumorambulanz Klinikum Dortmund',
             chars: 2_480,
             blocks: 9,
+            location: null,
           },
         ],
       },

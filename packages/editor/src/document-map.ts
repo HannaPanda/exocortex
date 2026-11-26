@@ -71,6 +71,27 @@ export interface DocumentMapEntry {
    * window the map opened a list into (issue #274).
    */
   blocks: number;
+  /** Where a window inside a list sits; `null` for a section or a top-level window. */
+  location: DocumentMapLocation | null;
+}
+
+/**
+ * Where a window inside a list sits (issue #274).
+ *
+ * `path` holds 1-based positions from the top of the mapped part inwards, and
+ * it alternates: the block that is the list, then the point opened inside it,
+ * then the block inside that point that is the next list, and so on. `points`
+ * says whether `first` and `last` count points of the list at the end of the
+ * path, or blocks inside the point at the end of it.
+ *
+ * Data rather than a sentence, because the words belong to whoever renders
+ * the map for its reader.
+ */
+export interface DocumentMapLocation {
+  path: number[];
+  points: boolean;
+  first: number;
+  last: number;
 }
 
 export interface DocumentMap {
@@ -216,6 +237,7 @@ function sectionEntry(group: readonly Measured[], cutLevel: number): DocumentMap
           : `${textOf(head.node)} (Anfang)`,
     chars: sumChars(group),
     blocks: group.length,
+    location: null,
   };
 }
 
@@ -239,17 +261,14 @@ function coarsen(entries: readonly DocumentMapEntry[], maxEntries: number): Docu
       title: `${bucket.length} Abschnitte: „${first.title}“ bis „${last.title}“`,
       chars: bucket.reduce((total, entry) => total + entry.chars, 0),
       blocks: bucket.reduce((total, entry) => total + entry.blocks, 0),
+      location: null,
     });
   }
   return merged;
 }
 
-/** The lists whose items a map may open, and what a person calls each of them. */
-const LIST_NAMES: Readonly<Record<string, string>> = {
-  bulletList: 'Aufzählung',
-  orderedList: 'nummerierten Liste',
-  taskList: 'Aufgabenliste',
-};
+/** The lists whose points a map may open. */
+const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList']);
 
 const LIST_ITEM_TYPES = new Set(['listItem', 'taskItem']);
 
@@ -261,10 +280,10 @@ const LIST_ITEM_TYPES = new Set(['listItem', 'taskItem']);
  * paragraph and the first point of a list are not a span, they are a shape.
  */
 interface SiblingGroup {
-  /** The window's title, from the 1-based positions of its first and last block. */
-  label: (first: number, last: number) => string;
-  /** Where this group sits, for the groups opened inside it. */
-  where: string;
+  /** `DocumentMapLocation.path` of the windows cut from this group. */
+  path: number[];
+  /** Whether the siblings are the points of a list. */
+  points: boolean;
 }
 
 /** One block a window can hold, with the group it belongs to and its place in it. */
@@ -273,27 +292,10 @@ interface Unit extends Measured {
   position: number;
 }
 
-const TOP_LEVEL: SiblingGroup = {
-  where: '',
-  label: (first, last) => `Blöcke ${first} bis ${last}`,
-};
+const TOP_LEVEL: SiblingGroup = { path: [], points: false };
 
 function isList(node: ProseMirrorNode): boolean {
-  return Object.hasOwn(LIST_NAMES, node.type);
-}
-
-function listGroup(list: ProseMirrorNode, where: string): SiblingGroup {
-  const name = `der ${LIST_NAMES[list.type] ?? 'Liste'} ${where}`;
-  return {
-    where: name,
-    label: (first, last) =>
-      first === last ? `Punkt ${first} ${name}` : `Punkte ${first} bis ${last} ${name}`,
-  };
-}
-
-function itemGroup(position: number, where: string): SiblingGroup {
-  const name = `in Punkt ${position} ${where}`;
-  return { where: name, label: (first, last) => `Blöcke ${first} bis ${last} ${name}` };
+  return LIST_TYPES.has(node.type);
 }
 
 /** A list item measured the way it reads: with its marker, inside its list. */
@@ -326,12 +328,11 @@ function windowUnits(items: readonly Measured[], target: number): Unit[] {
       const { node } = item;
       const opens = item.chars >= target && (node.content?.length ?? 0) > 0;
       if (opens && isList(node)) {
-        const where = group === TOP_LEVEL ? `in Block ${position}` : group.where;
-        visit(measureItems(node), listGroup(node, where));
+        visit(measureItems(node), { path: [...group.path, position], points: true });
         return;
       }
       if (opens && LIST_ITEM_TYPES.has(node.type) && (node.content ?? []).some(isList)) {
-        visit(measure(node.content ?? []), itemGroup(position, group.where));
+        visit(measure(node.content ?? []), { path: [...group.path, position], points: false });
         return;
       }
       units.push({ ...item, group, position });
@@ -371,16 +372,24 @@ function rangeEntries(items: readonly Measured[], maxEntries: number): DocumentM
     if (first === undefined || last === undefined) return;
     const { from, to } = rangeOf(window);
     const preview = textOf(first.node).slice(0, RANGE_PREVIEW_CHARS);
+    const { group } = first;
+    // Inside a list the title is the first point's text alone, and where the
+    // window sits travels as data: the reader words it (`location`).
+    const located = group !== TOP_LEVEL;
     entries.push({
       kind: 'range',
       fromBlockId: from,
       toBlockId: to,
       level: null,
-      title:
-        first.group.label(first.position, last.position) +
-        (preview.length > 0 ? `: ${preview}` : ''),
+      title: located
+        ? preview
+        : `Blöcke ${first.position} bis ${last.position}` +
+          (preview.length > 0 ? `: ${preview}` : ''),
       chars: sumChars(window),
       blocks: window.length,
+      location: located
+        ? { path: group.path, points: group.points, first: first.position, last: last.position }
+        : null,
     });
     window = [];
   };

@@ -43,6 +43,19 @@ export const responseBudgetSchema = z.object({
   want: z.enum(['auto', 'map']).optional(),
 });
 
+/**
+ * Where a window inside a list sits (issue #274). Mirrors `DocumentMapLocation`:
+ * 1-based positions from the top of the mapped part inwards, alternating the
+ * block that is a list and the point opened inside it; `points` says whether
+ * `first`/`last` count points or blocks inside a point.
+ */
+export const documentMapLocationSchema = z.object({
+  path: z.array(z.number().int().positive()),
+  points: z.boolean(),
+  first: z.number().int().positive(),
+  last: z.number().int().positive(),
+});
+
 /** One addressable part of a page, as a map lists it. Mirrors `DocumentMapEntry`. */
 export const documentMapEntrySchema = z.object({
   kind: z.enum(['section', 'range']),
@@ -52,6 +65,8 @@ export const documentMapEntrySchema = z.object({
   title: z.string(),
   chars: z.number().int().nonnegative(),
   blocks: z.number().int().nonnegative(),
+  /** Set for a window of a list the map opened; `null` otherwise. */
+  location: documentMapLocationSchema.nullable(),
 });
 export type DocumentMapEntryDto = z.infer<typeof documentMapEntrySchema>;
 

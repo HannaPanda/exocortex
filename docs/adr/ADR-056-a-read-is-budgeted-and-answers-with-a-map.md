@@ -127,7 +127,11 @@ back as siblings exactly as before; the points are siblings, so
 `fromBlockId`/`toBlockId` on two points is an ordinary range for the read and
 for the write side alike (ADR-055). A list that does not fill a window, and
 every page without lists, maps exactly as it did. An entry's `blocks` counts
-the points it covers.
+the points it covers, and where such a window sits travels as data
+(`location`: the path of list and point positions, and the first and last
+point) rather than as a sentence, because the words are the renderer's: the
+editor package carries no interface text (ADR-062), and the MCP tools word it
+for their reader.
 
 A point, or a window of points, comes back inside a list of its own kind
 (`standaloneSiblings`): a bare list item is not a valid top-level block and its
