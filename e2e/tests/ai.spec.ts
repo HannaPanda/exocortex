@@ -134,7 +134,9 @@ test.describe('AI side panel', () => {
       page.getByTestId('ai-run-trace-reasoning').first(),
       'the default model streamed no reasoning; see the comment above this test',
     ).toBeVisible({ timeout: AI_RUN_FINISH_TIMEOUT_MS });
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    // Visible thinking already says the trace is open. Its toggle is not
+    // asked separately: a one-sentence answer can be over, and the trace
+    // folded, between two assertions.
     await expect(toggle).toContainText('Gedankengang');
 
     // The run may well be over by now: a one-sentence answer takes a few
