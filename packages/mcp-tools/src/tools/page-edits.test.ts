@@ -144,3 +144,40 @@ describe('what the narrow writes say about expectedYjsUpdatedAt', () => {
     }
   });
 });
+
+describe('pageBlockWriteTool, lists and deletion (issue #247)', () => {
+  const WRITTEN = {
+    documentId: 'doc123456',
+    snapshotId: 'snap123456',
+    yjsUpdatedAt: '2026-11-26T10:00:00.000Z',
+    schemaVersion: 5,
+    byteSize: 512,
+    appliedToLiveSession: false,
+    warnings: [],
+    blockIds: [],
+    replacements: 1,
+  };
+
+  it('deletes a block without any Markdown and says it is gone', async () => {
+    const { client, calls } = fakeClient(WRITTEN);
+
+    const result = await pageBlockWriteTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'abc12345',
+      mode: 'delete',
+    });
+
+    expect(calls[0]?.path).toBe('/api/documents/doc123456/content/block');
+    expect(calls[0]?.body).toEqual({ blockId: 'abc12345', mode: 'delete' });
+    expect(result.text).toContain('Block abc12345 entfernt');
+    expect(result.text).toContain('snap123456');
+  });
+
+  it('tells an agent where list items go and what deleting means', () => {
+    const description = pageBlockWriteTool.description;
+    expect(description).toContain('IN dieser Liste');
+    expect(description).toContain('Benachbarte Listen werden nie zusammengeführt');
+    expect(description).toContain('mode "delete"');
+    expect(description).toContain('ohne leere Hülle');
+  });
+});

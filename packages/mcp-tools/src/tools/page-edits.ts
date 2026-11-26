@@ -70,6 +70,29 @@ const WHERE_BLOCK_IDS_COME_FROM =
   'oder aus exo_page_read mit includeBlockIds: true, das sie als "^kennung" hinter jeden Block ' +
   'schreibt.';
 
+/**
+ * What a block write does at a list, and what deleting means (issue #247).
+ *
+ * Both used to surprise: list items appended to a list arrived as a second
+ * list beside it, and the only way to delete, `replace` with nothing, left an
+ * empty paragraph that no later call could get rid of. The rules are the ones
+ * `applyBlockRangeEditToYDoc` enforces, said where an agent decides.
+ */
+const LISTS_AND_DELETION =
+  'Listen: Wer mit "append" oder "prepend" an eine Liste oder an einen ihrer Einträge ' +
+  'schreibt und nur Listenpunkte schickt ("- drei", eingerückte Unterpunkte erlaubt), bekommt ' +
+  'neue Einträge IN dieser Liste: an der Liste ans Ende bzw. an den Anfang, an einem Eintrag ' +
+  'direkt dahinter bzw. davor, auf derselben Ebene. Ein Eintrag ist über seine eigene Kennung ' +
+  'oder die seines Textes adressierbar (exo_page_read schreibt beide hinter die Zeile). ' +
+  '"replace" an einem Eintrag ersetzt ihn durch die geschickten Listenpunkte. Benachbarte ' +
+  'Listen werden nie zusammengeführt. Abgelehnt wird, ohne etwas zu schreiben: Aufgabenpunkte ' +
+  '("- [ ] …") für eine gewöhnliche Liste und umgekehrt, etwas anderes als Listenpunkte neben ' +
+  'einem Eintrag, und Listenpunkte gemischt mit anderen Blöcken an einer Liste. Löschen: ' +
+  'mode "delete" (oder "replace" mit leerem markdown) entfernt den Block wirklich, ohne leere ' +
+  'Hülle. Ein Eintrag geht mit seinen Unterpunkten, eine Liste ohne Einträge verschwindet mit. ' +
+  'Den Text eines Eintrags mit Unterpunkten zu löschen wird abgelehnt; dann den Eintrag selbst ' +
+  'löschen.';
+
 /** Turns the shared response into the sentence all three answer with. */
 function writtenText(documentId: string, result: DocumentGranularWriteResponse): string {
   const live = result.appliedToLiveSession
@@ -92,8 +115,10 @@ export const pageBlockWriteTool: AnyToolDefinition = defineTool({
     'eine kleine Änderung an einer langen Seite; exo_page_write mit "replace" schreibt dafür die ' +
     'ganze Seite neu. ' +
     'mode "replace" tauscht den Block aus, "append" setzt den neuen Inhalt dahinter, "prepend" ' +
-    'davor. Eine Überschrift meint hier nur sich selbst, nicht ihren Abschnitt; dafür gibt es ' +
-    'exo_page_section_write. ' +
+    'davor, "delete" entfernt ihn (ohne markdown). Eine Überschrift meint hier nur sich selbst, ' +
+    'nicht ihren Abschnitt; dafür gibt es exo_page_section_write. ' +
+    LISTS_AND_DELETION +
+    ' ' +
     WHERE_THE_REVISION_COMES_FROM +
     ' ' +
     WHERE_BLOCK_IDS_COME_FROM +
@@ -118,7 +143,8 @@ export const pageBlockWriteTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: documentGranularWriteResponseSchema,
     });
-    return { text: writtenText(documentId, result), data: result };
+    const removed = body.mode === 'delete' ? ` Block ${body.blockId} entfernt.` : '';
+    return { text: `${writtenText(documentId, result)}${removed}`, data: result };
   },
 });
 
@@ -162,7 +188,8 @@ export const pageSectionWriteTool: AnyToolDefinition = defineTool({
     'Ebene. ' +
     'mode "replace" ersetzt den Inhalt des Abschnitts und lässt die Überschrift stehen (sie ist ' +
     'die Adresse), "append" hängt ans Ende des Abschnitts an, "prepend" setzt direkt unter die ' +
-    'Überschrift. ' +
+    'Überschrift. "replace" mit leerem markdown leert den Abschnitt, ohne leeren Absatz; die ' +
+    'Überschrift bleibt. ' +
     'Der Text der Überschrift wird ohne Rücksicht auf Groß- und Kleinschreibung verglichen. ' +
     'Kommt er mehrfach vor, wird nichts geschrieben und der Aufruf nennt die Blockkennungen der ' +
     'Kandidaten; dann ist exo_page_block_update mit einer davon der eindeutige Weg. ' +

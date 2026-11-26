@@ -957,12 +957,22 @@ export type BlockRangeEdit = z.infer<typeof blockRangeEditSchema>;
  * where a heading stands for its whole section (ADR-045), and it is deliberate:
  * this tool's promise is "exactly one block", and a caller that means the
  * section has `section` below to say so.
+ *
+ * Lists and deletion (issue #247): list items sent to `append`/`prepend` at a
+ * list, or at one of its items, become entries of that list rather than a
+ * second list beside it. `delete` removes the block outright -- an item takes
+ * its sub-items, a list losing its last item goes too -- and so does `replace`
+ * with empty Markdown; neither leaves an empty paragraph behind.
  */
 export const documentBlockWriteRequestSchema = z.object({
   blockId: blockIdSchema,
-  markdown: z.string().max(200_000),
-  /** `replace` swaps the block out; `append`/`prepend` insert after/before it. */
-  mode: z.enum(['replace', 'append', 'prepend']).default('replace'),
+  /** Required for every mode but `delete`, which takes none. */
+  markdown: z.string().max(200_000).optional(),
+  /**
+   * `replace` swaps the block out; `append`/`prepend` insert after/before it;
+   * `delete` removes it.
+   */
+  mode: z.enum(['replace', 'append', 'prepend', 'delete']).default('replace'),
   expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
 });
 export type DocumentBlockWriteRequest = z.infer<typeof documentBlockWriteRequestSchema>;

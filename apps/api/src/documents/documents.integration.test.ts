@@ -2673,6 +2673,119 @@ describe('editing part of a page', () => {
     expect(error).toMatchObject({ code: 'document_content_conflict' });
   });
 
+  /** The canonical state, not the derived Markdown: what the editor will open. */
+  async function storedTopTypes(documentId: string): Promise<string[]> {
+    const content = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    const document = yjsStateToProseMirrorJson(content.yjsState);
+    return (document.content ?? []).map((node) => node.type);
+  }
+
+  async function storedTopIds(documentId: string): Promise<string[]> {
+    const content = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    const document = yjsStateToProseMirrorJson(content.yjsState);
+    return (document.content ?? []).map((node) => node.attrs?.blockId as string);
+  }
+
+  it('adds list items to the addressed list instead of a second list (issue #247)', async () => {
+    const { documentId } = await seed('Davor.\n\n- eins\n- zwei\n\nDazwischen.\n\n- andere');
+    const listId = (await storedTopIds(documentId))[1] as string;
+
+    const result = await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: { blockId: listId, markdown: '- drei', mode: 'append' },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(await storedTopTypes(documentId)).toEqual([
+      'paragraph',
+      'bulletList',
+      'paragraph',
+      'bulletList',
+    ]);
+    expect(await markdownOf(documentId)).toContain('- eins\n- zwei\n- drei');
+    expect(result.snapshotId).toBeTruthy();
+    expect(result.blockIds).toHaveLength(1);
+  });
+
+  it('deletes a block without leaving an empty shell, and a list with its last item (issue #247)', async () => {
+    const { documentId } = await seed('Erster.\n\nWeg damit.\n\n- einzig\n\nLetzter.');
+    const paragraph = (await storedTopIds(documentId))[1] as string;
+
+    await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: { blockId: paragraph, mode: 'delete' },
+      correlationId,
+      source: 'api',
+    });
+    expect(await storedTopTypes(documentId)).toEqual(['paragraph', 'bulletList', 'paragraph']);
+
+    // The list's only item, by `replace` with nothing: the same deletion.
+    const content = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    const listNode = yjsStateToProseMirrorJson(content.yjsState).content?.[1];
+    const itemId = listNode?.content?.[0]?.attrs?.blockId as string;
+    await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: {
+        blockId: itemId,
+        markdown: '',
+        mode: 'replace',
+        expectedYjsUpdatedAt: content.yjsUpdatedAt.toISOString(),
+      },
+      correlationId,
+      source: 'api',
+    });
+    expect(await storedTopTypes(documentId)).toEqual(['paragraph', 'paragraph']);
+    expect((await markdownOf(documentId)).trim()).toBe('Erster.\n\nLetzter.');
+  });
+
+  it('refuses a stale revision on a deletion and keeps the block (issue #247)', async () => {
+    const { documentId } = await seed('Bleibt.\n\nAuch.');
+    const blockIds = await storedTopIds(documentId);
+    const error = await editService
+      .writeBlock({
+        documentId,
+        userId: ownerId,
+        request: {
+          blockId: blockIds[0] as string,
+          mode: 'delete',
+          expectedYjsUpdatedAt: new Date(0).toISOString(),
+        },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_content_conflict' });
+    expect(await markdownOf(documentId)).toContain('Bleibt.');
+  });
+
+  it('refuses Markdown on a deletion and an empty insertion (issue #247)', async () => {
+    const { documentId } = await seed('Absatz.');
+    const blockIds = await storedTopIds(documentId);
+    const attempt = (request: Parameters<typeof editService.writeBlock>[0]['request']) =>
+      editService
+        .writeBlock({ documentId, userId: ownerId, request, correlationId, source: 'api' })
+        .then(() => null)
+        .catch((caught: unknown) => caught);
+
+    const blockId = blockIds[0] as string;
+    expect(await attempt({ blockId, mode: 'delete', markdown: 'Text' })).toMatchObject({
+      code: 'validation_failed',
+    });
+    expect(await attempt({ blockId, mode: 'append', markdown: '  ' })).toMatchObject({
+      code: 'validation_failed',
+    });
+    expect(await attempt({ blockId, mode: 'append' })).toMatchObject({
+      code: 'validation_failed',
+    });
+    expect(await markdownOf(documentId)).toContain('Absatz.');
+  });
+
   it("warns about an image on somebody else's host (issue #117)", async () => {
     const { documentId, blockIds } = await seed('Absatz.');
 

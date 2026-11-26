@@ -70,15 +70,36 @@ interface PreparedWrite {
   markdown: string;
 }
 
+/** A fragment without blocks: the range goes and nothing takes its place. */
+const EMPTY_FRAGMENT: ProseMirrorDocument = { type: 'doc', content: [] };
+
+/** Markdown that says nothing: what a deletion is spelled as (issue #247). */
+function isBlank(markdown: string): boolean {
+  return markdown.trim().length === 0;
+}
+
 /** A block write as the one ranged edit it is. */
 function blockEdit(request: DocumentBlockWriteRequest): PatchEdit {
+  const markdown = request.markdown;
+  if (request.mode === 'delete') {
+    if (markdown !== undefined && !isBlank(markdown)) {
+      throw AppError.validation('mode "delete" takes no Markdown; use "replace" to swap the block');
+    }
+  } else if (markdown === undefined) {
+    throw AppError.validation(`mode "${request.mode}" needs Markdown`);
+  }
+  const placements = {
+    replace: 'replace',
+    delete: 'replace',
+    append: 'after',
+    prepend: 'before',
+  } as const;
   const edit: BlockRangeEdit = {
     fromBlockId: request.blockId,
     toBlockId: null,
-    placement:
-      request.mode === 'replace' ? 'replace' : request.mode === 'append' ? 'after' : 'before',
+    placement: placements[request.mode],
   };
-  return { edit, markdown: request.markdown, replacements: 1 };
+  return { edit, markdown: request.mode === 'delete' ? '' : (markdown ?? ''), replacements: 1 };
 }
 
 /** A section write, resolved against the page by its heading. */
@@ -288,7 +309,19 @@ export class DocumentEditService {
     const blockIds: string[] = [];
 
     for (const step of edits) {
-      const content = this.parse(step.markdown, (title) => identities.identityFor(title), input);
+      /*
+       * Empty Markdown is a deletion (issue #247). Parsed, it would be a
+       * document of one empty paragraph, and that paragraph used to take the
+       * block's place: a shell of no characters that the next empty write
+       * replaced with another shell. As a document without blocks it is what
+       * `applyBlockRangeEditToYDoc` already treats as "remove the range".
+       */
+      if (isBlank(step.markdown) && step.edit.placement !== 'replace') {
+        throw AppError.validation('The Markdown is empty, so there is nothing to insert here');
+      }
+      const content = isBlank(step.markdown)
+        ? EMPTY_FRAGMENT
+        : this.parse(step.markdown, (title) => identities.identityFor(title), input);
       warnings.push(...foreignMediaWarnings(content, this.env.APP_URL));
       try {
         applied = applyBlockRangeEditToState(state, content, step.edit);
@@ -491,9 +524,18 @@ export class DocumentEditService {
   /** A `BlockRangeError` in the API's vocabulary; anything else stays what it is. */
   private refusal(error: unknown): unknown {
     if (error instanceof BlockRangeError) {
-      return error.reason === 'block_not_found'
-        ? new AppError('document_block_not_found', error.message, { blockId: error.blockId })
-        : new AppError('document_block_range_invalid', error.message, { blockId: error.blockId });
+      const details = { blockId: error.blockId, reason: error.reason };
+      switch (error.reason) {
+        case 'block_not_found':
+          return new AppError('document_block_not_found', error.message, details);
+        case 'block_range_not_siblings':
+        case 'block_range_inverted':
+          return new AppError('document_block_range_invalid', error.message, details);
+        default:
+          // A list refusal (issue #247): the content does not fit there, which
+          // is what a validation failure says; the reason names which rule.
+          return AppError.validation(error.message, details);
+      }
     }
     // The schema refused the result, which for a ranged edit means the content
     // is not allowed where it was placed: a heading inside a list item, say.
