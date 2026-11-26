@@ -48,6 +48,13 @@ export interface ChatCommandContext {
   settings: SettingsService;
   conversation: ChatCommandConversation;
   command: ParsedChatCommand;
+  /**
+   * The title of the page the conversation is bound to, as the caller may see
+   * it, or `null`. Resolved by the service through the same check a message
+   * goes through, so a page shared from another workspace (issue #234) is
+   * reported like any other and a withdrawn one is not.
+   */
+  openPageTitle: string | null;
 }
 
 type ChatCommandHandler = (context: ChatCommandContext) => Promise<ChatCommandResult>;
@@ -211,17 +218,10 @@ const pageContext: ChatCommandHandler = async (context) => {
   // Reported from `documentId`, which keeps tracking the page even while
   // the context is off -- that is what makes `/context on` meaningful
   // without having to navigate somewhere first.
-  const page =
-    conversation.documentId === null
-      ? null
-      : await prisma.document.findFirst({
-          where: { id: conversation.documentId, workspaceId: conversation.workspaceId },
-          select: { title: true },
-        });
-
-  const where = page === null ? t('context.noPage') : t('context.openPage', { title: page.title });
+  const title = context.openPageTitle;
+  const where = title === null ? t('context.noPage') : t('context.openPage', { title });
   const what = enabled
-    ? page === null
+    ? title === null
       ? t('context.enabledNoPage')
       : t('context.enabled')
     : t('context.disabled');

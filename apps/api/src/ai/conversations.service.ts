@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { estimateMessageTokens } from '@exocortex/ai';
-import { assertPolicy, canReadWorkspace, WorkspaceAccessService } from '@exocortex/auth';
+import {
+  assertPolicy,
+  canReadWorkspace,
+  mayBeConversationPage,
+  WorkspaceAccessService,
+} from '@exocortex/auth';
 import {
   type AiConversation,
   type AiConversationDetailResponse,
@@ -174,7 +179,10 @@ export class ConversationsService {
 
     if (input.request.documentId !== null) {
       const context = await this.access.findDocumentContext(input.request.documentId, input.userId);
-      if (context === null || context.workspaceId !== input.request.workspaceId) {
+      // A page shared with the caller may stand in a conversation of their
+      // own workspace (issue #234); a page of a workspace they merely belong
+      // to may not, because that workspace is where its conversation lives.
+      if (context === null || !mayBeConversationPage(context, input.request.workspaceId)) {
         throw new AppError('document_access_denied', 'The referenced document is not accessible');
       }
     }
@@ -284,6 +292,11 @@ export class ConversationsService {
    * The check itself is not decoration: since the worker puts the page's title
    * and path into the system prompt, an unchecked id would hand a caller the
    * title of any document by guessing its id.
+   *
+   * A page shared with the caller from another workspace passes too (issue
+   * #234): the run stays in the conversation's workspace and pays from it,
+   * and the worker checks the grant again before it names the page, because a
+   * grant can be withdrawn between this request and the run.
    */
   private async resolvePageContext(input: {
     conversation: ConversationRow;
@@ -295,7 +308,7 @@ export class ConversationsService {
     if (documentId === null) return { documentId: null, documentTitle: null };
 
     const context = await this.access.findDocumentContext(documentId, userId);
-    if (context !== null && context.workspaceId === conversation.workspaceId) {
+    if (context !== null && mayBeConversationPage(context, conversation.workspaceId)) {
       return { documentId, documentTitle: context.document.title };
     }
 
@@ -517,6 +530,13 @@ export class ConversationsService {
     // language (ADR-062). It is not stored: the panel shows it and forgets it.
     const locale = await readerLocale(this.prisma, input.userId, input.headers);
 
+    // Only `/context` reads it, but it costs one lookup and keeps the answer
+    // on the same check a message goes through (issue #234).
+    const { documentTitle: openPageTitle } = await this.resolvePageContext({
+      conversation,
+      requested: undefined,
+      userId: input.userId,
+    });
     const result = await runChatCommand({
       prisma: this.prisma,
       t: serverTranslator(locale, 'commands'),
@@ -524,6 +544,7 @@ export class ConversationsService {
       settings: this.settings,
       conversation,
       command,
+      openPageTitle,
     });
     return { run: null, command: result, userMessage: null };
   }

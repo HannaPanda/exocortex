@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   chainCovers,
   isRestricted,
+  mayBeConversationPage,
   type PageScopeRestriction,
   restrictionAllows,
   roleForSharePermission,
@@ -151,5 +152,31 @@ describe('isRestricted', () => {
     expect(isRestricted(null)).toBe(false);
     expect(isRestricted({ tokenId: 't', declared: false, scopes: [] })).toBe(false);
     expect(isRestricted({ tokenId: 't', declared: true, scopes: [] })).toBe(true);
+  });
+});
+
+describe('mayBeConversationPage', () => {
+  const share = {
+    source: 'share',
+    shareId: 'share-1',
+    rootId: 'page',
+    scope: 'PAGE_ONLY',
+    permission: 'READ',
+  } as const;
+
+  it("lets a page of the conversation's own workspace through", () => {
+    expect(
+      mayBeConversationPage({ workspaceId: 'mine', grant: { source: 'membership' } }, 'mine'),
+    ).toBe(true);
+  });
+
+  it('lets a page of another workspace through when a share reached it', () => {
+    expect(mayBeConversationPage({ workspaceId: 'theirs', grant: share }, 'mine')).toBe(true);
+  });
+
+  it('refuses a page of another workspace reached through a membership there', () => {
+    expect(
+      mayBeConversationPage({ workspaceId: 'theirs', grant: { source: 'membership' } }, 'mine'),
+    ).toBe(false);
   });
 });

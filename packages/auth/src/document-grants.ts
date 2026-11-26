@@ -129,3 +129,24 @@ export function restrictionAllows(
 export function isRestricted(restriction: PageScopeRestriction | null): boolean {
   return restriction !== null && restriction.declared;
 }
+
+/**
+ * Whether a page may be the open page of a conversation that lives in
+ * `conversationWorkspaceId` (issue #234).
+ *
+ * A page of the conversation's own workspace always may. A page of another
+ * workspace only when the caller reached it through a share: the chat then
+ * runs in the reader's own workspace, on its key and its budget, and the page
+ * is the context the reader was handed -- reachable by every tool call
+ * exactly as far as the grant reaches, because each of those calls is
+ * authorized as the reader again. A membership in the other workspace is
+ * deliberately not enough: a member talks about the page in its own
+ * workspace, and a run that mixed two workspaces' rules, keys and budgets
+ * would answer to neither.
+ */
+export function mayBeConversationPage(
+  context: { readonly workspaceId: string; readonly grant: DocumentGrant },
+  conversationWorkspaceId: string,
+): boolean {
+  return context.workspaceId === conversationWorkspaceId || context.grant.source === 'share';
+}
