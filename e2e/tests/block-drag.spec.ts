@@ -123,6 +123,8 @@ test.describe('moving blocks', () => {
     await page.mouse.move(handle.x, zwei.y + zwei.height - 4, { steps: 10 });
     const line = page.getByTestId('block-drop-line');
     await expect(line).toBeVisible();
+    // The row it will follow is tinted.
+    await expect(page.locator('.exocortex-editor .exocortex-drop-anchor')).toHaveText('Zwei');
     const sameLevel = await line.boundingBox();
     // One indentation to the right: a sub-item of "Zwei", and the line says so.
     await page.mouse.move(handle.x + 28, zwei.y + zwei.height - 4, { steps: 6 });
