@@ -20,6 +20,7 @@ import { type ObjectStorage } from '@exocortex/storage';
 import { AI_KEY_UNREADABLE, type ResolvedAiKey, WorkspaceKeyUnreadableError } from '../ai-key';
 import { compactIfNeeded } from '../compaction';
 import { type ExternalToolLoader } from '../external-mcp-tools';
+import { resolveOpenPageReach } from '../open-page';
 import { type ToolImageDescriber } from '../tool-images';
 import { type ToolRunnerFactory } from '../tool-runner';
 
@@ -311,11 +312,20 @@ async function prepareRunVision(input: {
   if (run.documentId === null || visionPreprocessor === null) {
     return { imageContext: null, describeImage };
   }
+  // A page shared from another workspace keeps its pictures there, and is
+  // looked at only while the grant still holds (issue #234).
+  const reach = await resolveOpenPageReach({
+    prisma: dependencies.prisma,
+    runWorkspaceId: run.workspaceId,
+    documentId: run.documentId,
+    userId: run.createdById,
+  });
+  if (reach === null) return { imageContext: null, describeImage };
   const imageContext = await describeDocumentImages({
     prisma: dependencies.prisma,
     storage: dependencies.storage,
     visionPreprocessor,
-    workspaceId: run.workspaceId,
+    workspaceId: reach.workspaceId,
     documentId: run.documentId,
     correlationId: input.correlationId,
     logger,

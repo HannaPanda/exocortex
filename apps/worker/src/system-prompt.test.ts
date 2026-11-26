@@ -124,6 +124,35 @@ describe('formatOpenPageSection', () => {
     expect(section).toContain('Titel: Unbenannte Seite');
     expect(section).toContain('Pfad: Unbenannte Seite');
   });
+
+  it("says nothing about a share for a page of the run's own workspace", () => {
+    const section = formatOpenPageSection(page, { toolsAvailable: true });
+
+    expect(section).not.toContain('geteilt');
+  });
+
+  it('tells the model a READ share of one page is that page, read-only (issue #234)', () => {
+    const section = formatOpenPageSection(
+      { ...page, ancestorTitles: [], share: { scope: 'PAGE_ONLY', permission: 'READ' } },
+      { toolsAvailable: true },
+    );
+
+    expect(section).toContain('jemand hat sie mit der Nutzerin geteilt');
+    expect(section).toContain('nur diese eine Seite');
+    expect(section).toContain('ändern kannst du diese Seite nicht');
+    expect(section).toContain('keine\nSuche, keinen Seitenbaum');
+  });
+
+  it('tells the model a WRITE share of a branch reaches the pages below', () => {
+    const section = formatOpenPageSection(
+      { ...page, share: { scope: 'SUBTREE', permission: 'WRITE' } },
+      { toolsAvailable: true },
+    );
+
+    expect(section).toContain('diese Seite und die Seiten darunter');
+    expect(section).toContain('lesen und bearbeiten');
+    expect(section).not.toContain('ändern kannst du diese Seite nicht');
+  });
 });
 
 /**

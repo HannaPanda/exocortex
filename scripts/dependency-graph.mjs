@@ -115,7 +115,9 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/storage',
     '@exocortex/ai',
     '@exocortex/editor',
-    // Only to mint the short-lived service tokens the API accepts (D3).
+    // To mint the short-lived service tokens the API accepts (D3), and to ask
+    // whether a page shared from another workspace still reaches a run's
+    // person before the prompt names it (issue #234).
     '@exocortex/auth',
     '@exocortex/mcp-tools',
     // Talks CalDAV to mailbox.org; the mapping onto database rows lives here,

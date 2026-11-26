@@ -199,6 +199,7 @@ export async function buildRunMessages(input: {
     basePrompt: settings['ai.systemPrompt'],
     maxRuleChars: MAX_RULE_CHARS,
     documentId: run.documentId,
+    userId: run.createdById,
     databaseViewId: run.databaseViewId,
     conversationId: run.conversationId,
     pinnedContextMaxChars: settings['ai.pinnedContextMaxChars'],

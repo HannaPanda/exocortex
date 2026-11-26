@@ -15,6 +15,10 @@ import {
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
+import { loadOpenPage, type OpenPage, resolveOpenPageReach, sharedPageLines } from './open-page';
+
+export type { OpenPage } from './open-page';
+
 export interface BuildSystemPromptInput {
   prisma: PrismaClient;
   workspaceId: string;
@@ -23,6 +27,11 @@ export interface BuildSystemPromptInput {
   maxRuleChars: number;
   /** The page the user has open, or `null` when the run has no page context. */
   documentId: string | null;
+  /**
+   * The run's person. A page of another workspace is named only while this
+   * account still holds a share on it (issue #234).
+   */
+  userId: string;
   /** The open view when `documentId` is a collection. `null` falls back to the first one. */
   databaseViewId: string | null;
   /**
@@ -91,9 +100,6 @@ const PINNED_KIND: Record<ConversationSourceRef['kind'], AiRunContextSource['kin
   SAVED_QUERY: 'saved_query',
 };
 
-/** How far up the tree the breadcrumb of the open page is resolved. Deeper ancestors are elided. */
-const MAX_PATH_DEPTH = 8;
-
 /**
  * Tells the model exactly what the chat can display, and nothing more
  * (issue #21). This lists precisely the node/mark vocabulary
@@ -124,17 +130,6 @@ const DOCUMENT_TYPE_LABEL: Record<DocumentType, string> = {
   COLLECTION: 'Sammlung (Datenbank)',
   PROJECT: 'Projekt (Dateibaum, z. B. LaTeX)',
 };
-
-export interface OpenPage {
-  id: string;
-  title: string;
-  type: DocumentType;
-  archived: boolean;
-  /** Ancestor titles from the root down to (and excluding) the page itself. Possibly elided at the front. */
-  ancestorTitles: readonly string[];
-  /** `true` when the breadcrumb was cut off at `MAX_PATH_DEPTH`. */
-  pathElided: boolean;
-}
 
 /** Keeps an untitled page from turning into an empty line the model has to guess about. */
 function displayTitle(title: string): string {
@@ -193,6 +188,8 @@ export function formatOpenPageSection(page: OpenPage, options: OpenPageSectionOp
     `Typ: ${DOCUMENT_TYPE_LABEL[page.type]}${page.archived ? ' (archiviert)' : ''}`,
     '',
   ];
+  const share = page.share ?? null;
+  if (share !== null) lines.push(...sharedPageLines(share), '');
 
   // A collection is a shape, not a text: its columns and the open view's
   // filters say more than any amount of prose, and reading the page's body
@@ -407,54 +404,6 @@ async function loadPinnedSourcesSection(input: {
   return { section, count: rendered.sources.length, chars: rendered.budget.usedChars, sources };
 }
 
-/**
- * Loads the open page and its breadcrumb.
- *
- * Scoped to the run's workspace on purpose: a run may carry a `documentId` from
- * an older turn or from a client that guessed one, and a title from a workspace
- * the run has nothing to do with must never reach the prompt.
- */
-async function loadOpenPage(input: {
-  prisma: PrismaClient;
-  workspaceId: string;
-  documentId: string;
-}): Promise<OpenPage | null> {
-  const { prisma, workspaceId, documentId } = input;
-
-  const document = await prisma.document.findFirst({
-    where: { id: documentId, workspaceId },
-    select: { id: true, title: true, type: true, parentId: true, archivedAt: true },
-  });
-  if (document === null) return null;
-
-  const ancestorTitles: string[] = [];
-  let parentId = document.parentId;
-  let pathElided = false;
-  for (let depth = 0; parentId !== null; depth += 1) {
-    if (depth >= MAX_PATH_DEPTH) {
-      pathElided = true;
-      break;
-    }
-    const parent: { title: string; parentId: string | null } | null =
-      await prisma.document.findFirst({
-        where: { id: parentId, workspaceId },
-        select: { title: true, parentId: true },
-      });
-    if (parent === null) break;
-    ancestorTitles.unshift(parent.title);
-    parentId = parent.parentId;
-  }
-
-  return {
-    id: document.id,
-    title: document.title,
-    type: document.type,
-    archived: document.archivedAt !== null,
-    ancestorTitles,
-    pathElided,
-  };
-}
-
 /** A part of the prompt built from nothing but its own text. */
 function plainSection(key: AiRunContextSectionKey, text: string): PromptSection {
   return { key, text, items: null, truncated: false, sources: [] };
@@ -530,24 +479,42 @@ async function buildOpenPageSection(input: {
   prisma: PrismaClient;
   workspaceId: string;
   documentId: string;
+  userId: string;
   databaseViewId: string | null;
   toolsAvailable: boolean;
   includePageContent: boolean;
   pageContentMaxChars: number;
   logger: Logger;
 }): Promise<PromptSection | null> {
-  const { prisma, workspaceId, documentId, databaseViewId, logger } = input;
-  const openPage = await loadOpenPage({ prisma, workspaceId, documentId });
-  if (openPage === null) {
+  const { prisma, workspaceId: runWorkspaceId, documentId, databaseViewId, logger } = input;
+  const reach = await resolveOpenPageReach({
+    prisma,
+    runWorkspaceId,
+    documentId,
+    userId: input.userId,
+  });
+  const openPage =
+    reach === null
+      ? null
+      : await loadOpenPage({
+          prisma,
+          workspaceId: reach.workspaceId,
+          documentId,
+          share: reach.share,
+        });
+  if (reach === null || openPage === null) {
     logger.info(
-      'Run carries a documentId that is not in its workspace; omitting the page context',
+      'Run carries a documentId it cannot name (another workspace and no live share); omitting the page context',
       {
         documentId,
-        workspaceId,
+        workspaceId: runWorkspaceId,
       },
     );
     return null;
   }
+  // The collection lives where the page lives, which for a shared page is
+  // not the run's workspace.
+  const workspaceId = reach.workspaceId;
   // A collection's own body is empty by construction (its rows are separate
   // documents), so the content switch does not apply to one: the view
   // description above is already the richer answer.
@@ -560,8 +527,12 @@ async function buildOpenPageSection(input: {
         })
       : null;
 
+  // A collection's rows are pages below it, so a grant on the collection
+  // alone does not cover them (ADR-044): its description, which shows rows,
+  // needs the grant to reach the branch.
+  const mayDescribeRows = reach.share === null || reach.share.scope === 'SUBTREE';
   const collectionDescription =
-    openPage.type === 'COLLECTION'
+    openPage.type === 'COLLECTION' && mayDescribeRows
       ? await describeCollection({
           prisma,
           workspaceId,
@@ -623,6 +594,7 @@ export async function buildSystemPrompt(
     basePrompt,
     maxRuleChars,
     documentId,
+    userId,
     databaseViewId,
     conversationId,
     pinnedContextMaxChars,
@@ -703,6 +675,7 @@ export async function buildSystemPrompt(
           prisma,
           workspaceId,
           documentId,
+          userId,
           databaseViewId,
           toolsAvailable,
           includePageContent,
