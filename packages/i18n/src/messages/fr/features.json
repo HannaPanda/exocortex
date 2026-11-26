@@ -677,7 +677,7 @@
     "title": "Discuter avec un modèle au sujet de tes pages",
     "summary": "Le chat s’exécute à côté de la page et connaît le titre ainsi que le chemin de la page ouverte. Le modèle qui répond est défini dans la gestion des modèles ; si aucun fournisseur n’est configuré, un modèle fictif local répond afin de ne rien bloquer.",
     "details": {
-      "p1": "Le chat est une page à part entière ainsi qu’un panneau à côté de l’éditeur. Il sait sur quelle page tu te trouves, titre et chemin compris ; il ne reçoit le texte de la page que si cette option est expressément activée ou si tu lui transmets un passage sélectionné.",
+      "p1": "Le chat est à la fois une page dédiée et un volet situé à côté de l’éditeur. Il sait sur quelle page tu te trouves actuellement (titre et chemin d’accès compris) ; il ne reçoit le texte de la page que si cette option est expressément activée ou si tu lui transmets un passage sélectionné. Sans page ouverte, tu peux démarrer un chat dans le champ de saisie sur la page d’accueil de l’espace de travail.",
       "p2": "Le modèle qui répond est défini dans l’administration des modèles et peut être remplacé pour chaque espace de travail. Une invite système pour l’ensemble de l’installation détermine la façon dont il répond ; pour des consignes de contenu permanentes, il vaut mieux rédiger une page de règles, car tout le monde peut la lire et la modifier.",
       "p3": "Si aucun fournisseur n’est configuré, un modèle fictif intégré répond avec un texte visiblement inventé. C’est délibéré : aucune fonction de cette installation ne doit dépendre de la disponibilité d’un service tiers, et les tests s’exécutent sans clé."
     },
@@ -711,6 +711,16 @@
       "p3": "Les agents lisent et définissent ce paramètre via exo_me_preferences et exo_me_preferences_set, sous la clé chatScroll avec les valeurs follow et answerStart."
     },
     "where": "Paramètres, Chat IA. Également dans le menu de la zone IA et dans la palette de commandes."
+  },
+  "chat-ohne-seite": {
+    "title": "Interroger l’IA sans ouvrir de page",
+    "summary": "Sur la page d’accueil de chaque espace de travail, un champ de saisie se trouve au-dessus de « Reprendre ». Ce que tu y écris lance un nouveau chat sans lien avec une page, et le chat occupe tout l’écran. À côté d’une page, un bouton te permet de replier au choix la page ou le chat.",
+    "details": {
+      "p1": "Saisis ta question dans le champ sur la page d’accueil et appuie sur Entrée. Un nouveau chat sans lien avec une page se crée et s’ouvre en plein écran, sur mobile comme sur ordinateur. Les commandes comme /help y fonctionnent également.",
+      "p2": "En haut du volet IA, à côté de « Nouveau chat », se trouve un bouton avec deux flèches. Il donne tout l’espace au chat et replie la page attenante ; ce même bouton repositionne le chat à côté de la page. La page reste intacte, y compris pendant la saisie. Tu peux replier le chat lui-même comme d’habitude avec Strg + . ou à l’aide du bouton en haut à droite.",
+      "p3": "Le chat grand format n’est pas un état permanent : si tu passes à une autre page ou si tu fermes le volet IA, la page revient au premier plan. Via Strg + K, tu trouveras ces deux actions sous forme de commandes : « Démarrer un nouveau chat » et « Afficher le chat IA en plein écran »."
+    },
+    "where": "Le champ de saisie sur la page d’accueil de chaque espace de travail, et le bouton avec deux flèches en haut du volet IA."
   },
   "chat-je-tab": {
     "title": "Travailler dans plusieurs onglets avec différents chats",

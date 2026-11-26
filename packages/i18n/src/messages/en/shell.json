@@ -163,6 +163,9 @@
     "trashKeywords": "deleted archive restore trash",
     "newChat": "Start new chat",
     "newChatKeywords": "chat conversation ai assistant question new",
+    "chatExpand": "Show AI chat full screen",
+    "chatCollapse": "Minimize AI chat",
+    "chatExpandKeywords": "ai chat full screen fullscreen maximize page collapse minimize alongside",
     "chatScroll": {
       "stayAtAnswerStart": "AI Chat: Stay at start of answer",
       "follow": "AI Chat: Follow response as it generates",

@@ -33,6 +33,7 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { ChatStarter } from '@/components/ai/chat-starter';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
@@ -322,6 +323,10 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
           </Button>
         </div>
       </header>
+
+      {/* Above "Weitermachen": asking something is as much a way into the
+          workspace as going back to a page (issue #288). */}
+      <ChatStarter workspaceId={workspaceId} />
 
       {data === undefined ? (
         <div className="flex flex-col gap-3" role="status" aria-label={t('loading')}>

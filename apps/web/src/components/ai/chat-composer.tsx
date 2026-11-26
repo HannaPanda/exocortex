@@ -12,13 +12,40 @@ import { CommandHint } from './command-hint';
 export interface ChatComposerProps {
   disabled: boolean;
   onSubmit: (content: string) => Promise<void> | void;
+  /**
+   * `panel` is the box at the foot of the AI panel. `start` is the one-line
+   * field on a workspace's start page that begins a new chat (issue #288): the
+   * same keys and the same command hints, its own id, so both can be on screen
+   * at once.
+   */
+  variant?: 'panel' | 'start';
 }
+
+const VARIANTS = {
+  panel: {
+    inputId: 'ai-composer-input',
+    inputTestId: 'ai-input',
+    sendTestId: 'ai-send',
+    rows: 2,
+    wrapper: 'relative p-2',
+    textarea: 'min-h-[3.25rem] resize-none',
+  },
+  start: {
+    inputId: 'chat-start-input',
+    inputTestId: 'chat-start-input',
+    sendTestId: 'chat-start-send',
+    rows: 1,
+    wrapper: 'relative',
+    textarea: 'max-h-40 min-h-9 resize-none',
+  },
+} as const;
 
 /** Matches a still-being-typed command word: a leading slash, no whitespace yet. */
 const COMMAND_PREFIX_PATTERN = /^\/([a-z]*)$/i;
 
-export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
+export function ChatComposer({ disabled, onSubmit, variant = 'panel' }: ChatComposerProps) {
   const t = useTranslations('ai.composer');
+  const look = VARIANTS[variant];
   const [value, setValue] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const [hintIndex, setHintIndex] = React.useState(0);
@@ -64,9 +91,9 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
   return (
     // The top border lives on the wrapper in `ai-panel`, so the context chips
     // above sit inside the same bordered block instead of behind a second rule.
-    <div className="relative p-2">
-      <label htmlFor="ai-composer-input" className="sr-only">
-        {t('label')}
+    <div className={look.wrapper}>
+      <label htmlFor={look.inputId} className="sr-only">
+        {variant === 'start' ? t('startLabel') : t('label')}
       </label>
 
       {matches.length > 0 ? (
@@ -75,11 +102,11 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
 
       <div className="flex items-end gap-2">
         <Textarea
-          id="ai-composer-input"
-          rows={2}
+          id={look.inputId}
+          rows={look.rows}
           value={value}
-          placeholder={t('placeholder')}
-          data-testid="ai-input"
+          placeholder={variant === 'start' ? t('startPlaceholder') : t('placeholder')}
+          data-testid={look.inputTestId}
           disabled={disabled || sending}
           onChange={(event) => setValue(event.target.value)}
           ref={textareaRef}
@@ -113,12 +140,12 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
               void submit();
             }
           }}
-          className="min-h-[3.25rem] resize-none"
+          className={look.textarea}
         />
         <Button
           size="icon"
           aria-label={t('send')}
-          data-testid="ai-send"
+          data-testid={look.sendTestId}
           disabled={disabled || sending || value.trim().length === 0}
           onClick={() => void submit()}
         >

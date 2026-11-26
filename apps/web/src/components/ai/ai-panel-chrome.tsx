@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontalIcon, PlusIcon } from 'lucide-react';
+import { Maximize2Icon, Minimize2Icon, MoreHorizontalIcon, PlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -14,6 +14,7 @@ import {
 } from '@exocortex/contracts';
 import {
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -38,11 +39,15 @@ import { ModelPicker } from './model-picker';
  */
 
 /**
- * Which conversation is open, the one button that starts another, and the
- * panel's menu: whether the transcript follows an answer or stays at its
- * start (issue #282), the reader's own choice on every device.
+ * Which conversation is open, the one button that starts another, the one
+ * that gives the chat the screen (issue #288), and the panel's menu: whether
+ * the transcript follows an answer or stays at its start (issue #282), the
+ * reader's own choice on every device.
  */
 export function AiPanelHeader({
+  expanded,
+  onExpandedChange,
+  inset,
   workspaceId,
   activeConversationId,
   onSelect,
@@ -50,6 +55,10 @@ export function AiPanelHeader({
   chatScroll,
   onChatScrollChange,
 }: {
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+  /** Leaves room for the close button a phone's sheet draws in the corner. */
+  inset: boolean;
   workspaceId: string;
   activeConversationId: string | null;
   onSelect: (conversationId: string | null) => void;
@@ -59,7 +68,12 @@ export function AiPanelHeader({
 }) {
   const t = useTranslations('ai.panel');
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5">
+    <div
+      className={cn(
+        'flex items-center justify-between gap-2 border-b border-border px-2 py-1.5',
+        inset && 'pr-10',
+      )}
+    >
       <ConversationSwitcher
         workspaceId={workspaceId}
         activeConversationId={activeConversationId}
@@ -81,6 +95,22 @@ export function AiPanelHeader({
             }
           />
           <TooltipContent>{t('newChat')}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={expanded ? t('collapse') : t('expand')}
+                data-testid="ai-expand"
+                onClick={() => onExpandedChange(!expanded)}
+              >
+                {expanded ? <Minimize2Icon /> : <Maximize2Icon />}
+              </Button>
+            }
+          />
+          <TooltipContent>{expanded ? t('collapse') : t('expand')}</TooltipContent>
         </Tooltip>
         <DropdownMenu>
           <Tooltip>

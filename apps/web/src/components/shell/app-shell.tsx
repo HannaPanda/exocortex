@@ -19,6 +19,7 @@ import {
 } from '@exocortex/ui';
 
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
+import { ChatStartProvider } from '@/components/ai/chat-start';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { LocaleSync } from '@/components/locale-sync';
 import { PaletteContributionsProvider } from '@/components/palette/contributions';
@@ -34,7 +35,7 @@ import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider'
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
-import { ContextPanel, type ContextTab } from './context-panel';
+import { ContextPanel, type ContextPanelProps, type ContextTab } from './context-panel';
 import { useDelegatedWorkRealtime } from './delegated-work-realtime';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
@@ -49,6 +50,7 @@ import {
 } from './panel-preferences';
 import { Topbar } from './topbar';
 import { TrashSheet } from './trash-sheet';
+import { useChatScreen } from './use-chat-screen';
 
 /** How long realtime tree events are gathered before the tree is read again. */
 const TREE_REFRESH_GATHER_MS = 1000;
@@ -137,6 +139,14 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     (open: boolean) => setContext({ ...context, open }),
     [context, setContext],
   );
+  const chatScreen = useChatScreen({
+    pathname,
+    contextOpen,
+    openContext: () => setContextOpen(true),
+    showAssistant: () => setContextTab('ai'),
+  });
+  const chatFillsScreen = chatScreen.fills;
+  const changeChatExpanded = chatScreen.change;
 
   // Handing a selection to the AI is pointless while the panel is closed: the
   // chip that says what will be sent would be invisible. The ref keys on the
@@ -258,6 +268,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           setContextTab(tab);
           if (!contextOpen) setContextOpen(true);
         },
+        chatExpanded: chatFillsScreen,
+        onToggleChatExpanded: () => changeChatExpanded(!chatFillsScreen),
         onNewChat: () => {
           setContextTab('ai');
           if (!contextOpen) setContextOpen(true);
@@ -272,6 +284,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       }),
     [
       askPalette,
+      changeChatExpanded,
+      chatFillsScreen,
       context,
       contextOpen,
       documentId,
@@ -341,110 +355,166 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   }, [contextOpen, setContextOpen, setSidebarOpen, showNavigation, sidebarOpen, workspaceId]);
 
   return (
-    <AppShellFrame>
-      <SkipToContentLink />
-      <LocaleSync />
+    // A question typed on the start page: its chat gets the screen, which on
+    // a phone is the only size a conversation is comfortable at (issue #288).
+    <ChatStartProvider onStart={() => changeChatExpanded(true)}>
+      <AppShellFrame>
+        <SkipToContentLink />
+        <LocaleSync />
 
-      <Topbar
-        workspaceId={workspaceId}
-        hasNavigation={showNavigation}
-        sidebarOpen={sidebarOpen}
-        onSidebarOpenChange={setSidebarOpen}
-        contextOpen={contextOpen}
-        onContextOpenChange={setContextOpen}
-        onOpenSearch={() => setSearchOpen(true)}
-        onOpenCapture={() => setCaptureOpen(true)}
-        onSignOut={() => {
-          void signOut().then(() => router.replace('/anmelden'));
-        }}
-      />
+        <Topbar
+          workspaceId={workspaceId}
+          hasNavigation={showNavigation}
+          sidebarOpen={sidebarOpen}
+          onSidebarOpenChange={setSidebarOpen}
+          contextOpen={contextOpen}
+          onContextOpenChange={setContextOpen}
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCapture={() => setCaptureOpen(true)}
+          onSignOut={() => {
+            void signOut().then(() => router.replace('/anmelden'));
+          }}
+        />
 
-      <AppBody>
-        {showNavigation ? (
-          isMobile ? (
-            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-              <SheetContent side="left" data-testid="sidebar">
-                <SheetTitle className="exocortex-sr-only">{t('navigationTitle')}</SheetTitle>
+        <AppBody>
+          {showNavigation ? (
+            isMobile ? (
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetContent side="left" data-testid="sidebar">
+                  <SheetTitle className="exocortex-sr-only">{t('navigationTitle')}</SheetTitle>
+                  <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
+                    <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            ) : sidebarOpen ? (
+              <ResizablePanel
+                width={sidebar.width}
+                onWidthChange={(width) => setSidebar({ ...sidebar, width })}
+                handle="right"
+                minWidth={200}
+                maxWidth={420}
+                label={t('navigationWidth')}
+                className="border-r border-border bg-surface"
+                data-testid="sidebar"
+              >
                 <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
                   <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
                 </nav>
-              </SheetContent>
-            </Sheet>
-          ) : sidebarOpen ? (
-            <ResizablePanel
-              width={sidebar.width}
-              onWidthChange={(width) => setSidebar({ ...sidebar, width })}
-              handle="right"
-              minWidth={200}
-              maxWidth={420}
-              label={t('navigationWidth')}
-              className="border-r border-border bg-surface"
-              data-testid="sidebar"
-            >
-              <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
-                <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
-              </nav>
-            </ResizablePanel>
-          ) : null
-        ) : null}
+              </ResizablePanel>
+            ) : null
+          ) : null}
 
-        <AppMain>{children}</AppMain>
+          {/* Hidden rather than unmounted while the chat has the screen, so the
+            page comes back as it was left: its editor, its scroll position. */}
+          <AppMain className={chatFillsScreen && !isMobile ? 'hidden' : undefined}>
+            {children}
+          </AppMain>
 
-        {isMobile ? (
-          <Sheet open={contextOpen} onOpenChange={setContextOpen}>
-            <SheetContent side="right" data-testid="context-panel">
-              <SheetTitle className="exocortex-sr-only">{t('contextTitle')}</SheetTitle>
-              <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
-                <ContextPanel
-                  workspaceId={workspaceId}
-                  documentId={documentId}
-                  tab={contextTab}
-                  onTabChange={setContextTab}
-                />
-              </aside>
-            </SheetContent>
-          </Sheet>
-        ) : contextOpen ? (
-          <ResizablePanel
+          <ContextArea
+            mobile={isMobile}
+            open={contextOpen}
+            onOpenChange={setContextOpen}
             width={context.width}
             onWidthChange={(width) => setContext({ ...context, width })}
-            handle="left"
-            minWidth={260}
-            maxWidth={520}
-            label={t('contextWidth')}
-            className={cn('border-l border-border bg-surface')}
-            data-testid="context-panel"
-          >
-            <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
-              <ContextPanel
-                workspaceId={workspaceId}
-                documentId={documentId}
-                tab={contextTab}
-                onTabChange={setContextTab}
-              />
-            </aside>
-          </ResizablePanel>
-        ) : null}
-      </AppBody>
-
-      <SearchCommand
-        workspaceId={workspaceId}
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-        commands={paletteCommands}
-      />
-      {workspaceId === null ? null : (
-        <>
-          <CaptureDialog
-            workspaceId={workspaceId}
-            open={captureOpen}
-            onOpenChange={setCaptureOpen}
+            chatFillsScreen={chatFillsScreen}
+            panel={{
+              workspaceId,
+              documentId,
+              tab: contextTab,
+              onTabChange: setContextTab,
+              chatExpanded: chatFillsScreen,
+              onChatExpandedChange: changeChatExpanded,
+            }}
           />
-          <TrashSheet workspaceId={workspaceId} open={trashOpen} onOpenChange={setTrashOpen} />
-        </>
+        </AppBody>
+
+        <SearchCommand
+          workspaceId={workspaceId}
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          commands={paletteCommands}
+        />
+        {workspaceId === null ? null : (
+          <>
+            <CaptureDialog
+              workspaceId={workspaceId}
+              open={captureOpen}
+              onOpenChange={setCaptureOpen}
+            />
+            <TrashSheet workspaceId={workspaceId} open={trashOpen} onOpenChange={setTrashOpen} />
+          </>
+        )}
+        <JobProgressIndicator />
+      </AppShellFrame>
+    </ChatStartProvider>
+  );
+}
+
+/**
+ * The context panel: a sheet over the page on a phone, a resizable column
+ * beside it otherwise. When the chat has the screen (issue #288) the sheet
+ * goes full width and the column fills the row.
+ */
+function ContextArea({
+  mobile,
+  open,
+  onOpenChange,
+  width,
+  onWidthChange,
+  chatFillsScreen,
+  panel,
+}: {
+  mobile: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  width: number;
+  onWidthChange: (width: number) => void;
+  chatFillsScreen: boolean;
+  panel: Omit<ContextPanelProps, 'closeButtonInset'>;
+}) {
+  const t = useTranslations('shell.appShell');
+  if (mobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="right"
+          data-testid="context-panel"
+          className={chatFillsScreen ? 'w-full max-w-none border-l-0' : undefined}
+        >
+          <SheetTitle className="exocortex-sr-only">{t('contextTitle')}</SheetTitle>
+          <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
+            <ContextPanel {...panel} closeButtonInset />
+          </aside>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+  if (!open) return null;
+  return (
+    <ResizablePanel
+      width={width}
+      onWidthChange={onWidthChange}
+      handle="left"
+      minWidth={260}
+      maxWidth={520}
+      label={t('contextWidth')}
+      // The same element either way, so a chat that takes the screen in the
+      // middle of an answer keeps streaming it. Filling the row, the
+      // remembered width and its handle have nothing to say. Spread only when
+      // it applies: `ResizablePanel` sets its width as `style` before the rest
+      // of the props, and `style={undefined}` would wipe it.
+      {...(chatFillsScreen ? { style: { width: 'auto' } } : {})}
+      className={cn(
+        'border-l border-border bg-surface',
+        chatFillsScreen && 'flex-1 border-l-0 [&>[role=separator]]:hidden',
       )}
-      <JobProgressIndicator />
-    </AppShellFrame>
+      data-testid="context-panel"
+    >
+      <aside aria-label={t('contextTitle')} className="flex min-h-0 flex-1 flex-col">
+        <ContextPanel {...panel} closeButtonInset={false} />
+      </aside>
+    </ResizablePanel>
   );
 }
 

@@ -9,7 +9,9 @@
     "menu": "Chat options",
     "stayAtAnswerStart": "Stay at start of answer",
     "stayAtAnswerStartHint": "Your question moves up once, then the view stays in place and the answer keeps growing downward.",
-    "chatScrollFailed": "Could not save the setting. Try again in a moment."
+    "chatScrollFailed": "Could not save the setting. Try again in a moment.",
+    "expand": "Expand chat to full screen",
+    "collapse": "Collapse chat"
   },
   "transcript": {
     "unavailableTitle": "Chat unavailable",
@@ -38,7 +40,9 @@
     "label": "Message to AI",
     "placeholder": "Ask a question or /help for commands …",
     "send": "Send question",
-    "commandsLabel": "Commands"
+    "commandsLabel": "Commands",
+    "startLabel": "Start a new chat with a question",
+    "startPlaceholder": "Ask the AI something …"
   },
   "commands": {
     "clear": "Clear context, history remains readable",

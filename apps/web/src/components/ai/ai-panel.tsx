@@ -22,6 +22,7 @@ import { usePersistentState } from '@/lib/use-persistent-state';
 import { AiPanelFooter, AiPanelHeader, AiPanelModelBar } from './ai-panel-chrome';
 import { useAiSelection } from './ai-selection';
 import { AiTranscriptArea } from './ai-transcript-area';
+import { useStartedChat } from './chat-start';
 import {
   parseWorkspaceId,
   resolveChatWorkspace,
@@ -68,9 +69,29 @@ function transcriptContentKey(input: {
   ].join('|');
 }
 
+/** How the panel is laid out by the shell around it (issue #288). */
+export interface AiPanelLayout {
+  /** The chat has the screen: the page beside it is folded away. */
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+  /** The phone's sheet draws its close button over the panel's top right corner. */
+  headerInset: boolean;
+}
+
+/**
+ * A line as wide as a desktop screen is unreadable, so a chat that has the
+ * screen keeps the measure it had in the panel, centred (issue #288).
+ */
+function panelFrameClass(expanded: boolean): string {
+  return expanded
+    ? 'mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col'
+    : 'flex min-h-0 flex-1 flex-col';
+}
+
 export interface AiPanelProps {
   workspaceId: string | null;
   documentId: string | null;
+  layout: AiPanelLayout;
 }
 
 /** A shared page's chat, told which of the reader's workspaces it runs in (issue #234). */
@@ -89,7 +110,7 @@ interface SharedChat {
  * shared page is the open page of that conversation. What the assistant may
  * do on it is decided by the API, as the reader, on every call.
  */
-export function AiPanel({ workspaceId: routeWorkspaceId, documentId }: AiPanelProps) {
+export function AiPanel({ workspaceId: routeWorkspaceId, documentId, layout }: AiPanelProps) {
   const t = useTranslations('ai.panel');
   const workspaces = useWorkspaces();
   const openPage = useDocument(documentId ?? undefined);
@@ -115,6 +136,7 @@ export function AiPanel({ workspaceId: routeWorkspaceId, documentId }: AiPanelPr
         key={chat.workspaceId}
         workspaceId={chat.workspaceId}
         documentId={documentId}
+        layout={layout}
         shared={
           chat.kind === 'shared'
             ? { workspaceName: chat.workspaceName, choices: chat.choices, onChoose: remember }
@@ -149,10 +171,12 @@ export function AiPanel({ workspaceId: routeWorkspaceId, documentId }: AiPanelPr
 function AiPanelBody({
   workspaceId,
   documentId,
+  layout,
   shared,
 }: {
   workspaceId: string;
   documentId: string | null;
+  layout: AiPanelLayout;
   shared: SharedChat | null;
 }) {
   // Per tab and per page, never shared between tabs (issue #231).
@@ -291,13 +315,19 @@ function AiPanelBody({
     onError: setError,
   });
 
-  const handleSubmit = async (content: string): Promise<void> => {
-    if (busy) return;
+  /**
+   * Sends `content`, into the open conversation or, with `fresh`, into a new
+   * one. A fresh start does not wait for the open conversation's run: that run
+   * goes on in its own chat, and this one has nothing in flight yet.
+   */
+  const handleSubmit = async (content: string, fresh = false): Promise<void> => {
+    if (busy && !fresh) return;
     setError(null);
     setNotice(null);
     setCommandNotice(null);
     try {
-      const conversationId = activeConversationId ?? (await startNewConversation());
+      const open = fresh ? null : activeConversationId;
+      const conversationId = open ?? (await startNewConversation());
       const response = await postMessage.mutateAsync({
         conversationId,
         request: {
@@ -342,9 +372,20 @@ function AiPanelBody({
     }
   };
 
+  // A question typed on the workspace's start page (issue #288) begins a new
+  // chat here, because this is where its answer is streamed.
+  useStartedChat(workspaceId, (text) => void handleSubmit(text, true));
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col" data-testid="ai-panel">
+    <div
+      className={panelFrameClass(layout.expanded)}
+      data-testid="ai-panel"
+      data-expanded={String(layout.expanded)}
+    >
       <AiPanelHeader
+        expanded={layout.expanded}
+        onExpandedChange={layout.onExpandedChange}
+        inset={layout.headerInset}
         workspaceId={workspaceId}
         activeConversationId={activeConversationId}
         onSelect={setActiveConversationId}

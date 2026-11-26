@@ -9,7 +9,9 @@
     "menu": "Options du chat",
     "stayAtAnswerStart": "Rester au début de la réponse",
     "stayAtAnswerStartHint": "Ta question remonte une fois, puis la vue reste fixe et la réponse continue de se développer vers le bas.",
-    "chatScrollFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant."
+    "chatScrollFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
+    "expand": "Afficher le chat en plein écran",
+    "collapse": "Réduire le chat"
   },
   "transcript": {
     "unavailableTitle": "Chat indisponible",
@@ -38,7 +40,9 @@
     "label": "Message à l’IA",
     "placeholder": "Pose une question ou /help pour les commandes…",
     "send": "Envoyer la question",
-    "commandsLabel": "Commandes"
+    "commandsLabel": "Commandes",
+    "startLabel": "Démarrer un nouveau chat avec une question",
+    "startPlaceholder": "Pose une question à l’IA…"
   },
   "commands": {
     "clear": "Effacer le contexte, l’historique reste lisible",

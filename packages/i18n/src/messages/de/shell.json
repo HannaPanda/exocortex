@@ -163,6 +163,9 @@
     "trashKeywords": "gelöscht archiv wiederherstellen",
     "newChat": "Neuen Chat beginnen",
     "newChatKeywords": "chat gespräch unterhaltung ki assistent frage neu",
+    "chatExpand": "KI-Chat bildschirmfüllend zeigen",
+    "chatCollapse": "KI-Chat verkleinern",
+    "chatExpandKeywords": "ki chat vollbild bildschirmfüllend groß maximieren seite einklappen verkleinern daneben",
     "chatScroll": {
       "stayAtAnswerStart": "KI-Chat: am Antwortanfang bleiben",
       "follow": "KI-Chat: mit der Antwort mitlaufen",

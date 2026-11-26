@@ -223,6 +223,8 @@ describe('shellCommands', () => {
     onToggleContext: vi.fn(),
     onOpenContextTab: vi.fn(),
     onNewChat: vi.fn(),
+    chatExpanded: false,
+    onToggleChatExpanded: vi.fn(),
     onFocus: vi.fn(),
     onOpenTrash: vi.fn(),
     t: echo<Parameters<typeof shellCommands>[0]['t']>(),
@@ -245,6 +247,18 @@ describe('shellCommands', () => {
 
   it('starts no chat outside a workspace', () => {
     expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain('command-new-chat');
+  });
+
+  it('names the chat toggle by what it does next (issue #288)', () => {
+    const label = (chatExpanded: boolean): string | undefined =>
+      shellCommands({ ...base, chatExpanded }).find(
+        (command) => command.id === 'command-chat-expand',
+      )?.label;
+    expect(label(false)).toBe('chatExpand');
+    expect(label(true)).toBe('chatCollapse');
+    expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain(
+      'command-chat-expand',
+    );
   });
 
   it('offers no navigation toggle where no page tree is drawn, as on the map', () => {

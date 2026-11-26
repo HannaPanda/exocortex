@@ -677,7 +677,7 @@
     "title": "Talk with a model about your pages",
     "summary": "The chat runs alongside the page and knows the title and path of the open page. Which model responds is set in model administration; without a configured provider, a local dummy model responds so nothing depends on it.",
     "details": {
-      "p1": "Chat is both its own page and a panel alongside the editor. It knows which page you are currently on, including its title and path; it only receives the page’s text if this is explicitly turned on or if you pass selected text.",
+      "p1": "The chat is its own page and at the same time an area next to the editor. It knows which page you are currently on, including its title and path; it only receives the text of the page if this is explicitly turned on or if you pass a selected passage. Without a page, you start a chat in the input field on the workspace home page.",
       "p2": "Which model responds is configured in model administration and can be overridden per workspace. A system prompt for the entire installation defines how responses are given; permanent content guidelines are better written as rule pages, since anyone can read and edit those.",
       "p3": "If no provider is configured, a built-in mock model responds with recognizably made-up text. This is intentional: no feature of this installation should depend on a third-party service being reachable, and tests run through without keys."
     },
@@ -711,6 +711,16 @@
       "p3": "Agents read and set the preference via exo_me_preferences and exo_me_preferences_set, as chatScroll with the values follow and answerStart."
     },
     "where": "Settings, AI chat. Also in the AI panel menu and in the command palette."
+  },
+  "chat-ohne-seite": {
+    "title": "Ask the AI without opening a page",
+    "summary": "On the home page of each workspace, there is an input field above “Continue”. What you type there starts a new chat with no page context, and the chat takes up the entire screen. Next to a page, you can collapse either the page or the chat with a button.",
+    "details": {
+      "p1": "Type your question into the field on the home page and press Enter. A new chat is created that does not belong to any page, and it opens in full screen, on mobile just like on the computer. Commands like /help work there as well.",
+      "p2": "At the top of the AI pane, next to “New chat”, there is a button with two arrows. It gives the chat the entire space and collapses the page next to it; the same button puts the chat back next to the page. The page remains as it was, even while typing. You collapse the chat itself as before with Ctrl + . or the button at the top right.",
+      "p3": "The expanded chat is not a permanent state: if you go to another page or close the AI pane, the page takes center stage again. Via Strg+K you can find both as commands: “Start new chat” and “Show AI chat in full screen”."
+    },
+    "where": "The input field on the home page of each workspace, and the button with the two arrows at the top of the AI pane."
   },
   "chat-je-tab": {
     "title": "Working in multiple tabs with different chats",

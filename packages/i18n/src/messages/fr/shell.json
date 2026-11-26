@@ -163,6 +163,9 @@
     "trashKeywords": "supprimé corbeille archive restaurer",
     "newChat": "Démarrer une nouvelle discussion",
     "newChatKeywords": "discussion conversation chat ia assistant question nouveau",
+    "chatExpand": "Afficher le chat IA en plein écran",
+    "chatCollapse": "Réduire le chat IA",
+    "chatExpandKeywords": "ia chat plein écran grand maximiser page replier réduire à côté",
     "chatScroll": {
       "stayAtAnswerStart": "Chat IA : rester au début de la réponse",
       "follow": "Chat IA : suivre la réponse",

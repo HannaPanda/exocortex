@@ -677,7 +677,7 @@
     "title": "Rozmowa z modelem o twoich stronach",
     "summary": "Czat działa obok strony i zna tytuł oraz ścieżkę otwartej strony. To, który model odpowiada, określa zarządzanie modelami; bez skonfigurowanego dostawcy odpowiada lokalny model zastępczy, aby nic od tego nie zależało.",
     "details": {
-      "p1": "Czat jest osobną stroną, a jednocześnie panelem obok edytora. Wie, na której stronie właśnie się znajdujesz (zna jej tytuł i ścieżkę); tekst strony otrzymuje tylko wtedy, gdy jest to wyraźnie włączone lub przekażesz zaznaczony fragment.",
+      "p1": "Czat jest osobną stroną, a jednocześnie panelem obok edytora. Wie, na której stronie aktualnie się znajdujesz – zna jej tytuł i ścieżkę. Treść strony otrzymuje tylko wtedy, gdy jest to wyraźnie włączone lub gdy przekażesz zaznaczony fragment. Bez otwartej strony czat zaczniesz w polu wprowadzania na stronie startowej obszaru roboczego.",
       "p2": "To, który model odpowiada, określa administracja modelami i można to nadpisać dla każdego obszaru roboczego. Prompt systemowy dla całej instalacji definiuje sposób odpowiadania; trwałe wytyczne dotyczące treści lepiej zapisać jako stronę z regułami, ponieważ każdy może ją przeczytać i zmienić.",
       "p3": "Jeśli żaden dostawca nie jest skonfigurowany, odpowiada wbudowany model zastępczy z wyraźnie zmyślonym tekstem. To celowe: żadna funkcja tej instalacji nie powinna zależeć od dostępności zewnętrznej usługi, a testy przechodzą bez kluczy."
     },
@@ -711,6 +711,16 @@
       "p3": "Agenci odczytują i zmieniają to ustawienie za pomocą exo_me_preferences i exo_me_preferences_set, jako chatScroll z wartościami follow oraz answerStart."
     },
     "where": "Ustawienia, Czat AI. Ponadto w menu panelu AI i w palecie poleceń."
+  },
+  "chat-ohne-seite": {
+    "title": "Zadawanie pytań AI bez otwierania strony",
+    "summary": "Na stronie startowej każdego obszaru roboczego, nad „Kontynuuj”, znajduje się pole wprowadzania. To, co tam wpiszesz, rozpocznie nowy czat bez powiązania ze stroną, a czat zajmie cały ekran. Obok strony możesz za pomocą przycisku zwinąć stronę albo czat.",
+    "details": {
+      "p1": "Wpisz swoje pytanie w pole na stronie startowej i naciśnij Enter. Powstanie nowy czat, który nie należy do żadnej strony, i otworzy się na pełnym ekranie – tak samo na telefonie, jak i na komputerze. Działają tam również polecenia takie jak /help.",
+      "p2": "Na górze panelu AI, obok „Nowy czat”, znajduje się przycisk z dwiema strzałkami. Daje on czatowi całe dostępne miejsce i zwija stronę obok; ten sam przycisk przywraca czat z powrotem obok strony. Strona pozostaje przy tym w takim stanie, w jakim była, również podczas pisania. Sam czat zwijasz jak dotychczas za pomocą Strg + . lub przycisku w prawym górnym rogu.",
+      "p3": "Duży czat nie jest stanem trwałym: jeśli przejdziesz na inną stronę lub zamkniesz panel AI, strona znów znajdzie się na pierwszym planie. Przez Strg + K znajdziesz oba polecenia: „Rozpocznij nowy czat” oraz „Pokaż czat AI na pełnym ekranie”."
+    },
+    "where": "Pole wprowadzania na stronie startowej każdego obszaru roboczego oraz przycisk z dwiema strzałkami na górze panelu AI."
   },
   "chat-je-tab": {
     "title": "Praca w wielu kartach z różnymi czatami",

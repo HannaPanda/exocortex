@@ -163,6 +163,9 @@
     "trashKeywords": "usunięte archiwum przywróć",
     "newChat": "Rozpocznij nowy czat",
     "newChatKeywords": "czat rozmowa konwersacja ai asystent pytanie nowy",
+    "chatExpand": "Pokaż czat AI na pełnym ekranie",
+    "chatCollapse": "Zmniejsz czat AI",
+    "chatExpandKeywords": "ai czat pełny ekran pełnoekranowy duży maksymalizuj strona zwiń zmniejsz obok",
     "chatScroll": {
       "stayAtAnswerStart": "Czat AI: pozostań na początku odpowiedzi",
       "follow": "Czat AI: przewijaj wraz z odpowiedzią",

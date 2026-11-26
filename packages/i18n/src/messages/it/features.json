@@ -677,7 +677,7 @@
     "title": "Discutere delle tue pagine con un modello",
     "summary": "La chat affianca la pagina e ne conosce titolo e percorso. Quale modello risponda è stabilito nella gestione modelli; in assenza di un provider configurato risponde un modello fittizio locale, così da non bloccare alcuna operazione.",
     "details": {
-      "p1": "La chat è una pagina a sé stante e allo stesso tempo un’area accanto all’editor. Sa su quale pagina ti trovi, compresi titolo e percorso; riceve il testo della pagina solo se questa opzione è espressamente attivata o se passi una parte di testo selezionata.",
+      "p1": "La chat è una pagina a sé stante e allo stesso tempo un’area accanto all’editor. Sa su quale pagina ti trovi, inclusi titolo e percorso; riceve il testo della pagina solo se questa opzione è espressamente attivata o se passi un passaggio selezionato. Senza alcuna pagina, puoi avviare una chat dal campo di inserimento nella pagina iniziale dell’area di lavoro.",
       "p2": "Il modello che risponde è specificato nella gestione dei modelli e può essere personalizzato per ogni area di lavoro. Un prompt di sistema per l’intera installazione definisce come rispondere; è meglio scrivere direttive permanenti sui contenuti sotto forma di pagina di regole, perché chiunque può leggerla e modificarla.",
       "p3": "Se non è configurato alcun fornitore, risponde un modello fittizio integrato con testo visibilmente inventato. Questo comportamento è voluto: nessuna funzione di questa installazione deve dipendere dalla raggiungibilità di un servizio esterno, e i test vengono completati senza bisogno di chiavi."
     },
@@ -711,6 +711,16 @@
       "p3": "Gli agenti leggono e impostano questa preferenza tramite exo_me_preferences ed exo_me_preferences_set, come chatScroll con i valori follow e answerStart."
     },
     "where": "Impostazioni, Chat IA. Inoltre nel menu dell’area IA e nella tavolozza dei comandi."
+  },
+  "chat-ohne-seite": {
+    "title": "Chiedere all’IA senza aprire una pagina",
+    "summary": "Nella pagina iniziale di ogni area di lavoro trovi un campo di inserimento sopra «Continua». Ciò che scrivi lì avvia una nuova chat senza alcun riferimento a una pagina, e la chat occupa l’intero schermo. Accanto a una pagina, puoi comprimere a scelta la pagina o la chat tramite un pulsante.",
+    "details": {
+      "p1": "Scrivi la tua domanda nel campo sulla pagina iniziale e premi Invio. Verrà creata una nuova chat che non appartiene ad alcuna pagina e si aprirà a schermo intero, sia su smartphone che su computer. Anche i comandi come /help funzionano lì.",
+      "p2": "In alto nell’area IA, accanto a «Nuova chat», c’è un pulsante con due frecce. Assegna l’intero spazio alla chat e comprime la pagina accanto; lo stesso pulsante riporta la chat di fianco alla pagina. La pagina rimane invariata, anche durante la scrittura. Puoi comprimere la chat stessa come al solito con Strg + . o tramite il pulsante in alto a destra.",
+      "p3": "La chat a schermo intero non è uno stato permanente: se passi a un’altra pagina o chiudi l’area IA, la pagina torna in primo piano. Tramite Strg + K trovi entrambe le azioni sotto forma di comando: «Avvia nuova chat» e «Mostra la chat IA a schermo intero»."
+    },
+    "where": "Il campo di inserimento nella pagina iniziale di ogni area di lavoro e il pulsante con le due frecce in alto nell’area IA."
   },
   "chat-je-tab": {
     "title": "Lavorare con chat diverse in più schede",

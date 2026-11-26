@@ -677,7 +677,7 @@
     "title": "Hablar con un modelo sobre tus páginas",
     "summary": "El chat se ejecuta junto a la página y conoce el título y la ruta de la página abierta. Qué modelo responde se define en la gestión de modelos; si no hay ningún proveedor configurado, responde un modelo simulado local para que nada quede bloqueado.",
     "details": {
-      "p1": "El chat es una página propia y, al mismo tiempo, un panel junto al editor. Sabe en qué página te encuentras, concretamente con su título y ruta; solo recibe el texto de la página si se activa expresamente o si le pasas un fragmento seleccionado.",
+      "p1": "El chat es una página propia y, al mismo tiempo, un panel junto al editor. Sabe en qué página estás exactamente, con su título y ruta; solo recibe el texto de la página si se activa expresamente o si le pasas un fragmento seleccionado. Sin ninguna página abierta, puedes iniciar un chat desde el campo de entrada de la página de inicio del espacio de trabajo.",
       "p2": "El modelo que responde se define en la administración de modelos y se puede anular para cada espacio de trabajo. Una instrucción de sistema para toda la instalación determina cómo se responde; las pautas de contenido permanentes es mejor escribirlas como página de reglas, ya que cualquiera puede leerlas y modificarlas.",
       "p3": "Si no hay ningún proveedor configurado, responde un modelo simulado integrado con texto reconociblemente inventado. Está hecho a propósito: ninguna función de esta instalación debe depender de la disponibilidad de un servicio externo, y los tests se ejecutan sin claves."
     },
@@ -711,6 +711,16 @@
       "p3": "Los agentes leen y configuran este ajuste mediante exo_me_preferences y exo_me_preferences_set, como chatScroll con los valores follow y answerStart."
     },
     "where": "Ajustes, Chat de IA. También en el menú de la sección de IA y en la paleta de comandos."
+  },
+  "chat-ohne-seite": {
+    "title": "Preguntar a la IA sin abrir una página",
+    "summary": "En la página de inicio de cada espacio de trabajo hay un campo de entrada encima de «Continuar». Lo que escribas allí inicia un nuevo chat sin referencia a ninguna página, y el chat ocupa toda la pantalla. Junto a una página, puedes plegar la página o el chat con un botón.",
+    "details": {
+      "p1": "Escribe tu pregunta en el campo de la página de inicio y pulsa Intro. Se creará un nuevo chat que no pertenece a ninguna página y se abrirá a pantalla completa, tanto en el móvil como en el ordenador. Los comandos como /help también funcionan allí.",
+      "p2": "En la parte superior del panel de la IA, junto a «Nuevo chat», hay un botón con dos flechas. Le da todo el espacio al chat y pliega la página de al lado; el mismo botón vuelve a colocar el chat junto a la página. La página se mantiene como estaba, incluso mientras escribes. Puedes plegar el chat en sí como siempre con Strg + . o con el botón de arriba a la derecha.",
+      "p3": "El chat ampliado no es un estado permanente: si vas a otra página o cierras el panel de la IA, la página vuelve a estar en primer plano. Con Strg + K encontrarás ambas opciones como comandos: «Iniciar nuevo chat» y «Mostrar chat de IA a pantalla completa»."
+    },
+    "where": "El campo de entrada en la página de inicio de cada espacio de trabajo y el botón con las dos flechas en la parte superior del panel de la IA."
   },
   "chat-je-tab": {
     "title": "Trabajar en varias pestañas con distintos chats",

@@ -9,7 +9,9 @@
     "menu": "Chatopties",
     "stayAtAnswerStart": "Bij begin van antwoord blijven",
     "stayAtAnswerStartHint": "Je vraag schuift eenmalig omhoog; daarna blijft het scherm staan en groeit het antwoord naar beneden verder.",
-    "chatScrollFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog een keer."
+    "chatScrollFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog een keer.",
+    "expand": "Chat schermvullend weergeven",
+    "collapse": "Chat verkleinen"
   },
   "transcript": {
     "unavailableTitle": "Chat niet beschikbaar",
@@ -38,7 +40,9 @@
     "label": "Bericht aan de AI",
     "placeholder": "Vraag stellen of /help voor commando’s …",
     "send": "Vraag verzenden",
-    "commandsLabel": "Commando’s"
+    "commandsLabel": "Commando’s",
+    "startLabel": "Een nieuwe chat starten met een vraag",
+    "startPlaceholder": "Vraag de AI iets …"
   },
   "commands": {
     "clear": "Context wissen, geschiedenis blijft leesbaar",

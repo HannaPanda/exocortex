@@ -9,7 +9,9 @@
     "menu": "Chat-Optionen",
     "stayAtAnswerStart": "Am Antwortanfang bleiben",
     "stayAtAnswerStartHint": "Deine Frage rückt einmal nach oben, danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter.",
-    "chatScrollFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal."
+    "chatScrollFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
+    "expand": "Chat bildschirmfüllend zeigen",
+    "collapse": "Chat verkleinern"
   },
   "transcript": {
     "unavailableTitle": "Chat nicht verfügbar",
@@ -38,7 +40,9 @@
     "label": "Nachricht an die KI",
     "placeholder": "Frage stellen oder /help für Befehle …",
     "send": "Frage senden",
-    "commandsLabel": "Befehle"
+    "commandsLabel": "Befehle",
+    "startLabel": "Neuen Chat mit einer Frage beginnen",
+    "startPlaceholder": "Frag die KI etwas …"
   },
   "commands": {
     "clear": "Kontext leeren, Verlauf bleibt lesbar",

@@ -2596,6 +2596,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "ec075128ebd31705"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "f3e3efa55ff20b5d"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "7230bff6133d0594"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "822e86845d02cb06"
@@ -2891,6 +2899,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "cf344c7a8b0f4e0b"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "3b0425da234025c7"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "f1642ee18d983b82"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -12192,6 +12208,30 @@
       "source": "97ff674be89e2442",
       "output": "96314cc7926d68be"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "26cf77da44d52ead"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "e7e83f7201929b44"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "a88952869046fa94"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "22c06c0017b8bd35"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "305edd80f06a5237"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "d582b9ab83071a5d"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "ad667ade308650ff"
@@ -12809,8 +12849,8 @@
       "output": "a7244a27779be40b"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "d42405d754ecafe6"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "883b1b59d2323a11"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -20264,6 +20304,18 @@
       "source": "ab424ef93255babc",
       "output": "57f9e56fba2d7fe6"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "3d28f5c7f6168531"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "4c3f461b1332472c"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "a0aba6a6522c04aa"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "4f476e44be68ff65"
@@ -26706,6 +26758,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "e2f852a76a212fdf"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "6fb719bfb2602b05"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "a60088b6c2051766"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "492291acca6795c8"
@@ -27001,6 +27061,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "826e695888dcc8a6"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "e969a818ec0ab5ef"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "777230bf75c9f1fc"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -36302,6 +36370,30 @@
       "source": "97ff674be89e2442",
       "output": "ab9babfaa5b3b0cc"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "943bcf0f90322d1a"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "1d54e30b2253755e"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "24e141db8e46299a"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "a0a64edde25af908"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "3e1e70aa17ae6b6c"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "2197bd1d005272ec"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "0945966b2ac75764"
@@ -36919,8 +37011,8 @@
       "output": "0a3d54707f9dcd32"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "a299b107070328b9"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "01de27400c8012d0"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -44374,6 +44466,18 @@
       "source": "ab424ef93255babc",
       "output": "500e0fcd999a460b"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "839b4ced79dd8292"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "7d30e9718b3181ba"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "1c0a714731ec0467"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "bf99aa724a80a867"
@@ -50816,6 +50920,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "4697363236d0be80"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "13a0bc42ef117dd7"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "a889cd5de2091d22"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "18da81af7644301f"
@@ -51111,6 +51223,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "b9d7dec4bcf18917"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "74ced691014a862b"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "129872963744eed6"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -60412,6 +60532,30 @@
       "source": "97ff674be89e2442",
       "output": "d18f0eb7b76798f0"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "d36fcc1637043452"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "a54f6cf0da7cf43d"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "71cb5798a994fecd"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "d763be92f4dd1b5a"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "5208ae10ea46297b"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "307192e0681f4068"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "a65df7971d9b801e"
@@ -61029,8 +61173,8 @@
       "output": "43f520dfb042bdad"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "8e55434e53ea0783"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "cdad1fe27a3846de"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -68484,6 +68628,18 @@
       "source": "ab424ef93255babc",
       "output": "61816357872b8fb3"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "130eaadd74d8f2cf"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "c8e52403550e757c"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "5f2bb113915f1051"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "5fe34e6fa7282ddc"
@@ -74926,6 +75082,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "7feca9f689212085"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "915f08d1ffb2c6d8"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "995b564eb5a1d02e"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "d538bb09d6dbfd7f"
@@ -75221,6 +75385,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "1895ec5d6fbcfe66"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "fcf45a3aa8136395"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "9ffaca0fd974dcf4"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -84522,6 +84694,30 @@
       "source": "97ff674be89e2442",
       "output": "2c2f418fc04a3570"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "44f20469f7509c55"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "5d4ef5753b4d4088"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "afd8eb9309ef8edf"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "bcb58552d442053d"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "9e1490c865270c53"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "6577c505a0401863"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "adfb553c6a375524"
@@ -85139,8 +85335,8 @@
       "output": "a5d49f4de7eede50"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "14f030cf246364a3"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "97bcdf08b56d2479"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -92594,6 +92790,18 @@
       "source": "ab424ef93255babc",
       "output": "9083b4d74ab0cdd5"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "b8d6d8cfa461e8bd"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "a16d281b6e2f8fa6"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "57d73a7cd5bfcc4f"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "44928e53753b06c1"
@@ -99036,6 +99244,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "94f5b0f946e20c5f"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "ef85ef0b62e89db9"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "1f4faa1ff8e4a86d"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "b44fd227aaca5a19"
@@ -99331,6 +99547,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "7c875914114621a0"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "22bb95ceed2b4da4"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "02d498dd19391011"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -108632,6 +108856,30 @@
       "source": "97ff674be89e2442",
       "output": "0b67a13072627c2d"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "ce999b55239a5a52"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "d2e8bb9f9179e7d6"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "1e550be27cec1360"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "3a71229bc433861c"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "aecbbb10866df3a7"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "01983ff132ac466c"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "42a9ea6b71041961"
@@ -109249,8 +109497,8 @@
       "output": "47110179b84a9740"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "14aaf15be9a1bc12"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "d579f0593487d568"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -116704,6 +116952,18 @@
       "source": "ab424ef93255babc",
       "output": "fe208777fec4ecb8"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "23b91745cb27ec89"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "7925ad44db417f13"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "c5df214ef7e8c340"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "59010707a78bfca5"
@@ -123146,6 +123406,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "53cf90281ff3c8b0"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "a27f282a67c39256"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "d76faf33a2f728f0"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "2d46fa604ec7e067"
@@ -123441,6 +123709,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "f2a0b89dba89f9b9"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "9547b05c03637b95"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "712ba032a5ebeb17"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -132742,6 +133018,30 @@
       "source": "97ff674be89e2442",
       "output": "339fa5248f35320d"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "a454df6d117ce49f"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "6a576b695a1cdf76"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "faf24dda80b28ba8"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "459fcef7b412380f"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "9159cc67c403d476"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "77c8bb85779f7b80"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "d603099a56490074"
@@ -133359,8 +133659,8 @@
       "output": "3f2184aa8df287f5"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "e1c9a8bd52e332e5"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "e4cf8ae96692ec1c"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -140814,6 +141114,18 @@
       "source": "ab424ef93255babc",
       "output": "94a638698cb82192"
     },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "5b5b2e659c91b7cb"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "72d69cddfbc3237e"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "af3a30787727b0c4"
+    },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",
       "output": "f9b3eb35811c6ed4"
@@ -147256,6 +147568,14 @@
       "source": "0c5222e8f4ce83ad",
       "output": "dc4070ab48082c01"
     },
+    "ai.composer.startLabel": {
+      "source": "9477beca1cea6531",
+      "output": "b039e163ed4314e9"
+    },
+    "ai.composer.startPlaceholder": {
+      "source": "451b6754cd52b91c",
+      "output": "a3bc49c82815ca50"
+    },
     "ai.context.costChars": {
       "source": "9b7365f0cbef49af",
       "output": "492291acca6795c8"
@@ -147551,6 +147871,14 @@
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "b091ce45d9f5b96f"
+    },
+    "ai.panel.collapse": {
+      "source": "3fefde6e492371c2",
+      "output": "e1626c038b4fe5e2"
+    },
+    "ai.panel.expand": {
+      "source": "0a5b8d2b968f3994",
+      "output": "c86fee7bf9847737"
     },
     "ai.panel.menu": {
       "source": "e0203e204879b996",
@@ -156852,6 +157180,30 @@
       "source": "97ff674be89e2442",
       "output": "3194fdab0ef7f666"
     },
+    "features.chat-ohne-seite.details.p1": {
+      "source": "8c0c7a65231155c2",
+      "output": "52a1c7017f7089f4"
+    },
+    "features.chat-ohne-seite.details.p2": {
+      "source": "775e3c5e6c50f031",
+      "output": "8767996a7af2413a"
+    },
+    "features.chat-ohne-seite.details.p3": {
+      "source": "e7aab9464034aea8",
+      "output": "e3b9129d9da39705"
+    },
+    "features.chat-ohne-seite.summary": {
+      "source": "92531c6ad82d48dd",
+      "output": "fed3d2d4dc8620da"
+    },
+    "features.chat-ohne-seite.title": {
+      "source": "43043e5e8c62fd8c",
+      "output": "b343379c57e80873"
+    },
+    "features.chat-ohne-seite.where": {
+      "source": "7803e5ad3496aeb4",
+      "output": "4cd3de455a7e618a"
+    },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
       "output": "3465e7350e629735"
@@ -157469,8 +157821,8 @@
       "output": "698b21161f349667"
     },
     "features.ki-chat.details.p1": {
-      "source": "97b9b5ebf135e0b3",
-      "output": "690f9eecfb2cff03"
+      "source": "7ba1b1e15e62f6d2",
+      "output": "4371a363ce614ba1"
     },
     "features.ki-chat.details.p2": {
       "source": "606614c96fbbada2",
@@ -164923,6 +165275,18 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "5278f75f08d33ee8"
+    },
+    "shell.paletteCommands.chatCollapse": {
+      "source": "10ffb81297016b05",
+      "output": "a4ab54ba55cebbd8"
+    },
+    "shell.paletteCommands.chatExpand": {
+      "source": "a6e4ab5588dc497b",
+      "output": "50f99e60dabe1ee9"
+    },
+    "shell.paletteCommands.chatExpandKeywords": {
+      "source": "461c102927649421",
+      "output": "8175d016b42584ac"
     },
     "shell.paletteCommands.chatScroll.follow": {
       "source": "1496491be9967091",

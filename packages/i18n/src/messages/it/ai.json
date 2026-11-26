@@ -9,7 +9,9 @@
     "menu": "Opzioni chat",
     "stayAtAnswerStart": "Rimani all’inizio della risposta",
     "stayAtAnswerStartHint": "La tua domanda scorre verso l’alto una volta sola, poi la vista si ferma e la risposta continua a svilupparsi verso il basso.",
-    "chatScrollFailed": "Impossibile salvare l’impostazione. Riprova tra poco."
+    "chatScrollFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
+    "expand": "Mostra chat a schermo intero",
+    "collapse": "Riduci chat"
   },
   "transcript": {
     "unavailableTitle": "Chat non disponibile",
@@ -38,7 +40,9 @@
     "label": "Messaggio per l’IA",
     "placeholder": "Fai una domanda o usa /help per i comandi…",
     "send": "Invia domanda",
-    "commandsLabel": "Comandi"
+    "commandsLabel": "Comandi",
+    "startLabel": "Inizia una nuova chat con una domanda",
+    "startPlaceholder": "Chiedi qualcosa all’IA…"
   },
   "commands": {
     "clear": "Svuota il contesto, la cronologia rimane leggibile",

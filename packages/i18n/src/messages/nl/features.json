@@ -677,7 +677,7 @@
     "title": "Met een model over je pagina’s praten",
     "summary": "De chat draait naast de pagina en kent titel en pad van de geopende pagina. Welk model antwoordt, staat in het modelbeheer; zonder ingestelde provider antwoordt een lokaal dummy-model, zodat niets ervan afhangt.",
     "details": {
-      "p1": "De chat is een eigen pagina en tegelijkertijd een deelvenster naast de editor. Hij weet op welke pagina je op dat moment bent, inclusief titel en pad; de tekst van de pagina ontvangt hij pas als dat uitdrukkelijk is ingeschakeld of wanneer je een geselecteerd fragment doorgeeft.",
+      "p1": "De chat is een eigen pagina en tegelijkertijd een paneel naast de editor. Hij weet op welke pagina je bent, inclusief titel en pad; de tekst van de pagina ontvangt hij alleen als dat uitdrukkelijk is ingeschakeld of wanneer je een geselecteerd gedeelte meestuurt. Zonder pagina start je een chat in het invoerveld op de startpagina van de werkruimte.",
       "p2": "Welk model antwoordt, staat in het modelbeheer en kan per werkruimte worden overschreven. Een systeemprompt voor de hele installatie bepaalt hoe er wordt geantwoord; blijvende inhoudelijke richtlijnen kun je beter als regelpagina opschrijven, omdat iedereen die kan lezen en aanpassen.",
       "p3": "Is er geen provider ingesteld, dan antwoordt een ingebouwd dummy-model met herkenbaar verzonnen tekst. Dat is opzettelijk zo ontworpen: geen enkele functie van deze installatie mag afhankelijk zijn van de bereikbaarheid van een externe dienst, en tests slagen zo zonder sleutels."
     },
@@ -711,6 +711,16 @@
       "p3": "Agenten lezen en wijzigen de instelling via exo_me_preferences en exo_me_preferences_set, als chatScroll met de waarden follow en answerStart."
     },
     "where": "Instellingen, AI-chat. Ook in het menu van het AI-gedeelte en in het opdrachtpalet."
+  },
+  "chat-ohne-seite": {
+    "title": "De AI vragen stellen zonder een pagina te openen",
+    "summary": "Op de startpagina van elke werkruimte staat boven „Verdergaan” een invoerveld. Wat je daar typt, start een nieuwe chat zonder paginacontext, en de chat krijgt het volledige scherm. Naast een pagina klap je met een knop naar keuze de pagina of de chat in.",
+    "details": {
+      "p1": "Typ je vraag in het veld op de startpagina en druk op Enter. Er ontstaat een nieuwe chat die niet bij een pagina hoort, en deze opent schermvullend, op je telefoon net zo als op de computer. Commando’s zoals /help werken daar ook.",
+      "p2": "Bovenin het AI-gedeelte zit naast „Nieuwe chat” een knop met twee pijlen. Deze geeft de chat alle ruimte en klapt de pagina ernaast in; dezelfde knop zet de chat weer naast de pagina. De pagina blijft daarbij zoals hij was, ook tijdens het schrijven. De chat zelf klap je zoals altijd in met Strg + . of de knop rechtsboven.",
+      "p3": "De grote chat is geen permanente toestand: ga je naar een andere pagina of sluit je het AI-gedeelte, dan staat de pagina weer op de voorgrond. Via Strg + K vind je beide als commando: „Nieuwe chat starten” en „AI-chat schermvullend tonen”."
+    },
+    "where": "Het invoerveld op de startpagina van elke werkruimte, en de knop met de twee pijlen bovenin het AI-gedeelte."
   },
   "chat-je-tab": {
     "title": "In meerdere tabbladen met verschillende chats werken",

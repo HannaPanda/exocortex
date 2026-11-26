@@ -33,6 +33,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/einstellungen/ki-chat'] },
   }),
   defineFeature({
+    id: 'chat-ohne-seite',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#288'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'chat-je-tab',
     area: 'ki',
     since: '2026-11-26',

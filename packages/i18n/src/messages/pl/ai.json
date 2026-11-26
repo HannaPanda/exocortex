@@ -9,7 +9,9 @@
     "menu": "Opcje czatu",
     "stayAtAnswerStart": "Pozostań na początku odpowiedzi",
     "stayAtAnswerStartHint": "Twoje pytanie przesunie się raz w górę, a potem widok pozostanie w miejscu, podczas gdy odpowiedź będzie rozwijać się w dół.",
-    "chatScrollFailed": "Nie udało się zapisać tego ustawienia. Spróbuj ponownie za chwilę."
+    "chatScrollFailed": "Nie udało się zapisać tego ustawienia. Spróbuj ponownie za chwilę.",
+    "expand": "Pokaż czat na pełnym ekranie",
+    "collapse": "Zmniejsz czat"
   },
   "transcript": {
     "unavailableTitle": "Czat niedostępny",
@@ -38,7 +40,9 @@
     "label": "Wiadomość do AI",
     "placeholder": "Zadaj pytanie lub wpisz /help, aby wyświetlić polecenia…",
     "send": "Wyślij pytanie",
-    "commandsLabel": "Polecenia"
+    "commandsLabel": "Polecenia",
+    "startLabel": "Rozpocznij nowy czat od pytania",
+    "startPlaceholder": "Zapytaj AI o cokolwiek…"
   },
   "commands": {
     "clear": "Wyczyść kontekst, historia pozostaje czytelna",

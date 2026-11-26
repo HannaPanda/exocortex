@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  cn,
   Tabs,
   TabsContent,
   TabsList,
@@ -41,6 +42,11 @@ export interface ContextPanelProps {
   documentId: string | null;
   tab: ContextTab;
   onTabChange: (tab: ContextTab) => void;
+  /** The chat has the screen, the page is folded away (issue #288). */
+  chatExpanded: boolean;
+  onChatExpandedChange: (expanded: boolean) => void;
+  /** On a phone the sheet's close button sits in the top right corner of this panel. */
+  closeButtonInset: boolean;
 }
 
 /**
@@ -90,7 +96,15 @@ function ContextTab({
  * rather than printing one; an interface that reports absences makes the reader
  * filter them out every time.
  */
-export function ContextPanel({ workspaceId, documentId, tab, onTabChange }: ContextPanelProps) {
+export function ContextPanel({
+  workspaceId,
+  documentId,
+  tab,
+  onTabChange,
+  chatExpanded,
+  onChatExpandedChange,
+  closeButtonInset,
+}: ContextPanelProps) {
   const t = useTranslations('shell.contextPanel');
   const { request: commentRequest } = useCommentAnchor();
 
@@ -106,11 +120,19 @@ export function ContextPanel({ workspaceId, documentId, tab, onTabChange }: Cont
     onTabChange('comments');
   }, [commentRequest, onTabChange]);
 
+  // Off a page the assistant's own header is the panel's top row, so it is
+  // the one that has to make room for the sheet's close button.
+  const chatLayout = {
+    expanded: chatExpanded,
+    onExpandedChange: onChatExpandedChange,
+    headerInset: closeButtonInset && documentId === null,
+  };
+
   if (documentId === null) {
     return (
       <div className="flex min-h-0 flex-1 flex-col pt-2">
         <PanelErrorBoundary title={t('aiErrorTitle')} description={t('aiErrorDescription')}>
-          <AiPanel workspaceId={workspaceId} documentId={null} />
+          <AiPanel workspaceId={workspaceId} documentId={null} layout={chatLayout} />
         </PanelErrorBoundary>
       </div>
     );
@@ -124,7 +146,7 @@ export function ContextPanel({ workspaceId, documentId, tab, onTabChange }: Cont
       }}
       className="flex min-h-0 flex-1 flex-col"
     >
-      <div className="p-2">
+      <div className={cn('p-2', closeButtonInset && 'pr-10')}>
         {/* `@container`: below 420px the tab bar shows icons only (see
             `ContextTab`); the panel is resizable down to 260px
             (`app-shell.tsx`), where five labelled tabs never fit. */}
@@ -159,7 +181,7 @@ export function ContextPanel({ workspaceId, documentId, tab, onTabChange }: Cont
 
       <TabsContent value="ai" className="flex min-h-0 flex-col">
         <PanelErrorBoundary title={t('aiErrorTitle')} description={t('aiErrorDescription')}>
-          <AiPanel workspaceId={workspaceId} documentId={documentId} />
+          <AiPanel workspaceId={workspaceId} documentId={documentId} layout={chatLayout} />
         </PanelErrorBoundary>
       </TabsContent>
 

@@ -163,6 +163,9 @@
     "trashKeywords": "excluído arquivo restaurar",
     "newChat": "Iniciar nova conversa",
     "newChatKeywords": "chat conversa bate-papo ia assistente pergunta novo nova",
+    "chatExpand": "Mostrar chat de IA em tela cheia",
+    "chatCollapse": "Reduzir chat de IA",
+    "chatExpandKeywords": "ia chat tela cheia maximizar grande página recolher diminuir reduzir lado",
     "chatScroll": {
       "stayAtAnswerStart": "Chat de IA: manter no início da resposta",
       "follow": "Chat de IA: acompanhar a resposta",

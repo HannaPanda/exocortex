@@ -163,6 +163,9 @@
     "trashKeywords": "eliminado archivo restaurar papelera",
     "newChat": "Empezar un nuevo chat",
     "newChatKeywords": "chat conversacion charla ia asistente pregunta nuevo",
+    "chatExpand": "Mostrar chat de IA a pantalla completa",
+    "chatCollapse": "Reducir chat de IA",
+    "chatExpandKeywords": "ia chat pantalla completa grande maximizar página plegar reducir al lado",
     "chatScroll": {
       "stayAtAnswerStart": "Chat de IA: quedarse al inicio de la respuesta",
       "follow": "Chat de IA: seguir la respuesta",

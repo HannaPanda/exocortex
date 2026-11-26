@@ -9,7 +9,9 @@
     "menu": "Opciones de chat",
     "stayAtAnswerStart": "Mantener al inicio de la respuesta",
     "stayAtAnswerStartHint": "Tu pregunta subirá una vez; después, la vista se mantendrá fija y la respuesta seguirá creciendo hacia abajo.",
-    "chatScrollFailed": "No se pudo guardar el ajuste. Inténtalo de nuevo en un momento."
+    "chatScrollFailed": "No se pudo guardar el ajuste. Inténtalo de nuevo en un momento.",
+    "expand": "Mostrar el chat a pantalla completa",
+    "collapse": "Reducir el chat"
   },
   "transcript": {
     "unavailableTitle": "Chat no disponible",
@@ -38,7 +40,9 @@
     "label": "Mensaje a la IA",
     "placeholder": "Haz una pregunta o usa /help para ver comandos …",
     "send": "Enviar pregunta",
-    "commandsLabel": "Comandos"
+    "commandsLabel": "Comandos",
+    "startLabel": "Iniciar un nuevo chat con una pregunta",
+    "startPlaceholder": "Pregunta algo a la IA…"
   },
   "commands": {
     "clear": "Vaciar contexto, el historial sigue siendo legible",

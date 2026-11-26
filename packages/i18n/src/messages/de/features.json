@@ -677,7 +677,7 @@
     "title": "Mit einem Modell über deine Seiten reden",
     "summary": "Der Chat läuft neben der Seite und kennt Titel und Pfad der offenen Seite. Welches Modell antwortet, steht in der Modellverwaltung; ohne eingerichteten Anbieter antwortet ein lokales Attrappenmodell, damit nichts davon abhängt.",
     "details": {
-      "p1": "Der Chat ist eine eigene Seite und zugleich ein Bereich neben dem Editor. Er weiß, auf welcher Seite du gerade bist, und zwar mit Titel und Pfad; den Text der Seite bekommt er nur, wenn das ausdrücklich eingeschaltet ist oder du eine Stelle markiert übergibst.",
+      "p1": "Der Chat ist eine eigene Seite und zugleich ein Bereich neben dem Editor. Er weiß, auf welcher Seite du gerade bist, und zwar mit Titel und Pfad; den Text der Seite bekommt er nur, wenn das ausdrücklich eingeschaltet ist oder du eine Stelle markiert übergibst. Ohne Seite beginnst du einen Chat im Eingabefeld auf der Startseite des Arbeitsbereichs.",
       "p2": "Welches Modell antwortet, steht in der Modellverwaltung und lässt sich pro Arbeitsbereich überschreiben. Ein Systemprompt für die ganze Installation legt fest, wie geantwortet wird; dauerhafte inhaltliche Vorgaben schreibst du besser als Regelseite, weil die jeder lesen und ändern kann.",
       "p3": "Ist kein Anbieter eingerichtet, antwortet ein eingebautes Attrappenmodell mit erkennbar erfundenem Text. Das ist Absicht: keine Funktion dieser Installation soll daran hängen, dass ein fremder Dienst erreichbar ist, und Tests laufen ohne Schlüssel durch."
     },
@@ -711,6 +711,16 @@
       "p3": "Agenten lesen und setzen die Einstellung über exo_me_preferences und exo_me_preferences_set, als chatScroll mit den Werten follow und answerStart."
     },
     "where": "Einstellungen, KI-Chat. Außerdem im Menü des KI-Bereichs und in der Befehlspalette."
+  },
+  "chat-ohne-seite": {
+    "title": "Die KI fragen, ohne eine Seite zu öffnen",
+    "summary": "Auf der Startseite jedes Arbeitsbereichs steht über „Weitermachen“ ein Eingabefeld. Was du dort tippst, beginnt einen neuen Chat ohne Seitenbezug, und der Chat bekommt den ganzen Bildschirm. Neben einer Seite klappst du mit einem Knopf wahlweise die Seite oder den Chat ein.",
+    "details": {
+      "p1": "Tipp deine Frage in das Feld auf der Startseite und drück die Eingabetaste. Es entsteht ein neuer Chat, der zu keiner Seite gehört, und er öffnet sich bildschirmfüllend, auf dem Handy genauso wie am Rechner. Befehle wie /help funktionieren dort auch.",
+      "p2": "Oben im KI-Bereich sitzt neben „Neuer Chat“ ein Knopf mit zwei Pfeilen. Er gibt dem Chat den ganzen Platz und klappt die Seite daneben ein; derselbe Knopf stellt den Chat wieder neben die Seite. Die Seite bleibt dabei, wie sie war, auch beim Schreiben. Den Chat selbst klappst du wie bisher mit Strg + . oder dem Knopf oben rechts ein.",
+      "p3": "Der große Chat ist kein dauerhafter Zustand: gehst du auf eine andere Seite oder schließt du den KI-Bereich, steht die Seite wieder im Vordergrund. Über Strg + K findest du beides als Befehl, „Neuen Chat beginnen“ und „KI-Chat bildschirmfüllend zeigen“."
+    },
+    "where": "Das Eingabefeld auf der Startseite jedes Arbeitsbereichs, und der Knopf mit den zwei Pfeilen oben im KI-Bereich."
   },
   "chat-je-tab": {
     "title": "In mehreren Tabs mit verschiedenen Chats arbeiten",

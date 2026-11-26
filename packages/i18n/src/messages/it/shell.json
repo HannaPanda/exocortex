@@ -163,6 +163,9 @@
     "trashKeywords": "eliminato archivio ripristina",
     "newChat": "Inizia una nuova chat",
     "newChatKeywords": "chat conversazione ia assistente domanda nuovo nuova",
+    "chatExpand": "Mostra chat IA a schermo intero",
+    "chatCollapse": "Riduci chat IA",
+    "chatExpandKeywords": "ia chat schermo intero grande massimizza pagina comprimi comprimere riduci affiancato",
     "chatScroll": {
       "stayAtAnswerStart": "Chat IA: resta all’inizio della risposta",
       "follow": "Chat IA: scorri con la risposta",

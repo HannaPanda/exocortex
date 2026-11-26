@@ -6,8 +6,10 @@ import {
   FocusIcon,
   InboxIcon,
   LinkIcon,
+  Maximize2Icon,
   MessageSquareIcon,
   MessageSquarePlusIcon,
+  Minimize2Icon,
   PanelLeftIcon,
   PanelRightIcon,
   SettingsIcon,
@@ -52,6 +54,9 @@ export interface ShellCommandInput {
   onToggleContext: () => void;
   onOpenContextTab: (tab: ContextTab) => void;
   onNewChat: () => void;
+  /** Whether the chat has the screen and the page is folded away (issue #288). */
+  chatExpanded: boolean;
+  onToggleChatExpanded: () => void;
   onFocus: () => void;
   onOpenTrash: () => void;
   t: ReturnType<typeof useTranslations<'shell.paletteCommands'>>;
@@ -151,6 +156,20 @@ function panelCommands(input: ShellCommandInput): PaletteCommand[] {
       icon: <MessageSquarePlusIcon className={ICON} />,
       keywords: keywordsOf(t('newChatKeywords')),
       run: input.onNewChat,
+    });
+    // Named by what the press does, like the panel toggles above. On a phone
+    // this is how a chat stops being a narrow strip beside the page.
+    commands.push({
+      id: 'command-chat-expand',
+      group: 'view',
+      label: input.chatExpanded ? t('chatCollapse') : t('chatExpand'),
+      icon: input.chatExpanded ? (
+        <Minimize2Icon className={ICON} />
+      ) : (
+        <Maximize2Icon className={ICON} />
+      ),
+      keywords: keywordsOf(t('chatExpandKeywords')),
+      run: input.onToggleChatExpanded,
     });
   }
 
