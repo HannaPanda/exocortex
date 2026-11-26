@@ -137,7 +137,12 @@ test.describe('AI side panel', () => {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(toggle).toContainText('Gedankengang');
 
-    await waitForAiRun(page, 'ai:thinking');
+    // The run may well be over by now: a one-sentence answer takes a few
+    // seconds, and `waitForAiRun` would wait for an activity that already
+    // came and went.
+    await expect(page.getByTestId('ai-run-activity')).toBeHidden({
+      timeout: AI_RUN_FINISH_TIMEOUT_MS,
+    });
     // Folded once the run is over, and standing right above the answer.
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('ai-run-trace-reasoning')).toHaveCount(0);
@@ -186,10 +191,11 @@ test.describe('AI side panel', () => {
     await expect.poll(async () => (await metrics()).distance).toBeLessThan(40);
     await expect(page.getByTestId('ai-jump-end')).toBeHidden();
 
-    // The reader scrolls up: the position stays where they put it.
-    await transcript.evaluate((element) => {
-      element.scrollTop = 0;
-    });
+    // The reader scrolls up: the position stays where they put it. A wheel,
+    // because a position set from a script is not a reader and does not stop
+    // the transcript from following.
+    await transcript.hover();
+    await page.mouse.wheel(0, -100_000);
     await expect(page.getByTestId('ai-jump-end')).toBeVisible();
     await page.waitForTimeout(1_500);
     expect((await metrics()).top).toBeLessThan(5);
@@ -199,12 +205,13 @@ test.describe('AI side panel', () => {
     await expect.poll(async () => (await metrics()).distance).toBeLessThan(40);
     await expect(page.getByTestId('ai-jump-end')).toBeHidden();
 
-    await waitForAiRun(page, 'ai:follow');
+    await expect(page.getByTestId('ai-run-activity')).toBeHidden({
+      timeout: AI_RUN_FINISH_TIMEOUT_MS,
+    });
 
     // A little way up, the start of the answer lies above: one jump to it.
-    await transcript.evaluate((element) => {
-      element.scrollTop = element.scrollHeight - element.clientHeight - 200;
-    });
+    await transcript.hover();
+    await page.mouse.wheel(0, -300);
     const toStart = page.getByTestId('ai-jump-answer-start');
     await expect(toStart).toBeVisible();
     await toStart.click();
