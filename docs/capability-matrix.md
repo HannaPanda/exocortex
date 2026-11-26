@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-308 routes are reachable from at least one client; 177 from all three.
+310 routes are reachable from at least one client; 178 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -77,6 +77,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/ai/conversations/search` | ✓ | ✓ | ✓ | `exo_chat_search` |
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
+| `GET /api/ai/runs/:x/changes` | ✓ | ✓ | ✓ | `exo_ai_run_changes` |
 | `GET /api/ai/runs/:x/inspection` | ✓ | · | ✓ | `exo_ai_run_inspect` |
 | `GET /api/attachments/:x/image` | · | ✓ | ✓ | `exo_attachment_read_image` |
 | `GET /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_read_text` |
@@ -227,6 +228,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/ai/runs/:x/eval-case` | ✓ | · | ✓ | `exo_eval_case_from_run` |
+| `POST /api/ai/runs/:x/revert` | ✓ | · | · | — |
 | `POST /api/attachments/:x/download-tickets` | · | · | ✓ | `exo_attachment_download_ticket` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
 | `POST /api/attention/:x/resolve` | ✓ | ✓ | ✓ | `exo_attention_resolve` |
@@ -335,7 +337,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-77 of them. Each is covered by a documented exemption; the reasons
+78 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -392,6 +394,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/ai/conversations/:x/to-page`
 - `POST /api/ai/runs/:x/cancel` (reachable from MCP)
 - `POST /api/ai/runs/:x/eval-case` (reachable from MCP)
+- `POST /api/ai/runs/:x/revert`
 - `POST /api/auth/oauth2/consent`
 - `POST /api/documents/:x/collaboration-ticket`
 - `POST /api/documents/:x/cover`
@@ -451,4 +454,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 53 documented route exemptions.
+Counted against 54 documented route exemptions.

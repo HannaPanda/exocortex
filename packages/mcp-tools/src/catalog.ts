@@ -2,6 +2,7 @@ import { type AnyToolDefinition, type ToolDomain, type ToolSurface } from './too
 import { AGENT_MESSAGE_TOOLS } from './tools/agent-messages.js';
 import { AGENT_PROFILE_TOOLS } from './tools/agent-profiles.js';
 import { AGENT_SESSION_TOOLS } from './tools/agent-sessions.js';
+import { aiRunChangesTool } from './tools/ai-run-changes.js';
 import { aiRunInspectTool } from './tools/ai-run-inspection.js';
 import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
@@ -80,6 +81,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...RULES_TOOLS,
   ...AI_RUN_TOOLS,
   aiRunInspectTool,
+  aiRunChangesTool,
   ...CHAT_TOOLS,
   ...RESEARCH_TOOLS,
   ...MEMORY_TOOLS,

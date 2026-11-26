@@ -264,6 +264,11 @@ const EXEMPT = [
     reason:
       'Takes back everything one agent session wrote. Listing and reading a session are tools (`exo_agent_session_list`, `exo_agent_session_get`); undoing it is not, because an agent that can revert an afternoon in one call is a new way to lose work, and whether a session was a mistake is not a judgement the agent that made it can make. A person presses this in the admin area (ADR-022).',
   },
+  {
+    route: 'POST /api/ai/runs/:x/revert',
+    reason:
+      "Takes one AI run back, block by block, in the chat (issue #248). Reading what the run changed is a tool on both surfaces (`exo_ai_run_changes`), and it names the snapshot and the block ids, so a single change can still be undone with `exo_page_restore_blocks`. Undoing the whole run in one call is not, for ADR-022's reason: whether a run was a mistake is the judgement of the person it ran for, not of an agent, least of all the one that made it.",
+  },
 
   // -- covered through another route ---------------------------------------
   {
