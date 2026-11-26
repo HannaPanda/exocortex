@@ -24,6 +24,11 @@ import { type PdfPageSize, usePdfDocument, usePdfPageSizes } from './pdf-documen
  *
  * It is deliberately not a PDF reader. No text selection, no search, no
  * thumbnails, no annotations -- pages, zoom, and a click that knows its place.
+ *
+ * It does follow its box, though (issue #241): the default zoom is the pane's
+ * width, measured for as long as the pane exists, so a PDF block on a page
+ * whose width was changed, or a project pane being dragged, is drawn again for
+ * the room it has instead of keeping the size it opened with.
  */
 
 /** Zoom steps, and the one the buttons move between. */
@@ -33,6 +38,30 @@ const ZOOM_STEP = 0.25;
 
 /** Pages drawn ahead of and behind the viewport, so scrolling is not a blank. */
 const RENDER_MARGIN_PX = 1200;
+
+/**
+ * How long a page that already has a bitmap waits before drawing it again at a
+ * new scale. Dragging a panel edge changes the width every frame; the old
+ * bitmap is stretched to the new box meanwhile, which is blurry for a moment
+ * rather than wrong, and only the width the drag ends on is drawn.
+ */
+const REDRAW_DELAY_MS = 150;
+
+/** The padding around the column of pages, on each side (`p-3`). */
+const COLUMN_PADDING_PX = 12;
+
+/**
+ * Where the reader is: a page, and how far down it, as a share of its height.
+ *
+ * A share rather than pixels because a new scale changes every pixel offset
+ * while the reader is still looking at the same line of the same page; the
+ * horizontal centre is kept the same way for a zoom wider than the pane.
+ */
+interface ScrollAnchor {
+  page: number;
+  down: number;
+  across: number;
+}
 
 interface PdfViewProps {
   url: string;
@@ -53,40 +82,84 @@ export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
   const { document, pageCount, error } = usePdfDocument(url);
   const sizes = usePdfPageSizes(document);
 
-  const scrollRef = React.useRef<HTMLDivElement>(null);
+  // Kept in state as well as in a ref, so that measuring starts when the
+  // scroll pane exists. It does not exist on the first renders: while the
+  // pages are being measured the viewer shows its loading state instead. An
+  // effect keyed on the document ran in exactly that window, found nothing to
+  // observe, and never ran again, so every PDF was drawn at its own size in a
+  // box that followed the page width around it (issue #241).
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const [scroller, setScroller] = React.useState<HTMLDivElement | null>(null);
+  const attachScroller = React.useCallback((element: HTMLDivElement | null) => {
+    scrollRef.current = element;
+    setScroller(element);
+  }, []);
   const pageRefs = React.useRef(new Map<number, HTMLDivElement>());
+  const anchorRef = React.useRef<ScrollAnchor | null>(null);
   const [available, setAvailable] = React.useState(0);
   /** Null means "as wide as the pane". A number is a zoom the reader chose. */
   const [zoom, setZoom] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    const element = scrollRef.current;
-    if (element === null) return;
+    if (scroller === null) return;
+    // Called once on `observe` as well, so the first width needs no read of
+    // its own. Every later change of the room arrives here: the page width,
+    // a side panel opening, the window, a project pane being dragged.
     const observer = new ResizeObserver(([entry]) => {
       if (entry !== undefined) setAvailable(entry.contentRect.width);
     });
-    observer.observe(element);
-    setAvailable(element.clientWidth);
+    observer.observe(scroller);
     return () => observer.disconnect();
-  }, [document]);
+  }, [scroller]);
 
   const widest = sizes.reduce((max, size) => Math.max(max, size.width), 0);
-  // 24px is the padding around the column; fitting to the full width would put
-  // the page edge under the scrollbar.
-  const fitScale = widest > 0 && available > 0 ? (available - 24) / widest : 1;
+  // Fitting to the full width would put the page edge under the padding; the
+  // scrollbar has a gutter of its own (`scrollbar-gutter: stable`), so a page
+  // that grows tall enough to need one does not narrow the room it was fitted
+  // to and start over.
+  const fitScale =
+    widest > 0 && available > 0 ? Math.max(available - 2 * COLUMN_PADDING_PX, 1) / widest : 1;
   const scale = zoom ?? fitScale;
+  // No page is laid out before the room is known: one drawn at the file's own
+  // size first would be a wasted render and a visible jump.
+  const measured = available > 0 && sizes.length > 0;
 
+  // A new scale keeps the reader where they were. Before the paint, so the
+  // pages never show at the new size with the old scroll offset.
+  React.useLayoutEffect(() => {
+    const anchor = anchorRef.current;
+    const container = scrollRef.current;
+    if (container === null || anchor === null) return;
+    const page = pageRefs.current.get(anchor.page);
+    if (page === undefined) return;
+    container.scrollTop = page.offsetTop + anchor.down * page.offsetHeight;
+    container.scrollLeft = anchor.across * container.scrollWidth - container.clientWidth / 2;
+  }, [scale]);
+
+  const onScroll = React.useCallback(() => {
+    const container = scrollRef.current;
+    if (container === null) return;
+    anchorRef.current = readAnchor(container, pageRefs.current);
+  }, []);
+
+  // The scale at the moment the mark arrives, read through a ref so that a
+  // resize does not pull the pane back to the mark the reader scrolled away
+  // from; the anchor above keeps the place instead.
+  const scaleRef = React.useRef(scale);
+  React.useLayoutEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
   const first = highlights[0] ?? null;
   React.useEffect(() => {
-    if (first === null) return;
+    if (first === null || !measured) return;
     const page = pageRefs.current.get(first.page);
     const container = scrollRef.current;
     if (page === undefined || container === null) return;
     // Two thirds of a pane above the mark rather than centred: the answer to
     // "where is my cursor" is usually read downwards from there.
-    const target = page.offsetTop + first.top * scale - container.clientHeight / 3;
+    const target = page.offsetTop + first.top * scaleRef.current - container.clientHeight / 3;
     container.scrollTo({ top: Math.max(target, 0), behavior: 'smooth' });
-  }, [first, scale]);
+  }, [first, measured]);
 
   if (error !== null) {
     return (
@@ -114,9 +187,15 @@ export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
         onZoom={setZoom}
         onFit={() => setZoom(null)}
       />
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto bg-muted/40">
-        <div className="flex flex-col items-center gap-3 p-3">
-          {sizes.map((size, index) => (
+      {/* Positioned, so that a page's `offsetTop` is measured from here. */}
+      <div
+        ref={attachScroller}
+        onScroll={onScroll}
+        data-testid="pdf-scroll"
+        className="relative min-h-0 flex-1 overflow-auto bg-muted/40 [scrollbar-gutter:stable]"
+      >
+        <div className="flex w-max min-w-full flex-col items-center gap-3 p-3">
+          {(measured ? sizes : []).map((size, index) => (
             <PdfPage
               key={index}
               document={document}
@@ -139,6 +218,33 @@ export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
       </div>
     </div>
   );
+}
+
+/**
+ * The page at the top edge of the pane and how far down it the edge is.
+ *
+ * Null at the very top: a reader who has not scrolled stays at the top, and a
+ * share of the padding above the first page would be a few pixels of drift.
+ */
+function readAnchor(
+  scroller: HTMLElement,
+  pages: ReadonlyMap<number, HTMLElement>,
+): ScrollAnchor | null {
+  const top = scroller.scrollTop;
+  const across =
+    scroller.scrollWidth > 0
+      ? (scroller.scrollLeft + scroller.clientWidth / 2) / scroller.scrollWidth
+      : 0.5;
+  if (top <= 0 && scroller.scrollLeft <= 0) return null;
+  let found: ScrollAnchor | null = null;
+  for (const [number, page] of pages) {
+    if (page.offsetHeight <= 0) continue;
+    // The gap below a page belongs to it, so the edge always lands somewhere.
+    if (page.offsetTop <= top && (found === null || number > found.page)) {
+      found = { page: number, down: (top - page.offsetTop) / page.offsetHeight, across };
+    }
+  }
+  return found ?? { page: 1, down: 0, across };
 }
 
 function ZoomBar({
@@ -248,21 +354,29 @@ function PdfPage({
     // turns 9pt footnotes into grey mush, which is exactly the text somebody
     // zooms in to read.
     const ratio = window.devicePixelRatio > 0 ? window.devicePixelRatio : 1;
-    void document.getPage(pageNumber).then((page) => {
-      if (cancelled) return;
-      const viewport = page.getViewport({ scale: scale * ratio });
-      canvas.width = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-      const render = page.render({ canvas, viewport });
-      task = render;
-      render.promise.catch(() => {
-        // A cancelled render rejects, and a cancelled render is the ordinary
-        // case here: every zoom step replaces the one before it.
+    const draw = () => {
+      void document.getPage(pageNumber).then((page) => {
+        if (cancelled) return;
+        const viewport = page.getViewport({ scale: scale * ratio });
+        // Sized only now, together with the render: clearing the old bitmap
+        // any earlier would blank the page for the whole delay below.
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        const render = page.render({ canvas, viewport });
+        task = render;
+        render.promise.catch(() => {
+          // A cancelled render rejects, and a cancelled render is the ordinary
+          // case here: every zoom step replaces the one before it.
+        });
       });
-    });
+    };
+    // A first drawing is immediate; a redrawing waits for the width to settle.
+    const timer = canvas.width > 0 ? window.setTimeout(draw, REDRAW_DELAY_MS) : null;
+    if (timer === null) draw();
 
     return () => {
       cancelled = true;
+      if (timer !== null) window.clearTimeout(timer);
       task?.cancel();
     };
   }, [document, pageNumber, scale, near]);

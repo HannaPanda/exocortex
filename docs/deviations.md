@@ -332,6 +332,19 @@ was clicked. `packages/editor` does not load the renderer -- it is read by the
 server too -- and instead offers `MediaInfoResolver.renderPdf`, a box the host
 draws into.
 
+Drawing the pages ourselves also means following the box ourselves, which an
+`<object>` would have done for free. `PdfView` observes its scroll pane with a
+`ResizeObserver` from the moment the pane exists, and the default zoom is "as
+wide as the pane", so a new page width, an opened side panel, a dragged project
+split or a phone all redraw the pages for the room they now have (issue #241).
+Until then the observer was attached by an effect that ran while the viewer
+still showed its loading state, found no pane, and never ran again: every PDF
+was drawn at its own size inside a box that grew and shrank around it. A zoom
+the reader chose stays chosen, the place they were reading stays in view (a
+page and a share of its height, restored before the paint), and a page that
+already has a bitmap waits 150 ms before redrawing, so a drag draws the width
+it ends on rather than every width on the way.
+
 ## 20. The icon and emoji datasets are generated into the repository
 
 `packages/contracts/src/lucide-icon-names.ts`,
