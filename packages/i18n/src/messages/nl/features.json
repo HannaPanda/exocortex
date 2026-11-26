@@ -587,6 +587,16 @@
     },
     "where": "De voortgangsindicator in de chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Zien wat de AI heeft gewijzigd en dit ongedaan maken",
+    "summary": "Terwijl de ingebouwde AI bezig is, staat in de chat welke pagina deze leest of bewerkt. Onder het antwoord staan naderhand de pagina’s die zijn gewijzigd, en met „Ongedaan maken” draai je de wijzigingen terug zonder te overschrijven wat jij of iemand anders sindsdien heeft geschreven.",
+    "details": {
+      "p1": "Onder de voortgang van een lopende chat staat „Schrijft in …” of „Leest …” met de titel van de pagina; een klik brengt je ernaartoe. Als de pagina openstaat, lichten de alinea’s die de AI heeft gewijzigd kort op. Er wordt niets vergrendeld; je kunt overal gewoon doorschrijven.",
+      "p2": "Na de run toont een regel onder het antwoord de gewijzigde pagina’s. Een klik op een daarvan opent de pagina en markeert de alinea’s die door deze run zijn gewijzigd. „Ongedaan maken …” toont eerst elke wijziging met de bijbehorende status: wordt teruggedraaid, sindsdien door iemand gewijzigd, of staat er alweer zoals voorheen.",
+      "p3": "Het ongedaan maken gebeurt blok voor blok, en alleen voor wat er nog precies zo staat als de AI het heeft achtergelaten. Heeft iemand een van deze alinea’s daarna bewerkt, dan blijft deze staan en wordt dit gemeld in plaats van overschreven. De hele run ongedaan maken kan alleen de persoon voor wie deze heeft gewerkt; agents lezen de lijst met wijzigingen via exo_ai_run_changes en zetten afzonderlijke blokken hoogstens gericht terug met exo_page_restore_blocks."
+    },
+    "where": "In de AI-chat: onder de voortgang tijdens een run, en onder het antwoord van een run die pagina’s heeft gewijzigd."
+  },
   "lauf-inspektor": {
     "title": "Bekijken wat een AI-uitvoering heeft gedaan",
     "summary": "Voor elke uitvoering van de ingebouwde AI is er een tijdlijn: welk model via welke provider heeft geantwoord, welke tools het hoe lang heeft aangeroepen, wat het heeft gekost en waaruit de context bestond, tot op de afzonderlijke pagina’s nauwkeurig.",

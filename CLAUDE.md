@@ -920,6 +920,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   run would use; `compactRequestedAt` holds the conversation for at most two
   minutes (`ai_conversation_compacting`), and the outcome is on the row and in
   an event. MCP only: a run holds its own conversation against it.
+- ADR-094: an AI run is taken back block by block. Every journalled agent
+  write records the top-level blocks it changed as fingerprints with a group
+  (`AgentWriteJournal.writtenBlocks`), never content; a group is one stretch of
+  changes and goes back whole or not at all. The undo judges each group against
+  the page as it is now: as the run left it is restored through the ordinary
+  `restoreBlocks`, anything else is named and left alone, with no grace window.
+  Reading a run's changes is `exo_ai_run_changes` on both surfaces; the undo
+  (`POST /api/ai/runs/:id/revert`) is the browser's and the requester's only.
+  The pulse names the page of the call in flight; there is still no editing
+  state (ADR-065).
 
 Full list: `docs/adr/`.
 

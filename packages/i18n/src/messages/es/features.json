@@ -587,6 +587,16 @@
     },
     "where": "El indicador de progreso en el chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Ver qué ha cambiado la IA y deshacerlo",
+    "summary": "Mientras la IA integrada trabaja, el chat muestra qué página está leyendo o en cuál está escribiendo. Debajo de su respuesta aparecen después las páginas modificadas, y «Deshacer» revierte sus cambios sin sobrescribir lo que tú u otra persona hayáis escrito desde entonces.",
+    "details": {
+      "p1": "Bajo el progreso de un chat en curso se muestra «Escribiendo en…» o «Leyendo…» junto al título de la página; un clic te lleva allí. Si la página está abierta, los párrafos que la IA ha modificado se iluminan brevemente. No se bloquea nada, puedes seguir escribiendo en cualquier parte.",
+      "p2": "Tras la ejecución, una línea bajo la respuesta enumera las páginas modificadas. Al hacer clic en una de ellas, se abre y resalta los párrafos que modificó esa ejecución. «Deshacer…» muestra primero cada cambio con su estado: se deshará, modificado por alguien desde entonces o ya está como antes.",
+      "p3": "La reversión se hace bloque a bloque, y solo de lo que aún sigue exactamente como lo dejó la IA. Si alguien editó uno de esos párrafos después, se conserva y se indica, en lugar de sobrescribirse. Solo la persona para la que trabajó la ejecución puede deshacerla al completo; los agentes leen la lista de cambios mediante exo_ai_run_changes y, como mucho, recuperan bloques específicos con exo_page_restore_blocks."
+    },
+    "where": "En el chat de la IA: bajo el progreso durante una ejecución y bajo la respuesta de una ejecución que haya modificado páginas."
+  },
   "lauf-inspektor": {
     "title": "Comprobar qué ha hecho una ejecución de IA",
     "summary": "Para cada ejecución de la IA integrada hay una cronología: qué modelo ha respondido a través de qué proveedor, qué herramientas ha invocado y durante cuánto tiempo, cuánto ha costado y de qué se componía el contexto, hasta llegar a las páginas individuales.",

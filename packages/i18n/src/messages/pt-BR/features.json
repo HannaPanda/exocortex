@@ -587,6 +587,16 @@
     },
     "where": "O indicador de progresso no chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Ver o que a IA alterou e desfazer as mudanças",
+    "summary": "Enquanto a IA integrada trabalha, o chat mostra qual página ela está lendo ou em qual está escrevendo. Depois, abaixo da resposta dela, aparecem as páginas que foram alteradas, e “Desfazer” reverte as alterações feitas por ela sem sobrescrever o que você ou outra pessoa escreveu desde então.",
+    "details": {
+      "p1": "Abaixo do progresso de um chat em andamento, aparece “Escrevendo em…” ou “Lendo…” junto com o título da página; um clique leva você até lá. Se a página estiver aberta, os parágrafos alterados pela IA acendem brevemente. Nada fica bloqueado durante o processo, você pode continuar escrevendo em qualquer lugar.",
+      "p2": "Após a execução, uma linha abaixo da resposta lista as páginas alteradas. Um clique em uma delas abre a página e destaca os parágrafos modificados por essa execução. “Desfazer…” mostra primeiro cada alteração com seu status: será desfeita, alterada por alguém desde então, ou já está como antes.",
+      "p3": "A reversão é feita bloco por bloco, e apenas no que ainda estiver exatamente como a IA deixou. Se alguém editou um desses parágrafos depois disso, ele é mantido e mencionado, em vez de ser sobrescrito. Somente a pessoa para quem a IA trabalhou pode reverter a execução inteira; agentes leem a lista de alterações via exo_ai_run_changes e, no máximo, restauram blocos específicos de forma direcionada com exo_page_restore_blocks."
+    },
+    "where": "No chat da IA: abaixo do progresso durante uma execução e abaixo da resposta de uma execução que alterou páginas."
+  },
   "lauf-inspektor": {
     "title": "Ver o que uma execução de IA fez",
     "summary": "Para cada execução da IA integrada, há uma linha do tempo: qual modelo respondeu por meio de qual provedor, quais ferramentas chamou e por quanto tempo, quanto isso custou e do que o contexto era composto, até as páginas individuais.",

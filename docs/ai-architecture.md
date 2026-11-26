@@ -1246,6 +1246,44 @@ the worker notices through its own heartbeat write (a status-filtered
 aborts the run's `AbortController`, at most one heartbeat interval later. See
 "Time budget of a run" below and ADR-017.
 
+## What a run changed, and taking it back (issue #248, ADR-094)
+
+Every run writes under its own agent session `ai-run-<runId>`
+(`run-tools.ts`), so the write journal of ADR-022 holds the run's writes. Each
+journalled write that took a snapshot also records the top-level blocks it
+changed in `AgentWriteJournal.writtenBlocks`: `[{ id, after, group }]`, where
+`after` is a fingerprint (`blockFingerprint`, `packages/editor/src/written-blocks.ts`)
+of the block as the write left it, `null` for a removed block, and `group`
+numbers the stretches of consecutive changes between blocks the write left
+alone. `journalWrittenBlocks` computes it inside the write's transaction from
+the snapshot and the stored content (`apps/api/src/common/agent-journal-blocks.ts`).
+
+- **While it works.** The pulse names the page of the tool call in flight
+  (`currentToolPage` in `run-labels.ts`): "Schreibt in „Titel“" when the call's
+  `target` is the page, "Liest „Titel“" when only its `subject` is, linked. The
+  trace names pages by title where the reader may open them. No page carries an
+  editing state (ADR-065).
+- **After it.** `GET /api/ai/conversations/:id` answers `runWrites`, the pages
+  each run of the conversation wrote, straight from the journal. The transcript
+  puts a line under the run's last message (`run-changes-line.tsx`) naming
+  them; a page link opens the page and asks its editor, through
+  `lib/run-highlight.ts`, to mark the run's blocks (`AgentEditMarkers`, the
+  same decorations as a live notice, held twelve seconds).
+- **The reading.** `GET /api/ai/runs/:id/changes` (`RunChangesService`, tool
+  `exo_ai_run_changes`) folds the run's journal per page (earliest snapshot,
+  latest fingerprint per block, groups joined across writes) and judges every
+  group against the page now (`judgeRunBlocks` in `apps/api/src/ai/run-changes.ts`):
+  `revertible` when every block is as the run left it, `reverted` when every
+  block is as before the run, `changed_since` otherwise. A page with a write
+  whose blocks were not recorded is `not_recorded`, one without a snapshot
+  `no_snapshot`, one the reader cannot read `unavailable`.
+- **The undo.** `POST /api/ai/runs/:id/revert` (requester only, not a tool)
+  calls `DocumentDiffService.restoreBlocks` per page with the snapshot before
+  the run and the blocks of every revertible group, and answers what it restored
+  plus the reading afterwards. A second undo finds nothing left and writes
+  nothing. The dialog (`run-revert-dialog.tsx`) shows the reading first and the
+  button second.
+
 ## Adding a provider
 
 1. Implement `AiProvider` in `packages/ai/src/<name>-provider.ts`. Honour `signal`,

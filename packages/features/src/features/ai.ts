@@ -176,6 +176,14 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_ai_run_get', 'exo_ai_run_cancel'],
   }),
   defineFeature({
+    id: 'ki-lauf-zuruecknehmen',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#248', 'ADR-094'],
+    ui: {},
+    tools: ['exo_ai_run_changes'],
+  }),
+  defineFeature({
     id: 'lauf-inspektor',
     area: 'ki',
     since: '2026-10-11',

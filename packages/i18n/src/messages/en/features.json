@@ -587,6 +587,16 @@
     },
     "where": "The progress indicator in chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "See what the AI changed and undo it",
+    "summary": "While the built-in AI is working, the chat shows which page it is currently reading or writing to. Afterwards, the pages it changed are listed under its reply, and “Undo” reverts its changes without overwriting what you or anyone else has written since.",
+    "details": {
+      "p1": "Under the progress of an ongoing chat, it says “Writing to …” or “Reading …” with the title of the page—one click takes you there. If the page is open, the paragraphs the AI changed briefly light up. Nothing is locked in the process; you can keep writing anywhere.",
+      "p2": "After the run, a line below the reply lists the changed pages. Clicking on one of them opens it and highlights the paragraphs that this run changed. “Undo …” first shows each change along with its status: will be reverted, edited by someone since, or already in its previous state.",
+      "p3": "Changes are reverted block by block, and only what is still exactly as the AI left it. If someone edited one of these paragraphs afterwards, it stays intact and is noted instead of being overwritten. Only the person for whom the run worked can undo the entire run; agents read the list of changes via exo_ai_run_changes and at most selectively restore individual blocks using exo_page_restore_blocks."
+    },
+    "where": "In the AI chat: under the progress during a run, and under the reply of a run that changed pages."
+  },
   "lauf-inspektor": {
     "title": "See what an AI run did",
     "summary": "For every run of the built-in AI, there is a timeline: which model responded via which provider, which tools it called and for how long, how much it cost, and what the context consisted of, right down to individual pages.",

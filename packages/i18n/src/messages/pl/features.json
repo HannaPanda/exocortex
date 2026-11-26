@@ -587,6 +587,16 @@
     },
     "where": "Wskaźnik postępu na czacie."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Sprawdzanie zmian wprowadzonych przez AI i ich cofanie",
+    "summary": "Gdy wbudowane AI pracuje, na czacie widać, którą stronę właśnie czyta lub w której pisze. Pod odpowiedzią pojawia się lista zmienionych stron, a opcja „Cofnij” wycofuje te zmiany bez nadpisywania tego, co od tamtej pory zostało napisane przez ciebie lub kogoś innego.",
+    "details": {
+      "p1": "Pod paskiem postępu trwającego czatu pojawia się komunikat „Pisze w…” lub „Czyta…” wraz z tytułem strony – kliknięcie przenosi cię do niej. Jeśli strona jest otwarta, akapity zmienione przez AI na chwilę się podświetlają. Nic nie jest przy tym blokowane, możesz pisać dalej w dowolnym miejscu.",
+      "p2": "Po zakończeniu działania wiersz pod odpowiedzią wymienia zmienione strony. Kliknięcie jednej z nich otwiera ją i zaznacza akapity zmodyfikowane w ramach tego przebiegu. „Cofnij…” najpierw pokazuje każdą zmianę wraz z jej statusem: do cofnięcia, zmieniona od tego czasu przez kogoś innego lub już przywrócona do poprzedniego stanu.",
+      "p3": "Cofanie odbywa się blok po bloku i dotyczy tylko tego, co pozostało dokładnie w takiej postaci, w jakiej zostawiło to AI. Jeśli ktoś później edytował dany akapit, pozostanie on nienaruszony i zostanie wymieniony, zamiast ulec nadpisaniu. Cały przebieg może cofnąć tylko osoba, na rzecz której AI pracowało; agenci odczytują listę zmian przez exo_ai_run_changes i mogą co najwyżej celowo przywracać pojedyncze bloki za pomocą exo_page_restore_blocks."
+    },
+    "where": "Na czacie AI: pod paskiem postępu w trakcie działania oraz pod odpowiedzią po przebiegu, który zmodyfikował strony."
+  },
   "lauf-inspektor": {
     "title": "Sprawdzanie, co zrobiło uruchomienie AI",
     "summary": "Dla każdego uruchomienia wbudowanej AI dostępna jest oś czasu: jaki model odpowiedział i przez jakiego dostawcę, jakie narzędzia wywołał i jak długo to trwało, ile to kosztowało oraz z czego składał się kontekst – aż po poszczególne strony.",

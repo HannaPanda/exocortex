@@ -1,0 +1,94 @@
+# ADR-094: An AI run is taken back block by block, and a block somebody changed since is named
+
+- Status: accepted
+- Date: 2026-11-26
+- Relates to: ADR-022 (agent provenance and the bulk revert), ADR-055 (blocks,
+  not offsets), ADR-065 (an edit notice says what just happened), ADR-084
+  (`ai.run.tool_call` carries its page as `subject`), ADR-025 (the same
+  capability for the browser, the built-in AI and MCP), issue #248
+
+## Context
+
+The pieces for "what did the AI just do to my page, and take it back" were all
+there, and none of them reached the person in the chat. Every run of the
+built-in AI already writes under its own agent session (`ai-run-<id>`), so the
+journal of ADR-022 knew exactly which pages a run wrote and which snapshot came
+before each write. The editor marked the blocks a write changed for a few
+seconds (ADR-065), the pulse under a running chat named the tool and the page
+id, and a page's history could restore single blocks of a snapshot (issue #77).
+
+What was missing is the part in between. The chat said "Werkzeug
+exo_page_patch (Seite hcpq9w…)" while it worked and nothing at all afterwards;
+the session revert sits in the admin area, takes back whole pages and decides
+"somebody changed this since" from a timestamp with a two-minute grace window,
+inside which it overwrites a person's edit without saying so. That is
+defensible for an agent's afternoon. It is the wrong tool for the question a
+person asks right after an answer, "nimm das zurück", where the person is very
+likely still on the page and has very likely typed in it.
+
+## Decision
+
+**The journal records which top-level blocks a write changed, as fingerprints.**
+`AgentWriteJournal.writtenBlocks` holds `[{ id, after, group }]` for every
+snapshotted write that carries an agent session: `after` is a short hash of the
+block as the write left it (`null` when it removed the block), computed inside
+the write's own transaction from the snapshot it just took and the content it
+just stored (`journalWrittenBlocks`, `written-blocks.ts`). Fingerprints, never
+content: the snapshot is where the content is, as ADR-022 decided.
+
+**Blocks that only mean something together are one change.** A narrow write
+that rewords a paragraph usually removes the block and inserts a new one with a
+new identifier. Putting the old one back while somebody has since reworded the
+new one would leave both standing. So each write groups its changed blocks into
+stretches between blocks it left alone, the groups of one run join through the
+blocks they share, and a group goes back whole or not at all.
+
+**Each group is judged against the page as it is now, and there are three
+answers.** Every block as the run left it: the group is restored. Every block
+as it was before the run: already back. Anything else, including a block the
+open editor stored slightly differently from what the run wrote: somebody else
+has been here, and the group is named and left alone. No grace window and no
+timestamp: the content decides, which is the only test that cannot overwrite a
+person's sentence typed a second after the run ended. Ambiguity is refused, as
+ADR-055 refuses it for a write.
+
+**The undo is the ordinary block restore.** `POST /api/ai/runs/:id/revert`
+calls `DocumentDiffService.restoreBlocks` once per page with the snapshot
+before the run's first write and the blocks of every revertible group, so the
+open editing session is told, the restore is audited and snapshotted, and the
+restore can itself be restored. Nothing new writes a page.
+
+**Reading what a run changed is a tool, the undo is not.**
+`GET /api/ai/runs/:id/changes` is `exo_ai_run_changes` on both agent surfaces,
+and it names the snapshot and the block ids. Taking a whole run back in one call
+stays a person's act in the browser, for ADR-022's reason: whether a run was a
+mistake is the judgement of the person it ran for. An agent that has been asked
+to undo one specific change can still do it with `exo_page_restore_blocks`, one
+page and one decision at a time. Only the person the run worked for may take it
+back; any member who may read the run may read its changes.
+
+**What is shown while a run works names a place, not a state.** The pulse
+under a running chat says "Schreibt in „Titel“" or "Liest „Titel“" for the tool
+call in flight, from the `target` and `subject` the worker already publishes
+(ADR-084), and links to the page. There is still no "is being edited" state on
+the page and nothing is locked (ADR-065): a write lands as one transaction and
+the editor marks its blocks afterwards. "Auf der Seite zeigen" asks the editor
+for the run's blocks once, from the run's changes, and marks them with the same
+decorations for a while.
+
+## Consequences
+
+- An AI run's changes can be taken back from the chat without fear of losing
+  what a person wrote afterwards; the price is that a group is held back as soon
+  as one of its blocks moved, even when the move was harmless.
+- A block restore puts content back, not order: a block the run only moved
+  stays where it is. Renames, moves and pages a run created are named but not
+  undone, as in ADR-022.
+- Rows written before the column existed carry `NULL` and their pages are
+  reported as "not recorded"; the page's history still has the snapshot.
+- Every journalled agent write now derives two states in its transaction. That
+  is milliseconds for an ordinary page and nothing for a write without an agent
+  session, which is every write a person makes in the editor.
+- The session revert in the admin area is unchanged. It answers a different
+  question, about an external agent's afternoon, and keeps its whole-page
+  restore and its documented grace window.

@@ -587,6 +587,16 @@
     },
     "where": "L’indicateur de progression dans le chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Voir ce que l’IA a modifié et l’annuler",
+    "summary": "Pendant que l’IA intégrée travaille, le chat indique quelle page elle est en train de lire ou de modifier. Sous sa réponse s’affichent ensuite les pages qu’elle a modifiées, et « Annuler » défait ses modifications sans écraser ce que toi ou quelqu’un d’autre avez écrit depuis.",
+    "details": {
+      "p1": "Sous la progression d’un chat en cours s’affiche « Écrit dans… » ou « Lit… » avec le titre de la page, et un clic t’y emmène. Si la page est ouverte, les paragraphes modifiés par l’IA s’illuminent brièvement. Rien n’est verrouillé pour autant, tu peux continuer à écrire partout.",
+      "p2": "Après l’exécution, une ligne sous la réponse liste les pages modifiées. Cliquer sur l’une d’elles l’ouvre et met en surbrillance les paragraphes modifiés lors de cette exécution. « Annuler… » montre d’abord chaque modification avec son état : va être annulée, modifiée par quelqu’un depuis, ou déjà rétablie à son état initial.",
+      "p3": "L’annulation se fait bloc par bloc, et uniquement pour ce qui se trouve encore exactement comme l’IA l’a laissé. Si quelqu’un a retouché l’un de ces paragraphes après coup, il reste intact et est mentionné, plutôt que d’être écrasé. Seule la personne pour qui l’exécution a tourné peut annuler toute l’exécution ; les agents lisent la liste des modifications via exo_ai_run_changes et ne restaurent au besoin que des blocs précis avec exo_page_restore_blocks."
+    },
+    "where": "Dans le chat IA : sous la progression pendant une exécution, et sous la réponse d’une exécution ayant modifié des pages."
+  },
   "lauf-inspektor": {
     "title": "Voir ce qu’une exécution d’IA a fait",
     "summary": "Chaque exécution de l’IA intégrée dispose d’une frise chronologique : quel modèle a répondu via quel fournisseur, quels outils ont été appelés et pendant combien de temps, ce que cela a coûté et de quoi le contexte était composé, jusqu’aux pages individuelles.",

@@ -587,6 +587,16 @@
     },
     "where": "L’indicatore di avanzamento nella chat."
   },
+  "ki-lauf-zuruecknehmen": {
+    "title": "Vedere cosa ha modificato l’IA e annullarlo",
+    "summary": "Mentre l’IA integrata lavora, nella chat vedi quale pagina sta leggendo o su quale sta scrivendo. Sotto la sua risposta trovi poi l’elenco delle pagine modificate, e «Annulla» revoca le sue modifiche senza sovrascrivere quanto scritto nel frattempo da te o da altri.",
+    "details": {
+      "p1": "Sotto l’avanzamento di una chat in corso compare «Scrive in …» o «Legge …» con il titolo della pagina; basta un clic per andarci. Se la pagina è aperta, i paragrafi modificati dall’IA si illuminano brevemente. Nulla viene bloccato: puoi continuare a scrivere ovunque.",
+      "p2": "Al termine dell’esecuzione, una riga sotto la risposta elenca le pagine modificate. Facendo clic su una di esse la apri ed evidenzi i paragrafi modificati in quel passaggio. «Annulla …» mostra prima ciascuna modifica con il relativo stato: da annullare, modificata nel frattempo da qualcuno oppure già identica a prima.",
+      "p3": "L’annullamento avviene blocco per blocco e tocca solo ciò che è rimasto esattamente come lasciato dall’IA. Se qualcuno ha modificato uno di questi paragrafi nel frattempo, questo viene mantenuto e segnalato anziché sovrascritto. L’intera esecuzione può essere annullata solo dalla persona per cui l’IA ha lavorato; gli agenti leggono l’elenco delle modifiche tramite exo_ai_run_changes e ripristinano singoli blocchi in modo mirato al massimo con exo_page_restore_blocks."
+    },
+    "where": "Nella chat dell’IA: sotto l’avanzamento durante un’esecuzione e sotto la risposta di un’esecuzione che ha modificato pagine."
+  },
   "lauf-inspektor": {
     "title": "Scopri cosa ha fatto un’esecuzione dell’IA",
     "summary": "Per ogni esecuzione dell’IA integrata c’è una cronologia: quale modello ha risposto e tramite quale provider, quali strumenti ha chiamato e per quanto tempo, quanto è costato e da cosa era composto il contesto, fino alle singole pagine.",
