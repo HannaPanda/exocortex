@@ -350,7 +350,10 @@ export class ChatCompletionsProvider implements AiProvider {
    * never part of a prompt or of an answer to the person.
    */
   private async refusalMessage(response: Response, request: AiGenerateRequest): Promise<string> {
-    const detail = providerErrorDetail(await response.text().catch(() => ''));
+    const detail = redactKey(
+      providerErrorDetail(await response.text().catch(() => '')),
+      this.options.apiKey,
+    );
     this.options.logger.error(`${this.dialect.label} request failed`, undefined, {
       status: response.status,
       correlationId: request.correlationId,
@@ -696,6 +699,19 @@ function mergeToolCallDeltas(
 }
 
 /** The provider's own reason for a refusal: `error.message` when it is JSON, else the text. */
+/**
+ * A refusal's text with the key taken out (issue #225). Some providers quote
+ * the key they refused, whole or in part ("Incorrect API key provided:
+ * sk-...1234"), and this text goes to the log and onto the run's error. The
+ * key itself is replaced wherever it appears, and so is anything shaped like
+ * a provider key, because a quoted fragment is not the key and still is not
+ * the log's to keep.
+ */
+export function redactKey(text: string, apiKey: string): string {
+  const withoutKey = apiKey.length >= 8 ? text.split(apiKey).join('[key]') : text;
+  return withoutKey.replace(/\bsk-[\w*.-]{6,}/g, '[key]');
+}
+
 export function providerErrorDetail(body: string): string {
   let detail = body.trim();
   try {

@@ -301,6 +301,34 @@ describe('OpenRouterProvider.stream', () => {
       status: 400,
     });
   });
+
+  it('keeps a refused key out of the error it reports (issue #225)', async () => {
+    const key = 'sk-or-v1-0123456789abcdef0123456789abcdef';
+    const body = JSON.stringify({
+      error: { code: 401, message: `Incorrect API key provided: ${key} (also sk-or-v1-****cdef)` },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(body, { status: 401 })),
+    );
+    const refusing = new OpenRouterProvider({
+      apiKey: key,
+      baseUrl: 'https://openrouter.test/api/v1',
+      defaultModel: 'test/model',
+      logger,
+      appUrl: 'https://exocortex.test',
+    });
+
+    const events = await collect(refusing.stream(request));
+
+    // 401 is about the key, not the routing: no fallback reads it as "not now".
+    expect(events).toContainEqual({
+      type: 'error',
+      code: 'ai_provider_unavailable',
+      message: 'OpenRouter responded with 401: Incorrect API key provided: [key] (also [key])',
+      status: 401,
+    });
+  });
 });
 
 /**
