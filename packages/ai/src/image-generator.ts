@@ -1,7 +1,9 @@
 import { deflateSync } from 'node:zlib';
 
+import { type AiUsage } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
+import { providerErrorDetail, redactKey } from './chat-completions-provider';
 import { AiProviderError } from './provider';
 
 /**
@@ -29,10 +31,33 @@ export interface GeneratedImage {
   mimeType: string;
   /** Model that produced it, for logs and audit metadata. */
   model: string;
+  /**
+   * What the picture cost, as the provider reported it (issue #252). Every
+   * picture is a paid call, so it is recorded like a run's turn and counted
+   * in the usage report.
+   */
+  usage: AiUsage;
+}
+
+/**
+ * An answer that came back without a picture, which the provider still
+ * charged for: the model read the prompt and wrote text instead. Carries the
+ * usage so the cost reaches the report even though nothing was drawn.
+ */
+export class AiImageEmptyError extends AiProviderError {
+  public readonly usage: AiUsage | null;
+
+  constructor(message: string, usage: AiUsage | null) {
+    super('ai_image_empty', message);
+    this.name = 'AiImageEmptyError';
+    this.usage = usage;
+  }
 }
 
 export interface ImageGenerator {
   readonly model: string;
+  /** Who is paid for the picture: `openrouter`, or `mock`, which costs nothing. */
+  readonly provider: string;
   generate(input: GenerateImageInput): Promise<GeneratedImage>;
 }
 
@@ -80,6 +105,7 @@ function decodeDataUri(url: string): { data: Buffer; mimeType: string } | null {
  */
 export class OpenRouterImageGenerator implements ImageGenerator {
   public readonly model: string;
+  public readonly provider = 'openrouter';
 
   private readonly options: OpenRouterImageGeneratorOptions;
 
@@ -93,6 +119,7 @@ export class OpenRouterImageGenerator implements ImageGenerator {
     const timeout =
       controller === null ? null : setTimeout(() => controller.abort(), input.timeoutMs);
     const signal = controller?.signal ?? input.signal ?? null;
+    const startedAt = Date.now();
 
     try {
       const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
@@ -112,47 +139,87 @@ export class OpenRouterImageGenerator implements ImageGenerator {
               content: `${input.prompt.slice(0, MAX_IMAGE_PROMPT_CHARS)}\n\n${COVER_STYLE_HINT}`,
             },
           ],
+          // The price of the picture comes back in the answer, so the usage
+          // report can say what it cost instead of guessing (issue #252).
+          usage: { include: true },
         }),
         signal,
       });
 
       if (!response.ok) {
-        const detail = await response.text();
+        // The key never leaves in a refusal: some providers quote the one
+        // they refused, and this text reaches the log (issue #225).
+        const detail = redactKey(
+          providerErrorDetail(await response.text().catch(() => '')),
+          this.options.apiKey,
+        );
         this.options.logger.error('Image generation request failed', undefined, {
           status: response.status,
           model: this.options.model,
           correlationId: input.correlationId,
+          detail,
         });
         throw new AiProviderError(
           'ai_image_unavailable',
-          `Image model responded with ${response.status}: ${detail.slice(0, 200)}`,
+          `Image model responded with ${response.status}${detail === '' ? '' : `: ${detail}`}`,
+          { status: response.status },
         );
       }
 
-      const payload = (await response.json()) as {
-        choices?: { message?: { images?: { image_url?: { url?: string } }[] } }[];
-      };
+      const payload = (await response.json()) as ImageCompletion;
+      const usage = this.usageOf(payload, Date.now() - startedAt);
       const url = payload.choices?.[0]?.message?.images?.[0]?.image_url?.url;
       if (url === undefined) {
-        throw new AiProviderError(
-          'ai_image_empty',
+        throw new AiImageEmptyError(
           'The image model answered without an image. It may not support image output.',
+          usage,
         );
       }
 
       const decoded = decodeDataUri(url);
       if (decoded === null) {
-        throw new AiProviderError(
-          'ai_image_empty',
+        throw new AiImageEmptyError(
           'The image model returned something that was not an inline image',
+          usage,
         );
       }
 
-      return { data: decoded.data, mimeType: decoded.mimeType, model: this.options.model };
+      return { data: decoded.data, mimeType: decoded.mimeType, model: this.options.model, usage };
     } finally {
       if (timeout !== null) clearTimeout(timeout);
     }
   }
+
+  private usageOf(payload: ImageCompletion, durationMs: number): AiUsage {
+    const cost = payload.usage?.cost;
+    return {
+      inputTokens: payload.usage?.prompt_tokens ?? 0,
+      outputTokens: payload.usage?.completion_tokens ?? 0,
+      cachedInputTokens: payload.usage?.prompt_tokens_details?.cached_tokens ?? 0,
+      provider: this.provider,
+      servedBy:
+        typeof payload.provider === 'string' && payload.provider.length > 0
+          ? payload.provider
+          : null,
+      model: payload.model ?? this.options.model,
+      providerCostMicroUsd:
+        typeof cost === 'number' && cost >= 0 ? Math.round(cost * 1_000_000) : null,
+      durationMs,
+    };
+  }
+}
+
+/** The part of OpenRouter's answer an image call reads. */
+interface ImageCompletion {
+  model?: string;
+  provider?: string;
+  usage?: {
+    prompt_tokens?: number;
+    completion_tokens?: number;
+    cost?: number;
+    prompt_tokens_details?: { cached_tokens?: number };
+  };
+  choices?: { message?: { images?: { image_url?: { url?: string } }[] } }[];
 }
 
 // ---------------------------------------------------------------------------
@@ -225,6 +292,7 @@ export function createSolidPng(
  */
 export class MockImageGenerator implements ImageGenerator {
   public readonly model = 'mock-image';
+  public readonly provider = 'mock';
 
   async generate(input: GenerateImageInput): Promise<GeneratedImage> {
     let hash = 0;
@@ -240,6 +308,16 @@ export class MockImageGenerator implements ImageGenerator {
       data: createSolidPng(256, 80, rgb),
       mimeType: 'image/png',
       model: this.model,
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+        cachedInputTokens: 0,
+        provider: this.provider,
+        servedBy: null,
+        model: this.model,
+        providerCostMicroUsd: 0,
+        durationMs: 0,
+      },
     };
   }
 }

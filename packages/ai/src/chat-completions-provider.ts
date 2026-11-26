@@ -698,7 +698,6 @@ function mergeToolCallDeltas(
   }
 }
 
-/** The provider's own reason for a refusal: `error.message` when it is JSON, else the text. */
 /**
  * A refusal's text with the key taken out (issue #225). Some providers quote
  * the key they refused, whole or in part ("Incorrect API key provided:
@@ -712,6 +711,7 @@ export function redactKey(text: string, apiKey: string): string {
   return withoutKey.replace(/\bsk-[\w*.-]{6,}/g, '[key]');
 }
 
+/** The provider's own reason for a refusal: `error.message` when it is JSON, else the text. */
 export function providerErrorDetail(body: string): string {
   let detail = body.trim();
   try {

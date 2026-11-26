@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createLogger } from '@exocortex/logger';
 
-import { createSolidPng, MockImageGenerator, OpenRouterImageGenerator } from './image-generator';
+import {
+  AiImageEmptyError,
+  createSolidPng,
+  MockImageGenerator,
+  OpenRouterImageGenerator,
+} from './image-generator';
 import { AiProviderError } from './provider';
 import { createImageGenerator } from './registry';
 
@@ -120,6 +125,120 @@ describe('OpenRouterImageGenerator', () => {
     );
 
     await expect(generator().generate({ prompt: 'x', correlationId: 'c1' })).rejects.toThrow(/429/);
+  });
+
+  it('asks for the price and reports what the picture cost (issue #252)', async () => {
+    const png = createSolidPng(4, 4, [1, 2, 3]);
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          model: 'test/image-20261001',
+          provider: 'Google',
+          usage: { prompt_tokens: 40, completion_tokens: 1290, cost: 0.0387 },
+          choices: [
+            {
+              message: {
+                images: [{ image_url: { url: `data:image/png;base64,${png.toString('base64')}` } }],
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await generator().generate({ prompt: 'ein Bild', correlationId: 'c1' });
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+    const body = JSON.parse(String(init?.body)) as { usage?: unknown };
+    expect(body.usage).toEqual({ include: true });
+    expect(result.usage).toMatchObject({
+      inputTokens: 40,
+      outputTokens: 1290,
+      provider: 'openrouter',
+      servedBy: 'Google',
+      model: 'test/image-20261001',
+      providerCostMicroUsd: 38_700,
+    });
+  });
+
+  it('leaves the cost open when the provider named none, rather than calling it free', async () => {
+    const png = createSolidPng(4, 4, [1, 2, 3]);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            usage: { prompt_tokens: 40, completion_tokens: 1290 },
+            choices: [
+              {
+                message: {
+                  images: [
+                    { image_url: { url: `data:image/png;base64,${png.toString('base64')}` } },
+                  ],
+                },
+              },
+            ],
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const result = await generator().generate({ prompt: 'ein Bild', correlationId: 'c1' });
+
+    expect(result.usage.providerCostMicroUsd).toBeNull();
+    expect(result.usage.model).toBe('test/image');
+  });
+
+  it('keeps the usage of an answer without a picture, because it was still paid for', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            usage: { prompt_tokens: 40, completion_tokens: 12, cost: 0.0001 },
+            choices: [{ message: { content: 'Ich kann nicht malen.' } }],
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const failure = await generator()
+      .generate({ prompt: 'x', correlationId: 'c1' })
+      .catch((error: unknown) => error);
+
+    expect(failure).toBeInstanceOf(AiImageEmptyError);
+    expect((failure as AiImageEmptyError).usage?.providerCostMicroUsd).toBe(100);
+  });
+
+  it('carries the status of a refused key and never the key itself', async () => {
+    const apiKey = 'sk-or-v1-testonlynotarealkey000000';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ error: { message: `User not found for key ${apiKey}` } }), {
+          status: 401,
+        }),
+      ),
+    );
+
+    const failure = await new OpenRouterImageGenerator({
+      apiKey,
+      baseUrl: 'https://example.invalid/api/v1',
+      model: 'test/image',
+      appUrl: 'https://exocortex.test',
+      logger,
+    })
+      .generate({ prompt: 'x', correlationId: 'c1' })
+      .catch((error: unknown) => error);
+
+    expect(failure).toBeInstanceOf(AiProviderError);
+    expect((failure as AiProviderError).status).toBe(401);
+    expect((failure as AiProviderError).message).not.toContain(apiKey);
+    expect((failure as AiProviderError).message).toContain('[key]');
   });
 });
 
