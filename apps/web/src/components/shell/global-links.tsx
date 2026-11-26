@@ -12,6 +12,7 @@ import {
   NetworkIcon,
   Share2Icon,
   ShieldIcon,
+  SparklesIcon,
   UserRoundIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -149,6 +150,14 @@ function globalLinks(
       label: t('language'),
       testId: 'open-language',
       icon: LanguagesIcon,
+      group: 'settings',
+    },
+    // How the chat behaves for this person (issue #282), on every device.
+    {
+      href: '/einstellungen/ki-chat',
+      label: t('aiChat'),
+      testId: 'open-ai-chat-settings',
+      icon: SparklesIcon,
       group: 'settings',
     },
   ];

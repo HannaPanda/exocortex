@@ -25,8 +25,10 @@ import { type TranscriptFollow } from './use-transcript-follow';
  * right now, and the two one-line notices below it.
  *
  * It follows what arrives until the reader scrolls up to read something
- * earlier (issue #242); then two jumps appear over its lower edge: back to the
- * start of the latest answer, and on to the end, which resumes following.
+ * earlier (issue #242), or, for a reader who chose to stay at the answer's
+ * start, holds the question at the top (issue #282). Either way two jumps
+ * appear over its lower edge once there is somewhere to go: back to the
+ * start of the latest answer, and on to the end, which follows from there.
  */
 export function AiTranscriptArea({
   scrollRef,
@@ -148,7 +150,9 @@ function TranscriptJumps({
     scrollRef.current?.focus({ preventScroll: true });
   };
   const showStart = !follow.following && follow.answerStartAbove;
-  const showEnd = !follow.following;
+  // Staying at the answer's start (issue #282), the transcript is not
+  // following and often at its end anyway: then there is nowhere to go.
+  const showEnd = !follow.following && !follow.atEnd;
   if (!showStart && !showEnd) return null;
 
   return (

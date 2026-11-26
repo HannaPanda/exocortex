@@ -9,6 +9,18 @@
     "loading": "Loading language …",
     "loadError": "Could not load language"
   },
+  "chat": {
+    "title": "AI chat",
+    "intro": "How the AI chat behaves for you. This choice applies to your account, so on every device where you are signed in.",
+    "scrollLegend": "While a response is generating",
+    "follow": "Follow along",
+    "answerStart": "Stay at the start of the response",
+    "followHint": "The chat scrolls down as long as you are at the bottom. If you scroll up, it pauses until you reach the bottom again.",
+    "answerStartHint": "Your question moves up once when the response begins. After that, the view stops moving automatically: the response grows downward, and you read it from the beginning. You can jump to the bottom at any time using the button in the bottom right of the chat.",
+    "saveFailed": "Could not save setting. Please try again in a moment.",
+    "loading": "Loading settings…",
+    "loadError": "Could not load settings"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Memory",

@@ -15,6 +15,7 @@ import {
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { useDocument } from '@/lib/api/document-queries';
+import { useChatScrollPreference } from '@/lib/api/preferences-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
@@ -219,6 +220,8 @@ function AiPanelBody({
   });
 
   const shownError = error ?? lastRunFailure;
+  // The reader's own choice, on every device (issue #282); following until it is known.
+  const chatScroll = useChatScrollPreference();
   const follow = useTranscriptFollow(
     scrollRef,
     transcriptContentKey({
@@ -228,6 +231,7 @@ function AiPanelBody({
       notices: [commandNotice?.id ?? null, notice, shownError],
     }),
     activeConversationId,
+    chatScroll.mode,
   );
 
   const modelChoice = resolveModelChoice({
@@ -325,8 +329,9 @@ function AiPanelBody({
 
       if (response.run !== null) {
         run.beginRun(response.run.id);
-        // Whoever asks wants to see the answer arrive, wherever they were reading.
-        follow.follow();
+        // Whoever asks wants to see the answer arrive, wherever they were
+        // reading: at the end, or from its start (issue #282).
+        follow.sent(response.userMessage?.id ?? null);
       }
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : t('requestFailed'));
@@ -340,6 +345,10 @@ function AiPanelBody({
         activeConversationId={activeConversationId}
         onSelect={setActiveConversationId}
         onCreateNew={() => void startNewConversation()}
+        chatScroll={chatScroll.mode}
+        onChatScrollChange={(mode) =>
+          chatScroll.change(mode, { onError: () => setError(t('chatScrollFailed')) })
+        }
       />
 
       {shared === null ? null : (

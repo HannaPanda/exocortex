@@ -692,6 +692,16 @@
     },
     "where": "W panelu AI obok każdej strony. Oba przyciski pojawiają się w prawym dolnym rogu czatu, gdy tylko przewiniesz w górę."
   },
+  "chat-am-antwortanfang": {
+    "title": "Czytanie odpowiedzi od samego początku",
+    "summary": "Zamiast przewijać ekran wraz z pojawiającym się tekstem, czat AI może pozostać na początku odpowiedzi: twoje pytanie przesuwa się raz na samą górę, a odpowiedź rozwija się w dół, bez konieczności przewijania z powrotem.",
+    "details": {
+      "p1": "W menu panelu AI (trzy kropki obok „Nowy czat”), w Ustawienia → Czat AI oraz za pomocą Strg + K możesz wybrać zachowanie czatu podczas generowania odpowiedzi. „Podążaj za tekstem” to opcja domyślna: widok śledzi najnowszy tekst, dopóki nie przewiniesz do góry. „Zostań na początku odpowiedzi” przesuwa twoje pytanie na górną krawędź tuż po rozpoczęciu generowania, a potem widok nie przesuwa się już samoczynnie.",
+      "p2": "Gdy odpowiedź jest jeszcze krótka, pod spodem pozostaje puste miejsce, aby pytanie mogło pozostać na górze; przestrzeń ta zmniejsza się wraz z wydłużaniem się odpowiedzi. Dwa przyciski w prawym dolnym rogu czatu pozostają w obu przypadkach: „Do końca czatu” przenosi cię na sam dół i od tego momentu czat znów podąża za tekstem. Ten wybór jest przypisany do twojego konta i obowiązuje na każdym urządzeniu.",
+      "p3": "Agenci odczytują i zmieniają to ustawienie za pomocą exo_me_preferences i exo_me_preferences_set, jako chatScroll z wartościami follow oraz answerStart."
+    },
+    "where": "Ustawienia, Czat AI. Ponadto w menu panelu AI i w palecie poleceń."
+  },
   "chat-je-tab": {
     "title": "Praca w wielu kartach z różnymi czatami",
     "summary": "Każda karta przeglądarki ma swój własny czat, a każda strona zapamiętuje w niej, który czat był ostatnio otwarty obok niej. Jeśli zmienisz czat w jednej karcie, pozostałe karty pozostaną bez zmian.",

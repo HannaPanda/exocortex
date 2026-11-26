@@ -264,6 +264,85 @@ test.describe('AI side panel', () => {
       .toBeLessThan(40);
   });
 
+  /**
+   * Issue #282: a reader who chose to stay at the answer's start sees the
+   * question brought to the top once, and then the view stays put while a
+   * long answer grows out of sight below it, also when the run ends and the
+   * panel below the transcript changes. The choice is made in the panel's
+   * menu and lands on the account, which is put back afterwards, because the
+   * test above expects the default.
+   */
+  test.describe('staying at the answer start', () => {
+    test.afterEach(async ({ request, baseURL }) => {
+      await request.patch('/api/me/preferences', {
+        data: { chatScroll: 'follow' },
+        headers: { origin: baseURL as string },
+      });
+    });
+
+    test('brings the question to the top once and stays there', async ({ page }) => {
+      test.setTimeout(AI_TEST_TIMEOUT_MS);
+      await page.goto('/arbeitsbereich');
+      await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+      await createPage(page, `Antwortanfang ${Date.now().toString(36)}`);
+
+      await page.getByTestId('context-tab-ai').click();
+      await page.getByTestId('ai-panel-menu').click();
+      const toggle = page.getByTestId('ai-stay-at-answer-start');
+      await expect(toggle).toHaveAttribute('aria-checked', 'false');
+      await toggle.click();
+      await expect(toggle).toHaveAttribute('aria-checked', 'true');
+      await page.keyboard.press('Escape');
+      await expect
+        .poll(async () => {
+          const response = await page.request.get('/api/me/preferences');
+          return ((await response.json()) as { chatScroll: string }).chatScroll;
+        })
+        .toBe('answerStart');
+
+      await page
+        .getByTestId('ai-input')
+        .fill(
+          'Schreibe eine nummerierte Liste mit 60 Punkten, je ein Satz über Wolken. Ohne Werkzeuge, ohne Einleitung.',
+        );
+      await page.getByTestId('ai-send').click();
+
+      const transcript = page.getByTestId('ai-transcript');
+      const question = page.getByTestId('ai-question').last();
+      /** How far the question stands below the transcript's upper edge. */
+      const questionOffset = async (): Promise<number> => {
+        const box = await question.boundingBox();
+        const frame = await transcript.boundingBox();
+        return box !== null && frame !== null ? box.y - frame.y : 999;
+      };
+      const below = (): Promise<number> =>
+        transcript.evaluate(
+          (element) => element.scrollHeight - element.scrollTop - element.clientHeight,
+        );
+
+      // The question goes to the top once it is there ...
+      await expect.poll(questionOffset, { timeout: AI_RUN_FINISH_TIMEOUT_MS }).toBeLessThan(40);
+      await expect.poll(questionOffset).toBeGreaterThanOrEqual(0);
+
+      // ... and stays there while the answer grows out of sight below it.
+      await expect.poll(below, { timeout: AI_RUN_FINISH_TIMEOUT_MS }).toBeGreaterThan(300);
+      expect(await questionOffset()).toBeLessThan(40);
+      await expect(page.getByTestId('ai-jump-end')).toBeVisible();
+
+      // The run ends, the activity line goes and the trace folds: the
+      // question has not moved.
+      await expect(page.getByTestId('ai-run-activity')).toBeHidden({
+        timeout: AI_RUN_FINISH_TIMEOUT_MS,
+      });
+      await page.waitForTimeout(500);
+      expect(Math.abs(await questionOffset())).toBeLessThan(40);
+
+      // The end is one press away, as in the other mode.
+      await page.getByTestId('ai-jump-end').click();
+      await expect.poll(below).toBeLessThan(40);
+    });
+  });
+
   test('keeps quiet while a fast background job is materialized', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

@@ -692,6 +692,16 @@
     },
     "where": "En el panel de la IA junto a cada página. Ambos botones aparecen abajo a la derecha en el chat en cuanto te desplazas hacia arriba."
   },
+  "chat-am-antwortanfang": {
+    "title": "Leer una respuesta desde el principio",
+    "summary": "En lugar de desplazarse con la respuesta a medida que crece, el chat de IA puede quedarse al principio de la respuesta: tu pregunta se desplaza una vez hacia arriba y la respuesta sigue creciendo hacia abajo, sin que tengas que volver a subir.",
+    "details": {
+      "p1": "En el menú de la sección de IA (los tres puntos junto a «Nuevo chat»), en Ajustes → Chat de IA y con Ctrl + K puedes elegir qué hace el chat mientras se genera una respuesta. «Seguir el texto» es la opción predeterminada: la vista sigue el texto más reciente hasta que te desplaces hacia arriba. «Quedarse al inicio de la respuesta» desplaza tu pregunta una sola vez al borde superior al empezar la respuesta; a partir de ahí, la vista ya no se mueve por sí sola.",
+      "p2": "Si la respuesta aún es corta, queda espacio libre debajo para que la pregunta permanezca arriba; ese espacio se va reduciendo a medida que la respuesta crece. Los dos botones abajo a la derecha en el chat se mantienen en ambos casos: «Ir al final del chat» te lleva al final, y desde ahí el chat vuelve a seguir el texto. La elección está vinculada a tu cuenta y se aplica en cualquier dispositivo.",
+      "p3": "Los agentes leen y configuran este ajuste mediante exo_me_preferences y exo_me_preferences_set, como chatScroll con los valores follow y answerStart."
+    },
+    "where": "Ajustes, Chat de IA. También en el menú de la sección de IA y en la paleta de comandos."
+  },
   "chat-je-tab": {
     "title": "Trabajar en varias pestañas con distintos chats",
     "summary": "Cada pestaña del navegador tiene su propio chat y cada página recuerda en ella qué chat tuvo al lado por última vez. Si cambias de chat en una pestaña, las demás se quedan como están.",

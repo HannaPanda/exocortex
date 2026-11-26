@@ -33,6 +33,7 @@
     "connections": "Verbindingen",
     "notifications": "Meldingen",
     "language": "Taal",
+    "aiChat": "AI-chat",
     "admin": "Beheer",
     "menuLabel": "Account en ruimtes",
     "menuLabelWithNew": "{count, plural, one {Account en ruimtes (# nieuwe functie)} other {Account en ruimtes (# nieuwe functies)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "verwijderd archief herstellen",
     "newChat": "Nieuwe chat starten",
     "newChatKeywords": "chat gesprek conversatie ai assistent vraag nieuw",
+    "chatScroll": {
+      "stayAtAnswerStart": "AI-chat: aan begin van antwoord blijven",
+      "follow": "AI-chat: met het antwoord meescrollen",
+      "hint": "Geldt voor je account",
+      "keywords": "ai chat scrollen meescrollen volgen antwoord begin lezen blijven staan autoscroll"
+    },
     "contextOpen": "Contextpaneel openen",
     "contextOpenPlaceholder": "Welk tabblad?",
     "contextOpenKeywords": "context contextpaneel tabblad tab paneel zijbalk rechts",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Taal wijzigen",
         "keywords": "taal language vertaling instellingen nederlands english"
+      },
+      "aiChat": {
+        "label": "AI-chatinstellingen",
+        "keywords": "ai chat assistent instellingen scrollen meescrollen begin van antwoord"
       },
       "workspaces": {
         "label": "Alle werkruimten weergeven",

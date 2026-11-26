@@ -23,6 +23,7 @@ apps/web/src/components/palette/
   shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, focus, fullscreen, trash
   create-commands.tsx      a new page, database, project, saved search, a page from a template
   workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
+  chat-scroll-commands.tsx switching the AI chat between following an answer and staying at its start
   contributions.tsx        usePaletteContribution: commands a mounted surface offers
   palette-requests.tsx     usePaletteRequest: asking a control elsewhere to act
   page-commands.tsx        the open page's actions (body and top-bar menu), layout and move menus

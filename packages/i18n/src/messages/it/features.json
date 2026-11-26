@@ -692,6 +692,16 @@
     },
     "where": "Nell’area IA accanto a ogni pagina. I due pulsanti compaiono in basso a destra nella chat non appena scorri verso l’alto."
   },
+  "chat-am-antwortanfang": {
+    "title": "Leggere una risposta dal suo inizio",
+    "summary": "Invece di seguire lo scorrimento del testo mentre viene generato, la chat IA può rimanere ferma all’inizio della risposta: la tua domanda si sposta una volta verso l’alto e la risposta si espande verso il basso, senza dover scorrere indietro.",
+    "details": {
+      "p1": "Nel menu dell’area IA (i tre puntini accanto a «Nuova chat»), in Impostazioni → Chat IA e con Ctrl + K puoi scegliere il comportamento della chat durante la generazione di una risposta. «Segui» è l’impostazione predefinita: la vista segue il testo più recente finché non scorri verso l’alto. «Rimani all’inizio della risposta» sposta la tua domanda una sola volta verso il bordo superiore all’avvio della risposta; dopodiché la vista non si muove più automaticamente.",
+      "p2": "Se la risposta è ancora breve, lo spazio sottostante rimane vuoto affinché la domanda possa restare in alto; lo spazio si riduce man mano che la risposta cresce. I due pulsanti in basso a destra nella chat rimangono in entrambi i casi: «Vai alla fine della chat» ti porta in fondo, e da lì la chat riprende a seguire il testo. La scelta è legata al tuo account e si applica a qualsiasi dispositivo.",
+      "p3": "Gli agenti leggono e impostano questa preferenza tramite exo_me_preferences ed exo_me_preferences_set, come chatScroll con i valori follow e answerStart."
+    },
+    "where": "Impostazioni, Chat IA. Inoltre nel menu dell’area IA e nella tavolozza dei comandi."
+  },
   "chat-je-tab": {
     "title": "Lavorare con chat diverse in più schede",
     "summary": "Ogni scheda del browser ha la propria chat e ogni pagina ricorda quale chat era aperta per ultima accanto ad essa. Se cambi chat in una scheda, le altre schede rimangono invariate.",

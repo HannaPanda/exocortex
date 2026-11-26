@@ -33,6 +33,7 @@
     "connections": "Verbindungen",
     "notifications": "Benachrichtigungen",
     "language": "Sprache",
+    "aiChat": "KI-Chat",
     "admin": "Verwaltung",
     "menuLabel": "Konto und Bereiche",
     "menuLabelWithNew": "{count, plural, one {Konto und Bereiche (# neue Funktion)} other {Konto und Bereiche (# neue Funktionen)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "gelöscht archiv wiederherstellen",
     "newChat": "Neuen Chat beginnen",
     "newChatKeywords": "chat gespräch unterhaltung ki assistent frage neu",
+    "chatScroll": {
+      "stayAtAnswerStart": "KI-Chat: am Antwortanfang bleiben",
+      "follow": "KI-Chat: mit der Antwort mitlaufen",
+      "hint": "Gilt für dein Konto",
+      "keywords": "ki chat scrollen mitlaufen folgen antwort anfang lesen stehen bleiben autoscroll"
+    },
     "contextOpen": "Kontextbereich öffnen",
     "contextOpenPlaceholder": "Welcher Reiter?",
     "contextOpenKeywords": "kontext kontextbereich reiter tab panel seitenleiste rechts",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Sprache ändern",
         "keywords": "sprache language übersetzung einstellungen deutsch english"
+      },
+      "aiChat": {
+        "label": "KI-Chat-Einstellungen",
+        "keywords": "ki chat assistent einstellungen scrollen mitlaufen antwortanfang"
       },
       "workspaces": {
         "label": "Alle Arbeitsbereiche anzeigen",

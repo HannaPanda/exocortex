@@ -5,7 +5,11 @@
     "newChat": "Neuer Chat",
     "sharedRunsIn": "Dieser Chat läuft in deinem Arbeitsbereich „{workspace}“ und wird von dort bezahlt. Auf der geteilten Seite darf die KI genau das, was deine Freigabe erlaubt.",
     "sharedWorkspaceLabel": "Arbeitsbereich für diesen Chat",
-    "sharedNeedsWorkspace": "Für den KI-Chat auf einer geteilten Seite brauchst du einen eigenen Arbeitsbereich."
+    "sharedNeedsWorkspace": "Für den KI-Chat auf einer geteilten Seite brauchst du einen eigenen Arbeitsbereich.",
+    "menu": "Chat-Optionen",
+    "stayAtAnswerStart": "Am Antwortanfang bleiben",
+    "stayAtAnswerStartHint": "Deine Frage rückt einmal nach oben, danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter.",
+    "chatScrollFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal."
   },
   "transcript": {
     "unavailableTitle": "Chat nicht verfügbar",

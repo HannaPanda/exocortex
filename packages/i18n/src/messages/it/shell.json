@@ -33,6 +33,7 @@
     "connections": "Connessioni",
     "notifications": "Notifiche",
     "language": "Lingua",
+    "aiChat": "Chat IA",
     "admin": "Amministrazione",
     "menuLabel": "Account e aree",
     "menuLabelWithNew": "{count, plural, one {Account e aree (# nuova funzione)} many {Account e aree (# nuove funzioni)} other {Account e aree (# nuove funzioni)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "eliminato archivio ripristina",
     "newChat": "Inizia una nuova chat",
     "newChatKeywords": "chat conversazione ia assistente domanda nuovo nuova",
+    "chatScroll": {
+      "stayAtAnswerStart": "Chat IA: resta all’inizio della risposta",
+      "follow": "Chat IA: scorri con la risposta",
+      "hint": "Vale per il tuo account",
+      "keywords": "ia chat scorrere seguire risposta inizio leggere fermo autoscroll"
+    },
     "contextOpen": "Apri pannello contestuale",
     "contextOpenPlaceholder": "Quale scheda?",
     "contextOpenKeywords": "contesto pannello contestuale scheda tab pannello barra laterale destra",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Cambia lingua",
         "keywords": "lingua language traduzione impostazioni italiano english"
+      },
+      "aiChat": {
+        "label": "Impostazioni chat IA",
+        "keywords": "ia chat assistente impostazioni scorrere seguire inizio risposta"
       },
       "workspaces": {
         "label": "Mostra tutte le aree di lavoro",

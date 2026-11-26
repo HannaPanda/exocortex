@@ -692,6 +692,16 @@
     },
     "where": "Im KI-Bereich neben jeder Seite. Die beiden Knöpfe erscheinen unten rechts im Chat, sobald du nach oben gescrollt hast."
   },
+  "chat-am-antwortanfang": {
+    "title": "Eine Antwort von ihrem Anfang an lesen",
+    "summary": "Statt mit der wachsenden Antwort mitzulaufen, kann der KI-Chat am Anfang der Antwort stehen bleiben: deine Frage rückt einmal nach oben, und die Antwort wächst nach unten weiter, ohne dass du zurückscrollen musst.",
+    "details": {
+      "p1": "Im Menü des KI-Bereichs (die drei Punkte neben „Neuer Chat“), unter Einstellungen → KI-Chat und mit Strg + K wählst du, was der Chat tut, während eine Antwort entsteht. „Mitlaufen“ ist der Standard: die Ansicht folgt dem neuesten Text, bis du nach oben scrollst. „Am Antwortanfang bleiben“ schiebt deine Frage beim Start der Antwort einmal an den oberen Rand, danach bewegt sich die Ansicht nicht mehr von selbst.",
+      "p2": "Ist die Antwort noch kurz, bleibt darunter Platz frei, damit die Frage oben stehen kann; der Platz schrumpft, während die Antwort wächst. Die beiden Knöpfe unten rechts im Chat bleiben in beiden Fällen: „Zum Ende des Chats“ bringt dich ans Ende, und von dort läuft der Chat wieder mit. Die Wahl gehört zu deinem Konto und gilt auf jedem Gerät.",
+      "p3": "Agenten lesen und setzen die Einstellung über exo_me_preferences und exo_me_preferences_set, als chatScroll mit den Werten follow und answerStart."
+    },
+    "where": "Einstellungen, KI-Chat. Außerdem im Menü des KI-Bereichs und in der Befehlspalette."
+  },
   "chat-je-tab": {
     "title": "In mehreren Tabs mit verschiedenen Chats arbeiten",
     "summary": "Jeder Browser-Tab hat seinen eigenen Chat, und jede Seite merkt sich darin, welcher Chat zuletzt neben ihr stand. Wechselst du in einem Tab den Chat, bleiben die anderen Tabs, wie sie sind.",

@@ -33,6 +33,7 @@
     "connections": "Connexions",
     "notifications": "Notifications",
     "language": "Langue",
+    "aiChat": "Chat IA",
     "admin": "Administration",
     "menuLabel": "Compte et espaces",
     "menuLabelWithNew": "{count, plural, one {Compte et espaces (# nouvelle fonctionnalité)} many {Compte et espaces (# nouvelles fonctionnalités)} other {Compte et espaces (# nouvelles fonctionnalités)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "supprimé corbeille archive restaurer",
     "newChat": "Démarrer une nouvelle discussion",
     "newChatKeywords": "discussion conversation chat ia assistant question nouveau",
+    "chatScroll": {
+      "stayAtAnswerStart": "Chat IA : rester au début de la réponse",
+      "follow": "Chat IA : suivre la réponse",
+      "hint": "S’applique à ton compte",
+      "keywords": "ia chat défilement suivre réponse début lire rester autoscroll"
+    },
     "contextOpen": "Ouvrir le panneau contextuel",
     "contextOpenPlaceholder": "Quel onglet ?",
     "contextOpenKeywords": "contexte panneau onglet volet barre latérale droite",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Changer de langue",
         "keywords": "langue language traduction paramètres français english"
+      },
+      "aiChat": {
+        "label": "Paramètres du chat IA",
+        "keywords": "ia chat assistant paramètres défilement suivre début réponse"
       },
       "workspaces": {
         "label": "Afficher tous les espaces de travail",

@@ -100,6 +100,7 @@ const ACCOUNT_PLACES = new Set([
   'navigate-connections',
   'navigate-notifications',
   'navigate-language',
+  'navigate-aiChat',
 ]);
 const WORKSPACE_PLACES = new Set(['navigate-workspaceSettings']);
 const ADMIN_PLACES = new Set(['navigate-adminSettings', 'navigate-adminModels']);

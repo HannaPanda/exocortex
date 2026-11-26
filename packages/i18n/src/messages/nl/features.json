@@ -692,6 +692,16 @@
     },
     "where": "In het AI-gedeelte naast elke pagina. De twee knoppen verschijnen rechtsonder in de chat zodra je omhoog hebt gescrold."
   },
+  "chat-am-antwortanfang": {
+    "title": "Een antwoord vanaf het begin lezen",
+    "summary": "In plaats van mee te scrollen met het groeiende antwoord, kan de AI-chat aan het begin van het antwoord blijven staan: je vraag schuift eenmaal naar boven en het antwoord groeit naar beneden toe verder, zonder dat je terug hoeft te scrollen.",
+    "details": {
+      "p1": "In het menu van het AI-gedeelte (de drie puntjes naast „Nieuwe chat”), onder Instellingen → AI-chat en met Strg + K kies je wat de chat doet terwijl er een antwoord ontstaat. „Meelopen” is de standaard: de weergave volgt de nieuwste tekst tot je naar boven scrollt. „Aan het begin van het antwoord blijven” schuift je vraag bij de start van het antwoord eenmaal naar de bovenrand; daarna beweegt de weergave niet meer vanzelf.",
+      "p2": "Is het antwoord nog kort, dan blijft er daaronder ruimte vrij, zodat de vraag bovenaan kan blijven staan; deze ruimte krimpt naarmate het antwoord groeit. De twee knoppen rechtsonder in de chat blijven in beide gevallen: „Naar het einde van de chat” brengt je naar het einde, en vanaf daar scrollt de chat weer mee. De keuze hoort bij je account en geldt op elk apparaat.",
+      "p3": "Agenten lezen en wijzigen de instelling via exo_me_preferences en exo_me_preferences_set, als chatScroll met de waarden follow en answerStart."
+    },
+    "where": "Instellingen, AI-chat. Ook in het menu van het AI-gedeelte en in het opdrachtpalet."
+  },
   "chat-je-tab": {
     "title": "In meerdere tabbladen met verschillende chats werken",
     "summary": "Elk browsertabblad heeft zijn eigen chat, en elke pagina onthoudt daarin welke chat er het laatst naast openstond. Wissel je in het ene tabblad van chat, dan blijven de andere tabbladen zoals ze zijn.",

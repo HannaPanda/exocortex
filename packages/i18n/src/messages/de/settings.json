@@ -9,6 +9,18 @@
     "loading": "Sprache wird geladen …",
     "loadError": "Die Sprache konnte nicht geladen werden"
   },
+  "chat": {
+    "title": "KI-Chat",
+    "intro": "Wie sich der KI-Chat für dich verhält. Die Wahl gilt für dein Konto, also auf jedem Gerät, auf dem du angemeldet bist.",
+    "scrollLegend": "Während eine Antwort entsteht",
+    "follow": "Mitlaufen",
+    "answerStart": "Am Antwortanfang bleiben",
+    "followHint": "Der Chat rückt mit, solange du unten bist. Scrollst du nach oben, bleibt er stehen, bis du wieder unten ankommst.",
+    "answerStartHint": "Deine Frage rückt beim Start der Antwort einmal nach oben. Danach bewegt sich die Ansicht nicht mehr von selbst: die Antwort wächst nach unten weiter, und du liest sie von ihrem Anfang an. Ans Ende kommst du jederzeit mit dem Knopf unten rechts im Chat.",
+    "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
+    "loading": "Einstellungen werden geladen …",
+    "loadError": "Die Einstellungen konnten nicht geladen werden"
+  },
   "groups": {
     "ai": "KI",
     "memory": "Gedächtnis",

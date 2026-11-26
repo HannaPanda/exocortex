@@ -9,6 +9,18 @@
     "loading": "Ładowanie języka…",
     "loadError": "Nie udało się załadować języka"
   },
+  "chat": {
+    "title": "Czat SI",
+    "intro": "Jak zachowuje się czat SI. Ten wybór dotyczy twojego konta, a więc każdego urządzenia, na którym jesteś zalogować się.",
+    "scrollLegend": "Podczas generowania odpowiedzi",
+    "follow": "Przewijaj automatycznie",
+    "answerStart": "Pozostań na początku odpowiedzi",
+    "followHint": "Czat przesuwa się w dół, dopóki jesteś na samym dole. Jeśli przewiniesz w górę, zatrzyma się, aż znów dotrzesz na sam dół.",
+    "answerStartHint": "Twoje pytanie przesuwa się w górę na początku odpowiedzi. Potem widok nie przesuwa się już samoczynnie: odpowiedź rozwija się w dół, a ty czytasz ją od początku. Na sam dół możesz przejść w każdej chwili za pomocą przycisku w prawym dolnym rogu czatu.",
+    "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
+    "loading": "Ładowanie ustawień…",
+    "loadError": "Nie udało się załadować ustawień"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Pamięć",

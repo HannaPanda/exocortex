@@ -25,6 +25,14 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'chat-am-antwortanfang',
+    area: 'ki',
+    since: '2026-11-26',
+    references: ['#282', '#242'],
+    ui: { path: '/einstellungen/ki-chat' },
+    claims: { screens: ['/einstellungen/ki-chat'] },
+  }),
+  defineFeature({
     id: 'chat-je-tab',
     area: 'ki',
     since: '2026-11-26',

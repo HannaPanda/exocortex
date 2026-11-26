@@ -9,6 +9,18 @@
     "loading": "Taal wordt geladen …",
     "loadError": "De taal kon niet worden geladen"
   },
+  "chat": {
+    "title": "AI-chat",
+    "intro": "Hoe de AI-chat zich voor jou gedraagt. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd.",
+    "scrollLegend": "Terwijl een antwoord wordt gegenereerd",
+    "follow": "Meebewegen",
+    "answerStart": "Aan het begin van het antwoord blijven",
+    "followHint": "De chat scrollt mee zolang je onderaan bent. Scroll je naar boven, dan stopt hij tot je weer onderaan bent.",
+    "answerStartHint": "Je vraag schuift bij het begin van het antwoord eenmalig naar boven. Daarna beweegt het beeld niet meer vanzelf: het antwoord groeit naar beneden door en je leest het vanaf het begin. Met de knop rechtsonder in de chat ga je direct naar het einde.",
+    "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog eens.",
+    "loading": "Instellingen worden geladen …",
+    "loadError": "De instellingen konden niet worden geladen"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Geheugen",

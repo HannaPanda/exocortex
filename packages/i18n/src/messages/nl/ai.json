@@ -5,7 +5,11 @@
     "newChat": "Nieuwe chat",
     "sharedRunsIn": "Deze chat draait in je werkruimte „{workspace}” en wordt van daaruit betaald. Op de gedeelde pagina mag de AI precies wat je deling toestaat.",
     "sharedWorkspaceLabel": "Werkruimte voor deze chat",
-    "sharedNeedsWorkspace": "Voor de AI-chat op een gedeelde pagina heb je een eigen werkruimte nodig."
+    "sharedNeedsWorkspace": "Voor de AI-chat op een gedeelde pagina heb je een eigen werkruimte nodig.",
+    "menu": "Chatopties",
+    "stayAtAnswerStart": "Bij begin van antwoord blijven",
+    "stayAtAnswerStartHint": "Je vraag schuift eenmalig omhoog; daarna blijft het scherm staan en groeit het antwoord naar beneden verder.",
+    "chatScrollFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog een keer."
   },
   "transcript": {
     "unavailableTitle": "Chat niet beschikbaar",

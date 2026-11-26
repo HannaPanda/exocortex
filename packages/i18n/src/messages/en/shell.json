@@ -33,6 +33,7 @@
     "connections": "Connections",
     "notifications": "Notifications",
     "language": "Language",
+    "aiChat": "AI Chat",
     "admin": "Administration",
     "menuLabel": "Account and areas",
     "menuLabelWithNew": "{count, plural, one {Account and areas (# new feature)} other {Account and areas (# new features)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "deleted archive restore trash",
     "newChat": "Start new chat",
     "newChatKeywords": "chat conversation ai assistant question new",
+    "chatScroll": {
+      "stayAtAnswerStart": "AI Chat: Stay at start of answer",
+      "follow": "AI Chat: Follow response as it generates",
+      "hint": "Applies to your account",
+      "keywords": "ai chat scroll follow response answer start read stay autoscroll"
+    },
     "contextOpen": "Open context panel",
     "contextOpenPlaceholder": "Which tab?",
     "contextOpenKeywords": "context context panel tab tab panel sidebar right",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Change language",
         "keywords": "language translation settings german english"
+      },
+      "aiChat": {
+        "label": "AI Chat settings",
+        "keywords": "ai chat assistant settings scroll follow response start"
       },
       "workspaces": {
         "label": "Show all workspaces",

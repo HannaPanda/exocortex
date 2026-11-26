@@ -2884,9 +2884,17 @@
       "source": "fbf13a954f4d930f",
       "output": "073d9d34754d4172"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "28009384d77d1b9b"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "cf344c7a8b0f4e0b"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "d32044524174b97b"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -2907,6 +2915,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "c99dc9d0acab73da"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "71fc42b4ddbc54f1"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "c438e7b5614b9a84"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -12052,6 +12068,30 @@
       "source": "711ef1b97501061e",
       "output": "533c4c907d9f5015"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "ce5d442410ce20e3"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "c43d9490e18b0051"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "b87d5e44b80e1cbc"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "7fbdd8d06438641b"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "cdbfb5ff6229f3cb"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "03aba33d9fd53c37"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "61fc55b1048b3774"
@@ -17056,6 +17096,46 @@
       "source": "a11a0bd5225429d7",
       "output": "a5af2a9ec78712ac"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "1b17cc9180aa7799"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "20dfaec71159160f"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "273869c12606c741"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "9b95a38d1aaf422a"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "076d09cd979e6c0f"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "ed9c827a46f71f8c"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "e71a13459ccdcc88"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "9036d879833df473"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "85f913b04f30b4d1"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "5a3fb0f77198d732"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "11c47f5a4736c5c0"
@@ -19868,6 +19948,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "4b42c6690ebeb867"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "fe98f42cd51a8389"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "9f760ab207394414"
@@ -20119,6 +20203,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "57f9e56fba2d7fe6"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "4f476e44be68ff65"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8e5b5eef50045f96"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "f854b378d5aff22c"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "08f70dcc7e48e4a6"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -20387,6 +20487,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "e86e5adc406e8e33"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "19a05e81c90edd67"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "71d9df92482b796e"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -26826,9 +26934,17 @@
       "source": "fbf13a954f4d930f",
       "output": "f5d6a8abefd8e953"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "2c3b23dd33356aee"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "826e695888dcc8a6"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "22f3455fd09ce403"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -26849,6 +26965,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "ac7373db50226201"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "24d3b17f0ac93fb8"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "1408d7b3e09f9114"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -35994,6 +36118,30 @@
       "source": "711ef1b97501061e",
       "output": "b5253645dd4c8d83"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "68f47011b2dcc28e"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "97c109ef75006ba3"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "46fabda25e06941d"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "88c82434d5413618"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "fb64f3a95098a407"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "ba7da1b3bb355abc"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "c7a71e4e6fd9cce9"
@@ -40998,6 +41146,46 @@
       "source": "a11a0bd5225429d7",
       "output": "65df98803f9e6565"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "94f82c865e04f0fa"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "a070f4c7779fcda3"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "b96bf15022f48754"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "2785e6fefbd8bf56"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "925e37ebc2a576b1"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "00a09c103dc3cdab"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "229d202a499e609f"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "4b7f2aa09a0320ef"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "a86914c5c74667f2"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "5062e3f24cd8bc3a"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "146f7503512795d2"
@@ -43810,6 +43998,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "1a1b3e6ecc51b478"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "5062e3f24cd8bc3a"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "5f7c38e49bac94ef"
@@ -44061,6 +44253,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "500e0fcd999a460b"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "bf99aa724a80a867"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "e7a13ba480ac5fbf"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "16c8e18e94bd07c4"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "80ded2611fb53808"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -44329,6 +44537,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "5b5692d1b2fd3a67"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "17b1fcacdefaad41"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "2e853ca697625e18"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -50768,9 +50984,17 @@
       "source": "fbf13a954f4d930f",
       "output": "950597366f28cf72"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "141f9b3d1cd5f703"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "b9d7dec4bcf18917"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "5471f5b353ffbfcf"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -50791,6 +51015,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "a01bf64e192ec34e"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "42d0f8812d8bf4a4"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "70357cf116a1aa4d"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -59936,6 +60168,30 @@
       "source": "711ef1b97501061e",
       "output": "f43bf3333533ede5"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "b9793da536dfaa28"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "a2569f72510f6bdd"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "f05642d437ed2281"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "a9255c90d34bb048"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "a2df2d826c380550"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "26b190e8adc4c872"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "fbb6ce3bf51c302a"
@@ -64940,6 +65196,46 @@
       "source": "a11a0bd5225429d7",
       "output": "0feaf6c9b54b471c"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "42d0f8812d8bf4a4"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "768a7672845c8638"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "a93373f4f9b59406"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "d3e535ce54990735"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "f6559877ba2c06d1"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "3a1ffabb56c3ec9f"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "fc3ea2a6a5332a31"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "141f9b3d1cd5f703"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "ab4d666a09698dac"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "8f23316a7119c5d2"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "51904b488f3c30ef"
@@ -67752,6 +68048,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "4b42c6690ebeb867"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "8f23316a7119c5d2"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "7d934b85a0e956b1"
@@ -68003,6 +68303,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "61816357872b8fb3"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "5fe34e6fa7282ddc"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "5f89ef44e6192639"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "21bb43c141c3b1da"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "93e3ebb7875adb44"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -68271,6 +68587,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "4ac8d9352b377c3e"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "352888f14c5386ae"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "f895b2b81ce423fc"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -74710,9 +75034,17 @@
       "source": "fbf13a954f4d930f",
       "output": "e77b7d4f61876d03"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "b45c9c27893d7742"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "1895ec5d6fbcfe66"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "a60c56fc8d7f64b9"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -74733,6 +75065,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "9eead7debe812430"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "22915f5cb92a5722"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "e484365b81ed1874"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -83878,6 +84218,30 @@
       "source": "711ef1b97501061e",
       "output": "589afcdebd6bba58"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "8db54ebec4d8c941"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "9af3399314ca9398"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "40177fd4cae35b8d"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "6f9d7cc05d1aa0f7"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "f286c2511102545d"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "58d81f858aa70869"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "2cc6fa58d332e48b"
@@ -88882,6 +89246,46 @@
       "source": "a11a0bd5225429d7",
       "output": "da7cb3471f0b9244"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "22915f5cb92a5722"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "941f8880ee5f5a7f"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "b6fb45b061fcbfb9"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "59637ec6b844feda"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "3e13a5e47067cf5f"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "3f4c81a379d136b0"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "70a0029a50f4dfd9"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "b45c9c27893d7742"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "477ef5defd3e4c80"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "8f23316a7119c5d2"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "3b95723ed8676505"
@@ -91694,6 +92098,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "a3573199a663b82b"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "8f23316a7119c5d2"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "b67291b7fa56a2b8"
@@ -91945,6 +92353,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "9083b4d74ab0cdd5"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "44928e53753b06c1"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "57e5cbbb32b3a0d4"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "65a185ccc0b54be5"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "8c0a903df1a29e24"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -92213,6 +92637,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "1b567961c75aae0f"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "26a836b1d983dcae"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "0260c721399bf35a"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -98652,9 +99084,17 @@
       "source": "fbf13a954f4d930f",
       "output": "a37e7707d11d86ea"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "f04dcb02636e79dc"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "7c875914114621a0"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "4d3d958a1155a31f"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -98675,6 +99115,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "29c69eb50a3e5b37"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "830e8c630a465708"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "7ee5ff589f2a92aa"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -107820,6 +108268,30 @@
       "source": "711ef1b97501061e",
       "output": "1345b353d6b37164"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "ca6ec9e87bdb534a"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "75f49ad867e58e39"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "db7ee2e5473403b9"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "dab45d5f6351c4b1"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "109e7552cc740874"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "00761ba26b204f7a"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "e923402df1b689a2"
@@ -112824,6 +113296,46 @@
       "source": "a11a0bd5225429d7",
       "output": "6265e0019afdca87"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "44432a930a7d9d0f"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "d803209fea98dad8"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "de0dd2a3a6382e53"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "56610f232b8f64c1"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "7f5b7db058d13b96"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "b63920f2cd51372b"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "cf32e3f75aeaa9ed"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "82f8dfe926facd9a"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "27570b5c7a6a0050"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "4af888d54043d1d1"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "09d13a37747af966"
@@ -115636,6 +116148,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "c88e8f8aabb68d14"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "4af888d54043d1d1"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "1f3d531cf0369539"
@@ -115887,6 +116403,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "fe208777fec4ecb8"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "59010707a78bfca5"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "14b5cab44361344a"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "7eae774c3a9f5133"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "aaa979d23492cebe"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -116155,6 +116687,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "91e0f486bab118c4"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "8742debf2e5b0386"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "d2749e31a734ed5b"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -122594,9 +123134,17 @@
       "source": "fbf13a954f4d930f",
       "output": "6de7db4dee804e4f"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "7183d8cfc63dc5d6"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "f2a0b89dba89f9b9"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "e93e330634a65724"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -122617,6 +123165,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "2c225b5148c2ea94"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "6dca55e14c4feeb5"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "431a4bf48290ba1b"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -131762,6 +132318,30 @@
       "source": "711ef1b97501061e",
       "output": "6757bd85d1265e60"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "3199b10a716a7a53"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "933d9d655eec4657"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "aa36829230eec39a"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "accc96307210b4e1"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "06f8db42593240b4"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "a6eb14ba9e0d3330"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "5ecd76c04ad06678"
@@ -136766,6 +137346,46 @@
       "source": "a11a0bd5225429d7",
       "output": "f9d0dd64efc54c8a"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "6dca55e14c4feeb5"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "1223849b54d94998"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "6daa9576c788b488"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "e8a87992ed538e9e"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "077fd11effd3e192"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "ac54be04220749d5"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "74d8622d724be568"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "11d340737ec72bae"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "0a169c2baa833d49"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "d9cca169e5ef6ad7"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "df801ff53f0742b7"
@@ -139578,6 +140198,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "6ac745ccb40997a7"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "7c4d2620ae470ab8"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "1b531f27fe1974eb"
@@ -139829,6 +140453,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "94a638698cb82192"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "f9b3eb35811c6ed4"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "d1dc37c0683ad734"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "ff0e2abab5dc5435"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "276a0b1f8d0441b0"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -140097,6 +140737,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "4aed470020ff81c7"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "65c43ce74f912c3c"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "06f94e5182ae90fa"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",
@@ -146536,9 +147184,17 @@
       "source": "fbf13a954f4d930f",
       "output": "d260211975722679"
     },
+    "ai.panel.chatScrollFailed": {
+      "source": "814f2b5217437f82",
+      "output": "ac707bf412f6c509"
+    },
     "ai.panel.chooseWorkspace": {
       "source": "fb60752472246be1",
       "output": "b091ce45d9f5b96f"
+    },
+    "ai.panel.menu": {
+      "source": "e0203e204879b996",
+      "output": "72af79f2edf31de0"
     },
     "ai.panel.newChat": {
       "source": "0bba167e7183860f",
@@ -146559,6 +147215,14 @@
     "ai.panel.sharedWorkspaceLabel": {
       "source": "5b96fb74ba960373",
       "output": "54fe51f44846b9ed"
+    },
+    "ai.panel.stayAtAnswerStart": {
+      "source": "699b831993b47696",
+      "output": "08434871e0a8f56b"
+    },
+    "ai.panel.stayAtAnswerStartHint": {
+      "source": "cda04dfa193a7a63",
+      "output": "cb01032c81b8f258"
     },
     "ai.reader.archived": {
       "source": "6daf357f6235d9ad",
@@ -155704,6 +156368,30 @@
       "source": "711ef1b97501061e",
       "output": "9854726a6ca4db64"
     },
+    "features.chat-am-antwortanfang.details.p1": {
+      "source": "b5eb1d6cd66127c5",
+      "output": "db0ddfe590f888c1"
+    },
+    "features.chat-am-antwortanfang.details.p2": {
+      "source": "b7967e9476416ea4",
+      "output": "eeb683e5cf1f59c6"
+    },
+    "features.chat-am-antwortanfang.details.p3": {
+      "source": "47422e89e665281f",
+      "output": "d1a0cce0308bba38"
+    },
+    "features.chat-am-antwortanfang.summary": {
+      "source": "20bf75467412d238",
+      "output": "eb8cd562fe74508c"
+    },
+    "features.chat-am-antwortanfang.title": {
+      "source": "fc3d056f61522576",
+      "output": "56514ca0dad00909"
+    },
+    "features.chat-am-antwortanfang.where": {
+      "source": "79841e1ba91d3f67",
+      "output": "cbdc3174a9fc6341"
+    },
     "features.chat-archiv.details.p1": {
       "source": "274d89fff47f0738",
       "output": "c1c5c42cc6050c30"
@@ -160708,6 +161396,46 @@
       "source": "a11a0bd5225429d7",
       "output": "ff9ae3956ae5f45c"
     },
+    "settings.chat.answerStart": {
+      "source": "699b831993b47696",
+      "output": "08434871e0a8f56b"
+    },
+    "settings.chat.answerStartHint": {
+      "source": "c45acb26ff8d790a",
+      "output": "ac4b8d8225e05576"
+    },
+    "settings.chat.follow": {
+      "source": "da1050308aa2bfee",
+      "output": "242f8a3b43c33881"
+    },
+    "settings.chat.followHint": {
+      "source": "6af8d1330ab59448",
+      "output": "9f67e7ad6d2b5836"
+    },
+    "settings.chat.intro": {
+      "source": "1dd6704bdd317be7",
+      "output": "534e6165e812637e"
+    },
+    "settings.chat.loadError": {
+      "source": "225fbaf819beb633",
+      "output": "be50cf1483045522"
+    },
+    "settings.chat.loading": {
+      "source": "1ebc9020723cb349",
+      "output": "da7acba15f4bbf52"
+    },
+    "settings.chat.saveFailed": {
+      "source": "814f2b5217437f82",
+      "output": "ac707bf412f6c509"
+    },
+    "settings.chat.scrollLegend": {
+      "source": "512023634b24f5ae",
+      "output": "2aaa1257bfdb38ec"
+    },
+    "settings.chat.title": {
+      "source": "13fcece1cf40aafc",
+      "output": "5062e3f24cd8bc3a"
+    },
     "settings.credentials.deploymentKey": {
       "source": "275ebb45cfb973d2",
       "output": "736e1486432132b2"
@@ -163520,6 +164248,10 @@
       "source": "2456bb8ed72ffaa4",
       "output": "7d8098b4f7eeea90"
     },
+    "shell.globalLinks.aiChat": {
+      "source": "13fcece1cf40aafc",
+      "output": "5062e3f24cd8bc3a"
+    },
     "shell.globalLinks.attention": {
       "source": "21cfb3bee2704a04",
       "output": "31dc334f62c2f9be"
@@ -163771,6 +164503,22 @@
     "shell.paletteCommands.captureKeywords": {
       "source": "ab424ef93255babc",
       "output": "5278f75f08d33ee8"
+    },
+    "shell.paletteCommands.chatScroll.follow": {
+      "source": "1496491be9967091",
+      "output": "2965d807e5ccb5ad"
+    },
+    "shell.paletteCommands.chatScroll.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8bc2aceb9451cc2a"
+    },
+    "shell.paletteCommands.chatScroll.keywords": {
+      "source": "8620ee49c840ae16",
+      "output": "9e80ecaaf0622530"
+    },
+    "shell.paletteCommands.chatScroll.stayAtAnswerStart": {
+      "source": "8d6a550c0b5a2502",
+      "output": "bf5f7bb874b6e418"
     },
     "shell.paletteCommands.contextActivity": {
       "source": "94425f37f5c47ff6",
@@ -164039,6 +164787,14 @@
     "shell.paletteCommands.navigation.agentProfiles.label": {
       "source": "28c981529d6b0163",
       "output": "6295a7cc3d31d33c"
+    },
+    "shell.paletteCommands.navigation.aiChat.keywords": {
+      "source": "e75df1ce33b153ac",
+      "output": "2209d128c57c9055"
+    },
+    "shell.paletteCommands.navigation.aiChat.label": {
+      "source": "a705ceb71c57116b",
+      "output": "f9e1bae532eb5368"
     },
     "shell.paletteCommands.navigation.attention.keywords": {
       "source": "0e7ff322a575b684",

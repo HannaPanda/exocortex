@@ -692,6 +692,16 @@
     },
     "where": "Dans le panneau de l’IA à côté de chaque page. Les deux boutons apparaissent en bas à droite du chat dès que tu as scrollé vers le haut."
   },
+  "chat-am-antwortanfang": {
+    "title": "Lire une réponse depuis son début",
+    "summary": "Au lieu de défiler avec la réponse en cours de génération, le chat IA peut rester au début de la réponse : ta question remonte une fois vers le haut, et la réponse s’étend vers le bas sans que tu aies besoin de remonter.",
+    "details": {
+      "p1": "Dans le menu de la zone IA (les trois points à côté de « Nouveau chat »), sous Paramètres → Chat IA et avec Strg + K, tu choisis le comportement du chat pendant qu’une réponse est générée. « Suivre » est l’option par défaut : la vue suit le texte le plus récent jusqu’à ce que tu fasses défiler vers le haut. « Rester au début de la réponse » pousse ta question tout en haut dès le début de la réponse, après quoi la vue ne bouge plus d’elle-même.",
+      "p2": "Si la réponse est encore courte, de l’espace reste libre en dessous pour que la question puisse rester en haut ; cet espace diminue au fur et à mesure que la réponse s’allonge. Les deux boutons en bas à droite du chat restent présents dans les deux cas : « Aller à la fin du chat » t’amène à la fin, et à partir de là, le chat recommence à suivre le défilement. Ce choix est lié à ton compte et s’applique sur chaque appareil.",
+      "p3": "Les agents lisent et définissent ce paramètre via exo_me_preferences et exo_me_preferences_set, sous la clé chatScroll avec les valeurs follow et answerStart."
+    },
+    "where": "Paramètres, Chat IA. Également dans le menu de la zone IA et dans la palette de commandes."
+  },
   "chat-je-tab": {
     "title": "Travailler dans plusieurs onglets avec différents chats",
     "summary": "Chaque onglet du navigateur a son propre chat, et chaque page s’y souvient du dernier chat ouvert à côté d’elle. Si tu changes de chat dans un onglet, les autres onglets ne sont pas modifiés.",

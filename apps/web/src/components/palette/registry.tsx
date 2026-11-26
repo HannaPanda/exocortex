@@ -8,6 +8,7 @@ import { type UserRole } from '@exocortex/contracts';
 import { useSettingGroupLabel } from '@/components/settings/setting-copy';
 import { useWorkspaceDetail, useWorkspaces } from '@/lib/api/workspace-queries';
 
+import { useChatScrollCommands } from './chat-scroll-commands';
 import { usePaletteContributions } from './contributions';
 import { useCreateCommands } from './create-commands';
 import { navigationCommands } from './navigation-commands';
@@ -51,6 +52,7 @@ export function usePaletteCommands({
   const tWorkspace = useTranslations('shell.paletteCommands.workspace');
   const groupLabel = useSettingGroupLabel();
   const create = useCreateCommands(workspaceId, open);
+  const chatScroll = useChatScrollCommands();
   const contributed = usePaletteContributions();
   const workspaces = useWorkspaces();
   // Usually in the cache already: the workspace switcher and the settings
@@ -69,9 +71,11 @@ export function usePaletteCommands({
       ...navigation,
       ...workspaceCommands(context, workspaces.data ?? [], tWorkspace),
       ...settings,
+      ...chatScroll,
       ...settingsMenu(navigation, settings, tSettings, groupLabel),
     ];
   }, [
+    chatScroll,
     contributed,
     create,
     documentId,

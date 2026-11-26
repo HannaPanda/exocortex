@@ -692,6 +692,16 @@
     },
     "where": "In the AI pane next to every page. The two buttons appear in the bottom right of the chat as soon as you scroll up."
   },
+  "chat-am-antwortanfang": {
+    "title": "Read an answer from its start",
+    "summary": "Instead of auto-scrolling with the growing answer, the AI chat can stay at the beginning of the answer: your question moves to the top once, and the answer grows downwards without you having to scroll back.",
+    "details": {
+      "p1": "In the menu of the AI panel (the three dots next to “New chat”), under Settings → AI chat, and with Strg + K, you choose what the chat does while an answer is being generated. “Auto-scroll” is the default: the view follows the newest text until you scroll up. “Stay at answer start” moves your question to the top edge once when the answer begins, after which the view no longer moves on its own.",
+      "p2": "While the answer is still short, space remains underneath so the question can stay at the top; this space shrinks as the answer grows. The two buttons at the bottom right of the chat remain in both cases: “To chat end” takes you to the bottom, and from there the chat resumes auto-scrolling. The choice belongs to your account and applies across every device.",
+      "p3": "Agents read and set the preference via exo_me_preferences and exo_me_preferences_set, as chatScroll with the values follow and answerStart."
+    },
+    "where": "Settings, AI chat. Also in the AI panel menu and in the command palette."
+  },
   "chat-je-tab": {
     "title": "Working in multiple tabs with different chats",
     "summary": "Each browser tab has its own chat, and each page in it remembers which chat was last open beside it. Switching chats in one tab leaves the other tabs untouched.",

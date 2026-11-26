@@ -5,7 +5,11 @@
     "newChat": "Nowy czat",
     "sharedRunsIn": "Ten czat działa w twoim obszarze roboczym „{workspace}” i z niego jest opłacany. Na udostępnionej stronie AI może robić dokładnie to, na co pozwala twoje udostępnienie.",
     "sharedWorkspaceLabel": "Obszar roboczy dla tego czatu",
-    "sharedNeedsWorkspace": "Do czatu AI na udostępnionej stronie potrzebujesz własnego obszaru roboczego."
+    "sharedNeedsWorkspace": "Do czatu AI na udostępnionej stronie potrzebujesz własnego obszaru roboczego.",
+    "menu": "Opcje czatu",
+    "stayAtAnswerStart": "Pozostań na początku odpowiedzi",
+    "stayAtAnswerStartHint": "Twoje pytanie przesunie się raz w górę, a potem widok pozostanie w miejscu, podczas gdy odpowiedź będzie rozwijać się w dół.",
+    "chatScrollFailed": "Nie udało się zapisać tego ustawienia. Spróbuj ponownie za chwilę."
   },
   "transcript": {
     "unavailableTitle": "Czat niedostępny",

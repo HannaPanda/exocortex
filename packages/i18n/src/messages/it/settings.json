@@ -9,6 +9,18 @@
     "loading": "Caricamento della lingua …",
     "loadError": "Impossibile caricare la lingua"
   },
+  "chat": {
+    "title": "Chat IA",
+    "intro": "Come si comporta la chat IA per te. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso.",
+    "scrollLegend": "Mentre viene generata una risposta",
+    "follow": "Segui",
+    "answerStart": "Rimani all’inizio della risposta",
+    "followHint": "La chat scorre verso il basso finché rimani in fondo. Se scorri verso l’alto, si ferma finché non torni di nuovo in fondo.",
+    "answerStartHint": "La tua domanda scorre verso l’alto una volta quando inizia la risposta. Dopodiché la visualizzazione non si sposta più da sola: la risposta continua a crescere verso il basso e puoi leggerla fin dall’inizio. Puoi raggiungere la fine in qualsiasi momento con il pulsante in basso a destra nella chat.",
+    "saveFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
+    "loading": "Caricamento delle impostazioni…",
+    "loadError": "Impossibile caricare le impostazioni"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Memoria",

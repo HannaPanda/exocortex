@@ -1129,6 +1129,24 @@ screen has to be taken back once it is over (issue #242):
   following, and sending a message always does. They are no palette
   commands: they move a scroll position inside the open panel and open no
   place of their own.
+- **Or it stays at the answer's start (issue #282).** A person who chose
+  `chatScroll: 'answerStart'` (on the account, `GET`/`PATCH
+/api/me/preferences`, `exo_me_preferences_set`; the panel's menu, the
+  palette command "KI-Chat: am Antwortanfang bleiben" and
+  `/einstellungen/ki-chat`) does not follow a sent question. `useAnswerAnchor`
+  waits until the question with that message id (the value of
+  `data-chat-question`) is in the transcript, glides it to the top once
+  (`anchorTop` in `transcript-anchor.ts`: below the padding, or with its end a
+  third of the way down when it is long, so the answer keeps two thirds of the
+  view) and then leaves the view alone. Under a short answer there would be
+  nothing to scroll into, so room is added to the transcript's bottom padding
+  (`spacerHeight`), never as an element, and shrinks as the answer fills it.
+  Until the reader touches the transcript the question is held there, also
+  against the browser clamping the position when the activity line goes or
+  the trace folds at the run's end. Reaching the end follows again only when
+  the reader went there, because the room ends exactly where the view does.
+  The jump buttons stay; "Zum Ende des Chats" hides while there is nothing
+  below.
 
 The panel never relies on that channel alone. For as long as it believes a run
 is in flight it polls `GET /api/ai/runs/:runId` every

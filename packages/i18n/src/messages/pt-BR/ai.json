@@ -5,7 +5,11 @@
     "newChat": "Novo chat",
     "sharedRunsIn": "Este chat é executado no seu espaço de trabalho “{workspace}” e é pago por lá. Na página compartilhada, a IA só pode fazer exatamente o que o seu compartilhamento permitir.",
     "sharedWorkspaceLabel": "Espaço de trabalho para este chat",
-    "sharedNeedsWorkspace": "Você precisa de um espaço de trabalho próprio para usar o chat de IA em uma página compartilhada."
+    "sharedNeedsWorkspace": "Você precisa de um espaço de trabalho próprio para usar o chat de IA em uma página compartilhada.",
+    "menu": "Opções do chat",
+    "stayAtAnswerStart": "Permanecer no início da resposta",
+    "stayAtAnswerStartHint": "Sua pergunta sobe uma vez; depois disso, a visualização fica parada e a resposta continua crescendo para baixo.",
+    "chatScrollFailed": "Não foi possível salvar a configuração. Tente novamente em instantes."
   },
   "transcript": {
     "unavailableTitle": "Chat indisponível",

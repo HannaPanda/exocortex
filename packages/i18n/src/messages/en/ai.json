@@ -5,7 +5,11 @@
     "newChat": "New chat",
     "sharedRunsIn": "This chat runs in your workspace “{workspace}” and is billed there. On the shared page, the AI can only do what your share allows.",
     "sharedWorkspaceLabel": "Workspace for this chat",
-    "sharedNeedsWorkspace": "You need your own workspace to use AI chat on a shared page."
+    "sharedNeedsWorkspace": "You need your own workspace to use AI chat on a shared page.",
+    "menu": "Chat options",
+    "stayAtAnswerStart": "Stay at start of answer",
+    "stayAtAnswerStartHint": "Your question moves up once, then the view stays in place and the answer keeps growing downward.",
+    "chatScrollFailed": "Could not save the setting. Try again in a moment."
   },
   "transcript": {
     "unavailableTitle": "Chat unavailable",

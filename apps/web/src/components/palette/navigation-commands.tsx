@@ -24,6 +24,7 @@ import {
   Share2Icon,
   ShieldIcon,
   SlidersHorizontalIcon,
+  SparklesIcon,
   UserCogIcon,
   UsersIcon,
   WaypointsIcon,
@@ -61,6 +62,7 @@ interface Place {
     | 'connections'
     | 'notifications'
     | 'language'
+    | 'aiChat'
     | 'workspaces'
     | 'workspaceHome'
     | 'knowledgeMap'
@@ -119,6 +121,7 @@ const PLACES: readonly Place[] = [
     icon: BellIcon,
   },
   { key: 'language', screen: '/einstellungen/sprache', audience: 'everyone', icon: LanguagesIcon },
+  { key: 'aiChat', screen: '/einstellungen/ki-chat', audience: 'everyone', icon: SparklesIcon },
   { key: 'workspaces', screen: '/arbeitsbereich', audience: 'everyone', icon: LayoutGridIcon },
   { key: 'workspaceHome', screen: '/arbeitsbereich/:x', audience: 'workspace', icon: HouseIcon },
   {

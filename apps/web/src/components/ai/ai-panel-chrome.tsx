@@ -1,6 +1,6 @@
 'use client';
 
-import { PlusIcon } from 'lucide-react';
+import { MoreHorizontalIcon, PlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -9,9 +9,20 @@ import {
   type AiConversationSourceMode,
   type AiConversationSourcesResponse,
   type AiReasoningLevel,
+  type ChatScrollMode,
   type DocumentDetail,
 } from '@exocortex/contracts';
-import { Button, Skeleton, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@exocortex/ui';
 
 import { ChatComposer } from './chat-composer';
 import { ContextChips } from './context-chips';
@@ -26,17 +37,25 @@ import { ModelPicker } from './model-picker';
  * at the bottom (split out of `ai-panel.tsx`, issue #97).
  */
 
-/** Which conversation is open, and the one button that starts another. */
+/**
+ * Which conversation is open, the one button that starts another, and the
+ * panel's menu: whether the transcript follows an answer or stays at its
+ * start (issue #282), the reader's own choice on every device.
+ */
 export function AiPanelHeader({
   workspaceId,
   activeConversationId,
   onSelect,
   onCreateNew,
+  chatScroll,
+  onChatScrollChange,
 }: {
   workspaceId: string;
   activeConversationId: string | null;
   onSelect: (conversationId: string | null) => void;
   onCreateNew: () => void;
+  chatScroll: ChatScrollMode;
+  onChatScrollChange: (mode: ChatScrollMode) => void;
 }) {
   const t = useTranslations('ai.panel');
   return (
@@ -47,16 +66,56 @@ export function AiPanelHeader({
         onSelect={onSelect}
         onCreateNew={onCreateNew}
       />
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button variant="ghost" size="icon-sm" aria-label={t('newChat')} onClick={onCreateNew}>
-              <PlusIcon />
-            </Button>
-          }
-        />
-        <TooltipContent>{t('newChat')}</TooltipContent>
-      </Tooltip>
+      <div className="flex shrink-0 items-center gap-0.5">
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t('newChat')}
+                onClick={onCreateNew}
+              >
+                <PlusIcon />
+              </Button>
+            }
+          />
+          <TooltipContent>{t('newChat')}</TooltipContent>
+        </Tooltip>
+        <DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={t('menu')}
+                      data-testid="ai-panel-menu"
+                    >
+                      <MoreHorizontalIcon />
+                    </Button>
+                  }
+                />
+              }
+            />
+            <TooltipContent>{t('menu')}</TooltipContent>
+          </Tooltip>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuCheckboxItem
+              checked={chatScroll === 'answerStart'}
+              onCheckedChange={(checked) => onChatScrollChange(checked ? 'answerStart' : 'follow')}
+              data-testid="ai-stay-at-answer-start"
+            >
+              <span className="flex flex-col gap-0.5">
+                <span>{t('stayAtAnswerStart')}</span>
+                <span className="text-xs text-muted-foreground">{t('stayAtAnswerStartHint')}</span>
+              </span>
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

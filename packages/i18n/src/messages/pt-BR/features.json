@@ -692,6 +692,16 @@
     },
     "where": "Na área da IA ao lado de cada página. Os dois botões aparecem no canto inferior direito do chat assim que você rola para cima."
   },
+  "chat-am-antwortanfang": {
+    "title": "Ler uma resposta a partir do início",
+    "summary": "Em vez de rolar junto com a resposta que está sendo gerada, o chat de IA pode permanecer no início da resposta: a sua pergunta sobe uma vez para o topo e a resposta cresce para baixo, sem que você precise rolar de volta.",
+    "details": {
+      "p1": "No menu da área de IA (os três pontos ao lado de „Novo chat”), em Configurações → Chat de IA e com Strg + K, você escolhe o que o chat faz enquanto uma resposta é gerada. „Acompanhar” é o padrão: a visualização acompanha o texto mais recente até você rolar para cima. „Ficar no início da resposta” move a sua pergunta uma vez para a borda superior no início da resposta; depois disso, a visualização não se move mais sozinha.",
+      "p2": "Se a resposta ainda for curta, o espaço abaixo fica livre para que a pergunta possa permanecer no topo; esse espaço diminui à medida que a resposta cresce. Os dois botões no canto inferior direito do chat continuam disponíveis em ambos os casos: „Ir para o final do chat” leva você ao final e, a partir dali, o chat volta a rolar automaticamente. A escolha está vinculada à sua conta e vale para qualquer dispositivo.",
+      "p3": "Agentes leem e definem a configuração via exo_me_preferences e exo_me_preferences_set, como chatScroll com os valores follow e answerStart."
+    },
+    "where": "Configurações, Chat de IA. Também no menu da área de IA e na paleta de comandos."
+  },
   "chat-je-tab": {
     "title": "Trabalhar em várias abas com chats diferentes",
     "summary": "Cada aba do navegador tem seu próprio chat, e cada página se lembra de qual chat esteve ao lado dela por último. Se você trocar de chat em uma aba, as outras abas continuam como estão.",

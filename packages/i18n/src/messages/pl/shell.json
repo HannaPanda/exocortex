@@ -33,6 +33,7 @@
     "connections": "Połączenia",
     "notifications": "Powiadomienia",
     "language": "Język",
+    "aiChat": "Czat AI",
     "admin": "Administracja",
     "menuLabel": "Konto i obszary",
     "menuLabelWithNew": "{count, plural, one {Konto i obszary (# nowa funkcja)} few {Konto i obszary (# nowe funkcje)} many {Konto i obszary (# nowych funkcji)} other {Konto i obszary (# nowej funkcji)}}",
@@ -162,6 +163,12 @@
     "trashKeywords": "usunięte archiwum przywróć",
     "newChat": "Rozpocznij nowy czat",
     "newChatKeywords": "czat rozmowa konwersacja ai asystent pytanie nowy",
+    "chatScroll": {
+      "stayAtAnswerStart": "Czat AI: pozostań na początku odpowiedzi",
+      "follow": "Czat AI: przewijaj wraz z odpowiedzią",
+      "hint": "Dotyczy twojego konta",
+      "keywords": "ai czat przewijanie śledzenie odpowiedź początek czytanie autoscroll"
+    },
     "contextOpen": "Otwórz panel kontekstowy",
     "contextOpenPlaceholder": "Która zakładka?",
     "contextOpenKeywords": "kontekst panel kontekstowy zakładka tab panel pasek boczny po prawej",
@@ -215,6 +222,10 @@
       "language": {
         "label": "Zmień język",
         "keywords": "język language tłumaczenie ustawienia polski english"
+      },
+      "aiChat": {
+        "label": "Ustawienia czatu AI",
+        "keywords": "ai czat asystent ustawienia przewijanie początek odpowiedzi"
       },
       "workspaces": {
         "label": "Pokaż wszystkie obszary robocze",

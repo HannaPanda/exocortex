@@ -9,6 +9,18 @@
     "loading": "Chargement de la langue …",
     "loadError": "Impossible de charger la langue"
   },
+  "chat": {
+    "title": "Chat IA",
+    "intro": "Comportement du chat IA pour toi. Ce choix s’applique à ton compte, sur tous les appareils où tu es connecté.",
+    "scrollLegend": "Pendant qu’une réponse se génère",
+    "follow": "Suivre le défilement",
+    "answerStart": "Rester au début de la réponse",
+    "followHint": "Le chat défile automatiquement tant que tu es tout en bas. Si tu remontes, il s’arrête jusqu’à ce que tu reviennes en bas.",
+    "answerStartHint": "Ta question remonte d’un coup au début de la réponse. Ensuite, la vue ne bouge plus d’elle-même : la réponse s’étend vers le bas et tu peux la lire depuis le début. Tu peux revenir à la fin à tout moment grâce au bouton en bas à droite du chat.",
+    "saveFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
+    "loading": "Chargement des paramètres…",
+    "loadError": "Impossible de charger les paramètres"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Mémoire",
