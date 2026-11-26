@@ -281,6 +281,26 @@ state (ADR-004/005) where a conversation is an append-only list of rows, and
   which an explicit choice writes and which nothing listens to: the `storage`
   event that used to switch every open tab along is gone on purpose. Model and
   thinking level stay per workspace in `localStorage`, as before.
+- **A chat without a page (issue #288).** A conversation's `documentId` has
+  always been optional, and off a page the context panel is the assistant
+  alone. What was missing was a way in and room to read. The workspace's
+  start page now has a field above "Weitermachen"
+  (`apps/web/src/components/ai/chat-starter.tsx`, the composer's `start`
+  variant). It does not post anything itself: it hands the text to
+  `ChatStartProvider` (`chat-start.tsx`), the shell opens the panel and gives
+  the chat the screen, and the panel's `useStartedChat` creates a new
+  conversation and posts into it with the ordinary `handleSubmit`, because the
+  panel is the only place that follows a run it started. A start nobody picks
+  up within ten seconds is dropped rather than sent on a later visit.
+  "Bildschirmfüllend" (`useChatScreen` in `apps/web/src/components/shell`) is
+  layout, not a setting: on a desktop the context panel fills the row and the
+  page is hidden, not unmounted, so the editor comes back as it was; on a
+  phone the sheet goes full width. Navigating or closing the panel gives the
+  page back, and nothing is stored. The header button `ai-expand` and the
+  palette command `command-chat-expand` are its two doors; collapsing the chat
+  is closing the panel, as before. No tool comes with it: the start uses
+  `POST /api/ai/conversations` and `POST …/messages`, whose exemption below
+  still holds, and the layout is not a capability.
 - **On the agent surfaces.** `exo_chat_list`, `exo_chat_search` and
   `exo_chat_read` (`packages/mcp-tools/src/tools/chats.ts`), all read-only. The
   catalogue's blanket exemption for `/api/ai/conversations*` was narrowed to the
