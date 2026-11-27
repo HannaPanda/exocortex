@@ -622,6 +622,46 @@ test.describe('editor', () => {
   });
 
   /**
+   * Issue #302: `Backspace` in the empty line below a list removes the line
+   * and puts the caret after the last point, in one press, also when that
+   * point is a sub-point. Before, the first presses wrapped the line into the
+   * list where the preview of #240 had already drawn it, so nothing changed on
+   * screen. Unit-tested in `packages/editor`; what only a browser proves is the
+   * real key, the real caret and the Yjs undo.
+   */
+  test('Backspace below a list goes back into it in one press', async ({ page }) => {
+    await openEditor(page);
+    const surface = page.getByTestId('editor-surface');
+    await page.keyboard.type('- eins');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await page.keyboard.type('unter');
+    // Out of the sub-list, out of the list: the line below it.
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    const line = surface.locator(':scope > ul + p');
+    await expect(line).toHaveClass(/exocortex-list-ghost/);
+    await page.waitForTimeout(800);
+
+    await page.keyboard.press('Backspace');
+    await expect(line).toHaveCount(0);
+    await expect(surface.locator('li')).toHaveCount(2);
+    await page.waitForTimeout(800);
+
+    // One undo brings the line back, and the next press leaves it again.
+    await page.keyboard.press('Control+z');
+    await expect(line).toHaveCount(1);
+    await expect(surface.locator('li')).toHaveCount(2);
+    await line.click();
+    await page.keyboard.press('Backspace');
+    await expect(line).toHaveCount(0);
+    await page.keyboard.type('!');
+    await expect(surface.locator('ul ul > li')).toHaveText('unter!');
+    await expect(surface.locator('li')).toHaveCount(2);
+  });
+
+  /**
    * Issue #227: the hint stands in the one empty line being written in, set
    * apart from text, and nowhere else. The rules are unit-tested in
    * `packages/editor`; what only a browser proves is the real focus, the real
