@@ -355,6 +355,15 @@
     @apply bg-transparent p-0;
   }
 
+  /* The strip at the top of an editable code block belongs to its bar
+     (language and copy, issue #304): the bar stands in that corner and covers
+     no code however long the first line is. The strip stays while the bar is
+     hidden, because a padding that came and went with the pointer would make
+     the code jump. A read-only page has no bar and keeps the even padding. */
+  .exocortex-editor .ProseMirror[contenteditable='true'] pre {
+    @apply pt-9;
+  }
+
   /*
    * Syntax highlighting theme for highlight.js, built from the content colour
    * tokens rather than from a downloaded theme file. Two reasons: a stock theme

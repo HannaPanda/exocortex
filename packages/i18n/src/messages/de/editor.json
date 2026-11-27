@@ -279,6 +279,7 @@
     "blockActions": "Blockaktionen"
   },
   "codeBlock": {
+    "label": "Codeblock",
     "language": "Sprache",
     "noHighlighting": "Ohne Hervorhebung",
     "copy": "Code kopieren",

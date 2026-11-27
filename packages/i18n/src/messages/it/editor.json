@@ -279,6 +279,7 @@
     "blockActions": "Azioni blocco"
   },
   "codeBlock": {
+    "label": "Blocco di codice",
     "language": "Linguaggio",
     "noHighlighting": "Nessuna evidenziazione",
     "copy": "Copia codice",

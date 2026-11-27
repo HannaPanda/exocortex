@@ -279,6 +279,7 @@
     "blockActions": "Działania na bloku"
   },
   "codeBlock": {
+    "label": "Blok kodu",
     "language": "Język",
     "noHighlighting": "Bez wyróżniania",
     "copy": "Kopiuj kod",

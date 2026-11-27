@@ -8812,6 +8812,10 @@
       "source": "2ed99c26c545d4d1",
       "output": "49a0053f3b0d5045"
     },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "7545380a2996b3b3"
+    },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
       "output": "a4fe65264ef7dbb3"
@@ -33633,6 +33637,10 @@
     "editor.codeBlock.copy": {
       "source": "2ed99c26c545d4d1",
       "output": "1ab20b7797d20f74"
+    },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "519e4fa1d02f0d81"
     },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
@@ -58456,6 +58464,10 @@
       "source": "2ed99c26c545d4d1",
       "output": "58d4532c8310b022"
     },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "a75173e6f2237317"
+    },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
       "output": "c46b6fd57f2fe9d4"
@@ -83277,6 +83289,10 @@
     "editor.codeBlock.copy": {
       "source": "2ed99c26c545d4d1",
       "output": "656234f68cae601d"
+    },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "7cc3e04d19c334a4"
     },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
@@ -108100,6 +108116,10 @@
       "source": "2ed99c26c545d4d1",
       "output": "f90a8ad5f4608539"
     },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "0beb1772d073cf8e"
+    },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
       "output": "532568d0860c656f"
@@ -132922,6 +132942,10 @@
       "source": "2ed99c26c545d4d1",
       "output": "dcc3654a4a3c88f5"
     },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "6b9faedbffb98ff4"
+    },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",
       "output": "314cd0c9855dffc4"
@@ -157743,6 +157767,10 @@
     "editor.codeBlock.copy": {
       "source": "2ed99c26c545d4d1",
       "output": "1ab20b7797d20f74"
+    },
+    "editor.codeBlock.label": {
+      "source": "6659914f26c1927a",
+      "output": "45b49b8b0365496e"
     },
     "editor.codeBlock.language": {
       "source": "f2a1cc71fa59a04b",

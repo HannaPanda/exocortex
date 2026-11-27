@@ -279,6 +279,7 @@
     "blockActions": "Blokacties"
   },
   "codeBlock": {
+    "label": "Codeblok",
     "language": "Taal",
     "noHighlighting": "Zonder markering",
     "copy": "Code kopiëren",
