@@ -77,6 +77,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
 | `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
 | `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 17)                                                                                                                                |
+| `handle-hover.ts`               | which block the handle belongs to while the pointer moves: a nested block keeps it over its text and on the way to the handle (issue #286)                                                                                            |
 | `block-actions.tsx`             | turn into, colour, move, duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                |
 | `block-target.ts`               | the block a handle action is aimed at: found again by its id, then selected with `runOnBlock` before the selection command runs (issue #229)                                                                                          |
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
@@ -327,8 +328,14 @@ edge, and inside a list item nothing moves above the item's own text.
 the list around it; that is also what "Absatz" in the handle's menu needs for
 a list item (issue #284).
 
-In the web app the handle targets nested blocks with the left edge only
-(`NESTED_TARGETS` in `block-handle.tsx`, docs/deviations.md 17). The handle's
+In the web app the handle belongs to the block under the pointer, a nested
+one included (`NESTED_TARGETS` in `handle-hover.ts`, docs/deviations.md 17,
+issue #286): over a block's text it is that block, left of a block inside a
+quote, callout, column or table cell it is the container, and a list item
+never gives way to the item around it. Once the handle stands beside a block,
+the strip from that block's line to the handle is the block's, so the pointer
+can travel to the handle of a sub-item without the item above taking it. The
+handle's
 menu opens on release without movement, never on the press that may start a
 drag (issue #268), and a drag closes it. Covered by `block-drop.test.ts`,
 `move-block.test.ts`, `list-split.test.ts` and `e2e/tests/block-drag.spec.ts`.

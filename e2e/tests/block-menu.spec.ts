@@ -51,6 +51,51 @@ test.describe('the block menu', () => {
     await expect(page.getByTestId('block-duplicate')).toBeVisible();
   }
 
+  /**
+   * Points at the start of a block's text and travels to its handle the way a
+   * hand does, frame by frame, checking at every step that the handle stays
+   * beside that block; then presses and releases it (issue #286).
+   */
+  async function travelToHandleOf(page: Page, block: Locator): Promise<void> {
+    const box = await block.boundingBox();
+    if (box === null) throw new Error('block has no layout');
+    const handle = page.getByTestId('block-handle');
+    const handleOffset = async (): Promise<number> => {
+      const at = await handle.boundingBox();
+      return at === null ? Number.POSITIVE_INFINITY : Math.abs(at.y - box.y);
+    };
+    // Coming from the right, onto the first letters: the zone where the
+    // handle used to go to the block around this one straight away.
+    await page.mouse.move(box.x + 120, box.y + box.height / 2);
+    await page.mouse.move(box.x + 6, box.y + box.height / 2, { steps: 6 });
+    await expect(handle).toBeVisible();
+    await expect.poll(handleOffset).toBeLessThan(6);
+    const at = await handle.boundingBox();
+    if (at === null) throw new Error('handle has no layout');
+    const from = { x: box.x + 6, y: box.y + box.height / 2 };
+    const to = { x: at.x + at.width / 2, y: at.y + at.height / 2 };
+    const steps = 16;
+    for (let step = 1; step <= steps; step += 1) {
+      await page.mouse.move(
+        from.x + ((to.x - from.x) * step) / steps,
+        from.y + ((to.y - from.y) * step) / steps,
+      );
+      // Two frames: the plugin decides once per animation frame.
+      await page.evaluate(() => {
+        const frames = globalThis as unknown as {
+          requestAnimationFrame: (callback: () => void) => number;
+        };
+        return new Promise<void>((resolve) => {
+          frames.requestAnimationFrame(() => frames.requestAnimationFrame(resolve));
+        });
+      });
+      expect(await handleOffset(), `step ${step} of ${steps}`).toBeLessThan(6);
+    }
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(page.getByTestId('block-duplicate')).toBeVisible();
+  }
+
   async function caretAtEndOf(page: Page, block: Locator): Promise<void> {
     await block.click();
     await page.keyboard.press('End');
@@ -131,5 +176,36 @@ test.describe('the block menu', () => {
     await expect(
       textBlock(page, 'Oben').locator('[data-text-color], [data-text-background]'),
     ).toHaveCount(0);
+  });
+
+  test('keeps the handle on a nested item while the pointer travels to it', async ({ page }) => {
+    await pageWith(
+      page,
+      [
+        'Oben',
+        '- Eins\n  - Zwei\n    - Drei',
+        '1. Alpha\n   1. Beta\n      1. Gamma',
+        '- [ ] Aufgabe\n  - [ ] Teilaufgabe',
+        '> Zitat eins\n>\n> Zitat zwei',
+      ].join('\n\n'),
+    );
+    await expect(textBlock(page, 'Teilaufgabe')).toBeVisible({ timeout: 30_000 });
+
+    for (const text of ['Zwei', 'Drei', 'Gamma', 'Teilaufgabe', 'Zitat zwei']) {
+      await travelToHandleOf(page, textBlock(page, text));
+      await page.getByTestId('block-color').click();
+      await page.getByTestId('text-color-green').click();
+      await expect(page.getByTestId('block-duplicate')).toBeHidden();
+    }
+
+    // The menu each time belonged to the item the pointer came from, never to
+    // the item or the quote around it.
+    await expect(page.locator('.exocortex-editor [data-text-color="green"]')).toHaveText([
+      'Zwei',
+      'Drei',
+      'Gamma',
+      'Teilaufgabe',
+      'Zitat zwei',
+    ]);
   });
 });

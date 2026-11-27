@@ -286,11 +286,21 @@ Any further prop of `DragHandle` (`computePositionConfig`, `onElementDragStart`,
 
 Two more departures from the defaults, both from issue #243:
 
-- `nested` is not `true` but `NESTED_TARGETS`, edge detection on the left edge
-  only. The default also prefers the outer block near the _top_ edge, by
-  `500 × depth`; a list item two levels deep was excluded there outright, and a
-  single-line item is all top edge in its upper half, so on a list's first and
-  last item the handle stayed on the block before and a drag moved that block.
+- `nested` is not `true` but `NESTED_TARGETS` (`handle-hover.ts`). The default
+  also prefers the outer block near the _top_ edge, by `500 × depth`; a list
+  item two levels deep was excluded there outright, and a single-line item is
+  all top edge in its upper half, so on a list's first and last item the handle
+  stayed on the block before and a drag moved that block. Issue #243 kept the
+  left edge alone; issue #286 switched the edge detection off as well. Its left
+  zone covered the first 12 px of a nested block's text and everything left of
+  it, which is where a nested block's handle stands: on the way to a sub-item's
+  handle the handle jumped to the item above, and a paragraph in a quote lost
+  it to the quote. Two rules of our own take its place: a block inside a
+  container gives way to the container only while the pointer is left of it
+  (never a list item), and the strip between the handle's block and the handle
+  belongs to that block, so every other candidate is vetoed there and the
+  plugin leaves the handle where it is. Rules see no coordinates, so
+  `trackHandleHover` records the pointer per view from the same `mousemove`.
 - The actions menu is controlled. Base UI opens a menu on the press of its
   trigger, and on the handle a drag starts from that same press: the menu
   stood in the way, and its backdrop took every `dragover`, so nothing could be
