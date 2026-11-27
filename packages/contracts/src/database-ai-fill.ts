@@ -82,6 +82,31 @@ export const AI_AUTO_FILL = ['off', 'on_create', 'on_change'] as const;
 export const aiAutoFillSchema = z.enum(AI_AUTO_FILL);
 export type AiAutoFill = z.infer<typeof aiAutoFillSchema>;
 
+/** What happened to a row that may make a self-filling column fill its cell. */
+export const AI_AUTO_FILL_TRIGGERS = ['created', 'changed'] as const;
+export const aiAutoFillTriggerSchema = z.enum(AI_AUTO_FILL_TRIGGERS);
+export type AiAutoFillTrigger = z.infer<typeof aiAutoFillTriggerSchema>;
+
+/**
+ * The `autoFill` settings a trigger wakes: a new row every column that fills
+ * itself, a changed one only those set to `on_change`. One function for the
+ * outbox dispatcher, the worker and the API, so all three agree.
+ */
+export function aiAutoFillsFor(trigger: AiAutoFillTrigger): Exclude<AiAutoFill, 'off'>[] {
+  return trigger === 'created' ? ['on_create', 'on_change'] : ['on_change'];
+}
+
+/**
+ * The worker asking the API to start the automatic fill of one row's cell
+ * (issue #237, ADR-099), as the account that wrote the column's instruction.
+ */
+export const startAutoAiFillRequestSchema = z.object({
+  propertyId: idSchema,
+  rowId: idSchema,
+  trigger: aiAutoFillTriggerSchema,
+});
+export type StartAutoAiFillRequest = z.infer<typeof startAutoAiFillRequestSchema>;
+
 /**
  * Which cells a batch may write. `empty_only` is the default, `replace_ai`
  * also renews values a fill wrote that nobody changed since, `replace_all`

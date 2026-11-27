@@ -24,10 +24,13 @@ import {
   setDatabasePropertyAiRequestSchema,
   type StartAiFillRequest,
   startAiFillRequestSchema,
+  type StartAutoAiFillRequest,
+  startAutoAiFillRequestSchema,
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../../auth/session.guard';
-import { currentCorrelationId } from '../../common/correlation';
+import { AppError } from '../../common/app-error';
+import { currentAiRunId, currentCorrelationId } from '../../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../../common/zod';
 
 import { AiFillService } from './ai-fill.service';
@@ -41,6 +44,12 @@ const listQuerySchema = z.object({
     .transform((value) => value === 'true'),
 });
 type ListQuery = z.output<typeof listQuerySchema>;
+
+/**
+ * What `SessionGuard` names a session made from one of the worker's service
+ * tokens (`service:<purpose>`). An MCP client's token says `mcp-tools`.
+ */
+const WORKER_SESSION_ID = 'service:ai-tools';
 
 /**
  * A column's AI instruction and the batches that fill it (issue #237,
@@ -98,6 +107,30 @@ export class AiFillController {
     @Body(zodPipe(startAiFillRequestSchema)) body: StartAiFillRequest,
   ): Promise<AiFillStartResponse> {
     return this.fills.start({
+      collectionDocumentId: documentId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * The worker's: the automatic fill of one row (ADR-099). Only the worker's
+   * own service token reaches it, never a person's session, an `exo_` token
+   * or a run's tool loop: a column fills itself, nobody asks for it.
+   */
+  @Post('documents/:documentId/ai-fills/auto')
+  @ApiBody({ schema: openApiSchema(startAutoAiFillRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(aiFillStartResponseSchema) })
+  async startAutomatic(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(startAutoAiFillRequestSchema)) body: StartAutoAiFillRequest,
+  ): Promise<AiFillStartResponse> {
+    if (session.sessionId !== WORKER_SESSION_ID || currentAiRunId() !== undefined) {
+      throw new AppError('ai_fill_worker_only', 'Only the worker may start an automatic fill');
+    }
+    return this.fills.startAutomatic({
       collectionDocumentId: documentId,
       userId: session.userId,
       request: body,

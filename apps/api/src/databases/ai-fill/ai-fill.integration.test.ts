@@ -393,4 +393,50 @@ describe('AI fill', () => {
       settingsValue = settingsSchema.parse({});
     }
   });
+
+  it('fills a row by itself only when the column says so, as its author, never over a person', async () => {
+    const { databaseId, summaryId, rowIds } = await setup();
+    const [first = '', handWritten = ''] = rowIds;
+    const auto = (userId: string, rowId: string, trigger: 'created' | 'changed') =>
+      fills.startAutomatic({
+        collectionDocumentId: databaseId,
+        userId,
+        request: { propertyId: summaryId, rowId, trigger },
+        correlationId,
+      });
+
+    await config.set({
+      collectionDocumentId: databaseId,
+      propertyId: summaryId,
+      userId: ownerId,
+      request: { preset: 'summary' },
+      correlationId,
+    });
+    // Off by default: nothing fills itself.
+    await expect(auto(ownerId, first, 'created')).rejects.toMatchObject({
+      code: 'ai_fill_not_configured',
+    });
+
+    await config.set({
+      collectionDocumentId: databaseId,
+      propertyId: summaryId,
+      userId: ownerId,
+      request: { autoFill: 'on_create' },
+      correlationId,
+    });
+    // A new row, not a changed one; and only as the instruction's author.
+    await expect(auto(ownerId, first, 'changed')).rejects.toMatchObject({
+      code: 'ai_fill_not_configured',
+    });
+    await expect(auto(readerId, first, 'created')).rejects.toMatchObject({
+      code: 'ai_fill_not_configured',
+    });
+
+    const started = await auto(ownerId, first, 'created');
+    expect(started).toMatchObject({ queued: 1, run: { origin: 'automatic', mode: 'replace_ai' } });
+
+    // A person's value stays: the automatic batch is `replace_ai`.
+    const kept = await auto(ownerId, handWritten, 'created');
+    expect(kept).toMatchObject({ run: null, queued: 0, skippedNotEmpty: 1 });
+  });
 });

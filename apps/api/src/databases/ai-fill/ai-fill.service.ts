@@ -9,6 +9,8 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  type AiAutoFill,
+  aiAutoFillsFor,
   aiFillInstructionText,
   type AiFillMode,
   type AiFillOrigin,
@@ -20,6 +22,7 @@ import {
   QUEUE_NAMES,
   type StartAiFillRequest,
   startAiFillRequestSchema,
+  type StartAutoAiFillRequest,
 } from '@exocortex/contracts';
 import { loadDatabaseScope, type PrismaClient } from '@exocortex/database';
 import { QueueRegistry } from '@exocortex/queue';
@@ -35,6 +38,7 @@ import { storedToResponseValue } from '../row-values';
 import {
   AI_FILL_RUN_INCLUDE,
   type AiFillRunRow,
+  autoFillFromColumn,
   countsFrom,
   modeFromColumn,
   modeToColumn,
@@ -212,6 +216,49 @@ export class AiFillService {
     );
 
     return { run: await this.summary(runId), ...counts };
+  }
+
+  /**
+   * The automatic fill of one row's cell (ADR-099), asked by the worker after
+   * a row of a database with a self-filling column was created or changed.
+   * It runs as the account that wrote the instruction last, which has to be
+   * the caller, and in `replace_ai`, so it never overwrites a person's value.
+   * A column switched off or handed to somebody else since the change is
+   * refused as not configured, which the worker reads as "nothing to do".
+   */
+  async startAutomatic(input: {
+    collectionDocumentId: string;
+    userId: string;
+    request: StartAutoAiFillRequest;
+    correlationId: string;
+  }): Promise<AiFillStartResponse> {
+    const ai = await this.prisma.databasePropertyAi.findUnique({
+      where: { propertyId: input.request.propertyId },
+      select: { autoFill: true, updatedById: true, property: { select: { documentId: true } } },
+    });
+    const wanted: readonly AiAutoFill[] = aiAutoFillsFor(input.request.trigger);
+    if (
+      ai === null ||
+      ai.property.documentId !== input.collectionDocumentId ||
+      ai.updatedById !== input.userId ||
+      !wanted.includes(autoFillFromColumn(ai.autoFill))
+    ) {
+      throw new AppError(
+        'ai_fill_not_configured',
+        'This column does not fill itself on this change',
+      );
+    }
+    return this.start({
+      collectionDocumentId: input.collectionDocumentId,
+      userId: input.userId,
+      request: {
+        propertyId: input.request.propertyId,
+        rowIds: [input.request.rowId],
+        mode: 'replace_ai',
+      },
+      correlationId: input.correlationId,
+      origin: 'automatic',
+    });
   }
 
   /**

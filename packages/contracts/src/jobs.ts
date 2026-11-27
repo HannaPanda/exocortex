@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { automationRunOriginSchema, automationTriggerSchema } from './automations';
+import { aiAutoFillTriggerSchema } from './database-ai-fill';
 import { DEFAULT_LOCALE, localeSchema } from './locale';
 import { mailMessageSchema, mailRecipientSchema } from './mail';
 import { idSchema } from './primitives';
@@ -712,7 +713,7 @@ export const databaseAiFillJobSchema = z.discriminatedUnion('kind', [
     workspaceId: idSchema,
     databaseId: idSchema,
     rowId: idSchema,
-    trigger: z.enum(['created', 'changed']),
+    trigger: aiAutoFillTriggerSchema,
   }),
 ]);
 export type DatabaseAiFillJob = z.infer<typeof databaseAiFillJobSchema>;
