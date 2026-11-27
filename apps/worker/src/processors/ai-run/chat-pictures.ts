@@ -5,14 +5,16 @@ import { type JobContext } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { describeChatAttachments, transcriptCarriesForeignChatFiles } from './chat-attachments';
+import { awaitChatDocumentTexts } from './chat-documents';
 import { type ChatImagePixels, chatImagePixelsFor } from './chat-images';
 import { type ResolvedModelRow } from './contract';
 import { MAX_IMAGES_PER_RUN } from './images';
 import { resolveImageDescriber } from './preparation';
 
 /**
- * What a run does with the pictures on its conversation before the prompt is
- * built (issue #223): describes the ones nobody has described yet with the
+ * What a run does with the files on its conversation before the prompt is
+ * built (issue #223): waits, bounded, for a document's text, describes the
+ * pictures nobody has described yet with the
  * describer a tool's picture gets (ADR-088), screens each new description
  * (ADR-096), and chooses whether a model that sees gets them as pixels
  * (ADR-097). Answers the pixel reader, and whether the prompt now carries a
@@ -64,6 +66,18 @@ export async function prepareChatPictures(input: {
     correlationId: input.correlationId,
     logger: input.logger,
   });
+  // A document whose text is still being read is waited for, bounded: the
+  // run that answers its message is the one that should read it (issue #223).
+  if (
+    !(await awaitChatDocumentTexts({
+      prisma: dependencies.prisma,
+      conversationId: run.conversationId,
+    }))
+  ) {
+    input.logger.info('A chat document is still being read; the run goes on without its text', {
+      runId: run.id,
+    });
+  }
   const foreign = await transcriptCarriesForeignChatFiles(
     dependencies.prisma,
     run.conversationId,

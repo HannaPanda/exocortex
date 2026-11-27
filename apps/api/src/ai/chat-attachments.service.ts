@@ -3,17 +3,23 @@ import { Inject, Injectable } from '@nestjs/common';
 import { WorkspaceAccessService } from '@exocortex/auth';
 import {
   type AiChatAttachment,
+  ATTACHMENT_TEXT_MAX_CHARS,
+  chatAttachmentDeclaredType,
+  chatAttachmentTextStateOf,
   isChatAttachmentMimeType,
+  isChatPlainTextMimeType,
+  QUEUE_NAMES,
   type UploadChatAttachmentResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
-import { OBJECT_STORAGE, PRISMA } from '../platform/platform.module';
+import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { CHAT_ATTACHMENT_SELECT, chatAttachmentToContract } from './chat-attachments';
@@ -29,9 +35,10 @@ import { loadOwnedConversation } from './conversation-mapping';
  * nightly sweep take it, and deleting the conversation takes everything.
  *
  * Every limit is one the deployment already has: the upload's size and the
- * magic-byte check are `AttachmentsService.upload`, and how many pictures one
- * message may carry is `ai.visionMaxImagesPerRun`, because no run describes
- * more than that.
+ * magic-byte check are `AttachmentsService.upload`, a document's extraction is
+ * the one every upload gets (ADR-050), and how many files one message may
+ * carry is `ai.visionMaxImagesPerRun`, because no run describes more pictures
+ * than that.
  */
 @Injectable()
 export class ChatAttachmentsService {
@@ -42,6 +49,7 @@ export class ChatAttachmentsService {
     private readonly access: WorkspaceAccessService,
     private readonly attachments: AttachmentsService,
     private readonly settings: SettingsService,
+    @Inject(QUEUES) private readonly queues: QueueRegistry,
   ) {}
 
   async upload(input: {
@@ -76,11 +84,25 @@ export class ChatAttachmentsService {
       documentId: null,
       conversationId: conversation.id,
       filename: input.filename,
-      declaredMimeType: input.declaredMimeType,
+      declaredMimeType: chatAttachmentDeclaredType(input.filename, input.declaredMimeType),
       body: input.body,
       correlationId: input.correlationId,
       accept: isChatAttachmentMimeType,
     });
+
+    const textStatus = isChatPlainTextMimeType(uploaded.attachment.mimeType)
+      ? await this.storePlainText({
+          attachmentId: uploaded.attachment.id,
+          workspaceId: conversation.workspaceId,
+          body: input.body,
+          correlationId: input.correlationId,
+        })
+      : (
+          await this.prisma.attachment.findUniqueOrThrow({
+            where: { id: uploaded.attachment.id },
+            select: { textStatus: true },
+          })
+        ).textStatus;
 
     return {
       attachment: {
@@ -89,10 +111,43 @@ export class ChatAttachmentsService {
         mimeType: uploaded.attachment.mimeType,
         byteSize: uploaded.attachment.byteSize,
         description: null,
+        textState: chatAttachmentTextStateOf(textStatus),
         screening: null,
         createdAt: uploaded.attachment.createdAt,
       },
     };
+  }
+
+  /**
+   * A text, Markdown or JSON file is its own text: it is stored as the
+   * extracted text right away, so the assistant, `exo_attachment_read_text`
+   * and the screening (ADR-096) read it like any extraction, and the
+   * screening is queued like the one after an extraction. Cut at the same
+   * length an extraction is.
+   */
+  private async storePlainText(input: {
+    attachmentId: string;
+    workspaceId: string;
+    body: Buffer;
+    correlationId: string;
+  }): Promise<'READY'> {
+    const text = new TextDecoder('utf-8').decode(input.body);
+    await this.prisma.attachment.update({
+      where: { id: input.attachmentId },
+      data: {
+        extractedText: text.slice(0, ATTACHMENT_TEXT_MAX_CHARS),
+        textTruncated: text.length > ATTACHMENT_TEXT_MAX_CHARS,
+        textStatus: 'READY',
+        textExtractedAt: new Date(),
+      },
+    });
+    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+      correlationId: input.correlationId,
+      attachmentId: input.attachmentId,
+      workspaceId: input.workspaceId,
+      reason: 'screen',
+    });
+    return 'READY';
   }
 
   /**

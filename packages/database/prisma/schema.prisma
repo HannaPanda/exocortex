@@ -2145,36 +2145,41 @@ model AiConversationSource {
 }
 
 model AiConversationMessage {
-  id              String                   @id @default(cuid(2))
-  conversationId  String
-  conversation    AiConversation           @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  role            AiConversationRole
-  content         String
+  id               String                   @id @default(cuid(2))
+  conversationId   String
+  conversation     AiConversation           @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role             AiConversationRole
+  content          String
   /// Assistant tool-call requests, verbatim as the provider returned them.
   /// Null for plain text turns.
-  toolCalls       Json?
+  toolCalls        Json?
   /// Set on TOOL messages: which call this is the result of.
-  toolCallId      String?
-  toolName        String?
+  toolCallId       String?
+  toolName         String?
   /// True when a compaction produced this message instead of a user or model.
-  isSummary       Boolean                  @default(false)
+  isSummary        Boolean                  @default(false)
   /// Set when a compaction or `/clear` retired this message. Retired messages
   /// stay readable in the UI but never reach the provider again.
-  supersededAt    DateTime?
-  runId           String?
-  estimatedTokens Int                      @default(0)
-  createdAt       DateTime                 @default(now())
+  supersededAt     DateTime?
+  /// The compaction summary that took this message in (issue #223). The
+  /// files on it stay in the context after that summary for as long as the
+  /// summary does; `/clear` sets no summary, so its files leave.
+  summarizedIntoId String?
+  runId            String?
+  estimatedTokens  Int                      @default(0)
+  createdAt        DateTime                 @default(now())
   /// Generated tsvector over `content`, maintained by PostgreSQL rather than by
   /// an indexing job: unlike a page, a message is already plain text when it is
   /// written, so there is nothing to materialize (issue #69). Raw SQL, because
   /// Prisma has no native tsvector type -- same arrangement as
   /// `DocumentSearchIndex.searchVector`.
-  searchVector    Unsupported("tsvector")?
+  searchVector     Unsupported("tsvector")?
   /// Files sent with this message (issue #223).
-  attachments     Attachment[]
+  attachments      Attachment[]
 
   @@index([conversationId, createdAt])
   @@index([conversationId, supersededAt])
+  @@index([summarizedIntoId])
   @@map("ai_conversation_message")
 }
 

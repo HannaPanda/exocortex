@@ -136,6 +136,7 @@ beforeAll(async () => {
       access,
       {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[4],
       settings,
+      {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[6],
     ),
   );
   documents = new DocumentsService(

@@ -27,7 +27,12 @@ import { compactIfNeeded, estimateFloorInputTokens } from '../../compaction';
 import { buildSystemPrompt, type PromptSection } from '../../system-prompt';
 import { type ToolImageDescriber } from '../../tool-images';
 
-import { chatAttachmentContext, loadChatAttachmentsForPrompt } from './chat-attachments';
+import {
+  chatAttachmentContext,
+  loadCarriedFiles,
+  loadChatAttachmentsForPrompt,
+} from './chat-attachments';
+import { carriedFilesContext } from './chat-documents';
 import { type ChatImagePixels, type RunPromptMessage } from './chat-images';
 import { type ResolvedModelRow } from './contract';
 import { type RunTimeline } from './timeline';
@@ -293,19 +298,27 @@ export async function loadConversationMessages(
   // Pictures on a message stand right before it, as what the vision model
   // saw (issue #223), or ride on the message itself as pixels (ADR-097); the
   // message's text stays what the person typed.
-  const { byMessage, images } = await loadChatAttachmentsForPrompt(
+  const { byMessage, documents, images } = await loadChatAttachmentsForPrompt(
     prisma,
     activeMessages.filter((message) => message.role === 'USER').map((message) => message.id),
     readerId,
     pixels,
   );
-  return activeMessages.flatMap((message) => {
+  // The files of messages a compaction took in stand after the summary that
+  // took them in, the latest one: a summary knows only text (issue #223).
+  const carried = carriedFilesContext(await loadCarriedFiles(prisma, conversationId, readerId));
+  const lastSummary = activeMessages.findLastIndex((message) => message.isSummary);
+  return activeMessages.flatMap((message, index) => {
     const files = byMessage.get(message.id) ?? [];
     const pictures = files.flatMap((file) => {
       const image = images.get(file.id);
       return image === undefined ? [] : [image];
     });
-    const context = chatAttachmentContext(files, new Set(images.keys()));
+    const context = chatAttachmentContext(
+      files,
+      new Set(images.keys()),
+      documents.get(message.id) ?? [],
+    );
     const own: RunPromptMessage = {
       role: CONVERSATION_ROLE_TO_LOWER[message.role],
       content: message.content,
@@ -314,6 +327,7 @@ export async function loadConversationMessages(
       toolCalls: message.toolCalls ?? undefined,
       ...(pictures.length > 0 ? { images: pictures } : {}),
     };
+    if (index === lastSummary && carried !== null) return [own, carried];
     return context === null ? [own] : [context, own];
   });
 }

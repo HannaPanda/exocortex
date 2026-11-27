@@ -4,7 +4,11 @@ import { aiRunSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
 import { aiRunWrittenPagesSchema } from './ai-run-changes';
 import { attachmentScreeningSchema } from './ai-trust';
-import { isAttachmentImageSource } from './attachments';
+import {
+  ATTACHMENT_IMAGE_SOURCE_MIME_TYPES,
+  isAttachmentImageSource,
+  OFFICE_ATTACHMENT_MIME_TYPES,
+} from './attachments';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 export const aiConversationRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
@@ -110,13 +114,33 @@ export function contextUsagePercentOf(tokens: number, windowTokens: number | nul
 }
 
 /**
+ * Whether a chat file's text could be read (issue #223): `pending` while the
+ * extraction runs, `ready` once it is there, `failed` when no engine could
+ * read it, `none` for a picture or a document whose engine is switched off.
+ */
+export const AI_CHAT_ATTACHMENT_TEXT_STATES = ['none', 'pending', 'ready', 'failed'] as const;
+export const aiChatAttachmentTextStateSchema = z.enum(AI_CHAT_ATTACHMENT_TEXT_STATES);
+export type AiChatAttachmentTextState = z.infer<typeof aiChatAttachmentTextStateSchema>;
+
+/** The text state of a stored attachment row, from its database enum. */
+export function chatAttachmentTextStateOf(
+  column: 'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED',
+): AiChatAttachmentTextState {
+  if (column === 'PENDING') return 'pending';
+  if (column === 'READY') return 'ready';
+  if (column === 'FAILED') return 'failed';
+  return 'none';
+}
+
+/**
  * A file somebody put on a chat message (issue #223).
  *
  * It belongs to the conversation, never to a page: only the conversation's
- * owner can read it, and deleting the conversation deletes it. Pictures only
- * for now; the built-in AI reads one through a vision model's description
- * (ADR-088), which is stored here once and fenced as attachment content
- * every time it reaches a prompt (ADR-030).
+ * owner can read it, and deleting the conversation deletes it. A picture is
+ * read through a vision model's description, stored here once, or as pixels
+ * by a model that sees (ADR-097); a document through its extracted text
+ * (ADR-050). Either is fenced as attachment content every time it reaches a
+ * prompt (ADR-030).
  */
 export const aiChatAttachmentSchema = z.object({
   id: idSchema,
@@ -126,9 +150,12 @@ export const aiChatAttachmentSchema = z.object({
   /**
    * What a vision model saw, in the words the assistant was given. Null until
    * a run described the picture, and while nobody could: vision switched off,
-   * no model to ask, or the call failed (the next run tries again).
+   * no model to ask, or the call failed (the next run tries again). Always
+   * null for a document.
    */
   description: z.string().nullable(),
+  /** Whether a document's text was read; `none` for a picture. */
+  textState: aiChatAttachmentTextStateSchema.default('none'),
   /**
    * What the screening for instructions to an AI found (ADR-096). Only
    * `clean` lets the assistant keep writing after reading the file; null
@@ -140,15 +167,77 @@ export const aiChatAttachmentSchema = z.object({
 export type AiChatAttachment = z.infer<typeof aiChatAttachmentSchema>;
 
 /**
+ * Documents a chat message may carry (issue #223): what an extraction engine
+ * reads (ADR-050), and plain text, Markdown and JSON, which are read as they
+ * are when they arrive.
+ */
+export const CHAT_DOCUMENT_MIME_TYPES = [
+  'application/pdf',
+  ...OFFICE_ATTACHMENT_MIME_TYPES,
+  'text/plain',
+  'text/markdown',
+  'application/json',
+] as const;
+
+/** Text files with no extraction engine: their bytes are their text. */
+export const CHAT_PLAIN_TEXT_MIME_TYPES = [
+  'text/plain',
+  'text/markdown',
+  'application/json',
+] as const;
+
+/** Whether a chat file of this type is a document rather than a picture. */
+export function isChatDocumentMimeType(mimeType: string): boolean {
+  return (CHAT_DOCUMENT_MIME_TYPES as readonly string[]).includes(mimeType);
+}
+
+/** Whether a chat file of this type is read as it is, without an extraction engine. */
+export function isChatPlainTextMimeType(mimeType: string): boolean {
+  return (CHAT_PLAIN_TEXT_MIME_TYPES as readonly string[]).includes(mimeType);
+}
+
+/**
  * Whether a file of this type can go on a chat message (issue #223).
  *
- * The raster images the image read accepts (ADR-088): the assistant sees a
- * picture through a vision model, and an SVG is a document that can carry
- * script rather than a picture. Other files are the next step.
+ * The raster images the image read accepts (ADR-088), and the documents
+ * above. An SVG is a document that can carry script rather than a picture,
+ * and stays out.
  */
 export function isChatAttachmentMimeType(mimeType: string): boolean {
-  return isAttachmentImageSource(mimeType);
+  return isAttachmentImageSource(mimeType) || isChatDocumentMimeType(mimeType);
 }
+
+const TEXT_TYPE_BY_EXTENSION: Readonly<Record<string, string>> = {
+  txt: 'text/plain',
+  text: 'text/plain',
+  md: 'text/markdown',
+  markdown: 'text/markdown',
+  json: 'application/json',
+  csv: 'text/csv',
+};
+
+/**
+ * The type a chat file declares, or, when a browser declared none, the one its
+ * name says for a text format. Text has no magic bytes, so the upload checks
+ * text against the declared type, and a Markdown file often arrives with an
+ * empty one. Only ever a hint: the server still checks the bytes.
+ */
+export function chatAttachmentDeclaredType(
+  filename: string,
+  declared: string | undefined,
+): string | undefined {
+  if (declared !== undefined && declared.length > 0 && declared !== 'application/octet-stream') {
+    return declared;
+  }
+  const extension = filename.split('.').pop()?.toLowerCase() ?? '';
+  return TEXT_TYPE_BY_EXTENSION[extension] ?? declared;
+}
+
+/** Every type the chat's file picker offers. */
+export const CHAT_ATTACHMENT_MIME_TYPES = [
+  ...ATTACHMENT_IMAGE_SOURCE_MIME_TYPES,
+  ...CHAT_DOCUMENT_MIME_TYPES,
+] as const;
 
 /**
  * The most attachments one message may name, whatever the workspace allows.

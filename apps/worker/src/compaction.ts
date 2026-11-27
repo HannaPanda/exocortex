@@ -193,8 +193,8 @@ async function summarizeAndSupersede(input: {
     .reduce((sum, message) => sum + message.estimatedTokens, 0);
   const messageTokensAfter = keptMessageTokens + summaryEstimatedTokens;
 
-  await input.prisma.$transaction([
-    input.prisma.aiConversationMessage.create({
+  await input.prisma.$transaction(async (tx) => {
+    const summary = await tx.aiConversationMessage.create({
       data: {
         conversationId: input.conversationId,
         role: 'SYSTEM',
@@ -202,18 +202,21 @@ async function summarizeAndSupersede(input: {
         isSummary: true,
         estimatedTokens: summaryEstimatedTokens,
       },
-    }),
-    input.prisma.aiConversationMessage.updateMany({
+    });
+    // Which summary took them in, so the files on them stay in the context
+    // after the summary: a picture's description, a document by name (#223).
+    // `/clear` retires the summary too, and the files leave with it.
+    await tx.aiConversationMessage.updateMany({
       where: { id: { in: [...summarizedIds] } },
-      data: { supersededAt: new Date() },
-    }),
-    input.prisma.aiConversation.update({
+      data: { supersededAt: new Date(), summarizedIntoId: summary.id },
+    });
+    await tx.aiConversation.update({
       where: { id: input.conversationId },
       // The last measured prompt described the transcript just superseded;
       // the next turn measures the compacted one.
       data: { estimatedTokens: messageTokensAfter, measuredInputTokens: null },
-    }),
-  ]);
+    });
+  });
 
   await input.bus.publish({
     type: 'ai.conversation.compacted',

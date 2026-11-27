@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  type AiChatAttachmentTextState,
   type AiConversation,
   type AiConversationCompactionError,
   aiConversationCompactResponseSchema,
@@ -151,7 +152,8 @@ export const chatReadTool: AnyToolDefinition = defineTool({
   description:
     'Liest den Verlauf einer eigenen KI-Unterhaltung: alle Nachrichten in ihrer Reihenfolge, ' +
     'inklusive der Nachrichten, die eine Verdichtung aus dem Kontext genommen hat, und mit den ' +
-    'Bildern, die eine Nachricht mitgebracht hat (lesbar mit exo_attachment_read_image).',
+    'Bildern und Dateien, die eine Nachricht mitgebracht hat (Bilder lesbar mit ' +
+    'exo_attachment_read_image, Dokumente mit exo_attachment_read_text).',
   inputSchema: z.object({
     conversationId: idSchema,
   }),
@@ -185,18 +187,27 @@ export const chatReadTool: AnyToolDefinition = defineTool({
 });
 
 /**
- * The pictures a person sent with a message (issue #223): named with their
- * id, so the picture itself is one `exo_attachment_read_image` away, and with
- * what the vision model told the built-in assistant about it.
+ * The files a person sent with a message (issue #223): named with their id,
+ * so a picture is one `exo_attachment_read_image` and a document one
+ * `exo_attachment_read_text` away, with what the built-in assistant was told:
+ * a picture's description, or whether a document's text could be read.
  */
 function attachmentLines(message: AiConversationMessage): string {
   return message.attachments
-    .map((file) => {
-      const seen =
-        file.description === null ? 'noch nicht beschrieben' : `Beschreibung: ${file.description}`;
-      return `\n- Anhang ${file.filename} (${file.mimeType}, id ${file.id}); ${seen}`;
-    })
+    .map((file) => `\n- Anhang ${file.filename} (${file.mimeType}, id ${file.id}); ${seenAs(file)}`)
     .join('');
+}
+
+const TEXT_STATE_LINE: Record<AiChatAttachmentTextState, string> = {
+  none: 'Text nicht lesbar',
+  pending: 'Text wird gelesen',
+  ready: 'Text gelesen (exo_attachment_read_text)',
+  failed: 'Text nicht lesbar',
+};
+
+function seenAs(file: AiConversationMessage['attachments'][number]): string {
+  if (!file.mimeType.startsWith('image/')) return TEXT_STATE_LINE[file.textState];
+  return file.description === null ? 'noch nicht beschrieben' : `Beschreibung: ${file.description}`;
 }
 
 /** How a requested compaction ended, for a reader of the conversation. */

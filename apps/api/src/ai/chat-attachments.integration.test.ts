@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
+import { QUEUE_NAMES } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
@@ -110,6 +111,7 @@ beforeAll(async () => {
     access,
     attachments,
     settings,
+    queues,
   );
   conversations = new ConversationsService(
     prisma,
@@ -219,9 +221,37 @@ describe('uploading a chat file', () => {
     expect(new Set(both.map(({ attachment }) => attachment.id)).size).toBe(2);
   });
 
-  it('refuses a file that is not a picture', async () => {
+  it('takes a PDF, and reads a text file as its own text, queued for the screening', async () => {
     const conversationId = await createConversation();
-    await expect(upload(conversationId, PDF, ownerId, 'brief.pdf')).rejects.toMatchObject({
+    const pdf = await upload(conversationId, PDF, ownerId, 'brief.pdf');
+    expect(pdf.attachment.mimeType).toBe('application/pdf');
+    expect(pdf.attachment.description).toBeNull();
+
+    const text = await upload(
+      conversationId,
+      Buffer.from('# Notiz\n\nDrei Punkte für morgen.\n', 'utf8'),
+      ownerId,
+      'notiz.md',
+    );
+    expect(text.attachment.textState).toBe('ready');
+    const row = await prisma.attachment.findUniqueOrThrow({ where: { id: text.attachment.id } });
+    expect(row.extractedText).toContain('Drei Punkte für morgen.');
+    expect(row.textStatus).toBe('READY');
+    expect(row.screening).toBeNull();
+    const queued = await queues
+      .getQueue(QUEUE_NAMES.attachmentText)
+      .getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
+    expect(
+      queued.some(
+        (job) => job.data.attachmentId === text.attachment.id && job.data.reason === 'screen',
+      ),
+    ).toBe(true);
+  });
+
+  it('refuses a file that is neither a picture nor a document', async () => {
+    const conversationId = await createConversation();
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>', 'utf8');
+    await expect(upload(conversationId, svg, ownerId, 'bild.svg')).rejects.toMatchObject({
       code: 'unsupported_media_type',
     });
   });

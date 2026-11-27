@@ -3322,6 +3322,107 @@ describe('ai runs', () => {
   }, 60_000);
 
   /**
+   * Issue #223: a document on a message reaches the prompt as its text, and
+   * the files of a message a compaction took in stay after the summary.
+   */
+  it('reads a chat document as its text and keeps summarised files after the summary', async () => {
+    const conversationId = await createConversation();
+    const older = await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Schau dir das Foto an.', estimatedTokens: 5 },
+    });
+    const summary = await prisma.aiConversationMessage.create({
+      data: {
+        conversationId,
+        role: 'SYSTEM',
+        content: 'Zusammenfassung des bisherigen Verlaufs:\n\nEin Foto wurde besprochen.',
+        isSummary: true,
+        estimatedTokens: 10,
+      },
+    });
+    await prisma.aiConversationMessage.update({
+      where: { id: older.id },
+      data: { supersededAt: new Date(), summarizedIntoId: summary.id },
+    });
+    const question = await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Was steht im Brief?', estimatedTokens: 5 },
+    });
+    const stamp = Date.now().toString(36);
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        conversationId,
+        conversationMessageId: older.id,
+        filename: 'hund.png',
+        mimeType: 'image/png',
+        byteSize: ONE_PIXEL_PNG.byteLength,
+        storageKey: `test/chat-carried-${stamp}.png`,
+        createdById: userId,
+        imageDescription: 'Ein Hund am Strand.',
+        screening: 'CLEAN',
+      },
+    });
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        conversationId,
+        conversationMessageId: question.id,
+        filename: 'brief.pdf',
+        mimeType: 'application/pdf',
+        byteSize: 10,
+        storageKey: `test/chat-doc-${stamp}.pdf`,
+        createdById: userId,
+        textStatus: 'READY',
+        extractedText: 'Die Miete steigt im März.',
+        screening: 'CLEAN',
+      },
+    });
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: userId,
+        status: 'PENDING',
+        provider: 'capturing-test-provider',
+        model: 'test-model',
+        messages: [{ role: 'user', content: 'Was steht im Brief?' }],
+        conversationId,
+      },
+    });
+    const provider = new CapturingAiProvider();
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(provider),
+      bus,
+      storage: fakeStorage(ONE_PIXEL_PNG),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => fakeVisionPreprocessor('unbenutzt'),
+      queues,
+      modelRegistry: async () => null,
+    });
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-chat-doc', runId: run.id, workspaceId, userId })
+        .context,
+    );
+
+    const messages = provider.lastRequest?.messages ?? [];
+    const summaryAt = messages.findIndex((entry) => entry.content.startsWith('Zusammenfassung'));
+    expect(summaryAt).toBeGreaterThanOrEqual(0);
+    expect(messages[summaryAt + 1]?.content).toContain('1. hund.png: Ein Hund am Strand.');
+    const questionAt = messages.findIndex((entry) => entry.content === 'Was steht im Brief?');
+    expect(messages[questionAt - 1]?.content).toContain('### brief.pdf');
+    expect(messages[questionAt - 1]?.content).toContain('Die Miete steigt im März.');
+    expect(messages.some((entry) => entry.content === 'Schau dir das Foto an.')).toBe(false);
+
+    // Both are the uploader's own and clean, so for them nothing is foreign;
+    // for anybody else both are.
+    expect(await transcriptCarriesForeignChatFiles(prisma, conversationId, userId)).toBe(false);
+    expect(await transcriptCarriesForeignChatFiles(prisma, conversationId, 'somebody-else')).toBe(
+      true,
+    );
+  }, 60_000);
+
+  /**
    * ADR-097: a model that sees images gets the picture itself, and a provider
    * that refuses it before answering gets the same prompt with the description.
    */
@@ -4309,6 +4410,9 @@ describe('compactIfNeeded', () => {
     expect(active.find((message) => message.isSummary)?.content).toContain(
       'Kurze Zusammenfassung.',
     );
+    // Each retired message names the summary that took it in (issue #223).
+    const summaryId = active.find((message) => message.isSummary)?.id;
+    expect(superseded.every((message) => message.summarizedIntoId === summaryId)).toBe(true);
 
     // Issue #6, point 5: the compaction says so while it runs, not only once
     // it is over. Summarising a long transcript is exactly the kind of pause
