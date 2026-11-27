@@ -207,6 +207,110 @@ test.describe('databases', () => {
     await expect(page.locator('th', { hasText: 'Notiz' })).toHaveCount(0, { timeout: 15_000 });
   });
 
+  /**
+   * Issue #305: every column is separated by a line of the same kind as the
+   * row lines, and the pinned title cell stays opaque on a hovered row, so the
+   * columns scrolling underneath it never show through.
+   */
+  test('draws the same grid line between every row and column', async ({ page, baseURL }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const databaseId = await createDatabase(page, `Raster ${Date.now().toString(36)}`);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    const headers = { origin: baseURL ?? '' };
+    for (const name of ['Erste', 'Zweite', 'Dritte', 'Vierte', 'Fünfte']) {
+      const response = await page.request.post(`/api/documents/${databaseId}/properties`, {
+        headers,
+        data: { type: 'TEXT', name },
+      });
+      expect(response.ok(), await response.text()).toBe(true);
+    }
+    for (const title of ['Zeile A', 'Zeile B', 'Zeile C']) {
+      const response = await page.request.post(`/api/documents/${databaseId}/rows`, {
+        headers,
+        data: { title, values: [] },
+      });
+      expect(response.ok(), await response.text()).toBe(true);
+    }
+    // Narrow enough that the table scrolls sideways under the pinned column.
+    await page.setViewportSize({ width: 1000, height: 800 });
+    await page.reload();
+    const rows = page.locator('[data-testid^="database-row-"]');
+    await expect(rows).toHaveCount(3, { timeout: 15_000 });
+
+    const lines = await page.evaluate(() => {
+      const browser = globalThis as unknown as GridBrowser;
+      return [...browser.document.querySelectorAll('[data-testid="table-scroll"] tr')].map((row) =>
+        [...row.children].map((cell) => {
+          const style = browser.getComputedStyle(cell);
+          return {
+            right: style.borderRightWidth,
+            bottom: style.borderBottomWidth,
+            rightColour: style.borderRightColor,
+            bottomColour: style.borderBottomColor,
+          };
+        }),
+      );
+    });
+    expect(lines.length).toBe(4);
+    for (const cells of lines) {
+      expect(cells.at(-1)?.right).toBe('0px');
+      for (const cell of cells.slice(0, -1)) {
+        expect(cell.right).not.toBe('0px');
+        expect(cell.right).toBe(cell.bottom);
+        expect(cell.rightColour).toBe(cell.bottomColour);
+      }
+    }
+
+    await page.getByTestId('table-scroll').evaluate((element) => {
+      (element as unknown as { scrollLeft: number }).scrollLeft = 120;
+    });
+    const hovered = rows.nth(1);
+    const rowSelector = `[data-testid="${(await hovered.getAttribute('data-testid')) ?? ''}"]`;
+    const resting = await page.evaluate((selector) => {
+      const browser = globalThis as unknown as GridBrowser;
+      const cell = browser.document.querySelector(`${selector} > td`);
+      if (cell === null) throw new Error('no pinned cell');
+      return browser.getComputedStyle(cell).backgroundColor;
+    }, rowSelector);
+    await hovered.locator('td').nth(2).hover();
+    // The pinned cell is opaque and shows the colour the rest of the row shows:
+    // the row's translucent tint laid over the resting cell colour.
+    const colours = await page.evaluate(
+      ([selector, base]) => {
+        const browser = globalThis as unknown as GridBrowser;
+        const canvas = browser.document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext('2d');
+        if (context === null) throw new Error('no 2d context');
+        const paint = (...layers: string[]): number[] => {
+          context.clearRect(0, 0, 1, 1);
+          for (const layer of layers) {
+            context.fillStyle = layer;
+            context.fillRect(0, 0, 1, 1);
+          }
+          return [...context.getImageData(0, 0, 1, 1).data];
+        };
+        const row = browser.document.querySelector(selector);
+        const cell = browser.document.querySelector(`${selector} > td`);
+        if (row === null || cell === null) throw new Error('no hovered row');
+        return {
+          pinned: paint(browser.getComputedStyle(cell).backgroundColor),
+          row: paint(base, browser.getComputedStyle(row).backgroundColor),
+        };
+      },
+      [rowSelector, resting] as const,
+    );
+    expect(colours.pinned[3]).toBe(255);
+    for (let channel = 0; channel < 3; channel += 1) {
+      expect(Math.abs((colours.pinned[channel] ?? 0) - (colours.row[channel] ?? 0))).toBeLessThan(
+        3,
+      );
+    }
+  });
+
   test('changes the width of a page and remembers it', async ({ page }) => {
     // Wide enough that the reading measure is actually narrower than the
     // available space: with both panels open at 1280, it is not, and every
@@ -411,6 +515,42 @@ test.describe('databases', () => {
     await expect(rows).toHaveCount(1, { timeout: 15_000 });
   });
 });
+
+/**
+ * The e2e project is typed against Node alone, so the browser globals the grid
+ * test touches are named explicitly, and only as much as it uses.
+ */
+interface GridElement {
+  children: Iterable<GridElement>;
+}
+interface GridBrowser {
+  document: {
+    querySelector: (selector: string) => GridElement | null;
+    querySelectorAll: (selector: string) => Iterable<GridElement>;
+    createElement: (tag: 'canvas') => {
+      width: number;
+      height: number;
+      getContext: (kind: '2d') => {
+        fillStyle: string;
+        clearRect: (x: number, y: number, width: number, height: number) => void;
+        fillRect: (x: number, y: number, width: number, height: number) => void;
+        getImageData: (
+          x: number,
+          y: number,
+          width: number,
+          height: number,
+        ) => { data: Iterable<number> };
+      } | null;
+    };
+  };
+  getComputedStyle: (element: GridElement) => {
+    borderRightWidth: string;
+    borderBottomWidth: string;
+    borderRightColor: string;
+    borderBottomColor: string;
+    backgroundColor: string;
+  };
+}
 
 async function addProperty(page: Page, name: string, typeLabel: string): Promise<void> {
   await page.getByTestId('add-property').click();
