@@ -19,7 +19,7 @@
     "lint:fix": "oxlint --fix && eslint . --fix",
     "typecheck": "turbo run typecheck && tsc -p tsconfig.tools.json --noEmit",
     "test": "pnpm test:unit && pnpm test:integration",
-    "test:unit": "turbo run test:unit",
+    "test:unit": "node scripts/run-tests.mjs test:unit",
     "test:integration": "bash scripts/test-integration.sh",
     "test:gates": "vitest run",
     "test:plugin": "node --test --test-concurrency=4 tools/claude-code-plugin/test/hooks.test.mjs",

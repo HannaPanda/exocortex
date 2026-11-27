@@ -185,7 +185,8 @@ pnpm lint             # dependency boundaries, then oxlint, then ESLint
                       #  first after changing a package's exported types)
 pnpm lint:fix         # the mechanical half of both
 pnpm typecheck
-pnpm test:unit        # everything that needs no infrastructure
+pnpm test:unit        # everything that needs no infrastructure, on half the
+                      # cores (EXOCORTEX_TEST_CPUS=all|<n>, scripts/run-tests.mjs)
 pnpm test:integration # *.integration.test.ts on a throwaway stack (needs Docker)
 pnpm test             # both halves
 pnpm test:e2e         # Playwright against a running deployment

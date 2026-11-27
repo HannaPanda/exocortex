@@ -66,6 +66,11 @@ const NOT_CONFIGURATION = new Set([
   // starts (`tools/claude-code-plugin/hooks`, issue #188). Set by one process
   // for the next, never by a person.
   'EXOCORTEX_HOOK_INPUT',
+  // How many CPUs the tests may keep busy (scripts/run-tests.mjs, issue #313).
+  // Set by whoever starts the run -- the CI workflow says `all` -- and read
+  // from the shell only: nothing loads a `.env` before the tests start, so a
+  // line there would change nothing.
+  'EXOCORTEX_TEST_CPUS',
 ]);
 
 /**

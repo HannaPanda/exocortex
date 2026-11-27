@@ -55,7 +55,12 @@ jobs:
 
       # `build.sh` runs `pnpm install --frozen-lockfile` itself, which is what
       # rejects a lockfile that does not match package.json.
+      # The runner serves nothing else, so the tests may use every core. Not a
+      # rule of its own: `scripts/run-tests.mjs` is where the budget is split,
+      # and on the deployment host it defaults to half the cores (issue #313).
       - name: scripts/build.sh --full-tests
+        env:
+          EXOCORTEX_TEST_CPUS: all
         run: bash scripts/build.sh --full-tests
 
       # Not a check: it hands the styleguide gate's evidence to whoever has to

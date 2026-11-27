@@ -375,7 +375,18 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    2 GB instead of one second), which is why it runs after the build: the
    packages' `dist` declarations are what it sees across a package boundary. Then `pnpm format:check`, `pnpm typecheck`, the gate tests, and
    `pnpm test:unit` — every test in every workspace that needs no
-   infrastructure. `--full-tests` adds `pnpm test:integration`, which brings up
+   infrastructure, with its parallelism bounded by `scripts/run-tests.mjs`
+   (issue #313): the tests may keep half the cores busy, as two vitest workers
+   per workspace and as many workspaces side by side as the rest allows (on
+   this host two workspaces of two workers each). `EXOCORTEX_TEST_CPUS` changes the budget (`all` or
+   a number); the CI workflow sets `all`, because its runner serves nothing
+   else. Before, turbo ran ten workspaces at once and every vitest one worker
+   per core but one: up to 70 test processes, a load of 60 to 70, eight of
+   twenty workspaces red on their 5 s limits and every one of them green alone.
+   The answer to a test that runs out of time is that bound, never a longer
+   limit in the test; a test that is close to its limit on its own is a test
+   to repair. `pnpm test:integration` goes through the same helper.
+   `--full-tests` adds `pnpm test:integration`, which brings up
    a Postgres and a Redis of its own (`docker-compose.test.yml`), migrates
    them, runs the suites and removes them again. Until issue #94 those suites
    talked to the **production** database on this host; a guard now refuses any
@@ -607,6 +618,11 @@ installs Node and pnpm and runs `bash scripts/build.sh` — the same script, the
 same gates, the same order, on a checkout that has never seen this repository.
 The workflow file itself contains no checks, on purpose: a rule that lives in
 the workflow instead of the script is a rule the deploy does not know about.
+
+Its one setting is `EXOCORTEX_TEST_CPUS=all` on that step: the runner serves
+nothing else, so the tests may use every core there, while the same script on
+this host keeps them to half (issue #313). It is a budget handed to
+`scripts/run-tests.mjs`, not a rule; how the budget is spent is decided there.
 
 It needs no secrets and touches nothing here. Its databases are throwaway
 containers: the migration gate's, and the integration tests' own Postgres and

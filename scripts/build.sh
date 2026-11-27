@@ -208,6 +208,12 @@ else
   # not the default here because it needs Docker and half a minute of container
   # startup, not because it is dangerous any more: since issue #94 it brings up
   # its own Postgres and Redis and cannot reach the deployment's.
+  # How many of them run at once is decided in one place,
+  # `scripts/run-tests.mjs`: half the cores by default, because the four units
+  # keep serving meanwhile, and `EXOCORTEX_TEST_CPUS=all` on a machine that
+  # does nothing else (the CI). Unbounded, turbo and vitest together started
+  # some 70 test processes on eight cores and tests ran into their limits
+  # under the load they made themselves (issue #313).
   info "Tests without infrastructure (--full-tests adds the rest) …"
   pnpm test:unit || fail "Unit tests failed"
 

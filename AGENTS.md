@@ -131,7 +131,12 @@ Tests come in two halves, told apart by the file name and kept apart by the
 test-split gate. `*.integration.test.ts` may open a database or Redis
 connection and runs only under `pnpm test:integration`, which gives it a
 throwaway Postgres and Redis and refuses to let it reach any other; every other test runs
-under `pnpm test:unit`, which is what `build.sh` and CI run. A test that needs
+under `pnpm test:unit`, which is what `build.sh` and CI run. How many tests run
+at once is decided in `scripts/run-tests.mjs` and nowhere else (issue #313):
+half the cores by default, `EXOCORTEX_TEST_CPUS` to change it. A test that runs
+out of time in a full run is not given a longer limit; a test that is close to
+its limit on its own is repaired (fake timers instead of real time, a smaller
+fixture). A test that needs
 infrastructure is named accordingly, and a workspace that gains tests gains the
 two scripts as well — without them `turbo run test:unit` walks past it and the
 tests run nowhere.

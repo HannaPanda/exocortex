@@ -209,12 +209,14 @@ if [ -n "$RUN_COMMAND" ]; then
   bash -c "$RUN_COMMAND"
 else
   step "Step 4 — integration tests"
-  TURBO_ARGS=(run test:integration)
+  # Through the same helper as `pnpm test:unit`, so the integration half keeps
+  # to the same CPU budget (issue #313).
+  TURBO_ARGS=()
   for workspace in ${FILTER[@]+"${FILTER[@]}"}; do
     info "workspace: $workspace"
     TURBO_ARGS+=(--filter "$workspace")
   done
-  pnpm exec turbo "${TURBO_ARGS[@]}"
+  node scripts/run-tests.mjs test:integration ${TURBO_ARGS[@]+"${TURBO_ARGS[@]}"}
 fi
 TEST_STATUS=$?
 set -e

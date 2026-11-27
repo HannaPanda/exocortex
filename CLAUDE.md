@@ -259,7 +259,9 @@ pnpm lint:fix          # the mechanical half of both
 pnpm format            # Prettier over the tree; format:check is what build.sh runs
 pnpm typecheck
 pnpm test:unit         # every test that needs no infrastructure, in every
-                       # workspace -- this is what build.sh and CI run
+                       # workspace -- this is what build.sh and CI run, on
+                       # half the cores (scripts/run-tests.mjs, issue #313;
+                       # EXOCORTEX_TEST_CPUS=all|<n> to change the budget)
 pnpm test:integration  # only `*.integration.test.ts` -- brings up its own
                        # throwaway Postgres and Redis, and can reach no other
 pnpm test              # both halves at once
