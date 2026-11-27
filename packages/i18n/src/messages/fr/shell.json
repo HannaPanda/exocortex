@@ -32,7 +32,7 @@
     "memory": "Mémoire",
     "connections": "Connexions",
     "notifications": "Notifications",
-    "language": "Langue",
+    "language": "Langue et heure",
     "aiChat": "Chat IA",
     "editor": "Éditeur",
     "admin": "Administration",
@@ -187,6 +187,13 @@
       "hint": "S’applique à ton compte",
       "keywords": "plan sommaire table des matières échelle déplier survol hover souris ouvrir automatiquement clic"
     },
+    "timeFormat": {
+      "auto": "Format d’heure selon la langue ({example})",
+      "h24": "Format d’heure sur 24 heures ({example})",
+      "h12": "Format d’heure sur 12 heures ({example})",
+      "hint": "S’applique à ton compte",
+      "keywords": "heure temps format d’heure 24 heures 12 heures am pm matin après-midi horloge format paramètres réglages"
+    },
     "contextOpen": "Ouvrir le panneau contextuel",
     "contextOpenPlaceholder": "Quel onglet ?",
     "contextOpenKeywords": "contexte panneau onglet volet barre latérale droite",
@@ -238,8 +245,8 @@
         "keywords": "notification e-mail push alerte paramètres"
       },
       "language": {
-        "label": "Changer de langue",
-        "keywords": "langue language traduction paramètres français english"
+        "label": "Définir la langue et l’heure",
+        "keywords": "langue language traduction paramètres réglages français english allemand heure format d’heure 24 heures 12 heures am pm fuseau horaire"
       },
       "aiChat": {
         "label": "Paramètres du chat IA",

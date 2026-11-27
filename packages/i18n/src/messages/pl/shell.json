@@ -32,7 +32,7 @@
     "memory": "Pamięć",
     "connections": "Połączenia",
     "notifications": "Powiadomienia",
-    "language": "Język",
+    "language": "Język i czas",
     "aiChat": "Czat AI",
     "editor": "Edytor",
     "admin": "Administracja",
@@ -187,6 +187,13 @@
       "hint": "Dotyczy twojego konta",
       "keywords": "konspekt spis treści skala rozwiń rozwijanie najechanie hover mysz automatycznie otwórz kliknięcie"
     },
+    "timeFormat": {
+      "auto": "Zapisuj czas zgodnie z językiem ({example})",
+      "h24": "Zapisuj czas w formacie 24-godzinnym ({example})",
+      "h12": "Zapisuj czas w formacie 12-godzinnym ({example})",
+      "hint": "Dotyczy twojego konta",
+      "keywords": "godzina czas format czasu 24 godziny 12 godzin am pm rano po południu zegar format ustawienia"
+    },
     "contextOpen": "Otwórz panel kontekstowy",
     "contextOpenPlaceholder": "Która zakładka?",
     "contextOpenKeywords": "kontekst panel kontekstowy zakładka tab panel pasek boczny po prawej",
@@ -238,8 +245,8 @@
         "keywords": "powiadomienie powiadomienia mail push alert ustawienia"
       },
       "language": {
-        "label": "Zmień język",
-        "keywords": "język language tłumaczenie ustawienia polski english"
+        "label": "Ustaw język i czas",
+        "keywords": "język language tłumaczenie ustawienia polski english godzina format czasu 24 godziny 12 godzin am pm strefa czasowa"
       },
       "aiChat": {
         "label": "Ustawienia czatu AI",

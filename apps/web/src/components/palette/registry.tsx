@@ -15,6 +15,7 @@ import { navigationCommands } from './navigation-commands';
 import { useOutlinePreferenceCommands } from './outline-preference-commands';
 import { type PaletteCommand, type PaletteContext } from './palette-command';
 import { settingsCommands, settingsMenu } from './settings-commands';
+import { useTimeFormatCommands } from './time-format-commands';
 import { workspaceCommands } from './workspace-commands';
 
 /**
@@ -55,6 +56,7 @@ export function usePaletteCommands({
   const create = useCreateCommands(workspaceId, open);
   const chatScroll = useChatScrollCommands();
   const outline = useOutlinePreferenceCommands();
+  const timeFormat = useTimeFormatCommands();
   const contributed = usePaletteContributions();
   const workspaces = useWorkspaces();
   // Usually in the cache already: the workspace switcher and the settings
@@ -75,6 +77,7 @@ export function usePaletteCommands({
       ...settings,
       ...chatScroll,
       ...outline,
+      ...timeFormat,
       ...settingsMenu(navigation, settings, tSettings, groupLabel),
     ];
   }, [
@@ -89,6 +92,7 @@ export function usePaletteCommands({
     tNavigation,
     tSettings,
     tWorkspace,
+    timeFormat,
     workspaceId,
     workspaceRole,
     workspaces.data,

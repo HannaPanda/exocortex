@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex w twoim języku",
-    "summary": "W sekcji Ustawienia → Język wybierasz język, w którym eXocortex się z tobą komunikuje: niemiecki, angielski, hiszpański, francuski, włoski, niderlandzki, polski lub brazylijski portugalski. Wybór jest przypisany do twojego konta i obowiązuje na każdym urządzeniu.",
+    "summary": "W sekcji Ustawienia → Język i godzina możesz wybrać, w jakim języku eXocortex ma się z tobą komunikować: niemieckim, angielskim, hiszpańskim, francuskim, włoskim, niderlandzkim, polskim lub portugalskim brazylijskim. Wybór ten jest przypisany do twojego konta i obowiązuje na każdym urządzeniu.",
     "details": {
       "p1": "Dopóki niczego nie wybierzesz, eXocortex dostosowuje się do języka twojej przeglądarki i przełącza się na niemiecki, jeśli przeglądarka nie żąda żadnego z obsługiwanych języków. Gdy dokonasz wyboru samodzielnie, obowiązuje on wszędzie, także na urządzeniu, na którym logujesz się po raz pierwszy: tam pierwszy widok pojawi się jeszcze w języku przeglądarki i zmieni się od razu po załadowaniu twojego konta.",
       "p2": "Język można zmienić także przed zalogowaniem: pod formularzem logowania, podczas przyjmowania zaproszenia oraz na stronie „Nie pamiętasz hasła?”. Ten wybór przeglądarka zapamiętuje do czasu, aż twoje konto będzie miało własne ustawienie.",
@@ -9,7 +9,17 @@
       "p4": "Interfejs jest tłumaczony obszar po obszarze. Jeśli gdzieś widać jeszcze tekst niemiecki, dany obszar nie został jeszcze przetłumaczony; do momentu ukończenia całości inny język może więc w niektórych miejscach pozostać niemiecki.",
       "p5": "Agenci odczytują i ustawiają język za pomocą exo_me_preferences oraz exo_me_preferences_set."
     },
-    "where": "Ustawienia, Język."
+    "where": "Ustawienia, Język i godzina."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Format godziny: 24- lub 12-godzinny",
+    "summary": "eXocortex zapisuje każdą godzinę zgodnie z twoim językiem: po niemiecku 14:30, po angielsku 2:30 PM. W sekcji Ustawienia → Język i godzina możesz zamiast tego ustalić, aby godziny zawsze wyświetlały się w formacie 24- lub 12-godzinnym, niezależnie od języka.",
+    "details": {
+      "p1": "Wybór ten obowiązuje wszędzie tam, gdzie pojawia się godzina: w bazach danych (również w przedziałach czasowych i w kalendarzu), w komentarzach, w historii i w ustawieniach. Stosuje się do niego także pole, w którym wpisujesz godzinę. Możesz tam wpisać 14:30, 1430, 2:30 pm lub po prostu 9; klawisze strzałek pozwalają przeskakiwać o kwadrans (z klawiszem Shift o pełne godziny).",
+      "p2": "Godziny są wyświetlane w strefie czasowej twojego urządzenia. Dokładny punkt w czasie jest zawsze zapisywany jednoznacznie w UTC, dlatego osoba w innej strefie czasowej widzi to samo wydarzenie w swoim lokalnym czasie. Data bez godziny, na przykład całodzienne wydarzenie, nigdy nie jest przesuwana.",
+      "p3": "Wybór ten jest powiązany z twoim kontem i działa na każdym urządzeniu. Możesz go również zmienić za pomocą Strg + K („Używaj 24-godzinnego formatu czasu”). Agenci odczytują i ustawiają go za pomocą exo_me_preferences i exo_me_preferences_set, jako timeFormat (auto, 24h lub 12h)."
+    },
+    "where": "Ustawienia, Język i godzina. Dodatkowo w palecie poleceń."
   },
   "funktionsuebersicht": {
     "title": "Ten przegląd i nowości od twojej ostatniej wizyty",

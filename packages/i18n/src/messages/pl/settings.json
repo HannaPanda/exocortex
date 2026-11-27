@@ -1,13 +1,18 @@
 {
   "language": {
-    "title": "Język",
-    "intro": "W jakim języku eXocortex komunikuje się z tobą. Wybór dotyczy twojego konta, a więc każdego urządzenia, na którym się zalogujesz. Twoje własne treści nigdy nie są tłumaczone.",
+    "title": "Język i czas",
+    "intro": "W jakim języku eXocortex wyświetla interfejs i jak zapisuje godziny. Wybór dotyczy twojego konta, czyli każdego urządzenia, na którym się logujesz. Twoje własne treści nigdy nie są tłumaczone.",
     "legend": "Język interfejsu",
     "followBrowser": "Taki jak w przeglądarce",
     "followBrowserHint": "Dopóki nic nie wybierzesz, eXocortex dostosowuje się do twojej przeglądarki, czyli obecnie do: {browser}.",
-    "saveFailed": "Nie udało się zapisać języka. Spróbuj ponownie za chwilę.",
-    "loading": "Ładowanie języka…",
-    "loadError": "Nie udało się załadować języka"
+    "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
+    "loading": "Wczytywanie ustawień…",
+    "loadError": "Nie udało się wczytać ustawień",
+    "timeFormatLegend": "Format godziny",
+    "timeFormatAuto": "Zgodnie z językiem ({example})",
+    "timeFormat24h": "24-godzinny ({example})",
+    "timeFormat12h": "12-godzinny ({example})",
+    "timeFormatHint": "Dotyczy każdej godziny w eXocortex, także w bazach danych i w kalendarzu. Data bez godziny pozostaje bez zmian. Godziny są wyświetlane w strefie czasowej twojego urządzenia, obecnie {zone}."
   },
   "chat": {
     "title": "Czat SI",

@@ -1,13 +1,18 @@
 {
   "language": {
-    "title": "Idioma",
-    "intro": "Em qual idioma o eXocortex fala com você. A escolha vale para a sua conta, ou seja, em qualquer dispositivo em que você entrar. Seus próprios conteúdos nunca são traduzidos.",
+    "title": "Idioma e horário",
+    "intro": "Em qual idioma o eXocortex fala com você e como ele exibe os horários. A escolha vale para a sua conta, ou seja, em qualquer dispositivo onde você estiver conectado. O seu próprio conteúdo nunca é traduzido.",
     "legend": "Idioma da interface",
     "followBrowser": "Igual ao meu navegador",
     "followBrowserHint": "Enquanto você não escolher nada, o eXocortex seguirá o seu navegador, no momento {browser}.",
-    "saveFailed": "Não foi possível salvar o idioma. Tente novamente em instantes.",
-    "loading": "Carregando idioma…",
-    "loadError": "Não foi possível carregar o idioma"
+    "saveFailed": "Não foi possível salvar a configuração. Tente novamente daqui a pouco.",
+    "loading": "Carregando configurações…",
+    "loadError": "Não foi possível carregar as configurações",
+    "timeFormatLegend": "Horário",
+    "timeFormatAuto": "Igual ao idioma ({example})",
+    "timeFormat24h": "24 horas ({example})",
+    "timeFormat12h": "12 horas ({example})",
+    "timeFormatHint": "Aplica-se a qualquer horário no eXocortex, inclusive em bancos de dados e no calendário. Uma data sem horário permanece como está. Os horários são exibidos no fuso horário do seu dispositivo, atualmente {zone}."
   },
   "chat": {
     "title": "Chat de IA",

@@ -1,13 +1,18 @@
 {
   "language": {
-    "title": "Language",
-    "intro": "Which language eXocortex speaks with you. This choice applies to your account, across every device where you’re signed in. Your own content is never translated.",
+    "title": "Language and time",
+    "intro": "Which language eXocortex speaks with you and how it writes times. Your choice applies to your account, so on every device where you’re signed in. Your own content is never translated.",
     "legend": "Interface language",
     "followBrowser": "Match my browser",
     "followBrowserHint": "As long as you don’t choose one, eXocortex follows your browser, which is currently {browser}.",
-    "saveFailed": "The language couldn’t be saved. Try again in a moment.",
-    "loading": "Loading language …",
-    "loadError": "Could not load language"
+    "saveFailed": "The setting couldn’t be saved. Please try again in a moment.",
+    "loading": "Loading settings …",
+    "loadError": "Settings couldn’t be loaded",
+    "timeFormatLegend": "Time format",
+    "timeFormatAuto": "Same as language ({example})",
+    "timeFormat24h": "24 hours ({example})",
+    "timeFormat12h": "12 hours ({example})",
+    "timeFormatHint": "Applies to every time in eXocortex, including in databases and in the calendar. A date without a time stays as it is. Times are shown in your device’s time zone, currently {zone}."
   },
   "chat": {
     "title": "AI chat",

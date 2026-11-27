@@ -14101,16 +14101,16 @@
       "output": "1b277250912a1676"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "033b01c45863366f"
+      "source": "4f052e4f5fab8ced",
+      "output": "71a35654772bf5ed"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "8197dcdb0f8352ea"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "c8ee042285584dd2"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "74767ccc6e68739b"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -14287,6 +14287,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "4d342e16da23daa3"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "dbb23eeb4827f937"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "7498b9c219afd65c"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "746bef911701ee08"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "e807192f25a35ced"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "9e4fce1e16e132d3"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "7ac6dd342c77fcdc"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -19325,28 +19349,48 @@
       "output": "50c7578ef2acb92a"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "0b326389f802a896"
+      "source": "d4245b76ee5835e2",
+      "output": "4ed51e18fb13b557"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "8027f432a7fb7c27"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "b141cce23f44295a"
+      "source": "225fbaf819beb633",
+      "output": "103925d48756ef6d"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "428e76b2a27d1a0e"
+      "source": "1ebc9020723cb349",
+      "output": "04784f27e6548e03"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "c1da85842fd397e6"
+      "source": "814f2b5217437f82",
+      "output": "60f76d3e93873257"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "cfdb60e4d210e735"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "5353d81660663b54"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "e15a955581221669"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "41806c29ec256cc8"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "80d7dcf227479382"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "a4fe65264ef7dbb3"
+      "source": "fc718156fac294de",
+      "output": "59123709ae7a762d"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -20725,8 +20769,8 @@
       "output": "cf983024c2a5b4ca"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "a4fe65264ef7dbb3"
+      "source": "fc718156fac294de",
+      "output": "59123709ae7a762d"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -21345,12 +21389,12 @@
       "output": "7cbb568809597ca6"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "65b1eb95beb81a77"
+      "source": "4875eaae06a8b40b",
+      "output": "e35861fce5e9fc4d"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "009ed110badf6e7b"
+      "source": "1ac4335fe6140d14",
+      "output": "0e4e5fc3229c58d4"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -21867,6 +21911,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "169d12bf7fb13c9c"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "27050e9dd35fb93a"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "e33eac7a676f00e8"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "2c5e79b3c63819e4"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8e5b5eef50045f96"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "aaa2b9d27eb12cd7"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -38967,16 +39031,16 @@
       "output": "0387b9b42d31b0be"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "52153e54ea39907f"
+      "source": "4f052e4f5fab8ced",
+      "output": "4b59f9981827b6e0"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "153e4cb7002d5c9e"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "7d0e21628102bcb5"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "c1cceee4f5040f33"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -39153,6 +39217,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "ebafb762f9b7f5c2"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "0208794e0945015b"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "5031ffb1478de6dd"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "fc856af15fa6676b"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "1748d71964327e6c"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "bd8932082cc065f9"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "1ce8f2479a0f9236"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -44191,28 +44279,48 @@
       "output": "ccfd6f793f34b02d"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "6c9588d6b4dc4012"
+      "source": "d4245b76ee5835e2",
+      "output": "c992680bff4e1b70"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "ae41373cea3bf791"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "85b55401255cdb2c"
+      "source": "225fbaf819beb633",
+      "output": "00a09c103dc3cdab"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "ce182ae36f8186db"
+      "source": "1ebc9020723cb349",
+      "output": "229d202a499e609f"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "e5ef7df8fd81377c"
+      "source": "814f2b5217437f82",
+      "output": "4b7f2aa09a0320ef"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "feeddb4cdb041b09"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "8a22ca51cfa8b94d"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "d622af4cc230a3cc"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "687d3ba9c72a22d2"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "503f312cde03e217"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "7ae9d418353b399f"
+      "source": "fc718156fac294de",
+      "output": "bbe5c79680dcf0aa"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -45591,8 +45699,8 @@
       "output": "f2a3d7d76dd9e4bc"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "7ae9d418353b399f"
+      "source": "fc718156fac294de",
+      "output": "bbe5c79680dcf0aa"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -46211,12 +46319,12 @@
       "output": "7daf0e1c4fb596e3"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "f0e8b45226b1432a"
+      "source": "4875eaae06a8b40b",
+      "output": "99e88c004905e9d9"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "48a468d875e628df"
+      "source": "1ac4335fe6140d14",
+      "output": "da087adf8c74e5d1"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -46733,6 +46841,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "a9f7cdc8f5dfc702"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "a64d0229aaea9302"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "3704a5c97f9c54a7"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "86ddedfb1709a4a8"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "e7a13ba480ac5fbf"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "afca6bcd2feb3d49"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -63833,16 +63961,16 @@
       "output": "2817ae4ea2f27ae3"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "6074a1ffbd8acd98"
+      "source": "4f052e4f5fab8ced",
+      "output": "91725476fc7964dd"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "bf9eb703afcac086"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "e56be2e3d18d361c"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "2b49deef7bf02408"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -64019,6 +64147,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "9240ab6c0f975bdf"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "6da116a187bdf3f7"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "d125207a6e7895e1"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "8ffceb50a5672760"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "fea89a2a71a88a30"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "d6452323ca4c2b12"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "a2c8ba093bf276ec"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -69057,28 +69209,48 @@
       "output": "8ac388c207f782c1"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "15704e00950cf97b"
+      "source": "d4245b76ee5835e2",
+      "output": "bdeab3b95a873a45"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "3e91b633157d19fe"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "5f650ae2df6f22d7"
+      "source": "225fbaf819beb633",
+      "output": "3a1ffabb56c3ec9f"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "7611cc7362b6d1b4"
+      "source": "1ebc9020723cb349",
+      "output": "fc3ea2a6a5332a31"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "6fafbb6d0240fba6"
+      "source": "814f2b5217437f82",
+      "output": "141f9b3d1cd5f703"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "07e8957c0fd575bf"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "bf71f461fcd414a6"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "86b322e76cd62a2f"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "bc559ddac87b3658"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "eef6e93550f264d5"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "5f6baab4dbe152fc"
+      "source": "fc718156fac294de",
+      "output": "b561056f86c8fffb"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -70457,8 +70629,8 @@
       "output": "64c1600b71e014df"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "5f6baab4dbe152fc"
+      "source": "fc718156fac294de",
+      "output": "b561056f86c8fffb"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -71077,12 +71249,12 @@
       "output": "598a004123822bb3"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "2f81e5b0a9012bea"
+      "source": "4875eaae06a8b40b",
+      "output": "70710c9ac92c3d57"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "e93dffab73934281"
+      "source": "1ac4335fe6140d14",
+      "output": "cc0b52b735ab8c56"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -71599,6 +71771,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "ea41d8d0987e22e3"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "035405c3d3f87a83"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "d8d74623eed4a9a9"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "5a160def55b450b3"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "5f89ef44e6192639"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "b215307e0bb91edf"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -88699,16 +88891,16 @@
       "output": "00a429868c366067"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "2ebd546441ed4648"
+      "source": "4f052e4f5fab8ced",
+      "output": "a85473e665b04124"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "1fb6405de8667796"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "239f967f046e9c5b"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "d2993f2c7cb3164c"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -88885,6 +89077,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "ba880dbb198050f5"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "f6030426e19f98a6"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "4ba61d6d400d552c"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "05b601952aeacb95"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "6b538f2176608b3a"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "31d294789a3efe23"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "0ed2980489924c35"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -93923,28 +94139,48 @@
       "output": "3d3290560e4c1d0b"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "d7a0f58ef80b0d5a"
+      "source": "d4245b76ee5835e2",
+      "output": "8d15a50d49f72e07"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "2c85e86f60dc264d"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "65459bda110f90f3"
+      "source": "225fbaf819beb633",
+      "output": "3f4c81a379d136b0"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "c6e409d61bbc33e3"
+      "source": "1ebc9020723cb349",
+      "output": "9df3dbe868537d26"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "f95720065de2f543"
+      "source": "814f2b5217437f82",
+      "output": "b45c9c27893d7742"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "e0ff3bec84a09050"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "d0f23fdbb83d79a1"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "29f101d6a3d046d2"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "1dda369ebeec46e2"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "ae89c1f2c1781e29"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "0fcc9b7d744c5fee"
+      "source": "fc718156fac294de",
+      "output": "be6302c5247bf929"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -95323,8 +95559,8 @@
       "output": "bd17f54c07bc17c4"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "0fcc9b7d744c5fee"
+      "source": "fc718156fac294de",
+      "output": "be6302c5247bf929"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -95943,12 +96179,12 @@
       "output": "7cc404efca609d87"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "1b1fe2bc482dea49"
+      "source": "4875eaae06a8b40b",
+      "output": "60bc4c1c9993f3a9"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "c1e6124dd3adec64"
+      "source": "1ac4335fe6140d14",
+      "output": "df38bce145c569d4"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -96465,6 +96701,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "ad6963f7e575f7ba"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "28fd2a0fd9ffbf23"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "0a314792919511fa"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "3ef32997159c48df"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "57e5cbbb32b3a0d4"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "1f89cb28cb7ef32a"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -113565,16 +113821,16 @@
       "output": "590c86879645b15c"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "a16b1b88b8c629da"
+      "source": "4f052e4f5fab8ced",
+      "output": "9ff0e3a83095d3c4"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "3d559cd01b3acf48"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "a2fd938e5072b0e4"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "0e2eec718c18476a"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -113751,6 +114007,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "1bbdb0761313dc69"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "12266ace7c5dd963"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "8692ea852cafa85f"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "15f00d558591e960"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "75f4bd657cb7d3cb"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "27cef523106c5176"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "1b21ee621f8cbf14"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -118789,28 +119069,48 @@
       "output": "0d08213da7c57e90"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "0d05e96c202839ef"
+      "source": "d4245b76ee5835e2",
+      "output": "6fda7c870e2426fa"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "11ce5b4643dbd441"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "23d239b8d3a96f67"
+      "source": "225fbaf819beb633",
+      "output": "b63920f2cd51372b"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "9f356a2df18d36aa"
+      "source": "1ebc9020723cb349",
+      "output": "f5721ba8ae474d48"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "b73a0983f8d6e195"
+      "source": "814f2b5217437f82",
+      "output": "f04dcb02636e79dc"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "e268ae29d9c25ab6"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "ec43c6ead405e52b"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "dd9bb12605e4fc15"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "ef39312fc1fa42e2"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "7f45f58e8654aae3"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "532568d0860c656f"
+      "source": "fc718156fac294de",
+      "output": "84e952b57a69bc49"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -120189,8 +120489,8 @@
       "output": "e3d2702fc14e5cd6"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "532568d0860c656f"
+      "source": "fc718156fac294de",
+      "output": "84e952b57a69bc49"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -120809,12 +121109,12 @@
       "output": "58d1a824347b4143"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "3d56ccc848058a85"
+      "source": "4875eaae06a8b40b",
+      "output": "7629164420d5d333"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "9890e62dcabef016"
+      "source": "1ac4335fe6140d14",
+      "output": "b03f66dc249d5f1c"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -121331,6 +121631,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "e09b9ccb93a87bea"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "9f5a0bc9d8cf21cb"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "e1eca328c8407779"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "29d4ddcddb071e54"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "14b5cab44361344a"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "de94f8e569a811f7"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -138431,16 +138751,16 @@
       "output": "75ecf4d4b99087db"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "d2497873de15a4ce"
+      "source": "4f052e4f5fab8ced",
+      "output": "06e7d6fb0cbf1bea"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "3fdb1b22135a5edf"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "9b9ce60e9354bf4f"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "2f03ffc9fbed0dd2"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -138617,6 +138937,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "6248fb15e12f0976"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "813052165646fc4a"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "d2b51d55d1f93509"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "4a5889ce5149852d"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "1211564ec2b4ad5c"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "1cfa4fdf58e13a65"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "1ca9448795f4487c"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -143655,28 +143999,48 @@
       "output": "a15667ce39bd6cd6"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "6825a80d054c99b1"
+      "source": "d4245b76ee5835e2",
+      "output": "cda9288d8d8c705f"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "a5e225548d32bbc6"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "3e6750bbb315b858"
+      "source": "225fbaf819beb633",
+      "output": "cf7357e1675e675a"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "29154c46c4882e64"
+      "source": "1ebc9020723cb349",
+      "output": "1931b644b5c7918c"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "c95b764b7893884b"
+      "source": "814f2b5217437f82",
+      "output": "11d340737ec72bae"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "f47af9f8c0bb3a86"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "8db61227123110d1"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "a819c37bf78026ea"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "358926e6a6f56864"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "5d8cc42fc574aa8f"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "314cd0c9855dffc4"
+      "source": "fc718156fac294de",
+      "output": "f3ac9b158783ad4f"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -145055,8 +145419,8 @@
       "output": "af6d9b8ad15aff6e"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "314cd0c9855dffc4"
+      "source": "fc718156fac294de",
+      "output": "f3ac9b158783ad4f"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -145675,12 +146039,12 @@
       "output": "db98f8e41cc9eefe"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "b084af167a856a1c"
+      "source": "4875eaae06a8b40b",
+      "output": "95d28c9355f96586"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "4e5637c26c763c38"
+      "source": "1ac4335fe6140d14",
+      "output": "bb6dfe1dfe56c492"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -146197,6 +146561,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "03f31bc720241ed4"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "7bc050698d1b4864"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "eba57516acbdb645"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "0a3647d506515ef7"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "d1dc37c0683ad734"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "4585c482c035c3e0"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
@@ -163297,16 +163681,16 @@
       "output": "ccf623eff71d941d"
     },
     "features.sprache-waehlen.summary": {
-      "source": "4fdc8ecaeeb2ed62",
-      "output": "b48e932a9f39a742"
+      "source": "4f052e4f5fab8ced",
+      "output": "601b0dfc89295236"
     },
     "features.sprache-waehlen.title": {
       "source": "d7c032f3d16418f5",
       "output": "ef6fd0d5689a13a2"
     },
     "features.sprache-waehlen.where": {
-      "source": "2d9394ba43fb21ef",
-      "output": "7e868e733b9ee29c"
+      "source": "b6e80d74cc3cd0d4",
+      "output": "b0c64a4d3aec7c8a"
     },
     "features.suche.details.p1": {
       "source": "65112a9ac84b1bc1",
@@ -163483,6 +163867,30 @@
     "features.uebersichtsseiten.where": {
       "source": "9fad7ee8c0d190db",
       "output": "cfed67023e2e2560"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p1": {
+      "source": "279106c6dcca06b2",
+      "output": "e781691e7332f04e"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p2": {
+      "source": "902eb6fbb5d7750b",
+      "output": "8a70c60a9fe02584"
+    },
+    "features.uhrzeit-24-oder-12-stunden.details.p3": {
+      "source": "ffd4d86b7a8bcecb",
+      "output": "71de50baac1da8e7"
+    },
+    "features.uhrzeit-24-oder-12-stunden.summary": {
+      "source": "6dc4f49bda5b35eb",
+      "output": "8514ee9242514db3"
+    },
+    "features.uhrzeit-24-oder-12-stunden.title": {
+      "source": "d4bce029e8b12bb7",
+      "output": "574e3c611bfbee7d"
+    },
+    "features.uhrzeit-24-oder-12-stunden.where": {
+      "source": "bc7190ade1b187af",
+      "output": "1ff95ef927aae0e0"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -168521,28 +168929,48 @@
       "output": "5630cef768809d19"
     },
     "settings.language.intro": {
-      "source": "4e9b2c69cc4e3ed3",
-      "output": "2cb41264a1437f9a"
+      "source": "d4245b76ee5835e2",
+      "output": "96d2cd423f9735df"
     },
     "settings.language.legend": {
       "source": "6ce43872fe0faa94",
       "output": "980b2fd3e50c6074"
     },
     "settings.language.loadError": {
-      "source": "71fb40771123e3a2",
-      "output": "71c2a7ae9482a7a9"
+      "source": "225fbaf819beb633",
+      "output": "be50cf1483045522"
     },
     "settings.language.loading": {
-      "source": "a5430adf0a1baa03",
-      "output": "7fb3893ab2745d80"
+      "source": "1ebc9020723cb349",
+      "output": "da7acba15f4bbf52"
     },
     "settings.language.saveFailed": {
-      "source": "72451d1303429e34",
-      "output": "050bd9d211b3c65b"
+      "source": "814f2b5217437f82",
+      "output": "5363b238d5742f20"
+    },
+    "settings.language.timeFormat12h": {
+      "source": "17489d671e8b39e4",
+      "output": "feeddb4cdb041b09"
+    },
+    "settings.language.timeFormat24h": {
+      "source": "6c59faf8664416d5",
+      "output": "8a22ca51cfa8b94d"
+    },
+    "settings.language.timeFormatAuto": {
+      "source": "d1ff233b63b72a86",
+      "output": "b8f0bd5b14e36805"
+    },
+    "settings.language.timeFormatHint": {
+      "source": "31492299cbec0cd7",
+      "output": "0f2a3245c9ffb500"
+    },
+    "settings.language.timeFormatLegend": {
+      "source": "317f0a69e9cc6367",
+      "output": "9e7e28fffd0d3aee"
     },
     "settings.language.title": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "7ae9d418353b399f"
+      "source": "fc718156fac294de",
+      "output": "cdd442293df934a1"
     },
     "settings.providerRouting.chips.add": {
       "source": "bdbf1e35649298c8",
@@ -169921,8 +170349,8 @@
       "output": "36c3113959edb5f0"
     },
     "shell.globalLinks.language": {
-      "source": "f2a1cc71fa59a04b",
-      "output": "7ae9d418353b399f"
+      "source": "fc718156fac294de",
+      "output": "1ecdb85fdf80a76f"
     },
     "shell.globalLinks.memory": {
       "source": "06ced26bdf4fb1b0",
@@ -170541,12 +170969,12 @@
       "output": "dbcde09ec34e562b"
     },
     "shell.paletteCommands.navigation.language.keywords": {
-      "source": "e1e3e060681e4f23",
-      "output": "539a515628a37b32"
+      "source": "4875eaae06a8b40b",
+      "output": "fbcf0a1e5bad9876"
     },
     "shell.paletteCommands.navigation.language.label": {
-      "source": "c44d1dcfcff4cd42",
-      "output": "65c16dee117ba86b"
+      "source": "1ac4335fe6140d14",
+      "output": "5aaf43a9a04c4568"
     },
     "shell.paletteCommands.navigation.memory.keywords": {
       "source": "4aa43ead029ff888",
@@ -171063,6 +171491,26 @@
     "shell.paletteCommands.sidebarKeywords": {
       "source": "3eb7a5cd97807449",
       "output": "a796ff20a44a3078"
+    },
+    "shell.paletteCommands.timeFormat.auto": {
+      "source": "fbb52a2fbbcb56cc",
+      "output": "b7eafcd1320e497e"
+    },
+    "shell.paletteCommands.timeFormat.h12": {
+      "source": "8dc9912e83c6d93b",
+      "output": "544c22927155b51b"
+    },
+    "shell.paletteCommands.timeFormat.h24": {
+      "source": "073dcd8b7b475f06",
+      "output": "fed8b08688b3d8e8"
+    },
+    "shell.paletteCommands.timeFormat.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8bc2aceb9451cc2a"
+    },
+    "shell.paletteCommands.timeFormat.keywords": {
+      "source": "2fddfaac667eadf8",
+      "output": "56f29b827de4fd44"
     },
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",

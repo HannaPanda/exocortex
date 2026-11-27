@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex in your language",
-    "summary": "Under Settings → Language, you choose which language eXocortex speaks with you: German, English, Spanish, French, Italian, Dutch, Polish, or Brazilian Portuguese. The choice belongs to your account and therefore applies on every device.",
+    "summary": "Under Settings → Language and time, you choose which language eXocortex speaks with you: German, English, Spanish, French, Italian, Dutch, Polish, or Brazilian Portuguese. Your choice belongs to your account and therefore applies across every device.",
     "details": {
       "p1": "As long as you do not choose anything, eXocortex follows your browser’s language and falls back to German if the browser requests none of the available languages. If you choose for yourself, your choice applies everywhere, even on a device where you sign in for the first time: there, the initial view still appears in the browser language and switches as soon as your account is loaded.",
       "p2": "You can also switch the language before signing in: below the sign-in form, when accepting an invitation, and on the “Forgot password” page. The browser remembers this choice until your account has its own.",
@@ -9,7 +9,17 @@
       "p4": "The interface is switched section by section. Wherever German text still appears, that section has not yet been translated; until everything has been switched over, another language may still remain German in some places.",
       "p5": "Agents read and set the language via exo_me_preferences and exo_me_preferences_set."
     },
-    "where": "Settings, Language."
+    "where": "Settings, Language and time."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Times in 24-hour or 12-hour format",
+    "summary": "eXocortex formats every time the way your language does: in German 14:30, in English 2:30 PM. Under Settings → Language and time, you can specify instead that times always appear in 24-hour or always in 12-hour format, regardless of the language.",
+    "details": {
+      "p1": "Your choice applies everywhere a time appears: in databases (including date ranges and the calendar), in comments, in history, and in settings. The field where you type a time follows it too. You can enter 14:30, 1430, 2:30 pm, or just 9 there, and use the arrow keys to jump in 15-minute steps (with Shift in whole hours).",
+      "p2": "Times appear in your device’s time zone. A point in time is always saved unambiguously in UTC, so someone in another time zone sees the same event at their own local time. A date without a time, such as an all-day event, is never shifted.",
+      "p3": "Your choice belongs to your account and applies across every device. You can also toggle it with Strg+K (“Show times in 24-hour format”). Agents read and set it via exo_me_preferences and exo_me_preferences_set, as timeFormat (auto, 24h, or 12h)."
+    },
+    "where": "Settings, Language and time. Also in the command palette."
   },
   "funktionsuebersicht": {
     "title": "This overview, and what was added since your last visit",

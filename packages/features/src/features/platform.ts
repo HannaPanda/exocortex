@@ -90,6 +90,13 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_me_preferences', 'exo_me_preferences_set'],
   }),
   defineFeature({
+    id: 'uhrzeit-24-oder-12-stunden',
+    area: 'hilfe',
+    since: '2026-11-27',
+    references: ['#255', 'ADR-062'],
+    ui: { path: '/einstellungen/sprache' },
+  }),
+  defineFeature({
     id: 'verbindungen',
     area: 'agenten',
     since: '2026-08-12',

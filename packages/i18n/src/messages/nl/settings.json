@@ -1,13 +1,18 @@
 {
   "language": {
-    "title": "Taal",
-    "intro": "In welke taal eXocortex met je communiceert. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd. Je eigen inhoud wordt nooit vertaald.",
+    "title": "Taal en tijd",
+    "intro": "In welke taal eXocortex met je communiceert en hoe tijden worden weergegeven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd. Je eigen inhoud wordt nooit vertaald.",
     "legend": "Taal van de interface",
     "followBrowser": "Zoals mijn browser",
     "followBrowserHint": "Zolang je niets kiest, volgt eXocortex je browser, momenteel dus {browser}.",
-    "saveFailed": "De taal kon niet worden opgeslagen. Probeer het zo meteen nog eens.",
-    "loading": "Taal wordt geladen …",
-    "loadError": "De taal kon niet worden geladen"
+    "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog een keer.",
+    "loading": "Instellingen laden …",
+    "loadError": "De instellingen konden niet worden geladen",
+    "timeFormatLegend": "Tijd",
+    "timeFormatAuto": "Volgens de taal ({example})",
+    "timeFormat24h": "24 uur ({example})",
+    "timeFormat12h": "12 uur ({example})",
+    "timeFormatHint": "Geldt voor elke tijd in eXocortex, ook in databases en in de agenda. Een datum zonder tijd blijft zoals hij is. Tijden worden weergegeven in de tijdzone van je apparaat, momenteel {zone}."
   },
   "chat": {
     "title": "AI-chat",

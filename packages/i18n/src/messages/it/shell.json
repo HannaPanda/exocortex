@@ -32,7 +32,7 @@
     "memory": "Memoria",
     "connections": "Connessioni",
     "notifications": "Notifiche",
-    "language": "Lingua",
+    "language": "Lingua e ora",
     "aiChat": "Chat IA",
     "editor": "Editor",
     "admin": "Amministrazione",
@@ -187,6 +187,13 @@
       "hint": "Vale per il tuo account",
       "keywords": "struttura sommario indice scala espandi passaggio hover mouse cursore apri automatico clic"
     },
+    "timeFormat": {
+      "auto": "Formatta l’ora in base alla lingua ({example})",
+      "h24": "Formatta l’ora su 24 ore ({example})",
+      "h12": "Formatta l’ora su 12 ore ({example})",
+      "hint": "Vale per il tuo account",
+      "keywords": "ora orario formato ora 24 ore 12 ore am pm mattina pomeriggio orologio formato impostazioni"
+    },
     "contextOpen": "Apri pannello contestuale",
     "contextOpenPlaceholder": "Quale scheda?",
     "contextOpenKeywords": "contesto pannello contestuale scheda tab pannello barra laterale destra",
@@ -238,8 +245,8 @@
         "keywords": "notifica notificazione mail push avviso impostazioni"
       },
       "language": {
-        "label": "Cambia lingua",
-        "keywords": "lingua language traduzione impostazioni italiano english"
+        "label": "Imposta lingua e ora",
+        "keywords": "lingua language traduzione impostazioni italiano english ora formato ora 24 ore 12 ore am pm fuso orario"
       },
       "aiChat": {
         "label": "Impostazioni chat IA",

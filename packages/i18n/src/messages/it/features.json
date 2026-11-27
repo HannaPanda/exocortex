@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex nella tua lingua",
-    "summary": "In Impostazioni → Lingua scegli in quale lingua eXocortex deve comunicare con te: tedesco, inglese, spagnolo, francese, italiano, olandese, polacco o portoghese brasiliano. La scelta è associata al tuo account e si applica quindi su ogni dispositivo.",
+    "summary": "In Impostazioni → Lingua e ora scegli in quale lingua eXocortex si rivolge a te: tedesco, inglese, spagnolo, francese, italiano, olandese, polacco o portoghese brasiliano. La scelta è associata al tuo account e si applica quindi su ogni dispositivo.",
     "details": {
       "p1": "Se non scegli nulla, eXocortex si adatta alla lingua del tuo browser, tornando al tedesco se questa non è tra quelle offerte. Se scegli tu, la tua preferenza vale ovunque, anche su un dispositivo su cui accedi per la prima volta: lì la schermata iniziale apparirà ancora nella lingua del browser e cambierà non appena il tuo account sarà caricato.",
       "p2": "La lingua si può cambiare anche prima dell’accesso: sotto il modulo di accesso, quando accetti un invito e nella pagina „Password dimenticata”. Il browser ricorderà questa scelta finché il tuo account non ne imposterà una propria.",
@@ -9,7 +9,17 @@
       "p4": "L’interfaccia viene aggiornata sezione per sezione. Dove compare ancora testo in tedesco, significa che quella sezione non è stata ancora tradotta; fino al completamento, un’altra lingua potrebbe quindi rimanere in tedesco in alcuni punti.",
       "p5": "Gli agenti leggono e impostano la lingua tramite exo_me_preferences ed exo_me_preferences_set."
     },
-    "where": "Impostazioni, Lingua."
+    "where": "Impostazioni, Lingua e ora."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Orari a 24 o 12 ore",
+    "summary": "eXocortex scrive gli orari secondo la tua lingua: in tedesco 14:30, in inglese 2:30 PM. In Impostazioni → Lingua e ora puoi invece stabilire che gli orari appaiano sempre nel formato a 24 ore o sempre a 12 ore, indipendentemente dalla lingua.",
+    "details": {
+      "p1": "La scelta si applica ovunque compaia un orario: nei database (anche negli intervalli di tempo e nel calendario), nei commenti, nella cronologia e nelle impostazioni. Anche il campo in cui inserisci un orario la segue. Lì puoi digitare 14:30, 1430, 2:30 pm o semplicemente 9; con i tasti freccia puoi avanzare di un quarto d’ora alla volta (con Maiusc di ore intere).",
+      "p2": "Gli orari vengono mostrati nel fuso orario del tuo dispositivo. Nel sistema un momento temporale viene salvato sempre in modo univoco in UTC, così chi si trova in un altro fuso orario vedrà lo stesso appuntamento al proprio orario locale. Una data senza orario, come un appuntamento che dura tutto il giorno, non viene mai spostata.",
+      "p3": "La scelta è associata al tuo account ed è valida su qualsiasi dispositivo. Puoi modificarla anche con Strg + K („Usa formato orario a 24 ore”). Gli agenti la leggono e la impostano tramite exo_me_preferences ed exo_me_preferences_set, con il parametro timeFormat (auto, 24h o 12h)."
+    },
+    "where": "Impostazioni, Lingua e ora. Anche nella tavolozza dei comandi."
   },
   "funktionsuebersicht": {
     "title": "Questa panoramica e le novità dalla tua ultima visita",

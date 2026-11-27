@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex en tu idioma",
-    "summary": "En Ajustes → Idioma eliges en qué idioma te habla eXocortex: alemán, inglés, español, francés, italiano, neerlandés, polaco o portugués de Brasil. La elección está vinculada a tu cuenta y se aplica por tanto en cualquier dispositivo.",
+    "summary": "En Ajustes → Idioma y hora eliges en qué idioma te habla eXocortex: alemán, inglés, español, francés, italiano, neerlandés, polaco o portugués de Brasil. La elección se asocia a tu cuenta y por eso se aplica en cualquier dispositivo.",
     "details": {
       "p1": "Mientras no elijas nada, eXocortex se adapta al idioma de tu navegador y recurre al alemán si este no solicita ninguno de los idiomas ofrecidos. Si eliges tú, tu selección se aplica en todas partes, incluso en un dispositivo en el que inicies sesión por primera vez: allí la primera vista aparece aún en el idioma del navegador y cambia en cuanto se carga tu cuenta.",
       "p2": "El idioma también se puede cambiar antes de iniciar sesión: debajo del formulario de acceso, al aceptar una invitación y en la página «¿Has olvidado tu contraseña?». El navegador recuerda esta elección hasta que tu cuenta tenga una propia.",
@@ -9,7 +9,17 @@
       "p4": "La interfaz se va adaptando sección por sección. Donde aún aparezca texto en alemán, esa sección todavía no se ha trasladado; hasta que todo esté adaptado, otro idioma puede seguir mostrándose en alemán en algunos puntos.",
       "p5": "Los agentes leen y configuran el idioma mediante exo_me_preferences y exo_me_preferences_set."
     },
-    "where": "Ajustes, Idioma."
+    "where": "Ajustes, Idioma y hora."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Horas en formato de 24 o 12 horas",
+    "summary": "eXocortex muestra cada hora según las convenciones de tu idioma: en alemán 14:30, en inglés 2:30 PM. En Ajustes → Idioma y hora puedes definir en su lugar que las horas se muestren siempre en 24 o siempre en 12 horas, sin importar el idioma.",
+    "details": {
+      "p1": "Esta elección se aplica en todos los lugares donde aparece una hora: en bases de datos (también en periodos de tiempo y en el calendario), en comentarios, en el historial y en los ajustes. El campo donde escribes una hora también se adapta a ella. Puedes introducir allí 14:30, 1430, 2:30 pm o simplemente 9; con las teclas de flecha avanzas en pasos de cuartos de hora (con Mayús en horas completas).",
+      "p2": "Las horas se muestran en la zona horaria de tu dispositivo. Cada momento se guarda siempre de forma inequívoca en UTC, de modo que alguien en otra zona horaria ve el mismo evento en su propia hora local. Una fecha sin hora, como un evento de día completo, nunca cambia.",
+      "p3": "La elección se asocia a tu cuenta y se aplica en cualquier dispositivo. También puedes cambiarla con Strg + K («Mostrar la hora en formato de 24 horas»). Los agentes la leen y la configuran mediante exo_me_preferences y exo_me_preferences_set, como timeFormat (auto, 24h o 12h)."
+    },
+    "where": "Ajustes, Idioma y hora. También en la paleta de comandos."
   },
   "funktionsuebersicht": {
     "title": "Este resumen y las novedades desde tu última visita",

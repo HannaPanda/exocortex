@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex in deiner Sprache",
-    "summary": "Unter Einstellungen → Sprache wählst du, in welcher Sprache eXocortex mit dir spricht: Deutsch, Englisch, Spanisch, Französisch, Italienisch, Niederländisch, Polnisch oder brasilianisches Portugiesisch. Die Wahl gehört zu deinem Konto und gilt deshalb auf jedem Gerät.",
+    "summary": "Unter Einstellungen → Sprache und Uhrzeit wählst du, in welcher Sprache eXocortex mit dir spricht: Deutsch, Englisch, Spanisch, Französisch, Italienisch, Niederländisch, Polnisch oder brasilianisches Portugiesisch. Die Wahl gehört zu deinem Konto und gilt deshalb auf jedem Gerät.",
     "details": {
       "p1": "Solange du nichts wählst, richtet sich eXocortex nach der Sprache deines Browsers und fällt auf Deutsch zurück, wenn der keine der angebotenen Sprachen verlangt. Wählst du selbst, gilt deine Wahl überall, auch auf einem Gerät, an dem du dich zum ersten Mal anmeldest: dort erscheint die erste Ansicht noch in der Browsersprache und wechselt, sobald dein Konto geladen ist.",
       "p2": "Auch vor dem Anmelden lässt sich die Sprache umstellen: unter dem Anmeldeformular, beim Annehmen einer Einladung und auf der Seite „Passwort vergessen“. Diese Wahl merkt sich der Browser, bis dein Konto eine eigene hat.",
@@ -9,7 +9,17 @@
       "p4": "Die Oberfläche wird Bereich für Bereich umgestellt. Wo noch deutscher Text steht, ist dieser Bereich noch nicht übertragen; bis alles umgestellt ist, kann eine andere Sprache also an manchen Stellen deutsch bleiben.",
       "p5": "Agenten lesen und setzen die Sprache über exo_me_preferences und exo_me_preferences_set."
     },
-    "where": "Einstellungen, Sprache."
+    "where": "Einstellungen, Sprache und Uhrzeit."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Uhrzeiten mit 24 oder 12 Stunden",
+    "summary": "eXocortex schreibt jede Uhrzeit so, wie deine Sprache es tut: auf Deutsch 14:30, auf Englisch 2:30 PM. Unter Einstellungen → Sprache und Uhrzeit legst du stattdessen fest, dass Uhrzeiten immer mit 24 oder immer mit 12 Stunden erscheinen, egal in welcher Sprache.",
+    "details": {
+      "p1": "Die Wahl gilt überall, wo eine Uhrzeit steht: in Datenbanken (auch in Zeiträumen und im Kalender), in Kommentaren, im Verlauf und in den Einstellungen. Auch das Feld, in das du eine Uhrzeit tippst, folgt ihr. Du kannst dort 14:30, 1430, 2:30 pm oder nur 9 eingeben, mit den Pfeiltasten springst du in Viertelstunden weiter (mit Umschalt in ganzen Stunden).",
+      "p2": "Uhrzeiten stehen in der Zeitzone deines Geräts. Gespeichert wird ein Zeitpunkt immer eindeutig in UTC, deshalb sieht jemand in einer anderen Zeitzone denselben Termin zu seiner eigenen Uhrzeit. Ein Datum ohne Uhrzeit, etwa ein ganztägiger Termin, wird nie verschoben.",
+      "p3": "Die Wahl gehört zu deinem Konto und gilt auf jedem Gerät. Mit Strg + K wechselst du sie ebenfalls („Uhrzeit mit 24 Stunden schreiben“). Agenten lesen und setzen sie über exo_me_preferences und exo_me_preferences_set, als timeFormat (auto, 24h oder 12h)."
+    },
+    "where": "Einstellungen, Sprache und Uhrzeit. Außerdem in der Befehlspalette."
   },
   "funktionsuebersicht": {
     "title": "Diese Übersicht, und was seit deinem letzten Besuch dazukam",

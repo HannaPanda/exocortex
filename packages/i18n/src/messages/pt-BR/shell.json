@@ -32,7 +32,7 @@
     "memory": "Memória",
     "connections": "Conexões",
     "notifications": "Notificações",
-    "language": "Idioma",
+    "language": "Idioma e hora",
     "aiChat": "Chat de IA",
     "editor": "Editor",
     "admin": "Administração",
@@ -187,6 +187,13 @@
       "hint": "Aplica-se à sua conta",
       "keywords": "estrutura sumário índice escala expandir passar cursor hover mouse abrir automaticamente clique"
     },
+    "timeFormat": {
+      "auto": "Formato de hora de acordo com o idioma ({example})",
+      "h24": "Formato de hora em 24 horas ({example})",
+      "h12": "Formato de hora em 12 horas ({example})",
+      "hint": "Aplica-se à sua conta",
+      "keywords": "hora horário formato de hora 24 horas 12 horas am pm manhã tarde relógio formato configurações"
+    },
     "contextOpen": "Abrir painel de contexto",
     "contextOpenPlaceholder": "Qual aba?",
     "contextOpenKeywords": "contexto painel de contexto aba guia painel barra lateral direita",
@@ -238,8 +245,8 @@
         "keywords": "notificação email push aviso configurações"
       },
       "language": {
-        "label": "Alterar idioma",
-        "keywords": "idioma language tradução configurações português english"
+        "label": "Configurar idioma e hora",
+        "keywords": "idioma language tradução configurações português english hora formato de hora 24 horas 12 horas am pm fuso horário"
       },
       "aiChat": {
         "label": "Configurações do chat de IA",

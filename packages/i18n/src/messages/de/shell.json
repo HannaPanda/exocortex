@@ -32,7 +32,7 @@
     "memory": "Gedächtnis",
     "connections": "Verbindungen",
     "notifications": "Benachrichtigungen",
-    "language": "Sprache",
+    "language": "Sprache und Uhrzeit",
     "aiChat": "KI-Chat",
     "editor": "Editor",
     "admin": "Verwaltung",
@@ -187,6 +187,13 @@
       "hint": "Gilt für dein Konto",
       "keywords": "gliederung inhaltsverzeichnis skala aufklappen überfahren hover maus automatisch öffnen klick"
     },
+    "timeFormat": {
+      "auto": "Uhrzeit wie die Sprache schreiben ({example})",
+      "h24": "Uhrzeit mit 24 Stunden schreiben ({example})",
+      "h12": "Uhrzeit mit 12 Stunden schreiben ({example})",
+      "hint": "Gilt für dein Konto",
+      "keywords": "uhrzeit zeit zeitformat 24 stunden 12 stunden am pm vormittag nachmittag uhr format einstellungen"
+    },
     "contextOpen": "Kontextbereich öffnen",
     "contextOpenPlaceholder": "Welcher Reiter?",
     "contextOpenKeywords": "kontext kontextbereich reiter tab panel seitenleiste rechts",
@@ -238,8 +245,8 @@
         "keywords": "benachrichtigung mail push hinweis einstellungen"
       },
       "language": {
-        "label": "Sprache ändern",
-        "keywords": "sprache language übersetzung einstellungen deutsch english"
+        "label": "Sprache und Uhrzeit einstellen",
+        "keywords": "sprache language übersetzung einstellungen deutsch english uhrzeit zeitformat 24 stunden 12 stunden am pm zeitzone"
       },
       "aiChat": {
         "label": "KI-Chat-Einstellungen",

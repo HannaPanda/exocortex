@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex dans ta langue",
-    "summary": "Sous Paramètres → Langue, choisis dans quelle langue eXocortex s’adresse à toi : allemand, anglais, espagnol, français, italien, néerlandais, polonais ou portugais brésilien. Ce choix est associé à ton compte et s’applique donc sur tous tes appareils.",
+    "summary": "Sous Paramètres → Langue et heure, tu choisis la langue dans laquelle eXocortex s’adresse à toi : allemand, anglais, espagnol, français, italien, néerlandais, polonais ou portugais brésilien. Ce choix est associé à ton compte et s’applique donc sur chaque appareil.",
     "details": {
       "p1": "Tant que tu ne choisis rien, eXocortex se base sur la langue de ton navigateur et bascule par défaut sur l’allemand si celui-ci ne demande aucune des langues proposées. Dès que tu choisis toi-même, ton choix s’applique partout, y compris sur un appareil où tu te connectes pour la première fois : la première vue y apparaîtra encore dans la langue du navigateur et basculera dès que ton compte sera chargé.",
       "p2": "La langue peut aussi être modifiée avant la connexion : sous le formulaire de connexion, lors de l’acceptation d’une invitation et sur la page « Mot de passe oublié ». Le navigateur mémorise ce choix jusqu’à ce que ton compte dispose du sien.",
@@ -9,7 +9,17 @@
       "p4": "L’interface est adaptée section par section. Là où se trouve encore du texte en allemand, cette section n’a pas encore été transférée ; jusqu’à ce que tout soit adapté, une autre langue peut donc rester en allemand à certains endroits.",
       "p5": "Les agents lisent et définissent la langue via exo_me_preferences et exo_me_preferences_set."
     },
-    "where": "Paramètres, Langue."
+    "where": "Paramètres, Langue et heure."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Heure au format 24 h ou 12 h",
+    "summary": "eXocortex affiche chaque heure selon les conventions de ta langue : 14:30 en français, 2:30 PM en anglais. Sous Paramètres → Langue et heure, tu peux choisir à la place d’afficher toujours les heures au format 24 h ou 12 h, quelle que soit la langue.",
+    "details": {
+      "p1": "Ce choix s’applique partout où figure une heure : dans les bases de données (y compris pour les plages horaires et dans le calendrier), dans les commentaires, dans l’historique et dans les paramètres. Le champ où tu saisis une heure s’y conforme également. Tu peux y taper 14:30, 1430, 2:30 pm ou simplement 9 ; les touches fléchées permettent d’avancer par quart d’heure (ou d’heure en heure avec Maj).",
+      "p2": "Les heures s’affichent dans le fuseau horaire de ton appareil. Une date et heure précise est toujours enregistrée sans ambiguïté en UTC, si bien qu’une personne située dans un autre fuseau horaire verra le même événement à sa propre heure locale. Une date sans heure, comme un événement sur toute la journée, n’est jamais décalée.",
+      "p3": "Ce choix est lié à ton compte et s’applique sur chaque appareil. Tu peux aussi en changer via Strg + K (« Afficher l’heure au format 24 heures »). Les agents le consultent et le modifient via exo_me_preferences et exo_me_preferences_set, sous la clé timeFormat (auto, 24h ou 12h)."
+    },
+    "where": "Paramètres, Langue et heure. Également dans la palette de commandes."
   },
   "funktionsuebersicht": {
     "title": "Cette vue d’ensemble, et les nouveautés depuis ta dernière visite",

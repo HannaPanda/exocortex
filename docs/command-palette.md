@@ -25,6 +25,7 @@ apps/web/src/components/palette/
   workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
   chat-scroll-commands.tsx switching the AI chat between following an answer and staying at its start
   outline-preference-commands.tsx switching a pinned outline between its own column and lying over the text, and opening the scale on hover
+  time-format-commands.tsx the clock every time is written on: as the language does, 24 or 12 hours (#255)
   contributions.tsx        usePaletteContribution: commands a mounted surface offers
   palette-requests.tsx     usePaletteRequest: asking a control elsewhere to act
   page-commands.tsx        the open page's actions (body and top-bar menu), layout and move menus

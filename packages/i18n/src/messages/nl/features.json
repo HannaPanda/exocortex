@@ -1,7 +1,7 @@
 {
   "sprache-waehlen": {
     "title": "eXocortex in je eigen taal",
-    "summary": "Onder Instellingen → Taal kies je in welke taal eXocortex met je communiceert: Duits, Engels, Spaans, Frans, Italiaans, Nederlands, Pools of Braziliaans Portugees. Deze keuze hoort bij je account en geldt daarom op elk apparaat.",
+    "summary": "Onder Instellingen → Taal en tijd kies je in welke taal eXocortex met je communiceert: Duits, Engels, Spaans, Frans, Italiaans, Nederlands, Pools of Braziliaans Portugees. Deze keuze is gekoppeld aan je account en geldt daarom op elk apparaat.",
     "details": {
       "p1": "Zolang je niets kiest, volgt eXocortex de taal van je browser en valt terug op het Duits als die om geen van de aangeboden talen vraagt. Kies je zelf, dan geldt je keuze overal, ook op een apparaat waarop je je voor het eerst aanmeldt: daar verschijnt de eerste weergave nog in de browsertaal en wisselt zodra je account is geladen.",
       "p2": "Ook vóór het aanmelden kan de taal worden gewijzigd: onder het aanmeldformulier, bij het accepteren van een uitnodiging en op de pagina „Wachtwoord vergeten”. Deze keuze onthoudt de browser totdat je account een eigen instelling heeft.",
@@ -9,7 +9,17 @@
       "p4": "De interface wordt onderdeel voor onderdeel omgezet. Waar nog Duitse tekst staat, is dat onderdeel nog niet vertaald; totdat alles is omgezet, kan een andere taal op sommige plekken dus Duits blijven.",
       "p5": "Agents lezen en wijzigen de taal via exo_me_preferences en exo_me_preferences_set."
     },
-    "where": "Instellingen, Taal."
+    "where": "Instellingen, Taal en tijd."
+  },
+  "uhrzeit-24-oder-12-stunden": {
+    "title": "Tijden met 24 of 12 uur",
+    "summary": "eXocortex schrijft elke tijd zoals jouw taal dat doet: in het Nederlands 14:30, in het Engels 2:30 PM. Onder Instellingen → Taal en tijd stel je in plaats daarvan in dat tijden altijd met 24 of altijd met 12 uur worden weergegeven, ongeacht de taal.",
+    "details": {
+      "p1": "Deze keuze geldt overal waar een tijd staat: in databases (ook in perioden en in de kalender), in reacties, in de geschiedenis en in de instellingen. Ook het veld waarin je een tijd typt, volgt deze instelling. Je kunt daar 14:30, 1430, 2:30 pm of gewoon 9 invoeren; met de pijltjestoetsen spring je in kwartieren vooruit of achteruit (met Shift in hele uren).",
+      "p2": "Tijden worden weergegeven in de tijdzone van je apparaat. Een tijdstip wordt altijd eenduidig in UTC opgeslagen, waardoor iemand in een andere tijdzone dezelfde afspraak op diens eigen lokale tijd ziet. Een datum zonder tijd, zoals een activiteit die de hele dag duurt, verschuift nooit.",
+      "p3": "De keuze hoort bij je account en geldt op elk apparaat. Met Strg + K wissel je deze instelling ook („Tijd met 24 uur weergeven”). Agents lezen en wijzigen dit via exo_me_preferences en exo_me_preferences_set, als timeFormat (auto, 24h of 12h)."
+    },
+    "where": "Instellingen, Taal en tijd. Ook in het opdrachtpalet."
   },
   "funktionsuebersicht": {
     "title": "Dit overzicht, en wat er sinds je laatste bezoek is bijgekomen",

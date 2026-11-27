@@ -32,7 +32,7 @@
     "memory": "Memory",
     "connections": "Connections",
     "notifications": "Notifications",
-    "language": "Language",
+    "language": "Language and time",
     "aiChat": "AI Chat",
     "editor": "Editor",
     "admin": "Administration",
@@ -187,6 +187,13 @@
       "hint": "Applies to your account",
       "keywords": "outline table of contents toc scale expand hover mouse auto open click"
     },
+    "timeFormat": {
+      "auto": "Format time based on language ({example})",
+      "h24": "Format time using 24 hours ({example})",
+      "h12": "Format time using 12 hours ({example})",
+      "hint": "Applies to your account",
+      "keywords": "time time format 24-hour 12-hour am pm morning afternoon clock format settings"
+    },
     "contextOpen": "Open context panel",
     "contextOpenPlaceholder": "Which tab?",
     "contextOpenKeywords": "context context panel tab tab panel sidebar right",
@@ -238,8 +245,8 @@
         "keywords": "notification mail push alert settings"
       },
       "language": {
-        "label": "Change language",
-        "keywords": "language translation settings german english"
+        "label": "Set language and time",
+        "keywords": "language translation settings german english time time format 24-hour 12-hour am pm time zone"
       },
       "aiChat": {
         "label": "AI Chat settings",

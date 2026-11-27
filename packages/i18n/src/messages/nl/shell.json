@@ -32,7 +32,7 @@
     "memory": "Geheugen",
     "connections": "Verbindingen",
     "notifications": "Meldingen",
-    "language": "Taal",
+    "language": "Taal en tijd",
     "aiChat": "AI-chat",
     "editor": "Editor",
     "admin": "Beheer",
@@ -187,6 +187,13 @@
       "hint": "Geldt voor je account",
       "keywords": "overzicht inhoudsopgave schaal uitvouwen aanwijzen hover muis automatisch openen klik"
     },
+    "timeFormat": {
+      "auto": "Tijd volgens de taal noteren ({example})",
+      "h24": "Tijd in 24 uur noteren ({example})",
+      "h12": "Tijd in 12 uur noteren ({example})",
+      "hint": "Geldt voor je account",
+      "keywords": "tijd tijdnotatie tijdsindeling 24 uur 12 uur am pm ochtend middag klok notatie instellingen"
+    },
     "contextOpen": "Contextpaneel openen",
     "contextOpenPlaceholder": "Welk tabblad?",
     "contextOpenKeywords": "context contextpaneel tabblad tab paneel zijbalk rechts",
@@ -238,8 +245,8 @@
         "keywords": "melding mail push bericht instellingen"
       },
       "language": {
-        "label": "Taal wijzigen",
-        "keywords": "taal language vertaling instellingen nederlands english"
+        "label": "Taal en tijd instellen",
+        "keywords": "taal language vertaling instellingen nederlands engels tijd tijdnotatie 24 uur 12 uur am pm tijdzone"
       },
       "aiChat": {
         "label": "AI-chatinstellingen",

@@ -28,6 +28,8 @@ import {
 import { useSetUserPreferences, useUserPreferences } from '@/lib/api/preferences-queries';
 import { clearLocaleCookie, writeLocaleCookie } from '@/lib/locale-cookie';
 
+import { TimeFormatField } from './time-format-field';
+
 /** The select's value for "no choice of my own". Not a locale, never sent. */
 const FOLLOW_BROWSER = 'browser';
 
@@ -41,7 +43,9 @@ function browserLanguageName(): string {
 const noSubscription = () => () => {};
 
 /**
- * The interface language of this account (issue #98, ADR-062).
+ * The interface language of this account (issue #98, ADR-062), and the clock
+ * its times are written on (issue #255), because the second follows the first
+ * until a person chooses otherwise.
  *
  * One select rather than a list of radio buttons: nine entries are a scan,
  * and each language is named in its own words so a person who landed in the
@@ -102,30 +106,33 @@ export function LanguagePage() {
       ) : query.isError ? (
         <ErrorState title={t('loadError')} onRetry={() => void query.refetch()} />
       ) : (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="interface-language">{t('legend')}</Label>
-          <Select value={selected} disabled={save.isPending} onValueChange={change}>
-            <SelectTrigger
-              id="interface-language"
-              className="w-full sm:w-72"
-              data-testid="interface-language"
-            >
-              <SelectValue>{() => labelOf(selected)}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={FOLLOW_BROWSER}>{t('followBrowser')}</SelectItem>
-              {SUPPORTED_LOCALES.map((option) => (
-                <SelectItem key={option} value={option} lang={option}>
-                  {LOCALE_ENDONYMS[option]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {current === null ? (
-            <p className="max-w-measure text-xs text-muted-foreground">
-              {t('followBrowserHint', { browser: browserName })}
-            </p>
-          ) : null}
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="interface-language">{t('legend')}</Label>
+            <Select value={selected} disabled={save.isPending} onValueChange={change}>
+              <SelectTrigger
+                id="interface-language"
+                className="w-full sm:w-72"
+                data-testid="interface-language"
+              >
+                <SelectValue>{() => labelOf(selected)}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={FOLLOW_BROWSER}>{t('followBrowser')}</SelectItem>
+                {SUPPORTED_LOCALES.map((option) => (
+                  <SelectItem key={option} value={option} lang={option}>
+                    {LOCALE_ENDONYMS[option]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {current === null ? (
+              <p className="max-w-measure text-xs text-muted-foreground">
+                {t('followBrowserHint', { browser: browserName })}
+              </p>
+            ) : null}
+          </div>
+          <TimeFormatField onFailed={() => setFailed(true)} />
         </div>
       )}
     </AppPage>
