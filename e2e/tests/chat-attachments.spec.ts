@@ -7,13 +7,13 @@ import { storageStatePath } from '../support/global-setup';
 test.use({ storageState: storageStatePath('johanna') });
 
 /**
- * Pictures on a chat message (issue #223): pasted, dropped or chosen in the
- * composer, shown as a chip that can be taken away, and on the sent question
- * after a reload, with the description the assistant was given.
+ * Pictures and documents on a chat message (issue #223): pasted, dropped or
+ * chosen in the composer, shown as a chip that can be taken away, and on the
+ * sent question after a reload, with what the assistant was given.
  *
- * The first test asks no model: it only uploads and removes. The second sends
- * one message and waits for one real run, because the description is written
- * by the worker. Every conversation is deleted for good afterwards, which
+ * The first test asks no model: it only uploads and removes. The others each
+ * send one message and wait for one real run, because the description and
+ * the reading are done by the worker. Every conversation is deleted for good afterwards, which
  * takes its pictures out of the bucket too.
  */
 test.beforeAll(() => {
@@ -134,7 +134,7 @@ async function openPanelOnNewPage(page: Page, title: string): Promise<void> {
   });
 }
 
-test('takes pictures by picker, paste and drop, refuses other files and lets a chip go', async ({
+test('takes pictures and documents by picker, paste and drop, refuses others, lets a chip go', async ({
   page,
 }) => {
   await openPanelOnNewPage(page, `Chatbilder ${Date.now().toString(36)}`);
@@ -158,13 +158,14 @@ test('takes pictures by picker, paste and drop, refuses other files and lets a c
   // Pictures alone are a message.
   await expect(page.getByTestId('ai-send')).toBeEnabled();
 
-  // A PDF is not a picture, and the composer says so instead of uploading it.
+  // An archive is neither a picture nor a document, and the composer says so
+  // instead of uploading it.
   await deliver(page, 'drop', {
-    name: 'brief.pdf',
-    base64: Buffer.from('%PDF-1.4\n%%EOF\n').toString('base64'),
-    type: 'application/pdf',
+    name: 'paket.zip',
+    base64: Buffer.from('PK\u0005\u0006' + '\u0000'.repeat(18)).toString('base64'),
+    type: 'application/zip',
   });
-  await expect(page.getByText('brief.pdf', { exact: false })).toBeVisible();
+  await expect(page.getByText('paket.zip', { exact: false })).toBeVisible();
   await expect(chips).toHaveCount(3);
 
   const deleted = page.waitForResponse(
@@ -175,6 +176,17 @@ test('takes pictures by picker, paste and drop, refuses other files and lets a c
   await chips.filter({ hasText: 'gezogen.png' }).getByTestId('ai-file-remove').click();
   expect((await deleted).ok()).toBe(true);
   await expect(chips).toHaveCount(2);
+
+  // A text file is a document: it goes with the message as a file chip, even
+  // dropped with no type, which is how a browser often hands over Markdown.
+  await deliver(page, 'drop', {
+    name: 'notiz.md',
+    base64: Buffer.from('# Notiz\n\nNur ein Test.\n').toString('base64'),
+    type: '',
+  });
+  const document = page.locator('[data-testid="ai-file-chip"][data-kind="document"]');
+  await expect(document).toHaveCount(1);
+  await expect(document).toHaveAttribute('data-status', 'ready', { timeout: 30_000 });
 });
 
 test('sends a picture with the question, shows it after a reload and describes it once', async ({
@@ -228,4 +240,50 @@ test('sends a picture with the question, shows it after a reload and describes i
   await expect(page.getByTestId('ai-question-picture')).toHaveCount(1, { timeout: 30_000 });
   await page.getByTestId('ai-question-picture').click();
   await expect(page.getByRole('dialog')).toBeVisible();
+});
+
+test('reads a picture and a text file sent from the start page', async ({ page }) => {
+  // Waits for one real provider call and one picture description.
+  test.setTimeout(AI_TEST_TIMEOUT_MS);
+  await page.goto('/arbeitsbereich');
+  await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+$/, { timeout: 60_000 });
+  const field = page.getByTestId('chat-start-input');
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  const base64 = await drawWord(page, 'BANANE');
+  page.on('response', (response) => {
+    if (response.request().method() !== 'POST') return;
+    if (new URL(response.url()).pathname !== '/api/ai/conversations') return;
+    void response
+      .json()
+      .then((body: { conversation?: { id: string } }) => {
+        if (body.conversation !== undefined) created.push(body.conversation.id);
+      })
+      .catch(() => undefined);
+  });
+
+  const starter = page.getByTestId('chat-starter');
+  await starter.getByTestId('ai-attach-input').setInputFiles([
+    { name: 'wort.png', mimeType: 'image/png', buffer: Buffer.from(base64, 'base64') },
+    {
+      name: 'zettel.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('Das gesuchte Wort lautet KIWANO.\n'),
+    },
+  ]);
+  // Nothing is uploaded yet: there is no conversation to hold the files.
+  await expect(starter.getByTestId('ai-file-chip')).toHaveCount(2);
+  await field.fill(
+    'Welches Wort steht auf dem Bild, und welches in der Datei? Antworte nur mit den zwei Wörtern.',
+  );
+  await field.press('Enter');
+
+  await expect(page.getByTestId('ai-question-picture')).toHaveCount(1, { timeout: 30_000 });
+  await expect(page.getByTestId('ai-question-document')).toHaveCount(1);
+  const answer = page.getByTestId('ai-answer').last();
+  await expect(answer).toContainText(/banane/i, { timeout: AI_RUN_FINISH_TIMEOUT_MS });
+  await expect(answer).toContainText(/kiwano/i);
+  await expect(page.getByTestId('ai-question-document')).toHaveAttribute(
+    'data-text-state',
+    'ready',
+  );
 });

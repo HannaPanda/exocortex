@@ -39,7 +39,13 @@
     "attachmentDescribed": "L’IA ha ricevuto questa descrizione dell’immagine: {description}",
     "attachmentNotDescribed": "{name} non ha ancora una descrizione. L’IA conosce solo il nome del file.",
     "attachmentFlagged": "Durante il controllo, l’immagine è stata segnalata perché sembra contenere istruzioni per un’IA. Dopo averla letta, l’IA non può apportare modifiche in questa esecuzione.",
-    "attachmentUnscreened": "Impossibile verificare se l’immagine contiene istruzioni per un’IA. Dopo averla letta, l’IA non può apportare modifiche in questa esecuzione."
+    "attachmentUnscreened": "Impossibile verificare se l’immagine contiene istruzioni per un’IA. Dopo averla letta, l’IA non può apportare modifiche in questa esecuzione.",
+    "documentOpen": "Apri {name}",
+    "documentReady": "L’IA ha letto il testo di {name}.",
+    "documentPending": "Lettura del testo di {name} in corso…",
+    "documentUnreadable": "Impossibile leggere il testo di {name}. L’IA conosce solo il nome del file.",
+    "documentFlagged": "Il file è stato segnalato durante la verifica perché sembra contenere istruzioni per un’IA. Dopo averlo letto, l’IA non può apportare modifiche in questa esecuzione.",
+    "documentUnscreened": "Impossibile verificare se il file contiene istruzioni per un’IA. Dopo averlo letto, l’IA non può apportare modifiche in questa esecuzione."
   },
   "composer": {
     "label": "Messaggio per l’IA",
@@ -48,9 +54,9 @@
     "commandsLabel": "Comandi",
     "startLabel": "Inizia una nuova chat con una domanda",
     "startPlaceholder": "Chiedi qualcosa all’IA…",
-    "attach": "Allega immagine",
-    "attachHint": "Allega immagine: seleziona, trascina o incolla",
-    "dropHint": "Rilascia per allegare l’immagine al messaggio successivo"
+    "attach": "Allega file",
+    "attachHint": "Allega un’immagine o un file: seleziona, trascina o incolla",
+    "dropHint": "Rilascia per allegare il file al prossimo messaggio"
   },
   "commands": {
     "clear": "Svuota il contesto, la cronologia rimane leggibile",
@@ -198,13 +204,14 @@
     "pinFull": "{count, plural, one {Non è consentita più di # fonte} many {Non sono consentite più di # fonti} other {Non sono consentite più di # fonti}} qui.",
     "pinFailed": "Impossibile fissare la fonte.",
     "file": "Immagine: {name}",
+    "document": "File: {name}",
     "fileUploading": "Caricamento: {name}",
-    "fileRemove": "Non inviare l’immagine {name}",
-    "fileOnce": "Viene inviata una sola volta con il messaggio successivo. L’IA riceve una descrizione dell’immagine, non l’immagine stessa.",
-    "fileNotImage": "{name} non è un’immagine. Nella chat puoi usare PNG, JPEG, WebP, GIF e AVIF.",
-    "fileTooMany": "{count, plural, one {Puoi inviare solo un’immagine con un messaggio.} many {Puoi inviare al massimo # immagini con un messaggio.} other {Puoi inviare al massimo # immagini con un messaggio.}}",
+    "fileRemove": "Non inviare {name}",
+    "fileOnce": "Verrà inviato una sola volta con il prossimo messaggio.",
+    "fileNotImage": "Impossibile inviare {name} nella chat. Sono supportati immagini (PNG, JPEG, WebP, GIF, AVIF), PDF, documenti Office e file di testo.",
+    "fileTooMany": "{count, plural, one {È possibile inviare solo un file con un messaggio.} many {È possibile inviare al massimo # file con un messaggio.} other {È possibile inviare al massimo # file con un messaggio.}}",
     "fileFailed": "Impossibile caricare {name}: {reason}",
-    "fileFailedPlain": "Impossibile caricare l’immagine."
+    "fileFailedPlain": "Impossibile caricare il file."
   },
   "meter": {
     "label": "Utilizzo del contesto",

@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2Icon, XIcon } from 'lucide-react';
+import { FileTextIcon, Loader2Icon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge, Button, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
@@ -8,10 +8,11 @@ import { Badge, Button, Tooltip, TooltipContent, TooltipTrigger } from '@exocort
 import { type PendingChatFile } from './use-chat-attachments';
 
 /**
- * A picture that goes with the next message (issue #223), drawn like the
- * selection chip beside it: it is sent once and is gone after, and the cross
- * takes it away before that. The thumbnail is the file itself, so it shows
- * while the upload is still on its way.
+ * A picture or document that goes with the next message (issue #223), drawn
+ * like the selection chip beside it: it is sent once and is gone after, and
+ * the cross takes it away before that. A picture's thumbnail is the file
+ * itself, so it shows while the upload is still on its way; a document shows
+ * an icon.
  */
 export function ChatFileChip({
   file,
@@ -30,17 +31,23 @@ export function ChatFileChip({
       className="max-w-full gap-1 py-0.5 pr-1 pl-0.5"
       data-testid="ai-file-chip"
       data-status={file.status}
+      data-kind={file.kind}
     >
-      {/* oxlint-disable-next-line nextjs/no-img-element --
-          an object URL of a file in the browser, which no loader can serve. */}
-      <img
-        src={file.previewUrl}
-        alt=""
-        className="size-5 shrink-0 rounded-sm object-cover"
-        aria-hidden
-      />
+      {file.kind === 'picture' ? (
+        // oxlint-disable-next-line nextjs/no-img-element -- an object URL of a file in the browser, which no loader can serve.
+        <img
+          src={file.previewUrl}
+          alt=""
+          className="size-5 shrink-0 rounded-sm object-cover"
+          aria-hidden
+        />
+      ) : (
+        <FileTextIcon aria-hidden className="ml-0.5 shrink-0 text-muted-foreground" />
+      )}
       <span className="min-w-0 truncate" title={t('fileOnce')}>
-        {uploading ? t('fileUploading', { name: file.name }) : t('file', { name: file.name })}
+        {uploading
+          ? t('fileUploading', { name: file.name })
+          : t(file.kind === 'picture' ? 'file' : 'document', { name: file.name })}
       </span>
       {uploading ? (
         <Loader2Icon aria-hidden className="shrink-0 animate-spin text-muted-foreground" />

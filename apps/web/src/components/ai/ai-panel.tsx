@@ -46,7 +46,7 @@ import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
 import { useActiveConversation } from './use-active-conversation';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
-import { useChatAttachments, useFileDrop } from './use-chat-attachments';
+import { useChatAttachments, useChatFileUpload, useFileDrop } from './use-chat-attachments';
 import { useConversationSettings } from './use-conversation-settings';
 import { usePinnedSources } from './use-pinned-sources';
 import { useTranscriptFollow } from './use-transcript-follow';
@@ -324,13 +324,18 @@ function AiPanelBody({
     onError: setError,
   });
   const fileDrop = useFileDrop(attachments.add);
+  const uploadStartFiles = useChatFileUpload(setError);
 
   /**
    * Sends `content`, into the open conversation or, with `fresh`, into a new
    * one. A fresh start does not wait for the open conversation's run: that run
    * goes on in its own chat, and this one has nothing in flight yet.
    */
-  const handleSubmit = async (content: string, fresh = false): Promise<void> => {
+  const handleSubmit = async (
+    content: string,
+    fresh = false,
+    startFiles: readonly File[] = [],
+  ): Promise<void> => {
     if (busy && !fresh) return;
     setError(null);
     setNotice(null);
@@ -340,7 +345,10 @@ function AiPanelBody({
       const conversationId = open ?? (await startNewConversation());
       // The pictures above the composer belong to the open conversation; a
       // question begun elsewhere (issue #288) does not take them along.
-      const attachmentIds = attachments.idsFor(open);
+      const attachmentIds = [
+        ...attachments.idsFor(open),
+        ...(await uploadStartFiles(conversationId, startFiles)),
+      ];
       const response = await postMessage.mutateAsync({
         conversationId,
         request: {
@@ -390,7 +398,7 @@ function AiPanelBody({
 
   // A question typed on the workspace's start page (issue #288) begins a new
   // chat here, because this is where its answer is streamed.
-  useStartedChat(workspaceId, (text) => void handleSubmit(text, true));
+  useStartedChat(workspaceId, (text, files) => void handleSubmit(text, true, files));
 
   return (
     <div

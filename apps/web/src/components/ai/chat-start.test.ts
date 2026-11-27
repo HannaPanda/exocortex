@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { isChatStartFor, type PendingChatStart } from './chat-start';
 
-const pending: PendingChatStart = { workspaceId: 'ws', text: 'Hallo', requestId: 1, askedAt: 1000 };
+const pending: PendingChatStart = {
+  workspaceId: 'ws',
+  text: 'Hallo',
+  files: [],
+  requestId: 1,
+  askedAt: 1000,
+};
 
 describe('isChatStartFor', () => {
   it('sends a fresh start from the panel of its own workspace', () => {

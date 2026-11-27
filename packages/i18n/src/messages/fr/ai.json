@@ -39,7 +39,13 @@
     "attachmentDescribed": "L’IA a reçu cette description de l’image : {description}",
     "attachmentNotDescribed": "{name} n’est pas encore décrite. L’IA ne connaît que le nom du fichier.",
     "attachmentFlagged": "Lors de l’analyse, cette image a attiré l’attention car elle semble contenir des instructions destinées à une IA. Après l’avoir lue, l’IA ne pourra rien modifier pendant cette exécution.",
-    "attachmentUnscreened": "Impossible de vérifier si l’image contient des instructions destinées à une IA. Après l’avoir lue, l’IA ne pourra rien modifier pendant cette exécution."
+    "attachmentUnscreened": "Impossible de vérifier si l’image contient des instructions destinées à une IA. Après l’avoir lue, l’IA ne pourra rien modifier pendant cette exécution.",
+    "documentOpen": "Ouvrir {name}",
+    "documentReady": "L’IA a lu le texte de {name}.",
+    "documentPending": "Lecture du texte de {name} en cours…",
+    "documentUnreadable": "Impossible de lire le texte de {name}. L’IA ne connaît que le nom du fichier.",
+    "documentFlagged": "Lors de la vérification, le fichier a été signalé car il semble contenir des instructions destinées à une IA. Après l’avoir lu, l’IA ne pourra rien modifier au cours de cette exécution.",
+    "documentUnscreened": "Impossible de vérifier si le fichier contient des instructions pour une IA. Après l’avoir lu, l’IA ne pourra rien modifier au cours de cette exécution."
   },
   "composer": {
     "label": "Message à l’IA",
@@ -48,9 +54,9 @@
     "commandsLabel": "Commandes",
     "startLabel": "Démarrer un nouveau chat avec une question",
     "startPlaceholder": "Pose une question à l’IA…",
-    "attach": "Joindre une image",
-    "attachHint": "Joindre une image : sélectionner, glisser-déposer ou coller",
-    "dropHint": "Relâche pour joindre l’image au prochain message"
+    "attach": "Joindre un fichier",
+    "attachHint": "Joindre une image ou un fichier : sélectionner, glisser-déposer ou coller",
+    "dropHint": "Relâche pour joindre le fichier au prochain message"
   },
   "commands": {
     "clear": "Effacer le contexte, l’historique reste lisible",
@@ -198,13 +204,14 @@
     "pinFull": "Pas plus de {count, plural, one {# source n’est autorisée} many {# de sources ne sont autorisées} other {# sources ne sont autorisées}} ici.",
     "pinFailed": "Impossible d’épingler la source.",
     "file": "Image : {name}",
+    "document": "Fichier : {name}",
     "fileUploading": "Téléversement : {name}",
-    "fileRemove": "Ne pas envoyer l’image {name}",
-    "fileOnce": "Envoyée une seule fois avec le prochain message. L’IA reçoit une description de l’image, pas l’image elle-même.",
-    "fileNotImage": "{name} n’est pas une image. Le chat accepte les formats PNG, JPEG, WebP, GIF et AVIF.",
-    "fileTooMany": "{count, plural, one {Un seul message ne peut contenir qu’une image.} many {Un seul message ne peut contenir au maximum que # images.} other {Un seul message ne peut contenir au maximum que # images.}}",
+    "fileRemove": "Ne pas inclure {name}",
+    "fileOnce": "Sera envoyé une fois avec le prochain message.",
+    "fileNotImage": "{name} ne peut pas être envoyé dans le chat. Formats acceptés : images (PNG, JPEG, WebP, GIF, AVIF), PDF, documents Office et fichiers texte.",
+    "fileTooMany": "{count, plural, one {Un seul fichier peut être envoyé avec un message.} many {Au maximum # fichiers peuvent être envoyés avec un message.} other {Au maximum # fichiers peuvent être envoyés avec un message.}}",
     "fileFailed": "Impossible de téléverser {name} : {reason}",
-    "fileFailedPlain": "Impossible de téléverser l’image."
+    "fileFailedPlain": "Impossible d’importer le fichier."
   },
   "meter": {
     "label": "Utilisation du contexte",

@@ -1,13 +1,14 @@
 'use client';
 
-import { ImagePlusIcon, Loader2Icon, SendIcon } from 'lucide-react';
+import { Loader2Icon, PaperclipIcon, SendIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { ATTACHMENT_IMAGE_SOURCE_MIME_TYPES, CHAT_COMMANDS } from '@exocortex/contracts';
+import { CHAT_COMMANDS } from '@exocortex/contracts';
 import { Button, Textarea, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 import { CommandHint } from './command-hint';
+import { CHAT_FILE_INPUT_ACCEPT } from './use-chat-attachments';
 
 export interface ChatComposerProps {
   disabled: boolean;
@@ -214,7 +215,7 @@ function ComposerAttachButton({ files, disabled }: { files: ComposerFiles; disab
       <input
         ref={inputRef}
         type="file"
-        accept={ATTACHMENT_IMAGE_SOURCE_MIME_TYPES.join(',')}
+        accept={CHAT_FILE_INPUT_ACCEPT}
         multiple
         hidden
         data-testid="ai-attach-input"
@@ -235,7 +236,7 @@ function ComposerAttachButton({ files, disabled }: { files: ComposerFiles; disab
               disabled={disabled}
               onClick={() => inputRef.current?.click()}
             >
-              <ImagePlusIcon />
+              <PaperclipIcon />
             </Button>
           }
         />

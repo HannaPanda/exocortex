@@ -39,7 +39,13 @@
     "attachmentDescribed": "Die KI hat das Bild so beschrieben bekommen: {description}",
     "attachmentNotDescribed": "{name} ist noch nicht beschrieben. Die KI kennt nur den Dateinamen.",
     "attachmentFlagged": "Bei der Prüfung fiel das Bild auf, weil es Anweisungen an eine KI zu enthalten scheint. Nach dem Lesen darf die KI in diesem Lauf nichts verändern.",
-    "attachmentUnscreened": "Das Bild konnte nicht auf Anweisungen an eine KI geprüft werden. Nach dem Lesen darf die KI in diesem Lauf nichts verändern."
+    "attachmentUnscreened": "Das Bild konnte nicht auf Anweisungen an eine KI geprüft werden. Nach dem Lesen darf die KI in diesem Lauf nichts verändern.",
+    "documentOpen": "{name} öffnen",
+    "documentReady": "Die KI hat den Text von {name} gelesen.",
+    "documentPending": "Der Text von {name} wird noch gelesen.",
+    "documentUnreadable": "Der Text von {name} ließ sich nicht lesen. Die KI kennt nur den Dateinamen.",
+    "documentFlagged": "Bei der Prüfung fiel die Datei auf, weil sie Anweisungen an eine KI zu enthalten scheint. Nach dem Lesen darf die KI in diesem Lauf nichts verändern.",
+    "documentUnscreened": "Die Datei konnte nicht auf Anweisungen an eine KI geprüft werden. Nach dem Lesen darf die KI in diesem Lauf nichts verändern."
   },
   "composer": {
     "label": "Nachricht an die KI",
@@ -48,9 +54,9 @@
     "commandsLabel": "Befehle",
     "startLabel": "Neuen Chat mit einer Frage beginnen",
     "startPlaceholder": "Frag die KI etwas …",
-    "attach": "Bild anhängen",
-    "attachHint": "Bild anhängen: auswählen, hineinziehen oder einfügen",
-    "dropHint": "Loslassen, um das Bild an die nächste Nachricht zu hängen"
+    "attach": "Datei anhängen",
+    "attachHint": "Bild oder Datei anhängen: auswählen, hineinziehen oder einfügen",
+    "dropHint": "Loslassen, um die Datei an die nächste Nachricht zu hängen"
   },
   "commands": {
     "clear": "Kontext leeren, Verlauf bleibt lesbar",
@@ -198,13 +204,14 @@
     "pinFull": "Mehr als {count, plural, one {# Quelle ist} other {# Quellen sind}} hier nicht erlaubt.",
     "pinFailed": "Die Quelle ließ sich nicht anheften.",
     "file": "Bild: {name}",
+    "document": "Datei: {name}",
     "fileUploading": "Lädt hoch: {name}",
-    "fileRemove": "Bild {name} nicht mitschicken",
-    "fileOnce": "Geht einmal mit der nächsten Nachricht mit. Die KI bekommt eine Beschreibung des Bildes, nicht das Bild selbst.",
-    "fileNotImage": "{name} ist kein Bild. Im Chat gehen PNG, JPEG, WebP, GIF und AVIF.",
-    "fileTooMany": "{count, plural, one {Mit einer Nachricht geht ein Bild mit.} other {Mit einer Nachricht gehen höchstens # Bilder mit.}}",
+    "fileRemove": "{name} nicht mitschicken",
+    "fileOnce": "Geht einmal mit der nächsten Nachricht mit.",
+    "fileNotImage": "{name} geht im Chat nicht mit. Möglich sind Bilder (PNG, JPEG, WebP, GIF, AVIF), PDFs, Office-Dokumente und Textdateien.",
+    "fileTooMany": "{count, plural, one {Mit einer Nachricht geht eine Datei mit.} other {Mit einer Nachricht gehen höchstens # Dateien mit.}}",
     "fileFailed": "{name} ließ sich nicht hochladen: {reason}",
-    "fileFailedPlain": "Das Bild ließ sich nicht hochladen."
+    "fileFailedPlain": "Die Datei ließ sich nicht hochladen."
   },
   "meter": {
     "label": "Kontextauslastung",

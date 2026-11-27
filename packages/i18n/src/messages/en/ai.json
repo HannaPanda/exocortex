@@ -39,7 +39,13 @@
     "attachmentDescribed": "The AI received this description of the image: {description}",
     "attachmentNotDescribed": "{name} is not described yet. The AI only knows the filename.",
     "attachmentFlagged": "The image was flagged during review because it appears to contain instructions for an AI. After reading it, the AI is not allowed to make changes during this run.",
-    "attachmentUnscreened": "The image could not be checked for instructions to an AI. After reading it, the AI is not allowed to make changes during this run."
+    "attachmentUnscreened": "The image could not be checked for instructions to an AI. After reading it, the AI is not allowed to make changes during this run.",
+    "documentOpen": "Open {name}",
+    "documentReady": "The AI has read the text of {name}.",
+    "documentPending": "The text of {name} is still being read.",
+    "documentUnreadable": "The text of {name} could not be read. The AI only knows the file name.",
+    "documentFlagged": "The file was flagged during screening because it appears to contain instructions for an AI. After reading it, the AI is not allowed to make changes in this run.",
+    "documentUnscreened": "The file could not be screened for instructions for an AI. After reading it, the AI is not allowed to make changes in this run."
   },
   "composer": {
     "label": "Message to AI",
@@ -48,9 +54,9 @@
     "commandsLabel": "Commands",
     "startLabel": "Start a new chat with a question",
     "startPlaceholder": "Ask the AI something …",
-    "attach": "Attach image",
-    "attachHint": "Attach image: select, drag in, or paste",
-    "dropHint": "Drop to attach the image to the next message"
+    "attach": "Attach file",
+    "attachHint": "Attach image or file: select, drag in, or paste",
+    "dropHint": "Release to attach file to the next message"
   },
   "commands": {
     "clear": "Clear context, history remains readable",
@@ -198,13 +204,14 @@
     "pinFull": "No more than {count, plural, one {# source is} other {# sources are}} allowed here.",
     "pinFailed": "The source could not be pinned.",
     "file": "Image: {name}",
+    "document": "File: {name}",
     "fileUploading": "Uploading: {name}",
-    "fileRemove": "Do not include image {name}",
-    "fileOnce": "Sent once with the next message. The AI receives a description of the image, not the image itself.",
-    "fileNotImage": "{name} is not an image. The chat supports PNG, JPEG, WebP, GIF, and AVIF.",
-    "fileTooMany": "{count, plural, one {Only one image can be sent with a message.} other {At most # images can be sent with a message.}}",
+    "fileRemove": "Do not send {name}",
+    "fileOnce": "Sent once with the next message.",
+    "fileNotImage": "{name} cannot be sent in chat. Images (PNG, JPEG, WebP, GIF, AVIF), PDFs, Office documents, and text files are supported.",
+    "fileTooMany": "{count, plural, one {Only one file can be sent with a message.} other {At most # files can be sent with a message.}}",
     "fileFailed": "{name} could not be uploaded: {reason}",
-    "fileFailedPlain": "The image could not be uploaded."
+    "fileFailedPlain": "The file could not be uploaded."
   },
   "meter": {
     "label": "Context usage",

@@ -39,7 +39,13 @@
     "attachmentDescribed": "Sztuczna inteligencja otrzymała taki opis obrazu: {description}",
     "attachmentNotDescribed": "Obraz {name} nie ma jeszcze opisu. Sztuczna inteligencja zna tylko nazwę pliku.",
     "attachmentFlagged": "Podczas sprawdzania obraz zwrócił uwagę, ponieważ wydaje się zawierać instrukcje dla AI. Po jego odczytaniu AI nie może w tym uruchomieniu niczego zmieniać.",
-    "attachmentUnscreened": "Nie udało się sprawdzić obrazu pod kątem instrukcji dla AI. Po jego odczytaniu AI nie może w tym uruchomieniu niczego zmieniać."
+    "attachmentUnscreened": "Nie udało się sprawdzić obrazu pod kątem instrukcji dla AI. Po jego odczytaniu AI nie może w tym uruchomieniu niczego zmieniać.",
+    "documentOpen": "Otwórz {name}",
+    "documentReady": "AI odczytała treść pliku {name}.",
+    "documentPending": "Treść pliku {name} jest jeszcze odczytywana.",
+    "documentUnreadable": "Nie udało się odczytać treści pliku {name}. AI zna tylko nazwę pliku.",
+    "documentFlagged": "Podczas sprawdzania plik zwrócił uwagę, ponieważ wydaje się zawierać instrukcje dla AI. Po odczytaniu AI nie może niczego zmieniać w tym przebiegu.",
+    "documentUnscreened": "Nie udało się sprawdzić pliku pod kątem instrukcji dla AI. Po odczytaniu AI nie może niczego zmieniać w tym przebiegu."
   },
   "composer": {
     "label": "Wiadomość do AI",
@@ -48,9 +54,9 @@
     "commandsLabel": "Polecenia",
     "startLabel": "Rozpocznij nowy czat od pytania",
     "startPlaceholder": "Zapytaj AI o cokolwiek…",
-    "attach": "Załącz obraz",
-    "attachHint": "Załącz obraz: wybierz, przeciągnij lub wklej",
-    "dropHint": "Upuść, aby załączyć obraz do następnej wiadomości"
+    "attach": "Załącz plik",
+    "attachHint": "Załącz obraz lub plik: wybierz, przeciągnij lub wklej",
+    "dropHint": "Upuść, aby załączyć plik do następnej wiadomości"
   },
   "commands": {
     "clear": "Wyczyść kontekst, historia pozostaje czytelna",
@@ -198,13 +204,14 @@
     "pinFull": "{count, plural, one {Więcej niż # źródło nie jest tutaj dozwolone.} few {Więcej niż # źródła nie są tutaj dozwolone.} many {Więcej niż # źródeł nie jest tutaj dozwolonych.} other {Więcej niż # źródła nie jest tutaj dozwolone.}}",
     "pinFailed": "Nie udało się przypiąć źródła.",
     "file": "Obraz: {name}",
+    "document": "Plik: {name}",
     "fileUploading": "Przesyłanie: {name}",
-    "fileRemove": "Nie wysyłaj obrazu {name}",
-    "fileOnce": "Zostanie wysłany raz z następną wiadomością. Sztuczna inteligencja otrzyma opis obrazu, a nie sam obraz.",
-    "fileNotImage": "Plik {name} nie jest obrazem. Na czacie dozwolone są formaty PNG, JPEG, WebP, GIF i AVIF.",
-    "fileTooMany": "{count, plural, one {W jednej wiadomości możesz wysłać jeden obraz.} few {W jednej wiadomości możesz wysłać najwyżej # obrazy.} many {W jednej wiadomości możesz wysłać najwyżej # obrazów.} other {W jednej wiadomości możesz wysłać najwyżej # obrazu.}}",
+    "fileRemove": "Nie dołączaj {name}",
+    "fileOnce": "Zostanie dołączony jednorazowo do następnej wiadomości.",
+    "fileNotImage": "Pliku {name} nie można dołączyć do czatu. Obsługiwane są obrazy (PNG, JPEG, WebP, GIF, AVIF), pliki PDF, dokumenty Office i pliki tekstowe.",
+    "fileTooMany": "{count, plural, one {Z jedną wiadomością można wysłać jeden plik.} few {Z jedną wiadomością można wysłać najwyżej # pliki.} many {Z jedną wiadomością można wysłać najwyżej # plików.} other {Z jedną wiadomością można wysłać najwyżej # pliku.}}",
     "fileFailed": "Nie udało się przesłać pliku {name}: {reason}",
-    "fileFailedPlain": "Nie udało się przesłać obrazu."
+    "fileFailedPlain": "Nie udało się przesłać pliku."
   },
   "meter": {
     "label": "Użycie kontekstu",

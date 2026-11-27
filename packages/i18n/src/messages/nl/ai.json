@@ -39,7 +39,13 @@
     "attachmentDescribed": "De AI heeft de afbeelding zo beschreven gekregen: {description}",
     "attachmentNotDescribed": "{name} is nog niet beschreven. De AI kent alleen de bestandsnaam.",
     "attachmentFlagged": "Tijdens de controle viel de afbeelding op, omdat deze instructies voor een AI lijkt te bevatten. Na het lezen mag de AI tijdens deze sessie niets meer wijzigen.",
-    "attachmentUnscreened": "De afbeelding kon niet worden gecontroleerd op instructies voor een AI. Na het lezen mag de AI tijdens deze sessie niets meer wijzigen."
+    "attachmentUnscreened": "De afbeelding kon niet worden gecontroleerd op instructies voor een AI. Na het lezen mag de AI tijdens deze sessie niets meer wijzigen.",
+    "documentOpen": "{name} openen",
+    "documentReady": "De AI heeft de tekst van {name} gelezen.",
+    "documentPending": "De tekst van {name} wordt nog gelezen.",
+    "documentUnreadable": "De tekst van {name} kon niet worden gelezen. De AI kent alleen de bestandsnaam.",
+    "documentFlagged": "Bij de controle viel het bestand op omdat het instructies voor een AI lijkt te bevatten. Na het lezen mag de AI tijdens deze sessie niets wijzigen.",
+    "documentUnscreened": "Het bestand kon niet worden gecontroleerd op instructies voor een AI. Na het lezen mag de AI tijdens deze sessie niets wijzigen."
   },
   "composer": {
     "label": "Bericht aan de AI",
@@ -48,9 +54,9 @@
     "commandsLabel": "Commando’s",
     "startLabel": "Een nieuwe chat starten met een vraag",
     "startPlaceholder": "Vraag de AI iets …",
-    "attach": "Afbeelding bijvoegen",
-    "attachHint": "Afbeelding bijvoegen: selecteren, hierheen slepen of plakken",
-    "dropHint": "Laat los om de afbeelding aan het volgende bericht toe te voegen"
+    "attach": "Bestand bijvoegen",
+    "attachHint": "Afbeelding of bestand bijvoegen: selecteren, hierheen slepen of plakken",
+    "dropHint": "Laat los om het bestand aan het volgende bericht toe te voegen"
   },
   "commands": {
     "clear": "Context wissen, geschiedenis blijft leesbaar",
@@ -198,13 +204,14 @@
     "pinFull": "Meer dan {count, plural, one {# bron is} other {# bronnen zijn}} hier niet toegestaan.",
     "pinFailed": "De bron kon niet worden vastgemaakt.",
     "file": "Afbeelding: {name}",
+    "document": "Bestand: {name}",
     "fileUploading": "Uploaden: {name}",
-    "fileRemove": "Afbeelding {name} niet meesturen",
-    "fileOnce": "Gaat eenmalig mee met het volgende bericht. De AI krijgt een beschrijving van de afbeelding, niet de afbeelding zelf.",
-    "fileNotImage": "{name} is geen afbeelding. In de chat werken PNG, JPEG, WebP, GIF en AVIF.",
-    "fileTooMany": "{count, plural, one {Er kan maximaal één afbeelding mee met een bericht.} other {Er kunnen maximaal # afbeeldingen mee met een bericht.}}",
+    "fileRemove": "{name} niet meesturen",
+    "fileOnce": "Gaat eenmalig mee met het volgende bericht.",
+    "fileNotImage": "{name} kan niet mee in de chat. Mogelijk zijn afbeeldingen (PNG, JPEG, WebP, GIF, AVIF), pdf’s, Office-documenten en tekstbestanden.",
+    "fileTooMany": "{count, plural, one {Er kan één bestand met een bericht meegaan.} other {Er kunnen maximaal # bestanden met een bericht meegaan.}}",
     "fileFailed": "{name} kon niet worden geüpload: {reason}",
-    "fileFailedPlain": "De afbeelding kon niet worden geüpload."
+    "fileFailedPlain": "Het bestand kon niet worden geüpload."
   },
   "meter": {
     "label": "Contextgebruik",

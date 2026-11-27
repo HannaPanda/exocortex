@@ -39,7 +39,13 @@
     "attachmentDescribed": "La IA ha recibido esta descripción de la imagen: {description}",
     "attachmentNotDescribed": "{name} aún no tiene descripción. La IA solo conoce el nombre de archivo.",
     "attachmentFlagged": "Durante la revisión, la imagen llamó la atención porque parece contener instrucciones para una IA. Tras leerla, la IA no podrá realizar cambios en esta ejecución.",
-    "attachmentUnscreened": "No se pudo revisar si la imagen contenía instrucciones para una IA. Tras leerla, la IA no podrá realizar cambios en esta ejecución."
+    "attachmentUnscreened": "No se pudo revisar si la imagen contenía instrucciones para una IA. Tras leerla, la IA no podrá realizar cambios en esta ejecución.",
+    "documentOpen": "Abrir {name}",
+    "documentReady": "La IA ha leído el texto de {name}.",
+    "documentPending": "Aún se está leyendo el texto de {name}.",
+    "documentUnreadable": "No se ha podido leer el texto de {name}. La IA solo conoce el nombre del archivo.",
+    "documentFlagged": "Al revisarlo, el archivo llamó la atención porque parece contener instrucciones para una IA. Tras leerlo, la IA no puede modificar nada en esta ejecución.",
+    "documentUnscreened": "No se pudo comprobar si el archivo contenía instrucciones para una IA. Tras leerlo, la IA no puede modificar nada en esta ejecución."
   },
   "composer": {
     "label": "Mensaje a la IA",
@@ -48,9 +54,9 @@
     "commandsLabel": "Comandos",
     "startLabel": "Iniciar un nuevo chat con una pregunta",
     "startPlaceholder": "Pregunta algo a la IA…",
-    "attach": "Adjuntar imagen",
-    "attachHint": "Adjuntar imagen: seleccionar, arrastrar o pegar",
-    "dropHint": "Suelta para adjuntar la imagen al siguiente mensaje"
+    "attach": "Adjuntar archivo",
+    "attachHint": "Adjuntar imagen o archivo: selecciona, arrastra o pega",
+    "dropHint": "Suelta para adjuntar el archivo al siguiente mensaje"
   },
   "commands": {
     "clear": "Vaciar contexto, el historial sigue siendo legible",
@@ -198,13 +204,14 @@
     "pinFull": "No se {count, plural, one {permite más de # fuente} many {permiten más de # fuentes} other {permiten más de # fuentes}} aquí.",
     "pinFailed": "No se pudo fijar la fuente.",
     "file": "Imagen: {name}",
+    "document": "Archivo: {name}",
     "fileUploading": "Subiendo: {name}",
-    "fileRemove": "No incluir la imagen {name}",
-    "fileOnce": "Se enviará una sola vez con el siguiente mensaje. La IA recibe una descripción de la imagen, no la imagen en sí.",
-    "fileNotImage": "{name} no es una imagen. En el chat se admiten PNG, JPEG, WebP, GIF y AVIF.",
-    "fileTooMany": "{count, plural, one {Solo se puede enviar una imagen con cada mensaje.} many {Como máximo se pueden enviar # imágenes con cada mensaje.} other {Como máximo se pueden enviar # imágenes con cada mensaje.}}",
+    "fileRemove": "No incluir {name}",
+    "fileOnce": "Se enviará una vez con el siguiente mensaje.",
+    "fileNotImage": "No se puede incluir {name} en el chat. Se admiten imágenes (PNG, JPEG, WebP, GIF, AVIF), PDF, documentos de Office y archivos de texto.",
+    "fileTooMany": "{count, plural, one {Solo se puede incluir un archivo por mensaje.} many {Como máximo se pueden incluir # archivos por mensaje.} other {Como máximo se pueden incluir # archivos por mensaje.}}",
     "fileFailed": "No se pudo subir {name}: {reason}",
-    "fileFailedPlain": "No se pudo subir la imagen."
+    "fileFailedPlain": "No se ha podido subir el archivo."
   },
   "meter": {
     "label": "Uso del contexto",

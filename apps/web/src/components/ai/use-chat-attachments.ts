@@ -5,18 +5,23 @@ import * as React from 'react';
 
 import {
   type AiChatAttachment,
+  CHAT_ATTACHMENT_MIME_TYPES,
+  chatAttachmentDeclaredType,
+  isAttachmentImageSource,
   isChatAttachmentMimeType,
   type UploadChatAttachmentResponse,
 } from '@exocortex/contracts';
 
 import { ApiError, apiRequest, uploadRequest } from '@/lib/api/client';
 
-/** A picture waiting above the composer for the next message (issue #223). */
+/** A picture or document waiting above the composer for the next message (issue #223). */
 export interface PendingChatFile {
   /** Local, so a chip has a key before the upload has answered. */
   localId: string;
   name: string;
-  /** An object URL of the file itself: the chip shows it before the server has it. */
+  /** A picture shows itself on its chip; a document shows an icon. */
+  kind: 'picture' | 'document';
+  /** An object URL of a picture: the chip shows it before the server has it. Empty for a document. */
   previewUrl: string;
   status: 'uploading' | 'ready';
   attachment: AiChatAttachment | null;
@@ -24,7 +29,7 @@ export interface PendingChatFile {
 
 export interface ChatAttachments {
   files: readonly PendingChatFile[];
-  /** Pasted, dropped or chosen files; anything that is not a picture is refused with a sentence. */
+  /** Pasted, dropped or chosen files; anything the chat does not take is refused with a sentence. */
   add: (files: readonly File[]) => void;
   /** Takes a chip away and deletes its upload. */
   remove: (localId: string) => void;
@@ -51,6 +56,83 @@ function markReady(
   );
 }
 
+/**
+ * What a file picker offers: the types, and the extensions of text a browser
+ * often names with no type at all.
+ */
+export const CHAT_FILE_INPUT_ACCEPT = [
+  ...CHAT_ATTACHMENT_MIME_TYPES,
+  '.md',
+  '.txt',
+  '.json',
+  '.csv',
+].join(',');
+
+/** Whether the chat takes this file, judged by its type or, for text, its name. */
+export function isChatFile(file: File): boolean {
+  return isChatAttachmentMimeType(chatAttachmentDeclaredType(file.name, file.type) ?? '');
+}
+
+/** A picture by its type; everything else the chat takes is a document. */
+export function chatFileKind(file: File): 'picture' | 'document' {
+  return isAttachmentImageSource(file.type) ? 'picture' : 'document';
+}
+
+/** Uploads one file into a conversation, for the composer and for a chat begun elsewhere. */
+export async function uploadChatFile(
+  conversationId: string,
+  file: File,
+): Promise<AiChatAttachment> {
+  const form = new FormData();
+  form.append('file', file, file.name);
+  const { attachment } = await uploadRequest<UploadChatAttachmentResponse>(
+    `/api/ai/conversations/${conversationId}/attachments`,
+    form,
+  );
+  return attachment;
+}
+
+type ContextTranslator = ReturnType<typeof useTranslations<'ai.context'>>;
+
+/** The sentence for an upload that failed: the limit by its number, anything else by its reason. */
+function uploadFailure(t: ContextTranslator, file: File, caught: unknown): string {
+  if (caught instanceof ApiError && caught.code === 'ai_chat_attachments_limit') {
+    const limit = limitOf(caught);
+    return limit === null ? caught.message : t('fileTooMany', { count: limit });
+  }
+  const reason = caught instanceof ApiError ? caught.message : t('fileFailedPlain');
+  return t('fileFailed', { name: file.name, reason });
+}
+
+/**
+ * Uploads files that waited outside any conversation (the start page's field,
+ * issue #288) into the one just created for them, one after another, and
+ * answers the ids of those that arrived. A file that did not is named through
+ * `onError`; the message goes with the rest rather than not at all, because
+ * its words were already taken from the field.
+ */
+export function useChatFileUpload(
+  onError: (message: string) => void,
+): (conversationId: string, files: readonly File[]) => Promise<string[]> {
+  const t = useTranslations('ai.context');
+  return React.useCallback(
+    async (conversationId, files) => {
+      // Files picked on the start page arrive as files and are uploaded into
+      // the conversation just made for them (issue #223).
+      const ids: string[] = [];
+      for (const file of files) {
+        try {
+          ids.push((await uploadChatFile(conversationId, file)).id);
+        } catch (caught) {
+          onError(uploadFailure(t, file, caught));
+        }
+      }
+      return ids;
+    },
+    [onError, t],
+  );
+}
+
 let counter = 0;
 function nextLocalId(): string {
   counter += 1;
@@ -63,7 +145,7 @@ function limitOf(error: ApiError): number | null {
 }
 
 /**
- * The pictures for the next message (issue #223).
+ * The pictures and documents for the next message (issue #223).
  *
  * Each one is uploaded the moment it arrives, into the conversation it will be
  * sent in, so the server holds it under the same size and type checks as any
@@ -109,23 +191,27 @@ export function useChatAttachments(input: {
 
   const add = React.useCallback(
     (incoming: readonly File[]) => {
-      const pictures: File[] = [];
+      const accepted: File[] = [];
       for (const file of incoming) {
-        if (isChatAttachmentMimeType(file.type)) pictures.push(file);
+        if (isChatFile(file)) accepted.push(file);
         else onError(t('fileNotImage', { name: file.name }));
       }
-      if (pictures.length === 0) return;
+      if (accepted.length === 0) return;
 
-      const pending = pictures.map((file) => ({
-        file,
-        entry: {
-          localId: nextLocalId(),
-          name: file.name,
-          previewUrl: URL.createObjectURL(file),
-          status: 'uploading' as const,
-          attachment: null,
-        },
-      }));
+      const pending = accepted.map((file) => {
+        const kind = chatFileKind(file);
+        return {
+          file,
+          entry: {
+            localId: nextLocalId(),
+            name: file.name,
+            kind,
+            previewUrl: kind === 'picture' ? URL.createObjectURL(file) : '',
+            status: 'uploading' as const,
+            attachment: null,
+          },
+        };
+      });
       setFiles((current) => [...current, ...pending.map(({ entry }) => entry)]);
 
       const drop = (localId: string) =>
@@ -151,22 +237,11 @@ export function useChatAttachments(input: {
         // parallel uploads would all pass that count before any of them landed.
         for (const { file, entry } of pending) {
           try {
-            const form = new FormData();
-            form.append('file', file, file.name);
-            const { attachment } = await uploadRequest<UploadChatAttachmentResponse>(
-              `/api/ai/conversations/${conversationId}/attachments`,
-              form,
-            );
+            const attachment = await uploadChatFile(conversationId, file);
             setFiles((current) => markReady(current, entry.localId, attachment));
           } catch (caught) {
             drop(entry.localId);
-            if (caught instanceof ApiError && caught.code === 'ai_chat_attachments_limit') {
-              const limit = limitOf(caught);
-              onError(limit === null ? caught.message : t('fileTooMany', { count: limit }));
-            } else {
-              const reason = caught instanceof ApiError ? caught.message : t('fileFailedPlain');
-              onError(t('fileFailed', { name: file.name, reason }));
-            }
+            onError(uploadFailure(t, file, caught));
           }
         }
       })();

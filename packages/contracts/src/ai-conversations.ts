@@ -168,7 +168,7 @@ export type AiChatAttachment = z.infer<typeof aiChatAttachmentSchema>;
 
 /**
  * Documents a chat message may carry (issue #223): what an extraction engine
- * reads (ADR-050), and plain text, Markdown and JSON, which are read as they
+ * reads (ADR-050), and plain text, Markdown, CSV and JSON, which are read as they
  * are when they arrive.
  */
 export const CHAT_DOCUMENT_MIME_TYPES = [
@@ -176,6 +176,7 @@ export const CHAT_DOCUMENT_MIME_TYPES = [
   ...OFFICE_ATTACHMENT_MIME_TYPES,
   'text/plain',
   'text/markdown',
+  'text/csv',
   'application/json',
 ] as const;
 
@@ -183,6 +184,7 @@ export const CHAT_DOCUMENT_MIME_TYPES = [
 export const CHAT_PLAIN_TEXT_MIME_TYPES = [
   'text/plain',
   'text/markdown',
+  'text/csv',
   'application/json',
 ] as const;
 

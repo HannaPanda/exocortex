@@ -1,16 +1,18 @@
 'use client';
 
+import { FileTextIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type AiChatAttachment } from '@exocortex/contracts';
+import { type AiChatAttachment, isAttachmentImageSource } from '@exocortex/contracts';
 import { ImageLightbox, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 /**
- * The pictures a question was sent with (issue #223), above its bubble and
- * still there after a reload, because they are read from the message rather
- * than from the composer. A click opens the picture large; the tooltip says
- * what the assistant was told about it, which is all it ever saw.
+ * The pictures and documents a question was sent with (issue #223), above its
+ * bubble and still there after a reload, because they are read from the
+ * message rather than from the composer. A click opens a picture large and
+ * downloads a document; the tooltip says what the assistant was told about
+ * the file.
  */
 export function ChatMessagePictures({ attachments }: { attachments: readonly AiChatAttachment[] }) {
   const t = useTranslations('ai.message');
@@ -24,6 +26,9 @@ export function ChatMessagePictures({ attachments }: { attachments: readonly AiC
         data-testid="ai-question-pictures"
       >
         {attachments.map((attachment) => {
+          if (!isAttachmentImageSource(attachment.mimeType)) {
+            return <ChatMessageDocument key={attachment.id} attachment={attachment} />;
+          }
           const src = `/api/attachments/${attachment.id}/download?variant=preview`;
           const alt = attachment.description ?? attachment.filename;
           return (
@@ -59,17 +64,59 @@ export function ChatMessagePictures({ attachments }: { attachments: readonly AiC
   );
 }
 
+/** A document on a sent question: its name, a download, and whether its text was read. */
+function ChatMessageDocument({ attachment }: { attachment: AiChatAttachment }) {
+  const t = useTranslations('ai.message');
+  const name = attachment.filename;
+  const state = attachment.textState;
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <a
+            href={`/api/attachments/${attachment.id}/download`}
+            className="flex h-8 max-w-48 items-center gap-1.5 rounded-md border border-border px-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            aria-label={t('documentOpen', { name })}
+            data-testid="ai-question-document"
+            data-text-state={state}
+          >
+            <FileTextIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0 truncate">{name}</span>
+          </a>
+        }
+      />
+      <TooltipContent className="max-w-xs">
+        {state === 'ready'
+          ? t('documentReady', { name })
+          : state === 'pending'
+            ? t('documentPending', { name })
+            : t('documentUnreadable', { name })}
+        {state === 'ready' ? <ScreeningNote screening={attachment.screening} document /> : null}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 /**
- * Why reading this picture stops the assistant from changing anything
- * (ADR-096): a finding, or a check that could not be made. A clean picture
+ * Why reading this file stops the assistant from changing anything
+ * (ADR-096): a finding, or a check that could not be made. A clean file
  * needs no sentence.
  */
-function ScreeningNote({ screening }: { screening: AiChatAttachment['screening'] }) {
+function ScreeningNote({
+  screening,
+  document = false,
+}: {
+  screening: AiChatAttachment['screening'];
+  document?: boolean;
+}) {
   const t = useTranslations('ai.message');
   if (screening === 'clean') return null;
+  const flagged = screening === 'flagged';
   return (
     <span className="mt-1 block" data-testid="ai-question-picture-screening">
-      {t(screening === 'flagged' ? 'attachmentFlagged' : 'attachmentUnscreened')}
+      {document
+        ? t(flagged ? 'documentFlagged' : 'documentUnscreened')
+        : t(flagged ? 'attachmentFlagged' : 'attachmentUnscreened')}
     </span>
   );
 }
