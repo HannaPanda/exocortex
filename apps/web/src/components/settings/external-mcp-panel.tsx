@@ -8,7 +8,7 @@ import {
   PlugIcon,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type ExternalMcpServer } from '@exocortex/contracts';
@@ -41,6 +41,7 @@ import {
   useSetExternalMcpToolAccess,
   useUpdateExternalMcpServer,
 } from '@/lib/api/external-mcp-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { ExternalMcpServerForm } from './external-mcp-server-form';
 import { ExternalMcpSuggestions } from './external-mcp-suggestions';

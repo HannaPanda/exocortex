@@ -1,9 +1,9 @@
 'use client';
 
-import { useFormatter } from 'next-intl';
-
 import type { SettingKey, Settings } from '@exocortex/contracts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * An hour of the day (0 to 23), picked as a time (issue #169). The stored

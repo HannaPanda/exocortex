@@ -1,4 +1,4 @@
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -10,6 +10,8 @@ import {
   type AutomationScope,
   type AutomationTrigger,
 } from '@exocortex/contracts';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The words for the enums an automation is made of (issue #50, ADR-024).

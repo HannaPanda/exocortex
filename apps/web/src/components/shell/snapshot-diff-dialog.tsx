@@ -1,7 +1,7 @@
 'use client';
 
 import { GitCompareIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentDiffBlock, type DocumentDiffNotice } from '@exocortex/contracts';
@@ -26,6 +26,7 @@ import {
 } from '@exocortex/ui';
 
 import { useRestoreSnapshotBlocks, useSnapshotDiff } from '@/lib/api/snapshot-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { KindIcon, Segments, useBlockTypeLabel } from './diff-blocks';
 

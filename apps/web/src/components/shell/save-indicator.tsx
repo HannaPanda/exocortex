@@ -1,8 +1,10 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { cn } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 import { useDocumentSession } from './document-session';
 

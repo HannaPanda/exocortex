@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AdminUser, type AdminUserSort, type UserRole } from '@exocortex/contracts';
@@ -53,6 +53,7 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The user administration screen: who is here, who is invited, and the two ways

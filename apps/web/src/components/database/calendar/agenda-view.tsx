@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 
-import { EmptyState } from '@exocortex/ui';
+import { EmptyState, type HourCycle, useHourCycle } from '@exocortex/ui';
 
 import { type CalendarEntry, dayKey } from './entries';
 import { CalendarEntryLink } from './entry-link';
@@ -25,6 +25,7 @@ interface AgendaViewProps {
 export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewProps) {
   const t = useTranslations('calendar.agenda');
   const locale = useLocale();
+  const cycle = useHourCycle();
   const days: { day: Date; entries: CalendarEntry[] }[] = [];
   for (let cursor = from; cursor < to; cursor = addDays(cursor, 1)) {
     const entries = entriesByDay.get(dayKey(cursor)) ?? [];
@@ -50,7 +51,7 @@ export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewPr
             {entries.map((entry) => (
               <li key={entry.row.document.id} className="flex items-baseline gap-3 py-1.5">
                 <span className="w-28 shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {timeRangeOf(entry, locale, {
+                  {timeRangeOf(entry, locale, cycle, {
                     allDay: t('allDay'),
                     range: (start, end) => t('timeRange', { from: start, to: end }),
                   })}
@@ -73,12 +74,13 @@ export function AgendaView({ workspaceId, from, to, entriesByDay }: AgendaViewPr
 function timeRangeOf(
   entry: CalendarEntry,
   locale: string,
+  cycle: HourCycle | undefined,
   wording: { allDay: string; range: (start: string, end: string) => string },
 ): string {
   if (entry.allDay) return wording.allDay;
   const start = new Date(entry.start);
   if (Number.isNaN(start.getTime())) return '';
-  const time = calendarFormatter(locale, 'time');
+  const time = calendarFormatter(locale, 'time', cycle);
   if (entry.end === null) return time.format(start);
   const end = new Date(entry.end);
   if (Number.isNaN(end.getTime())) return time.format(start);

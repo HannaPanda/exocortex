@@ -1,12 +1,13 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Alert, AlertDescription, Button, Card, CardContent } from '@exocortex/ui';
 
 import { apiRequest } from '@/lib/api/client';
+import { useFormatter } from '@/lib/formatter';
 
 interface OAuthClient {
   clientId: string;

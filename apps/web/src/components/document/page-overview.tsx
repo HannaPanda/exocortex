@@ -2,7 +2,7 @@
 
 import { ChevronRightIcon, RefreshCwIcon, SparklesIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentOverviewResponse, type OverviewEntry } from '@exocortex/contracts';
@@ -10,6 +10,7 @@ import { Badge, Button, cn } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentOverview, useRefreshDocumentOverview } from '@/lib/api/overview-queries';
+import { useFormatter } from '@/lib/formatter';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
 /**

@@ -1,11 +1,13 @@
 'use client';
 
 import { MonitorPlayIcon, PaletteIcon, PauseIcon, PlayIcon, ScanIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type KnowledgeMapEdgeKind, type KnowledgeMapSemanticState } from '@exocortex/contracts';
 import { Button, cn, Label, Slider, Switch, Toggle } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The quiet furniture around the map (issue #189): the title, the legend that

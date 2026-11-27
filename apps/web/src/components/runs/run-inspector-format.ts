@@ -1,8 +1,8 @@
 'use client';
 
-import { useFormatter } from 'next-intl';
 import * as React from 'react';
 
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 /** Numbers, money and durations the way the reader's language writes them. */

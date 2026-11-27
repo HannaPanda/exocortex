@@ -9,8 +9,10 @@ import {
   DEFAULT_OUTLINE_HOVER_EXPAND,
   DEFAULT_OUTLINE_PINNED_MODE,
   DEFAULT_OUTLINE_TRANSPARENCY,
+  DEFAULT_TIME_FORMAT,
   type OutlinePinnedMode,
   type OutlineTransparency,
+  type TimeFormat,
   type UpdateUserPreferencesRequest,
   type UserPreferences,
 } from '@exocortex/contracts';
@@ -18,7 +20,10 @@ import {
 import { apiRequest } from './client';
 import { queryKeys } from './query-keys';
 
-/** The account's personal settings: language (#98), chat scrolling (#282), the outline (#283). */
+/**
+ * The account's personal settings: language (#98), the clock (#255), chat
+ * scrolling (#282), the outline (#283).
+ */
 export const preferenceKeys = {
   preferences: ['me', 'preferences'] as const,
 };
@@ -45,6 +50,57 @@ export function useSetUserPreferences() {
       void client.invalidateQueries({ queryKey: queryKeys.session });
     },
   });
+}
+
+export interface TimeFormatPreference {
+  format: TimeFormat;
+  change: (format: TimeFormat, options?: { onError?: () => void }) => void;
+  pending: boolean;
+}
+
+/**
+ * The clock a time of day is written on (issue #255), read by the app shell
+ * for everything below it and changed from the settings page and the palette.
+ *
+ * Optimistic like the chat's scrolling: every time on the screen moves to the
+ * new clock at once and back if saving fails. Until the preferences have
+ * loaded it is `auto`, which is what the server rendered, so nothing changes
+ * between the first frame and hydration.
+ */
+export function useTimeFormatPreference(): TimeFormatPreference {
+  const client = useQueryClient();
+  const query = useUserPreferences();
+  const mutation = useMutation({
+    mutationFn: (timeFormat: TimeFormat) =>
+      apiRequest<UserPreferences>('/api/me/preferences', {
+        method: 'PATCH',
+        body: { timeFormat } satisfies UpdateUserPreferencesRequest,
+      }),
+    onMutate: async (timeFormat) => {
+      await client.cancelQueries({ queryKey: preferenceKeys.preferences });
+      const before = client.getQueryData<UserPreferences>(preferenceKeys.preferences);
+      if (before !== undefined) {
+        client.setQueryData<UserPreferences>(preferenceKeys.preferences, {
+          ...before,
+          timeFormat,
+        });
+      }
+      return { before };
+    },
+    onError: (_error, _timeFormat, context) => {
+      if (context?.before !== undefined) {
+        client.setQueryData(preferenceKeys.preferences, context.before);
+      }
+    },
+    onSuccess: (result) => {
+      client.setQueryData(preferenceKeys.preferences, result);
+    },
+  });
+  return {
+    format: query.data?.timeFormat ?? DEFAULT_TIME_FORMAT,
+    change: (format, options) => mutation.mutate(format, { onError: options?.onError }),
+    pending: mutation.isPending,
+  };
 }
 
 export interface ChatScrollPreference {

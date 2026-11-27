@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -44,6 +44,7 @@ import {
 import { useAgentSessions, useRevertAgentSession } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useFormatter } from '@/lib/formatter';
 
 const DATE_TIME = { dateStyle: 'medium', timeStyle: 'short' } as const;
 

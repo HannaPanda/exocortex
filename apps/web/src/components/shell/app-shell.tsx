@@ -10,6 +10,8 @@ import {
   AppMain,
   AppShell as AppShellFrame,
   cn,
+  hourCycleOf,
+  HourCycleProvider,
   ResizablePanel,
   Sheet,
   SheetContent,
@@ -27,6 +29,7 @@ import { PaletteRequestsProvider, useAskPalette } from '@/components/palette/pal
 import { usePaletteCommands } from '@/components/palette/registry';
 import { shellCommands } from '@/components/palette/shell-commands';
 import { SearchCommand } from '@/components/search/search-command';
+import { useTimeFormatPreference } from '@/lib/api/preferences-queries';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { signOut } from '@/lib/auth/client';
@@ -60,19 +63,30 @@ const TREE_REFRESH_GATHER_MS = 1000;
  * context panel. Layout preferences are the only client state that is persisted;
  * everything else is server state owned by TanStack Query.
  */
+/**
+ * The account's clock for every time below the shell (issue #255): the
+ * palette, the panels and the pages alike.
+ */
+function AccountHourCycle({ children }: { children: React.ReactNode }) {
+  const { format } = useTimeFormatPreference();
+  return <HourCycleProvider value={hourCycleOf(format)}>{children}</HourCycleProvider>;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <DocumentSessionProvider>
-      <AiSelectionProvider>
-        <CommentAnchorProvider>
-          <PaletteRequestsProvider>
-            <PaletteContributionsProvider>
-              <AppShellInner>{children}</AppShellInner>
-            </PaletteContributionsProvider>
-          </PaletteRequestsProvider>
-        </CommentAnchorProvider>
-      </AiSelectionProvider>
-    </DocumentSessionProvider>
+    <AccountHourCycle>
+      <DocumentSessionProvider>
+        <AiSelectionProvider>
+          <CommentAnchorProvider>
+            <PaletteRequestsProvider>
+              <PaletteContributionsProvider>
+                <AppShellInner>{children}</AppShellInner>
+              </PaletteContributionsProvider>
+            </PaletteRequestsProvider>
+          </CommentAnchorProvider>
+        </AiSelectionProvider>
+      </DocumentSessionProvider>
+    </AccountHourCycle>
   );
 }
 

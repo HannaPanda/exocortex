@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyIcon, GlobeIcon, LinkIcon, MailIcon, TriangleAlertIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentShare, type ShareScope } from '@exocortex/contracts';
@@ -35,6 +35,7 @@ import {
   useRevokeShare,
   useUpdateShare,
 } from '@/lib/api/share-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { ShareLinkAddress, shareUrlFor } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';

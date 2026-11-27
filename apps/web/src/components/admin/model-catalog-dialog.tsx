@@ -1,7 +1,7 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiModelCatalogEntry, groupAiModelsByVendor } from '@exocortex/contracts';
@@ -29,6 +29,7 @@ import {
 import { useAddAiModelsFromCatalog, useAiModelCatalog } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 /**

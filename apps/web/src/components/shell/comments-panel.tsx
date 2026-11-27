@@ -10,7 +10,7 @@ import {
   RotateCcwIcon,
   Trash2Icon,
 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -34,6 +34,7 @@ import {
 import { useDocument } from '@/lib/api/document-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
+import { useFormatter } from '@/lib/formatter';
 
 export interface CommentsPanelProps {
   workspaceId: string | null;

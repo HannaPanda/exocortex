@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useNow, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import type {
@@ -37,6 +37,7 @@ import { ChatStarter } from '@/components/ai/chat-starter';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The landing view of a workspace.

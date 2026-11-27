@@ -2,7 +2,7 @@
 
 import { GlobeIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentShare } from '@exocortex/contracts';
@@ -24,6 +24,7 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useRevokeWorkspaceShare, useWorkspaceShares } from '@/lib/api/share-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { ShareLinkAddress } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';

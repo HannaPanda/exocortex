@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import {
   type ExternalMcpTool,
@@ -8,6 +8,8 @@ import {
   type ExternalMcpToolHints,
 } from '@exocortex/contracts';
 import { Badge, Toggle, ToggleGroup } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 const ACCESS_ORDER: readonly ExternalMcpToolAccess[] = ['blocked', 'read', 'write'];
 

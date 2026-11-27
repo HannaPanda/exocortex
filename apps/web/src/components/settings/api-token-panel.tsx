@@ -1,7 +1,7 @@
 'use client';
 
 import { CopyIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -45,6 +45,7 @@ import { useDocumentTree } from '@/lib/api/document-queries';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { connectionSnippets } from '@/lib/connection-snippets';
+import { useFormatter } from '@/lib/formatter';
 
 import { CopyBlock } from './copy-block';
 

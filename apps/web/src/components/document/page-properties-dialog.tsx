@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -32,6 +32,7 @@ import {
 
 import { useSetAiRule } from '@/lib/api/ai-queries';
 import { useUpdateDocument } from '@/lib/api/document-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { DocumentIcon } from './document-icon';
 import { PageIconPicker } from './page-icon-picker';

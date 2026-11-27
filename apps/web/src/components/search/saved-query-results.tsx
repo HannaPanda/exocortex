@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type SavedQueryDisplay, type SavedQueryHit } from '@exocortex/contracts';
@@ -9,6 +9,7 @@ import { cn, EmptyState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { documentHref } from '@/lib/document-href';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The answer to a saved query, in the three layouts `SavedQueryDisplay` offers

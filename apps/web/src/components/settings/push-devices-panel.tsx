@@ -1,7 +1,7 @@
 'use client';
 
 import { BellIcon, BellOffIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -31,6 +31,7 @@ import {
   useSendTestPush,
   useUpdatePushDevice,
 } from '@/lib/api/push-queries';
+import { useFormatter } from '@/lib/formatter';
 import {
   detectPushSupport,
   identifyBrowser,

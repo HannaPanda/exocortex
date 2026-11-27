@@ -2,7 +2,7 @@
 
 import { Link2OffIcon, LinkIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -15,6 +15,7 @@ import { Badge, EmptyState, ErrorState, LoadingState, SectionRule } from '@exoco
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentLinks, useRelatedDocuments } from '@/lib/api/page-link-queries';
+import { useFormatter } from '@/lib/formatter';
 
 export interface BacklinksPanelProps {
   workspaceId: string | null;

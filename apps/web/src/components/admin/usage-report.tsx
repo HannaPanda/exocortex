@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -28,6 +28,7 @@ import {
 } from '@exocortex/ui';
 
 import { useAdminAiUsage } from '@/lib/api/admin-queries';
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 type Formatter = ReturnType<typeof useFormatter>;

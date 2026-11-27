@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type WorkspaceCredential } from '@exocortex/contracts';
@@ -13,6 +13,7 @@ import {
   useSetWorkspaceCredential,
   useWorkspaceCredentials,
 } from '@/lib/api/workspace-settings-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * This workspace's own provider key (issue #52, AP7, ADR-023).

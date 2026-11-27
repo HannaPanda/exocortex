@@ -1,10 +1,12 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { isAttachmentTextErrorCode } from '@exocortex/contracts';
 import { type EditorWords } from '@exocortex/editor';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The words of the editor's hand-built node views, in the reader's language

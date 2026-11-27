@@ -1,4 +1,5 @@
 import { type DatabaseCalendarMode } from '@exocortex/contracts';
+import { type HourCycle, withHourCycle } from '@exocortex/ui';
 
 /**
  * The window a mode shows, as local half-open `[from, to)`.
@@ -36,11 +37,19 @@ export type CalendarDateFormat = keyof typeof DATE_FORMATS;
 
 const formatterCache = new Map<string, Intl.DateTimeFormat>();
 
-export function calendarFormatter(locale: string, format: CalendarDateFormat): Intl.DateTimeFormat {
-  const key = `${locale}|${format}`;
+/**
+ * `cycle` is the reader's clock (issue #255): a time of day is written on it,
+ * a date has none and ignores it.
+ */
+export function calendarFormatter(
+  locale: string,
+  format: CalendarDateFormat,
+  cycle?: HourCycle,
+): Intl.DateTimeFormat {
+  const key = `${locale}|${format}|${cycle ?? 'auto'}`;
   let formatter = formatterCache.get(key);
   if (formatter === undefined) {
-    formatter = new Intl.DateTimeFormat(locale, DATE_FORMATS[format]);
+    formatter = new Intl.DateTimeFormat(locale, withHourCycle(DATE_FORMATS[format], cycle));
     formatterCache.set(key, formatter);
   }
   return formatter;

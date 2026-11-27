@@ -1,10 +1,11 @@
 'use client';
 
-import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Input } from '@exocortex/ui';
 
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd, microUsdFromText, usdInputText } from '@/lib/money';
 
 /**

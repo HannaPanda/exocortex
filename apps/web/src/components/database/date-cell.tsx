@@ -1,4 +1,4 @@
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -7,6 +7,8 @@ import {
   parseDatePropertyConfig,
 } from '@exocortex/contracts';
 import { DatePicker, DateTimePicker } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 import { type PropertyCellProps } from './cells';
 

@@ -8,7 +8,7 @@ import {
   PlusIcon,
   RefreshCwIcon,
 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiModel, groupAiModelsByVendor } from '@exocortex/contracts';
@@ -42,6 +42,7 @@ import {
 } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 import { ModelCatalogDialog } from './model-catalog-dialog';

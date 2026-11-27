@@ -13,7 +13,7 @@ import {
   Share2Icon,
   Undo2Icon,
 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentActivityEntry } from '@exocortex/contracts';
@@ -40,6 +40,7 @@ import {
 
 import { useDocument } from '@/lib/api/document-queries';
 import { useDocumentActivity, useRestoreSnapshot } from '@/lib/api/snapshot-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { type DiffableSnapshot, SnapshotDiffDialog } from './snapshot-diff-dialog';
 

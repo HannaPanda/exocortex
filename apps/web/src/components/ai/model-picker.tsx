@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import {
   type AiModel,
@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 /** Sentinel for "no vision companion for this conversation" (request sends `'off'`). */

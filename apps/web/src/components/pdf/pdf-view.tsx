@@ -1,11 +1,13 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { type PDFDocumentProxy } from 'pdfjs-dist';
 import * as React from 'react';
 
 import { type ProjectSourceArea } from '@exocortex/contracts';
 import { Button, cn, ErrorState, LoadingState } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 import { type PdfPageSize, usePdfDocument, usePdfPageSizes } from './pdf-document';
 

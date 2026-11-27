@@ -61,14 +61,28 @@ const EXPERIMENT_IMPORTS = {
 };
 
 /**
+ * A time of day is written on the reader's clock (issue #255), and next-intl's
+ * own formatter does not know it. `apps/web/src/lib/formatter.ts` wraps it,
+ * and is the one file allowed to import the original.
+ */
+const FORMATTER_WRAPPER = 'apps/web/src/lib/formatter.ts';
+const INTL_FORMATTER_IMPORTS = {
+  name: 'next-intl',
+  importNames: ['useFormatter'],
+  message:
+    "Take useFormatter from '@/lib/formatter': it writes a time of day on the account's 24- or 12-hour clock (issue #255).",
+};
+
+/**
  * Forbids every internal package the given one is not allowed to import, plus
  * reaching into another package by relative path.
  *
  * @param {string} packageName
  * @param {readonly Record<string, unknown>[]} [extraPatterns]
+ * @param {readonly Record<string, unknown>[]} [extraPaths]
  * @returns {Record<string, unknown>}
  */
-function boundaryRules(packageName, extraPatterns = []) {
+function boundaryRules(packageName, extraPatterns = [], extraPaths = []) {
   const allowed = ALLOWED_INTERNAL_DEPENDENCIES[packageName] ?? [];
   const forbidden = ALL_INTERNAL_PACKAGES.filter(
     (name) => name !== packageName && !allowed.includes(name),
@@ -77,6 +91,7 @@ function boundaryRules(packageName, extraPatterns = []) {
     'no-restricted-imports': [
       'error',
       {
+        ...(extraPaths.length > 0 ? { paths: [...extraPaths] } : {}),
         patterns: [
           ...forbidden.map((name) => ({
             group: [name, `${name}/*`],
@@ -263,7 +278,10 @@ const config = {
     // ------------------------------------------------------------- packages
     ...ALL_INTERNAL_PACKAGES.filter((name) => name.startsWith(INTERNAL_SCOPE)).map((name) => ({
       files: [`${directoryOf(name)}/**/*.{ts,tsx,mts,cts}`],
-      rules: boundaryRules(name, name === `${INTERNAL_SCOPE}web` ? [EXPERIMENT_IMPORTS] : []),
+      rules:
+        name === `${INTERNAL_SCOPE}web`
+          ? boundaryRules(name, [EXPERIMENT_IMPORTS], [INTL_FORMATTER_IMPORTS])
+          : boundaryRules(name),
     })),
     {
       // Later overrides win, so this puts the plain boundary back for the two
@@ -272,7 +290,12 @@ const config = {
         'apps/web/src/components/design-system/design-system-page.tsx',
         `${EXPERIMENTS_DIRECTORY}/**/*.{ts,tsx}`,
       ],
-      rules: boundaryRules(`${INTERNAL_SCOPE}web`),
+      rules: boundaryRules(`${INTERNAL_SCOPE}web`, [], [INTL_FORMATTER_IMPORTS]),
+    },
+    {
+      // The wrapper itself is where next-intl's formatter is allowed in.
+      files: [FORMATTER_WRAPPER],
+      rules: boundaryRules(`${INTERNAL_SCOPE}web`, [EXPERIMENT_IMPORTS]),
     },
 
     // ---------------------------------------------------------------- react

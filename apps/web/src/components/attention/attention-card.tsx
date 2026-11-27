@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -14,6 +14,7 @@ import {
 import { Badge, Button, Textarea } from '@exocortex/ui';
 
 import { useResolveAttention } from '@/lib/api/attention-queries';
+import { useFormatter } from '@/lib/formatter';
 
 import { AttentionCheckpoint } from './attention-checkpoint';
 

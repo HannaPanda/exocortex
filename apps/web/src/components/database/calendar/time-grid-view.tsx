@@ -3,6 +3,8 @@
 import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { useHourCycle } from '@exocortex/ui';
+
 import { type CalendarEntry, dayKey } from './entries';
 import { CalendarEntryLink } from './entry-link';
 import { layoutDay, MINUTES_PER_DAY } from './layout';
@@ -33,6 +35,7 @@ interface TimeGridViewProps {
 export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewProps) {
   const t = useTranslations('calendar.timeGrid');
   const locale = useLocale();
+  const cycle = useHourCycle();
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const now = useNow();
   const todayKey = dayKey(now ?? new Date());
@@ -112,7 +115,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                   >
                     {hour === 0
                       ? ''
-                      : calendarFormatter(locale, 'time').format(new Date(2026, 0, 1, hour))}
+                      : calendarFormatter(locale, 'time', cycle).format(new Date(2026, 0, 1, hour))}
                   </span>
                 ))}
               </div>

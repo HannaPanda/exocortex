@@ -1,8 +1,9 @@
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { type AdminOverviewResponse } from '@exocortex/contracts';
 import { Readout, SectionRule } from '@exocortex/ui';
 
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 /**

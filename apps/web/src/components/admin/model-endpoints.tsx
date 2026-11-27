@@ -1,11 +1,12 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { type AiModelEndpoint } from '@exocortex/contracts';
 import { Badge, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useAiModelEndpoints } from '@/lib/api/admin-queries';
+import { useFormatter } from '@/lib/formatter';
 import { formatMicroUsd } from '@/lib/money';
 
 /** The input an endpoint can really take: its window, or its own tighter prompt cap. */

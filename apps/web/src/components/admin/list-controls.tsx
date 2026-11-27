@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -15,6 +15,8 @@ import {
   SelectValue,
   TableHead,
 } from '@exocortex/ui';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The parts every growing admin list shares (issue #176): its state in the

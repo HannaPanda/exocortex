@@ -3,13 +3,21 @@
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
+import { type HourCycle, useHourCycle } from '@exocortex/ui';
+
 import { type CalendarEntry } from './entries';
 import { calendarFormatter } from './range';
 
-export function entryTime(entry: CalendarEntry, locale: string): string | null {
+export function entryTime(
+  entry: CalendarEntry,
+  locale: string,
+  cycle: HourCycle | undefined,
+): string | null {
   if (entry.allDay) return null;
   const date = new Date(entry.start);
-  return Number.isNaN(date.getTime()) ? null : calendarFormatter(locale, 'time').format(date);
+  return Number.isNaN(date.getTime())
+    ? null
+    : calendarFormatter(locale, 'time', cycle).format(date);
 }
 
 /**
@@ -28,7 +36,8 @@ export function CalendarEntryLink({
   showTime?: boolean;
 }) {
   const locale = useLocale();
-  const time = showTime ? entryTime(entry, locale) : null;
+  const cycle = useHourCycle();
+  const time = showTime ? entryTime(entry, locale, cycle) : null;
   return (
     <Link
       href={`/arbeitsbereich/${workspaceId}/seite/${entry.row.document.id}`}

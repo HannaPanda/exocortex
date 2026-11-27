@@ -1,4 +1,4 @@
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -6,6 +6,8 @@ import {
   type RenderSource,
   type RenderVariableOrigin,
 } from '@exocortex/contracts';
+
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * The words for the enums a render is made of (issue #44, ADR-026).

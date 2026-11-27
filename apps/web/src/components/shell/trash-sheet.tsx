@@ -2,7 +2,7 @@
 
 import { ExternalLinkIcon, RotateCcwIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type TrashEntry } from '@exocortex/contracts';
@@ -35,6 +35,7 @@ import { useRestoreDocument } from '@/lib/api/document-queries';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useDeleteDocuments, useDeletionPreviews, useTrash } from '@/lib/api/trash-queries';
 import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
+import { useFormatter } from '@/lib/formatter';
 
 interface TrashSheetProps {
   workspaceId: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type Invitation, type InvitationStatus } from '@exocortex/contracts';
@@ -32,6 +32,7 @@ import {
   useResendInvitation,
   useRevokeInvitation,
 } from '@/lib/api/invitation-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * Only "offen" gets a colour. The other three are history, and a list where

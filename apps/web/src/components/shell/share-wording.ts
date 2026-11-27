@@ -1,6 +1,8 @@
-import { type useFormatter, type useTranslations } from 'next-intl';
+import { type useTranslations } from 'next-intl';
 
 import { type DocumentShare } from '@exocortex/contracts';
+
+import { type Formatter } from '@/lib/formatter';
 
 /**
  * The words for one grant, shared by the page's share dialog and the list of
@@ -9,7 +11,6 @@ import { type DocumentShare } from '@exocortex/contracts';
  */
 
 type WordingTranslator = ReturnType<typeof useTranslations<'shares.wording'>>;
-type Formatter = ReturnType<typeof useFormatter>;
 
 /** One sentence per grant, in the words somebody would use about it. */
 export function describeShare(

@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -44,6 +44,7 @@ import {
   preferredByteUnit,
 } from '@/lib/byte-size';
 import { durationBaseOfSettingKey, isHourOfDaySettingKey } from '@/lib/duration';
+import { useFormatter } from '@/lib/formatter';
 import { isFractionSettingKey } from '@/lib/fraction';
 import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
 import { sameRouting } from '@/lib/provider-routing-form';

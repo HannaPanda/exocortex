@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type MemoryFact, type MemoryFactStatus } from '@exocortex/contracts';
@@ -22,6 +22,7 @@ import {
 
 import { useMemoryFacts, usePromoteMemoryFact } from '@/lib/api/memory-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * What the agent memory holds to be true (issue #46, ADR-021).

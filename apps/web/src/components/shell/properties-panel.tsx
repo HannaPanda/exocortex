@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDownIcon, ImageIcon, MoveVerticalIcon, SettingsIcon, XIcon } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentDetail } from '@exocortex/contracts';
@@ -30,6 +30,7 @@ import {
   useUpdateDatabaseRowValues,
 } from '@/lib/api/database-queries';
 import { useDocument, useUpdateDocument } from '@/lib/api/document-queries';
+import { useFormatter } from '@/lib/formatter';
 
 /**
  * Values of the row this page is, when it sits inside a database

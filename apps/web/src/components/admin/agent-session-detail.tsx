@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -16,6 +16,7 @@ import {
 } from '@exocortex/ui';
 
 import { useAgentSession } from '@/lib/api/admin-queries';
+import { useFormatter } from '@/lib/formatter';
 
 type ActionKey =
   'created' | 'updated' | 'contentReplaced' | 'moved' | 'archived' | 'restored' | 'deleted';
