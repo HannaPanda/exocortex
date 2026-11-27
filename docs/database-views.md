@@ -564,6 +564,46 @@ properties panel, because all three render `PropertyCell` and pass it the row.
   is outlined and names its column. Without the right to edit, the cell only
   shows and downloads.
 
+## Columns the AI fills
+
+Issue #237, [ADR-099](adr/ADR-099-an-ai-column-is-a-stored-value-a-batch-is-a-run.md).
+A writable column (Text, Number, Select, Multi-select, Date, Checkbox, URL,
+E-mail, Phone, Person; `AI_FILLABLE_PROPERTY_TYPES`) can carry an AI
+instruction, and its cells are then filled by a model from what each row holds.
+The value is an ordinary stored value, never a formula (ADR-041).
+
+- **The instruction.** `database_property_ai`, one row per column, written with
+  `PATCH /api/documents/:id/properties/:propertyId/ai` (and removed with
+  `DELETE`) by whoever may change the columns. A preset (`summary`,
+  `key_points`, `tags`, `translate`, `document_date`, `sender`, `recipient`)
+  or `custom` with the person's own words; which presets fit which type is
+  `AI_FILL_PRESET_TYPES`, and `aiFillConfigProblems` is the one check the API
+  refuses with and the browser warns with. `allowNewOptions` (selects only),
+  the three sources (`useContent`, `useProperties`, `useAttachments`) and
+  `autoFill` (`off` by default). Every property answer carries it as `ai`.
+- **A batch.** `POST /api/documents/:id/ai-fills` with `propertyId`, optional
+  `rowIds` (absent: the whole column, in the database's order, skipping rows
+  the requester may not change) and `mode` (`empty_only`, `replace_ai`,
+  `replace_all`); `dryRun` only counts. `AiFillService` writes the `ai_run`
+  (kind FILL), its `database_ai_fill_run` and one `database_ai_fill_cell` per
+  row in one transaction and queues `database-ai-fill`; at most
+  `ai.fillMaxRowsPerRun` cells, and the answer says how many rows were left
+  out and why. `GET /api/documents/:id/ai-fills`, `GET /api/ai-fills/:id`,
+  `POST /api/ai-fills/:id/cancel` and `/retry` are the rest of the loop.
+- **One cell.** The worker asks `AiFillWorkerService` for the cell's material
+  (title, other values as text, the page's Markdown up to 20 000 characters,
+  up to ten files with their text, members for a Person column), calls the
+  model once without tools, and posts the answer back.
+  `coerceAiFillAnswer` (`packages/contracts/src/database-ai-fill.ts`) turns it
+  into the column's value or a code; `writeAiValue` on `DatabaseRowsService`
+  writes it like any value, with `aiRunId` set. The mode is checked again
+  before the model is asked and when the answer arrives, so a value typed in
+  the meantime is kept.
+- **Marks.** `document_property_value.aiRunId` is cleared by every other
+  write. Every row answer carries `aiCells` (`aiCellsOfRows` in
+  `apps/api/src/databases/ai-fill/ai-cells.ts`): `pending`, `failed` with its
+  code, `empty`, or `filled` with the time, for the table to draw.
+
 ## Known limitations (deliberate, not bugs)
 
 - **Filters/sorts sent alongside a `viewId` are ignored.** When a request to

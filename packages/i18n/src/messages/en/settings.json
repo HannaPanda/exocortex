@@ -132,6 +132,10 @@
         "label": "Images per request",
         "help": "Upper limit for the number of described images per run."
       },
+      "fillMaxRowsPerRun": {
+        "label": "Rows per AI fill run",
+        "help": "The maximum number of cells a single run fills for a column with an AI prompt. Each cell is a model request; a larger column is filled across multiple runs."
+      },
       "sendImagesToModel": {
         "label": "Send chat images directly to the model",
         "help": "On: A vision-capable model receives an image from the chat as an image, with every reply, as long as it remains in the history. This is more accurate and costs more per reply. Off: Like any other model, it reads the saved description. An image is described in both cases, for models without vision capabilities and as a fallback."

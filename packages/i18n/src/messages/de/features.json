@@ -518,6 +518,16 @@
     },
     "where": "Datei in den Editor ziehen."
   },
+  "datenbank-ki-spalten": {
+    "title": "Spalten einer Datenbank von der KI ausfüllen lassen",
+    "summary": "Eine Spalte bekommt eine KI-Anweisung, etwa „Fasse zusammen“, „Datum aus dem Dokument“ oder eine eigene. Danach füllt die KI die Zellen dieser Spalte aus dem, was in der Zeile steht: dem Text der Seite, den anderen Spalten und den angehängten Dateien.",
+    "details": {
+      "p1": "Es gibt Vorlagen für Zusammenfassung, Stichpunkte, Schlagwörter, Übersetzung, das Datum eines Dokuments sowie Absender und Empfänger, und eine eigene Anweisung für jeden Spaltentyp, den die KI füllen kann: Text, Zahl, Datum, Auswahl, Mehrfachauswahl, Kontrollkästchen, Adresse, E-Mail, Telefon und Person. Jede Antwort wird gegen den Typ geprüft: ein Datum muss ein echtes Datum sein, eine Auswahl eine vorhandene Option (neue nur, wenn du das erlaubst) und eine Person ein Mitglied des Arbeitsbereichs.",
+      "p2": "Gefüllt werden einzelne Zeilen oder die ganze Spalte. Standard ist: nur leere Zellen. Werte, die die KI geschrieben hat, lassen sich erneuern, Werte von Menschen nur auf ausdrücklichen Wunsch. Eine Zelle, die die KI gefüllt hat, ist als KI-Wert mit Zeitpunkt markiert, bis jemand sie ändert. Schlägt eine Zelle fehl, steht der Grund dabei, und ein neuer Durchgang versucht genau diese Zellen noch einmal.",
+      "p3": "Ein Durchgang ist ein KI-Lauf: er wird mit dem Schlüssel des Arbeitsbereichs bezahlt, erscheint im Nutzungsbericht und hält höchstens so viele Zeilen, wie ai.fillMaxRowsPerRun erlaubt. Er läuft im Hintergrund und lässt sich jederzeit abbrechen. Die KI liest nur, was die Person lesen darf, die ihn gestartet hat. Angehängte Dateien liest sie als fremden Inhalt: daraus wird höchstens der Wert dieser einen Zelle, nie ein weiterer Schritt.",
+      "p4": "Agenten richten die Anweisung mit exo_database_property_ai_set ein, starten mit exo_database_ai_fill_start, sehen den Stand mit exo_database_ai_fill_status und exo_database_ai_fills, brechen mit exo_database_ai_fill_cancel ab und wiederholen mit exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Dateien in eine Dateien-Spalte einer Datenbank hochladen",
     "summary": "Eine Spalte vom Typ Dateien nimmt Dateien direkt in die Zelle auf: über „Datei hinzufügen“, durch Ziehen auf die Zelle oder durch Einfügen mit Strg+V. Die Dateien gehören zu dieser Zelle der Zeile und landen nicht im Text der Seite.",

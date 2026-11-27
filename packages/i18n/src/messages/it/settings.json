@@ -132,6 +132,10 @@
         "label": "Immagini per richiesta",
         "help": "Limite massimo per il numero di immagini descritte per ciascuna esecuzione."
       },
+      "fillMaxRowsPerRun": {
+        "label": "Righe per ciclo di riempimento IA",
+        "help": "Numero massimo di celle che un ciclo di una colonna con istruzioni IA può riempire. Ogni cella corrisponde a una richiesta al modello; una colonna più grande viene riempita in più cicli."
+      },
       "sendImagesToModel": {
         "label": "Immagini della chat inviate direttamente al modello",
         "help": "Attivo: un modello con supporto visivo riceve un’immagine della chat come immagine vera e propria, a ogni risposta, finché rimane nella cronologia. È più preciso e costa di più per risposta. Disattivo: legge la descrizione salvata come qualsiasi altro modello. L’immagine viene comunque descritta in entrambi i casi, per i modelli senza supporto visivo e come soluzione di riserva."

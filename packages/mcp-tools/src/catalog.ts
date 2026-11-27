@@ -11,6 +11,7 @@ import { AUTOMATION_TOOLS } from './tools/automations.js';
 import { CHANGESET_TOOLS } from './tools/changesets.js';
 import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
+import { DATABASE_AI_FILL_TOOLS } from './tools/database-ai-fill.js';
 import { DATABASE_ROW_BATCH_TOOLS } from './tools/database-rows-batch.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { ENTITY_TOOLS } from './tools/entities.js';
@@ -79,6 +80,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...WEB_TOOLS,
   ...DATABASE_TOOLS,
   ...DATABASE_ROW_BATCH_TOOLS,
+  ...DATABASE_AI_FILL_TOOLS,
   ...ATTACHMENT_TOOLS,
   ...RULES_TOOLS,
   ...AI_RUN_TOOLS,

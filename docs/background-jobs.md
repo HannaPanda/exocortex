@@ -24,6 +24,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `mail`                     | share notifications (#103) and stopped automations (#107) out of the outbox, the comment digests (#106), `EMAIL_SELF` rules (#104) | `createMailDeliveryProcessor`           | real (one SMTP hop, 5 attempts over ~8 min; a 5xx fails unrecoverably; issue #102)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `workflow`                 | `POST /api/workflows/:id/runs`, outbox dispatch (debounced event triggers), the runtime itself, `sweep-workflow-runs`              | `createWorkflowProcessor`               | real (advance, execute, resume, start-event; one transition per job, issue #161, ADR-076)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `conversation-compaction`  | `/compact`, `POST /api/ai/conversations/:id/compact` (`exo_chat_compact`)                                                          | `createConversationCompactionProcessor` | real (one summariser call per request, the key a run would use; one attempt, the outcome is written onto the conversation; ADR-093)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `database-ai-fill`         | `POST /api/documents/:id/ai-fills` and `POST /api/ai-fills/:id/retry` (`exo_database_ai_fill_start`, `exo_database_ai_fill_retry`) | `createDatabaseAiFillProcessor`         | real (one batch of an AI column, an `ai_run` of kind FILL on the workspace key; one model call per cell, every answer handed back to the API; one attempt, the batch settles its own cells; ADR-099)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -238,6 +239,37 @@ publishes `ai.conversation.compacted`, anything else
 `ai.conversation.compaction_failed`. A job lost on the way needs no sweep: past
 the lease every reader sees `abandoned` and the conversation takes messages
 again.
+
+### `database-ai-fill`: a column filled by its AI instruction
+
+`databaseAiFillJobSchema` is a union on `kind`. `run` (`{ correlationId,
+runId, workspaceId }`) is queued by `POST /api/documents/:id/ai-fills` and by
+`POST /api/ai-fills/:id/retry` (issue #237, ADR-099), after the API has
+written the batch in one transaction: an `ai_run` of kind FILL (PENDING, the
+model resolved like a chat's), its `database_ai_fill_run` with the
+instruction the batch started with, and one `database_ai_fill_cell` per row
+the mode and the requester's rights let it fill. `auto` is reserved for the
+column that fills itself and is skipped by this build.
+
+`createDatabaseAiFillProcessor`
+(`apps/worker/src/processors/database-ai-fill.ts`, concurrency 1, one
+attempt) skips a batch that is no longer PENDING, resolves provider and key
+through `providerFor` like a run (an unreadable workspace key fails the batch
+as `ai_key_unreadable`, ADR-091), marks it RUNNING with `usedOwnKey` and
+heartbeats every five seconds, which is also how it notices a cancel. Three
+cells at a time, it fetches each cell's material from
+`GET /api/ai-fills/:id/cells/:cell/material`, asks the model once with
+`buildAiFillPrompt` (files fenced, no tools, JSON only) and posts the answer
+to `POST /api/ai-fills/:id/cells/:cell/result`, where the API checks it
+against the column and writes it as the requester. Both routes answer only a
+service token carrying this batch's run id. It stops early on a refused key
+(`ai_key_refused`), three failed model calls in a row
+(`ai_provider_unavailable`), the run budget (`ai_budget_exceeded`) or
+`ai.maxRunMs` (`ai_timeout`); the cells it did not reach are cancelled with
+that reason. Usage is summed onto the row whatever ended the batch, and
+`database.ai_fill.changed` announces every change of state. A worker that
+dies mid-batch is the reaper's, like any run: its cells then count as open,
+and a retry asks them again.
 
 ### `memory-capture`: one session becomes one note
 

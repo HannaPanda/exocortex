@@ -119,6 +119,22 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_attachment_upload', 'exo_attachment_upload_url'],
   }),
   defineFeature({
+    id: 'datenbank-ki-spalten',
+    area: 'datenbanken',
+    since: '2026-11-27',
+    references: ['#237', 'ADR-099'],
+    tools: [
+      'exo_database_property_ai_set',
+      'exo_database_property_ai_remove',
+      'exo_database_ai_fill_start',
+      'exo_database_ai_fills',
+      'exo_database_ai_fill_status',
+      'exo_database_ai_fill_cancel',
+      'exo_database_ai_fill_retry',
+    ],
+    settings: ['ai.fillMaxRowsPerRun'],
+  }),
+  defineFeature({
     id: 'datenbank-dateien',
     area: 'datenbanken',
     since: '2026-11-27',

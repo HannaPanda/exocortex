@@ -132,6 +132,10 @@
         "label": "Obrazy na zapytanie",
         "help": "Górny limit liczby opisywanych obrazów na uruchomienie."
       },
+      "fillMaxRowsPerRun": {
+        "label": "Wiersze na jedno przejście autouzupełniania przez AI",
+        "help": "Maksymalna liczba komórek wypełnianych w jednym przejściu kolumny z instrukcją AI. Każda komórka to jedno zapytanie do modelu; większa kolumna jest uzupełniana w kilku przejściach."
+      },
       "sendImagesToModel": {
         "label": "Obrazy na czacie bezpośrednio do modelu",
         "help": "Włączone: model obsługujący obrazy otrzymuje obraz z czatu w formie graficznej przy każdej odpowiedzi, dopóki znajduje się on w historii. Jest to dokładniejsze i kosztuje więcej przy każdej odpowiedzi. Wyłączone: model czyta zapisany opis, tak jak każdy inny model. Opis obrazu jest generowany w obu przypadkach – dla modeli bez obsługi obrazów oraz jako rozwiązanie zapasowe."

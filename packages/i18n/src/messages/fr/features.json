@@ -518,6 +518,16 @@
     },
     "where": "Glisser un fichier dans l’éditeur."
   },
+  "datenbank-ki-spalten": {
+    "title": "Faire remplir les colonnes d’une base de données par l’IA",
+    "summary": "Une colonne reçoit une consigne pour l’IA, comme « Résume », « Date du document » ou une consigne personnalisée. L’IA remplit ensuite les cellules de cette colonne à partir de ce qui se trouve dans la ligne : le texte de la page, les autres colonnes et les fichiers joints.",
+    "details": {
+      "p1": "Il existe des modèles pour le résumé, les points clés, les mots-clés, la traduction, la date d’un document ainsi que l’expéditeur et le destinataire, ainsi qu’une consigne personnalisée pour chaque type de colonne que l’IA peut remplir : texte, nombre, date, sélection, sélection multiple, case à cocher, adresse, e-mail, téléphone et personne. Chaque réponse est validée par rapport au type : une date doit être une vraie date, une sélection doit être une option existante (les nouvelles options uniquement si tu l’autorises) et une personne doit être un membre de l’espace de travail.",
+      "p2": "Le remplissage s’applique à des lignes individuelles ou à toute la colonne. Par défaut : seulement les cellules vides. Les valeurs générées par l’IA peuvent être actualisées, celles saisies par des humains uniquement sur demande explicite. Une cellule remplie par l’IA est marquée comme valeur d’IA avec un horodatage jusqu’à ce que quelqu’un la modifie. Si une cellule échoue, la raison est indiquée et un nouveau passage réessaie précisément ces cellules.",
+      "p3": "Un passage est une exécution de l’IA : il est facturé avec la clé de l’espace de travail, apparaît dans le rapport d’utilisation et traite au maximum le nombre de lignes autorisé par ai.fillMaxRowsPerRun. Il s’exécute en arrière-plan et peut être interrompu à tout moment. L’IA ne lit que ce que la personne qui l’a lancé a le droit de lire. Elle lit les fichiers joints en tant que contenu tiers : cela ne produit au maximum que la valeur de cette seule cellule, jamais une action supplémentaire.",
+      "p4": "Les agents configurent la consigne avec exo_database_property_ai_set, lancent l’opération avec exo_database_ai_fill_start, consultent l’avancement avec exo_database_ai_fill_status et exo_database_ai_fills, l’annulent avec exo_database_ai_fill_cancel et réessayent avec exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Téléverser des fichiers dans une colonne Fichiers d’une base de données",
     "summary": "Une colonne de type Fichiers accueille des fichiers directement dans la cellule : via « Ajouter un fichier », par glisser-déposer sur la cellule ou en collant avec Strg+V. Les fichiers appartiennent à cette cellule de la ligne et ne finissent pas dans le texte de la page.",

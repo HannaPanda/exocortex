@@ -518,6 +518,16 @@
     },
     "where": "Arrastrar un archivo al editor."
   },
+  "datenbank-ki-spalten": {
+    "title": "Rellenar columnas de una base de datos con IA",
+    "summary": "Una columna recibe una instrucción de IA, como «Resumir», «Fecha del documento» o una personalizada. Después, la IA rellena las celdas de esa columna a partir de lo que contiene la fila: el texto de la página, las demás columnas y los archivos adjuntos.",
+    "details": {
+      "p1": "Hay plantillas para resumen, puntos clave, etiquetas, traducción, la fecha de un documento, así como remitente y destinatario, además de una instrucción personalizada para cada tipo de columna que la IA puede rellenar: texto, número, fecha, selección, selección múltiple, casilla de verificación, dirección, correo electrónico, teléfono y persona. Cada respuesta se valida según su tipo: una fecha debe ser una fecha real, una selección debe ser una opción existente (nuevas solo si lo autorizas) y una persona debe ser miembro del espacio de trabajo.",
+      "p2": "Se pueden rellenar filas individuales o la columna completa. Por defecto, solo las celdas vacías. Los valores escritos por la IA se pueden actualizar; los valores introducidos por personas, únicamente si lo solicitas expresamente. Una celda rellenada por la IA queda marcada como valor de IA con su fecha y hora hasta que alguien la modifique. Si una celda da error, se indica el motivo y una nueva pasada vuelve a intentar exactamente esas celdas.",
+      "p3": "Una pasada es una ejecución de IA: se paga con la clave del espacio de trabajo, aparece en el informe de uso y procesa como máximo tantas filas como permita ai.fillMaxRowsPerRun. Se ejecuta en segundo plano y se puede cancelar en cualquier momento. La IA solo lee lo que puede leer la persona que la inició. Lee los archivos adjuntos como contenido externo: de ahí solo se extrae el valor de esa única celda, nunca un paso adicional.",
+      "p4": "Los agentes configuran la instrucción con exo_database_property_ai_set, inician el proceso con exo_database_ai_fill_start, consultan el estado con exo_database_ai_fill_status y exo_database_ai_fills, lo cancelan con exo_database_ai_fill_cancel y lo reintentan con exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Subir archivos a una columna de archivos de una base de datos",
     "summary": "Una columna de tipo Archivos admite archivos directamente en la celda: mediante «Añadir archivo», arrastrándolos a la celda o pegándolos con Strg+V. Los archivos pertenecen a esa celda de la fila y no van a parar al texto de la página.",

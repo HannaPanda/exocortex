@@ -340,7 +340,8 @@
       "cost": "Kosten",
       "median": "Mediaan",
       "estimated": "geschat",
-      "kindImage": "Omslagafbeeldingen"
+      "kindImage": "Omslagafbeeldingen",
+      "kindFill": "AI-kolommen"
     },
     "noRunsTitle": "Geen runs in deze periode",
     "noRunsDescription": "Zodra de AI wordt gebruikt, zie je hier welk model wat heeft gekost.",

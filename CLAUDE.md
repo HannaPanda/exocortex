@@ -978,6 +978,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   add files of its own row; `Attachment.propertyId` is a plain column so the
   mark outlives a deleted column, and the daily sweep collects a marked file a
   day after no value of its column names it.
+- ADR-099: an AI column is a stored value with a mark, never a formula. The
+  instruction is `database_property_ai` on the column; a batch is an
+  `ai_run` of kind FILL the API plans (mode, rights, `ai.fillMaxRowsPerRun`)
+  and the worker works through one model call per cell, without tools, posting
+  every answer back to routes only that batch's signed token reaches. The API
+  checks it against the column (`coerceAiFillAnswer`) and writes it with
+  `aiRunId`, which any other write clears; a new option needs the column's
+  permission, the right to change columns and the requester's own material. A
+  column fills itself through the outbox as the instruction's author, in
+  `replace_ai`, never through an automation rule.
   Full list: `docs/adr/`.
 
 ## How to extend the system

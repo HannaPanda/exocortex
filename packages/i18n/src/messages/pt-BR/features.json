@@ -518,6 +518,16 @@
     },
     "where": "Arrastar o arquivo para o editor."
   },
+  "datenbank-ki-spalten": {
+    "title": "Preencher colunas de um banco de dados com IA",
+    "summary": "Uma coluna recebe uma instrução de IA, como „Resuma“, „Data do documento“ ou uma personalizada. Em seguida, a IA preenche as células dessa coluna a partir do conteúdo da linha: o texto da página, as outras colunas e os arquivos anexados.",
+    "details": {
+      "p1": "Existem modelos para resumo, tópicos, etiquetas, tradução, data de um documento, além de remetente e destinatário, e uma instrução personalizada para cada tipo de coluna que a IA pode preencher: texto, número, data, seleção, múltipla escolha, caixa de seleção, endereço, e-mail, telefone e pessoa. Cada resposta é validada de acordo com o tipo: uma data precisa ser uma data real, uma seleção precisa ser uma opção existente (novas apenas se você permitir) e uma pessoa precisa ser membro do espaço de trabalho.",
+      "p2": "É possível preencher linhas individuais ou a coluna inteira. O padrão é: apenas células vazias. Valores escritos pela IA podem ser atualizados; valores definidos por pessoas, somente mediante solicitação explícita. Uma célula preenchida pela IA fica marcada como valor de IA com registro de data e hora, até que alguém a altere. Se uma célula falhar, o motivo será exibido, e uma nova execução tentará novamente exatamente essas células.",
+      "p3": "Uma execução é um ciclo de IA: é cobrada usando a chave do espaço de trabalho, aparece no relatório de uso e processa no máximo a quantidade de linhas permitida por ai.fillMaxRowsPerRun. Ela roda em segundo plano e pode ser cancelada a qualquer momento. A IA lê apenas o que a pessoa que iniciou o processo tem permissão para ler. Arquivos anexados são lidos como conteúdo externo: deles resulta no máximo o valor daquela célula específica, nunca uma etapa adicional.",
+      "p4": "Agentes configuram a instrução com exo_database_property_ai_set, iniciam com exo_database_ai_fill_start, verificam o status com exo_database_ai_fill_status e exo_database_ai_fills, cancelam com exo_database_ai_fill_cancel e tentam novamente com exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Fazer upload de arquivos em uma coluna de arquivos de um banco de dados",
     "summary": "Uma coluna do tipo Arquivos aceita arquivos diretamente na célula: pelo botão „Adicionar arquivo”, arrastando para a célula ou colando com Strg+V. Os arquivos pertencem a essa célula da linha e não vão parar no texto da página.",

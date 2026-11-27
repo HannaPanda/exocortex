@@ -132,6 +132,10 @@
         "label": "Images par requête",
         "help": "Limite supérieure pour le nombre d’images décrites par exécution."
       },
+      "fillMaxRowsPerRun": {
+        "label": "Lignes par passage de remplissage par l’IA",
+        "help": "Nombre maximal de cellules qu’un passage d’une colonne avec consigne d’IA remplit. Chaque cellule correspond à une requête de modèle ; une colonne plus grande sera remplie en plusieurs passages."
+      },
       "sendImagesToModel": {
         "label": "Images dans le chat directement transmises au modèle",
         "help": "Activé : Un modèle prenant en charge les images reçoit l’image du chat en tant qu’image, à chaque réponse, tant qu’elle figure dans l’historique. C’est plus précis et plus coûteux par réponse. Désactivé : Il lit la description enregistrée, comme tout autre modèle. L’image est décrite dans les deux cas, pour les modèles sans vision et comme solution de secours."

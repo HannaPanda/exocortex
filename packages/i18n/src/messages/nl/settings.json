@@ -132,6 +132,10 @@
         "label": "Afbeeldingen per verzoek",
         "help": "Bovengrens voor het aantal beschreven afbeeldingen per run."
       },
+      "fillMaxRowsPerRun": {
+        "label": "Rijen per AI-invulsessie",
+        "help": "Zoveel cellen vult één sessie van een kolom met AI-instructie maximaal. Elke cel is een modelaanvraag; een grotere kolom wordt in meerdere sessies gevuld."
+      },
       "sendImagesToModel": {
         "label": "Afbeeldingen in de chat direct naar het model",
         "help": "Aan: Een model dat overweg kan met afbeeldingen ontvangt een afbeelding uit de chat als afbeelding, bij elk antwoord, zolang deze in de geschiedenis staat. Dat is nauwkeuriger en kost per antwoord meer. Uit: Het leest net als elk ander model de opgeslagen beschrijving. Een afbeelding wordt in beide gevallen beschreven, voor modellen zonder beeldverwerking en als terugvaloptie."

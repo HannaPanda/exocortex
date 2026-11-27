@@ -340,7 +340,8 @@
       "cost": "Coût",
       "median": "Médiane",
       "estimated": "estimé",
-      "kindImage": "Images de couverture"
+      "kindImage": "Images de couverture",
+      "kindFill": "Colonnes IA"
     },
     "noRunsTitle": "Aucune exécution sur cette période",
     "noRunsDescription": "Dès que l’IA sera utilisée, tu verras ici ce que chaque modèle a coûté.",

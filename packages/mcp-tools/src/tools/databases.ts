@@ -144,7 +144,9 @@ export const databaseCreateTool: AnyToolDefinition = defineTool({
 
 export const databaseSchemaTool: AnyToolDefinition = defineTool({
   name: 'exo_database_schema',
-  description: 'Liest Zeilenanzahl, Spalten und Ansichten einer Datenbank.',
+  description:
+    'Liest Zeilenanzahl, Spalten und Ansichten einer Datenbank. Eine Spalte mit KI-Anweisung ' +
+    'nennt ihre Vorlage; sie lässt sich mit exo_database_ai_fill_start ausfüllen.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -167,7 +169,15 @@ export const databaseSchemaTool: AnyToolDefinition = defineTool({
         responseSchema: databaseViewListResponseSchema,
       }),
     ]);
-    const propertyLines = properties.properties.map((p) => `- ${p.name} (${p.type}, id: ${p.id})`);
+    // A column with an AI instruction says so (issue #237): it is what
+    // exo_database_ai_fill_start can fill.
+    const propertyLines = properties.properties.map(
+      (p) =>
+        `- ${p.name} (${p.type}, id: ${p.id})` +
+        (p.ai === null || p.ai === undefined
+          ? ''
+          : `, KI-Anweisung: ${p.ai.preset}, automatisch: ${p.ai.autoFill}`),
+    );
     const viewLines = views.views.map((v) => `- ${v.name} (${v.type}, id: ${v.id})`);
     const text = [
       `Zeilen: ${detail.rowCount ?? 0}`,

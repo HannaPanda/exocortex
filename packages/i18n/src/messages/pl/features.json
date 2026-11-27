@@ -518,6 +518,16 @@
     },
     "where": "Przeciągnij plik do edytora."
   },
+  "datenbank-ki-spalten": {
+    "title": "Wypełnianie kolumn bazy danych przez AI",
+    "summary": "Kolumna otrzymuje instrukcję AI, na przykład „Podsumuj”, „Data z dokumentu” lub własną. Następnie AI wypełnia komórki tej kolumny na podstawie zawartości wiersza: tekstu strony, innych kolumn i załączonych plików.",
+    "details": {
+      "p1": "Dostępne są szablony podsumowania, punktów kluczowych, słów kluczowych, tłumaczenia, daty dokumentu oraz nadawcy i odbiorcy, a także własna instrukcja dla każdego typu kolumny obsługiwanego przez AI: tekst, liczba, data, wybór, wielokrotny wybór, pole wyboru, adres, e-mail, telefon i osoba. Każda odpowiedź jest weryfikowana pod kątem typu: data musi być prawidłową datą, wybór istniejącą opcją (nową tylko wtedy, gdy na to zezwolisz), a osoba członkiem obszaru roboczego.",
+      "p2": "Wypełniać można pojedyncze wiersze lub całą kolumnę. Domyślnie: tylko puste komórki. Wartości wygenerowane przez AI można odświeżyć, natomiast wartości wprowadzone przez ludzi tylko na wyraźne życzenie. Komórka wypełniona przez AI jest oznaczona jako wartość AI ze znacznikiem czasu, dopóki ktoś jej nie zmieni. Jeśli w komórce wystąpi błąd, podawana jest jego przyczyna, a ponowne uruchomienie ponawia próbę dokładnie dla tych komórek.",
+      "p3": "Pojedyncze uruchomienie to przebieg AI: jest rozliczane przy użyciu klucza obszaru roboczego, pojawia się w raporcie użycia i obejmuje maksymalnie tyle wierszy, na ile pozwala ai.fillMaxRowsPerRun. Działa w tle i można je w każdej chwili anulować. AI odczytuje tylko to, do czego ma dostęp osoba uruchamiająca proces. Załączone pliki traktuje jako zawartość zewnętrzną: powstaje z nich co najwyżej wartość tej jednej komórki, nigdy żaden kolejny krok.",
+      "p4": "Agenci konfigurują instrukcję za pomocą exo_database_property_ai_set, uruchamiają przez exo_database_ai_fill_start, sprawdzają stan przy użyciu exo_database_ai_fill_status oraz exo_database_ai_fills, anulują przez exo_database_ai_fill_cancel i ponawiają za pomocą exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Przesyłanie plików do kolumny typu Pliki w bazie danych",
     "summary": "Kolumna typu Pliki przyjmuje pliki bezpośrednio w komórce: przez „Dodaj plik”, przeciągając je na komórkę lub wklejając za pomocą Strg+V. Pliki należą do tej komórki wiersza i nie trafiają do tekstu strony.",

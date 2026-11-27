@@ -518,6 +518,16 @@
     },
     "where": "Trascina il file nell’editor."
   },
+  "datenbank-ki-spalten": {
+    "title": "Far compilare le colonne di un database dall’IA",
+    "summary": "A una colonna viene assegnata un’istruzione IA, ad esempio «Riassumi», «Data dal documento» o un’istruzione personalizzata. Dopodiché l’IA compila le celle di questa colonna in base a quanto presente nella riga: il testo della pagina, le altre colonne e i file allegati.",
+    "details": {
+      "p1": "Sono disponibili modelli per riassunti, elenchi puntati, tag, traduzioni, la data di un documento nonché mittente e destinatario, oltre a un’istruzione personalizzata per ogni tipo di colonna che l’IA può compilare: testo, numero, data, selezione singola, selezione multipla, casella di controllo, indirizzo, e-mail, telefono e persona. Ogni risposta viene verificata rispetto al tipo: una data deve essere una data valida, una selezione un’opzione esistente (nuove opzioni solo se lo consenti) e una persona un membro dell’area di lavoro.",
+      "p2": "È possibile compilare singole righe o l’intera colonna. Per impostazione predefinita: solo le celle vuote. I valori scritti dall’IA possono essere aggiornati, quelli inseriti da persone solo su richiesta esplicita. Una cella compilata dall’IA è contrassegnata come valore IA con timestamp finché qualcuno non la modifica. Se la compilazione di una cella non riesce, viene indicato il motivo e un nuovo passaggio riprova esattamente con quelle celle.",
+      "p3": "Un passaggio è un’esecuzione dell’IA: viene addebitato tramite la chiave dell’area di lavoro, compare nel report di utilizzo e include al massimo il numero di righe consentito da ai.fillMaxRowsPerRun. Viene eseguito in background e può essere interrotto in qualsiasi momento. L’IA legge solo ciò che la persona che l’ha avviato è autorizzata a leggere. I file allegati vengono letti come contenuti esterni: da essi scaturisce al massimo il valore di quella singola cella, mai un passaggio ulteriore.",
+      "p4": "Gli agenti configurano l’istruzione con exo_database_property_ai_set, avviano con exo_database_ai_fill_start, controllano lo stato con exo_database_ai_fill_status e exo_database_ai_fills, interrompono con exo_database_ai_fill_cancel e riprovano con exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Caricare file in una colonna File di un database",
     "summary": "Una colonna di tipo File accoglie i file direttamente nella cella: tramite „Aggiungi file“, trascinandoli sulla cella o incollandoli con Strg+V. I file appartengono a questa cella della riga e non finiscono nel testo della pagina.",

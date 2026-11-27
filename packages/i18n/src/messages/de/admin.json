@@ -340,7 +340,8 @@
       "cost": "Kosten",
       "median": "Median",
       "estimated": "geschätzt",
-      "kindImage": "Titelbilder"
+      "kindImage": "Titelbilder",
+      "kindFill": "KI-Spalten"
     },
     "noRunsTitle": "Keine Läufe in diesem Zeitraum",
     "noRunsDescription": "Sobald die KI benutzt wird, steht hier, welches Modell was gekostet hat.",

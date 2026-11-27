@@ -1576,6 +1576,10 @@
       "source": "8494f0b6db020805",
       "output": "d342ed822e55a972"
     },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "cf3d42d32f48f0e3"
+    },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
       "output": "bbb2d27a28a888bc"
@@ -10192,6 +10196,26 @@
       "source": "38caf4fc9319d67f",
       "output": "4a3ec9197a9f2110"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "120be04f83ab3cd5"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "d81bb62184a0e714"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "599cd0163ed06dc1"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "248fd2edfc3347cf"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "78116b702cc23dce"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "7f74d28895bda352"
@@ -10319,6 +10343,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "5f7392cc5bceb183"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "a5a5a948f6b90049"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -12951,6 +12979,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "033ca3c06a36415c"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "93869aaaffdd94c2"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "6caabd34ce7be203"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "61c8def890882c19"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "42755771dd473368"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "616b9d8ca26e8ced"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "c6be2eb182367aa3"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -18903,6 +18955,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "341f4f0f6ee49c2a"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "c1b3dd62b64ba866"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "58f6ed85d6c13b4e"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -26905,6 +26965,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "9cf2e615ce01d285"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "556cf92a49823e4f"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -35522,6 +35586,26 @@
       "source": "38caf4fc9319d67f",
       "output": "48b411526124553a"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "27b16dd5d52e075e"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "8d3e96efadb53906"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "ad16d047e62bd7ec"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "12a0addd1b3b982d"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "9879ad98f1deab4d"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "29584758659ee599"
@@ -35649,6 +35733,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "8f45ff45d2fa52b7"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "a834a794487d48f0"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -38281,6 +38369,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "754f3542bbab2c23"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "214fff5fb543cf38"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "6e55dd8863e87c0e"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "92aece56d38ac505"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "1ad0ef1a2b245da6"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "a8307f8087030a22"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "694ecd1e3a36de09"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -44233,6 +44345,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "15c7f14ada4dae1a"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "b1eee8966e5dc697"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "3fdb2398a159c047"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -52235,6 +52355,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "64546f2e9adad9bd"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "8ff9903ea291e890"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -60852,6 +60976,26 @@
       "source": "38caf4fc9319d67f",
       "output": "51fd0925b767802c"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "bac2d4b3c3279eec"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "0c30c03df3ec649f"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "f81b250e013e61e6"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "786219e39a1cf4eb"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "9c1ed56ff5d55933"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "92411cdc9666a2d5"
@@ -60979,6 +61123,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "6b91f83a3ca996b5"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "37ddc34c0e69bf74"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -63611,6 +63759,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "4daf6f45bfe38508"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "53679ef27c8bc6ac"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "b8b028dbfcd0be9f"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "f7c86cb6eebaaa28"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "578796d3c73994d5"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "6cd07ef46973adec"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "9bbd3aa45f9133f9"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -69563,6 +69735,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "9854ce600e6432f0"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "eea706e37d009cd1"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "3ff3bd235b8859bf"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -77565,6 +77745,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "95fd782037ee1179"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "4fe5a2351c2f8610"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -86182,6 +86366,26 @@
       "source": "38caf4fc9319d67f",
       "output": "0494d5b9f099adc7"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "15ab56bf200a7035"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "6364956bb8916928"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "07dc8644b12f3ded"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "354e5bd0bbe3125a"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "d19b6f6f193c7a84"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "80064984f1de552a"
@@ -86309,6 +86513,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "8770e5b60050fae5"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "633b5314c133be6e"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -88941,6 +89149,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "5c99f79a5f2fadd6"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "9b8f39daa72e0b30"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "b485b111c79de38f"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "1c5a28dc5ff44d00"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "cabbee506a3e559f"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "057513e698177aad"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "15d91b79816e5843"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -94893,6 +95125,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "a9d0bcf1896ebd8c"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "ba447837fa4340b0"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "795ea0ccf6a94380"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -102895,6 +103135,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "4915c8cf2d1940d9"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "65ba08d92c17a3f4"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -111512,6 +111756,26 @@
       "source": "38caf4fc9319d67f",
       "output": "8b6bcdc9eba89842"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "54b6b8ed18600757"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "6d61deca5524eff3"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "2cd0cf7f550ca824"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "fe4a9296ca120c24"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "61074cc6a369ee4c"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "1f194176ce74995e"
@@ -111639,6 +111903,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "2cb2471187478974"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "96571ffdc9853a35"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -114271,6 +114539,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "3d7eef33886ee100"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "360aeb74014fd40c"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "1d5a1b93fab2dbc6"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "92f8658d163c708a"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "5b48576d0d41f3d1"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "bdb3b79a8de6671a"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "13b820b9c063df3f"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -120223,6 +120515,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "af58d22938652e16"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "eaf26bc3bd848c73"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "84cf4a530729f569"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -128225,6 +128525,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "aefef007d51d11fd"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "ce092772790e33e1"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -136842,6 +137146,26 @@
       "source": "38caf4fc9319d67f",
       "output": "aed05503e620faba"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "5714b1eda1176d7a"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "794a19172b3779a4"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "fbabdfdf33a503b9"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "2243f449bb54287e"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "52ef7f53bc657628"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "f7c65d241f08fe01"
@@ -136969,6 +137293,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "c56c61a46685f7bb"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "cbb56c95745c63f6"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -139601,6 +139929,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "2cfbb7859739244f"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "918d678b0db24ae4"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "ccb50ba59a79dd48"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "13a17a2bf8630125"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "05eaf4d7786b8ab0"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "43fc8d0effd0d0fd"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "5ccc16fb444bd29c"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -145553,6 +145905,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "c92e12d106b05751"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "9ad27e3cb66a5157"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "472324db9e086142"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",
@@ -153555,6 +153915,10 @@
     "admin.usage.modelTable.estimated": {
       "source": "8494f0b6db020805",
       "output": "9cf2e615ce01d285"
+    },
+    "admin.usage.modelTable.kindFill": {
+      "source": "e5f375b3eb64a4f6",
+      "output": "6425dd1c2a87f446"
     },
     "admin.usage.modelTable.kindImage": {
       "source": "cb38fdcf29e8ecb7",
@@ -162172,6 +162536,26 @@
       "source": "38caf4fc9319d67f",
       "output": "92b2ab3261ce14a9"
     },
+    "errors.codes.ai_fill_finished": {
+      "source": "296c710917bfdd41",
+      "output": "dedf4b516e42fa5e"
+    },
+    "errors.codes.ai_fill_not_configured": {
+      "source": "d4b51c2b809cb2bc",
+      "output": "fc513a3e1dbb88f4"
+    },
+    "errors.codes.ai_fill_too_many_rows": {
+      "source": "6f381a4e40d0cf7c",
+      "output": "584e07607bd328f3"
+    },
+    "errors.codes.ai_fill_unavailable": {
+      "source": "39b92554d0eef486",
+      "output": "ceb11853ab8d336a"
+    },
+    "errors.codes.ai_fill_worker_only": {
+      "source": "511ff3219f7a2127",
+      "output": "f7cf8c2a3d1c7237"
+    },
     "errors.codes.ai_image_unavailable": {
       "source": "393d9985c51d93b0",
       "output": "796417605ebb92e8"
@@ -162299,6 +162683,10 @@
     "errors.codes.database_files_target_invalid": {
       "source": "84a18a6e2e3cc480",
       "output": "11f5d60065f668dd"
+    },
+    "errors.codes.database_property_ai_invalid": {
+      "source": "b7b0ee8a8a5c4091",
+      "output": "0ee9ca75cfac68a4"
     },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
@@ -164931,6 +165319,30 @@
     "features.datenbank-einbettung.where": {
       "source": "e456b1328b880365",
       "output": "cbed23dfcb5e947f"
+    },
+    "features.datenbank-ki-spalten.details.p1": {
+      "source": "27900abfd706a78b",
+      "output": "31386ca98b900de0"
+    },
+    "features.datenbank-ki-spalten.details.p2": {
+      "source": "f446f6c930630ff0",
+      "output": "70efc3eaddab3fc0"
+    },
+    "features.datenbank-ki-spalten.details.p3": {
+      "source": "2f37fa50412342ac",
+      "output": "eed51fdaba4c4718"
+    },
+    "features.datenbank-ki-spalten.details.p4": {
+      "source": "7bf7da1f22bfbd01",
+      "output": "bc05d32b4844d6dd"
+    },
+    "features.datenbank-ki-spalten.summary": {
+      "source": "d299d3c176e8509e",
+      "output": "d3a2674536f03fe3"
+    },
+    "features.datenbank-ki-spalten.title": {
+      "source": "936d9a1e13438ab4",
+      "output": "055ef74b92b734a3"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -170883,6 +171295,14 @@
     "settings.keys.ai.externalMcpTimeoutSeconds.label": {
       "source": "8593ba194b8bb4c1",
       "output": "ee7965a0118db1b3"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.help": {
+      "source": "146a6b0312d31c48",
+      "output": "29a7cd9b593609a9"
+    },
+    "settings.keys.ai.fillMaxRowsPerRun.label": {
+      "source": "f875e58f6ecc4eef",
+      "output": "a5465c573795538f"
     },
     "settings.keys.ai.imageGenerationEnabled.help": {
       "source": "0fdaac01375b2859",

@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-315 routes are reachable from at least one client; 181 from all three.
+322 routes are reachable from at least one client; 181 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -38,6 +38,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_delete` |
 | `DELETE /api/documents/:x` | · | · | ✓ | `exo_page_delete` |
 | `DELETE /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_delete` |
+| `DELETE /api/documents/:x/properties/:x/ai` | · | ✓ | ✓ | `exo_database_property_ai_remove` |
 | `DELETE /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_delete` |
 | `DELETE /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_delete` |
 | `DELETE /api/entities/:x/pages/:x` | ✓ | ✓ | ✓ | `exo_entity_unlink_page` |
@@ -72,6 +73,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/agent-profiles/:x` | ✓ | ✓ | ✓ | `exo_agent_profile_get` |
 | `GET /api/agent-sessions` | ✓ | ✓ | ✓ | `exo_agent_session_list` |
 | `GET /api/agent-sessions/:x` | ✓ | ✓ | ✓ | `exo_agent_session_get` |
+| `GET /api/ai-fills/:x` | · | ✓ | ✓ | `exo_database_ai_fill_status` |
 | `GET /api/ai/conversations` | ✓ | ✓ | ✓ | `exo_chat_list` |
 | `GET /api/ai/conversations/:x` | ✓ | ✓ | ✓ | `exo_chat_read` |
 | `GET /api/ai/conversations/:x/sources` | ✓ | ✓ | ✓ | `exo_chat_context` |
@@ -89,6 +91,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/context` | · | ✓ | ✓ | `exo_context_compile` |
 | `GET /api/documents/:x` | ✓ | ✓ | ✓ | `exo_database_schema`, `fetch` |
 | `GET /api/documents/:x/activity` | ✓ | ✓ | ✓ | `exo_page_activity` |
+| `GET /api/documents/:x/ai-fills` | · | ✓ | ✓ | `exo_database_ai_fills` |
 | `GET /api/documents/:x/comments` | ✓ | ✓ | ✓ | `exo_comment_list` |
 | `GET /api/documents/:x/deletion-preview` | · | · | ✓ | `exo_page_delete` |
 | `GET /api/documents/:x/export/markdown` | ✓ | ✓ | ✓ | `exo_page_read`, `exo_rules_load`, `fetch` |
@@ -191,6 +194,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_update` |
 | `PATCH /api/documents/:x` | ✓ | ✓ | ✓ | `exo_page_rename`, `exo_page_set_ai_rule`, `exo_page_set_cover`, `exo_page_set_layout`, `exo_page_set_overview` |
 | `PATCH /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_update` |
+| `PATCH /api/documents/:x/properties/:x/ai` | · | ✓ | ✓ | `exo_database_property_ai_set` |
 | `PATCH /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_update` |
 | `PATCH /api/documents/:x/rows/values` | ✓ | ✓ | ✓ | `exo_database_rows_update` |
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
@@ -223,6 +227,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/admin/invitations/:x/resend` | · | ✓ | ✓ | `exo_invitation_resend` |
 | `POST /api/agent-profiles/:x/duplicate` | ✓ | · | ✓ | `exo_agent_profile_duplicate` |
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
+| `POST /api/ai-fills/:x/cancel` | · | ✓ | ✓ | `exo_database_ai_fill_cancel` |
+| `POST /api/ai-fills/:x/retry` | · | ✓ | ✓ | `exo_database_ai_fill_retry` |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/attachments` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/compact` | · | · | ✓ | `exo_chat_compact` |
@@ -243,6 +249,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/changesets/:x/reject` | · | · | ✓ | `exo_changeset_reject` |
 | `POST /api/changesets/:x/submit` | · | ✓ | ✓ | `exo_changeset_submit` |
 | `POST /api/comments/:x/resolve` | ✓ | ✓ | ✓ | `exo_comment_resolve` |
+| `POST /api/documents/:x/ai-fills` | · | ✓ | ✓ | `exo_database_ai_fill_start` |
 | `POST /api/documents/:x/archive` | ✓ | ✓ | ✓ | `exo_page_archive` |
 | `POST /api/documents/:x/collaboration-ticket` | ✓ | · | · | — |
 | `POST /api/documents/:x/comments` | ✓ | ✓ | ✓ | `exo_comment_create` |
@@ -461,4 +468,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 55 documented route exemptions.
+Counted against 57 documented route exemptions.

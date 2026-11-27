@@ -311,6 +311,16 @@ const EXEMPT = [
       "The step before an agent compacts its own conversation away (issue #92). Machinery for the same reason `capture` is: it belongs to a client's compaction lifecycle, it is called by a memory provider rather than by anybody's judgement, and the deliberate half of it is `remember`, which is a tool.",
   },
   {
+    route: 'GET /api/ai-fills/:x/cells/:x/material',
+    reason:
+      "What the model may read for one cell of an AI fill (issue #237, ADR-099). Answered only to the worker's service token of that very batch, whose run id is signed into it; any other caller is refused (`ai_fill_worker_only`). Machinery of the batch, like a tool loop's own turns: an agent reads a cell's row with `exo_database_row_get` and a batch with `exo_database_ai_fill_status`.",
+  },
+  {
+    route: 'POST /api/ai-fills/:x/cells/:x/result',
+    reason:
+      "The model's answer for one cell of an AI fill (issue #237, ADR-099), checked and written by the API. Reserved to the worker's service token of that batch for the same reason as the material route: a tool that wrote here would be a way to write a cell under a batch's name. An agent writes a cell with `exo_database_row_update`.",
+  },
+  {
     route: 'POST /api/entities/database',
     reason:
       'Creates the entity database and writes `entities.databaseId`, a deployment-wide setting that decides what every entity tool then reads (issue #47). Administrator-only and done once, like the rest of `/api/admin/settings`. The nine `exo_entity_*` tools cover everything past that point.',

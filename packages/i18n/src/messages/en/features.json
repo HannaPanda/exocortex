@@ -518,6 +518,16 @@
     },
     "where": "Drag a file into the editor."
   },
+  "datenbank-ki-spalten": {
+    "title": "Have AI fill in database columns",
+    "summary": "A column gets an AI prompt, such as “Summarize”, “Date from document”, or a custom one. The AI then fills in the cells of this column using what is in the row: the text of the page, the other columns, and attached files.",
+    "details": {
+      "p1": "There are templates for summaries, bullet points, tags, translations, document dates, as well as sender and recipient, plus custom prompts for every column type the AI can fill: text, number, date, select, multi-select, checkbox, address, email, phone, and person. Each response is validated against the type: a date must be a real date, a select value must be an existing option (new ones only if you allow it), and a person must be a member of the workspace.",
+      "p2": "You can fill individual rows or the entire column. The default is: only empty cells. Values written by the AI can be regenerated, while values written by humans can only be overwritten on explicit request. A cell filled by the AI is marked as an AI value with a timestamp until someone edits it. If a cell fails, the reason is displayed, and a new run will retry precisely those cells.",
+      "p3": "A run is an AI run: it is billed to the workspace’s key, appears in the usage report, and covers at most as many rows as ai.fillMaxRowsPerRun allows. It runs in the background and can be cancelled at any time. The AI only reads what the person who started it is allowed to read. It reads attached files as untrusted content: this results at most in the value of that single cell, never in any further step.",
+      "p4": "Agents configure the prompt with exo_database_property_ai_set, start with exo_database_ai_fill_start, check the status with exo_database_ai_fill_status and exo_database_ai_fills, cancel with exo_database_ai_fill_cancel, and retry with exo_database_ai_fill_retry."
+    }
+  },
   "datenbank-dateien": {
     "title": "Upload files into a files column of a database",
     "summary": "A column of type files accepts files directly into the cell: via “Add file”, by dragging onto the cell, or by pasting with Ctrl+V. The files belong to this cell of the row and do not end up in the page text.",

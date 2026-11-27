@@ -239,6 +239,17 @@ reported price or the registry's estimate, duration, `usedOwnKey`, and the
 usage report. Writing it never fails the cover. Refusal texts from the image
 model pass through `redactKey` like every other provider refusal.
 
+## AI fills of database columns
+
+A column with an AI instruction is filled in batches (issue #237,
+[ADR-099](adr/ADR-099-an-ai-column-is-a-stored-value-a-batch-is-a-run.md)).
+A batch is an `ai_run` of kind `FILL` with a `database_ai_fill_run` sidecar,
+paid through `providerFor` like a chat run and heartbeated so the reaper
+covers it. `createDatabaseAiFillProcessor` asks the model once per cell
+(`buildAiFillPrompt`: JSON only, no tools, every file fenced as
+`attachment`), and the API checks and writes the answer. The usage report
+splits these rows out as kind `fill`.
+
 ## Conversations and messages
 
 `AiConversation` / `AiConversationMessage` (Prisma) are the persistent side

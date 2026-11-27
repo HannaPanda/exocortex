@@ -340,7 +340,8 @@
       "cost": "Koszty",
       "median": "Mediana",
       "estimated": "szacowane",
-      "kindImage": "Zdjęcia na okładkę"
+      "kindImage": "Zdjęcia na okładkę",
+      "kindFill": "Kolumny AI"
     },
     "noRunsTitle": "Brak uruchomień w tym okresie",
     "noRunsDescription": "Gdy tylko AI zostanie użyte, pojawi się tutaj informacja, ile kosztował dany model.",

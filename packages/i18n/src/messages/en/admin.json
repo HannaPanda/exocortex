@@ -340,7 +340,8 @@
       "cost": "Cost",
       "median": "Median",
       "estimated": "estimated",
-      "kindImage": "Cover images"
+      "kindImage": "Cover images",
+      "kindFill": "AI columns"
     },
     "noRunsTitle": "No runs in this period",
     "noRunsDescription": "As soon as the AI is used, you’ll see here which model cost what.",
