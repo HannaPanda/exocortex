@@ -272,6 +272,15 @@ selected text keeps the old behaviour.
 - A list item where only a block fits gets a list of its source's kind around
   it (`dropWrapType`): that is how an item becomes a sub-item, and why a
   numbered item stays numbered and a task stays a task.
+- Between two items of a list, a block that is no item of it (a paragraph, a
+  heading, a picture, an item of another kind of list) is offered the place at
+  the list's own level as well (`split` on the candidate): the drop splits the
+  list there with `splitListAt` (`list-split.ts`) and puts the block between
+  the halves. Both halves keep the list's kind, every item keeps its
+  sub-items, the first half keeps the list's block id, and a numbered second
+  half starts again at one. Its line starts where the list starts. Between two
+  sub-items the same happens one level in: the sub-list is split and the block
+  stands inside the item that held it.
 - The pointer's horizontal position picks the level: the block is carried
   sideways with the pointer, so the candidate whose text start is nearest to
   where the carried block's text would be wins, and a place that needs no new
@@ -293,11 +302,36 @@ selected text keeps the old behaviour.
 its paragraph, the table rather than a cell, a selected image itself. The
 handle's menu offers the same two steps.
 
+At the first or last place of a list, a quote or a callout the next press
+takes the block out of it, to stand right before or after it (`edgeMove`):
+
+- a sub-item becomes an item of the list one level out, before or after the
+  item that held it, and a sub-list it empties goes with it;
+- an item of an outermost list becomes ordinary blocks (`liftListItemOut` in
+  `list-split.ts`): its text a paragraph, its sub-items a list right under it,
+  and a task's tick is not kept;
+- a block in a quote or callout leaves it, and the container stays;
+- a block that is the only thing in its list, quote or callout takes the
+  container along, so a lone bullet stays a bullet and a one-line quote stays
+  a quote.
+
+The other way round nothing enters: a neighbour that holds blocks (a list, a
+quote, a callout, an item with sub-items) is passed as a whole, so a block is
+only ever put inside a container on purpose, by dragging it there. Notion
+passes its bullets one at a time because a Notion bullet is a block of its own;
+here a list is one block, and stepping between its items would split it at
+every press. Columns, table cells, toggles and the page stop the key at their
+edge, and inside a list item nothing moves above the item's own text.
+
+`liftListItemOut` turns an item anywhere in its list into blocks, splitting
+the list around it; that is also what "Absatz" in the handle's menu needs for
+a list item (issue #284).
+
 In the web app the handle targets nested blocks with the left edge only
 (`NESTED_TARGETS` in `block-handle.tsx`, docs/deviations.md 17). The handle's
 menu opens on release without movement, never on the press that may start a
 drag (issue #268), and a drag closes it. Covered by `block-drop.test.ts`,
-`move-block.test.ts` and `e2e/tests/block-drag.spec.ts`.
+`move-block.test.ts`, `list-split.test.ts` and `e2e/tests/block-drag.spec.ts`.
 
 ## The handle's menu acts on its block
 
