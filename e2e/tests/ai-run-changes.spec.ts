@@ -83,4 +83,57 @@ test.describe('AI run changes', () => {
     await expect(editor).toContainText('Zweiter Absatz bleibt.');
     await expect(dialog.getByTestId('ai-run-revert-confirm')).toHaveCount(0);
   });
+
+  test('says on the page that it works there, and takes back a rename and a new page from the palette', async ({
+    page,
+  }) => {
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const suffix = Date.now().toString(36);
+    const title = `Umbau ${suffix}`;
+    const documentId = await createPage(page, title);
+
+    const editor = page.locator('.ProseMirror').first();
+    await editor.click();
+    await page.keyboard.type('Ein Absatz, der bleibt.');
+    await waitForMaterialization(page, documentId, 'bleibt');
+
+    await page.getByTestId('context-tab-ai').click();
+    await page
+      .getByTestId('ai-input')
+      .fill(
+        `Benenne diese Seite um in „${title} neu“. Lege danach unter dieser Seite eine neue ` +
+          `Unterseite mit dem Titel „Kind ${suffix}“ und dem Text „Hallo vom Lauf“ an. ` +
+          'Sonst nichts ändern.',
+      );
+    await page.getByTestId('ai-send').click();
+
+    // While the run renames this page, the page itself says so; nothing is
+    // locked, and the hint is gone once the run has ended.
+    await expect(page.getByTestId('ai-working-hint')).toBeVisible({ timeout: 120_000 });
+    await waitForAiRun(page, 'ai:run-structure');
+    await expect(page.getByTestId('ai-working-hint')).toBeHidden({ timeout: 30_000 });
+
+    // The palette opens the same preview as the line under the answer.
+    await expect(page.getByTestId('ai-run-changes')).toBeVisible({ timeout: 30_000 });
+    await page.keyboard.press('Control+k');
+    await page.keyboard.type('letzten ki-lauf');
+    await page.keyboard.press('Enter');
+    const dialog = page.getByTestId('ai-run-revert-dialog');
+    await expect(dialog).toBeVisible();
+    const change = (kind: string, state: string) =>
+      dialog.locator(`[data-testid="ai-run-change"][data-kind="${kind}"][data-state="${state}"]`);
+    await expect(change('renamed', 'revertible')).toHaveCount(1, { timeout: 30_000 });
+    await expect(change('created', 'revertible')).toHaveCount(1);
+
+    await dialog.getByTestId('ai-run-revert-confirm').click();
+    await expect(dialog.getByTestId('ai-run-revert-result')).toBeVisible({ timeout: 30_000 });
+    await expect(change('renamed', 'reverted')).toHaveCount(1, { timeout: 30_000 });
+    // The new page is in the trash, not deleted for good.
+    await expect(change('created', 'reverted')).toHaveCount(1);
+
+    const detail = await page.request.get(`/api/documents/${documentId}`);
+    expect(((await detail.json()) as { title: string }).title).toBe(title);
+  });
 });
