@@ -17,6 +17,8 @@ import {
 import { ReplaceStep } from '@tiptap/pm/transform';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 
+import { isListNode, LIST_ITEM_TYPE_NAMES, splitListAt } from './list-split';
+
 /**
  * Dragging a block with a line that says where it lands (issue #243).
  *
@@ -47,9 +49,6 @@ import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
  * ProseMirror's own behaviour.
  */
 
-/** List items: their first child is the item's own text, never a stranger. */
-const LIST_ITEM_TYPES = new Set(['listItem', 'taskItem']);
-
 /** Where the dragged blocks stand in the document before the drop. */
 export interface BlockDropSource {
   from: number;
@@ -66,6 +65,12 @@ export interface BlockDropCandidate {
    * sub-list, or a list of its own below the old one.
    */
   wrap: NodeType | null;
+  /**
+   * The place is between two items of a list the content does not fit in (a
+   * paragraph, a heading, a picture): the list is split there and the content
+   * stands between the two halves, at the list's own level.
+   */
+  split?: boolean;
 }
 
 /** The structure between two neighbouring blocks, as document positions. */
@@ -125,7 +130,7 @@ export function dropWrapType(
 ): NodeType | null {
   let items = content.childCount > 0;
   content.forEach((child) => {
-    if (!LIST_ITEM_TYPES.has(child.type.name)) items = false;
+    if (!LIST_ITEM_TYPE_NAMES.has(child.type.name)) items = false;
   });
   if (!items) return null;
   const parent = doc.resolve(source.from).parent;
@@ -207,7 +212,7 @@ export function dropGap(doc: PmNode, leafPos: number, after: boolean): BlockDrop
 
 /** Whether `$pos` is the place in front of a list item's own text. */
 function inFrontOfItemText($pos: ResolvedPos): boolean {
-  return LIST_ITEM_TYPES.has($pos.parent.type.name) && $pos.index() === 0;
+  return LIST_ITEM_TYPE_NAMES.has($pos.parent.type.name) && $pos.index() === 0;
 }
 
 /**
@@ -218,6 +223,11 @@ function inFrontOfItemText($pos: ResolvedPos): boolean {
  * in the gap is a candidate level. Excluded are the places inside the dragged
  * blocks themselves and the place in front of a list item's own text, which
  * would make the dropped block that item's first line.
+ *
+ * Between two items of a list, content that is no item of that list (a
+ * paragraph, a heading, an item of another kind of list) can still land: the
+ * list is split there (`split`), as long as the content fits where the list
+ * itself stands.
  */
 export function blockDropCandidates(
   doc: PmNode,
@@ -237,9 +247,29 @@ export function blockDropCandidates(
       candidates.push({ pos, wrap: null });
     } else if (wrapped !== null && $pos.parent.canReplace(index, index, wrapped)) {
       candidates.push({ pos, wrap });
+    } else if (fitsSplit($pos, content)) {
+      candidates.push({ pos, wrap: null, split: true });
+    } else if (wrapped !== null && fitsSplit($pos, wrapped)) {
+      candidates.push({ pos, wrap, split: true });
     }
   }
   return candidates;
+}
+
+/**
+ * Whether `content` can stand between the two halves of the list `$pos` is
+ * in, were the list split at `$pos`. Only a place strictly between two items
+ * splits: at either end of the list the place before or after it is in the
+ * same gap already.
+ */
+function fitsSplit($pos: ResolvedPos, content: Fragment): boolean {
+  const list = $pos.parent;
+  if ($pos.depth === 0 || !isListNode(list)) return false;
+  const index = $pos.index();
+  if (index === 0 || index >= list.childCount) return false;
+  const halves = Fragment.from(list).append(content).append(Fragment.from(list));
+  const listIndex = $pos.index(-1);
+  return $pos.node(-1).canReplace(listIndex, listIndex + 1, halves);
 }
 
 /**
@@ -261,6 +291,7 @@ export function blockDropTransaction(
   if (
     move &&
     candidate.wrap === null &&
+    candidate.split !== true &&
     (candidate.pos === source.from || candidate.pos === source.to)
   ) {
     return null;
@@ -269,12 +300,15 @@ export function blockDropTransaction(
   if (move) tr.deleteRange(source.from, source.to);
   const mapped = tr.mapping.mapResult(candidate.pos);
   if (mapped.deletedAcross) return null;
+  // Between two items: the list becomes two, and the block goes between them.
+  const at = candidate.split === true ? splitListAt(tr, mapped.pos) : mapped.pos;
+  if (at === null) return null;
   const inserted =
     candidate.wrap === null ? content : Fragment.from(candidate.wrap.create(null, content));
-  if (tr.maybeStep(new ReplaceStep(mapped.pos, mapped.pos, new Slice(inserted, 0, 0))).failed) {
+  if (tr.maybeStep(new ReplaceStep(at, at, new Slice(inserted, 0, 0))).failed) {
     return null;
   }
-  const first = candidate.wrap === null ? mapped.pos : mapped.pos + 1;
+  const first = candidate.wrap === null ? at : at + 1;
   const node = tr.doc.nodeAt(first);
   if (content.childCount === 1 && node !== null && NodeSelection.isSelectable(node)) {
     tr.setSelection(NodeSelection.create(tr.doc, first));
@@ -347,7 +381,7 @@ interface DragSession {
 function blockRect(view: EditorView, pos: number): DOMRect | null {
   const node = view.state.doc.nodeAt(pos);
   const measured =
-    node !== null && LIST_ITEM_TYPES.has(node.type.name) && node.firstChild !== null
+    node !== null && LIST_ITEM_TYPE_NAMES.has(node.type.name) && node.firstChild !== null
       ? pos + 1
       : pos;
   const dom = view.nodeDOM(measured);
@@ -378,32 +412,57 @@ function measure(
   const afterRect = after === null ? null : blockRect(view, candidate.pos);
   const reference = beforeRect ?? afterRect;
   if (reference === null) return null;
-  // The bottom of the item above, not of its first paragraph: the line has to
-  // clear a sub-list the item holds.
-  const beforeOuter = before === null ? null : outerRect(view, candidate.pos - before.nodeSize);
-  const afterOuter = after === null ? null : outerRect(view, candidate.pos);
-  const beforeBottom = beforeOuter?.bottom ?? null;
-  const afterTop = afterOuter?.top ?? null;
-  // The line runs to the right edge of the container it lands in: a task
-  // item's paragraph is shrunk to its words, its row is not.
-  const container = $pos.depth > 0 ? view.nodeDOM($pos.before()) : view.dom;
-  const right =
-    container instanceof HTMLElement ? container.getBoundingClientRect().right : reference.right;
-  let top: number;
-  if (beforeBottom !== null && afterTop !== null && afterTop >= beforeBottom) {
-    top = (beforeBottom + afterTop) / 2;
-  } else {
-    top = beforeBottom ?? afterTop ?? reference.top;
-  }
-  const left = reference.left + (candidate.wrap === null ? 0 : indent);
+  const { left, right } = landingEdges(view, candidate, reference, indent);
   return {
     candidate,
     left,
     right: Math.max(right, left + 24),
-    top,
+    top: lineTop(view, candidate.pos, reference),
     anchor: before === null ? null : anchorOf(view.state.doc, candidate.pos - before.nodeSize),
     trackLeft: left,
   };
+}
+
+/**
+ * Where the dropped block's text will start and how far its container
+ * reaches. A split puts the block beside the list, not into it: its text
+ * starts where the list starts, and it runs as wide as whatever holds the
+ * list. The line runs to the right edge of the container it lands in: a task
+ * item's paragraph is shrunk to its words, its row is not.
+ */
+function landingEdges(
+  view: EditorView,
+  candidate: BlockDropCandidate,
+  reference: DOMRect,
+  indent: number,
+): { left: number; right: number } {
+  const $pos = view.state.doc.resolve(candidate.pos);
+  const split = candidate.split === true && $pos.depth > 0;
+  const listBox = split ? outerRect(view, $pos.before()) : null;
+  const depth = split ? $pos.depth - 1 : $pos.depth;
+  const container = depth > 0 ? view.nodeDOM($pos.before(depth)) : view.dom;
+  const right =
+    container instanceof HTMLElement ? container.getBoundingClientRect().right : reference.right;
+  const left = (listBox ?? reference).left + (candidate.wrap === null ? 0 : indent);
+  return { left, right };
+}
+
+/**
+ * The line's height: halfway between the bottom of the block above and the
+ * top of the one below. The bottom of the item above, not of its first
+ * paragraph: the line has to clear a sub-list the item holds.
+ */
+function lineTop(view: EditorView, pos: number, reference: DOMRect): number {
+  const $pos = view.state.doc.resolve(pos);
+  const before = $pos.nodeBefore;
+  const after = $pos.nodeAfter;
+  const beforeBottom =
+    before === null ? null : (outerRect(view, pos - before.nodeSize)?.bottom ?? null);
+  const afterTop = after === null ? null : (outerRect(view, pos)?.top ?? null);
+  if (beforeBottom !== null && afterTop !== null && afterTop >= beforeBottom) {
+    return (beforeBottom + afterTop) / 2;
+  }
+  return beforeBottom ?? afterTop ?? reference.top;
 }
 
 /**
@@ -414,7 +473,7 @@ function measure(
 function anchorOf(doc: PmNode, pos: number): number | null {
   const node = doc.nodeAt(pos);
   if (node === null) return null;
-  if (LIST_ITEM_TYPES.has(node.type.name))
+  if (LIST_ITEM_TYPE_NAMES.has(node.type.name))
     return node.firstChild?.isTextblock === true ? pos + 1 : null;
   return isDropLeaf(node) ? pos : null;
 }
@@ -433,7 +492,8 @@ function closest(measured: readonly MeasuredCandidate[], left: number): Measured
   let best: MeasuredCandidate | null = null;
   let bestDistance = Number.POSITIVE_INFINITY;
   for (const entry of measured) {
-    const distance = Math.abs(entry.left - left) + (entry.candidate.wrap === null ? 0 : 0.5);
+    const extra = entry.candidate.wrap === null && entry.candidate.split !== true ? 0 : 0.5;
+    const distance = Math.abs(entry.left - left) + extra;
     if (distance < bestDistance) {
       best = entry;
       bestDistance = distance;
@@ -620,7 +680,8 @@ class BlockDropView {
     this.line.style.top = `${target.top - originTop}px`;
     this.line.style.width = `${target.right - target.trackLeft}px`;
     this.line.style.setProperty('--drop-level-offset', `${target.left - target.trackLeft}px`);
-    this.line.dataset.level = String(this.view.state.doc.resolve(target.candidate.pos).depth);
+    const { depth } = this.view.state.doc.resolve(target.candidate.pos);
+    this.line.dataset.level = String(target.candidate.split === true ? depth - 1 : depth);
   }
 
   private hideLine(): void {

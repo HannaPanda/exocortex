@@ -28,6 +28,7 @@ export * from './inline-styling';
 export * from './line-placeholder';
 export * from './link-target';
 export * from './list-continuation';
+export * from './list-split';
 export * from './markdown';
 export * from './mathematics';
 export * from './media';

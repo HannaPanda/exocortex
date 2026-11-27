@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { Editor } from '@tiptap/core';
+import { Editor, Extension } from '@tiptap/core';
+import { history, undo } from '@tiptap/pm/history';
 import { type Node as PmNode } from '@tiptap/pm/model';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -20,6 +21,12 @@ import { buildEditorExtensions } from './extensions';
  */
 
 let editor: Editor | null = null;
+
+/** The page's undo comes with Yjs; the plain history stands in for it here. */
+const History = Extension.create({
+  name: 'testHistory',
+  addProseMirrorPlugins: () => [history()],
+});
 
 function createEditor(content: string): Editor {
   editor = new Editor({ extensions: buildEditorExtensions(), content });
@@ -165,7 +172,7 @@ describe('block drop', () => {
     expect(instance.state.doc.child(0).child(0).childCount).toBe(1);
   });
 
-  it('puts a paragraph into an item or below the list, never between two items', () => {
+  it('offers a paragraph the item above and the place between two items, never an item of its own', () => {
     const instance = createEditor(
       '<p>Absatz</p><ul><li><p>A</p></li><li><p>B</p></li></ul><p>Ende</p>',
     );
@@ -176,9 +183,105 @@ describe('block drop', () => {
     expect(dropWrapType(doc, source, content)).toBeNull();
     const gap = dropGap(doc, textblock(doc, 'A'), true);
     const candidates = blockDropCandidates(doc, gap, content, source, null);
-    expect(candidates).toHaveLength(1);
-    const $pos = doc.resolve(candidates[0]!.pos);
-    expect($pos.parent.type.name).toBe('listItem');
+    // Inside A (a second line of the item), and between A and B (a split).
+    expect(candidates.map((entry) => entry.split === true)).toEqual([false, true]);
+    expect(doc.resolve(candidates[0]!.pos).parent.type.name).toBe('listItem');
+    expect(doc.resolve(candidates[1]!.pos).parent.type.name).toBe('bulletList');
+  });
+
+  it('splits the list where a paragraph lands between two items, in one undo step', () => {
+    const instance = new Editor({
+      extensions: [...buildEditorExtensions(), History],
+      content:
+        '<p>Absatz</p><ol><li><p>Eins</p><ul><li><p>Eins a</p></li></ul></li>' +
+        '<li><p>Zwei</p></li><li><p>Drei</p></li></ol>',
+    });
+    editor = instance;
+    const { state } = instance;
+    const paragraph = textblock(state.doc, 'Absatz');
+    const source = {
+      from: paragraph,
+      to: paragraph + (state.doc.nodeAt(paragraph)?.nodeSize ?? 0),
+    };
+    const content = state.doc.slice(source.from, source.to).content;
+    // The gap above "Zwei": below "Eins a", the end of its sub-list and item.
+    const gap = dropGap(state.doc, textblock(state.doc, 'Zwei'), false);
+    const candidates = blockDropCandidates(state.doc, gap, content, source, null);
+    const split = candidates.find((entry) => entry.split === true);
+    expect(split).toBeDefined();
+    const tr = blockDropTransaction(state, source, split!, content, true);
+    if (tr === null) throw new Error('no drop');
+    instance.view.dispatch(tr);
+    // Two numbered lists with the paragraph between; the sub-item stayed.
+    expect(outline(instance.state.doc)).toEqual([
+      '  Eins',
+      '    Eins a',
+      'Absatz',
+      '  Zwei',
+      '  Drei',
+    ]);
+    const kinds: string[] = [];
+    instance.state.doc.forEach((node) => kinds.push(node.type.name));
+    expect(kinds).toEqual(['orderedList', 'paragraph', 'orderedList']);
+    expect(instance.state.doc.child(2).attrs.start).toBe(1);
+
+    undo(instance.state, instance.view.dispatch);
+    expect(outline(instance.state.doc)).toEqual([
+      'Absatz',
+      '  Eins',
+      '    Eins a',
+      '  Zwei',
+      '  Drei',
+    ]);
+  });
+
+  it('splits a sub-list when a paragraph lands between two sub-items', () => {
+    const instance = createEditor(
+      '<ul><li><p>A</p><ul><li><p>A1</p></li><li><p>A2</p></li></ul></li></ul><p>Absatz</p>',
+    );
+    const { state } = instance;
+    const paragraph = textblock(state.doc, 'Absatz');
+    const source = {
+      from: paragraph,
+      to: paragraph + (state.doc.nodeAt(paragraph)?.nodeSize ?? 0),
+    };
+    const content = state.doc.slice(source.from, source.to).content;
+    const gap = dropGap(state.doc, textblock(state.doc, 'A1'), true);
+    const split = blockDropCandidates(state.doc, gap, content, source, null).find(
+      (entry) => entry.split === true,
+    );
+    if (split === undefined) throw new Error('no split offered');
+    const tr = blockDropTransaction(state, source, split, content, true);
+    if (tr === null) throw new Error('no drop');
+    instance.view.dispatch(tr);
+    // The paragraph now stands inside A, between the two halves of its sub-list.
+    expect(outline(instance.state.doc)).toEqual(['  A', '    A1', '  Absatz', '    A2']);
+  });
+
+  it('splits a task list for an item of another kind of list', () => {
+    const instance = createEditor(
+      '<ul data-type="taskList"><li data-type="taskItem" data-checked="false"><p>T1</p></li>' +
+        '<li data-type="taskItem" data-checked="false"><p>T2</p></li></ul><ul><li><p>Punkt</p></li></ul>',
+    );
+    const { state } = instance;
+    const source = item(state.doc, 'Punkt');
+    const content = state.doc.slice(source.from, source.to).content;
+    const gap = dropGap(state.doc, textblock(state.doc, 'T1'), true);
+    const split = blockDropCandidates(
+      state.doc,
+      gap,
+      content,
+      source,
+      dropWrapType(state.doc, source, content),
+    ).find((entry) => entry.split === true);
+    if (split === undefined) throw new Error('no split offered');
+    expect(split.wrap?.name).toBe('bulletList');
+    const tr = blockDropTransaction(state, source, split, content, true);
+    if (tr === null) throw new Error('no drop');
+    instance.view.dispatch(tr);
+    const kinds: string[] = [];
+    instance.state.doc.forEach((node) => kinds.push(node.type.name));
+    expect(kinds).toEqual(['taskList', 'bulletList', 'taskList']);
   });
 
   it('keeps a task item a task item when it becomes a sub-item', () => {
