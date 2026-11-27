@@ -83,8 +83,8 @@ decorations for a while.
   what a person wrote afterwards; the price is that a group is held back as soon
   as one of its blocks moved, even when the move was harmless.
 - A block restore puts content back, not order: a block the run only moved
-  stays where it is. Renames, moves and pages a run created are named but not
-  undone, as in ADR-022.
+  stays where it is. Renames, moves and pages a run created were at first
+  named but not undone; the amendment below takes them back too.
 - Rows written before the column existed carry `NULL` and their pages are
   reported as "not recorded"; the page's history still has the snapshot.
 - Every journalled agent write now derives two states in its transaction. That
@@ -93,3 +93,40 @@ decorations for a while.
 - The session revert in the admin area is unchanged. It answers a different
   question, about an external agent's afternoon, and keeps its whole-page
   restore and its documented grace window.
+
+## Amendment (2026-11-27): renames, moves, new pages, and what stands now
+
+**A rename, a move and a new page go back by the same rule as a block.** The
+journal row of a rename or a move carries `structure` (the title before and
+after; the parent, workspace and order key before and after), and every
+content-bearing row carries `pageAfter`, one fingerprint of the whole page as
+the write left it, empty paragraphs left out because opening a page may add
+one. Ids, titles and hashes, never content. The reading judges each with the
+three answers a block has and a `reason` when it holds one back: a rename goes
+back while the page still carries the run's title; a move while the page is
+under the parent the run chose (at the same place, for a move among siblings)
+and the parent it came from is still there; a page the run created while its
+content and title are what the run left, none of its properties changed after
+the run ended and nothing lies under it that the run did not put there. The
+content decides, as for blocks; only the property values are compared by time,
+against the end of the run, because they have no fingerprint.
+
+**The undo uses the ordinary routes, in an order that takes nothing along.**
+Moves first (`move`, next to the sibling that stood before the old order key),
+then renames (`update`), then blocks, then new pages, topmost first, into the
+trash (`archive`). A page the run moved under a page it created is out from
+under it before the trash would take it along; a page somebody else put there
+holds the new page back. Nothing is deleted for good: the trash is the way back
+from the undo.
+
+**Two things are named and not undone.** A move between workspaces took the
+whole subtree along, and what was added to it since cannot be told apart. A
+database or a project the run created holds rows, files and settings that one
+fingerprint cannot vouch for.
+
+**A change held back shows what stands now.** A block somebody rewrote under a
+new identifier is gone from the page, so the preview used to show the run's
+text or nothing. Each written block now records `prev`, the block before it,
+and the reading names the blocks nobody had before that stand right at that
+place (`standing`). A paragraph the run added and somebody rewrote is no longer
+"already back" just because its identifier is gone.

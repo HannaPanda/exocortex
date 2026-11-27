@@ -3301,8 +3301,8 @@
       "output": "c1b3e69326fe5e8b"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "1f019f3733616c96"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "29f7ecc059a56816"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -3315,6 +3315,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "d8332010312388dc"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "403586718bd1622d"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "108985fcabfa702f"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "abe9797dff4bfffc"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "e777b19e08f3a384"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "1d86fb73eeefc65c"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "4caa93c72eacdb3d"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "73b14e0926854936"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "e770128081cce524"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "9c4084567abdf3dc"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "9fd2eb53e8626ed7"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -3365,8 +3405,8 @@
       "output": "1ffb729dfb7f6aaa"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "2f8effcd28106430"
+      "source": "a16aa6d4cd015fe3",
+      "output": "1911221ccd2793bb"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -3375,6 +3415,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "d053a9304547118b"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "1e7e04d551052b29"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -3388,9 +3432,29 @@
       "source": "588a37f1873428c3",
       "output": "5d7aa3d62344f2b4"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "429b09e07b4e87b7"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "edc882ce13681325"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "6d23a3c9f6105c6c"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "eadb455f8da8ad6d"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "cfde079781fe5327"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "59535b0f264f6886"
+      "source": "a1f590e5b0390f8b",
+      "output": "b20f0607c5e8a26b"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -13209,12 +13273,12 @@
       "output": "992320504aec59a5"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "473178f39602a173"
+      "source": "00bc5ee645c339fd",
+      "output": "1325840d276f29d0"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "2815fcb1d27afb92"
+      "source": "52620c03e32b79bd",
+      "output": "45ff110303f0d23e"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -27839,8 +27903,8 @@
       "output": "2668a7371794886d"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "f977f1b8785143c8"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "f8e4f0502afc3b50"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -27853,6 +27917,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "6254a671c4a4fb7f"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "31bea5d4c07f4244"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "1a91d194ad5b592e"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "c37390bd4f8434a5"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "44e3986a273c6697"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "61c59e5c2c013386"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "604eb50bb66eaad9"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "2dc49393cabb1367"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "f24d5f752db6f40c"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "2c563452c46a25c4"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "0720056b3d222e6f"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -27903,8 +28007,8 @@
       "output": "5719165c8278293c"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "d7512065b1972e98"
+      "source": "a16aa6d4cd015fe3",
+      "output": "96388152dde3b6c5"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -27913,6 +28017,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "b06eccbf5f8eb4b5"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "b0d7136d82ba450a"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -27926,9 +28034,29 @@
       "source": "588a37f1873428c3",
       "output": "36abd2bb4156971a"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "f2f75ed7d0c38efe"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "862ac7beefdbb6de"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "cab32ca9248259bd"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "0aef30582e15a250"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "6e7762ebd114d1ef"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "18765cb733636140"
+      "source": "a1f590e5b0390f8b",
+      "output": "d4f8efa96a66ef66"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -37747,12 +37875,12 @@
       "output": "968103d39646a682"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "cab244179967c4e0"
+      "source": "00bc5ee645c339fd",
+      "output": "205037eda4ba055f"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "bb25f9bd900d3439"
+      "source": "52620c03e32b79bd",
+      "output": "201dd46b6c1d2861"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -52377,8 +52505,8 @@
       "output": "63b2a35d85cafcbf"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "8a6de9f06f3c22d0"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "ba27a42ebc932962"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -52391,6 +52519,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "031d92681918daf3"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "2996c3b2cafc0fe4"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "65a7c07dba02caa4"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "a035e23b2678be49"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "53616a127ba70fc0"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "e5f68a36cb962cba"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "9b5e5314f6b39b81"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "a0b89412d176a179"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "079f41ca1b21055d"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "fa4c00e0ced5dd8a"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "8bbedb15d29ee029"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -52441,8 +52609,8 @@
       "output": "127c52ff492cd7de"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "3636ac7ea8d4a28b"
+      "source": "a16aa6d4cd015fe3",
+      "output": "4bb085dc0ee9cb5d"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -52451,6 +52619,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "68d8c21befc84b41"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "a33ff46f15bd6260"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -52464,9 +52636,29 @@
       "source": "588a37f1873428c3",
       "output": "270fb60024ef8a4e"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "a2565eb693a5566e"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "2bdaea4485ff6a28"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "21f3d897f231aece"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "53140a65e435094a"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "2bbaca2f4d6e4db5"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "cd36dff0c5084532"
+      "source": "a1f590e5b0390f8b",
+      "output": "6329b532306fc232"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -62285,12 +62477,12 @@
       "output": "7a3f9aec0b217e1b"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "85a4d15fcc9f970c"
+      "source": "00bc5ee645c339fd",
+      "output": "9a5e9c6ce36e344e"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "0b3dced23096f0ed"
+      "source": "52620c03e32b79bd",
+      "output": "1e2b00f5d15a5344"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -76915,8 +77107,8 @@
       "output": "9f24b2579583e4bf"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "d7cca7db0d35f9cd"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "905c0eeec3c3735f"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -76929,6 +77121,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "0d34e0025803a802"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "c30f1757352b2441"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "7013145b26445d1c"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "092edc4e24585b94"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "45e6b58d0a9b7406"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "b855e6cad6358e76"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "c02046267a9c7ba8"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "16733712f6de8078"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "61891b37502389bb"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "35548cd91aa38871"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "62284df4c2b64241"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -76979,8 +77211,8 @@
       "output": "b47b35b38b992a8b"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "a996e2dd83c8a2fc"
+      "source": "a16aa6d4cd015fe3",
+      "output": "96197d856ab1d7d8"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -76989,6 +77221,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "7a46307005b77a0a"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "338acd3cce3013fa"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -77002,9 +77238,29 @@
       "source": "588a37f1873428c3",
       "output": "5d8257f0208194ac"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "a275f22bfe93c9b2"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "f792280571d77263"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "a938d97b039b06d5"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "8805381c2f7847db"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "0f72672ac31db7c8"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "061e3736b04919e5"
+      "source": "a1f590e5b0390f8b",
+      "output": "be58666b72d3f4eb"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -86823,12 +87079,12 @@
       "output": "8f21b8a1c1b73341"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "7d5c5d00cac6290c"
+      "source": "00bc5ee645c339fd",
+      "output": "03e9d5df4afc1f91"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "24a1ced45f602ca9"
+      "source": "52620c03e32b79bd",
+      "output": "98b4bce7a9949cb5"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -101453,8 +101709,8 @@
       "output": "11232072f869b33a"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "4d136d53612068d4"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "b690c9c0ee2849a0"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -101467,6 +101723,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "69d4c09744a9ef32"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "164ff9f515b4325a"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "6521ce78b967307f"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "1be7123b0846eabf"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "6f8ec42e9f32fd99"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "a6c5d8705f6df381"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "084163708cd4e083"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "3f1e11ab4b082621"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "0facce8e0e7d56b0"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "ed628d844b044324"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "3b7dbfc188f87923"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -101517,8 +101813,8 @@
       "output": "cb495471a29175fe"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "e18e525616991ab8"
+      "source": "a16aa6d4cd015fe3",
+      "output": "0ae262d1a6d3760d"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -101527,6 +101823,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "0b9e059e837fc27c"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "eacc14feaa1c86a7"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -101540,9 +101840,29 @@
       "source": "588a37f1873428c3",
       "output": "c5ab115788a058c3"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "f98fd91888703dcf"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "9abe2e1f93a74457"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "c61f5351aa7a2e22"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "23dd6da19a81c2c8"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "f23168f951c206db"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "eb01e1e5f3865a2f"
+      "source": "a1f590e5b0390f8b",
+      "output": "1ab508e846d771f2"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -111361,12 +111681,12 @@
       "output": "9e935f2f7e32e2c0"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "ae4740737548acd3"
+      "source": "00bc5ee645c339fd",
+      "output": "a12e53f4edafca17"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "d41c954baa3a6269"
+      "source": "52620c03e32b79bd",
+      "output": "4b9e432d48f4f6b8"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -125991,8 +126311,8 @@
       "output": "9cb0c5ae9bb10ec2"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "f49c230cecee24f1"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "567964341bbc67ec"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -126005,6 +126325,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "62fbc251c63268be"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "b978e8dd404241c3"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "8bafe128bd8dfecf"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "4ca13b79f87b94b4"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "d97e379c313480d7"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "72326695edca2501"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "1f25f346d3efc126"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "3393b7ba87c6de25"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "80fdb4f896f1a4d5"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "c8857f4cce81768e"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "63367cd84329ee27"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -126055,8 +126415,8 @@
       "output": "f2f4b6a81505a269"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "a753b4d2947e493a"
+      "source": "a16aa6d4cd015fe3",
+      "output": "99238d106d6a8051"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -126065,6 +126425,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "f45bde2feddc8d4e"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "6612c893d23c0ba3"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -126078,9 +126442,29 @@
       "source": "588a37f1873428c3",
       "output": "d2b88cf474043c0d"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "3af9865c1c952b89"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "c793d203bd2a4ec6"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "00644925f710dac1"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "d510310834c894eb"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "c687d1ae2c6cc29c"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "96e47c4dbd1a02eb"
+      "source": "a1f590e5b0390f8b",
+      "output": "d0c073ba3a6b4fac"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -135899,12 +136283,12 @@
       "output": "cb5d3a780693fcfd"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "4dc469274d764f5e"
+      "source": "00bc5ee645c339fd",
+      "output": "d48379388ae2e34f"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "9eb3c0866faf087b"
+      "source": "52620c03e32b79bd",
+      "output": "6941984d69d259db"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",
@@ -150529,8 +150913,8 @@
       "output": "2d2753a656a16023"
     },
     "ai.runChanges.doneKept": {
-      "source": "3a3c3d1e8cd190e6",
-      "output": "4dc1a40ec3c96fd2"
+      "source": "b08acbb8ec0cb4f4",
+      "output": "29d9796b20081881"
     },
     "ai.runChanges.excerpt": {
       "source": "1dc89e3f0f217d62",
@@ -150543,6 +150927,46 @@
     "ai.runChanges.failedTitle": {
       "source": "bc7cb98b3038e7df",
       "output": "b1a3d3d041d75ce2"
+    },
+    "ai.runChanges.held.children": {
+      "source": "0e5cab9e26bc2ca6",
+      "output": "f4ac85b3e323622d"
+    },
+    "ai.runChanges.held.edited": {
+      "source": "2dc8537afc5d79e0",
+      "output": "8cf163bb33bf597a"
+    },
+    "ai.runChanges.held.moved": {
+      "source": "8597164ec6b65355",
+      "output": "1d5b4bc38c48a5a8"
+    },
+    "ai.runChanges.held.not_a_page": {
+      "source": "7a72cee6b273a81d",
+      "output": "8db7d6ea5f35cd85"
+    },
+    "ai.runChanges.held.not_recorded": {
+      "source": "dd82c0e8daec2b34",
+      "output": "0f1e13ca9a31aa94"
+    },
+    "ai.runChanges.held.other_workspace": {
+      "source": "4fb00e029d659f62",
+      "output": "c3f7c28215d3766f"
+    },
+    "ai.runChanges.held.parent_gone": {
+      "source": "9ced7069df1c1ed6",
+      "output": "759cd2ad573eb97f"
+    },
+    "ai.runChanges.held.renamed": {
+      "source": "7eed1d5efdbc9941",
+      "output": "6d481d8bd4574ea2"
+    },
+    "ai.runChanges.held.trashed": {
+      "source": "6900f91775671259",
+      "output": "52c8b4426ec5b632"
+    },
+    "ai.runChanges.heldBadge": {
+      "source": "eeca1930eaa0c215",
+      "output": "1fca68a25c932e12"
     },
     "ai.runChanges.kinds.added": {
       "source": "c174b08404d6f97f",
@@ -150593,8 +151017,8 @@
       "output": "454b7dce46e8b4fb"
     },
     "ai.runChanges.skipped.no_snapshot": {
-      "source": "173c312e1c5fab10",
-      "output": "9e05903adb82f38b"
+      "source": "a16aa6d4cd015fe3",
+      "output": "02e022632f02e276"
     },
     "ai.runChanges.skipped.not_recorded": {
       "source": "64f17cb7293b5ad7",
@@ -150603,6 +151027,10 @@
     "ai.runChanges.skipped.unavailable": {
       "source": "5bc8c571dd34b52c",
       "output": "21aaa34ed06cd668"
+    },
+    "ai.runChanges.standing": {
+      "source": "090fec4a99323c1c",
+      "output": "2de358bd6f39cd71"
     },
     "ai.runChanges.states.changed_since": {
       "source": "d36babb5c8ede337",
@@ -150616,9 +151044,29 @@
       "source": "588a37f1873428c3",
       "output": "93ed0e65d5cc8b76"
     },
+    "ai.runChanges.structure.created": {
+      "source": "c130897e3bd02ab6",
+      "output": "5283135e06ccdb32"
+    },
+    "ai.runChanges.structure.hiddenPage": {
+      "source": "3fe3a95618e32c20",
+      "output": "34d42fdeebab1313"
+    },
+    "ai.runChanges.structure.moved": {
+      "source": "62c29b44ae4af29c",
+      "output": "0b10779a5fbe1c2e"
+    },
+    "ai.runChanges.structure.renamed": {
+      "source": "f185cf583af50772",
+      "output": "dd06c0f56c644a96"
+    },
+    "ai.runChanges.structure.topLevel": {
+      "source": "c89565e0ebb2b304",
+      "output": "18cc6388e3580b0f"
+    },
     "ai.runChanges.summary": {
-      "source": "d973914cc1323f06",
-      "output": "33cfe62e5a952439"
+      "source": "a1f590e5b0390f8b",
+      "output": "f1ae17a7a0ee5f6f"
     },
     "ai.runChanges.undo": {
       "source": "210a533304892420",
@@ -160437,12 +160885,12 @@
       "output": "8dfd788a575d1623"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "8c71231af9faf44f",
-      "output": "315f9465ea2c89a2"
+      "source": "00bc5ee645c339fd",
+      "output": "8a6c7229fcb1924d"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
-      "source": "36a1318bab4010de",
-      "output": "21d211843ca81bb5"
+      "source": "52620c03e32b79bd",
+      "output": "8ba2285080d14d59"
     },
     "features.ki-lauf-zuruecknehmen.summary": {
       "source": "417f590d3c24de72",

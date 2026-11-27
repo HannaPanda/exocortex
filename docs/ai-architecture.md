@@ -1331,8 +1331,14 @@ changed in `AgentWriteJournal.writtenBlocks`: `[{ id, after, group }]`, where
 `after` is a fingerprint (`blockFingerprint`, `packages/editor/src/written-blocks.ts`)
 of the block as the write left it, `null` for a removed block, and `group`
 numbers the stretches of consecutive changes between blocks the write left
-alone. `journalWrittenBlocks` computes it inside the write's transaction from
-the snapshot and the stored content (`apps/api/src/common/agent-journal-blocks.ts`).
+alone; `prev` names the block that stood right before it, so a block somebody
+rewrote under a new identifier can still be found by its place. `journalContent`
+computes it inside the write's transaction from the snapshot and the stored
+content (`apps/api/src/common/agent-journal-blocks.ts`), together with
+`pageAfter`, one `pageFingerprint` of the whole page as the write left it
+(empty paragraphs left out). A rename or a move carries `structure`: the title
+before and after, or the parent, workspace and order key before and after,
+passed to the outbox by `DocumentsService.update` and `DocumentMoveService`.
 
 - **While it works.** The pulse names the page of the run's latest tool call
   until the next one (`currentToolPage` in `run-labels.ts`; a read lasts
@@ -1351,15 +1357,31 @@ the snapshot and the stored content (`apps/api/src/common/agent-journal-blocks.t
   latest fingerprint per block, groups joined across writes) and judges every
   group against the page now (`judgeRunBlocks` in `apps/api/src/ai/run-changes.ts`):
   `revertible` when every block is as the run left it, `reverted` when every
-  block is as before the run, `changed_since` otherwise. A page with a write
-  whose blocks were not recorded is `not_recorded`, one without a snapshot
-  `no_snapshot`, one the reader cannot read `unavailable`.
+  block is as before the run, `changed_since` otherwise. A held-back block
+  carries `standing`: the blocks nobody had before that stand right where it
+  stood (`StandingFinder`), which is the text the preview shows instead of the
+  run's. A page with a write whose blocks were not recorded is `not_recorded`,
+  one without a snapshot and without a structural change `no_snapshot`, one the
+  reader cannot read `unavailable`.
+- **Renames, moves and new pages.** Each page's `structure` lists them, judged
+  by `judgeRename`, `judgeMove` and `judgeCreated` with the same three states
+  plus a `reason` when one is held: a rename goes back while the run's title
+  stands, a move while the page is under the parent the run chose (at the same
+  place for a move among siblings) and the old parent is still there, a page
+  the run created while its `pageFingerprint` and title are what the run left,
+  no property changed after the run ended and nothing lies under it that the
+  run did not put there (or that is held itself). A move between workspaces
+  and a new database or project are named only. A page the run created has no
+  block list; it goes back as a whole.
 - **The undo.** `POST /api/ai/runs/:id/revert` (requester only, not a tool)
-  calls `DocumentDiffService.restoreBlocks` per page with the snapshot before
-  the run and the blocks of every revertible group, and answers what it restored
-  plus the reading afterwards. A second undo finds nothing left and writes
-  nothing. The dialog (`run-revert-dialog.tsx`) shows the reading first and the
-  button second.
+  moves pages back first (`DocumentsService.move`, next to the sibling before
+  the old order key), gives old titles back (`update`), then calls
+  `DocumentDiffService.restoreBlocks` per page with the snapshot before the run
+  and the blocks of every revertible group, and last moves the topmost new
+  pages into the trash (`archive`, never a permanent delete). It answers what
+  it restored per page (`blockIds`, `structure`) plus the reading afterwards. A
+  second undo finds nothing left and writes nothing. The dialog
+  (`run-revert-dialog.tsx`) shows the reading first and the button second.
 
 ## Adding a provider
 

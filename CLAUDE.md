@@ -926,10 +926,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   changes and goes back whole or not at all. The undo judges each group against
   the page as it is now: as the run left it is restored through the ordinary
   `restoreBlocks`, anything else is named and left alone, with no grace window.
-  Reading a run's changes is `exo_ai_run_changes` on both surfaces; the undo
-  (`POST /api/ai/runs/:id/revert`) is the browser's and the requester's only.
-  The pulse names the page of the latest tool call; there is still no editing
-  state (ADR-065).
+  Renames, moves and pages the run created go back by the same rule, from
+  `structure` and `pageAfter` on the journal row: only while the page stands as
+  the run left it, a new page into the trash and never deleted, a move between
+  workspaces named only. Reading a run's changes is `exo_ai_run_changes` on
+  both surfaces; the undo (`POST /api/ai/runs/:id/revert`) is the browser's and
+  the requester's only. The pulse names the page of the latest tool call; there
+  is still no editing state (ADR-065).
 - ADR-095: a chat picture is an ordinary `Attachment` owned by its
   conversation (`conversationId`, cascade, never on a page, readable by its
   uploader only), uploaded when added and bound by `attachmentIds` when sent,
