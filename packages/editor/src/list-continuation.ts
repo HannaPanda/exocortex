@@ -4,6 +4,7 @@ import {
   type EditorState,
   Plugin,
   PluginKey,
+  Selection,
   TextSelection,
   type Transaction,
 } from '@tiptap/pm/state';
@@ -269,6 +270,39 @@ export function continueListTransaction(
   return tr.scrollIntoView();
 }
 
+/**
+ * `Backspace` in an empty line right below a list (issue #302): the line goes
+ * and the caret lands at the end of the list's last point, at whatever depth
+ * that point stands. One press, one visible step, one undo step.
+ *
+ * ProseMirror's own `joinBackward` instead wrapped the line into a new, empty
+ * point at the end of the list, and the next press joined that point into the
+ * one above as a second paragraph. Both times the line stood exactly where the
+ * pale marker of the continuation preview had drawn it, so two presses did
+ * nothing a reader could see, and a nested list added one more. The rule holds
+ * below every list, also where no preview is offered (a table cell), and only
+ * for a line without content: text below a list keeps the old join.
+ */
+export function backspaceBelowListTransaction(state: EditorState): Transaction | null {
+  const { selection } = state;
+  if (!(selection instanceof TextSelection) || !selection.empty) return null;
+  const { $from } = selection;
+  if ($from.depth === 0 || $from.parent.type.name !== 'paragraph') return null;
+  if ($from.parent.content.size > 0) return null;
+  const container = $from.node($from.depth - 1);
+  const index = $from.index($from.depth - 1);
+  const above = index > 0 ? container.child(index - 1) : null;
+  if (above === null || !isList(above)) return null;
+  if (!container.canReplace(index, index + 1)) return null;
+  const lineStart = $from.before();
+  // The list lies before the line, so deleting the line moves nothing in it.
+  const tr = state.tr.delete(lineStart, $from.after());
+  const listContentEnd = lineStart - 1;
+  const target = Selection.findFrom(tr.doc.resolve(listContentEnd), -1);
+  if (target === null) return null;
+  return tr.setSelection(target).scrollIntoView();
+}
+
 const listContinuationKey = new PluginKey('listContinuation');
 
 function markerText(marker: ListContinuationMarker): string {
@@ -338,6 +372,15 @@ export const ListContinuation = Extension.create<{ words: EditorWords }>({
         const continuation = listContinuationAtSelection(editor.state);
         if (continuation === null) return false;
         const tr = continueListTransaction(editor.state, continuation);
+        if (tr === null) return false;
+        editor.view.dispatch(tr);
+        return true;
+      },
+      // Ahead of the core keymap's `joinBackward`, which would wrap the line
+      // into an empty point of the list instead of removing it.
+      Backspace: ({ editor }) => {
+        if (!editor.isEditable) return false;
+        const tr = backspaceBelowListTransaction(editor.state);
         if (tr === null) return false;
         editor.view.dispatch(tr);
         return true;

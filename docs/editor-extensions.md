@@ -449,6 +449,17 @@ list, taking whatever follows it in the point along. Table cells are excluded.
 `- ` and `1. ` still start a list of their own. Covered by
 `list-continuation.test.ts` and `e2e/tests/editor.spec.ts`.
 
+**`Backspace` in the empty line right below a list** (issue #302) removes the
+line and puts the caret at the end of the list's last point, at whatever depth
+it stands, in one transaction (`backspaceBelowListTransaction`). ProseMirror's
+`joinBackward` instead wrapped the line into a new empty point, and the next
+press joined that point into the one above as a second paragraph; both times
+the line stood where the preview had already drawn its pale marker, so two
+presses (three below a sub-list) changed nothing on screen. The rule holds below
+every list, also in a table cell, and only for a line without content: text
+below a list, an empty point of its own and a line below a picture keep the
+keymap they had.
+
 ## A line after the last block
 
 A page that ends in a block other than a paragraph (a picture, a table, a code

@@ -6,7 +6,11 @@ import { TextSelection } from '@tiptap/pm/state';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildEditorExtensions } from './extensions';
-import { findListContinuation, LIST_CONTINUATION_MAX_GAP } from './list-continuation';
+import {
+  backspaceBelowListTransaction,
+  findListContinuation,
+  LIST_CONTINUATION_MAX_GAP,
+} from './list-continuation';
 
 /**
  * Issue #240: an empty line below a list, with a picture or another block in
@@ -278,6 +282,130 @@ describe('Tab in an empty line below a list (issue #240)', () => {
     instance.commands.insertContent('Text');
     expect(instance.state.doc.lastChild?.type.name).toBe('paragraph');
     expect(ghost(instance)).toBeNull();
+  });
+});
+
+describe('Backspace in an empty line below a list (issue #302)', () => {
+  /** Where the caret stands: the text of its block and its offset in it. */
+  function caret(instance: Editor): { text: string; offset: number; empty: boolean } {
+    const { selection } = instance.state;
+    return {
+      text: selection.$from.parent.textContent,
+      offset: selection.$from.parentOffset,
+      empty: selection.empty,
+    };
+  }
+
+  const LISTS = [
+    ['bullet', '<ul><li><p>eins</p></li><li><p>zwei</p></li></ul>', 'bulletList'],
+    ['numbered', '<ol><li><p>eins</p></li><li><p>zwei</p></li></ol>', 'orderedList'],
+    [
+      'task',
+      '<ul data-type="taskList"><li data-type="taskItem"><p>eins</p></li><li data-type="taskItem"><p>zwei</p></li></ul>',
+      'taskList',
+    ],
+  ] as const;
+
+  for (const [kind, list, type] of LISTS) {
+    it(`removes the line and puts the caret after the last ${kind} point in one press`, () => {
+      const instance = createEditor(`${list}<p></p>`);
+      caretInEmpty(instance);
+      expect(ghost(instance)).not.toBeNull();
+
+      expect(press(instance, 'Backspace')).toBe(true);
+      expect(instance.state.doc.childCount).toBe(1);
+      expect(instance.state.doc.firstChild?.type.name).toBe(type);
+      expect(instance.state.doc.firstChild?.childCount).toBe(2);
+      expect(caret(instance)).toEqual({ text: 'zwei', offset: 4, empty: true });
+      expect(ghost(instance)).toBeNull();
+    });
+  }
+
+  it('does the same in the middle of the page, and the text below stays where it was', () => {
+    const instance = createEditor(
+      `<p>oben</p><ul><li><p>eins</p></li><li><p>zwei</p></li></ul><p></p><p>unten</p>`,
+    );
+    caretInEmpty(instance);
+    press(instance, 'Backspace');
+    expect(shape(instance.state.doc)).toEqual({
+      doc: [
+        { paragraph: ['oben'] },
+        {
+          bulletList: [
+            { listItem: [{ paragraph: ['eins'] }] },
+            { listItem: [{ paragraph: ['zwei'] }] },
+          ],
+        },
+        { paragraph: ['unten'] },
+      ],
+    });
+    expect(caret(instance)).toEqual({ text: 'zwei', offset: 4, empty: true });
+  });
+
+  it('goes down to the last sub-point, from below the list and from inside a point', () => {
+    const nested = `<ul><li><p>eins</p><ul><li><p>unter</p></li></ul></li></ul>`;
+    const below = createEditor(`${nested}<p></p>`);
+    caretInEmpty(below);
+    press(below, 'Backspace');
+    expect(caret(below)).toEqual({ text: 'unter', offset: 5, empty: true });
+    expect(below.state.doc.childCount).toBe(1);
+
+    // The line a reader is left with inside a point, below its sub-list.
+    const inside = createEditor(
+      `<ul><li><p>eins</p><ul><li><p>unter</p></li></ul><p></p></li></ul>`,
+    );
+    caretInEmpty(inside);
+    press(inside, 'Backspace');
+    expect(caret(inside)).toEqual({ text: 'unter', offset: 5, empty: true });
+    expect(shape(inside.state.doc)).toEqual({
+      doc: [
+        {
+          bulletList: [
+            {
+              listItem: [
+                { paragraph: ['eins'] },
+                { bulletList: [{ listItem: [{ paragraph: ['unter'] }] }] },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('is taken back by one undo, line and caret', () => {
+    const id = 'leerezeile02';
+    const instance = createEditor(`<ul><li><p>eins</p></li></ul><p data-block-id="${id}"></p>`);
+    caretInEmpty(instance);
+    const before = shape(instance.state.doc);
+    press(instance, 'Backspace');
+    expect(undo(instance.state, instance.view.dispatch)).toBe(true);
+    expect(shape(instance.state.doc)).toEqual(before);
+    expect(instance.state.doc.lastChild?.attrs.blockId).toBe(id);
+    expect(caret(instance)).toEqual({ text: '', offset: 0, empty: true });
+    expect(undoDepth(instance.state)).toBe(0);
+  });
+
+  it('leaves every other Backspace to the keymap it had', () => {
+    // Text below the list, a block between, no list, a point's own empty text.
+    const cases = [
+      `<ul><li><p>eins</p></li></ul>${IMAGE}<p></p>`,
+      `<p>Text</p><p></p>`,
+      `<ul><li><p>eins</p></li><li><p></p></li></ul>`,
+    ];
+    for (const html of cases) {
+      const instance = createEditor(html);
+      caretInEmpty(instance);
+      expect(backspaceBelowListTransaction(instance.state)).toBeNull();
+    }
+    const withText = createEditor(`<ul><li><p>eins</p></li></ul><p>Text</p>`);
+    withText.view.dispatch(
+      withText.state.tr.setSelection(
+        TextSelection.create(withText.state.doc, withText.state.doc.content.size - 5),
+      ),
+    );
+    expect(withText.state.selection.$from.parent.textContent).toBe('Text');
+    expect(backspaceBelowListTransaction(withText.state)).toBeNull();
   });
 });
 

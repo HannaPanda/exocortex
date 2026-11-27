@@ -77,7 +77,7 @@
     "details": {
       "p1": "Klik in de lege regel onder de afbeelding. Hoort deze bij een lijst erboven, dan staat daar vaag het opsommingsteken (bij een genummerde lijst het volgende nummer, bij een takenlijst een leeg vakje) en de hint „Tab: lijst voortzetten”. Met Tab maak je er het volgende punt van; de afbeelding blijft waar hij stond. Met Strg+Z maak je dit in één stap ongedaan.",
       "p2": "De laatste lijst vóór de regel wordt voortgezet, zolang er hoogstens twee blokken tussen staan en geen tussenkop. Direct onder de lijst komt het nieuwe punt op het niveau van het laatste punt terecht, ook in een sublijst; over een afbeelding heen op het niveau van de lijst naast de afbeelding. Een genummerde lijst telt door, een taak blijft een taak. Staat de afbeelding binnen een punt en de lege regel eronder, dan wordt de regel het volgende punt van dezelfde lijst.",
-      "p3": "De suggestie is slechts een voorbeeldweergave en belandt niet in het document. Wil je bewust een nieuwe lijst beginnen, typ dan zoals altijd „- ” of „1. ”. In tabellen ga je met Tab naar de volgende cel, en in een lijst spring je met Tab zoals gewoonlijk een niveau in."
+      "p3": "Het voorstel is slechts een voorbeeld en belandt niet in het document. Wie bewust een nieuwe lijst wil beginnen, typt zoals voorheen „- ” of „1. ”. In tabellen ga je met Tab naar de volgende cel, en in een lijst springt Tab zoals gewoonlijk een punt in. Wil je toch terug, dan verwijdert de backspatetoets in de lege regel direct onder een lijst de regel met één druk en zet de cursor aan het einde van het laatste punt."
     },
     "where": "Klik in de editor in de lege regel onder een afbeelding die volgt op een lijst, en druk op Tab."
   },

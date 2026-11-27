@@ -77,7 +77,7 @@
     "details": {
       "p1": "Klick in die leere Zeile unter dem Bild. Gehört sie zu einer Aufzählung darüber, steht dort blass das Aufzählungszeichen (bei einer nummerierten Liste die nächste Nummer, bei einer Aufgabenliste ein leeres Kästchen) und der Hinweis „Tab: Aufzählung fortsetzen“. Mit Tab wird daraus der nächste Punkt; das Bild bleibt, wo es war. Strg+Z nimmt das in einem Schritt zurück.",
       "p2": "Fortgesetzt wird die letzte Liste vor der Zeile, solange höchstens zwei Blöcke dazwischen stehen und keine Überschrift. Direkt unter der Liste landet der neue Punkt auf der Ebene des letzten Punkts, auch in einer Unterliste; über ein Bild hinweg auf der Ebene der Liste neben dem Bild. Eine nummerierte Liste zählt weiter, eine Aufgabe bleibt eine Aufgabe. Steht das Bild innerhalb eines Punkts und die leere Zeile darunter, wird die Zeile zum nächsten Punkt derselben Liste.",
-      "p3": "Der Vorschlag ist nur eine Vorschau und landet nicht im Dokument. Wer bewusst eine neue Liste beginnen will, tippt wie bisher „- “ oder „1. “. In Tabellen wechselt Tab weiter in die nächste Zelle, und in einer Liste rückt Tab einen Punkt ein wie gewohnt."
+      "p3": "Der Vorschlag ist nur eine Vorschau und landet nicht im Dokument. Wer bewusst eine neue Liste beginnen will, tippt wie bisher „- “ oder „1. “. In Tabellen wechselt Tab weiter in die nächste Zelle, und in einer Liste rückt Tab einen Punkt ein wie gewohnt. Willst du doch zurück, nimmt die Rücktaste in der leeren Zeile direkt unter einer Liste die Zeile mit einem Druck weg und setzt den Cursor ans Ende des letzten Punkts."
     },
     "where": "Im Editor in die leere Zeile unter einem Bild klicken, das auf eine Aufzählung folgt, und Tab drücken."
   },
