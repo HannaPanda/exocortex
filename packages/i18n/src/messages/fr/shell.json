@@ -163,6 +163,8 @@
     "trashKeywords": "supprimé corbeille archive restaurer",
     "newChat": "Démarrer une nouvelle discussion",
     "newChatKeywords": "discussion conversation chat ia assistant question nouveau",
+    "undoLastRun": "Annuler la dernière exécution de l’IA",
+    "undoLastRunKeywords": "ia exécution annuler défaire undo modification assistant chat",
     "chatExpand": "Afficher le chat IA en plein écran",
     "chatCollapse": "Réduire le chat IA",
     "chatExpandKeywords": "ia chat plein écran grand maximiser page replier réduire à côté",
@@ -466,7 +468,10 @@
     "exportMarkdown": "Exporter en Markdown",
     "render": "Publier en PDF…",
     "importMarkdown": "Importer du Markdown",
-    "archive": "Mettre à la corbeille"
+    "archive": "Mettre à la corbeille",
+    "aiWorking": "L’IA travaille ici en ce moment",
+    "aiWorkingReading": "Une exécution de l’IA lit actuellement cette page. Rien n’est verrouillé, tu peux continuer à écrire.",
+    "aiWorkingWriting": "Une exécution de l’IA écrit actuellement sur cette page. Rien n’est verrouillé, tu peux continuer à écrire."
   },
   "documentTitleInput": {
     "label": "Titre de la page",

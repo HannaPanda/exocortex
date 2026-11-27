@@ -163,6 +163,8 @@
     "trashKeywords": "deleted archive restore trash",
     "newChat": "Start new chat",
     "newChatKeywords": "chat conversation ai assistant question new",
+    "undoLastRun": "Undo last AI run",
+    "undoLastRunKeywords": "ai run undo revert change assistant chat",
     "chatExpand": "Show AI chat full screen",
     "chatCollapse": "Minimize AI chat",
     "chatExpandKeywords": "ai chat full screen fullscreen maximize page collapse minimize alongside",
@@ -466,7 +468,10 @@
     "exportMarkdown": "Export as Markdown",
     "render": "Publish as PDF …",
     "importMarkdown": "Import Markdown",
-    "archive": "Move to trash"
+    "archive": "Move to trash",
+    "aiWorking": "AI is working here",
+    "aiWorkingReading": "An AI run is currently reading this page. Nothing is locked, you can keep writing.",
+    "aiWorkingWriting": "An AI run is currently writing to this page. Nothing is locked, you can keep writing."
   },
   "documentTitleInput": {
     "label": "Page title",

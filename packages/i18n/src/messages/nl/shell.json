@@ -163,6 +163,8 @@
     "trashKeywords": "verwijderd archief herstellen",
     "newChat": "Nieuwe chat starten",
     "newChatKeywords": "chat gesprek conversatie ai assistent vraag nieuw",
+    "undoLastRun": "Laatste AI-run ongedaan maken",
+    "undoLastRunKeywords": "ai run ongedaan herstellen undo wijziging assistent chat",
     "chatExpand": "AI-chat schermvullend weergeven",
     "chatCollapse": "AI-chat verkleinen",
     "chatExpandKeywords": "ai chat volledig scherm schermvullend groot maximaliseren pagina inklappen verkleinen ernaast",
@@ -466,7 +468,10 @@
     "exportMarkdown": "Exporteren als Markdown",
     "render": "Publiceren als PDF …",
     "importMarkdown": "Markdown importeren",
-    "archive": "Naar de prullenbak"
+    "archive": "Naar de prullenbak",
+    "aiWorking": "AI is hier nu bezig",
+    "aiWorkingReading": "Een AI-run leest nu deze pagina. Er is niets vergrendeld, je kunt gewoon verder schrijven.",
+    "aiWorkingWriting": "Een AI-run schrijft nu op deze pagina. Er is niets vergrendeld, je kunt gewoon verder schrijven."
   },
   "documentTitleInput": {
     "label": "Paginatitel",

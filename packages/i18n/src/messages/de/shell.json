@@ -163,6 +163,8 @@
     "trashKeywords": "gelöscht archiv wiederherstellen",
     "newChat": "Neuen Chat beginnen",
     "newChatKeywords": "chat gespräch unterhaltung ki assistent frage neu",
+    "undoLastRun": "Letzten KI-Lauf rückgängig machen",
+    "undoLastRunKeywords": "ki lauf rückgängig zurücknehmen undo änderung assistent chat",
     "chatExpand": "KI-Chat bildschirmfüllend zeigen",
     "chatCollapse": "KI-Chat verkleinern",
     "chatExpandKeywords": "ki chat vollbild bildschirmfüllend groß maximieren seite einklappen verkleinern daneben",
@@ -466,7 +468,10 @@
     "exportMarkdown": "Als Markdown exportieren",
     "render": "Als PDF veröffentlichen …",
     "importMarkdown": "Markdown importieren",
-    "archive": "In den Papierkorb"
+    "archive": "In den Papierkorb",
+    "aiWorking": "KI arbeitet gerade hier",
+    "aiWorkingReading": "Ein KI-Lauf liest gerade diese Seite. Gesperrt ist nichts, du kannst weiterschreiben.",
+    "aiWorkingWriting": "Ein KI-Lauf schreibt gerade in diese Seite. Gesperrt ist nichts, du kannst weiterschreiben."
   },
   "documentTitleInput": {
     "label": "Seitentitel",

@@ -163,6 +163,8 @@
     "trashKeywords": "eliminado archivo restaurar papelera",
     "newChat": "Empezar un nuevo chat",
     "newChatKeywords": "chat conversacion charla ia asistente pregunta nuevo",
+    "undoLastRun": "Deshacer la última ejecución de IA",
+    "undoLastRunKeywords": "ia ejecución deshacer revertir undo cambio asistente chat",
     "chatExpand": "Mostrar chat de IA a pantalla completa",
     "chatCollapse": "Reducir chat de IA",
     "chatExpandKeywords": "ia chat pantalla completa grande maximizar página plegar reducir al lado",
@@ -466,7 +468,10 @@
     "exportMarkdown": "Exportar como Markdown",
     "render": "Publicar como PDF …",
     "importMarkdown": "Importar Markdown",
-    "archive": "Mover a la papelera"
+    "archive": "Mover a la papelera",
+    "aiWorking": "La IA está trabajando aquí",
+    "aiWorkingReading": "Una ejecución de IA está leyendo esta página. Nada está bloqueado, puedes seguir escribiendo.",
+    "aiWorkingWriting": "Una ejecución de IA está escribiendo en esta página. Nada está bloqueado, puedes seguir escribiendo."
   },
   "documentTitleInput": {
     "label": "Título de la página",

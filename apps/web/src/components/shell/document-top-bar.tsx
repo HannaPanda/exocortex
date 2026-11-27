@@ -37,6 +37,7 @@ import { useInbox } from '@/lib/api/inbox-queries';
 import { useDocumentShares } from '@/lib/api/share-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 
+import { AiWorkingHint } from './ai-working-hint';
 import { useGuardedMove } from './guarded-move';
 import { PageBreadcrumb } from './page-breadcrumb';
 import { SaveIndicator } from './save-indicator';
@@ -142,6 +143,7 @@ export function DocumentTopBar({
       ) : null}
 
       <div className="ml-auto flex items-center gap-3">
+        {archived ? null : <AiWorkingHint documentId={documentId} />}
         {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
 
         {inInbox && detail.access === 'write' ? (
