@@ -46,6 +46,16 @@ checklist rather than a paragraph. Pick the one that fits and the rest follows.
    refuses a confined credential at the workspace root, and it is also what lets
    the holder of a `WRITE` + `SUBTREE` share add a page inside the branch.
 
+One page-level answer carries a little of what sits above the page: a row of a
+database (`GET /api/documents/:id/row`, `exo_database_row_get`) comes with the
+columns of its database, names, types and options, because a value is
+unreadable without them and the page header shows them (issue #254). That is
+the schema of the row the reader may already read, nothing more: the
+database's other rows, its views and its own title stay behind
+`requireDocumentContext` on the database, which a `PAGE_ONLY` grant on the row
+does not pass. A relation's linked rows are named only when the reader may read
+their database, otherwise the header shows their ids.
+
 `findMembershipRole` exists for the three questions that are about an _account_
 rather than about this request: whether the person a page is being shared with
 is already a member, what the realtime gateway should do with a socket, and what

@@ -583,9 +583,10 @@ const databaseRowGetInputSchema = z.object({ documentId: idSchema });
 export const databaseRowGetTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_get',
   description:
-    'Liest die Spaltenwerte einer Seite, falls sie eine Zeile in einer Datenbank ist (ADR-011: eine Zeile ist eine ' +
-    'gewöhnliche Seite mit einer Datenbank als übergeordnetem Element). Antwortet mit row: null, wenn die Seite ' +
-    'keine Zeile ist -- eine gewöhnliche Seite, eine Datenbank selbst oder eine Seite auf oberster Ebene.',
+    'Liest die Werte einer Seite, die eine Zeile in einer Datenbank ist (ADR-011), mit den Spalten ihrer Datenbank ' +
+    '(properties: Name, Typ, Optionen, in deren Reihenfolge): derselbe Stand, den der Kopf der Seite im Browser zeigt; ' +
+    'geändert wird mit exo_database_row_update. row: null, wenn die Seite keine Zeile ist (gewöhnliche Seite, ' +
+    'Datenbank selbst, Seite auf oberster Ebene).',
   inputSchema: databaseRowGetInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -599,8 +600,12 @@ export const databaseRowGetTool: AnyToolDefinition = defineTool({
     if (result.row === null) {
       return { text: `Seite ${input.documentId} ist keine Datenbankzeile.`, data: result };
     }
+    // Named by column, as the page header shows them (issue #254).
+    const names = new Map(result.properties.map((p) => [p.id, `${p.name} (${p.id})`] as const));
+    const wholeDays = wholeDayColumns(result.properties);
     const lines = result.row.values.map(
-      (value) => `- ${value.propertyId}: ${formatCell(value.value)}`,
+      ({ propertyId, value }) =>
+        `- ${names.get(propertyId) ?? propertyId}: ${formatCell(value, wholeDays.has(propertyId))}`,
     );
     return {
       text: `${result.row.document.title} (id: ${result.row.document.id})\n${lines.join('\n')}`,

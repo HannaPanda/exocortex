@@ -19,6 +19,7 @@ import {
   type DatabaseRowPropertyValue,
   type DatabaseSort,
   databaseSortSchema,
+  type DocumentRowResponse,
   EMPTY_DATABASE_FILTER_GROUP,
   type FormulaValueType,
   instantFromIsoInput,
@@ -51,6 +52,7 @@ import { DocumentsService, toSummary } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { listDatabaseProperties } from './database-properties.service';
 import { normalizeRelationValue } from './derived-properties';
 
 const sortsArraySchema = z.array(databaseSortSchema);
@@ -450,19 +452,37 @@ export class DatabaseRowsService {
    * here, not an error.
    */
   async getForDocument(documentId: string, userId: string): Promise<DatabaseRow | null> {
+    return (await this.describeDocumentRow(documentId, userId)).row;
+  }
+
+  /**
+   * The row a document is, together with the columns of its database (issue
+   * #254): what a page header needs to show and edit the row's values.
+   *
+   * The columns come with the row on the row's own right. The page may be all
+   * the reader holds -- a single page shared with them (ADR-044) -- and the
+   * values are unreadable without their names, types and options; the schema
+   * of the row they may read is part of reading it, while the database's other
+   * rows stay behind its own check.
+   */
+  async describeDocumentRow(documentId: string, userId: string): Promise<DocumentRowResponse> {
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
     const collectionDocumentId = context.document.parentId;
-    if (collectionDocumentId === null) return null;
+    if (collectionDocumentId === null) return { row: null, properties: [] };
 
     const parent = await this.prisma.document.findUnique({
       where: { id: collectionDocumentId },
       select: { type: true },
     });
-    if (parent === null || parent.type !== 'COLLECTION') return null;
+    if (parent === null || parent.type !== 'COLLECTION') return { row: null, properties: [] };
 
-    return this.toRowResponse(collectionDocumentId, documentId);
+    const [row, properties] = await Promise.all([
+      this.toRowResponse(collectionDocumentId, documentId),
+      listDatabaseProperties(this.prisma, collectionDocumentId),
+    ]);
+    return { row, properties };
   }
 
   async updateValues(input: {

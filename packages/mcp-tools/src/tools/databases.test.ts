@@ -85,6 +85,32 @@ describe('databaseRowGetTool', () => {
     expect(result.text).toContain('prop1234567: Erledigt');
   });
 
+  it('names each value by its column when the answer carries the columns (issue #254)', async () => {
+    const { client } = createFakeClient({
+      row: {
+        document: rowDocument,
+        values: [{ propertyId: 'prop1234567', value: 'Erledigt' }],
+      },
+      properties: [
+        {
+          id: 'prop1234567',
+          documentId: 'coll1234567',
+          type: 'TEXT',
+          name: 'Status',
+          orderKey: 'a0',
+          config: null,
+          options: [],
+          createdAt: '2026-11-27T10:00:00.000Z',
+          updatedAt: '2026-11-27T10:00:00.000Z',
+        },
+      ],
+    });
+
+    const result = await databaseRowGetTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain('- Status (prop1234567): Erledigt');
+  });
+
   it('says so, not an error, when the document is not a row', async () => {
     const { client } = createFakeClient({ row: null });
 

@@ -506,6 +506,15 @@ export type DatabaseRow = z.infer<typeof databaseRowSchema>;
  */
 export const documentRowResponseSchema = z.object({
   row: databaseRowSchema.nullable(),
+  /**
+   * The columns of the database the row belongs to, in the database's order
+   * (issue #254), empty when `row` is null. Carried here rather than left to
+   * `GET /api/documents/:collectionId/properties` because reading a row is the
+   * whole of the right this answer needs: somebody a single row page was shared
+   * with (ADR-044) may not open its database, and a value without its column's
+   * name, type and options cannot be read at all.
+   */
+  properties: z.array(databasePropertySchema).default([]),
 });
 export type DocumentRowResponse = z.infer<typeof documentRowResponseSchema>;
 

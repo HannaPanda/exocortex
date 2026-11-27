@@ -538,6 +538,35 @@ describe('database rows', () => {
       expect(answer?.values.find((entry) => entry.propertyId === status.id)?.value).toBe(done.id);
     });
 
+    it('carries the columns of the row with it, in the database order (issue #254)', async () => {
+      const { collectionId, status, priority, urgent } = await setupTaskDatabase();
+      const row = await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Kopf einer Zeile', values: [] },
+        correlationId,
+      });
+
+      const answer = await rows.describeDocumentRow(row.document.id, ownerId);
+      expect(answer.row?.document.id).toBe(row.document.id);
+      const ids = answer.properties.map((property) => property.id);
+      expect(ids).toEqual([status.id, priority.id, urgent.id]);
+      expect(answer.properties.find((property) => property.id === status.id)?.options).not.toEqual(
+        [],
+      );
+
+      const plain = await documents.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Keine Zeile', type: 'PAGE', parentId: null },
+        correlationId,
+      });
+      expect(await rows.describeDocumentRow(plain.id, ownerId)).toEqual({
+        row: null,
+        properties: [],
+      });
+    });
+
     it('answers null for an ordinary page, not an error', async () => {
       const documentId = await documents.create({
         workspaceId,
@@ -566,6 +595,46 @@ describe('database rows', () => {
         correlationId,
       });
       expect(await rows.getForDocument(child.id, ownerId)).toBeNull();
+    });
+
+    it('hands the columns to somebody only the row was shared with (issue #254)', async () => {
+      const { collectionId, status } = await setupTaskDatabase();
+      const row = await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Nur diese Zeile geteilt', values: [] },
+        correlationId,
+      });
+      const outsider = await prisma.user.create({
+        data: {
+          email: `db-outsider-${Date.now().toString(36)}@exocortex.test`,
+          name: 'Outsider',
+          emailVerified: true,
+        },
+      });
+      try {
+        await prisma.documentShare.create({
+          data: {
+            workspaceId,
+            documentId: row.document.id,
+            kind: 'USER',
+            permission: 'READ',
+            scope: 'PAGE_ONLY',
+            granteeId: outsider.id,
+            createdById: ownerId,
+          },
+        });
+
+        const answer = await rows.describeDocumentRow(row.document.id, outsider.id);
+        expect(answer.row?.document.id).toBe(row.document.id);
+        expect(answer.properties.map((property) => property.id)).toContain(status.id);
+        // The database itself stays behind its own check.
+        await expect(properties.list(collectionId, outsider.id)).rejects.toBeInstanceOf(
+          AuthorizationError,
+        );
+      } finally {
+        await prisma.user.delete({ where: { id: outsider.id } });
+      }
     });
 
     it('denies a non-member, the same as any other document read', async () => {

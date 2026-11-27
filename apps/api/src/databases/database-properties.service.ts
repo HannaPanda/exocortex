@@ -88,6 +88,23 @@ function toResponse(row: PropertyWithOptions): DatabaseProperty {
 }
 
 /**
+ * The columns of one database in their order, without an access check: the
+ * caller has already decided the reader may see them, either as a reader of the
+ * database (`list`) or as a reader of one of its rows (issue #254).
+ */
+export async function listDatabaseProperties(
+  prisma: PrismaClient,
+  collectionDocumentId: string,
+): Promise<DatabaseProperty[]> {
+  const rows = await prisma.databaseProperty.findMany({
+    where: { documentId: collectionDocumentId },
+    include: PROPERTY_INCLUDE,
+    orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+  });
+  return rows.map(toResponse);
+}
+
+/**
  * Manages the typed schema of a database (a `Document` with `type: 'COLLECTION'`):
  * its properties and their SELECT/MULTI_SELECT options. Row values live in
  * `DatabaseRowsService`; views live in `DatabaseViewsService`.
@@ -104,13 +121,7 @@ export class DatabasePropertiesService {
   async list(collectionDocumentId: string, userId: string): Promise<DatabaseProperty[]> {
     const context = await this.requireCollection(collectionDocumentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
-
-    const rows = await this.prisma.databaseProperty.findMany({
-      where: { documentId: collectionDocumentId },
-      include: PROPERTY_INCLUDE,
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
-    return rows.map(toResponse);
+    return listDatabaseProperties(this.prisma, collectionDocumentId);
   }
 
   async create(input: {

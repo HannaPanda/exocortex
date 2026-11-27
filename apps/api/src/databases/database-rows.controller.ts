@@ -76,7 +76,7 @@ export class DatabaseRowsController {
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
   ): Promise<DocumentRowResponse> {
-    return { row: await this.rows.getForDocument(documentId, session.userId) };
+    return this.rows.describeDocumentRow(documentId, session.userId);
   }
 
   @Patch(':documentId/values')
