@@ -36,6 +36,8 @@
     "ai_conversation_locked": "Une réponse est encore en cours dans ce chat.",
     "ai_conversation_compacting": "L’historique de ce chat est en train d’être résumé. Tu pourras continuer à écrire dans un instant.",
     "ai_conversation_cursor_invalid": "Impossible de faire défiler la liste plus loin.",
+    "ai_chat_attachment_invalid": "Une pièce jointe n’est plus disponible. Supprime-la et ajoute-la à nouveau.",
+    "ai_chat_attachments_limit": "Impossible d’envoyer autant d’images avec un seul message.",
     "document_content_conflict": "La page a été modifiée entre-temps.",
     "document_content_lossy": "L’ajout entraînerait la perte des bases de données intégrées sur cette page.",
     "document_page_oversized": "Cette page est devenue trop grande pour y ajouter du contenu. Déplace une section vers une page dédiée.",

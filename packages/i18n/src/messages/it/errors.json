@@ -36,6 +36,8 @@
     "ai_conversation_locked": "Una risposta è ancora in corso in questa chat.",
     "ai_conversation_compacting": "La cronologia di questa chat è in fase di compressione. Tra poco potrai continuare a scrivere.",
     "ai_conversation_cursor_invalid": "Impossibile sfogliare ulteriormente l’elenco.",
+    "ai_chat_attachment_invalid": "Un allegato non è più disponibile. Rimuovilo e aggiungilo di nuovo.",
+    "ai_chat_attachments_limit": "Non è possibile inviare così tante immagini con un unico messaggio.",
     "document_content_conflict": "La pagina è stata modificata nel frattempo.",
     "document_content_lossy": "Aggiungendo contenuto andrebbero persi i database incorporati in questa pagina.",
     "document_page_oversized": "Questa pagina è diventata troppo grande per aggiungere altro contenuto. Sposta una sezione in una pagina separata.",

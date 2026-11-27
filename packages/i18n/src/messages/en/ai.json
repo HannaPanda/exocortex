@@ -34,7 +34,10 @@
     "copyMarkdown": "Copy response as Markdown",
     "copiedMarkdown": "Response copied as Markdown",
     "copyTooltip": "Copy Markdown",
-    "copiedTooltip": "Copied"
+    "copiedTooltip": "Copied",
+    "attachmentOpen": "View image {name} large",
+    "attachmentDescribed": "The AI received this description of the image: {description}",
+    "attachmentNotDescribed": "{name} is not described yet. The AI only knows the filename."
   },
   "composer": {
     "label": "Message to AI",
@@ -42,7 +45,10 @@
     "send": "Send question",
     "commandsLabel": "Commands",
     "startLabel": "Start a new chat with a question",
-    "startPlaceholder": "Ask the AI something …"
+    "startPlaceholder": "Ask the AI something …",
+    "attach": "Attach image",
+    "attachHint": "Attach image: select, drag in, or paste",
+    "dropHint": "Drop to attach the image to the next message"
   },
   "commands": {
     "clear": "Clear context, history remains readable",
@@ -188,7 +194,15 @@
     "pin": "Pin source",
     "pinHint": "Permanently pin a page, database view, or saved search",
     "pinFull": "No more than {count, plural, one {# source is} other {# sources are}} allowed here.",
-    "pinFailed": "The source could not be pinned."
+    "pinFailed": "The source could not be pinned.",
+    "file": "Image: {name}",
+    "fileUploading": "Uploading: {name}",
+    "fileRemove": "Do not include image {name}",
+    "fileOnce": "Sent once with the next message. The AI receives a description of the image, not the image itself.",
+    "fileNotImage": "{name} is not an image. The chat supports PNG, JPEG, WebP, GIF, and AVIF.",
+    "fileTooMany": "{count, plural, one {Only one image can be sent with a message.} other {At most # images can be sent with a message.}}",
+    "fileFailed": "{name} could not be uploaded: {reason}",
+    "fileFailedPlain": "The image could not be uploaded."
   },
   "meter": {
     "label": "Context usage",

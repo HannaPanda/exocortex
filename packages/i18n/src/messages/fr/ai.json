@@ -34,7 +34,10 @@
     "copyMarkdown": "Copier la réponse en Markdown",
     "copiedMarkdown": "Réponse copiée en Markdown",
     "copyTooltip": "Copier en Markdown",
-    "copiedTooltip": "Copié"
+    "copiedTooltip": "Copié",
+    "attachmentOpen": "Agrandir l’image {name}",
+    "attachmentDescribed": "L’IA a reçu cette description de l’image : {description}",
+    "attachmentNotDescribed": "{name} n’est pas encore décrite. L’IA ne connaît que le nom du fichier."
   },
   "composer": {
     "label": "Message à l’IA",
@@ -42,7 +45,10 @@
     "send": "Envoyer la question",
     "commandsLabel": "Commandes",
     "startLabel": "Démarrer un nouveau chat avec une question",
-    "startPlaceholder": "Pose une question à l’IA…"
+    "startPlaceholder": "Pose une question à l’IA…",
+    "attach": "Joindre une image",
+    "attachHint": "Joindre une image : sélectionner, glisser-déposer ou coller",
+    "dropHint": "Relâche pour joindre l’image au prochain message"
   },
   "commands": {
     "clear": "Effacer le contexte, l’historique reste lisible",
@@ -188,7 +194,15 @@
     "pin": "Épingler la source",
     "pinHint": "Épingler de façon permanente une page, une vue de base de données ou une recherche enregistrée",
     "pinFull": "Pas plus de {count, plural, one {# source n’est autorisée} many {# de sources ne sont autorisées} other {# sources ne sont autorisées}} ici.",
-    "pinFailed": "Impossible d’épingler la source."
+    "pinFailed": "Impossible d’épingler la source.",
+    "file": "Image : {name}",
+    "fileUploading": "Téléversement : {name}",
+    "fileRemove": "Ne pas envoyer l’image {name}",
+    "fileOnce": "Envoyée une seule fois avec le prochain message. L’IA reçoit une description de l’image, pas l’image elle-même.",
+    "fileNotImage": "{name} n’est pas une image. Le chat accepte les formats PNG, JPEG, WebP, GIF et AVIF.",
+    "fileTooMany": "{count, plural, one {Un seul message ne peut contenir qu’une image.} many {Un seul message ne peut contenir au maximum que # images.} other {Un seul message ne peut contenir au maximum que # images.}}",
+    "fileFailed": "Impossible de téléverser {name} : {reason}",
+    "fileFailedPlain": "Impossible de téléverser l’image."
   },
   "meter": {
     "label": "Utilisation du contexte",

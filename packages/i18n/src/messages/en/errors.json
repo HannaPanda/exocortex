@@ -36,6 +36,8 @@
     "ai_conversation_locked": "A response is still in progress in this chat.",
     "ai_conversation_compacting": "This chat’s history is currently being compacted. You can continue writing in a moment.",
     "ai_conversation_cursor_invalid": "Could not paginate the list further.",
+    "ai_chat_attachment_invalid": "An attachment is no longer available. Remove it and add it again.",
+    "ai_chat_attachments_limit": "That’s too many images for a single message.",
     "document_content_conflict": "The page was modified in the meantime.",
     "document_content_lossy": "Appending would lose embedded databases on this page.",
     "document_page_oversized": "This page has become too large to append anything. Move a section to its own page.",

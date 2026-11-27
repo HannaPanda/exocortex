@@ -34,7 +34,10 @@
     "copyMarkdown": "Copiar resposta como Markdown",
     "copiedMarkdown": "Resposta copiada como Markdown",
     "copyTooltip": "Copiar Markdown",
-    "copiedTooltip": "Copiado"
+    "copiedTooltip": "Copiado",
+    "attachmentOpen": "Ver imagem {name} em tamanho grande",
+    "attachmentDescribed": "A IA recebeu esta descrição da imagem: {description}",
+    "attachmentNotDescribed": "{name} ainda não tem descrição. A IA só conhece o nome do arquivo."
   },
   "composer": {
     "label": "Mensagem para a IA",
@@ -42,7 +45,10 @@
     "send": "Enviar pergunta",
     "commandsLabel": "Comandos",
     "startLabel": "Iniciar novo chat com uma pergunta",
-    "startPlaceholder": "Pergunte algo à IA…"
+    "startPlaceholder": "Pergunte algo à IA…",
+    "attach": "Anexar imagem",
+    "attachHint": "Anexar imagem: selecionar, arrastar ou colar",
+    "dropHint": "Solte para anexar a imagem à próxima mensagem"
   },
   "commands": {
     "clear": "Limpar contexto, histórico continua visível",
@@ -188,7 +194,15 @@
     "pin": "Fixar fonte",
     "pinHint": "Fixar permanentemente página, visualização de banco de dados ou busca salva",
     "pinFull": "Mais de {count, plural, one {# fonte não é permitida} many {# fontes não são permitidas} other {# fontes não são permitidas}} aqui.",
-    "pinFailed": "Não foi possível fixar a fonte."
+    "pinFailed": "Não foi possível fixar a fonte.",
+    "file": "Imagem: {name}",
+    "fileUploading": "Enviando: {name}",
+    "fileRemove": "Não enviar a imagem {name}",
+    "fileOnce": "Será enviada uma vez com a próxima mensagem. A IA recebe uma descrição da imagem, não a imagem em si.",
+    "fileNotImage": "{name} não é uma imagem. O chat aceita PNG, JPEG, WebP, GIF e AVIF.",
+    "fileTooMany": "{count, plural, one {É possível enviar uma imagem por mensagem.} many {É possível enviar no máximo # imagens por mensagem.} other {É possível enviar no máximo # imagens por mensagem.}}",
+    "fileFailed": "Não foi possível enviar {name}: {reason}",
+    "fileFailedPlain": "Não foi possível enviar a imagem."
   },
   "meter": {
     "label": "Uso de contexto",

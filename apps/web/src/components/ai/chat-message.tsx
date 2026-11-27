@@ -11,6 +11,7 @@ import { Badge, cn, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/u
 import { runInspectorShortHref } from '@/components/runs/run-links';
 
 import { ChatMarkdown, CopyMarkdownButton } from './chat-markdown';
+import { ChatMessagePictures } from './chat-message-pictures';
 import { QUESTION_ATTRIBUTE } from './use-transcript-follow';
 
 export interface ChatMessageProps {
@@ -56,13 +57,17 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
       return (
         // Where "Zum Anfang der Antwort" lands (issue #242), and the question
         // "Am Antwortanfang bleiben" brings to the top, found by its id (#282).
-        <div className="flex justify-end" {...{ [QUESTION_ATTRIBUTE]: message.id }}>
-          <p
-            data-testid="ai-question"
-            className="max-w-[85%] rounded-md bg-primary px-3 py-2 text-sm whitespace-pre-wrap break-words text-primary-foreground"
-          >
-            {message.content}
-          </p>
+        <div className="flex flex-col items-end gap-1" {...{ [QUESTION_ATTRIBUTE]: message.id }}>
+          <ChatMessagePictures attachments={message.attachments} />
+          {/* A picture can be the whole question; then there are no words to show. */}
+          {message.content.length === 0 ? null : (
+            <p
+              data-testid="ai-question"
+              className="max-w-[85%] rounded-md bg-primary px-3 py-2 text-sm whitespace-pre-wrap break-words text-primary-foreground"
+            >
+              {message.content}
+            </p>
+          )}
         </div>
       );
 

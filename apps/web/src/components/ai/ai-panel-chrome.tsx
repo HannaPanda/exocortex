@@ -26,11 +26,13 @@ import {
 } from '@exocortex/ui';
 
 import { ChatComposer } from './chat-composer';
+import { ChatFileChip } from './chat-file-chip';
 import { ContextChips } from './context-chips';
 import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
 import { type ModelChoice } from './model-choice';
 import { ModelPicker } from './model-picker';
+import { type ChatAttachments } from './use-chat-attachments';
 
 /**
  * The fixed parts of the AI panel around its transcript: the conversation
@@ -213,6 +215,8 @@ export function AiPanelFooter({
   onPinRemove,
   busy,
   onSubmit,
+  attachments,
+  dragging,
 }: {
   openDocument: DocumentDetail | null;
   pageContextEnabled: boolean;
@@ -228,9 +232,24 @@ export function AiPanelFooter({
   onPinRemove: (source: AiConversationSource) => void;
   busy: boolean;
   onSubmit: (content: string) => Promise<void>;
+  /** The pictures waiting for the next message (issue #223). */
+  attachments: ChatAttachments;
+  /** Files are being dragged over the panel: the footer says where they go. */
+  dragging: boolean;
 }) {
+  const t = useTranslations('ai.composer');
   return (
-    <div className="border-t border-border">
+    <div
+      className={cn(
+        'border-t border-border',
+        dragging && 'rounded-md bg-accent/40 outline-2 outline-primary outline-dashed',
+      )}
+    >
+      {dragging ? (
+        <p className="px-3 pt-2 text-xs text-muted-foreground" data-testid="ai-drop-hint">
+          {t('dropHint')}
+        </p>
+      ) : null}
       <ContextChips
         documentTitle={openDocument?.title ?? null}
         isCollection={openDocument?.type === 'COLLECTION'}
@@ -246,7 +265,27 @@ export function AiPanelFooter({
         onPinRemove={onPinRemove}
         disabled={busy}
       />
-      <ChatComposer disabled={busy} onSubmit={onSubmit} />
+      {attachments.files.length === 0 ? null : (
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5 px-2 pt-2">
+          {attachments.files.map((file) => (
+            <ChatFileChip
+              key={file.localId}
+              file={file}
+              disabled={busy}
+              onRemove={() => attachments.remove(file.localId)}
+            />
+          ))}
+        </div>
+      )}
+      <ChatComposer
+        disabled={busy}
+        onSubmit={onSubmit}
+        files={{
+          onFiles: attachments.add,
+          ready: attachments.readyIds.length > 0,
+          uploading: attachments.uploading,
+        }}
+      />
     </div>
   );
 }

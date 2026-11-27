@@ -34,7 +34,10 @@
     "copyMarkdown": "Kopiuj odpowiedź jako Markdown",
     "copiedMarkdown": "Skopiowano odpowiedź jako Markdown",
     "copyTooltip": "Kopiuj Markdown",
-    "copiedTooltip": "Skopiowano"
+    "copiedTooltip": "Skopiowano",
+    "attachmentOpen": "Zobacz powiększony obraz {name}",
+    "attachmentDescribed": "Sztuczna inteligencja otrzymała taki opis obrazu: {description}",
+    "attachmentNotDescribed": "Obraz {name} nie ma jeszcze opisu. Sztuczna inteligencja zna tylko nazwę pliku."
   },
   "composer": {
     "label": "Wiadomość do AI",
@@ -42,7 +45,10 @@
     "send": "Wyślij pytanie",
     "commandsLabel": "Polecenia",
     "startLabel": "Rozpocznij nowy czat od pytania",
-    "startPlaceholder": "Zapytaj AI o cokolwiek…"
+    "startPlaceholder": "Zapytaj AI o cokolwiek…",
+    "attach": "Załącz obraz",
+    "attachHint": "Załącz obraz: wybierz, przeciągnij lub wklej",
+    "dropHint": "Upuść, aby załączyć obraz do następnej wiadomości"
   },
   "commands": {
     "clear": "Wyczyść kontekst, historia pozostaje czytelna",
@@ -188,7 +194,15 @@
     "pin": "Przypnij źródło",
     "pinHint": "Przypnij na stałe stronę, widok bazy danych lub zapisane wyszukiwanie",
     "pinFull": "{count, plural, one {Więcej niż # źródło nie jest tutaj dozwolone.} few {Więcej niż # źródła nie są tutaj dozwolone.} many {Więcej niż # źródeł nie jest tutaj dozwolonych.} other {Więcej niż # źródła nie jest tutaj dozwolone.}}",
-    "pinFailed": "Nie udało się przypiąć źródła."
+    "pinFailed": "Nie udało się przypiąć źródła.",
+    "file": "Obraz: {name}",
+    "fileUploading": "Przesyłanie: {name}",
+    "fileRemove": "Nie wysyłaj obrazu {name}",
+    "fileOnce": "Zostanie wysłany raz z następną wiadomością. Sztuczna inteligencja otrzyma opis obrazu, a nie sam obraz.",
+    "fileNotImage": "Plik {name} nie jest obrazem. Na czacie dozwolone są formaty PNG, JPEG, WebP, GIF i AVIF.",
+    "fileTooMany": "{count, plural, one {W jednej wiadomości możesz wysłać jeden obraz.} few {W jednej wiadomości możesz wysłać najwyżej # obrazy.} many {W jednej wiadomości możesz wysłać najwyżej # obrazów.} other {W jednej wiadomości możesz wysłać najwyżej # obrazu.}}",
+    "fileFailed": "Nie udało się przesłać pliku {name}: {reason}",
+    "fileFailedPlain": "Nie udało się przesłać obrazu."
   },
   "meter": {
     "label": "Użycie kontekstu",

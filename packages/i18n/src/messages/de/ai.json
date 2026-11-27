@@ -34,7 +34,10 @@
     "copyMarkdown": "Antwort als Markdown kopieren",
     "copiedMarkdown": "Antwort als Markdown kopiert",
     "copyTooltip": "Markdown kopieren",
-    "copiedTooltip": "Kopiert"
+    "copiedTooltip": "Kopiert",
+    "attachmentOpen": "Bild {name} groß ansehen",
+    "attachmentDescribed": "Die KI hat das Bild so beschrieben bekommen: {description}",
+    "attachmentNotDescribed": "{name} ist noch nicht beschrieben. Die KI kennt nur den Dateinamen."
   },
   "composer": {
     "label": "Nachricht an die KI",
@@ -42,7 +45,10 @@
     "send": "Frage senden",
     "commandsLabel": "Befehle",
     "startLabel": "Neuen Chat mit einer Frage beginnen",
-    "startPlaceholder": "Frag die KI etwas …"
+    "startPlaceholder": "Frag die KI etwas …",
+    "attach": "Bild anhängen",
+    "attachHint": "Bild anhängen: auswählen, hineinziehen oder einfügen",
+    "dropHint": "Loslassen, um das Bild an die nächste Nachricht zu hängen"
   },
   "commands": {
     "clear": "Kontext leeren, Verlauf bleibt lesbar",
@@ -188,7 +194,15 @@
     "pin": "Quelle anheften",
     "pinHint": "Seite, Datenbankansicht oder gespeicherte Suche dauerhaft anheften",
     "pinFull": "Mehr als {count, plural, one {# Quelle ist} other {# Quellen sind}} hier nicht erlaubt.",
-    "pinFailed": "Die Quelle ließ sich nicht anheften."
+    "pinFailed": "Die Quelle ließ sich nicht anheften.",
+    "file": "Bild: {name}",
+    "fileUploading": "Lädt hoch: {name}",
+    "fileRemove": "Bild {name} nicht mitschicken",
+    "fileOnce": "Geht einmal mit der nächsten Nachricht mit. Die KI bekommt eine Beschreibung des Bildes, nicht das Bild selbst.",
+    "fileNotImage": "{name} ist kein Bild. Im Chat gehen PNG, JPEG, WebP, GIF und AVIF.",
+    "fileTooMany": "{count, plural, one {Mit einer Nachricht geht ein Bild mit.} other {Mit einer Nachricht gehen höchstens # Bilder mit.}}",
+    "fileFailed": "{name} ließ sich nicht hochladen: {reason}",
+    "fileFailedPlain": "Das Bild ließ sich nicht hochladen."
   },
   "meter": {
     "label": "Kontextauslastung",

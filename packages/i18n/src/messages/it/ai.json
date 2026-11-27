@@ -34,7 +34,10 @@
     "copyMarkdown": "Copia risposta come Markdown",
     "copiedMarkdown": "Risposta copiata come Markdown",
     "copyTooltip": "Copia Markdown",
-    "copiedTooltip": "Copiato"
+    "copiedTooltip": "Copiato",
+    "attachmentOpen": "Visualizza l’immagine {name} a schermo intero",
+    "attachmentDescribed": "L’IA ha ricevuto questa descrizione dell’immagine: {description}",
+    "attachmentNotDescribed": "{name} non ha ancora una descrizione. L’IA conosce solo il nome del file."
   },
   "composer": {
     "label": "Messaggio per l’IA",
@@ -42,7 +45,10 @@
     "send": "Invia domanda",
     "commandsLabel": "Comandi",
     "startLabel": "Inizia una nuova chat con una domanda",
-    "startPlaceholder": "Chiedi qualcosa all’IA…"
+    "startPlaceholder": "Chiedi qualcosa all’IA…",
+    "attach": "Allega immagine",
+    "attachHint": "Allega immagine: seleziona, trascina o incolla",
+    "dropHint": "Rilascia per allegare l’immagine al messaggio successivo"
   },
   "commands": {
     "clear": "Svuota il contesto, la cronologia rimane leggibile",
@@ -188,7 +194,15 @@
     "pin": "Fissa fonte",
     "pinHint": "Fissa in modo permanente una pagina, una vista database o una ricerca salvata",
     "pinFull": "{count, plural, one {Non è consentita più di # fonte} many {Non sono consentite più di # fonti} other {Non sono consentite più di # fonti}} qui.",
-    "pinFailed": "Impossibile fissare la fonte."
+    "pinFailed": "Impossibile fissare la fonte.",
+    "file": "Immagine: {name}",
+    "fileUploading": "Caricamento: {name}",
+    "fileRemove": "Non inviare l’immagine {name}",
+    "fileOnce": "Viene inviata una sola volta con il messaggio successivo. L’IA riceve una descrizione dell’immagine, non l’immagine stessa.",
+    "fileNotImage": "{name} non è un’immagine. Nella chat puoi usare PNG, JPEG, WebP, GIF e AVIF.",
+    "fileTooMany": "{count, plural, one {Puoi inviare solo un’immagine con un messaggio.} many {Puoi inviare al massimo # immagini con un messaggio.} other {Puoi inviare al massimo # immagini con un messaggio.}}",
+    "fileFailed": "Impossibile caricare {name}: {reason}",
+    "fileFailedPlain": "Impossibile caricare l’immagine."
   },
   "meter": {
     "label": "Utilizzo del contesto",

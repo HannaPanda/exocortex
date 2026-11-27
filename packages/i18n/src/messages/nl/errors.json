@@ -36,6 +36,8 @@
     "ai_conversation_locked": "Er loopt in deze chat nog een antwoord.",
     "ai_conversation_compacting": "De geschiedenis van deze chat wordt momenteel samengevat. Je kunt zo weer verder schrijven.",
     "ai_conversation_cursor_invalid": "De lijst kon niet verder worden doorgebladerd.",
+    "ai_chat_attachment_invalid": "Een bijlage is er niet meer. Verwijder deze en voeg hem opnieuw toe.",
+    "ai_chat_attachments_limit": "Zoveel afbeeldingen kunnen niet in één bericht mee.",
     "document_content_conflict": "De pagina is tussentijds gewijzigd.",
     "document_content_lossy": "Toevoegen zou ertoe leiden dat ingesloten databases op deze pagina verloren gaan.",
     "document_page_oversized": "Deze pagina is te groot geworden om nog iets toe te voegen. Verplaats een gedeelte naar een eigen pagina.",

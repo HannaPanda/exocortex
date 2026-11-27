@@ -1,11 +1,11 @@
 'use client';
 
-import { Loader2Icon, SendIcon } from 'lucide-react';
+import { ImagePlusIcon, Loader2Icon, SendIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { CHAT_COMMANDS } from '@exocortex/contracts';
-import { Button, Textarea } from '@exocortex/ui';
+import { ATTACHMENT_IMAGE_SOURCE_MIME_TYPES, CHAT_COMMANDS } from '@exocortex/contracts';
+import { Button, Textarea, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 import { CommandHint } from './command-hint';
 
@@ -19,6 +19,25 @@ export interface ChatComposerProps {
    * at once.
    */
   variant?: 'panel' | 'start';
+  /**
+   * Pictures for the next message (issue #223): the composer takes them from
+   * the clipboard and the file picker and hands them on. Absent, it takes none.
+   */
+  files?: ComposerFiles;
+}
+
+export interface ComposerFiles {
+  onFiles: (files: File[]) => void;
+  /** Pictures are ready to go: a message may then be sent without words. */
+  ready: boolean;
+  /** A picture is still uploading, and sending now would leave it behind. */
+  uploading: boolean;
+}
+
+/** Whatever files a clipboard or a drop carries. */
+export function filesOf(data: DataTransfer | null): File[] {
+  if (data === null) return [];
+  return Array.from(data.files);
 }
 
 const VARIANTS = {
@@ -43,7 +62,7 @@ const VARIANTS = {
 /** Matches a still-being-typed command word: a leading slash, no whitespace yet. */
 const COMMAND_PREFIX_PATTERN = /^\/([a-z]*)$/i;
 
-export function ChatComposer({ disabled, onSubmit, variant = 'panel' }: ChatComposerProps) {
+export function ChatComposer({ disabled, onSubmit, variant = 'panel', files }: ChatComposerProps) {
   const t = useTranslations('ai.composer');
   const look = VARIANTS[variant];
   const [value, setValue] = React.useState('');
@@ -76,9 +95,11 @@ export function ChatComposer({ disabled, onSubmit, variant = 'panel' }: ChatComp
     textareaRef.current?.focus();
   };
 
+  const content = value.trim();
+  const canSend = !disabled && !sending && hasSomethingToSend(content, files);
+
   const submit = async (): Promise<void> => {
-    const content = value.trim();
-    if (content.length === 0 || disabled || sending) return;
+    if (!canSend) return;
     setSending(true);
     setValue('');
     try {
@@ -109,6 +130,7 @@ export function ChatComposer({ disabled, onSubmit, variant = 'panel' }: ChatComp
           data-testid={look.inputTestId}
           disabled={disabled || sending}
           onChange={(event) => setValue(event.target.value)}
+          onPaste={(event) => pasteFiles(event, files)}
           ref={textareaRef}
           onKeyDown={(event) => {
             if (matches.length > 0) {
@@ -142,16 +164,83 @@ export function ChatComposer({ disabled, onSubmit, variant = 'panel' }: ChatComp
           }}
           className={look.textarea}
         />
+        {files === undefined ? null : (
+          <ComposerAttachButton files={files} disabled={disabled || sending} />
+        )}
         <Button
           size="icon"
           aria-label={t('send')}
           data-testid={look.sendTestId}
-          disabled={disabled || sending || value.trim().length === 0}
+          disabled={!canSend}
           onClick={() => void submit()}
         >
           {sending ? <Loader2Icon className="animate-spin" aria-hidden /> : <SendIcon />}
         </Button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Words, or pictures without words; never while a picture is still uploading,
+ * since the message would then leave it behind.
+ */
+function hasSomethingToSend(content: string, files: ComposerFiles | undefined): boolean {
+  if (files?.uploading === true) return false;
+  return content.length > 0 || files?.ready === true;
+}
+
+/**
+ * A screenshot in the clipboard often comes with its file name as text; the
+ * picture is what was meant, so a paste that carries files inserts no text.
+ */
+function pasteFiles(
+  event: React.ClipboardEvent<HTMLTextAreaElement>,
+  files: ComposerFiles | undefined,
+): void {
+  if (files === undefined) return;
+  const pasted = filesOf(event.clipboardData);
+  if (pasted.length === 0) return;
+  event.preventDefault();
+  files.onFiles(pasted);
+}
+
+/** The file picker for pictures (issue #223): a hidden input behind an icon button. */
+function ComposerAttachButton({ files, disabled }: { files: ComposerFiles; disabled: boolean }) {
+  const t = useTranslations('ai.composer');
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ATTACHMENT_IMAGE_SOURCE_MIME_TYPES.join(',')}
+        multiple
+        hidden
+        data-testid="ai-attach-input"
+        onChange={(event) => {
+          files.onFiles(Array.from(event.target.files ?? []));
+          // The same picture chosen twice in a row is still a choice.
+          event.target.value = '';
+        }}
+      />
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('attach')}
+              data-testid="ai-attach"
+              disabled={disabled}
+              onClick={() => inputRef.current?.click()}
+            >
+              <ImagePlusIcon />
+            </Button>
+          }
+        />
+        <TooltipContent>{t('attachHint')}</TooltipContent>
+      </Tooltip>
+    </>
   );
 }

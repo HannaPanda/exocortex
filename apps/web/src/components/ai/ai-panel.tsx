@@ -45,6 +45,7 @@ import { SharedChatNote } from './shared-chat-note';
 import { SourcePicker } from './source-picker';
 import { useActiveConversation } from './use-active-conversation';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
+import { useChatAttachments, useFileDrop } from './use-chat-attachments';
 import { useConversationSettings } from './use-conversation-settings';
 import { usePinnedSources } from './use-pinned-sources';
 import { useTranscriptFollow } from './use-transcript-follow';
@@ -316,6 +317,12 @@ function AiPanelBody({
     ensureConversation: startNewConversation,
     onError: setError,
   });
+  const attachments = useChatAttachments({
+    conversationId: activeConversationId,
+    ensureConversation: startNewConversation,
+    onError: setError,
+  });
+  const fileDrop = useFileDrop(attachments.add);
 
   /**
    * Sends `content`, into the open conversation or, with `fresh`, into a new
@@ -330,10 +337,14 @@ function AiPanelBody({
     try {
       const open = fresh ? null : activeConversationId;
       const conversationId = open ?? (await startNewConversation());
+      // The pictures above the composer belong to the open conversation; a
+      // question begun elsewhere (issue #288) does not take them along.
+      const attachmentIds = attachments.idsFor(open);
       const response = await postMessage.mutateAsync({
         conversationId,
         request: {
           content,
+          attachmentIds,
           documentId,
           databaseViewId,
           selection:
@@ -343,6 +354,8 @@ function AiPanelBody({
       // One hand-over, one message. Leaving it in the chip row would silently
       // attach the same passage to every following question.
       clearSelection({ sent: true });
+      // A command answers without a message, so its pictures wait for the next one.
+      if (response.command === null) attachments.sent();
 
       if (response.command !== null) {
         const command = response.command;
@@ -383,6 +396,7 @@ function AiPanelBody({
       className={panelFrameClass(layout.expanded)}
       data-testid="ai-panel"
       data-expanded={String(layout.expanded)}
+      {...fileDrop.handlers}
     >
       <AiPanelHeader
         expanded={layout.expanded}
@@ -462,6 +476,8 @@ function AiPanelBody({
         onPinRemove={pinnedSources.remove}
         busy={busy}
         onSubmit={handleSubmit}
+        attachments={attachments}
+        dragging={fileDrop.dragging}
       />
       <SourcePicker
         workspaceId={workspaceId}

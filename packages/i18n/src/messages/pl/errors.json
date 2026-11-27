@@ -36,6 +36,8 @@
     "ai_conversation_locked": "W tym czacie trwa jeszcze generowanie odpowiedzi.",
     "ai_conversation_compacting": "Historia tego czatu jest właśnie podsumowywana. Za chwilę możesz pisać dalej.",
     "ai_conversation_cursor_invalid": "Nie udało się przewinąć listy dalej.",
+    "ai_chat_attachment_invalid": "Załącznik już nie istnieje. Usuń go i dodaj ponownie.",
+    "ai_chat_attachments_limit": "Nie można wysłać tylu zdjęć w jednej wiadomości.",
     "document_content_conflict": "Strona została w międzyczasie zmodyfikowana.",
     "document_content_lossy": "Dołączenie spowodowałoby utratę baz danych osadzonych na tej stronie.",
     "document_page_oversized": "Ta strona jest za duża, aby cokolwiek do niej dołączyć. Przenieś część treści na osobną stronę.",
