@@ -807,6 +807,48 @@ test.describe('editor', () => {
     await expect(cell).toHaveText('unten');
   });
 
+  /**
+   * Issue #303: a page ending in a heading and a bare address (a paragraph
+   * with a link in it) had no line below it: a click there only put the caret
+   * behind the address, and arrow down went nowhere. Now both make the line,
+   * the link is neither followed nor carried into what is typed next.
+   */
+  test('a page ending in a link keeps a line to write in', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Link ${Date.now().toString(36)}`);
+    const markdown = '## Quellen\n\nhttps://example.com/artikel\n';
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown, mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    const link = surface.locator(':scope > p a');
+    await expect(link).toBeVisible({ timeout: 30_000 });
+    await expect(surface).toHaveAttribute('data-trailing-line', '');
+    const pageUrl = page.url();
+
+    // A click below the address makes the line, an empty one.
+    const box = await surface.locator(':scope > p').boundingBox();
+    if (box === null) throw new Error('paragraph has no layout');
+    await page.mouse.click(box.x + 24, box.y + box.height + 16);
+    const line = surface.locator(':scope > p').nth(1);
+    await expect(line).toHaveCount(1);
+    await expect(surface).not.toHaveAttribute('data-trailing-line');
+    await page.keyboard.type('danach');
+    await expect(line).toHaveText('danach');
+    await expect(line.locator('a')).toHaveCount(0);
+    expect(page.url()).toBe(pageUrl);
+
+    // Arrow down from the end of the last paragraph does the same.
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.type('weiter');
+    await expect(surface.locator(':scope > p')).toHaveCount(3);
+    await expect(surface.locator(':scope > p').nth(2)).toHaveText('weiter');
+    await expect(link).toHaveText('https://example.com/artikel');
+  });
+
   test('offers table controls inside a table', async ({ page }) => {
     await openEditor(page);
 
