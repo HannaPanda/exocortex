@@ -818,6 +818,19 @@ reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.
 
+### A block's own bar
+
+A control that belongs to a whole block (today the code block's language and
+copy, issue #304) stands in that block's top right corner, never over the
+caret. It shows while the pointer rests on the block or the caret is in it,
+and on a touch screen, where nothing hovers, while the caret is in it. It
+lies flat in a strip the block keeps free at its top (`pt-9` on an editable
+code block), so it covers no line of the reader's text, and the strip is
+there whether the bar shows or not, so nothing moves when it appears. It is
+a `Toolbar`, the next `Tab` stop after the text; `Escape` goes back. It sits
+above an outline laid over the text (issue #283), because a covered control
+is one nobody can reach.
+
 ### The workflow canvas
 
 The workflow editor is a workbench, not a form with a graph behind it (issue
