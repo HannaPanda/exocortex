@@ -59,6 +59,29 @@ interface TableViewProps {
  */
 const TRAILING_COLUMN_WIDTH = 44;
 
+/**
+ * The grid line every cell draws on its right and bottom edge (issue #305).
+ *
+ * Real borders, never a 1px background box: a browser rounds a border's width
+ * to whole device pixels, a background only its edges, so at 150 % zoom a
+ * line drawn as a box came out twice as thick as the borders beside it. The
+ * trailing column carries no right border, because nothing follows it.
+ */
+const CELL_LINES = 'border-r border-b border-border';
+
+/**
+ * The row tint (`TableRow`: `muted/50` on hover, or while one of its cells has
+ * a menu open) for the pinned title cell, made opaque. The pinned cell covers
+ * the columns scrolling underneath it, so a translucent tint let their text
+ * show through it, and it doubled the row's own tint where both overlapped.
+ * Mixed in sRGB with the page colour, it is the colour the rest of the row
+ * shows, pixel for pixel.
+ */
+const PINNED_ROW_TINT = cn(
+  'group-hover:bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))]',
+  'group-has-aria-expanded:bg-[color-mix(in_srgb,var(--color-muted)_50%,var(--color-background))]',
+);
+
 export function TableView({ workspaceId, documentId, view, properties, readOnly }: TableViewProps) {
   const t = useTranslations('database.table');
   const tRows = useTranslations('database.rows');
@@ -137,10 +160,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead
-              className={cn(
-                'group/head relative sticky top-0 left-0 z-30 border-b border-border bg-background',
-                'after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border',
-              )}
+              className={cn('group/head sticky top-0 left-0 z-30 bg-background', CELL_LINES)}
             >
               <div className="flex items-center justify-between gap-1">
                 <span className="truncate">{t('nameColumn')}</span>
@@ -157,7 +177,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
             {columns.map((property) => (
               <TableHead
                 key={property.id}
-                className="group/head relative sticky top-0 z-20 border-b border-border bg-background"
+                className={cn('group/head sticky top-0 z-20 bg-background', CELL_LINES)}
               >
                 <div className="flex items-center justify-between gap-1">
                   <PropertyMenu
@@ -195,11 +215,9 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
             >
               <TableCell
                 className={cn(
-                  'relative sticky left-0 z-10 border-b border-border bg-background p-0 align-top',
-                  // The sticky cell paints over the row, so it has to repeat
-                  // the row's hover colour instead of letting it show through.
-                  'group-hover:bg-muted/50',
-                  'after:absolute after:inset-y-0 after:-right-px after:w-px after:bg-border',
+                  'sticky left-0 z-10 bg-background p-0 align-top',
+                  CELL_LINES,
+                  PINNED_ROW_TINT,
                 )}
               >
                 <div className="flex min-h-8 items-start gap-1 px-1.5 py-1.5">
@@ -232,7 +250,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                 const cellValue =
                   row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
                 return (
-                  <TableCell key={property.id} className="border-b border-border p-0 align-top">
+                  <TableCell key={property.id} className={cn('p-0 align-top', CELL_LINES)}>
                     <PropertyCell
                       property={property}
                       value={cellValue}

@@ -193,6 +193,17 @@ Two related rules follow from `rowHeight` being a clamp:
   `containerClassName`). A sticky `thead` only sticks against the box that
   actually scrolls.
 
+The grid is drawn by the cells themselves, as a right and a bottom border on
+every cell except the trailing one (issue #305). The table stays
+`border-separate`, because with `border-collapse` a shared border belongs to
+whichever cell wins it, and under the pinned title column that is often the
+cell scrolling away. Every line is a real border, never a 1px background box:
+a browser rounds a border's width to whole device pixels but only a box's
+edges, so at 150 % zoom a line drawn as a box came out twice as thick as its
+neighbours. The pinned title cell is opaque in every state, hover and an open
+cell menu included, with the row's tint mixed into the page colour, because
+the columns scroll underneath it.
+
 ## Inline embed
 
 A database can also appear as a live view inside another page (Notion's
