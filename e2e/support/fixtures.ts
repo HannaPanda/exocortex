@@ -3,6 +3,7 @@ import {
   type Browser,
   type BrowserContext,
   expect,
+  type Locator,
   type Page,
 } from '@playwright/test';
 
@@ -215,6 +216,22 @@ export async function createDatabase(page: Page, title: string): Promise<string>
   // views rather than the editor, so it never opens a collaboration connection
   // and waiting for one would wait forever.
   return documentId;
+}
+
+/**
+ * Adds a row through "Neue Zeile" and closes the side panel it opens in
+ * (issue #239), for a test that goes on working in the table: the panel lies
+ * over the right-hand part of it. Checks on the way that the new row opened
+ * with its name selected, and that closing took `?p=` out of the address.
+ */
+export async function addRowAndClosePeek(page: Page, scope: Page | Locator = page): Promise<void> {
+  await scope.getByTestId('add-row').click();
+  const peek = page.getByTestId('row-peek');
+  await expect(peek).toBeVisible({ timeout: 15_000 });
+  await expect(peek.getByTestId('document-title')).toBeFocused({ timeout: 15_000 });
+  await page.keyboard.press('Escape');
+  await expect(peek).toHaveCount(0, { timeout: 15_000 });
+  await expect(page).not.toHaveURL(/[?&]p=/);
 }
 
 /** Reads the active workspace id from the URL. */

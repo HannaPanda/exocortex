@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-import { createDatabase, requireSeedCredentials } from '../support/fixtures';
+import { addRowAndClosePeek, createDatabase, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -66,7 +66,7 @@ test.describe('files in a database cell (issue #245)', () => {
     await createDatabase(page, `Belege ${Date.now().toString(36)}`);
     await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
     await addFilesProperty(page, 'Belege');
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
     const tableRow = page.locator('[data-testid^="database-row-"]').first();
     await expect(tableRow).toBeVisible({ timeout: 15_000 });
 

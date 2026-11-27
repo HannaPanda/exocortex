@@ -1,6 +1,11 @@
 import { expect, type Page, test } from '@playwright/test';
 
-import { createDatabase, createPage, requireSeedCredentials } from '../support/fixtures';
+import {
+  addRowAndClosePeek,
+  createDatabase,
+  createPage,
+  requireSeedCredentials,
+} from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -32,8 +37,8 @@ test.describe('databases', () => {
     await page.getByLabel('Option hinzufügen').click();
     await page.keyboard.press('Escape');
 
-    await page.getByTestId('add-row').click();
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
+    await addRowAndClosePeek(page);
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(2, {
       timeout: 15_000,
     });
@@ -95,7 +100,7 @@ test.describe('databases', () => {
     await page.getByLabel('Option hinzufügen').click();
     await page.keyboard.press('Escape');
 
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
       timeout: 15_000,
     });
@@ -149,7 +154,7 @@ test.describe('databases', () => {
     const title = `Notizen ${Date.now().toString(36)}`;
     await createDatabase(page, title);
     await expect(page.getByTestId('add-row')).toBeVisible({ timeout: 15_000 });
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
 
     const row = page.locator('[data-testid^="database-row-"]').first();
     await expect(row).toBeVisible({ timeout: 15_000 });
@@ -168,7 +173,7 @@ test.describe('databases', () => {
     await createDatabase(page, title);
     await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
     await addProperty(page, 'Notiz', 'Text');
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
 
     const row = page.locator('[data-testid^="database-row-"]').first();
     await expect(row).toBeVisible({ timeout: 15_000 });
@@ -365,7 +370,7 @@ test.describe('databases', () => {
     await expect(embed).toContainText(databaseTitle);
 
     // Fully interactive: a row can be added and edited without leaving the page.
-    await embed.getByTestId('add-row').click();
+    await addRowAndClosePeek(page, embed);
     await expect(embed.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
       timeout: 15_000,
     });
@@ -393,7 +398,7 @@ test.describe('databases', () => {
     await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
     await addProperty(page, 'Priorität', 'Zahl');
 
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
       timeout: 15_000,
     });
@@ -443,7 +448,7 @@ test.describe('databases', () => {
     await createDatabase(page, title);
     await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
     await addProperty(page, 'Priorität', 'Zahl');
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
     const tableRow = page.locator('[data-testid^="database-row-"]').first();
     await expect(tableRow).toBeVisible({ timeout: 15_000 });
     const databaseUrl = page.url();
@@ -490,7 +495,7 @@ test.describe('databases', () => {
     // configuration above, while this process runs in the server's UTC. For
     // two hours after midnight in Berlin the two name different days, and a
     // date computed here once put the row off the day grid every night.
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
     const row = page.locator('[data-testid^="database-row-"]').first();
     await expect(row).toBeVisible({ timeout: 15_000 });
     await row.locator('[data-slot="date-picker"]').click();
@@ -541,8 +546,8 @@ test.describe('databases', () => {
     await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
     await addProperty(page, 'Fällig', 'Datum');
 
-    await page.getByTestId('add-row').click();
-    await page.getByTestId('add-row').click();
+    await addRowAndClosePeek(page);
+    await addRowAndClosePeek(page);
     const rows = page.locator('[data-testid^="database-row-"]');
     await expect(rows).toHaveCount(2, { timeout: 15_000 });
     await rows.first().locator('[data-slot="date-picker"]').click();
