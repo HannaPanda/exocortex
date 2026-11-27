@@ -111,6 +111,10 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_changeset_discard',
       'exo_comment_delete',
       'exo_comment_update',
+      // An AI fill (issue #237) writes cells, and in `replace_all` over a
+      // person's value; each value stays editable and a retry is a new batch.
+      'exo_database_ai_fill_retry',
+      'exo_database_ai_fill_start',
       'exo_database_option_delete',
       'exo_database_option_update',
       'exo_database_property_delete',
