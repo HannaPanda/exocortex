@@ -113,7 +113,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     id: 'bilder-im-chat',
     area: 'ki',
     since: '2026-11-27',
-    references: ['#223', 'ADR-095', 'ADR-030', 'ADR-096', 'ADR-097'],
+    references: ['#223', '#288', 'ADR-095', 'ADR-030', 'ADR-050', 'ADR-096', 'ADR-097'],
     ui: {},
     settings: ['ai.visionMaxImagesPerRun', 'ai.sendImagesToModel'],
   }),

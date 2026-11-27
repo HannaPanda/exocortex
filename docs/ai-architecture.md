@@ -134,8 +134,22 @@ message with pictures, its descriptions fenced as `attachment` content, and a
 run whose transcript carries one that is not the requester's own screened
 upload notes untrusted content (ADR-030, ADR-096). Each new description is
 screened right after it is written. The cap
-for one message is `ai.visionMaxImagesPerRun`. A compaction summary is built
-from message text and does not carry the descriptions.
+for one message is `ai.visionMaxImagesPerRun`.
+
+A document goes the same way (ADR-095, "Documents, and what a compaction
+keeps"): PDFs and office files are read by the extraction chain (ADR-050),
+plain text, Markdown, CSV and JSON are stored as their own text at upload and
+queued for screening. `awaitChatDocumentTexts`
+(`apps/worker/src/processors/ai-run/chat-documents.ts`) holds the run up to
+45 seconds for a text still being read or screened; `chatDocumentContext` then
+fences the texts in the note in front of the message, at most
+`CHAT_DOCUMENT_PROMPT_CHARS` (24 000) per message shared by its files, and
+names `exo_attachment_read_text` for what was cut. A compaction summary is
+built from message text, so the compaction marks every message it retires
+with `summarizedIntoId`; `summarizedMessageIds` follows that chain from the
+active summaries, and `carriedFilesContext` names those messages' files right
+after the latest summary, pictures by their fenced description and documents
+by name and id. `/clear` marks nothing, so its files leave the context.
 
 A model whose row has `supportsVision` gets the pictures themselves
 ([ADR-097](adr/ADR-097-a-model-that-sees-gets-the-chat-picture-itself.md)),

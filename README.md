@@ -162,10 +162,13 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
-- pictures in the chat: pasted, dropped or chosen in the composer, shown on
-  the sent question after a reload, described once by a vision model and
-  handed to the assistant as fenced text; deleting the chat deletes them
-  (ADR-095)
+- pictures and files in the chat, also from the start page's field: pasted,
+  dropped or chosen in the composer, shown on the sent question after a
+  reload. A picture is described once by a vision model, and a model that
+  sees gets the picture itself (ADR-097, switchable per workspace); a PDF,
+  office document or text file is read through its extracted text. Both are
+  handed over fenced, survive a compaction by description and name, and
+  leave with the chat when it is deleted (ADR-095)
 - a person's own uploads are theirs to work with: a file somebody uploaded
   themselves is screened once for instructions addressed to an AI, and when
   the screening finds nothing, reading it no longer stops that person's AI run

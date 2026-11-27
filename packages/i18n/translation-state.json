@@ -2581,20 +2581,20 @@
       "output": "4c955d9c880b3eb4"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "2eacc5e02758c0b0"
+      "source": "5a1d16ebaffe1253",
+      "output": "87fbe4fb79b1d700"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "21404b960ca2ffab"
+      "source": "c65f32eccc6cb3ef",
+      "output": "ec2dc88fa0177138"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "b269dc4e81a528a4"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "616d40b8948dee51"
+      "source": "39de076bb4652b60",
+      "output": "9edbd054f5b43ea2"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -2636,6 +2636,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "b47e64636b613ea9"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "ff15182af5d529e1"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "d88d7cf224068c3c"
@@ -2649,24 +2653,24 @@
       "output": "9c459012b30a9bfd"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "323e3faa20c975ba"
+      "source": "41e76411deabbf69",
+      "output": "fdec45e56c06eada"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "614f3ce62b7f511b"
+      "source": "c999e09cff4e025c",
+      "output": "5b2f95ad93941e79"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "4e982002f0f151c0"
+      "source": "7488d1b3645a07bf",
+      "output": "5feb20a80165d98a"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "3eb5a1aa5c9a6f73"
+      "source": "12cb7ccbb6a893ce",
+      "output": "62ec375a9d9cb5b1"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "8c9cdd7be47fc7f1"
+      "source": "78ac4bf72271c26f",
+      "output": "151e212fb90e1c98"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -2827,6 +2831,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "47ffe39e75566b38"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "b73582e02dc5d871"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "f687d18152a5b541"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "32d9a47d586644b8"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "e6bd3523626469dd"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "3bc7fe3ba98040ab"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "cc25ec787adab45d"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -12297,28 +12325,28 @@
       "output": "58e55afd839361c8"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "1452fbbfacc6462e"
+      "source": "0f8d7b650e2b3706",
+      "output": "2c127f5925aa46c2"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "491b0ee896505234"
+      "source": "53248c0fd604459f",
+      "output": "0d9f5611bc19a04c"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "8382e6ad8cbb60ec"
+      "source": "fafc4484dbedeb1f",
+      "output": "1869d7bfed91ed42"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "b00670691aced45a"
+      "source": "af43134f7c9bfca7",
+      "output": "381cc4b9a16ac01e"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "1192bd0f267a4cd0"
+      "source": "993d5295cbaa6958",
+      "output": "de7e3bd2bc23c520"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "88e6a67426912716"
+      "source": "95bf93404d4706fe",
+      "output": "c668377724f673cf"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -27091,20 +27119,20 @@
       "output": "1a103e3a0eea961c"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "2dd0ec0a4e08f1ed"
+      "source": "5a1d16ebaffe1253",
+      "output": "78bcce89e510979c"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "3e0dc7fd2f8bd08f"
+      "source": "c65f32eccc6cb3ef",
+      "output": "58de7a4bb23982e7"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "4b8731e4eac25e37"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "e18e81b32d5b3029"
+      "source": "39de076bb4652b60",
+      "output": "c1e93691e501f150"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -27146,6 +27174,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "3d570318f7703486"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "82bc8d16e625c844"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "eedf5b67e165f42e"
@@ -27159,24 +27191,24 @@
       "output": "8b80baf8f47ae696"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "f5772f31863d2843"
+      "source": "41e76411deabbf69",
+      "output": "7ddd8ade830bbd4a"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "1742db6a9ad1d9e6"
+      "source": "c999e09cff4e025c",
+      "output": "4e884bbbddfa4835"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "584392251fc541e0"
+      "source": "7488d1b3645a07bf",
+      "output": "b13cb7decbc581df"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "2ffab447f1de9ae3"
+      "source": "12cb7ccbb6a893ce",
+      "output": "d05f6a7e12d68f6e"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "111fb6b01361d6e8"
+      "source": "78ac4bf72271c26f",
+      "output": "9d19d6e35fd628da"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -27337,6 +27369,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "ede2b75d1ffd43d6"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "49ca015a4612da50"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "d8d0eae74f73ef5c"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "88e3f9c31d83b42a"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "d84eaf235f360dd9"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "d22f69bce2ee47fe"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "f565a9c85aa20807"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -36807,28 +36863,28 @@
       "output": "fda04ffb20b48130"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "8d671526ea770efe"
+      "source": "0f8d7b650e2b3706",
+      "output": "b4d7dc741a1198a0"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "89cbf4e16e75ab40"
+      "source": "53248c0fd604459f",
+      "output": "a7699736cc1a8628"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "db84feb84cf685b0"
+      "source": "fafc4484dbedeb1f",
+      "output": "98b5e84993c9888a"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "b14b4c50a6137ef1"
+      "source": "af43134f7c9bfca7",
+      "output": "bcdf632da937f35d"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "0f2b0475b15469fd"
+      "source": "993d5295cbaa6958",
+      "output": "fd1f2a514f924182"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "5d4e9cf016e269e3"
+      "source": "95bf93404d4706fe",
+      "output": "9ba91f2a235c9caa"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -51601,20 +51657,20 @@
       "output": "f26ff4df70d088f8"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "275aae25d99adca6"
+      "source": "5a1d16ebaffe1253",
+      "output": "d5e4e4c3d7ed1b4e"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "4ee2a01a9f69c31e"
+      "source": "c65f32eccc6cb3ef",
+      "output": "a5ad779f598c738e"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "0e3118a24b9ff7bd"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "f71ab0978632031d"
+      "source": "39de076bb4652b60",
+      "output": "8de4b2808a0b671e"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -51656,6 +51712,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "dca0e7041e9f1ba0"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "480d6e4c16335cea"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "35707e01401b7410"
@@ -51669,24 +51729,24 @@
       "output": "2cb071b878168afd"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "fbfb1a753a74e117"
+      "source": "41e76411deabbf69",
+      "output": "b7931aad8533707c"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "232b55b54ff35493"
+      "source": "c999e09cff4e025c",
+      "output": "6d8b601838f665fb"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "cd90734add82921f"
+      "source": "7488d1b3645a07bf",
+      "output": "3c6750e9ff054b27"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "08e5489ec72ef219"
+      "source": "12cb7ccbb6a893ce",
+      "output": "1a0a5b00d9aa3dfb"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "cd861ef2d0618dc8"
+      "source": "78ac4bf72271c26f",
+      "output": "01db53bd179957b0"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -51847,6 +51907,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "3e09ded54e9f909f"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "58e0f47bcb6774da"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "edc786f353951fa5"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "b01654a2b1b46592"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "93a1b086f2b1d9ea"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "464353c65d0adcc4"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "2b5aaceff25e9f61"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -61317,28 +61401,28 @@
       "output": "22103b9a1ee5c175"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "59fc873c2f43aa6e"
+      "source": "0f8d7b650e2b3706",
+      "output": "6788f933a6f9cc4f"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "c7815ba4a2318477"
+      "source": "53248c0fd604459f",
+      "output": "fb4a349661b5fbb1"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "9c4b584e29a583ac"
+      "source": "fafc4484dbedeb1f",
+      "output": "cbeaee9b598f9530"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "c646052770fb714d"
+      "source": "af43134f7c9bfca7",
+      "output": "e7c1ef32c9c88a8d"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "c660c91b396c3998"
+      "source": "993d5295cbaa6958",
+      "output": "ed43c69e90bcc43f"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "c98bce7c85d030ef"
+      "source": "95bf93404d4706fe",
+      "output": "a787c37fa7a22b98"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -76111,20 +76195,20 @@
       "output": "230cc45b0300adcf"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "a32883e96d943b09"
+      "source": "5a1d16ebaffe1253",
+      "output": "24ece3fe930c9c6e"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "8bb8fb2d8d0c26bf"
+      "source": "c65f32eccc6cb3ef",
+      "output": "8e67482abda0ab53"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "3c6824c3a8cf45a5"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "e0af715f4bfbd012"
+      "source": "39de076bb4652b60",
+      "output": "73a07a1a4610d174"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -76166,6 +76250,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "45604c3d7568a0f7"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "ff15182af5d529e1"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "a2b3c593dc612b49"
@@ -76179,24 +76267,24 @@
       "output": "9af44a535cdeb1e8"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "b14692364b8689bd"
+      "source": "41e76411deabbf69",
+      "output": "3b1c6f12acd0e76c"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "2bb67e09244570d3"
+      "source": "c999e09cff4e025c",
+      "output": "564b67066d09da6a"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "1bd0d6d3a161c7e1"
+      "source": "7488d1b3645a07bf",
+      "output": "8ea07da6fd1a4f85"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "e7ca0ffaf192c6a7"
+      "source": "12cb7ccbb6a893ce",
+      "output": "a36e9c2426f23b88"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "c83ec9f88003cb5a"
+      "source": "78ac4bf72271c26f",
+      "output": "598fbf3bfe460d16"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -76357,6 +76445,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "88ae0359c87383f3"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "13ed044c4ed1e957"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "645781807d9c38ac"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "1d7025f3c5bebf70"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "0a98f0d62a2823ca"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "98cb647e1dfc02d7"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "e913d144e81e3ad0"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -85827,28 +85939,28 @@
       "output": "3190d484f8b08637"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "2bcf26702545a172"
+      "source": "0f8d7b650e2b3706",
+      "output": "32605283908d23fe"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "8928eea4e87a752d"
+      "source": "53248c0fd604459f",
+      "output": "0724728386a705e5"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "cc1e34f2b42d7745"
+      "source": "fafc4484dbedeb1f",
+      "output": "61ddcc2bcbd1b752"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "f528322c94bb3830"
+      "source": "af43134f7c9bfca7",
+      "output": "850c02eb775a0cf2"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "48602f250cb1526d"
+      "source": "993d5295cbaa6958",
+      "output": "2dcd114dfbd59794"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "6dcd0edb89da0803"
+      "source": "95bf93404d4706fe",
+      "output": "52229ccc00939a1d"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -100621,20 +100733,20 @@
       "output": "7079ea21c56e956c"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "52819bffc1aab869"
+      "source": "5a1d16ebaffe1253",
+      "output": "cf294bfda213a2a0"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "5943a78b16d24325"
+      "source": "c65f32eccc6cb3ef",
+      "output": "bef8dffb8f5b6bea"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "03c18f778e60cca4"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "3a72ba25793f240c"
+      "source": "39de076bb4652b60",
+      "output": "973971ddeb155db5"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -100676,6 +100788,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "b6bec3a8ea6a9281"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "fad4ce712a6b4d1f"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "3758245c9e9e67f5"
@@ -100689,24 +100805,24 @@
       "output": "a8fbfc924534c0fe"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "276a6e6b48bb8735"
+      "source": "41e76411deabbf69",
+      "output": "2dc27a2ae82dcce9"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "b78f1b709c241b27"
+      "source": "c999e09cff4e025c",
+      "output": "ee2807ac57662cd5"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "ee21116a2981e0a2"
+      "source": "7488d1b3645a07bf",
+      "output": "aae861896684069e"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "b8e63e02d16a6cfc"
+      "source": "12cb7ccbb6a893ce",
+      "output": "337f13c554313e03"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "51dc65d70c0c06ea"
+      "source": "78ac4bf72271c26f",
+      "output": "ce140faf1944eb1b"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -100867,6 +100983,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "5ef6de602c4f193e"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "9d310040b6436579"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "394273dcedba1257"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "8b0673be69e8d8b4"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "cfb619206bd800e5"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "a9470eb78cecce14"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "2c0f91de8f61a8a5"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -110337,28 +110477,28 @@
       "output": "cbfc5fb94fc3c226"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "9ca5ea2c799ddb47"
+      "source": "0f8d7b650e2b3706",
+      "output": "58debcb7488f5471"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "599adeba8e47abec"
+      "source": "53248c0fd604459f",
+      "output": "ffe5907443f032a0"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "e613cdf12444ef7f"
+      "source": "fafc4484dbedeb1f",
+      "output": "2973880b74e9665c"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "eb69d166d44aadb1"
+      "source": "af43134f7c9bfca7",
+      "output": "c7e7c5fd0153eb37"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "7a95cb9346c910fe"
+      "source": "993d5295cbaa6958",
+      "output": "2faa121c38cb7771"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "1716567004c062fe"
+      "source": "95bf93404d4706fe",
+      "output": "b977c598243e6fdb"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -125131,20 +125271,20 @@
       "output": "e6209c9da76bd59c"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "99bb43c732ccccda"
+      "source": "5a1d16ebaffe1253",
+      "output": "fb60381fcd22f005"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "61a7e270145701cd"
+      "source": "c65f32eccc6cb3ef",
+      "output": "8f6407fb10502ae2"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "0c785ba70ffd2a53"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "f24e9cc3f1b9a76d"
+      "source": "39de076bb4652b60",
+      "output": "9c1b04669abca473"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -125186,6 +125326,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "d3a9b06dbb3d565e"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "b46fa0bf11a39040"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "47a4b4da76c68fc3"
@@ -125199,24 +125343,24 @@
       "output": "f6731cbb27910730"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "327c018c29d60519"
+      "source": "41e76411deabbf69",
+      "output": "549bb4f3be4109c3"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "57e6a1227ded78cb"
+      "source": "c999e09cff4e025c",
+      "output": "a234f0325a5861dc"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "cad971ec8a9a65b4"
+      "source": "7488d1b3645a07bf",
+      "output": "2a4f96d49e474d4a"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "9fcc78d1d2ea5810"
+      "source": "12cb7ccbb6a893ce",
+      "output": "08d35c9edc8c64b3"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "8c49a01e571217cf"
+      "source": "78ac4bf72271c26f",
+      "output": "7fac538e0cf9a7e1"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -125377,6 +125521,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "839cb210acf342a5"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "80e73bba70dc1d2d"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "1c8c3747d606d98b"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "de52c97ca92a772a"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "d5525f95091b4103"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "50b6be937906d825"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "e94865938a405c47"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -134847,28 +135015,28 @@
       "output": "90aa0bd79242383b"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "fe4ac2a00eeb1731"
+      "source": "0f8d7b650e2b3706",
+      "output": "b3ab4b63b004ca46"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "c82f7e229b79e9c7"
+      "source": "53248c0fd604459f",
+      "output": "eae556d53bc94600"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "87eb1194e9876480"
+      "source": "fafc4484dbedeb1f",
+      "output": "6f5c7333eeeae553"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "3c52871b30333dba"
+      "source": "af43134f7c9bfca7",
+      "output": "a7997beca93fe337"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "a661075249001bb1"
+      "source": "993d5295cbaa6958",
+      "output": "d343ce0498dc8a6b"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "4a68446661c855fa"
+      "source": "95bf93404d4706fe",
+      "output": "683d33cd7691070f"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -149641,20 +149809,20 @@
       "output": "5f3cc359bb05eaaf"
     },
     "ai.composer.attach": {
-      "source": "c0065fe86ed28d84",
-      "output": "8252257748b7a69b"
+      "source": "5a1d16ebaffe1253",
+      "output": "0176661d7e81f074"
     },
     "ai.composer.attachHint": {
-      "source": "0d79dfe3341a958c",
-      "output": "9e0793751cd92e58"
+      "source": "c65f32eccc6cb3ef",
+      "output": "5eb2f0bb4ea33334"
     },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "4b8731e4eac25e37"
     },
     "ai.composer.dropHint": {
-      "source": "8ccf0a79b7ec2555",
-      "output": "a2230670cc281d32"
+      "source": "39de076bb4652b60",
+      "output": "826eea7de387a2ed"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -149696,6 +149864,10 @@
       "source": "73e68975ad2b2eb0",
       "output": "cba38156562eb7cd"
     },
+    "ai.context.document": {
+      "source": "0f62399063d0763c",
+      "output": "fd664cd914877951"
+    },
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "f315c5cfab27f581"
@@ -149709,24 +149881,24 @@
       "output": "f6e8b82a8fee6828"
     },
     "ai.context.fileFailedPlain": {
-      "source": "ed66c3b9d3593c5d",
-      "output": "86ed2aa2d9123abf"
+      "source": "41e76411deabbf69",
+      "output": "99c81e2a87f1b072"
     },
     "ai.context.fileNotImage": {
-      "source": "fec2f9889a74a419",
-      "output": "4c861c451b429c03"
+      "source": "c999e09cff4e025c",
+      "output": "7073712645f88b7e"
     },
     "ai.context.fileOnce": {
-      "source": "b340d46f03ab93ae",
-      "output": "92e6637b58842a20"
+      "source": "7488d1b3645a07bf",
+      "output": "dc7434faf26e5fd1"
     },
     "ai.context.fileRemove": {
-      "source": "ff3f6cce4f95a42f",
-      "output": "ae86f89c43115700"
+      "source": "12cb7ccbb6a893ce",
+      "output": "b72e0cd4dee2665e"
     },
     "ai.context.fileTooMany": {
-      "source": "5fd9ad4ff054a130",
-      "output": "78041125cc286ebf"
+      "source": "78ac4bf72271c26f",
+      "output": "f7ec2c67f5e21898"
     },
     "ai.context.fileUploading": {
       "source": "acd6d63d30c9e84c",
@@ -149887,6 +150059,30 @@
     "ai.message.copyTooltip": {
       "source": "c2fee698c5cad7ca",
       "output": "ede2b75d1ffd43d6"
+    },
+    "ai.message.documentFlagged": {
+      "source": "648b03a92112bca4",
+      "output": "603cdfe4584c8fdb"
+    },
+    "ai.message.documentOpen": {
+      "source": "a8aef377a7c5b36c",
+      "output": "d8d0eae74f73ef5c"
+    },
+    "ai.message.documentPending": {
+      "source": "3aba6a2350baab1a",
+      "output": "a9e8aa7b7ecbdba6"
+    },
+    "ai.message.documentReady": {
+      "source": "72141f5170912daa",
+      "output": "db5ad1bb1de5b184"
+    },
+    "ai.message.documentUnreadable": {
+      "source": "9d794b7de82d2f15",
+      "output": "18fcbb56ee2c3894"
+    },
+    "ai.message.documentUnscreened": {
+      "source": "bb5c5a27eb665a01",
+      "output": "7b17f3702348a69a"
     },
     "ai.message.showHistory": {
       "source": "da6c6e01f58effda",
@@ -159357,28 +159553,28 @@
       "output": "60304a7d44c28cdb"
     },
     "features.bilder-im-chat.details.p1": {
-      "source": "206e9fed93e4fabb",
-      "output": "9722f67aa09f074f"
+      "source": "0f8d7b650e2b3706",
+      "output": "e9a71330bdfc7917"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "943f05d7d9f89a3e",
-      "output": "48337a6841b96d40"
+      "source": "53248c0fd604459f",
+      "output": "659445b25e65b21a"
     },
     "features.bilder-im-chat.details.p3": {
-      "source": "ac7e82662e07c1f8",
-      "output": "32f93851d3f78810"
+      "source": "fafc4484dbedeb1f",
+      "output": "bd57171c7bacf283"
     },
     "features.bilder-im-chat.summary": {
-      "source": "f38412b8c66ce465",
-      "output": "c7793da5358e0b5a"
+      "source": "af43134f7c9bfca7",
+      "output": "e326e84176c82909"
     },
     "features.bilder-im-chat.title": {
-      "source": "258d691d7fda58cd",
-      "output": "e62a357d3f4014eb"
+      "source": "993d5295cbaa6958",
+      "output": "96185a4f5f7923b1"
     },
     "features.bilder-im-chat.where": {
-      "source": "675f58dd54672ac0",
-      "output": "7a58ee60eec7b3af"
+      "source": "95bf93404d4706fe",
+      "output": "d281cf41fd2e4589"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",

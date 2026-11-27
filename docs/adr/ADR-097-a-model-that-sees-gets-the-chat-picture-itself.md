@@ -74,8 +74,9 @@ back. The run inspector lists them as the `chat_images` context section.
   costs more input tokens than with descriptions; `imageInputs` against
   `inputTokens`, `providerCostMicroUsd` and `durationMs` on `ai_run` shows how
   much.
-- Compaction still summarises text, and a picture on a summarised message
-  leaves the context with it.
+- Compaction still summarises text; a picture on a summarised message stays
+  in the context as its description (ADR-095, "Documents, and what a
+  compaction keeps"), never as pixels.
 - An eval replay posts the case's text into a fresh conversation and carries no
   chat pictures, so there is nothing for it to send or describe.
 - The open page's pictures and a picture a tool returns are still described

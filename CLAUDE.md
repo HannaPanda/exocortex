@@ -938,7 +938,12 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   attachment content, which closes writing like the page's pictures unless
   ADR-096 trusts it; a model that sees gets the pixels too (ADR-097).
   Deleting the chat deletes the objects, and an unsent picture is collected
-  after a day.
+  after a day. A document (PDF, office, text, Markdown, CSV, JSON) is the same
+  row read through its text (ADR-050; plain text stored at upload), fenced,
+  at most 24 000 characters per message per turn, waited for up to 45 s. A
+  compaction points the messages it retires at its summary
+  (`summarizedIntoId`), and their files are named after the latest summary;
+  `/clear` sets none, so its files leave.
 - ADR-096: a person's own upload, screened clean, does not close writing.
   `attachmentTrustFor` trusts a file only for the reader who uploaded it, when
   nobody else corrected it, it was not fetched from the web and its
