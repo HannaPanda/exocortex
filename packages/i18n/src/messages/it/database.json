@@ -98,7 +98,7 @@
     "loadFailed": "Impossibile caricare le righe",
     "nameColumn": "Nome",
     "resizeColumn": "Trascina per ridimensionare la colonna {name}",
-    "openRow": "Apri riga",
+    "openRow": "Apri nella barra laterale",
     "newRow": "Nuova riga",
     "emptyTitle": "Ancora nessuna riga",
     "emptyDescription": "Crea la prima riga per questo database.",
@@ -257,8 +257,15 @@
     "loading": "Caricamento database"
   },
   "peek": {
-    "openAsPage": "Apri come pagina",
-    "noProperties": "Questo database non ha ancora proprietà."
+    "label": "Riga nella barra laterale",
+    "close": "Chiudi barra laterale",
+    "closeHint": "Chiudi barra laterale (Esc)",
+    "openAsPage": "Apri come pagina intera",
+    "loading": "Caricamento riga in corso",
+    "unavailableTitle": "Riga non disponibile",
+    "unavailableDescription": "Questa riga non esiste più o non disponi dei permessi per aprirla.",
+    "notAPageTitle": "Impossibile aprire qui",
+    "notAPageDescription": "Nella barra laterale si aprono solo pagine. Aprila come pagina intera."
   },
   "formulaErrors": {
     "inColumn": "Colonna «{column}»: {message}",

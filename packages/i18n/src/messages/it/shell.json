@@ -485,6 +485,12 @@
       "clear": "Deseleziona tutto",
       "clearKeywords": "annulla selezione deseleziona righe"
     },
+    "rowPeek": {
+      "openAsPage": "Apri la riga aperta come pagina intera",
+      "openAsPageKeywords": "riga pagina schermo intero pagina intera apri barra laterale anteprima peek",
+      "close": "Chiudi la barra laterale",
+      "closeKeywords": "barra laterale anteprima peek riga chiudi comprimi nascondi"
+    },
     "knowledgeMap": {
       "appearance": "Aspetto della mappa della conoscenza",
       "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare",

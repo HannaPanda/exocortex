@@ -485,6 +485,12 @@
       "clear": "Odznacz wszystko",
       "clearKeywords": "odznacz zaznaczenie cofnij wiersze"
     },
+    "rowPeek": {
+      "openAsPage": "Otwórz otwarty wiersz jako całą stronę",
+      "openAsPageKeywords": "wiersz strona pełny ekran cała strona otwórz panel boczny podgląd peek",
+      "close": "Zamknij panel boczny",
+      "closeKeywords": "panel boczny podgląd peek wiersz zamknij zwiń ukryj"
+    },
     "knowledgeMap": {
       "appearance": "Wygląd mapy wiedzy",
       "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj",

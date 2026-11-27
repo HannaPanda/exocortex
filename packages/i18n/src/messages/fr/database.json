@@ -98,7 +98,7 @@
     "loadFailed": "Lignes non chargées",
     "nameColumn": "Nom",
     "resizeColumn": "Ajuster la largeur de la colonne {name}",
-    "openRow": "Ouvrir la ligne",
+    "openRow": "Ouvrir dans le panneau latéral",
     "newRow": "Nouvelle ligne",
     "emptyTitle": "Pas encore de lignes",
     "emptyDescription": "Crée la première ligne de cette base de données.",
@@ -257,8 +257,15 @@
     "loading": "Chargement de la base de données"
   },
   "peek": {
-    "openAsPage": "Ouvrir en tant que page",
-    "noProperties": "Cette base de données n’a pas encore de propriétés."
+    "label": "Ligne dans le panneau latéral",
+    "close": "Fermer le panneau latéral",
+    "closeHint": "Fermer le panneau latéral (Échap)",
+    "openAsPage": "Ouvrir en pleine page",
+    "loading": "Chargement de la ligne…",
+    "unavailableTitle": "Ligne non disponible",
+    "unavailableDescription": "Cette ligne n’existe plus ou tu n’as pas l’autorisation de l’ouvrir.",
+    "notAPageTitle": "Impossible d’ouvrir ici",
+    "notAPageDescription": "Le panneau latéral n’ouvre que des pages. Ouvre cet élément en pleine page."
   },
   "formulaErrors": {
     "inColumn": "Colonne « {column} » : {message}",

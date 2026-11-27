@@ -98,7 +98,7 @@
     "loadFailed": "Rijen niet geladen",
     "nameColumn": "Naam",
     "resizeColumn": "Kolom {name} breder of smaller slepen",
-    "openRow": "Rij openen",
+    "openRow": "In zijbalk openen",
     "newRow": "Nieuwe rij",
     "emptyTitle": "Nog geen rijen",
     "emptyDescription": "Maak de eerste rij voor deze database aan.",
@@ -257,8 +257,15 @@
     "loading": "Database wordt geladen"
   },
   "peek": {
-    "openAsPage": "Als pagina openen",
-    "noProperties": "Deze database heeft nog geen eigenschappen."
+    "label": "Rij in de zijbalk",
+    "close": "Zijbalk sluiten",
+    "closeHint": "Zijbalk sluiten (Esc)",
+    "openAsPage": "Als volledige pagina openen",
+    "loading": "Rij wordt geladen",
+    "unavailableTitle": "Rij niet beschikbaar",
+    "unavailableDescription": "Deze rij bestaat niet meer of je hebt geen toestemming om hem te openen.",
+    "notAPageTitle": "Kan hier niet worden geopend",
+    "notAPageDescription": "In de zijbalk kunnen alleen pagina’s worden geopend. Open dit als volledige pagina."
   },
   "formulaErrors": {
     "inColumn": "Kolom „{column}”: {message}",

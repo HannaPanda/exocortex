@@ -36,6 +36,9 @@ export function useDatabaseRealtime(): void {
     void queryClient.invalidateQueries({ queryKey: ['database', parentId, 'rows'] });
   };
   useRealtimeEvent('document.created', (event) => parentChanged(event.payload.document.parentId));
+  // A row renamed (or given a symbol) where the table cannot see it: in the
+  // side panel beside it (issue #239), in another tab, by an agent.
+  useRealtimeEvent('document.updated', (event) => parentChanged(event.payload.document.parentId));
   useRealtimeEvent('document.archived', (event) => parentChanged(event.payload.document.parentId));
   useRealtimeEvent('document.restored', (event) => parentChanged(event.payload.document.parentId));
   useRealtimeEvent('document.moved', (event) => {

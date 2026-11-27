@@ -5992,13 +5992,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "19dd83f117525b93"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "b3dbb47f70eab5d8"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "e801789883184aaa"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "b1166aa90cfcbf4a"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "9cb9e8433bebcf8e"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "cc0d69c77442dca3"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "b57015f534a8eac3"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "abe13938e70d62de"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "4027bd85e5e051b7"
+      "source": "d5b8f3ee7458a38b",
+      "output": "aaaf87960d2846a4"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "7ebc0a7b304330f3"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "4522f544cd8a7417"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -6313,8 +6341,8 @@
       "output": "8ea6cab3dcce54fb"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "0f3c00487acaf2d4"
+      "source": "e69161f8e595deec",
+      "output": "2e25b4e57ff98a8b"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -15064,6 +15092,34 @@
       "source": "4ee0255fbab35baf",
       "output": "114613b9f5fc507d"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "66e50ea841d5413f"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "f46ded3461e57053"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "bb4b436111694f2c"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "35d1e838eecc1870"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "851411527f0da6ce"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "81a380a221c00851"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "46c00df4b955f5c7"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "9b0f866325acd49e"
@@ -22055,6 +22111,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "1378a1f4e54078a7"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "17e28e2302175d33"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "5141dc31acf10e91"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "375e7f5a42005c58"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "5e86170847cef1ac"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -31250,13 +31322,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "8a7ae3ac199faeda"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "f067c084da6130f7"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "276f0cdb2788eaf5"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "fc16722c6ca4da1c"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "ecf65e65eb6e13be"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "68a57c1eea3d8387"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "0a6ea98acb6cda20"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "9e54fa6be57294a7"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "4f708f422bfbb432"
+      "source": "d5b8f3ee7458a38b",
+      "output": "59fc77c4d46be728"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "cdc6e97fd291a133"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "030871c1cefdebde"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -31571,8 +31671,8 @@
       "output": "9b7592103f494af5"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "72c917630086ad19"
+      "source": "e69161f8e595deec",
+      "output": "aeb375a3bf3b0840"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -40322,6 +40422,34 @@
       "source": "4ee0255fbab35baf",
       "output": "933619a32764bb76"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "e2e0393d6eb7d536"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "93250d6df361d171"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "f4985437be011f4d"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "0408d4afc792081f"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "5a38dde76e2616df"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "7b60cd836c17a758"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "22c8ca583b6ed68b"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "bf9a255c4fcbe446"
@@ -47313,6 +47441,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "8dd62bf8245f13c8"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "276f0cdb2788eaf5"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "bdfde96a20128d02"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "aeef8d94c1c9198f"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "a69ccbfd2ee63321"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -56508,13 +56652,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "dea9f56b97dc3a87"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "24fd3983c0e70158"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "8c7812fcc1d0dad0"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "b73c248302f5ca27"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "53127cbe7bffa09b"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "ff7661111dac1e81"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "d017624ee51d1eb0"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "6bd3f3c054f25bc3"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "1e947d28ca52169b"
+      "source": "d5b8f3ee7458a38b",
+      "output": "685551d9da7aa83e"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "8d8572c3b2391354"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "0cb95795cfc54a21"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -56829,8 +57001,8 @@
       "output": "5466843202a8a661"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "543742e874517088"
+      "source": "e69161f8e595deec",
+      "output": "6f8717ef4f86133f"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -65580,6 +65752,34 @@
       "source": "4ee0255fbab35baf",
       "output": "de3b5efc6df06c05"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "ecd5d999cd9a310e"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "96e8822e740fb955"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "3591f7d622885d44"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "a57dd5f271be0b3c"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "7d56ad36ea90707d"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "8049a49fb04e0948"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "fdabaa60d9f32d1d"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "62b0a7da01afbeb9"
@@ -72571,6 +72771,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "46058140ce3a5563"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "dffca7adf28df3f8"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "0c8e3619b37ce4ea"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "d622426ca516529c"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "509275280bf8f738"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -81766,13 +81982,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "464dabe236e57131"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "a4630bd6a4391c17"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "80cf79af58ec6acd"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "ecdf53a653e75237"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "42d5fd93e04b16fb"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "09c1e005bd33acef"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "e21104873928af20"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "ee4485bc44beb34f"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "34988c9a8e86d0a4"
+      "source": "d5b8f3ee7458a38b",
+      "output": "a0e3123ceb31ca2a"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "8d08cb290f812108"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "ab48efbff0739839"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -82087,8 +82331,8 @@
       "output": "394608997440d86d"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "a6cac75da92efd61"
+      "source": "e69161f8e595deec",
+      "output": "09797431144efa1e"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -90838,6 +91082,34 @@
       "source": "4ee0255fbab35baf",
       "output": "3920918137f33eab"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "e1ea3d05ae99c1e5"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "2dcc344d25f2d5d1"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "551ec055b114f48d"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "80dfee0b472641fb"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "f2173c9293753b62"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "b70c6aed956d327a"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "0cbadaa260961fae"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "8fdd8e041b5f8b3d"
@@ -97829,6 +98101,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "f865311a4e1906b7"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "0a4db163d9ceefd8"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "ded6dfeb750f89a2"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "5fd33d4d80cbb6d9"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "d6f1d37680b0897e"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -107024,13 +107312,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "7e80575c49f94971"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "d57d1c477df7678d"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "c93ba889ee3c216e"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "ead983c592a8a60a"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "c5d1b87edc64ab71"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "21a6a6393402b6cd"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "2631de27040862e6"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "60558476618b2e8c"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "0a6e150bca0101d6"
+      "source": "d5b8f3ee7458a38b",
+      "output": "d76613fe9c169564"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "b2c393d9275dec73"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "032418ffe209e0fb"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -107345,8 +107661,8 @@
       "output": "38c1ad85670b873e"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "85d9ebbf346f60a7"
+      "source": "e69161f8e595deec",
+      "output": "1603284737614d38"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -116096,6 +116412,34 @@
       "source": "4ee0255fbab35baf",
       "output": "b13d8d1feff30033"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "9572af5a737c5110"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "9b832986a7b1d51f"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "b2bdce60c19a959e"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "2ed901be6259fdf7"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "90bc11e744f06cbb"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "45577bf885fbe952"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "972ca2ca38306903"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "f524d6b909ea8836"
@@ -123087,6 +123431,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "3f2092c037f44693"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "c93ba889ee3c216e"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "7b1396ecd52e43e5"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "e170261535732621"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "89663ced05f912eb"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -132282,13 +132642,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "822b9d465c5b26b7"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "1db6edfdf7e0b0a5"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "5532dbf9c02029fc"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "f9d1fb1dc2db8cee"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "8b46a2dc9c783b37"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "ec2a8afb16e1e051"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "0265d38bc416737c"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "e41ad2a17bfda328"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "1a45557677bb70b5"
+      "source": "d5b8f3ee7458a38b",
+      "output": "95280cb4ce47f7d1"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "4f47216c61afa790"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "9c890c7ea459deed"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -132603,8 +132991,8 @@
       "output": "236862cc13b3e9c5"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "a1c8b56060ed916d"
+      "source": "e69161f8e595deec",
+      "output": "99bef532ffc0370e"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -141354,6 +141742,34 @@
       "source": "4ee0255fbab35baf",
       "output": "45475ed6ec9b771e"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "e130e6303d81ff64"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "2a8ea928cd7338c5"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "47884abd0149684f"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "003501d945fbd400"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "a034723617af22a7"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "396e42289728db30"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "18732d784720bc84"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "58ee3e77d74deea6"
@@ -148345,6 +148761,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "a93a709c1fea6fcb"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "a723861ab4fda461"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "42583b25e362515e"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "5b953a6892be97e3"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "b150d3b17c5d09f6"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
@@ -157540,13 +157972,41 @@
       "source": "5fa3188cc950d6d3",
       "output": "1875203bcdcc507d"
     },
-    "database.peek.noProperties": {
-      "source": "764fe3ee6066a634",
-      "output": "8b4569cea9fdfd26"
+    "database.peek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "ba1225ee0ddfd297"
+    },
+    "database.peek.closeHint": {
+      "source": "b0018fa14c6d1dae",
+      "output": "28c4af71f8bd0e3c"
+    },
+    "database.peek.label": {
+      "source": "9e0fc602cb3fb154",
+      "output": "99edaebe53b4a6da"
+    },
+    "database.peek.loading": {
+      "source": "1e460f2f03549f37",
+      "output": "db11d8d7e73ded36"
+    },
+    "database.peek.notAPageDescription": {
+      "source": "5e424c77e9df05a1",
+      "output": "e1979dd4b1c96e8f"
+    },
+    "database.peek.notAPageTitle": {
+      "source": "8c885937e4329722",
+      "output": "96a02cd2b01de3be"
     },
     "database.peek.openAsPage": {
-      "source": "c961fa113fb71924",
-      "output": "4f708f422bfbb432"
+      "source": "d5b8f3ee7458a38b",
+      "output": "56af5b086c0ef7ec"
+    },
+    "database.peek.unavailableDescription": {
+      "source": "2516775a7676018b",
+      "output": "fce9b223e96e4ac7"
+    },
+    "database.peek.unavailableTitle": {
+      "source": "4b9c780583cf6c09",
+      "output": "d91005559b8ca2a2"
     },
     "database.propertyMenu.addOption": {
       "source": "f95c8f4fc95f757c",
@@ -157861,8 +158321,8 @@
       "output": "e6a8ded996cbf4a2"
     },
     "database.table.openRow": {
-      "source": "c0864170fbb55ed0",
-      "output": "a6fff41f8422f6f4"
+      "source": "e69161f8e595deec",
+      "output": "fde9843a0de1bd4c"
     },
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
@@ -166612,6 +167072,34 @@
       "source": "4ee0255fbab35baf",
       "output": "226e140d35ef32ea"
     },
+    "features.zeilen-in-der-seitenleiste.details.p1": {
+      "source": "facc206b79740486",
+      "output": "144f8e2e8327ad64"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p2": {
+      "source": "8dc960a3a8817c9c",
+      "output": "e926f342db42e254"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p3": {
+      "source": "995a0c340745b25d",
+      "output": "c9880d08b226afa4"
+    },
+    "features.zeilen-in-der-seitenleiste.details.p4": {
+      "source": "ca171635bc616594",
+      "output": "74e41f207ee703a8"
+    },
+    "features.zeilen-in-der-seitenleiste.summary": {
+      "source": "a786e7cec7b70fa8",
+      "output": "ecbfa48ac3fe6391"
+    },
+    "features.zeilen-in-der-seitenleiste.title": {
+      "source": "cecf8e850c4bc445",
+      "output": "221844e0090a1585"
+    },
+    "features.zeilen-in-der-seitenleiste.where": {
+      "source": "afb6b3aced8efef8",
+      "output": "41b2c2f58d5ed263"
+    },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
       "output": "599e355eec66cbb5"
@@ -173603,6 +174091,22 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "5e95602e0c5709aa"
+    },
+    "shell.paletteCommands.rowPeek.close": {
+      "source": "2d6ac68d056b5d07",
+      "output": "ba1225ee0ddfd297"
+    },
+    "shell.paletteCommands.rowPeek.closeKeywords": {
+      "source": "409a0494f04c8b54",
+      "output": "b65f7dcba08ae5b9"
+    },
+    "shell.paletteCommands.rowPeek.openAsPage": {
+      "source": "4e9a524c49f06b6c",
+      "output": "c9e50c0df7f2fc12"
+    },
+    "shell.paletteCommands.rowPeek.openAsPageKeywords": {
+      "source": "90a7a8715ab690cb",
+      "output": "f0df782aa668393d"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",

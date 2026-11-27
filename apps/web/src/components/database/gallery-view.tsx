@@ -1,7 +1,6 @@
 'use client';
 
 import { ImageIcon, PlusIcon } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -16,6 +15,7 @@ import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 import { useCreateDatabaseRow, useDatabaseRows } from '@/lib/api/database-queries';
 
 import { PropertyValueDisplay } from './cells';
+import { RowPeekLink, useRowPeek } from './row-peek';
 
 interface GalleryViewProps {
   workspaceId: string;
@@ -56,6 +56,7 @@ export function GalleryView({
   const tRows = useTranslations('database.rows');
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
+  const peek = useRowPeek();
 
   if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError)
@@ -80,10 +81,11 @@ export function GalleryView({
             : undefined;
 
           return (
-            <Link
+            <RowPeekLink
               key={row.document.id}
-              href={`/arbeitsbereich/${workspaceId}/seite/${row.document.id}`}
-              className="flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-border-strong"
+              workspaceId={workspaceId}
+              rowId={row.document.id}
+              className="flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-border-strong aria-[current=true]:border-border-strong"
             >
               <div className="flex aspect-video items-center justify-center bg-surface text-muted-foreground">
                 {coverAttachmentId !== undefined ? (
@@ -114,7 +116,7 @@ export function GalleryView({
                   );
                 })}
               </div>
-            </Link>
+            </RowPeekLink>
           );
         })}
       </div>
@@ -128,7 +130,12 @@ export function GalleryView({
           variant="ghost"
           size="sm"
           className="mt-2 text-muted-foreground"
-          onClick={() => createRow.mutate({ title: tRows('untitled'), values: [] })}
+          // A new card opens beside the gallery, its name selected (#239).
+          onClick={() =>
+            void createRow
+              .mutateAsync({ title: tRows('untitled'), values: [] })
+              .then((created) => peek?.open(created.document.id, { selectTitle: true }))
+          }
         >
           <PlusIcon /> {t('newCard')}
         </Button>

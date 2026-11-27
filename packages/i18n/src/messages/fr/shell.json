@@ -485,6 +485,12 @@
       "clear": "Désélectionner tout",
       "clearKeywords": "sélection désélectionner annuler lignes"
     },
+    "rowPeek": {
+      "openAsPage": "Ouvrir la ligne ouverte en pleine page",
+      "openAsPageKeywords": "ligne page plein écran pleine page ouvrir volet latéral aperçu peek",
+      "close": "Fermer le volet latéral",
+      "closeKeywords": "volet latéral aperçu peek ligne fermer replier masquer"
+    },
     "knowledgeMap": {
       "appearance": "Apparence de la carte des connaissances",
       "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser",

@@ -48,6 +48,13 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'zeilen-in-der-seitenleiste',
+    area: 'datenbanken',
+    since: '2026-11-27',
+    references: ['#239'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'datenbank-verknuepfungen',
     area: 'datenbanken',
     since: '2026-09-19',

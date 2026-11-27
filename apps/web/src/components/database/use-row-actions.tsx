@@ -18,6 +18,7 @@ import { documentHref } from '@/lib/document-href';
 import { type CellValue } from './cells';
 import { type RowHandleActions } from './row-handle';
 import { RowMoveDialog } from './row-move-dialog';
+import { ROW_PEEK_ATTRIBUTE } from './row-peek';
 import {
   clickRow,
   EMPTY_ROW_SELECTION,
@@ -29,7 +30,7 @@ import { bulkWritableProperties, RowSelectionBar } from './row-selection-bar';
 
 /**
  * Whether an Escape belongs to something other than the selection: a field
- * being typed in, or a menu or dialog, which closes on it first. The popup is
+ * being typed in, a menu or dialog, or the side panel, which closes on it first. The popup is
  * still in the document while its own handler runs, so its presence is the
  * answer.
  */
@@ -37,6 +38,9 @@ function escapeIsTaken(target: EventTarget | null): boolean {
   if (document.querySelector('[role="dialog"], [role="menu"], [role="listbox"]') !== null) {
     return true;
   }
+  // An open side panel closes first; the selection waits for the next Escape
+  // (issue #239), so closing the row never costs the rows that were chosen.
+  if (document.querySelector(`[${ROW_PEEK_ATTRIBUTE}]`) !== null) return true;
   if (!(target instanceof HTMLElement)) return false;
   return (
     target.isContentEditable ||

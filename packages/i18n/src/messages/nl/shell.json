@@ -485,6 +485,12 @@
       "clear": "Selectie opheffen",
       "clearKeywords": "selectie opheffen deselecteren rijen"
     },
+    "rowPeek": {
+      "openAsPage": "Geopende regel als hele pagina openen",
+      "openAsPageKeywords": "regel pagina volledig scherm hele pagina openen zijbalk voorvertoning peek",
+      "close": "Zijbalk sluiten",
+      "closeKeywords": "zijbalk voorvertoning peek regel sluiten inklappen verbergen"
+    },
     "knowledgeMap": {
       "appearance": "Uiterlijk van de kenniskaart",
       "appearanceKeywords": "kaart kleuren glow bloom gloeien sterren halo look design aanpassen",

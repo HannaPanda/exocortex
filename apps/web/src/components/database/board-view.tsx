@@ -8,7 +8,6 @@ import {
   PlusIcon,
   Trash2Icon,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -43,6 +42,7 @@ import {
 
 import { PropertyValueDisplay } from './cells';
 import { OPTION_COLOR_BG_CLASS, OPTION_COLOR_TEXT_CLASS } from './property-types';
+import { RowPeekLink, useRowPeek } from './row-peek';
 
 interface BoardViewProps {
   workspaceId: string;
@@ -138,6 +138,7 @@ function BoardColumns({
   const tRows = useTranslations('database.rows');
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
+  const peek = useRowPeek();
   const updateValues = useUpdateDatabaseRowValues(documentId);
   // The card menu carries the row actions of the table's handle that fit a
   // card (issue #244); selecting several cards is the table's.
@@ -229,12 +230,13 @@ function BoardColumns({
                   className="flex flex-col gap-1.5 rounded-md border border-border bg-card p-2"
                 >
                   <div className="flex items-start justify-between gap-1">
-                    <Link
-                      href={`/arbeitsbereich/${workspaceId}/seite/${row.document.id}`}
+                    <RowPeekLink
+                      workspaceId={workspaceId}
+                      rowId={row.document.id}
                       className="min-w-0 flex-1 truncate text-sm font-medium hover:underline"
                     >
                       {row.document.title}
-                    </Link>
+                    </RowPeekLink>
                     {readOnly ? null : (
                       <DropdownMenu>
                         <DropdownMenuTrigger
@@ -297,13 +299,17 @@ function BoardColumns({
                   size="sm"
                   className="justify-start text-muted-foreground"
                   onClick={() =>
-                    createRow.mutate({
-                      title: tRows('untitled'),
-                      values:
-                        column.id === NO_VALUE_COLUMN
-                          ? []
-                          : [{ propertyId: groupProperty.id, value: column.id }],
-                    })
+                    void createRow
+                      .mutateAsync({
+                        title: tRows('untitled'),
+                        values:
+                          column.id === NO_VALUE_COLUMN
+                            ? []
+                            : [{ propertyId: groupProperty.id, value: column.id }],
+                      })
+                      // A new card opens beside the board, its name selected
+                      // (issue #239).
+                      .then((created) => peek?.open(created.document.id, { selectTitle: true }))
                   }
                 >
                   <PlusIcon /> {t('newCard')}

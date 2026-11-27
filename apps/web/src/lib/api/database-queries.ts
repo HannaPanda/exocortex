@@ -323,7 +323,7 @@ export function useUpdateDatabaseRowValues(documentId: string) {
       }),
     onSuccess: (_row, variables) => {
       void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
-      // The row-peek sheet and the table view both read from `rows` above; the
+      // The table, board and gallery all read from `rows` above; the
       // context panel's properties tab reads a single row by its own id
       // instead (`useDocumentRow`), so it needs its own invalidation.
       void client.invalidateQueries({ queryKey: databaseQueryKeys.row(variables.rowId) });

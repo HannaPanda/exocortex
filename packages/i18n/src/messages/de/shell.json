@@ -485,6 +485,12 @@
       "clear": "Auswahl aufheben",
       "clearKeywords": "auswahl aufheben abwählen zeilen"
     },
+    "rowPeek": {
+      "openAsPage": "Offene Zeile als ganze Seite öffnen",
+      "openAsPageKeywords": "zeile seite vollbild ganze seite öffnen seitenleiste vorschau peek",
+      "close": "Seitenleiste schließen",
+      "closeKeywords": "seitenleiste vorschau peek zeile schließen zuklappen ausblenden"
+    },
     "knowledgeMap": {
       "appearance": "Aussehen der Wissenskarte",
       "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen",

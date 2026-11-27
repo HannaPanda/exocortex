@@ -98,7 +98,7 @@
     "loadFailed": "Não foi possível carregar as linhas",
     "nameColumn": "Nome",
     "resizeColumn": "Redimensionar coluna {name}",
-    "openRow": "Abrir linha",
+    "openRow": "Abrir na barra lateral",
     "newRow": "Nova linha",
     "emptyTitle": "Nenhuma linha ainda",
     "emptyDescription": "Crie a primeira linha para este banco de dados.",
@@ -257,8 +257,15 @@
     "loading": "Carregando banco de dados"
   },
   "peek": {
-    "openAsPage": "Abrir como página",
-    "noProperties": "Este banco de dados ainda não tem propriedades."
+    "label": "Linha na barra lateral",
+    "close": "Fechar barra lateral",
+    "closeHint": "Fechar barra lateral (Esc)",
+    "openAsPage": "Abrir como página inteira",
+    "loading": "Carregando linha",
+    "unavailableTitle": "Linha não disponível",
+    "unavailableDescription": "Esta linha não existe mais ou você não tem permissão para abri-la.",
+    "notAPageTitle": "Não é possível abrir aqui",
+    "notAPageDescription": "Apenas páginas podem ser abertas na barra lateral. Abra como página inteira."
   },
   "formulaErrors": {
     "inColumn": "Coluna “{column}”: {message}",

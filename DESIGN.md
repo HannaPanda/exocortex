@@ -823,6 +823,18 @@ reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.
 
+### A row beside its database
+
+A row of a database opens in a side panel over the right-hand part of the
+page area (issue #239), not in a `Sheet` and not over the whole window. It
+holds a page, so it wears the page's `background`, set off by a
+`border-strong` edge and `shadow-lg` because it lies over the table. It is not
+modal: the table beside it stays live, the context panel stays where it is,
+and nothing under it moves or re-renders. Where the page area is narrower than
+the panel wants to be, the panel takes all of it, which is the phone's case.
+Its close button stands first in its bar, where the reader's eye arrives from
+the table, and Escape closes it.
+
 ### A block's own bar
 
 A control that belongs to a whole block (today the code block's language and

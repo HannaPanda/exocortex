@@ -98,7 +98,7 @@
     "loadFailed": "Nie udało się wczytać wierszy",
     "nameColumn": "Nazwa",
     "resizeColumn": "Przeciągnij, aby zmienić szerokość kolumny {name}",
-    "openRow": "Otwórz wiersz",
+    "openRow": "Otwórz na pasku bocznym",
     "newRow": "Nowy wiersz",
     "emptyTitle": "Nie ma jeszcze wierszy",
     "emptyDescription": "Dodaj pierwszy wiersz do tej bazy danych.",
@@ -257,8 +257,15 @@
     "loading": "Ładowanie bazy danych"
   },
   "peek": {
-    "openAsPage": "Otwórz jako stronę",
-    "noProperties": "Ta baza danych nie ma jeszcze żadnych właściwości."
+    "label": "Wiersz na pasku bocznym",
+    "close": "Zamknij pasek boczny",
+    "closeHint": "Zamknij pasek boczny (Esc)",
+    "openAsPage": "Otwórz jako pełną stronę",
+    "loading": "Wczytywanie wiersza",
+    "unavailableTitle": "Wiersz jest niedostępny",
+    "unavailableDescription": "Ten wiersz już nie istnieje lub nie masz uprawnień, aby go otworzyć.",
+    "notAPageTitle": "Nie można otworzyć w tym miejscu",
+    "notAPageDescription": "Na pasku bocznym otwierają się tylko strony. Otwórz to jako pełną stronę."
   },
   "formulaErrors": {
     "inColumn": "Kolumna „{column}”: {message}",

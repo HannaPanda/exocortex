@@ -98,7 +98,7 @@
     "loadFailed": "Zeilen nicht geladen",
     "nameColumn": "Name",
     "resizeColumn": "Spalte {name} breiter oder schmaler ziehen",
-    "openRow": "Zeile öffnen",
+    "openRow": "In der Seitenleiste öffnen",
     "newRow": "Neue Zeile",
     "emptyTitle": "Noch keine Zeilen",
     "emptyDescription": "Lege die erste Zeile für diese Datenbank an.",
@@ -257,8 +257,15 @@
     "loading": "Datenbank wird geladen"
   },
   "peek": {
-    "openAsPage": "Als Seite öffnen",
-    "noProperties": "Diese Datenbank hat noch keine Eigenschaften."
+    "label": "Zeile in der Seitenleiste",
+    "close": "Seitenleiste schließen",
+    "closeHint": "Seitenleiste schließen (Esc)",
+    "openAsPage": "Als ganze Seite öffnen",
+    "loading": "Zeile wird geladen",
+    "unavailableTitle": "Zeile nicht verfügbar",
+    "unavailableDescription": "Diese Zeile gibt es nicht mehr, oder du darfst sie nicht öffnen.",
+    "notAPageTitle": "Hier nicht zu öffnen",
+    "notAPageDescription": "In der Seitenleiste öffnen sich nur Seiten. Öffne das hier als ganze Seite."
   },
   "formulaErrors": {
     "inColumn": "Spalte „{column}“: {message}",

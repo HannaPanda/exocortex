@@ -485,6 +485,12 @@
       "clear": "Limpar seleção",
       "clearKeywords": "limpar seleção desmarcar linhas"
     },
+    "rowPeek": {
+      "openAsPage": "Abrir linha aberta como página inteira",
+      "openAsPageKeywords": "linha página tela cheia página inteira abrir barra lateral pré-visualização espiar peek",
+      "close": "Fechar barra lateral",
+      "closeKeywords": "barra lateral pré-visualização espiar peek linha fechar recolher ocultar"
+    },
     "knowledgeMap": {
       "appearance": "Aparência do mapa de conhecimento",
       "appearanceKeywords": "mapa cores brilho bloom luz estrelas halo visual design personalizar",

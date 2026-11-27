@@ -2,6 +2,7 @@
 
 import { Maximize2Icon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -37,7 +38,7 @@ import { AddPropertyButton } from './add-property-button';
 import { PropertyCell } from './cells';
 import { PropertyMenu } from './property-menu';
 import { RowHandle, type RowHandleActions } from './row-handle';
-import { RowPeekSheet } from './row-peek-sheet';
+import { PEEK_TRIGGER_ATTRIBUTE, useRowPeek } from './row-peek';
 import {
   clampColumnWidth,
   columnWidthOf,
@@ -118,7 +119,17 @@ export function TableView({
   const updateValues = useUpdateDatabaseRowValues(documentId);
   const updateView = useUpdateDatabaseView(documentId);
 
-  const [peekRowId, setPeekRowId] = React.useState<string | null>(null);
+  const router = useRouter();
+  // A row opens beside the table, as its page (issue #239); outside a
+  // document view there is no panel, and it opens as the whole page instead.
+  const peek = useRowPeek();
+  const openRow = React.useCallback(
+    (rowId: string, options?: { selectTitle?: boolean }): void => {
+      if (peek !== null) peek.open(rowId, options);
+      else router.push(`/arbeitsbereich/${workspaceId}/seite/${rowId}`);
+    },
+    [peek, router, workspaceId],
+  );
   /**
    * Width being dragged right now. Kept here rather than in the handle so the
    * `<col>` follows the pointer without a round-trip to the server; the commit
@@ -136,7 +147,7 @@ export function TableView({
     properties,
     readOnly,
     paletteEnabled,
-    onOpenPeek: setPeekRowId,
+    onOpenPeek: openRow,
   });
 
   const rowHeight = rowHeightOf(view);
@@ -162,7 +173,6 @@ export function TableView({
   }
 
   const rows = rowsQuery.data.rows;
-  const peekRow = rows.find((row) => row.document.id === peekRowId) ?? null;
   const totalWidth =
     widthOf(DATABASE_TITLE_COLUMN_KEY) +
     columns.reduce((sum, property) => sum + widthOf(property.id), 0) +
@@ -302,9 +312,15 @@ export function TableView({
                       variant="ghost"
                       size="icon-sm"
                       aria-label={t('openRow')}
+                      title={t('openRow')}
                       data-testid="open-row-peek"
-                      className="shrink-0 opacity-0 focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100"
-                      onClick={() => setPeekRowId(row.document.id)}
+                      aria-pressed={peek?.peekId === row.document.id}
+                      {...{ [PEEK_TRIGGER_ATTRIBUTE]: row.document.id }}
+                      className={cn(
+                        'shrink-0',
+                        peek?.peekId === row.document.id ? null : ROW_CONTROL_REVEAL,
+                      )}
+                      onClick={() => openRow(row.document.id)}
                     >
                       <Maximize2Icon />
                     </Button>
@@ -338,7 +354,13 @@ export function TableView({
             size="sm"
             className="ml-1 mt-1 text-muted-foreground"
             data-testid="add-row"
-            onClick={() => createRow.mutate({ title: tRows('untitled'), values: [] })}
+            // A new row opens beside the table with its name selected, so it
+            // is named and written in one go (issue #239).
+            onClick={() =>
+              void createRow
+                .mutateAsync({ title: tRows('untitled'), values: [] })
+                .then((created) => openRow(created.document.id, { selectTitle: true }))
+            }
           >
             <PlusIcon /> {t('newRow')}
           </Button>
@@ -348,18 +370,6 @@ export function TableView({
           <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : null}
 
-        <RowPeekSheet
-          workspaceId={workspaceId}
-          row={peekRow}
-          properties={properties}
-          readOnly={readOnly}
-          onOpenChange={(open) => {
-            if (!open) setPeekRowId(null);
-          }}
-          onChange={(propertyId, value) => {
-            if (peekRow !== null) setValue(peekRow, propertyId, value);
-          }}
-        />
         {rowActions.dialogs}
       </div>
     </>

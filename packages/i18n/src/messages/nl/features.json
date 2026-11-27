@@ -396,6 +396,17 @@
     },
     "where": "Klik op een rij in een database: de eigenschappen staan onder de titel van de pagina."
   },
+  "zeilen-in-der-seitenleiste": {
+    "title": "Rijen in de zijbalk openen",
+    "summary": "De pijl bij een rij opent deze rechts naast de database als pagina: titel, eigenschappen en tekst, allemaal direct bewerkbaar. De tabel blijft ernaast staan, met behoud van filters, selectie en scrollpositie.",
+    "details": {
+      "p1": "Een klik op de pijl naast de naam opent de rij in de zijbalk; in het handgreepmenu heet dit „Openen”. Op een bord, in de galerij en in de kalender opent een klik op de kaart of het item dezelfde balk. Een nieuwe rij of kaart opent direct daar, met geselecteerde naam, zodat je deze meteen kunt overschrijven.",
+      "p2": "Wat je in de balk schrijft, slaat eXocortex op zoals op elke pagina. Klik je op een andere rij, dan schakelt de balk daarnaar over zonder dat er iets verloren gaat. Escape of de knop linksboven sluit de balk, en je bent weer terug bij de rij waar je vandaan kwam.",
+      "p3": "De geopende rij staat in het adres. Je kunt de link delen, na het vernieuwen is de balk weer open, en de terugknop van de browser sluit hem. „Als volledige pagina openen” toont de rij zonder de database; met Ctrl en klik opent hij in een nieuw tabblad.",
+      "p4": "Op de telefoon neemt de balk het hele scherm in beslag. Het contextpaneel rechts en de AI-chat blijven waar ze zijn en blijven betrekking hebben op de database."
+    },
+    "where": "In een database op de pijl naast de naam van een rij klikken, of op een kaart in het bord, in de galerij of in de kalender."
+  },
   "eingang": {
     "title": "Inbox en snelle invoer",
     "summary": "Ctrl+E opent een klein veld waarin een gedachte direct kan worden ingevoerd, zonder dat je hoeft te beslissen waar hij thuishoort. Hij belandt op de inboxpagina, en ordenen doe je later met het plaatsingsvoorstel.",

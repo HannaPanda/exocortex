@@ -11,13 +11,23 @@ interface DocumentTitleInputProps {
   initialTitle: string;
   readOnly: boolean;
   onCommit: (title: string) => void;
+  /** Whether "Seite umbenennen" from the palette lands here (issue #239). */
+  answersPalette?: boolean;
+  /** Focuses the field and selects its text once, when it first appears. */
+  selectOnMount?: boolean;
 }
 
 /**
  * The title field owns its draft value. It is remounted through its `key` when the
  * document changes, so no effect has to copy server state into local state.
  */
-export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleInputProps) {
+export function DocumentTitleInput({
+  initialTitle,
+  readOnly,
+  onCommit,
+  answersPalette = true,
+  selectOnMount = false,
+}: DocumentTitleInputProps) {
   const t = useTranslations('shell.documentTitleInput');
   const [value, setValue] = React.useState(initialTitle);
   const field = React.useRef<HTMLTextAreaElement>(null);
@@ -29,8 +39,18 @@ export function DocumentTitleInput({ initialTitle, readOnly, onCommit }: Documen
       field.current?.focus();
       field.current?.select();
     },
-    !readOnly,
+    !readOnly && answersPalette,
   );
+
+  // A row that was just made opens with its name ready to be typed over
+  // (issue #239). Once, on mount: a later re-render must not steal the caret.
+  const selectedOnce = React.useRef(false);
+  React.useEffect(() => {
+    if (!selectOnMount || readOnly || selectedOnce.current) return;
+    selectedOnce.current = true;
+    field.current?.focus({ preventScroll: true });
+    field.current?.select();
+  }, [readOnly, selectOnMount]);
 
   const commit = (): void => {
     const trimmed = value.trim();

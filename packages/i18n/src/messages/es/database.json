@@ -98,7 +98,7 @@
     "loadFailed": "Error al cargar las filas",
     "nameColumn": "Nombre",
     "resizeColumn": "Ajustar el ancho de la columna {name}",
-    "openRow": "Abrir fila",
+    "openRow": "Abrir en la barra lateral",
     "newRow": "Nueva fila",
     "emptyTitle": "Aún no hay filas",
     "emptyDescription": "Crea la primera fila para esta base de datos.",
@@ -257,8 +257,15 @@
     "loading": "Cargando base de datos"
   },
   "peek": {
-    "openAsPage": "Abrir como página",
-    "noProperties": "Esta base de datos aún no tiene propiedades."
+    "label": "Fila en la barra lateral",
+    "close": "Cerrar barra lateral",
+    "closeHint": "Cerrar barra lateral (Esc)",
+    "openAsPage": "Abrir como página completa",
+    "loading": "Cargando fila",
+    "unavailableTitle": "Fila no disponible",
+    "unavailableDescription": "Esta fila ya no existe o no tienes permiso para abrirla.",
+    "notAPageTitle": "No se puede abrir aquí",
+    "notAPageDescription": "En la barra lateral solo se abren páginas. Ábrela como página completa."
   },
   "formulaErrors": {
     "inColumn": "Columna «{column}»: {message}",

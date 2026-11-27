@@ -98,7 +98,7 @@
     "loadFailed": "Failed to load rows",
     "nameColumn": "Name",
     "resizeColumn": "Drag column {name} wider or narrower",
-    "openRow": "Open row",
+    "openRow": "Open in side peek",
     "newRow": "New row",
     "emptyTitle": "No rows yet",
     "emptyDescription": "Create the first row for this database.",
@@ -257,8 +257,15 @@
     "loading": "Loading database"
   },
   "peek": {
-    "openAsPage": "Open as page",
-    "noProperties": "This database has no properties yet."
+    "label": "Row in side peek",
+    "close": "Close side peek",
+    "closeHint": "Close side peek (Esc)",
+    "openAsPage": "Open as full page",
+    "loading": "Loading row",
+    "unavailableTitle": "Row unavailable",
+    "unavailableDescription": "This row no longer exists, or you don’t have permission to open it.",
+    "notAPageTitle": "Cannot open here",
+    "notAPageDescription": "Only pages can open in the side peek. Open this as a full page instead."
   },
   "formulaErrors": {
     "inColumn": "Column “{column}”: {message}",

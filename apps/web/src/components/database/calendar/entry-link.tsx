@@ -1,9 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
 import { type HourCycle, useHourCycle } from '@exocortex/ui';
+
+import { RowPeekLink } from '../row-peek';
 
 import { type CalendarEntry } from './entries';
 import { calendarFormatter } from './range';
@@ -22,7 +23,8 @@ export function entryTime(
 
 /**
  * One row as a link to its own page. A calendar entry *is* a page (ADR-011), so
- * opening it is a navigation, never a dialog that shows a copy of it.
+ * opening it shows that page, never a dialog with a copy of it: beside the
+ * calendar in the side panel (issue #239), or in a new tab with Strg.
  */
 export function CalendarEntryLink({
   workspaceId,
@@ -39,13 +41,14 @@ export function CalendarEntryLink({
   const cycle = useHourCycle();
   const time = showTime ? entryTime(entry, locale, cycle) : null;
   return (
-    <Link
-      href={`/arbeitsbereich/${workspaceId}/seite/${entry.row.document.id}`}
+    <RowPeekLink
+      workspaceId={workspaceId}
+      rowId={entry.row.document.id}
       className={className}
       title={entry.row.document.title}
     >
       {time === null ? null : <span className="mr-1 text-muted-foreground">{time}</span>}
       {entry.row.document.title}
-    </Link>
+    </RowPeekLink>
   );
 }

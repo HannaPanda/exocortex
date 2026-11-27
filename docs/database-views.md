@@ -202,7 +202,7 @@ handles in the header, all read through
 | Field               | Meaning                                                                                                                                                                                                           |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `columnWidths`      | Width per property id in CSS pixels, plus the reserved key `title` for the row-title column (a row's title lives on the `Document`, so it has no property id). Missing key means `DATABASE_COLUMN_DEFAULT_WIDTH`. |
-| `rowHeight`         | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row sheet.                                                         |
+| `rowHeight`         | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row's page header (also in the side panel).                        |
 | `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated.                                   |
 
 Moving a column one step is in the column header menu ("Nach links" / "Nach
@@ -218,8 +218,9 @@ Two related rules follow from `rowHeight` being a clamp:
 
 - A cell never truncates without a way out. Text-ish cells
   (`ExpandableTextCell` in `text-cells.tsx`) are a button that opens the complete
-  value in an overlay anchored to the cell, and the row sheet
-  (`row-peek-sheet.tsx`) stacks every property of one row at full sheet width.
+  value in an overlay anchored to the cell, and a row's page header, in the
+  side panel or on the row's own page, stacks every property of one row at
+  full width.
 - The table's own scrollport is the `div` in `table-view.tsx`, not the `Table`
   primitive's container (which is switched to `overflow-visible` through
   `containerClassName`). A sticky `thead` only sticks against the box that
@@ -242,8 +243,9 @@ A row opened as a page shows its values under its title (issue #254,
 `row-properties-header.tsx`, mounted in `document-view.tsx` for a `PAGE` whose
 parent is a `COLLECTION`, or whose parent a share hides; `rowCollectionIdOf`
 decides, and for a shared page the row read's `row: null` is what says it is
-no row). It is the third place a row is edited, beside the
-table cell and the row sheet, and like those two it is not a copy:
+no row). It is the second place a row is edited, beside the table cell, and
+the side panel shows this same header (see "A row beside its database"
+below). Like the cell it is not a copy:
 
 - **One read, one write.** The header reads `GET /api/documents/:id/row`, which
   answers the row _and_ the columns of its database (`DocumentRowResponse.properties`,
@@ -288,7 +290,7 @@ while any row is selected, and always on a coarse pointer, where nothing
 hovers. They sit inside the pinned title cell rather than in a column of their
 own, so the grid lines of #305 and the pinned cell's tint are unchanged.
 
-- **The handle's menu** (`row-handle.tsx`): open in the sheet, open as a page,
+- **The handle's menu** (`row-handle.tsx`): open in the side panel, open as a page,
   copy link, and for a writer duplicate, move and into the trash. It does not
   drag: a table's order is its view's sort and rows have no manual order to
   drag into. "Verschieben" is `RowMoveDialog`, a search over the workspace
@@ -338,6 +340,57 @@ own, so the grid lines of #305 and the pinned cell's tint are unchanged.
   entry is a small chip, so neither has room for a checkbox that would not
   fight the click that opens the row. Their rows are selected in a table view
   of the same database.
+
+## A row beside its database: the side panel
+
+Issue #239, Notion's "side peek". The arrow beside a row's name, "Öffnen" in
+the handle menu, a click on a board card, a gallery card or a calendar entry,
+and every row made by "Neue Zeile" or "Neue Karte" open the row in a panel
+over the right-hand part of the page area (`row-peek-panel.tsx`). A click with
+Strg, Cmd, Shift or the middle button still goes to the row's own page
+(`RowPeekLink`); the title link in a table row also stays a link to the page.
+
+- **The panel is the page.** Its content is `PageSurface`
+  (`components/shell/page-surface.tsx`), the same component `DocumentView`
+  renders for every page: title, the row's page header, the overview and the
+  collaborative editor. Nothing is a second implementation. It reports into a
+  `DocumentSessionProvider` of its own, so the header's presence, save and
+  connection state keep describing the page underneath, and the panel shows
+  its own save indicator. Its title does not answer the palette's "Seite
+  umbenennen", which stays with the page the address names.
+- **The open row is the address.** `?p=<rowId>` (`row-peek-address.ts`,
+  unit-tested), written with `window.history.pushState`/`replaceState`, which
+  Next.js folds into `useSearchParams` without a server round trip. Opening
+  pushes a step, switching rows replaces it, closing goes back when the panel
+  pushed that step and replaces otherwise; so Back closes the panel, a reload
+  or a shared link opens the same row, and `?p=` naming the page itself is
+  ignored. `RowPeekProvider` sits in `DocumentView`, so an embedded database
+  opens its rows beside the page it is embedded in.
+- **The table is not touched.** The panel lies over the table rather than
+  pushing it aside, and nothing about the table depends on the address, so its
+  filters, sort, selection (#244) and scroll position stay as they were through
+  opening, switching and closing. Its width is `clamp(26rem, 48%, 44rem)` of
+  the page area, capped at the whole of it, which is what a phone gets. The
+  context panel and the AI chat stay beside it and keep speaking about the page
+  the address names.
+- **Switching keeps the text.** Each row is its own Yjs document; switching
+  tears the old connection down the way leaving a page does, after the edits
+  went to the socket and the browser's offline copy. A title being typed is
+  committed by blurring it before the panel closes on Escape.
+- **Keyboard.** Opening moves the focus into the panel; a new row's title is
+  focused and selected once, so the first keystroke names it. Escape closes the
+  panel unless a menu, popover or dialog is open or a field outside the panel
+  has the focus; while the panel is open the table's own Escape (letting go of
+  the selection) waits for the next press. Closing returns the focus to the
+  opener of the row shown last. The palette offers "Seitenleiste schließen"
+  and "Offene Zeile als ganze Seite öffnen" while the panel is open
+  (`palette/row-peek-commands.tsx`).
+- **Live.** A row renamed in the panel reaches the table beside it at once,
+  and `useDatabaseRealtime` now also answers `document.updated` by invalidating
+  the parent's rows, so a rename elsewhere reaches an open table too.
+- **No MCP counterpart.** The panel is a way of looking at a page, not a
+  capability: an agent reads and writes the same row with `exo_page_read`,
+  `exo_database_row_get` and the page and row writes it already has.
 
 ## Inline embed
 
@@ -476,8 +529,8 @@ happens to read `"Preis"` is left alone.
 Issue #245, [ADR-098](adr/ADR-098-a-cell-file-hangs-on-its-row.md). A FILES
 value is a list of attachment ids; `FilesCell`
 (`apps/web/src/components/database/files-cell.tsx`) is the one editor for it,
-in the table, the row sheet, a row's page header and the properties panel,
-because all four render `PropertyCell` and pass it the row.
+in the table, a row's page header (on its page and in the side panel) and the
+properties panel, because all three render `PropertyCell` and pass it the row.
 
 - **The upload names the cell.** The ordinary upload route
   (`POST /api/workspaces/:id/attachments`) takes a `propertyId` form field
@@ -525,7 +578,7 @@ because all four render `PropertyCell` and pass it the row.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
 - **PERSON is edited as raw, comma-separated ids** in `text-cells.tsx`'s
-  `IdListCell`, in the table, the row sheet and a row's page header alike — a
+  `IdListCell`, in the table and a row's page header alike — a
   member picker is a separate, larger feature; this is the honest minimal
   editor that still round-trips the array completely through the API. FILES
   has had its own cell since issue #245.

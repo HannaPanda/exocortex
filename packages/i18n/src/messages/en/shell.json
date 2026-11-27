@@ -485,6 +485,12 @@
       "clear": "Clear selection",
       "clearKeywords": "clear selection deselect rows"
     },
+    "rowPeek": {
+      "openAsPage": "Open open row as full page",
+      "openAsPageKeywords": "row page fullscreen full page open sidebar preview peek",
+      "close": "Close sidebar",
+      "closeKeywords": "sidebar preview peek row close collapse hide"
+    },
     "knowledgeMap": {
       "appearance": "Knowledge map appearance",
       "appearanceKeywords": "map colors glow bloom shine stars halo look design customize",
