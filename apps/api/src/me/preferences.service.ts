@@ -67,6 +67,7 @@ export class PreferencesService {
         outlinePinned: true,
         outlineTransparency: true,
         outlineDodge: true,
+        outlineHoverExpand: true,
       },
     });
     if (user === null)
@@ -77,6 +78,7 @@ export class PreferencesService {
       outlinePinned: OUTLINE_PINNED_FROM_ROW[user.outlinePinned],
       outlineTransparency: OUTLINE_TRANSPARENCY_FROM_ROW[user.outlineTransparency],
       outlineDodge: user.outlineDodge,
+      outlineHoverExpand: user.outlineHoverExpand,
     };
   }
 
@@ -96,6 +98,9 @@ export class PreferencesService {
           ? {}
           : { outlineTransparency: OUTLINE_TRANSPARENCY_TO_ROW[body.outlineTransparency] }),
         ...(body.outlineDodge === undefined ? {} : { outlineDodge: body.outlineDodge }),
+        ...(body.outlineHoverExpand === undefined
+          ? {}
+          : { outlineHoverExpand: body.outlineHoverExpand }),
       },
     });
     return this.get(userId);

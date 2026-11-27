@@ -224,6 +224,7 @@ describe('user preferences contract (issue #282)', () => {
         outlinePinned: 'column',
         outlineTransparency: 'none',
         outlineDodge: true,
+        outlineHoverExpand: false,
       }).chatScroll,
     ).toBe('follow');
   });
@@ -246,6 +247,13 @@ describe('outline preferences contract (issue #283)', () => {
       outlineDodge: false,
     });
     expect(() => updateUserPreferencesRequestSchema.parse({ outlineDodge: 'yes' })).toThrow();
+  });
+
+  it('switches opening the scale on hover on and off', () => {
+    expect(updateUserPreferencesRequestSchema.parse({ outlineHoverExpand: true })).toEqual({
+      outlineHoverExpand: true,
+    });
+    expect(() => updateUserPreferencesRequestSchema.parse({ outlineHoverExpand: 1 })).toThrow();
   });
 });
 
