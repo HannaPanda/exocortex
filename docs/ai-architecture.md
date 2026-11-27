@@ -1344,8 +1344,15 @@ passed to the outbox by `DocumentsService.update` and `DocumentMoveService`.
   until the next one (`currentToolPage` in `run-labels.ts`; a read lasts
   milliseconds, the thinking after it seconds): "Schreibt in „Titel“" when the call's
   `target` is the page, "Liest „Titel“" when only its `subject` is, linked. The
-  trace names pages by title where the reader may open them. No page carries an
-  editing state (ADR-065).
+  trace names pages by title where the reader may open them. The page itself
+  says "KI arbeitet gerade hier" in its top bar (`AiWorkingHint`, folded by
+  `page-run-presence.ts` from the `ai.run.tool_call` events the tab already
+  hears) while a run's latest tool call is about it, until the run's next call
+  elsewhere, its end, or three silent minutes. Which runs a tab hears is the
+  gateway's room membership, so a reader of a shared page hears their own run
+  (the panel joins the room of the workspace the chat runs in,
+  `useSharedChatRoom`) and never the owner's. No page carries an editing state
+  and nothing is locked (ADR-065).
 - **After it.** `GET /api/ai/conversations/:id` answers `runWrites`, the pages
   each run of the conversation wrote, straight from the journal. The transcript
   puts a line under the run's last message (`run-changes-line.tsx`) naming
@@ -1381,7 +1388,10 @@ passed to the outbox by `DocumentsService.update` and `DocumentMoveService`.
   pages into the trash (`archive`, never a permanent delete). It answers what
   it restored per page (`blockIds`, `structure`) plus the reading afterwards. A
   second undo finds nothing left and writes nothing. The dialog
-  (`run-revert-dialog.tsx`) shows the reading first and the button second.
+  (`run-revert-dialog.tsx`) shows the reading first and the button second. The
+  palette's "Letzten KI-Lauf rückgängig machen" opens the chat and asks it
+  (`undo-last-run`, `use-last-run-undo.tsx`) for the same dialog on the newest
+  ended run of the open conversation that changed a page.
 
 ## Adding a provider
 

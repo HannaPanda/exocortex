@@ -130,3 +130,17 @@ text or nothing. Each written block now records `prev`, the block before it,
 and the reading names the blocks nobody had before that stand right at that
 place (`standing`). A paragraph the run added and somebody rewrote is no longer
 "already back" just because its identifier is gone.
+
+**The page says a run is working on it, and stores nothing to say so.** The
+document's top bar shows "KI arbeitet gerade hier" while a run's latest tool
+call is about the page, folded in the browser from the same `ai.run.tool_call`
+events the pulse reads and dropped with the run's next call elsewhere, its end
+or three silent minutes. It locks nothing and no row records it, so ADR-065
+stands. Who sees it is decided where the events are delivered: a workspace
+room is a member's, so a reader of a shared page sees their own run there
+(the chat joins the room of the reader's own workspace it runs in) and never
+a run of the page's owner.
+
+**The palette reaches the undo.** "Letzten KI-Lauf rückgängig machen" opens the
+chat and the same preview the line under the answer opens, for the newest
+ended run of the open conversation that changed a page.

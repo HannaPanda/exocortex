@@ -3380,6 +3380,10 @@
       "source": "69812faa503ecbec",
       "output": "d18f95550fc01c2c"
     },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "9dff632c265bc5e7"
+    },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
       "output": "1a6bff3e5e31124e"
@@ -13269,12 +13273,12 @@
       "output": "2ecfeef702fb6e5c"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "992320504aec59a5"
+      "source": "c9fb54fb27f19dcd",
+      "output": "047638fb293c1032"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "1325840d276f29d0"
+      "source": "1e449743f77654dd",
+      "output": "d6921fc8677b31ad"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -20436,6 +20440,18 @@
       "source": "6b675eb001655d68",
       "output": "fe6a02e5a92d9ae8"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "a1307eae365b65b6"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "ca3d7dc43725de9e"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "a1c30b0e54348f3f"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "b250a454877d44a6"
@@ -21615,6 +21631,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "a7a7f9be847b7fb2"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "b001fabd23ed4d85"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "0767db57235ae082"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -27981,6 +28005,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "984f5a5439b8518f"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "8e05dcfbee871532"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -37871,12 +37899,12 @@
       "output": "96a59d7888b68712"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "968103d39646a682"
+      "source": "c9fb54fb27f19dcd",
+      "output": "2e149e9473ce8012"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "205037eda4ba055f"
+      "source": "1e449743f77654dd",
+      "output": "1c3a0bfca8291c2b"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -45038,6 +45066,18 @@
       "source": "6b675eb001655d68",
       "output": "1b9dc41e4a5a573a"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "a54fcd9f515b7df1"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "f4cb5a37fecbf039"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "f11cb11653f43314"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "b9a042ebc7a2c4fc"
@@ -46217,6 +46257,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "a0f4402a0b2a99ec"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "ee108284a212a2f9"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "50db0578beab1cb7"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -52583,6 +52631,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "83270ac96381e61c"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "27951bf481caf34f"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -62473,12 +62525,12 @@
       "output": "f9240c6f80c3da4e"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "7a3f9aec0b217e1b"
+      "source": "c9fb54fb27f19dcd",
+      "output": "b3bd8f6e1ec7d66e"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "9a5e9c6ce36e344e"
+      "source": "1e449743f77654dd",
+      "output": "e3fc99f4d58f74d6"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -69640,6 +69692,18 @@
       "source": "6b675eb001655d68",
       "output": "3e0e602135fdf2fe"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "28dc4b4a907f18ca"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "0b02b3155567e388"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "b6a7108e39b3f1f4"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "a52f470c90ed05f1"
@@ -70819,6 +70883,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "919b41455ffb2a20"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "a43abd5d51cbc54c"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "bea024374f7de82c"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -77185,6 +77257,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "591d9139cd6831b2"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "90719aa7a040a6fb"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -87075,12 +87151,12 @@
       "output": "12dcd8201bca520d"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "8f21b8a1c1b73341"
+      "source": "c9fb54fb27f19dcd",
+      "output": "132650985350ca08"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "03e9d5df4afc1f91"
+      "source": "1e449743f77654dd",
+      "output": "73140711e55fb485"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -94242,6 +94318,18 @@
       "source": "6b675eb001655d68",
       "output": "61b60ef9de02f577"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "cbd7e31883f703cd"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "2722eeec3425c9d7"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "4330db67a6046ad3"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "dd41b3275173bb27"
@@ -95421,6 +95509,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "6c7865087bfdd7a3"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "9cd9b7f4e07c5460"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "61b3fc64fb632462"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -101787,6 +101883,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "06c242ac6122520b"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "8413bc7ae041118b"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -111677,12 +111777,12 @@
       "output": "963a68b3141ac040"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "9e935f2f7e32e2c0"
+      "source": "c9fb54fb27f19dcd",
+      "output": "aab25fc2a167196d"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "a12e53f4edafca17"
+      "source": "1e449743f77654dd",
+      "output": "8afa2c4b1b4efda8"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -118844,6 +118944,18 @@
       "source": "6b675eb001655d68",
       "output": "1da9b8cc6ca375bc"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "4291a3e0e3f9a3fc"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "05cfcb46ad55b5c8"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "1b9e59fd063fc8d2"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "05a1a5c392b344cb"
@@ -120023,6 +120135,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "937ac76d208faa3c"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "9c0e859c40ee8013"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "9602fb32c00bde83"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -126389,6 +126509,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "7e7a58b76d25292e"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "1437b2acc1382b6c"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -136279,12 +136403,12 @@
       "output": "3ea0fde9cb4f9969"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "cb5d3a780693fcfd"
+      "source": "c9fb54fb27f19dcd",
+      "output": "2cc084b6560a9f41"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "d48379388ae2e34f"
+      "source": "1e449743f77654dd",
+      "output": "20ea972710eca124"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -143446,6 +143570,18 @@
       "source": "6b675eb001655d68",
       "output": "92ec337ae7972858"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "e16f092fdcbdda8f"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "0c29659e94f53aa7"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "2df021e092f909bf"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "d7b372fd3748e2fe"
@@ -144625,6 +144761,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "36f826ce6d570770"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "b880aecd44c7a47c"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "5753067e2c148a7b"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",
@@ -150991,6 +151135,10 @@
     "ai.runChanges.nothingTitle": {
       "source": "69812faa503ecbec",
       "output": "90bc899b28f041fa"
+    },
+    "ai.runChanges.nothingToUndo": {
+      "source": "c002b3e7f35a2b4e",
+      "output": "5bb660ccd92c888c"
     },
     "ai.runChanges.pageTitle": {
       "source": "3ca539fb07440412",
@@ -160881,12 +161029,12 @@
       "output": "306047d132881e57"
     },
     "features.ki-lauf-zuruecknehmen.details.p1": {
-      "source": "fcf6ca238f1ac104",
-      "output": "8dfd788a575d1623"
+      "source": "c9fb54fb27f19dcd",
+      "output": "71cf139710ba17bd"
     },
     "features.ki-lauf-zuruecknehmen.details.p2": {
-      "source": "00bc5ee645c339fd",
-      "output": "8a6c7229fcb1924d"
+      "source": "1e449743f77654dd",
+      "output": "252cf23245390555"
     },
     "features.ki-lauf-zuruecknehmen.details.p3": {
       "source": "52620c03e32b79bd",
@@ -168048,6 +168196,18 @@
       "source": "6b675eb001655d68",
       "output": "0667a4f5a7ff1c3d"
     },
+    "shell.documentTopBar.aiWorking": {
+      "source": "0555c4192d9b2d85",
+      "output": "57226fa78932fb29"
+    },
+    "shell.documentTopBar.aiWorkingReading": {
+      "source": "471a75ed78f52920",
+      "output": "1505ff8fee5e9f6c"
+    },
+    "shell.documentTopBar.aiWorkingWriting": {
+      "source": "fb116094d14ebbe6",
+      "output": "eb34952538d3610c"
+    },
     "shell.documentTopBar.archive": {
       "source": "eca8b731e7cd38c6",
       "output": "a7192ca1ffa6fb16"
@@ -169227,6 +169387,14 @@
     "shell.paletteCommands.trashKeywords": {
       "source": "d3008fc851072093",
       "output": "f04824fd0d1f89bc"
+    },
+    "shell.paletteCommands.undoLastRun": {
+      "source": "f446a2cb4262727c",
+      "output": "ea5713f6724132cc"
+    },
+    "shell.paletteCommands.undoLastRunKeywords": {
+      "source": "5ab9ce7571d4746a",
+      "output": "9e5a8c5fffc772c9"
     },
     "shell.paletteCommands.workspace.menu": {
       "source": "763a7af6a594ad29",

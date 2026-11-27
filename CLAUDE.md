@@ -931,8 +931,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the run left it, a new page into the trash and never deleted, a move between
   workspaces named only. Reading a run's changes is `exo_ai_run_changes` on
   both surfaces; the undo (`POST /api/ai/runs/:id/revert`) is the browser's and
-  the requester's only. The pulse names the page of the latest tool call; there
-  is still no editing state (ADR-065).
+  the requester's only. The pulse names the page of the latest tool call and the
+  page's top bar says a run works there, folded from the events in the browser;
+  there is still no editing state (ADR-065).
 - ADR-095: a chat picture is an ordinary `Attachment` owned by its
   conversation (`conversationId`, cascade, never on a page, readable by its
   uploader only), uploaded when added and bound by `attachmentIds` when sent,

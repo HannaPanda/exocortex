@@ -20,7 +20,7 @@ apps/web/src/components/palette/
   navigation-commands.tsx  PLACES: every screen one goes to by name
   settings-commands.tsx    the deployment's settings groups, the workspace tabs, the settings menu
   settings-addresses.ts    ?gruppe= and ?tab=, read by the settings pages
-  shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, focus, fullscreen, trash
+  shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, undo the chat's last run, focus, fullscreen, trash
   create-commands.tsx      a new page, database, project, saved search, a page from a template
   workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
   chat-scroll-commands.tsx switching the AI chat between following an answer and staying at its start
