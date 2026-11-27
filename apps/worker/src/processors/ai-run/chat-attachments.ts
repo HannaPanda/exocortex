@@ -1,12 +1,18 @@
+import { type DecisionProvider } from '@exocortex/ai';
 import {
   type AiMessage,
   ATTACHMENT_IMAGE_DEFAULT_MAX_EDGE,
   ATTACHMENT_IMAGE_MAX_BYTES,
+  type AttachmentTrust,
+  attachmentTrustFor,
+  attachmentTrustNote,
   fenceUntrustedContent,
+  screeningFromColumn,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type ObjectStorage, renderImageForAgent } from '@exocortex/storage';
 
+import { screenAttachment } from '../../attachment-screening';
 import { type ToolImageDescriber } from '../../tool-images';
 
 /**
@@ -16,15 +22,17 @@ import { type ToolImageDescriber } from '../../tool-images';
  * the model as a vision model's description of it, written once by the first
  * run that sees the message and kept on the attachment row, so the
  * conversation does not pay for the same picture on every turn. Where it
- * reaches a prompt it is fenced as attachment content and closes writing for
- * that run under its policy (ADR-030), exactly like the pictures of the open
- * page.
+ * reaches a prompt it is fenced as attachment content. It closes writing for
+ * that run under its policy (ADR-030) unless it is the requester's own upload
+ * and its description was screened clean (ADR-096).
  */
 
 /** What the transcript loader needs to know about one file on a message. */
 export interface ChatAttachmentForPrompt {
   filename: string;
   description: string | null;
+  /** Whether the run's requester may read it and keep writing (ADR-096). Absent means foreign. */
+  trust?: AttachmentTrust;
 }
 
 const UNSEEN =
@@ -69,6 +77,12 @@ export function chatAttachmentContext(
     );
   }
   for (const file of unseen) parts.push(`${file.filename}: ${UNSEEN}`);
+  // Outside the fence, because it is this deployment's sentence about the
+  // file, not the file's: why reading it stops the run from writing.
+  for (const file of described) {
+    const note = file.trust === undefined ? null : attachmentTrustNote(file.trust);
+    if (note !== null) parts.push(`${file.filename}: ${note}`);
+  }
   return { role: 'system', content: parts.join('\n\n') };
 }
 
@@ -79,40 +93,68 @@ export function chatAttachmentContext(
 export async function loadChatAttachmentsForPrompt(
   prisma: PrismaClient,
   messageIds: readonly string[],
+  readerId: string,
 ): Promise<Map<string, ChatAttachmentForPrompt[]>> {
   const byMessage = new Map<string, ChatAttachmentForPrompt[]>();
   if (messageIds.length === 0) return byMessage;
   const rows = await prisma.attachment.findMany({
     where: { conversationMessageId: { in: [...messageIds] }, deletedAt: null },
     orderBy: { createdAt: 'asc' },
-    select: { conversationMessageId: true, filename: true, imageDescription: true },
+    select: {
+      conversationMessageId: true,
+      filename: true,
+      imageDescription: true,
+      createdById: true,
+      fetchedFromUrl: true,
+      screening: true,
+    },
   });
   for (const row of rows) {
     if (row.conversationMessageId === null) continue;
     const list = byMessage.get(row.conversationMessageId) ?? [];
-    list.push({ filename: row.filename, description: row.imageDescription });
+    list.push({
+      filename: row.filename,
+      description: row.imageDescription,
+      trust: chatFileTrust(row, readerId),
+    });
     byMessage.set(row.conversationMessageId, list);
   }
   return byMessage;
 }
 
+/** ADR-096 for one chat file: the uploader's own, screened clean, or foreign. */
+function chatFileTrust(
+  row: { createdById: string; fetchedFromUrl: boolean; screening: string | null },
+  readerId: string,
+): AttachmentTrust {
+  return attachmentTrustFor({
+    createdById: row.createdById,
+    readerId,
+    fetchedFromUrl: row.fetchedFromUrl,
+    screening: screeningFromColumn(row.screening),
+  });
+}
+
 /**
- * Whether the prompt this conversation sends carries a picture's description,
- * which is what makes the run one that has read foreign text (ADR-030).
+ * Whether the prompt this conversation sends carries a description that is
+ * not the requester's own screened upload, which is what makes the run one
+ * that has read foreign text (ADR-030, ADR-096).
  */
-export async function transcriptCarriesChatImages(
+export async function transcriptCarriesForeignChatFiles(
   prisma: PrismaClient,
   conversationId: string,
+  readerId: string,
 ): Promise<boolean> {
-  const count = await prisma.attachment.count({
+  const rows = await prisma.attachment.findMany({
     where: {
       conversationId,
       deletedAt: null,
       imageDescription: { not: null },
       conversationMessage: { is: { supersededAt: null } },
     },
+    select: { createdById: true, fetchedFromUrl: true, screening: true },
   });
-  return count > 0;
+  return rows.some((row) => !chatFileTrust(row, readerId).trusted);
 }
 
 /**
@@ -129,11 +171,21 @@ export async function describeChatAttachments(input: {
   prisma: PrismaClient;
   storage: ObjectStorage;
   describer: { describe: ToolImageDescriber; model: string | null } | null;
+  /** Who screens a new description (ADR-096); `null` leaves it unscreened, hence foreign. */
+  decisions: DecisionProvider | null;
   conversationId: string;
   maxImages: number;
-  logger: { info: (message: string, context?: Record<string, unknown>) => void };
+  correlationId: string;
+  logger: {
+    info: (message: string, context?: Record<string, unknown>) => void;
+    warn: (message: string, context?: Record<string, unknown>) => void;
+  };
 }): Promise<number> {
   const { prisma, describer, logger } = input;
+  // A description written before the screening existed, or one whose
+  // screening could not be made, is asked about again: a chat run is the
+  // moment somebody is waiting to use it.
+  await screenChatDescriptions(input);
   if (describer === null || input.maxImages <= 0) return 0;
 
   const pending = await prisma.attachment.findMany({
@@ -175,6 +227,16 @@ export async function describeChatAttachments(input: {
           imageDescriptionModel: describer.model,
         },
       });
+      // The description is what a model reads of the picture, so it is what
+      // the screening is asked about (ADR-096).
+      await screenAttachment({
+        prisma,
+        decisions: input.decisions,
+        attachmentId: attachment.id,
+        text: description,
+        correlationId: input.correlationId,
+        logger,
+      });
       described += 1;
     } catch (error) {
       logger.info('Skipping a chat picture that could not be described', {
@@ -185,4 +247,41 @@ export async function describeChatAttachments(input: {
     }
   }
   return described;
+}
+
+/** Screens the descriptions on this conversation that were never screened or could not be. */
+async function screenChatDescriptions(input: {
+  prisma: PrismaClient;
+  decisions: DecisionProvider | null;
+  conversationId: string;
+  maxImages: number;
+  correlationId: string;
+  logger: {
+    info: (message: string, context?: Record<string, unknown>) => void;
+    warn: (message: string, context?: Record<string, unknown>) => void;
+  };
+}): Promise<void> {
+  if (input.decisions === null) return;
+  const unscreened = await input.prisma.attachment.findMany({
+    where: {
+      conversationId: input.conversationId,
+      deletedAt: null,
+      imageDescription: { not: null },
+      OR: [{ screening: null }, { screening: 'FAILED' }],
+      conversationMessage: { is: { supersededAt: null } },
+    },
+    orderBy: { createdAt: 'asc' },
+    take: Math.max(input.maxImages, 1),
+    select: { id: true, imageDescription: true },
+  });
+  for (const row of unscreened) {
+    await screenAttachment({
+      prisma: input.prisma,
+      decisions: input.decisions,
+      attachmentId: row.id,
+      text: row.imageDescription ?? '',
+      correlationId: input.correlationId,
+      logger: input.logger,
+    });
+  }
 }

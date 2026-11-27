@@ -73,6 +73,7 @@ export function toolCallEvent(input: {
       resultChars: result?.text.length ?? 0,
       resultTruncated: result?.resultTruncated ?? false,
       untrustedOrigin: result?.untrustedOrigin ?? null,
+      ...(result?.ownScreenedSource === true ? { ownScreenedSource: true } : {}),
       repeated: result?.repeated ?? false,
       pausedRun: result?.pausesRun === true,
       failureCode: result?.failureCode ?? null,

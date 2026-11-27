@@ -416,6 +416,10 @@ export class QueueRegistry {
     // #101). Slower than the embedding backfill because it costs one query
     // rather than a paid call, and nobody is waiting on it.
     await schedule('backfill-attachment-search-text', { every: 600_000 });
+    // Every ten minutes as well, and a no-op once every file with text has
+    // been screened (ADR-096): what is left is a failed screening from more
+    // than a day ago, asked again.
+    await schedule('screen-attachments', { every: 600_000 });
     // Every ten minutes while there are passages without a heading, and
     // nothing afterwards (issue #118). Same shape and same reason as the
     // sweep above: it enqueues ordinary re-indexing, which writes the anchor

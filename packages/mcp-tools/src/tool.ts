@@ -166,6 +166,14 @@ export interface ToolResult {
    * client has no loop of ours and is told so in `text`.
    */
   pausesRun?: boolean;
+  /**
+   * The API said the foreign text in this result is the caller's own upload,
+   * screened and found clean (ADR-096). The built-in loop still fences it, but
+   * reading it does not close writing for the run. Only ever copied from an
+   * API answer, which computed it for the caller; never derived from the
+   * input or from the text itself.
+   */
+  ownScreenedSource?: boolean;
 }
 
 /** Existential wrapper so a heterogeneous catalogue stays typed without `any`. */

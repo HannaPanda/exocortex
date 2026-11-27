@@ -422,6 +422,10 @@ export class WorkspaceAccessService {
       correctedText: string | null;
       textCorrectedAt: Date | null;
       textCorrectedById: string | null;
+      /** The screening for instructions to an AI (ADR-096); null until it was asked. */
+      screening: 'CLEAN' | 'FLAGGED' | 'FAILED' | null;
+      /** Fetched from the web for its uploader, so never the uploader's own text (ADR-096). */
+      fetchedFromUrl: boolean;
       /** Downscaled copy, or null when there is none and the original is it. */
       previewKey: string | null;
       previewMimeType: string | null;
@@ -452,6 +456,8 @@ export class WorkspaceAccessService {
         correctedText: true,
         textCorrectedAt: true,
         textCorrectedById: true,
+        screening: true,
+        fetchedFromUrl: true,
         previewKey: true,
         previewMimeType: true,
         previewByteSize: true,

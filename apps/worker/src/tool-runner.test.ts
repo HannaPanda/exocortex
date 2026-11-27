@@ -310,6 +310,53 @@ describe('the tool runner as a duplicate guard', () => {
     expect(tallies[0]?.repeats).toBe(1);
     expect(tallies[0]?.chars).toBeGreaterThan(0);
   });
+
+  /** The text read of a PDF, as the API answers it for the caller (ADR-096). */
+  function textBody(trust: { trusted: boolean; reason: string }): string {
+    return JSON.stringify({
+      attachmentId: 'attachment1',
+      filename: 'eigenes.pdf',
+      mimeType: 'application/pdf',
+      status: 'ready',
+      text: 'Inhalt des Dokuments.',
+      machineText: 'Inhalt des Dokuments.',
+      correction: null,
+      truncated: false,
+      metadata: null,
+      extractedAt: '2026-11-27T10:00:00.000Z',
+      error: null,
+      errorCode: null,
+      trust,
+    });
+  }
+
+  const A_TEXT_READ = {
+    name: 'exo_attachment_read_text',
+    argumentsJson: JSON.stringify({ attachmentId: 'attachment1' }),
+    correlationId: 'corr-1',
+  };
+
+  it("fences the requester's own screened upload but leaves writing open (ADR-096)", async () => {
+    const runner = await servingRunner([textBody({ trusted: true, reason: 'own_screened' })]);
+    const read = await runner.run(A_TEXT_READ);
+
+    expect(read.text).toContain('<<<FREMDINHALT');
+    expect(read.ownScreenedSource).toBe(true);
+    expect(read.untrustedOrigin).toBeUndefined();
+    expect(runner.untrustedOrigins).toEqual([]);
+    const write = await runner.run(A_WRITE);
+    expect(write.refused).toBe(false);
+  });
+
+  it('still closes writing after a file the API did not vouch for', async () => {
+    const runner = await servingRunner([textBody({ trusted: false, reason: 'flagged' })]);
+    const read = await runner.run(A_TEXT_READ);
+
+    expect(read.text).toContain('fiel diese Datei auf');
+    expect(runner.untrustedOrigins).toEqual(['attachment']);
+    const write = await runner.run(A_WRITE);
+    expect(write.refused).toBe(true);
+  });
 });
 
 /**

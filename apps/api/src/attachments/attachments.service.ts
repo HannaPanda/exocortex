@@ -21,9 +21,8 @@ import {
   attachmentTextEngine,
   type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
-  documentTextMetadataSchema,
+  attachmentTrustFor,
   isAttachmentImageSource,
-  isAttachmentTextErrorCode,
   QUEUE_NAMES,
   type UploadAttachmentFromUrlRequest,
   type UploadAttachmentResponse,
@@ -48,6 +47,7 @@ import { OutboxService } from '../common/outbox.service';
 import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
+import { projectAttachmentText } from './attachment-text-projection';
 import { fetchRemoteFile } from './remote-file';
 
 export interface UploadInput {
@@ -69,6 +69,11 @@ export interface UploadInput {
    * from the bytes. The chat takes pictures only.
    */
   accept?: (mimeType: string) => boolean;
+  /**
+   * The server fetched the bytes from the web (`uploadFromUrl`): its text is
+   * the web's, so it never counts as the uploader's own (ADR-096).
+   */
+  fetchedFromUrl?: boolean;
 }
 
 /**
@@ -155,6 +160,7 @@ export class AttachmentsService {
         storageKey: `pending:${randomUUID()}`,
         createdById: input.userId,
         conversationId: input.conversationId ?? null,
+        fetchedFromUrl: input.fetchedFromUrl ?? false,
         ...(extractionEnabled ? { textStatus: 'PENDING' } : {}),
       },
     });
@@ -310,6 +316,7 @@ export class AttachmentsService {
       declaredMimeType: fetched.contentType,
       body: fetched.body,
       correlationId: input.correlationId,
+      fetchedFromUrl: true,
     });
   }
 
@@ -665,12 +672,26 @@ export class AttachmentsService {
       );
     }
 
+    // The answer about the old text says nothing about the new one (ADR-096):
+    // the row is unscreened until the worker has asked again.
+    const unscreened = { screening: null, screenedAt: null, screenModel: null, screenScore: null };
     const updated = await this.prisma.attachment.update({
       where: { id: attachmentId },
       data:
         text === null
-          ? { correctedText: null, textCorrectedAt: null, textCorrectedById: null }
-          : { correctedText: text, textCorrectedAt: new Date(), textCorrectedById: userId },
+          ? { correctedText: null, textCorrectedAt: null, textCorrectedById: null, ...unscreened }
+          : {
+              correctedText: text,
+              textCorrectedAt: new Date(),
+              textCorrectedById: userId,
+              ...unscreened,
+            },
+    });
+    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+      correlationId,
+      attachmentId,
+      workspaceId: attachment.workspaceId,
+      reason: 'screen',
     });
 
     // The correction is what the search projection carries (issue #101), so
@@ -687,6 +708,13 @@ export class AttachmentsService {
 
     return {
       ...projected,
+      trust: attachmentTrustFor({
+        createdById: updated.createdById,
+        readerId: userId,
+        correctedById: updated.correctedText === null ? null : updated.textCorrectedById,
+        fetchedFromUrl: updated.fetchedFromUrl,
+        screening: null,
+      }),
       text: updated.correctedText ?? updated.extractedText,
       correction:
         updated.correctedText === null || updated.textCorrectedById === null
@@ -729,64 +757,7 @@ export class AttachmentsService {
     );
 
     const { attachment } = context;
-    // A row written before `documentTextMetadataSchema` existed, or by a future engine
-    // reporting an extra field, must not turn a read into a 500: an unparsable
-    // blob is reported as "no metadata".
-    const parsedMetadata = documentTextMetadataSchema.safeParse(attachment.textMetadata);
-    const correction =
-      attachment.correctedText === null || attachment.textCorrectedById === null
-        ? null
-        : {
-            editedAt: attachment.textCorrectedAt?.toISOString() ?? new Date(0).toISOString(),
-            editedById: attachment.textCorrectedById,
-          };
-    // The correction wins whenever there is one: it is what `exo_attachment_
-    // read_text` and the correction dialog both read as "the text".
-    const effectiveText = attachment.correctedText ?? attachment.extractedText;
-    const base = {
-      attachmentId,
-      filename: attachment.filename,
-      mimeType: attachment.mimeType,
-      metadata: parsedMetadata.success ? parsedMetadata.data : null,
-      text: effectiveText,
-      machineText: attachment.extractedText,
-      correction,
-      truncated: attachment.textTruncated,
-      extractedAt: null,
-      error: null,
-      errorCode: null,
-    };
-
-    if (attachment.textStatus === 'READY') {
-      return {
-        attachment,
-        projected: {
-          ...base,
-          status: 'ready',
-          extractedAt: attachment.textExtractedAt?.toISOString() ?? null,
-        },
-      };
-    }
-
-    if (attachment.textStatus === 'PENDING') {
-      return { attachment, projected: { ...base, status: 'pending' } };
-    }
-
-    if (attachment.textStatus === 'FAILED') {
-      return {
-        attachment,
-        projected: {
-          ...base,
-          status: 'failed',
-          error: attachment.textExtractionError,
-          errorCode: isAttachmentTextErrorCode(attachment.textErrorCode)
-            ? attachment.textErrorCode
-            : null,
-        },
-      };
-    }
-
-    return { attachment, projected: { ...base, status: 'not_applicable' } };
+    return { attachment, projected: projectAttachmentText(attachmentId, attachment, userId) };
   }
 
   private toContract(row: {

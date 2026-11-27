@@ -9,6 +9,7 @@ import {
   attachmentImageResponseSchema,
   attachmentTextInfoResponseSchema,
   attachmentTextResponseSchema,
+  attachmentTrustNote,
   createDownloadTicketResponseSchema,
   createUploadTicketRequestSchema,
   createUploadTicketResponseSchema,
@@ -388,9 +389,13 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     // alone: a model reading a PDF wants to know that it is looking at page 33
     // of a scan before it starts quoting from it -- and, if a correction
     // exists, that it is reading that correction rather than the raw scan.
+    // Whether reading this closes writing is the API's answer for the caller
+    // (ADR-096), never the model's or the document's.
+    const note = attachmentTrustNote(result.trust);
     return {
-      text: `${describeMetadata(result.metadata)}${describeCorrection(result)}${result.text ?? ''}`,
+      text: `${note === null ? '' : `${note}\n\n`}${describeMetadata(result.metadata)}${describeCorrection(result)}${result.text ?? ''}`,
       data: result,
+      ...(result.trust.trusted ? { ownScreenedSource: true } : {}),
     };
   },
 });

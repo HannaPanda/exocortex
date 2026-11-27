@@ -162,6 +162,11 @@ export const aiRunToolCallEventDataSchema = z.object({
   resultTruncated: z.boolean(),
   /** Foreign text this call brought into the run (ADR-030), null for the deployment's own. */
   untrustedOrigin: contentOriginSchema.nullable(),
+  /**
+   * Its answer was the requester's own upload, screened clean (ADR-096):
+   * fenced, but it did not close writing. Absent on older rows and otherwise.
+   */
+  ownScreenedSource: z.boolean().optional(),
   /** It answered exactly what the same call answered earlier in the run (ADR-059). */
   repeated: z.boolean(),
   /** It raised a blocking human checkpoint and paused the run (ADR-068). */

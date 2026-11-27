@@ -57,6 +57,7 @@ const baseResponse = {
   extractedAt: '2026-05-01T00:00:00.000Z',
   error: null,
   errorCode: null,
+  trust: { trusted: false, reason: 'not_own' as const },
 };
 
 describe('exo_attachment_read_text', () => {
@@ -98,6 +99,28 @@ describe('exo_attachment_read_text', () => {
 
     expect(result.isError).toBeUndefined();
     expect(result.text).toContain('der ausgelesene Text');
+  });
+});
+
+describe('exo_attachment_read_text and trust (ADR-096)', () => {
+  it("passes on the API's word that the text is the caller's own screened upload", async () => {
+    const { client } = createFakeClient({
+      ...baseResponse,
+      trust: { trusted: true, reason: 'own_screened' as const },
+    });
+    const result = await attachmentReadTextTool.run(client, { attachmentId: 'attachment1' });
+    expect(result.ownScreenedSource).toBe(true);
+    expect(result.text).not.toContain('Hinweis');
+  });
+
+  it('says why an own upload stays foreign, and never claims trust itself', async () => {
+    const { client } = createFakeClient({
+      ...baseResponse,
+      trust: { trusted: false, reason: 'flagged' as const },
+    });
+    const result = await attachmentReadTextTool.run(client, { attachmentId: 'attachment1' });
+    expect(result.ownScreenedSource).toBeUndefined();
+    expect(result.text).toContain('fiel diese Datei auf');
   });
 });
 

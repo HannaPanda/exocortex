@@ -332,6 +332,12 @@ export const maintenanceJobSchema = jobBase.extend({
      * job itself does nothing when the input hash is unchanged.
      */
     'refresh-stale-overviews',
+    /**
+     * Screens the files whose text was read before the screening existed,
+     * and retries a screening that failed a day ago (ADR-096). A file stays
+     * foreign until it is screened, so this only makes trust arrive sooner.
+     */
+    'screen-attachments',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -346,9 +352,11 @@ export const attachmentTextJobSchema = jobBase.extend({
   /**
    * `forced` is the one reason that is allowed to skip the `READY` idempotency
    * guard in the worker (issue #2): every other reason leaves an already
-   * extracted attachment alone.
+   * extracted attachment alone. `screen` extracts nothing: it asks the
+   * screening question of the text the row already has (ADR-096), after a
+   * person corrected it or for a row from before the screening existed.
    */
-  reason: z.enum(['upload', 'requested', 'retry', 'forced']),
+  reason: z.enum(['upload', 'requested', 'retry', 'forced', 'screen']),
 });
 export type AttachmentTextJob = z.infer<typeof attachmentTextJobSchema>;
 

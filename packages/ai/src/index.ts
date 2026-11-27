@@ -7,6 +7,7 @@ export * from './embedding-provider';
 export * from './fallback-provider';
 export * from './guarded-fetch';
 export * from './image-generator';
+export * from './injection-screen';
 export * from './mcp-client';
 export * from './memory-distill';
 export * from './mock-provider';

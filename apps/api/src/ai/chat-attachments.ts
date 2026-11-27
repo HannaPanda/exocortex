@@ -1,4 +1,4 @@
-import { type AiChatAttachment } from '@exocortex/contracts';
+import { type AiChatAttachment, screeningFromColumn } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
 /**
@@ -12,6 +12,7 @@ export const CHAT_ATTACHMENT_SELECT = {
   mimeType: true,
   byteSize: true,
   imageDescription: true,
+  screening: true,
   createdAt: true,
   conversationMessageId: true,
 } as const;
@@ -22,6 +23,7 @@ export interface ChatAttachmentRow {
   mimeType: string;
   byteSize: number;
   imageDescription: string | null;
+  screening: 'CLEAN' | 'FLAGGED' | 'FAILED' | null;
   createdAt: Date;
   conversationMessageId: string | null;
 }
@@ -33,6 +35,7 @@ export function chatAttachmentToContract(row: ChatAttachmentRow): AiChatAttachme
     mimeType: row.mimeType,
     byteSize: row.byteSize,
     description: row.imageDescription,
+    screening: screeningFromColumn(row.screening),
     createdAt: row.createdAt.toISOString(),
   };
 }

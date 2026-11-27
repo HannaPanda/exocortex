@@ -89,6 +89,7 @@ export class ChatAttachmentsService {
         mimeType: uploaded.attachment.mimeType,
         byteSize: uploaded.attachment.byteSize,
         description: null,
+        screening: null,
         createdAt: uploaded.attachment.createdAt,
       },
     };

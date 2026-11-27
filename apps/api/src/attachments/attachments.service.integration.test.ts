@@ -36,6 +36,8 @@ async function createPdfAttachment(
     textCorrectedAt: Date | null;
     textCorrectedById: string | null;
     textTruncated: boolean;
+    screening: 'CLEAN' | 'FLAGGED' | 'FAILED' | null;
+    fetchedFromUrl: boolean;
   }> = {},
 ): Promise<string> {
   const attachment = await prisma.attachment.create({
@@ -53,6 +55,8 @@ async function createPdfAttachment(
       textCorrectedAt: data.textCorrectedAt ?? null,
       textCorrectedById: data.textCorrectedById ?? null,
       textTruncated: data.textTruncated ?? false,
+      screening: data.screening ?? null,
+      fetchedFromUrl: data.fetchedFromUrl ?? false,
     },
   });
   return attachment.id;
@@ -136,6 +140,47 @@ describe('reading extracted text', () => {
     const attachmentId = await createPdfAttachment({ textTruncated: true });
     const info = await service.getTextInfo(attachmentId, memberId);
     expect(info.truncated).toBe(true);
+  });
+});
+
+describe('whose own the text is (ADR-096)', () => {
+  it('trusts a clean screening for the uploader alone', async () => {
+    const attachmentId = await createPdfAttachment({ screening: 'CLEAN' });
+    expect((await service.getText(attachmentId, memberId, 'test-correlation')).trust).toEqual({
+      trusted: true,
+      reason: 'own_screened',
+    });
+    expect((await service.getText(attachmentId, guestId, 'test-correlation')).trust.reason).toBe(
+      'not_own',
+    );
+  });
+
+  it('keeps an unscreened, a flagged and a fetched file foreign for its uploader', async () => {
+    const reasonOf = async (data: Parameters<typeof createPdfAttachment>[0]) =>
+      (await service.getTextInfo(await createPdfAttachment(data), memberId)).trust.reason;
+    expect(await reasonOf({})).toBe('unscreened');
+    expect(await reasonOf({ screening: 'FLAGGED' })).toBe('flagged');
+    expect(await reasonOf({ screening: 'FAILED' })).toBe('screen_failed');
+    expect(await reasonOf({ screening: 'CLEAN', fetchedFromUrl: true })).toBe('fetched');
+  });
+
+  it('forgets the screening when the text is corrected, and asks again', async () => {
+    const attachmentId = await createPdfAttachment({ screening: 'CLEAN' });
+    const corrected = await service.correctText(
+      attachmentId,
+      memberId,
+      'eine neue Fassung',
+      'test-correlation',
+    );
+    expect(corrected.trust.reason).toBe('unscreened');
+    const row = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(row.screening).toBeNull();
+    const jobs = await queues
+      .getQueue(QUEUE_NAMES.attachmentText)
+      .getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
+    expect(
+      jobs.some((job) => job.data.attachmentId === attachmentId && job.data.reason === 'screen'),
+    ).toBe(true);
   });
 });
 

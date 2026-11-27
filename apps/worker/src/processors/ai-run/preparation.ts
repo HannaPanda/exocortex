@@ -263,7 +263,7 @@ export async function buildRunMessages(input: {
   return {
     promptSections: systemPromptResult.sections,
     base: [{ role: 'system', content: systemPromptResult.prompt }],
-    rest: await loadConversationMessages(prisma, run.conversationId),
+    rest: await loadConversationMessages(prisma, run.conversationId, run.createdById),
     budgetInputTokens,
     floorInputTokens: await estimateFloorInputTokens({
       prisma,
@@ -278,6 +278,8 @@ export async function buildRunMessages(input: {
 export async function loadConversationMessages(
   prisma: PrismaClient,
   conversationId: string,
+  /** The run's requester: whose own uploads its chat files may be (ADR-096). */
+  readerId: string,
 ): Promise<AiMessage[]> {
   const activeMessages = await prisma.aiConversationMessage.findMany({
     where: { conversationId, supersededAt: null },
@@ -288,6 +290,7 @@ export async function loadConversationMessages(
   const attachments = await loadChatAttachmentsForPrompt(
     prisma,
     activeMessages.filter((message) => message.role === 'USER').map((message) => message.id),
+    readerId,
   );
   return activeMessages.flatMap((message) => {
     const context = chatAttachmentContext(attachments.get(message.id) ?? []);

@@ -308,6 +308,8 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
       officeExtractor,
       documentInfo: pdfDocumentInfo,
       settings: readSettings,
+      // The deployment's key, like the extraction engines in front of it.
+      decisions: decisionProviderFactory(env, logger)(env.OPENROUTER_API_KEY ?? ''),
     }),
     onFailed: async (payload, job, error) => {
       if (payload === null) return;

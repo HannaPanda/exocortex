@@ -1,4 +1,5 @@
 import {
+  type DecisionProvider,
   type DocumentTextExtractor,
   mergeDocumentTextMetadata,
   OfficeExtractionRefused,
@@ -16,6 +17,8 @@ import {
 import { Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
+
+import { screenAttachment } from '../attachment-screening';
 
 export interface AttachmentTextDependencies {
   prisma: PrismaClient;
@@ -48,6 +51,12 @@ export interface AttachmentTextDependencies {
    */
   documentInfo: PdfDocumentInfoReader;
   settings: (workspaceId?: string) => Promise<Settings>;
+  /**
+   * Who answers the screening question about the extracted text (ADR-096),
+   * on the deployment's key like the extraction itself; `null` when there is
+   * nobody to ask, which leaves every file foreign.
+   */
+  decisions: DecisionProvider | null;
 }
 
 /**
@@ -90,6 +99,13 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       return;
     }
 
+    // Nothing to extract: only the question about the text the row has
+    // (ADR-096), after a correction or for a row from before the screening.
+    if (payload.reason === 'screen') {
+      await screenStoredText({ dependencies, attachment, payload, logger });
+      return;
+    }
+
     if (attachment.textStatus === 'READY' && payload.reason !== 'forced') {
       // Idempotency: a retried job must not re-extract, unless it was asked to.
       logger.info('Skipping attachment text extraction: already ready', {
@@ -121,7 +137,16 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
 
     if (outcome === 'unavailable') return;
 
-    await prisma.attachment.update({ where: { id: attachment.id }, data: outcome });
+    const written = await prisma.attachment.update({
+      where: { id: attachment.id },
+      data: outcome,
+    });
+    // A new text is a new question (ADR-096): the answer about the last one
+    // says nothing about this one. A correction stays the text readers see,
+    // so it is what gets asked about when there is one.
+    if (written.textStatus === 'READY') {
+      await screenStoredText({ dependencies, attachment: written, payload, logger });
+    }
 
     // What is findable about the page changed, although the page did not
     // (issue #101). Enqueued for a failure as well: the previous run may have
@@ -135,6 +160,25 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       });
     }
   };
+}
+
+/** Screens the text a reader of this row would get: the correction, else the machine result. */
+async function screenStoredText(input: {
+  dependencies: AttachmentTextDependencies;
+  attachment: { id: string; extractedText: string | null; correctedText: string | null };
+  payload: JobContext<typeof QUEUE_NAMES.attachmentText>['payload'];
+  logger: JobContext<typeof QUEUE_NAMES.attachmentText>['logger'];
+}): Promise<void> {
+  const text = input.attachment.correctedText ?? input.attachment.extractedText;
+  if (text === null) return;
+  await screenAttachment({
+    prisma: input.dependencies.prisma,
+    decisions: input.dependencies.decisions,
+    attachmentId: input.attachment.id,
+    text,
+    correlationId: input.payload.correlationId,
+    logger: input.logger,
+  });
 }
 
 /**

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   type AiMutationPolicy,
+  attachmentTrustFor,
+  attachmentTrustNote,
   decideMutation,
   fenceUntrustedContent,
   isUntrustedOrigin,
@@ -108,5 +110,38 @@ describe('isUntrustedOrigin', () => {
     expect(isUntrustedOrigin('web')).toBe(true);
     expect(isUntrustedOrigin('mail')).toBe(true);
     expect(isUntrustedOrigin('external-mcp')).toBe(true);
+  });
+});
+
+describe('attachmentTrustFor (ADR-096)', () => {
+  const own = {
+    createdById: 'user-1',
+    readerId: 'user-1',
+    fetchedFromUrl: false,
+    screening: 'clean' as const,
+  };
+
+  it("trusts only the reader's own upload, screened clean", () => {
+    expect(attachmentTrustFor(own)).toEqual({ trusted: true, reason: 'own_screened' });
+  });
+
+  it("keeps somebody else's file foreign, however clean", () => {
+    expect(attachmentTrustFor({ ...own, readerId: 'user-2' }).reason).toBe('not_own');
+    expect(attachmentTrustFor({ ...own, correctedById: 'user-2' }).reason).toBe('not_own');
+    expect(attachmentTrustFor({ ...own, correctedById: 'user-1' }).trusted).toBe(true);
+  });
+
+  it('fails closed for a web fetch, a finding, a failed and a missing screening', () => {
+    expect(attachmentTrustFor({ ...own, fetchedFromUrl: true }).reason).toBe('fetched');
+    expect(attachmentTrustFor({ ...own, screening: 'flagged' }).reason).toBe('flagged');
+    expect(attachmentTrustFor({ ...own, screening: 'failed' }).reason).toBe('screen_failed');
+    expect(attachmentTrustFor({ ...own, screening: null }).reason).toBe('unscreened');
+  });
+
+  it('explains only the cases the reader could not guess', () => {
+    expect(attachmentTrustNote({ trusted: true, reason: 'own_screened' })).toBeNull();
+    expect(attachmentTrustNote({ trusted: false, reason: 'not_own' })).toBeNull();
+    expect(attachmentTrustNote({ trusted: false, reason: 'flagged' })).toContain('fiel');
+    expect(attachmentTrustNote({ trusted: false, reason: 'unscreened' })).toContain('geprüft');
   });
 });

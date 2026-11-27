@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { aiRunSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
 import { aiRunWrittenPagesSchema } from './ai-run-changes';
+import { attachmentScreeningSchema } from './ai-trust';
 import { isAttachmentImageSource } from './attachments';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
@@ -128,6 +129,12 @@ export const aiChatAttachmentSchema = z.object({
    * no model to ask, or the call failed (the next run tries again).
    */
   description: z.string().nullable(),
+  /**
+   * What the screening for instructions to an AI found (ADR-096). Only
+   * `clean` lets the assistant keep writing after reading the file; null
+   * until somebody asked.
+   */
+  screening: attachmentScreeningSchema.nullable().default(null),
   createdAt: isoDateTimeSchema,
 });
 export type AiChatAttachment = z.infer<typeof aiChatAttachmentSchema>;

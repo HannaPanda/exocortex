@@ -1635,6 +1635,15 @@ enum AttachmentTextStatus {
   FAILED
 }
 
+/// What a model found when it read an uploaded file's text, or a picture's
+/// description, for instructions addressed to an AI (ADR-096).
+enum AttachmentScreening {
+  CLEAN
+  FLAGGED
+  /// The question could not be answered: no key, a timeout, an error.
+  FAILED
+}
+
 model Attachment {
   id          String    @id @default(cuid(2))
   workspaceId String
@@ -1730,6 +1739,20 @@ model Attachment {
   imageDescribedAt      DateTime?
   /// The model that wrote `imageDescription`.
   imageDescriptionModel String?
+
+  /// The screening of the effective text or the picture's description for
+  /// instructions addressed to an AI (ADR-096). Null until it was asked; only
+  /// CLEAN lets the uploader's own runs keep writing after reading the file.
+  /// Reset when a person corrects the text, and asked again.
+  screening      AttachmentScreening?
+  screenedAt     DateTime?
+  /// The decision model that answered, as it named itself.
+  screenModel    String?
+  /// The highest probability of "yes" over the windows asked.
+  screenScore    Float?
+  /// Set when the server fetched the file from the web for its uploader
+  /// (`uploadFromUrl`): its text is the web's, so it is never the person's own.
+  fetchedFromUrl Boolean              @default(false)
 
   @@index([workspaceId, createdAt])
   @@index([documentId])

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { attachmentTrustSchema } from './ai-trust';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -461,6 +462,13 @@ export const attachmentTextResponseSchema = z.object({
   error: z.string().nullable(),
   /** Why it failed, as a code to word; null for a row from before the codes. */
   errorCode: z.enum(ATTACHMENT_TEXT_ERROR_CODES).nullable(),
+  /**
+   * Whether the caller's own AI runs may read this text and keep writing
+   * (ADR-096): computed for the caller, from who uploaded the file, who
+   * corrected it, where it came from and what the screening found. Never a
+   * request parameter.
+   */
+  trust: attachmentTrustSchema,
 });
 export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
 

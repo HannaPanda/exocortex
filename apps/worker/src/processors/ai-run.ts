@@ -32,7 +32,10 @@ import {
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
-import { describeChatAttachments, transcriptCarriesChatImages } from './ai-run/chat-attachments';
+import {
+  describeChatAttachments,
+  transcriptCarriesForeignChatFiles,
+} from './ai-run/chat-attachments';
 import { writeOutcome } from './ai-run/completion';
 import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
@@ -204,7 +207,11 @@ function buildRunRouting(input: {
                     }
                   : null,
             );
-            const reloaded = await loadConversationMessages(prisma, run.conversationId!);
+            const reloaded = await loadConversationMessages(
+              prisma,
+              run.conversationId!,
+              run.createdById,
+            );
             return imageContext === null
               ? [...base, ...reloaded]
               : [...base, imageContext, ...reloaded];
@@ -345,7 +352,8 @@ async function prepareRunVision(input: {
 /**
  * Describes the pictures on this conversation's messages that nobody has
  * described yet (issue #223), with the describer a tool's picture gets
- * (ADR-088), and answers whether the prompt now carries any description.
+ * (ADR-088), screens each new description (ADR-096), and answers whether the
+ * prompt now carries one that is not the requester's own screened upload.
  */
 async function describeRunChatImages(input: {
   dependencies: AiRunDependencies;
@@ -371,11 +379,17 @@ async function describeRunChatImages(input: {
     prisma: dependencies.prisma,
     storage: dependencies.storage,
     describer,
+    decisions: dependencies.decisionsFor?.(input.apiKey) ?? null,
     conversationId: run.conversationId,
     maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
+    correlationId: input.correlationId,
     logger: input.logger,
   });
-  return transcriptCarriesChatImages(dependencies.prisma, run.conversationId);
+  return transcriptCarriesForeignChatFiles(
+    dependencies.prisma,
+    run.conversationId,
+    run.createdById,
+  );
 }
 
 /**
@@ -584,7 +598,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // is built, so the transcript it loads already carries what a vision
     // model saw in them (issue #223).
     const conversationCompanionSlug = conversation?.visionCompanionSlug ?? null;
-    const chatImagesDescribed = await describeRunChatImages({
+    const chatFilesForeign = await describeRunChatImages({
       dependencies,
       run,
       settings,
@@ -649,8 +663,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // are text out of an uploaded file like any other (issue #56): the run has
     // already read foreign content by the time the first turn starts.
     // The same holds for a picture somebody put on a message in this
-    // conversation, for as long as its description is in the prompt (#223).
-    if (imageContext !== null || chatImagesDescribed) runner?.noteUntrustedContent('attachment');
+    // conversation, for as long as its description is in the prompt (#223),
+    // unless it is the requester's own and was screened clean (ADR-096).
+    if (imageContext !== null || chatFilesForeign) runner?.noteUntrustedContent('attachment');
 
     const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
     const messages: AiMessage[] = [

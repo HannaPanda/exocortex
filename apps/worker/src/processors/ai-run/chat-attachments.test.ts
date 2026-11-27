@@ -37,4 +37,23 @@ describe('chatAttachmentContext', () => {
     expect(content).not.toContain('FREMDINHALT');
     expect(content).toContain('b.jpg: nicht angesehen');
   });
+
+  it('says outside the fence why an own picture still closes writing (ADR-096)', () => {
+    const content =
+      chatAttachmentContext([
+        {
+          filename: 'a.png',
+          description: 'Ein Text.',
+          trust: { trusted: false, reason: 'flagged' },
+        },
+        {
+          filename: 'b.png',
+          description: 'Ein Diagramm.',
+          trust: { trusted: true, reason: 'own_screened' },
+        },
+      ])?.content ?? '';
+    const fenceEnd = content.indexOf('<<<ENDE FREMDINHALT>>>');
+    expect(content.indexOf('a.png: Hinweis')).toBeGreaterThan(fenceEnd);
+    expect(content).not.toContain('b.png: Hinweis');
+  });
 });

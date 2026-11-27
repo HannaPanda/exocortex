@@ -12,6 +12,7 @@ import {
   type AiStreamEvent,
   type AiToolCall,
   createEmbeddingClient,
+  type DecisionProvider,
   type DocumentTextExtractor,
   MockAiProvider,
   MockEmbeddingProvider,
@@ -58,6 +59,7 @@ import { ToolCallLedger } from '../tool-ledger';
 import { type ToolRunner } from '../tool-runner';
 
 import { createAiRunProcessor, type ResolvedModelRow } from './ai-run';
+import { transcriptCarriesForeignChatFiles } from './ai-run/chat-attachments';
 import { createAttachmentTextProcessor } from './attachment-text';
 import { createDocumentCoverProcessor } from './document-cover';
 import { repairUnresolvedLinks } from './document-links';
@@ -3088,6 +3090,26 @@ function fakeVisionPreprocessor(description: string): VisionPreprocessor {
   return { describeImage: async () => description } as unknown as VisionPreprocessor;
 }
 
+/** A decision model that answers the screening question with one fixed probability (ADR-096). */
+function screeningDecisions(probability: number): DecisionProvider & { calls: number } {
+  const provider = {
+    id: 'screening-test',
+    calls: 0,
+    async decide() {
+      provider.calls += 1;
+      return {
+        answers: { instructsAi: { kind: 'yesNo' as const, probability } },
+        model: 'typesafe/jev-test',
+        provider: 'test',
+        latencyMs: 1,
+        inputTokens: 1,
+        costMicroUsd: 1,
+      };
+    },
+  };
+  return provider;
+}
+
 describe('ai runs', () => {
   async function createRun(documentId: string): Promise<string> {
     const run = await prisma.aiRun.create({
@@ -3220,6 +3242,11 @@ describe('ai runs', () => {
     expect(stored.imageDescription).toBe('Ein Dialog: „Speichern fehlgeschlagen“.');
     expect(stored.imageDescribedAt).not.toBeNull();
 
+    // Nobody could screen it (no decision model in this run), so it stays
+    // foreign and says so outside the fence (ADR-096).
+    expect(stored.screening).toBe('FAILED');
+    expect(context?.content).toContain('fehler.png: Hinweis');
+
     // The next turn reads the stored description instead of paying again.
     const second = await runFor('test-chat-picture-2');
     expect(describe).toHaveBeenCalledTimes(1);
@@ -3228,6 +3255,70 @@ describe('ai runs', () => {
         entry.content.includes('Speichern fehlgeschlagen'),
       ),
     ).toBe(true);
+  }, 60_000);
+
+  it("screens a chat picture's description and trusts it for its uploader alone (ADR-096)", async () => {
+    const conversationId = await createConversation();
+    const message = await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Und das hier?', estimatedTokens: 5 },
+    });
+    const picture = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        conversationId,
+        conversationMessageId: message.id,
+        filename: 'eigenes.png',
+        mimeType: 'image/png',
+        byteSize: ONE_PIXEL_PNG.byteLength,
+        storageKey: `test/chat-screen-${Date.now().toString(36)}.png`,
+        createdById: userId,
+      },
+    });
+    const decisions = screeningDecisions(0.02);
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: userId,
+        status: 'PENDING',
+        provider: 'capturing-test-provider',
+        model: 'test-model',
+        messages: [{ role: 'user', content: 'Und das hier?' }],
+        conversationId,
+      },
+    });
+    const provider = new CapturingAiProvider();
+    const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
+      prisma,
+      providerFor: providerFor(provider),
+      bus,
+      storage: fakeStorage(ONE_PIXEL_PNG),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () =>
+        ({ describeImage: async () => 'Ein Balkendiagramm.' }) as unknown as VisionPreprocessor,
+      decisionsFor: () => decisions,
+      queues,
+      modelRegistry: async () => null,
+    });
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-chat-screen', runId: run.id, workspaceId, userId })
+        .context,
+    );
+
+    const stored = await prisma.attachment.findUniqueOrThrow({ where: { id: picture.id } });
+    expect(stored.screening).toBe('CLEAN');
+    expect(stored.screenModel).toBe('typesafe/jev-test');
+    expect(decisions.calls).toBe(1);
+    expect(await transcriptCarriesForeignChatFiles(prisma, conversationId, userId)).toBe(false);
+    expect(await transcriptCarriesForeignChatFiles(prisma, conversationId, 'somebody-else')).toBe(
+      true,
+    );
+    const context = (provider.lastRequest?.messages ?? []).find((entry) =>
+      entry.content.includes('eigenes.png'),
+    );
+    expect(context?.content).toContain('<<<FREMDINHALT');
+    expect(context?.content).not.toContain('Hinweis');
   }, 60_000);
 
   /**
@@ -4200,9 +4291,61 @@ describe('attachment text extraction', () => {
     return attachment.id;
   }
 
+  it('screens the text it extracted, and asks again about a correction (ADR-096)', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const clean = screeningDecisions(0.01);
+    const processorWith = (decisions: DecisionProvider) =>
+      createAttachmentTextProcessor({
+        decisions,
+        prisma,
+        queues,
+        officeExtractor: refusingOfficeExtractor,
+        storage: fakeStorage(Buffer.from('%PDF-1.4')),
+        extractors: () => [
+          { extract: async () => ({ text: 'Eine Rechnung.', metadata: stubMetadata }) },
+        ],
+        documentInfo: noDocumentInfo,
+        settings: stubSettings(),
+      });
+
+    await processorWith(clean)(
+      contextFor<'attachment-text'>({
+        correlationId: 'test-screen-1',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
+    );
+    const extracted = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(extracted.textStatus).toBe('READY');
+    expect(extracted.screening).toBe('CLEAN');
+    expect(clean.calls).toBe(1);
+
+    // A correction is a new text: the screen-only job asks about it and
+    // extracts nothing.
+    await prisma.attachment.update({
+      where: { id: attachmentId },
+      data: { correctedText: 'Ein anderer Text.', screening: null },
+    });
+    const flagging = screeningDecisions(0.97);
+    await processorWith(flagging)(
+      contextFor<'attachment-text'>({
+        correlationId: 'test-screen-2',
+        attachmentId,
+        workspaceId,
+        reason: 'screen',
+      }).context,
+    );
+    const corrected = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(corrected.screening).toBe('FLAGGED');
+    expect(corrected.screenScore).toBeCloseTo(0.97);
+    expect(corrected.extractedText).toBe('Eine Rechnung.');
+  }, 30_000);
+
   it('marks a non-PDF attachment as NOT_APPLICABLE', async () => {
     const attachmentId = await createAttachment({ mimeType: 'image/png' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4228,6 +4371,7 @@ describe('attachment text extraction', () => {
   it('fails with a clear reason when no extractor is configured', async () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4256,6 +4400,7 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const calls: string[] = [];
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4312,6 +4457,7 @@ describe('attachment text extraction', () => {
     // one should get its turn, so a throw must not end the chain.
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4345,6 +4491,7 @@ describe('attachment text extraction', () => {
   it('rethrows when every engine throws, so BullMQ retries', async () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4381,6 +4528,7 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     let secondCalled = false;
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4418,6 +4566,7 @@ describe('attachment text extraction', () => {
     // one just because it is the only one that knows the title.
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4472,6 +4621,7 @@ describe('attachment text extraction', () => {
   it('keeps the dictionary when no engine finds any text', async () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4515,6 +4665,7 @@ describe('attachment text extraction', () => {
     });
     let calls = 0;
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4573,6 +4724,7 @@ describe('attachment text extraction', () => {
       },
     });
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4603,6 +4755,7 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const longText = 'a'.repeat(400_001);
     const processor = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4626,6 +4779,7 @@ describe('attachment text extraction', () => {
     expect(truncated.extractedText).toHaveLength(400_000);
 
     const processorShort = createAttachmentTextProcessor({
+      decisions: null,
       prisma,
       queues,
       officeExtractor: refusingOfficeExtractor,
@@ -4668,6 +4822,7 @@ describe('attachment text extraction', () => {
     it('reads a Word document through the office converter', async () => {
       const attachmentId = await createAttachment({ mimeType: DOCX });
       const processor = createAttachmentTextProcessor({
+        decisions: null,
         prisma,
         queues,
         officeExtractor: {
@@ -4702,6 +4857,7 @@ describe('attachment text extraction', () => {
       // attempt, so the reason is written to the row and the job is done.
       const attachmentId = await createAttachment({ mimeType: DOCX });
       const processor = createAttachmentTextProcessor({
+        decisions: null,
         prisma,
         queues,
         officeExtractor: {
@@ -4734,6 +4890,7 @@ describe('attachment text extraction', () => {
     it('retries a converter that broke rather than blaming the document', async () => {
       const attachmentId = await createAttachment({ mimeType: DOCX });
       const processor = createAttachmentTextProcessor({
+        decisions: null,
         prisma,
         queues,
         officeExtractor: {
@@ -4769,6 +4926,7 @@ describe('attachment text extraction', () => {
       // left FAILED with a retry button that could never do anything.
       const attachmentId = await createAttachment({ mimeType: 'image/png' });
       const processor = createAttachmentTextProcessor({
+        decisions: null,
         prisma,
         queues,
         officeExtractor: refusingOfficeExtractor,

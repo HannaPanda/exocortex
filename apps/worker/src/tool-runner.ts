@@ -165,6 +165,11 @@ export interface ToolCallOutcome {
    * earlier answer. Facts about the text, never the text.
    */
   untrustedOrigin?: UntrustedOrigin;
+  /**
+   * The answer was foreign text the API vouched for as the requester's own,
+   * screened upload (ADR-096): fenced, but it did not close writing.
+   */
+  ownScreenedSource?: boolean;
   resultTruncated?: boolean;
   repeated?: boolean;
   /** Why it was refused or failed, as a closed code (issue #196); the timeline keeps it. */
@@ -590,6 +595,31 @@ async function runWithImagesDescribed(
   });
 }
 
+/**
+ * A foreign answer as the model reads it: cut, then fenced, so the closing
+ * marker survives the cap. The person's own upload, screened clean, is still
+ * fenced -- it is still a document, not an instruction -- but reading it is
+ * what the person meant to happen, so it does not close writing (ADR-096).
+ * Only the API's answer can say so, never the arguments or the text.
+ */
+function fencedOutcome(input: {
+  origin: UntrustedOrigin;
+  name: string;
+  result: ToolResult;
+  resultTruncated: boolean;
+  noteUntrustedContent: (origin: UntrustedOrigin) => void;
+}): ToolCallOutcome {
+  const text = fenceUntrustedContent({
+    origin: input.origin,
+    label: input.name,
+    text: truncate(input.result.text),
+  });
+  const shared = { text, isError: false, refused: false, resultTruncated: input.resultTruncated };
+  if (input.result.ownScreenedSource === true) return { ...shared, ownScreenedSource: true };
+  input.noteUntrustedContent(input.origin);
+  return { ...shared, untrustedOrigin: input.origin };
+}
+
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   const offer = createToolOffer(input);
 
@@ -740,18 +770,13 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       // fenced nor counted.
       const resultTruncated = result.text.length > MAX_RESULT_CHARS;
       if (tool.untrustedOutput !== null && !isError) {
-        noteUntrustedContent(tool.untrustedOutput);
-        return {
-          text: fenceUntrustedContent({
-            origin: tool.untrustedOutput,
-            label: name,
-            text: truncate(result.text),
-          }),
-          isError,
-          refused: false,
-          untrustedOrigin: tool.untrustedOutput,
+        return fencedOutcome({
+          origin: tool.untrustedOutput,
+          name,
+          result,
           resultTruncated,
-        };
+          noteUntrustedContent,
+        });
       }
       return {
         text: truncate(result.text),

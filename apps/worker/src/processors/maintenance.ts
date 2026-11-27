@@ -5,6 +5,7 @@ import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocor
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { syncAiModelRoutes } from './maintenance-tasks/ai-model-routes';
+import { screenAttachments } from './maintenance-tasks/attachment-screening';
 import { raiseRunFailureAttention } from './maintenance-tasks/attention';
 import { runDueAutomations } from './maintenance-tasks/automation-schedules';
 import {
@@ -100,6 +101,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'refresh-stale-overviews': refreshStaleOverviews,
   'backfill-embeddings': backfillEmbeddings,
   'backfill-attachment-search-text': backfillAttachmentSearchText,
+  'screen-attachments': screenAttachments,
   'backfill-passage-anchors': backfillPassageAnchors,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
