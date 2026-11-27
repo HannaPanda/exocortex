@@ -8,6 +8,7 @@ import { type DocumentDetail } from '@exocortex/contracts';
 import { cn, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
+import { rowCollectionIdOf } from '@/components/database/row-header-layout';
 import { RowPropertiesHeader } from '@/components/database/row-properties-header';
 import { PageCover, PageCoverAddButton } from '@/components/document/page-cover';
 import { PageIconAddButton, PageIconButton } from '@/components/document/page-icon-picker';
@@ -127,6 +128,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const user = session.data?.user;
   const archived = detail.archivedAt !== null;
   const readOnly = archived || detail.access === 'read';
+  const rowCollectionId = rowCollectionIdOf(detail);
 
   // Above the measure, so the image spans the whole surface no matter how
   // narrow the page body is; the add button sits inside it, where the title is.
@@ -225,15 +227,13 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
 
               {/* A row of a database carries its values under its title, read
                 and written as the table's own cells (issue #254). */}
-              {detail.type === 'PAGE' &&
-              detail.parentId !== null &&
-              detail.parentType === 'COLLECTION' ? (
+              {rowCollectionId === null ? null : (
                 <RowPropertiesHeader
-                  collectionDocumentId={detail.parentId}
+                  collectionDocumentId={rowCollectionId}
                   rowId={documentId}
                   readOnly={readOnly}
                 />
-              ) : null}
+              )}
 
               {/* Between the title and the body: the overview is about the page's
                 sub-pages, and a reader looking for one of them should not have

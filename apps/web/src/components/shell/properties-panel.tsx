@@ -19,6 +19,7 @@ import {
 
 import { PropertyCell } from '@/components/database/cells';
 import { usePropertyTypeLabel } from '@/components/database/property-types';
+import { rowCollectionIdOf } from '@/components/database/row-header-layout';
 import { useViewTypeLabel } from '@/components/database/view-tabs';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker } from '@/components/document/page-icon-picker';
@@ -308,6 +309,7 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
   const t = useTranslations('document.propertiesPanel');
   const tDocument = useTranslations('document');
   const readOnly = detail.access === 'read';
+  const rowCollectionId = rowCollectionIdOf(detail);
   const updateDocument = useUpdateDocument(workspaceId);
   const [aiRuleDialogOpen, setAiRuleDialogOpen] = React.useState(false);
 
@@ -349,13 +351,13 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
         </span>
       </div>
 
-      {detail.type === 'PAGE' && detail.parentId !== null && detail.parentType === 'COLLECTION' ? (
+      {rowCollectionId === null ? null : (
         <RowPropertiesSection
-          collectionDocumentId={detail.parentId}
+          collectionDocumentId={rowCollectionId}
           rowId={detail.id}
           readOnly={readOnly}
         />
-      ) : null}
+      )}
 
       <CoverSection workspaceId={workspaceId} detail={detail} readOnly={readOnly} />
 

@@ -10,6 +10,7 @@ import {
   ROW_HEADER_LEADING,
   ROW_HEADER_MAX,
   ROW_HEADER_SHOW_ALL_UP_TO,
+  rowCollectionIdOf,
 } from './row-header-layout';
 
 type CellValue = DatabaseRowPropertyValue['value'];
@@ -85,5 +86,20 @@ describe('layoutRowHeader (issue #254)', () => {
     const result = layout(4, {}, true);
     expect(result.shown).toEqual([]);
     expect(result.folded).toHaveLength(4);
+  });
+});
+
+describe('rowCollectionIdOf', () => {
+  const page = { type: 'PAGE' as const, parentId: 'db', parentType: null, viaShare: false };
+
+  it('names the database a member sees above the page', () => {
+    expect(rowCollectionIdOf({ ...page, parentType: 'COLLECTION' })).toBe('db');
+    expect(rowCollectionIdOf({ ...page, parentType: 'PAGE' })).toBeNull();
+    expect(rowCollectionIdOf({ ...page, parentId: null })).toBeNull();
+  });
+
+  it('asks the row read when a share hides what is above the page', () => {
+    expect(rowCollectionIdOf({ ...page, viaShare: true })).toBe('db');
+    expect(rowCollectionIdOf({ ...page, viaShare: true, type: 'COLLECTION' })).toBeNull();
   });
 });

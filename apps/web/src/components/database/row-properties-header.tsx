@@ -120,7 +120,10 @@ function RowPropertiesList({
             key={property.id}
             role="group"
             aria-label={property.name}
-            className="grid grid-cols-[minmax(6rem,10rem)_minmax(0,1fr)] items-start gap-x-3"
+            // Numbers sit right in a column, where they are compared with the
+            // numbers above them; here each stands alone beside its name and
+            // starts where every other value starts.
+            className="grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-x-3 sm:grid-cols-[10rem_minmax(0,1fr)] [&_input[type=number]]:text-left"
             data-testid={`row-header-property-${property.id}`}
           >
             <span

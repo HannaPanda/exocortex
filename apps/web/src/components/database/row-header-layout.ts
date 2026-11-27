@@ -1,4 +1,8 @@
-import { type DatabaseProperty, type DatabaseRowPropertyValue } from '@exocortex/contracts';
+import {
+  type DatabaseProperty,
+  type DatabaseRowPropertyValue,
+  type DocumentDetail,
+} from '@exocortex/contracts';
 
 type CellValue = DatabaseRowPropertyValue['value'];
 
@@ -66,4 +70,22 @@ export function layoutRowHeader(input: {
     return { shown: [...properties], folded: [] };
   }
   return { shown, folded };
+}
+
+/**
+ * The database a page may be a row of, or `null` when it certainly is not one.
+ *
+ * A member reads it off `parentType`. Somebody a single page was shared with
+ * is told nothing about the page above it (`parentType` is null when the
+ * parent lies outside the grant, issue #83), so for them the row read itself
+ * answers: `GET /api/documents/:id/row` says `row: null` for a page that is not
+ * a row, and the header then renders nothing (issue #254).
+ */
+export function rowCollectionIdOf(
+  detail: Pick<DocumentDetail, 'type' | 'parentId' | 'parentType' | 'viaShare'>,
+): string | null {
+  if (detail.type !== 'PAGE' || detail.parentId === null) return null;
+  if (detail.parentType === 'COLLECTION') return detail.parentId;
+  if (detail.parentType === null && detail.viaShare) return detail.parentId;
+  return null;
 }

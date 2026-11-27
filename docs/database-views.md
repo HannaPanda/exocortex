@@ -240,7 +240,9 @@ the columns scroll underneath it.
 
 A row opened as a page shows its values under its title (issue #254,
 `row-properties-header.tsx`, mounted in `document-view.tsx` for a `PAGE` whose
-parent is a `COLLECTION`). It is the third place a row is edited, beside the
+parent is a `COLLECTION`, or whose parent a share hides; `rowCollectionIdOf`
+decides, and for a shared page the row read's `row: null` is what says it is
+no row). It is the third place a row is edited, beside the
 table cell and the row sheet, and like those two it is not a copy:
 
 - **One read, one write.** The header reads `GET /api/documents/:id/row`, which
