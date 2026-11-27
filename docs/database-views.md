@@ -279,6 +279,66 @@ table cell and the row sheet, and like those two it is not a copy:
 The context panel's "Eigenschaften" tab reads the same answer, so it too shows
 the values on a page shared on its own.
 
+## Acting on rows: the handle and the selection
+
+A table row starts with a checkbox and a handle (issue #244), the table's
+counterpart of a block's six dots in the editor. Both wait for the pointer:
+hidden until the row is hovered or one of them has focus, shown on every row
+while any row is selected, and always on a coarse pointer, where nothing
+hovers. They sit inside the pinned title cell rather than in a column of their
+own, so the grid lines of #305 and the pinned cell's tint are unchanged.
+
+- **The handle's menu** (`row-handle.tsx`): open in the sheet, open as a page,
+  copy link, and for a writer duplicate, move and into the trash. It does not
+  drag: a table's order is its view's sort and rows have no manual order to
+  drag into. "Verschieben" is `RowMoveDialog`, a search over the workspace
+  that ends in `useGuardedMove`, the same move the palette makes, share
+  warning included; the row stops being a row of this database when it lands
+  elsewhere, and its stored values stay behind unread.
+- **The selection** (`row-selection.ts`, unit-tested; `use-row-actions.tsx`
+  holds it): a click on a checkbox flips that row and makes it the anchor,
+  Shift with a click gives every row between the anchor and this one the same
+  state, the header checkbox takes every row shown, and Escape lets go unless
+  a field, a menu or a dialog takes the key. A click in any other cell still
+  edits the cell. Only rows still shown count, so a row another tab put in the
+  trash drops out of the selection by itself; switching to another view starts
+  empty.
+- **The bar** (`row-selection-bar.tsx`) replaces nothing: it appears above the
+  table while rows are selected. "Eigenschaft setzen" opens the column's own
+  `PropertyCell` in a dialog, seeded with the value the rows share, and every
+  change goes to all selected rows at once; computed columns and FILES are not
+  offered, because a file belongs to the row it was uploaded onto (ADR-098).
+  "In den Papierkorb" asks first when more than one row goes.
+- **Three batch routes, each one request.** `PATCH /api/documents/:id/rows/values`
+  (`updateMany` in `DatabaseRowsService`), `POST .../rows/trash` and
+  `POST .../rows/duplicate` (`DatabaseRowActionsService`), at most
+  `DATABASE_ROW_BATCH_MAX` (100) rows. Every row is checked before any changes:
+  that it is a live row of this database (`database_rows_not_found` names the
+  ones that are not) and that the caller may edit it -- for a copy, read it and
+  create in the database -- each on its own access context, because a share can
+  reach one row and not its neighbour (ADR-044). Values are written in one
+  transaction with one `database.row.updated` outbox event per row, so a rule
+  reacts to a row as before. The trash is `DocumentsService.archive` per row,
+  so each row comes back on its own, from the trash like any page; there is
+  no undo of its own. A copy is made like a page from a template (ADR-039):
+  from the canonical Yjs state with new block ids, title, icon, cover and the
+  stored values, placed directly after its row; files it names stay the source
+  row's.
+- **Live.** Rows are pages, so a row created, duplicated, archived, restored
+  or moved elsewhere arrives as a `document.*` event naming its parent, and
+  `useDatabaseRealtime` invalidates that parent's rows. Before #244 a table
+  learnt about such a row only on its own next fetch.
+- **The palette** (`palette/row-selection-commands.tsx`), on the full-page
+  database only: "Alle Zeilen auswählen", and while rows are selected
+  "Eigenschaft für N Zeilen setzen → Spalte", duplicate, trash and "Auswahl
+  aufheben".
+- **Board, gallery, calendar.** A board card's existing menu also duplicates,
+  copies the link and puts the card in the trash. Selecting several cards is
+  the table's: a gallery card is one link from edge to edge and a calendar
+  entry is a small chip, so neither has room for a checkbox that would not
+  fight the click that opens the row. Their rows are selected in a table view
+  of the same database.
+
 ## Inline embed
 
 A database can also appear as a live view inside another page (Notion's

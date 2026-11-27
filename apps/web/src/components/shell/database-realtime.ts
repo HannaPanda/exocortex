@@ -27,6 +27,21 @@ export function useDatabaseRealtime(): void {
       documentId: event.payload.documentId,
     }),
   );
+  // A row is a page (ADR-011): one created, duplicated, put in the trash,
+  // restored or moved away arrives as a page event naming its parent, and a
+  // table showing that parent's rows has to follow (issue #244). A page whose
+  // parent is no database invalidates nothing that is cached.
+  const parentChanged = (parentId: string | null): void => {
+    if (parentId === null) return;
+    void queryClient.invalidateQueries({ queryKey: ['database', parentId, 'rows'] });
+  };
+  useRealtimeEvent('document.created', (event) => parentChanged(event.payload.document.parentId));
+  useRealtimeEvent('document.archived', (event) => parentChanged(event.payload.document.parentId));
+  useRealtimeEvent('document.restored', (event) => parentChanged(event.payload.document.parentId));
+  useRealtimeEvent('document.moved', (event) => {
+    parentChanged(event.payload.document.parentId);
+    parentChanged(event.payload.previousParentId);
+  });
   useRealtimeEvent('database.view.changed', (event) =>
     invalidateDatabaseAfterEvent(queryClient, {
       kind: 'view',

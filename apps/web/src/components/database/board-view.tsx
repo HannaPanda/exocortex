@@ -1,6 +1,13 @@
 'use client';
 
-import { KanbanIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react';
+import {
+  CopyIcon,
+  KanbanIcon,
+  LinkIcon,
+  MoreHorizontalIcon,
+  PlusIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -13,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   EmptyState,
   ErrorState,
@@ -27,6 +35,8 @@ import {
 import {
   useCreateDatabaseRow,
   useDatabaseRows,
+  useDuplicateDatabaseRows,
+  useTrashDatabaseRows,
   useUpdateDatabaseRowValues,
   useUpdateDatabaseView,
 } from '@/lib/api/database-queries';
@@ -129,6 +139,16 @@ function BoardColumns({
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
   const updateValues = useUpdateDatabaseRowValues(documentId);
+  // The card menu carries the row actions of the table's handle that fit a
+  // card (issue #244); selecting several cards is the table's.
+  const tRow = useTranslations('database.rowActions');
+  const duplicateRows = useDuplicateDatabaseRows(documentId);
+  const trashRows = useTrashDatabaseRows(documentId);
+  const copyLink = (row: DatabaseRow): void => {
+    void window.navigator.clipboard.writeText(
+      `${window.location.origin}/arbeitsbereich/${workspaceId}/seite/${row.document.id}`,
+    );
+  };
 
   if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError)
@@ -235,6 +255,27 @@ function BoardColumns({
                                 {t('moveTo', { column: target.label })}
                               </DropdownMenuItem>
                             ))}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            data-testid="card-duplicate"
+                            onClick={() => duplicateRows.mutate([row.document.id])}
+                          >
+                            <CopyIcon /> {tRow('duplicate')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            data-testid="card-copy-link"
+                            onClick={() => copyLink(row)}
+                          >
+                            <LinkIcon /> {tRow('copyLink')}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            data-testid="card-trash"
+                            onClick={() => trashRows.mutate([row.document.id])}
+                          >
+                            <Trash2Icon /> {tRow('trash')}
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}

@@ -146,6 +146,7 @@ export function DatabaseShell({
           view={activeView}
           properties={properties.data}
           readOnly={readOnly}
+          paletteEnabled={onActiveViewResolved !== undefined}
         />
       ) : null}
       {activeView.type === 'BOARD' ? (

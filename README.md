@@ -76,7 +76,10 @@ What is deliberately still missing is listed under
   or full-page; a row opened as a page shows and edits its properties under
   its title with the table's own fields; a files column takes uploads straight
   into the cell (picked, dropped or pasted, with progress), which belong to
-  the row and never to its page's text (ADR-098)
+  the row and never to its page's text (ADR-098); a table row has a handle
+  with its menu (open, duplicate, copy link, move, trash) and a checkbox, and
+  a selection gets one value for all its rows, a duplicate or the trash in one
+  request
 - entities, their candidates and page links, in their own workspace-wide screen
 - a knowledge map: every page of a workspace as a glowing point in a 3D room,
   joined by references, similar content nobody linked, entity mentions and the

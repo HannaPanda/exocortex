@@ -10,14 +10,17 @@ import {
   type DatabaseProperty,
   type DatabasePropertyOption,
   type DatabaseRow,
+  type DatabaseRowsResponse,
   type DatabaseView,
   type DocumentRowResponse,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
   type ReorderDatabasePropertyRequest,
   type ReorderDatabaseViewRequest,
+  type TrashDatabaseRowsResponse,
   type UpdateDatabasePropertyOptionRequest,
   type UpdateDatabasePropertyRequest,
+  type UpdateDatabaseRowsRequest,
   type UpdateDatabaseRowValuesRequest,
   type UpdateDatabaseViewRequest,
 } from '@exocortex/contracts';
@@ -325,6 +328,63 @@ export function useUpdateDatabaseRowValues(documentId: string) {
       // instead (`useDocumentRow`), so it needs its own invalidation.
       void client.invalidateQueries({ queryKey: databaseQueryKeys.row(variables.rowId) });
     },
+  });
+}
+
+/**
+ * What changes when several rows changed at once (issue #244): the database's
+ * rows, each row's own header, and -- for a duplicate or the trash -- the
+ * database's row count.
+ */
+function invalidateAfterRowBatch(
+  client: ReturnType<typeof useQueryClient>,
+  documentId: string,
+  structural: boolean,
+): void {
+  void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
+  void client.invalidateQueries({ queryKey: ['database', 'row'] });
+  if (!structural) return;
+  // The sidebar's tree follows through the `document.*` events every row
+  // created or archived announces.
+  void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
+}
+
+/** The same values for every selected row, in one request. */
+export function useUpdateDatabaseRows(documentId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (request: UpdateDatabaseRowsRequest) =>
+      apiRequest<DatabaseRowsResponse>(`/api/documents/${documentId}/rows/values`, {
+        method: 'PATCH',
+        body: request,
+      }),
+    onSuccess: () => invalidateAfterRowBatch(client, documentId, false),
+  });
+}
+
+/** A copy of each row directly below it. */
+export function useDuplicateDatabaseRows(documentId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (rowIds: string[]) =>
+      apiRequest<DatabaseRowsResponse>(`/api/documents/${documentId}/rows/duplicate`, {
+        method: 'POST',
+        body: { rowIds },
+      }),
+    onSuccess: () => invalidateAfterRowBatch(client, documentId, true),
+  });
+}
+
+/** The rows into the trash, each restorable on its own. */
+export function useTrashDatabaseRows(documentId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (rowIds: string[]) =>
+      apiRequest<TrashDatabaseRowsResponse>(`/api/documents/${documentId}/rows/trash`, {
+        method: 'POST',
+        body: { rowIds },
+      }),
+    onSuccess: () => invalidateAfterRowBatch(client, documentId, true),
   });
 }
 
