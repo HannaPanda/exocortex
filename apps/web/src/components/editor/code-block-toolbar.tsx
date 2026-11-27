@@ -39,14 +39,14 @@ const INSET = 4;
  *
  * `top-end` puts the bar above the block, flush with its right edge; the
  * offset then pulls it down by its own height plus the inset, and in by the
- * inset. No `flip` and no `shift`: a bar that changes sides when the block
+ * inset (for an `-end` placement a negative cross axis offset moves it in). No `flip` and no `shift`: a bar that changes sides when the block
  * nears an edge is the jump the issue was about.
  */
 const BAR_POSITION: ComputePositionConfig = {
   placement: 'top-end',
   strategy: 'absolute',
   middleware: [
-    offset(({ rects }) => ({ mainAxis: -(rects.floating.height + INSET), crossAxis: INSET })),
+    offset(({ rects }) => ({ mainAxis: -(rects.floating.height + INSET), crossAxis: -INSET })),
   ],
 };
 
@@ -295,15 +295,25 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
 
   if (host === null || block === null || anchor === null) return null;
 
-  /** Whether the caret stands in this very block, so a change may return to it. */
-  const caretInBlock = caret === anchor;
+  /**
+   * Whether the caret stands in this very block, so a change may return to it.
+   * Read from the selection, not from `caret`: a press on the bar has already
+   * taken the focus from the text, and `caret` only counts a focused editor.
+   */
+  const caretInBlock = (): boolean => {
+    const { $from } = editor.state.selection;
+    for (let depth = $from.depth; depth > 0; depth -= 1) {
+      if ($from.node(depth).type.name === 'codeBlock') return $from.before(depth) === anchor;
+    }
+    return false;
+  };
 
   const setLanguage = (value: string): void => {
     const pos = anchor;
     const chain = editor.chain();
     // Back to the text only when the caret is in this block: focusing the editor
     // otherwise scrolls to a caret somewhere else on the page.
-    if (caretInBlock) chain.focus();
+    if (caretInBlock()) chain.focus();
     chain
       .command(({ tr }) => {
         if (tr.doc.nodeAt(pos)?.type.name !== 'codeBlock') return false;
@@ -326,10 +336,12 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
       ref={barRef}
       aria-label={t('label')}
       data-testid="code-block-toolbar"
-      // Flat: the bar lies in the block's own strip, on nothing, so it needs no
-      // surface of its own (DESIGN.md, the Flat-By-Default Rule). `z-10` keeps it
-      // above an outline laid over the text (issue #283).
-      className="absolute top-0 left-0 z-10 gap-0.5 border-0 bg-transparent p-0 shadow-none"
+      // Flat, in the block's own colour: on the block it has no edge of its own
+      // (DESIGN.md, the Flat-By-Default Rule), and where an outline laid over the
+      // text covers the corner (issue #283) it still reads, because `z-10` keeps
+      // it above that list and the colour keeps the list's words from showing
+      // through it.
+      className="absolute top-0 left-0 z-10 gap-0.5 border-0 bg-sunken p-0 shadow-none"
       style={{ visibility: 'hidden' }}
       onPointerDown={() => setHeld(anchor)}
       onFocus={() => setHeld(anchor)}
@@ -413,6 +425,10 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
       >
         {copied ? <CheckIcon /> : <CopyIcon />}
       </ToolbarButton>
+      {/* The changed name of the button is not announced by itself. */}
+      <span className="sr-only" aria-live="polite">
+        {copied ? t('copied') : ''}
+      </span>
     </Toolbar>,
     host,
   );

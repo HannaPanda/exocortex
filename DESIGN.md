@@ -829,7 +829,8 @@ code block), so it covers no line of the reader's text, and the strip is
 there whether the bar shows or not, so nothing moves when it appears. It is
 a `Toolbar`, the next `Tab` stop after the text; `Escape` goes back. It sits
 above an outline laid over the text (issue #283), because a covered control
-is one nobody can reach.
+is one nobody can reach, and it wears the block's own `sunken`: on the block
+it has no edge, and over the list the list's words do not show through it.
 
 ### The workflow canvas
 
