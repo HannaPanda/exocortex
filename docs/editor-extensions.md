@@ -359,6 +359,17 @@ because the document may have moved since the handle picked it; the selection
 toolbar passes no target and keeps working on the selection the person made.
 Covered by `block-target.test.ts` and `e2e/tests/block-menu.spec.ts`.
 
+"Löschen" in the same menu leaves the caret where the block stood (issue #285).
+It used to run `chain().focus().deleteRange()`: the focus is in the menu, so
+`focus()` put back the selection from before the menu opened (where the caret
+had last been, or the start of the page if it never was placed) and scrolled
+that into view on the next frame. Deleting a heading halfway down a long page
+sent the reader to the top, or a screen further down. `deleteBlockRange` in
+`apps/web/src/components/editor/block-target.ts` deletes and puts the caret at
+the start of the block that followed, which is on screen, so focusing scrolls
+nothing. Covered by `apps/web/src/components/editor/block-target.test.ts` and
+`e2e/tests/scroll-position.spec.ts`.
+
 ## The hint in the empty line
 
 „Schreibe etwas oder tippe „/“ für Befehle …“ is `LinePlaceholder`

@@ -1,4 +1,5 @@
 import { type Node as PmNode } from '@tiptap/pm/model';
+import { Selection } from '@tiptap/pm/state';
 import { type Editor } from '@tiptap/react';
 
 import { BLOCK_ID_ATTRIBUTE, runOnBlock } from '@exocortex/editor';
@@ -55,4 +56,23 @@ export function runOnTarget(
   const range = currentRangeOf(editor, target);
   if (range === null) return false;
   return runOnBlock(editor, range.from, action);
+}
+
+/**
+ * Deletes a block and leaves the caret where it stood (issue #285).
+ *
+ * The menu deleted with `chain().focus().deleteRange()`. Opened from the
+ * handle, the editor has no focus, so `focus()` put back the selection from
+ * before the menu -- wherever the caret had last been, or the start of the
+ * page if it had never been placed -- and scrolled that into view on the next
+ * frame. The reader deleting a heading in the middle of a long page landed
+ * at the top, or a screen further down. The caret now goes where the block
+ * was, which is on screen, so focusing it scrolls nothing.
+ */
+export function deleteBlockRange(editor: Editor, range: { from: number; to: number }): void {
+  const tr = editor.state.tr.delete(range.from, range.to);
+  const at = Math.min(range.from, tr.doc.content.size);
+  tr.setSelection(Selection.near(tr.doc.resolve(at)));
+  editor.view.dispatch(tr);
+  editor.commands.focus();
 }

@@ -28,7 +28,7 @@ import {
 } from '@exocortex/ui';
 
 import { describeBlockRemoval, useBlockRemovalWarning } from './block-removal';
-import { type BlockTarget, currentRangeOf } from './block-target';
+import { type BlockTarget, currentRangeOf, deleteBlockRange } from './block-target';
 import { ColorItems } from './color-menu';
 import { useDestructiveConfirm } from './destructive-confirm';
 import { TurnIntoItems } from './turn-into-menu';
@@ -91,11 +91,7 @@ export function BlockActionItems({
     if (block === null) return;
     const removal = describeBlockRemoval(block.node);
     if (removal === null) {
-      editor
-        .chain()
-        .focus()
-        .deleteRange({ from: block.pos, to: block.pos + block.node.nodeSize })
-        .run();
+      deleteBlockRange(editor, { from: block.pos, to: block.pos + block.node.nodeSize });
       return;
     }
     void confirmDestructive(removalWarning(removal)).then((confirmed) => {
@@ -103,7 +99,7 @@ export function BlockActionItems({
       // The dialog was open for as long as it took to read: a collaborator may
       // have moved this block in the meantime, so it is looked up again.
       const range = currentRangeOf(editor, block);
-      if (range !== null) editor.chain().focus().deleteRange(range).run();
+      if (range !== null) deleteBlockRange(editor, range);
     });
   };
 
