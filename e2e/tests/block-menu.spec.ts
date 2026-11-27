@@ -208,4 +208,77 @@ test.describe('the block menu', () => {
       'Zitat zwei',
     ]);
   });
+  /**
+   * Issue #284: "Absatz" on a list item makes it an ordinary line, splitting
+   * the list around it and keeping its sub-items as a list underneath; the
+   * other conversions take it out of its list the same way. Which blocks
+   * come out is unit-tested beside `turnBlockInto`; this proves the real
+   * menu, the caret and the collaborative undo agree.
+   */
+  test('turns a list item into a line, a heading or a quote', async ({ page }) => {
+    await pageWith(
+      page,
+      [
+        'Oben',
+        '- Eins\n- Zwei\n  - Unter\n- Drei\n- Vier',
+        '1. Alpha\n2. Beta\n3. Gamma',
+        '- [ ] Aufgabe eins\n- [x] Aufgabe zwei\n- [ ] Aufgabe drei',
+      ].join('\n\n'),
+    );
+    await expect(textBlock(page, 'Aufgabe drei')).toBeVisible({ timeout: 30_000 });
+    await caretAtEndOf(page, textBlock(page, 'Oben'));
+
+    const topLevel = (text: string, tag = 'p'): Locator =>
+      page.locator(`.exocortex-editor .ProseMirror > ${tag}`, {
+        hasText: new RegExp(`^${text}$`),
+      });
+    const listItem = (text: string): Locator =>
+      page.locator('.exocortex-editor li p', { hasText: new RegExp(`^${text}$`) });
+    async function turnInto(text: string, entry: string): Promise<void> {
+      await openMenuOf(page, textBlock(page, text));
+      await page.getByTestId('block-turn-into').click();
+      await page.getByTestId(`turn-into-${entry}`).click();
+      await expect(page.getByTestId('block-duplicate')).toBeHidden();
+    }
+
+    // In the middle, with a sub-item: the list splits around it, the sub-item
+    // stays a list underneath, and one undo puts all of it back.
+    await turnInto('Zwei', 'paragraph');
+    await expect(topLevel('Zwei')).toHaveCount(1);
+    await expect(listItem('Zwei')).toHaveCount(0);
+    await expect(page.locator('.exocortex-editor .ProseMirror > ul')).toHaveCount(3);
+    await expect(listItem('Unter')).toHaveCount(1);
+    await expect(page.getByTestId('selection-toolbar')).toBeHidden();
+    await page.keyboard.press('Control+z');
+    await expect(listItem('Zwei')).toHaveCount(1);
+    await expect(page.locator('.exocortex-editor .ProseMirror > ul')).toHaveCount(2);
+
+    // The first and the last item; the caret ends after the line's text.
+    await turnInto('Eins', 'paragraph');
+    await expect(topLevel('Eins')).toHaveCount(1);
+    await page.keyboard.type('!');
+    await expect(topLevel('Eins!')).toHaveCount(1);
+    await turnInto('Vier', 'paragraph');
+    await expect(topLevel('Vier')).toHaveCount(1);
+    await expect(listItem('Drei')).toHaveCount(1);
+
+    // A numbered list and a task list split the same way.
+    await turnInto('Beta', 'paragraph');
+    await expect(topLevel('Beta')).toHaveCount(1);
+    await expect(page.locator('.exocortex-editor .ProseMirror > ol')).toHaveCount(2);
+    await turnInto('Aufgabe zwei', 'paragraph');
+    await expect(topLevel('Aufgabe zwei')).toHaveCount(1);
+    await expect(listItem('Aufgabe eins')).toHaveCount(1);
+    await expect(listItem('Aufgabe drei')).toHaveCount(1);
+
+    // Conversions that did nothing on a list item before, or hit its sub-item.
+    await turnInto('Zwei', 'heading-2');
+    await expect(topLevel('Zwei', 'h2')).toHaveCount(1);
+    await expect(listItem('Unter')).toHaveCount(1);
+    await turnInto('Drei', 'blockquote');
+    await expect(
+      page.locator('.exocortex-editor .ProseMirror > blockquote p', { hasText: /^Drei$/ }),
+    ).toHaveCount(1);
+    await expect(listItem('Drei')).toHaveCount(0);
+  });
 });
