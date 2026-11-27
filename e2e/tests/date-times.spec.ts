@@ -72,11 +72,12 @@ async function buildFixture(page: Page, baseURL: string | undefined): Promise<Fi
     return ((await response.json()) as { document: { id: string } }).document.id;
   };
   // 11:00 UTC on 26 November is noon in Berlin (CET), 10:00 UTC on 15 July
-  // is noon too (CEST): both rows have to read 12:00.
+  // is noon too (CEST): both rows have to read 12:00. The winter span ends at
+  // 16:00, late enough that moving its start to 14:30 keeps it a span.
   const winterRowId = await row('A Winter', [
     {
       propertyId: meetingId,
-      value: { start: '2026-11-26T11:00:00.000Z', end: '2026-11-26T11:15:00.000Z', allDay: false },
+      value: { start: '2026-11-26T11:00:00.000Z', end: '2026-11-26T15:00:00.000Z', allDay: false },
     },
     { propertyId: dueId, value: '2026-02-27' },
   ]);
@@ -117,7 +118,7 @@ test.describe('times in a database (issue #255)', () => {
 
     // The language's clock: German writes 24 hours, in both seasons.
     await expect(winterStart).toHaveValue('12:00');
-    await expect(winter.getByRole('textbox', { name: 'Ende, Uhrzeit' })).toHaveValue('12:15');
+    await expect(winter.getByRole('textbox', { name: 'Ende, Uhrzeit' })).toHaveValue('16:00');
     await expect(summerStart).toHaveValue('12:00');
     // A whole day stays the day: the formula reads 28 February, without a time.
     await expect(winter.getByTestId('readonly-cell')).toHaveText('28.02.2026');
@@ -127,6 +128,11 @@ test.describe('times in a database (issue #255)', () => {
     await page.reload();
     await expect(winterStart).toHaveValue(/^12:00\sPM$/);
     expect(spaced(await summerStart.inputValue())).toBe('12:00 PM');
+    // The wider 12-hour time wraps under its day instead of spilling over
+    // the next column.
+    const cell = page.locator('td').filter({ has: winterStart });
+    const [cellBox, fieldBox] = await Promise.all([cell.boundingBox(), winterStart.boundingBox()]);
+    expect(fieldBox!.x + fieldBox!.width).toBeLessThanOrEqual(cellBox!.x + cellBox!.width + 1);
 
     // Typed on any clock, stored as the instant: 14:30 in winter is 13:30 UTC,
     // 2:30 pm in summer is 12:30 UTC.
