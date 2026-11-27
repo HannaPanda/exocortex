@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import { createPage, presetPanelPreference, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
@@ -10,6 +10,9 @@ test.use({ storageState: storageStatePath('johanna') });
 test.beforeAll(() => {
   requireSeedCredentials();
 });
+
+/** What `Locator.boundingBox` answers with when the element has a layout. */
+type Box = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>;
 
 /**
  * The editor's *reachability*, not its schema.
@@ -424,6 +427,83 @@ test.describe('editor', () => {
     await page.keyboard.type('const x: number = 1;');
     // Highlighting is derived from the stored language name.
     await expect(page.locator('.exocortex-editor pre .hljs-keyword').first()).toBeVisible();
+  });
+
+  /**
+   * Issue #304: the bar was a bubble over the caret. It covered the lines above
+   * the one being written and moved with every arrow key. It now stands in the
+   * block's top right corner, in a strip of its own, and shows on hover or
+   * while the caret is in the block.
+   */
+  test('the code block bar stands in the corner, covers no code and keeps still', async ({
+    page,
+  }) => {
+    await openEditor(page);
+    await page.keyboard.type('Davor');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('``` ');
+    const long = 'x'.repeat(160);
+    for (let line = 1; line <= 4; line += 1) {
+      await page.keyboard.type(`const zeile${String(line)} = '${long}';`);
+      if (line < 4) await page.keyboard.press('Enter');
+    }
+    await page.keyboard.press('ArrowUp');
+
+    const bar = page.getByTestId('code-block-toolbar');
+    const pre = page.locator('.exocortex-editor pre');
+    await expect(bar).toBeVisible();
+
+    const where = async (): Promise<{ bar: Box; pre: Box; code: Box }> => {
+      const [barBox, preBox, codeBox] = await Promise.all([
+        bar.boundingBox(),
+        pre.boundingBox(),
+        pre.locator('code').boundingBox(),
+      ]);
+      if (barBox === null || preBox === null || codeBox === null) {
+        throw new Error('the code block has no layout');
+      }
+      return { bar: barBox, pre: preBox, code: codeBox };
+    };
+    const first = await where();
+    // Inside the block's top right corner ...
+    expect(first.bar.y).toBeGreaterThan(first.pre.y);
+    expect(first.bar.y).toBeLessThan(first.pre.y + 12);
+    expect(first.bar.x + first.bar.width).toBeLessThanOrEqual(first.pre.x + first.pre.width);
+    expect(first.bar.x + first.bar.width).toBeGreaterThan(first.pre.x + first.pre.width - 12);
+    // ... and above the first line, however far that line runs to the right.
+    expect(first.bar.y + first.bar.height).toBeLessThanOrEqual(first.code.y);
+
+    // The caret moving does not move the bar.
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('End');
+    const moved = await where();
+    expect(moved.bar.x).toBeCloseTo(first.bar.x, 0);
+    expect(moved.bar.y).toBeCloseTo(first.bar.y, 0);
+
+    // Outside the block it is gone, and the pointer brings it back.
+    await page.locator('.exocortex-editor p').first().click();
+    await expect(bar).toHaveCount(0);
+    await pre.hover({ position: { x: 40, y: 60 } });
+    await expect(bar).toBeVisible();
+    // The way from the code to the bar keeps it.
+    await bar.hover();
+    await page.getByTestId('code-language-trigger').click();
+    await page.getByTestId('code-language-rust').click();
+    await expect(pre.locator('code')).toHaveClass(/language-rust/);
+    await page.mouse.move(5, 5);
+    await page.locator('.exocortex-editor p').first().click();
+    await expect(bar).toHaveCount(0);
+
+    // The keyboard: Tab from the code into the bar, Escape back.
+    await pre.click({ position: { x: 40, y: 60 } });
+    await expect(bar).toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(page.getByTestId('code-language-trigger')).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByTestId('code-copy')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.ProseMirror.exocortex-editor-canvas')).toBeFocused();
+    await expect(bar).toBeVisible();
   });
 
   /**
@@ -973,5 +1053,37 @@ test.describe('editor', () => {
 
     await expect(context).toBeVisible({ visible: !contextWasOpen });
     await expect(page.locator('.exocortex-editor sup')).toHaveCount(0);
+  });
+});
+
+/**
+ * Issue #304 on a touch screen: nothing hovers there, so the bar shows while
+ * the caret is in the block, which is what tapping into it does, and stays
+ * while its own controls are tapped.
+ */
+test.describe('code block bar on a touch screen', () => {
+  test.use({ hasTouch: true });
+
+  test('shows while the caret is in the block and takes a tap', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Touch ${Date.now().toString(36)}`);
+    await page.getByTestId('editor-surface').click();
+    await page.keyboard.type('Davor');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('``` ');
+    await page.keyboard.type('echo eins');
+
+    const bar = page.getByTestId('code-block-toolbar');
+    const pre = page.locator('.exocortex-editor pre');
+    await page.locator('.exocortex-editor p').first().tap();
+    await expect(bar).toHaveCount(0);
+
+    await pre.tap({ position: { x: 40, y: 44 } });
+    await expect(bar).toBeVisible();
+    await page.getByTestId('code-language-trigger').tap();
+    await page.getByTestId('code-language-bash').tap();
+    await expect(pre.locator('code')).toHaveClass(/language-bash/);
+    await expect(bar).toBeVisible();
   });
 });
