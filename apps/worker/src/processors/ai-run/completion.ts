@@ -17,6 +17,8 @@ interface RunOutcome {
   toolIterations: number;
   toolCalls: number;
   toolContext: ToolContext | null;
+  /** Chat pictures sent as pixels in the last turn (ADR-097). Absent counts as none. */
+  imageInputs?: number;
 }
 
 /**
@@ -32,8 +34,12 @@ function toolColumns(outcome: RunOutcome): {
   toolsOffered: number | null;
   toolSchemaChars: number | null;
   toolDomains: string[];
+  imageInputs: number;
 } {
   return {
+    // Beside the tool context because it is the same kind of fact: what the
+    // prompt carried, for comparing what runs cost and how long they took.
+    imageInputs: outcome.imageInputs ?? 0,
     toolIterations: outcome.toolIterations,
     toolCalls: outcome.toolCalls,
     toolsOffered: outcome.toolContext?.offered ?? null,
@@ -247,6 +253,7 @@ export async function writeSuccess(input: {
     toolsOffered: outcome.toolContext?.offered ?? null,
     toolSchemaChars: outcome.toolContext?.schemaChars ?? null,
     toolDomains: outcome.toolContext?.domains ?? [],
+    imageInputs: outcome.imageInputs ?? 0,
   });
 }
 

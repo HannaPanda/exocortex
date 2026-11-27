@@ -3322,6 +3322,106 @@ describe('ai runs', () => {
   }, 60_000);
 
   /**
+   * ADR-097: a model that sees images gets the picture itself, and a provider
+   * that refuses it before answering gets the same prompt with the description.
+   */
+  it('sends a chat picture as pixels to a model that sees, and falls back on a refusal', async () => {
+    const conversationId = await createConversation();
+    const message = await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Was steht da?', estimatedTokens: 5 },
+    });
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        conversationId,
+        conversationMessageId: message.id,
+        filename: 'wort.png',
+        mimeType: 'image/png',
+        byteSize: ONE_PIXEL_PNG.byteLength,
+        storageKey: `test/chat-pixels-${Date.now().toString(36)}.png`,
+        createdById: userId,
+      },
+    });
+    const runWith = async (
+      provider: AiProvider,
+      overrides: Partial<Settings> = {},
+    ): Promise<{ imageInputs: number; status: string }> => {
+      const run = await prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: userId,
+          status: 'PENDING',
+          provider: provider.id,
+          model: 'test-model',
+          messages: [{ role: 'user', content: 'Was steht da?' }],
+          conversationId,
+        },
+      });
+      const processor = createAiRunProcessor({
+        search: { hybrid: search, keyword: keywordSearch },
+        prisma,
+        providerFor: providerFor(provider),
+        bus,
+        storage: fakeStorage(ONE_PIXEL_PNG),
+        settings: stubSettings(overrides),
+        toolRunnerFactory: null,
+        visionPreprocessorFor: () => fakeVisionPreprocessor('Das Wort KOLIBRI.'),
+        queues,
+        modelRegistry: async () => ({ ...toolCapableModelRow('test-model'), supportsVision: true }),
+      });
+      await processor(
+        contextFor<'ai'>({
+          correlationId: `test-pixels-${run.id}`,
+          runId: run.id,
+          workspaceId,
+          userId,
+        }).context,
+      );
+      return prisma.aiRun.findUniqueOrThrow({
+        where: { id: run.id },
+        select: { imageInputs: true, status: true },
+      });
+    };
+    const question = (request: AiGenerateRequest | null) =>
+      (request?.messages ?? []).find((entry) => entry.content === 'Was steht da?');
+
+    const seeing = new CapturingAiProvider();
+    expect(await runWith(seeing)).toEqual({ imageInputs: 1, status: 'COMPLETED' });
+    expect(question(seeing.lastRequest)?.images).toHaveLength(1);
+    expect(question(seeing.lastRequest)?.images?.[0]?.mimeType).toBe('image/png');
+    const note = (seeing.lastRequest?.messages ?? []).find((entry) =>
+      entry.content.includes('wort.png'),
+    );
+    expect(note?.content).toContain('in der Nachricht selbst');
+    expect(note?.content).not.toContain('FREMDINHALT');
+
+    // Switched off, the same model reads the description.
+    const reading = new CapturingAiProvider();
+    expect(await runWith(reading, { 'ai.sendImagesToModel': false })).toEqual({
+      imageInputs: 0,
+      status: 'COMPLETED',
+    });
+    expect(question(reading.lastRequest)?.images).toBeUndefined();
+
+    // A provider that refuses pictures with a 400 is asked again without them.
+    const refusing = new CapturingAiProvider();
+    const requests: AiGenerateRequest[] = [];
+    const stream = refusing.stream.bind(refusing);
+    refusing.stream = async function* (request: AiGenerateRequest) {
+      requests.push(request);
+      if (request.messages.some((entry) => (entry.images?.length ?? 0) > 0)) {
+        yield { type: 'error', code: 'ai_provider_error', message: 'no image input', status: 400 };
+        return;
+      }
+      yield* stream(request);
+    };
+    expect(await runWith(refusing)).toEqual({ imageInputs: 0, status: 'COMPLETED' });
+    expect(requests).toHaveLength(2);
+    const retried = requests[1]?.messages ?? [];
+    expect(retried.some((entry) => entry.content.includes('Das Wort KOLIBRI.'))).toBe(true);
+  }, 60_000);
+
+  /**
    * Issue #10: the usage view groups over columns, not over the JSON, and the
    * cost column it groups over has to distinguish a price a provider named from
    * one this deployment worked out itself.

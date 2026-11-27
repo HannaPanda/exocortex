@@ -32,10 +32,8 @@ import {
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
-import {
-  describeChatAttachments,
-  transcriptCarriesForeignChatFiles,
-} from './ai-run/chat-attachments';
+import { type ChatImagePixels, type RunPromptMessage } from './ai-run/chat-images';
+import { prepareChatPictures } from './ai-run/chat-pictures';
 import { writeOutcome } from './ai-run/completion';
 import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
@@ -51,7 +49,6 @@ import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
 import {
   buildRunMessages,
   loadConversationMessages,
-  resolveImageDescriber,
   resolveModelRow,
   resolveToolImageDescriber,
   resolveVisionPreprocessor,
@@ -158,6 +155,8 @@ function buildRunRouting(input: {
   logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
   base: AiMessage[];
   imageContext: AiMessage | null;
+  /** Chat pictures as pixels (ADR-097), read again from its cache after a compaction. */
+  pixels: ChatImagePixels | null;
   provider: AiProvider;
   timeline: RunTimeline;
   toolsEnabled: boolean;
@@ -182,7 +181,7 @@ function buildRunRouting(input: {
     compact:
       run.conversationId === null
         ? null
-        : async (budgetInputTokens: number): Promise<AiMessage[]> => {
+        : async (budgetInputTokens: number): Promise<RunPromptMessage[]> => {
             await input.timeline.timed(
               () =>
                 compactIfNeeded({
@@ -211,6 +210,7 @@ function buildRunRouting(input: {
               prisma,
               run.conversationId!,
               run.createdById,
+              input.pixels,
             );
             return imageContext === null
               ? [...base, ...reloaded]
@@ -347,49 +347,6 @@ async function prepareRunVision(input: {
     return null;
   });
   return { imageContext, describeImage };
-}
-
-/**
- * Describes the pictures on this conversation's messages that nobody has
- * described yet (issue #223), with the describer a tool's picture gets
- * (ADR-088), screens each new description (ADR-096), and answers whether the
- * prompt now carries one that is not the requester's own screened upload.
- */
-async function describeRunChatImages(input: {
-  dependencies: AiRunDependencies;
-  run: AiRun;
-  settings: Settings;
-  modelRow: ResolvedModelRow;
-  conversationCompanionSlug: string | null;
-  apiKey: string;
-  correlationId: string;
-  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
-}): Promise<boolean> {
-  const { dependencies, run, settings } = input;
-  if (run.conversationId === null) return false;
-  const describer = resolveImageDescriber({
-    settings,
-    modelRow: input.modelRow,
-    conversationCompanionSlug: input.conversationCompanionSlug,
-    visionPreprocessorFor: (modelSlug: string | null) =>
-      dependencies.visionPreprocessorFor(modelSlug, input.apiKey),
-    correlationId: input.correlationId,
-  });
-  await describeChatAttachments({
-    prisma: dependencies.prisma,
-    storage: dependencies.storage,
-    describer,
-    decisions: dependencies.decisionsFor?.(input.apiKey) ?? null,
-    conversationId: run.conversationId,
-    maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
-    correlationId: input.correlationId,
-    logger: input.logger,
-  });
-  return transcriptCarriesForeignChatFiles(
-    dependencies.prisma,
-    run.conversationId,
-    run.createdById,
-  );
 }
 
 /**
@@ -594,11 +551,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     );
     const requiresReasoningEffort = run.reasoningLevel !== 'NONE';
 
-    // Pictures on the conversation's messages are described before the prompt
-    // is built, so the transcript it loads already carries what a vision
-    // model saw in them (issue #223).
     const conversationCompanionSlug = conversation?.visionCompanionSlug ?? null;
-    const chatFilesForeign = await describeRunChatImages({
+    // Pictures on the conversation's messages are described and screened
+    // before the prompt is built; a model that sees gets them as pixels too
+    // (issue #223, ADR-097).
+    const { pixels, foreign: chatFilesForeign } = await prepareChatPictures({
       dependencies,
       run,
       settings,
@@ -617,6 +574,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       run,
       settings,
       timeline,
+      pixels,
       context: {
         toolsEnabled: tools.enabled,
         contextWindowTokens: modelRow.contextWindowTokens,
@@ -668,7 +626,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     if (imageContext !== null || chatFilesForeign) runner?.noteUntrustedContent('attachment');
 
     const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
-    const messages: AiMessage[] = [
+    const messages: RunPromptMessage[] = [
       ...preamble,
       ...(imageContext === null ? [] : [imageContext]),
       ...rest,
@@ -733,6 +691,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             // mode, role and tool offer rather than only the system prompt.
             base: preamble,
             imageContext,
+            pixels,
             // The routing input's provider writes compaction summaries, nothing else.
             provider: summaryProvider,
             timeline,

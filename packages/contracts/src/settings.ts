@@ -88,6 +88,15 @@ export const settingsSchema = z.object({
    */
   'ai.visionMaxImagesPerRun': z.number().int().min(0).max(64).default(4),
   /**
+   * Whether a picture on a chat message goes to a model that sees images as
+   * the picture itself, on every turn it is in the context (issue #223,
+   * ADR-097). Off, every model reads the stored description, which is cheaper
+   * per turn and what a text-only model always gets. The description is
+   * written either way: it is what compaction, the screening and a refused
+   * picture fall back to.
+   */
+  'ai.sendImagesToModel': z.boolean().default(true),
+  /**
    * Whether the open page's text is put into the system prompt directly.
    *
    * Default `false`, unlike every other AI switch here: this is the one that
@@ -900,6 +909,7 @@ export const SETTING_SCOPES = {
   'ai.maxToolIterations': 'workspace',
   'ai.visionEnabled': 'workspace',
   'ai.visionMaxImagesPerRun': 'workspace',
+  'ai.sendImagesToModel': 'workspace',
   'ai.pageContextEnabled': 'workspace',
   'ai.pageContextMaxChars': 'workspace',
   'ai.maxPinnedSources': 'workspace',

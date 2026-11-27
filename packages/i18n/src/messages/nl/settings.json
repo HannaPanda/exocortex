@@ -99,6 +99,10 @@
         "label": "Afbeeldingen per verzoek",
         "help": "Bovengrens voor het aantal beschreven afbeeldingen per run."
       },
+      "sendImagesToModel": {
+        "label": "Afbeeldingen in de chat direct naar het model",
+        "help": "Aan: Een model dat overweg kan met afbeeldingen ontvangt een afbeelding uit de chat als afbeelding, bij elk antwoord, zolang deze in de geschiedenis staat. Dat is nauwkeuriger en kost per antwoord meer. Uit: Het leest net als elk ander model de opgeslagen beschrijving. Een afbeelding wordt in beide gevallen beschreven, voor modellen zonder beeldverwerking en als terugvaloptie."
+      },
       "pageContextEnabled": {
         "label": "Tekst van de geopende pagina meesturen",
         "help": "Uit: de AI krijgt alleen de titel en het pad van de geopende pagina te weten en laadt de tekst zelf als een vraag die nodig heeft. Aan: de tekst wordt bij elke vraag meegestuurd, ook als die er niets mee te maken heeft. Nodig voor modellen zonder tools, anders extra datastroom naar de aanbieder."

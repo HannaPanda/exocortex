@@ -73,8 +73,26 @@ export interface AiReasoningOptions {
   effort: 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 }
 
+/**
+ * A picture that goes to the model with a user message (issue #223, ADR-097):
+ * already scaled, base64 without the `data:` prefix. Request-only: it is read
+ * from storage for the turn and never written into a stored message.
+ */
+export interface AiImageInput {
+  mimeType: string;
+  data: string;
+}
+
+/**
+ * A message as it goes to a provider: the contract's message, plus pictures on
+ * a user message for a model that sees them (ADR-097). The contract's
+ * `AiMessage` stays text, because that is what is stored and what the API
+ * accepts; a provider that cannot send pictures ignores `images`.
+ */
+export type AiPromptMessage = AiMessage & { images?: readonly AiImageInput[] };
+
 export interface AiGenerateRequest {
-  messages: readonly AiMessage[];
+  messages: readonly AiPromptMessage[];
   model?: string;
   maxOutputTokens?: number;
   temperature?: number;

@@ -2322,6 +2322,12 @@ model AiRun {
   /// join, because the credential may be replaced or removed later and the
   /// usage report still has to say whose money this run spent.
   usedOwnKey            Boolean @default(false)
+  /// Pictures from the chat that went to the model as pixels in the turn
+  /// that answered (issue #223, ADR-097). Zero for a run that read their
+  /// descriptions, including one whose pixels the provider refused and that
+  /// went on with the descriptions instead. What a comparison of cost and
+  /// duration with and without pixels groups by.
+  imageInputs           Int     @default(0)
 
   /// When the retention sweep emptied `messages` and `resultText`. The metric
   /// columns above survive it, so a pruned run still counts in the statistics

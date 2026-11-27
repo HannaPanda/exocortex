@@ -185,6 +185,20 @@ export class ChatCompletionsProvider implements AiProvider {
           issues: parsed.error.issues.map((issue) => issue.path.join('.')),
         });
       }
+      if (message.role === 'user' && message.images !== undefined && message.images.length > 0) {
+        // The OpenAI-shaped multimodal content (ADR-097): the text first, then
+        // each picture as a data URI. Only a user turn may carry one.
+        return {
+          role: 'user',
+          content: [
+            { type: 'text', text: message.content },
+            ...message.images.map((image) => ({
+              type: 'image_url',
+              image_url: { url: `data:${image.mimeType};base64,${image.data}` },
+            })),
+          ],
+        };
+      }
       return { role: message.role, content: message.content };
     });
   }

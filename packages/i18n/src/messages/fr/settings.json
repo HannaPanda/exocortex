@@ -99,6 +99,10 @@
         "label": "Images par requête",
         "help": "Limite supérieure pour le nombre d’images décrites par exécution."
       },
+      "sendImagesToModel": {
+        "label": "Images dans le chat directement transmises au modèle",
+        "help": "Activé : Un modèle prenant en charge les images reçoit l’image du chat en tant qu’image, à chaque réponse, tant qu’elle figure dans l’historique. C’est plus précis et plus coûteux par réponse. Désactivé : Il lit la description enregistrée, comme tout autre modèle. L’image est décrite dans les deux cas, pour les modèles sans vision et comme solution de secours."
+      },
       "pageContextEnabled": {
         "label": "Envoyer le texte de la page ouverte",
         "help": "Désactivé : l’IA ne connaît que le titre et le chemin de la page ouverte et charge elle-même le texte si une question le nécessite. Activé : le texte est transmis avec chaque question, même sans rapport. Nécessaire pour les modèles sans outils, sinon fuite de données supplémentaire vers le fournisseur."

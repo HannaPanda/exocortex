@@ -99,6 +99,10 @@
         "label": "Bilder pro Anfrage",
         "help": "Obergrenze für die Anzahl beschriebener Bilder je Lauf."
       },
+      "sendImagesToModel": {
+        "label": "Bilder im Chat direkt ans Modell",
+        "help": "An: Ein bildfähiges Modell bekommt ein Bild aus dem Chat als Bild, bei jeder Antwort, solange es im Verlauf steht. Das ist genauer und kostet je Antwort mehr. Aus: Es liest wie jedes andere Modell die gespeicherte Beschreibung. Beschrieben wird ein Bild in beiden Fällen, für Modelle ohne Bildverständnis und als Rückfall."
+      },
       "pageContextEnabled": {
         "label": "Text der geöffneten Seite mitschicken",
         "help": "Aus: Die KI erfährt nur Titel und Pfad der offenen Seite und lädt den Text selbst, wenn eine Frage ihn braucht. An: Der Text geht bei jeder Frage mit, auch wenn sie nichts damit zu tun hat. Nötig für Modelle ohne Werkzeuge, sonst zusätzlicher Datenabfluss zum Anbieter."

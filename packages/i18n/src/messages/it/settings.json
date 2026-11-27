@@ -99,6 +99,10 @@
         "label": "Immagini per richiesta",
         "help": "Limite massimo per il numero di immagini descritte per ciascuna esecuzione."
       },
+      "sendImagesToModel": {
+        "label": "Immagini della chat inviate direttamente al modello",
+        "help": "Attivo: un modello con supporto visivo riceve un’immagine della chat come immagine vera e propria, a ogni risposta, finché rimane nella cronologia. È più preciso e costa di più per risposta. Disattivo: legge la descrizione salvata come qualsiasi altro modello. L’immagine viene comunque descritta in entrambi i casi, per i modelli senza supporto visivo e come soluzione di riserva."
+      },
       "pageContextEnabled": {
         "label": "Includi il testo della pagina aperta",
         "help": "Disattivato: l’IA apprende solo titolo e percorso della pagina aperta e carica il testo autonomamente se una domanda lo richiede. Attivato: il testo viene inviato a ogni domanda, anche se non pertinente. Necessario per i modelli senza strumenti, altrimenti comporta un flusso aggiuntivo di dati verso il fornitore."

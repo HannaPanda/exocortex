@@ -17,12 +17,28 @@ export function estimateTokens(text: string): number {
   return Math.ceil(text.length / CHARS_PER_TOKEN_ESTIMATE);
 }
 
-export function estimateMessageTokens(message: { role: string; content: string }): number {
-  return estimateTokens(message.content) + MESSAGE_OVERHEAD_TOKENS;
+/**
+ * What one picture sent as pixels is assumed to cost (ADR-097). Providers count
+ * an image by its tiles, and a picture scaled to at most 1568 pixels on its
+ * long edge lands between a few hundred and about 1600 tokens; the high end is
+ * used, for the same reason the character estimate is conservative.
+ */
+export const IMAGE_INPUT_TOKEN_ESTIMATE = 1_600;
+
+export function estimateMessageTokens(message: {
+  role: string;
+  content: string;
+  images?: readonly unknown[];
+}): number {
+  return (
+    estimateTokens(message.content) +
+    (message.images?.length ?? 0) * IMAGE_INPUT_TOKEN_ESTIMATE +
+    MESSAGE_OVERHEAD_TOKENS
+  );
 }
 
 export function estimateConversationTokens(
-  messages: readonly { role: string; content: string }[],
+  messages: readonly { role: string; content: string; images?: readonly unknown[] }[],
 ): number {
   return messages.reduce((total, message) => total + estimateMessageTokens(message), 0);
 }

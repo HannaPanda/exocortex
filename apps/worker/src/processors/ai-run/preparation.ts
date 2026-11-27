@@ -28,6 +28,7 @@ import { buildSystemPrompt, type PromptSection } from '../../system-prompt';
 import { type ToolImageDescriber } from '../../tool-images';
 
 import { chatAttachmentContext, loadChatAttachmentsForPrompt } from './chat-attachments';
+import { type ChatImagePixels, type RunPromptMessage } from './chat-images';
 import { type ResolvedModelRow } from './contract';
 import { type RunTimeline } from './timeline';
 
@@ -106,7 +107,7 @@ export function withConfiguredEndpoints(
 /** What the prompt is, and how much room it has (ADR-032). */
 export interface BuiltRunMessages {
   base: AiMessage[];
-  rest: AiMessage[];
+  rest: RunPromptMessage[];
   /**
    * The largest prompt this run may send. Comes from the largest provider that
    * could serve it once the model has an endpoint snapshot, and from the
@@ -164,6 +165,8 @@ export async function buildRunMessages(input: {
   run: AiRun;
   settings: Settings;
   timeline: RunTimeline;
+  /** Chat pictures as pixels for a model that sees them (ADR-097); null reads descriptions. */
+  pixels: ChatImagePixels | null;
   context: {
     toolsEnabled: boolean;
     contextWindowTokens: number;
@@ -263,7 +266,7 @@ export async function buildRunMessages(input: {
   return {
     promptSections: systemPromptResult.sections,
     base: [{ role: 'system', content: systemPromptResult.prompt }],
-    rest: await loadConversationMessages(prisma, run.conversationId, run.createdById),
+    rest: await loadConversationMessages(prisma, run.conversationId, run.createdById, input.pixels),
     budgetInputTokens,
     floorInputTokens: await estimateFloorInputTokens({
       prisma,
@@ -280,26 +283,36 @@ export async function loadConversationMessages(
   conversationId: string,
   /** The run's requester: whose own uploads its chat files may be (ADR-096). */
   readerId: string,
-): Promise<AiMessage[]> {
+  /** Reads chat pictures as pixels for a model that sees them (ADR-097); null reads descriptions. */
+  pixels: ChatImagePixels | null = null,
+): Promise<RunPromptMessage[]> {
   const activeMessages = await prisma.aiConversationMessage.findMany({
     where: { conversationId, supersededAt: null },
     orderBy: { createdAt: 'asc' },
   });
   // Pictures on a message stand right before it, as what the vision model
-  // saw (issue #223); the message itself stays what the person typed.
-  const attachments = await loadChatAttachmentsForPrompt(
+  // saw (issue #223), or ride on the message itself as pixels (ADR-097); the
+  // message's text stays what the person typed.
+  const { byMessage, images } = await loadChatAttachmentsForPrompt(
     prisma,
     activeMessages.filter((message) => message.role === 'USER').map((message) => message.id),
     readerId,
+    pixels,
   );
   return activeMessages.flatMap((message) => {
-    const context = chatAttachmentContext(attachments.get(message.id) ?? []);
-    const own: AiMessage = {
+    const files = byMessage.get(message.id) ?? [];
+    const pictures = files.flatMap((file) => {
+      const image = images.get(file.id);
+      return image === undefined ? [] : [image];
+    });
+    const context = chatAttachmentContext(files, new Set(images.keys()));
+    const own: RunPromptMessage = {
       role: CONVERSATION_ROLE_TO_LOWER[message.role],
       content: message.content,
       toolCallId: message.toolCallId ?? undefined,
       toolName: message.toolName ?? undefined,
       toolCalls: message.toolCalls ?? undefined,
+      ...(pictures.length > 0 ? { images: pictures } : {}),
     };
     return context === null ? [own] : [context, own];
   });

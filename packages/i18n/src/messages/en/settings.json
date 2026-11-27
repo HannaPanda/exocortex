@@ -99,6 +99,10 @@
         "label": "Images per request",
         "help": "Upper limit for the number of described images per run."
       },
+      "sendImagesToModel": {
+        "label": "Send chat images directly to the model",
+        "help": "On: A vision-capable model receives an image from the chat as an image, with every reply, as long as it remains in the history. This is more accurate and costs more per reply. Off: Like any other model, it reads the saved description. An image is described in both cases, for models without vision capabilities and as a fallback."
+      },
       "pageContextEnabled": {
         "label": "Include text of the open page",
         "help": "Off: The AI only learns the title and path of the open page and loads the text itself if a question requires it. On: The text is sent with every question, even if it has nothing to do with it. Required for models without tools; otherwise, additional data flows to the provider."

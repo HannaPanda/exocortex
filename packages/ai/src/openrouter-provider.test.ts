@@ -529,3 +529,45 @@ describe('OpenRouterProvider provider routing', () => {
     expect(events).toContainEqual(expect.objectContaining({ type: 'done', text: 'ok' }));
   });
 });
+
+/** Pictures as pixels (issue #223, ADR-097). */
+describe('OpenRouterProvider pictures on a user message', () => {
+  it('sends them as image parts after the text, and leaves other messages plain', async () => {
+    let sent = '';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url: string, init: RequestInit) => {
+        sent = String(init.body);
+        return Promise.resolve(
+          streamResponse([{ choices: [{ delta: { content: 'ok' }, finish_reason: 'stop' }] }]),
+        );
+      }),
+    );
+
+    await collect(
+      provider().stream({
+        ...request,
+        messages: [
+          { role: 'system', content: 'Kontext' },
+          {
+            role: 'user',
+            content: 'Was steht da?',
+            images: [{ mimeType: 'image/png', data: 'AAAA' }],
+          },
+        ],
+      }),
+    );
+
+    const body = JSON.parse(sent) as { messages: unknown[] };
+    expect(body.messages).toEqual([
+      { role: 'system', content: 'Kontext' },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Was steht da?' },
+          { type: 'image_url', image_url: { url: 'data:image/png;base64,AAAA' } },
+        ],
+      },
+    ]);
+  });
+});

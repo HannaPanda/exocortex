@@ -9,11 +9,9 @@ import {
   type RoutePlan,
 } from '@exocortex/ai';
 import {
-  AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
   type AiRunDiagnosis,
   type AiRunIncompleteTurnArgs,
-  type AiRunPhase,
   type AiUsage,
 } from '@exocortex/contracts';
 import { type Prisma } from '@exocortex/database';
@@ -23,11 +21,12 @@ import { runTimeoutDiagnosis } from '../../run-timeout';
 import { toolLoopDiagnosis } from '../../tool-ledger';
 
 import { requestRouting } from './agent-profile';
+import { describedAfterImageRefusal, imageInputCount, type RunPromptMessage } from './chat-images';
 import { addUsage, type RunFailure, type TurnResult } from './contract';
 import { persistCountedMessage, recordMeasuredInput } from './conversation-tally';
 import { emptyTurnFailure, incompleteTurnDiagnosis, isEmptyTurn } from './empty-turn';
 import { type RunExecutionInput, type RunOutcome } from './execution-types';
-import { publishToolCallEvent, type ToolCallStatus } from './live-events';
+import { PhasePublisher, publishToolCallEvent, type ToolCallStatus } from './live-events';
 import {
   MAX_EMPTY_TURN_RETRIES,
   MAX_TRUNCATION_RETRIES,
@@ -55,9 +54,8 @@ class RunExecution {
   private readonly input: RunExecutionInput;
   private readonly runDeadline: number;
   private readonly runController = new AbortController();
-  private readonly lastPhasePublishedAt = new Map<AiRunPhase, number>();
 
-  private providerMessages: AiMessage[];
+  private providerMessages: RunPromptMessage[];
   private text = '';
   /** Text of earlier turns that were cut off at the output cap and picked up again. */
   private carriedText = '';
@@ -107,6 +105,8 @@ class RunExecution {
   private turnSawReasoning = false;
   /** Shows the person who asked what the model is thinking, live (ADR-087). */
   private readonly reasoning: ReasoningRelay;
+  /** Names a phase that streams no text, throttled per phase. */
+  private readonly phases: PhasePublisher;
   /** Whether the workspace's own key has paid for a turn of this run. */
   private readonly payer: OwnKeyPayer;
   /** Who answered the turn in flight (its `start`), so whose key a refusal hit (#225). */
@@ -118,6 +118,7 @@ class RunExecution {
     this.providerMessages = [...input.messages];
     this.runDeadline = Date.now() + input.timeouts.runBudgetMs;
     this.reasoning = new ReasoningRelay(reasoningPublisher(input));
+    this.phases = new PhasePublisher(input);
   }
 
   async execute(): Promise<RunOutcome> {
@@ -159,6 +160,7 @@ class RunExecution {
       // through `exo_toolbox` was offered more in its last turn than in its
       // first, and the larger number is the one that was paid for.
       toolContext: this.input.runner?.toolContext() ?? null,
+      imageInputs: imageInputCount(this.providerMessages),
     };
   }
 
@@ -187,6 +189,11 @@ class RunExecution {
       }
 
       if (turn.failure !== null) {
+        const described = describedAfterImageRefusal(turn, this.providerMessages, this.input);
+        if (described !== null) {
+          this.providerMessages = described;
+          continue;
+        }
         this.failure =
           turn.failure.code === AI_STREAM_INTERRUPTED
             ? {
@@ -269,13 +276,11 @@ class RunExecution {
     return true;
   }
 
-  private planFor(messages: readonly AiMessage[]): RoutePlan {
+  private planFor(messages: readonly RunPromptMessage[]): RoutePlan {
     const { routing, maxOutputTokens } = this.input;
     return planRoute({
       endpoints: routing.endpoints,
-      inputTokens: estimateConversationTokens(
-        messages.map((message) => ({ role: message.role, content: message.content })),
-      ),
+      inputTokens: estimateConversationTokens(messages),
       reservedOutputTokens: maxOutputTokens,
       usableSharePercent: routing.usableSharePercent,
       requiresTools: routing.requiresTools,
@@ -373,7 +378,7 @@ class RunExecution {
    * `turnTimeoutMs` aborts only itself, while an abort of the whole run
    * (budget, cancellation) still has to reach whichever turn is in flight.
    */
-  private async streamOneTurn(messages: readonly AiMessage[]): Promise<TurnResult> {
+  private async streamOneTurn(messages: readonly RunPromptMessage[]): Promise<TurnResult> {
     const { provider, bus, run, payload, timeouts, runner, toolsEnabled } = this.input;
     let text = '';
     let toolCalls: AiToolCall[] = [];
@@ -391,7 +396,7 @@ class RunExecution {
 
     // Ends whatever named silence came before it (a compaction, the
     // previous turn's thinking) and says a fresh answer is being asked for.
-    await this.publishPhase('generating');
+    await this.phases.publish('generating');
     // What the run's answer is worth right now: everything carried over
     // from a turn that was cut off at the output cap, and nothing else
     // until this turn produces its first delta.
@@ -439,7 +444,7 @@ class RunExecution {
             // The workspace hears that the model is thinking; only the
             // person who asked hears what (ADR-087).
             this.turnSawReasoning = true;
-            await this.publishPhase('reasoning');
+            await this.phases.publish('reasoning');
             await this.reasoning.push(event.text);
             break;
           case 'tool_calls':
@@ -553,7 +558,7 @@ class RunExecution {
       this.failure = budgetFailure(budgetMicroUsd);
       return false;
     }
-    await this.publishPhase('retrying');
+    await this.phases.publish('retrying');
     return true;
   }
 
@@ -768,28 +773,6 @@ class RunExecution {
       this.abortReason ??= 'cancelled';
       this.runController.abort();
     }
-  }
-
-  /**
-   * Names a phase that produces no text of its own, so a legitimate silence
-   * (three minutes of it are allowed by `ai.timeoutMs`) is distinguishable
-   * from a stall. Throttled per phase: reasoning arrives as a stream of tiny
-   * fragments, and repeating "still thinking" for each one says nothing the
-   * first one did not.
-   */
-  private async publishPhase(phase: AiRunPhase): Promise<void> {
-    const { bus, run, payload } = this.input;
-    const now = Date.now();
-    const previous = this.lastPhasePublishedAt.get(phase);
-    if (previous !== undefined && now - previous < AI_RUN_PHASE_MIN_INTERVAL_MS) return;
-    this.lastPhasePublishedAt.set(phase, now);
-    await bus.publish({
-      type: 'ai.run.phase',
-      workspaceId: run.workspaceId,
-      correlationId: payload.correlationId,
-      emittedAt: new Date().toISOString(),
-      payload: { runId: run.id, phase },
-    });
   }
 
   /**

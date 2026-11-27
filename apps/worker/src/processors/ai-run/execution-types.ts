@@ -1,6 +1,5 @@
 import { type AiProvider, type RoutingEndpoint } from '@exocortex/ai';
 import {
-  type AiMessage,
   type AiUsage,
   type deriveAiRunTimeouts,
   type ProviderRoutingOverride,
@@ -11,6 +10,7 @@ import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
+import { type RunPromptMessage } from './chat-images';
 import { type RunFailure } from './contract';
 import { type RunTimeline } from './timeline';
 
@@ -30,7 +30,7 @@ export interface RunRoutingInput {
   /** The smallest this prompt could be made; decides whether compacting is worth trying. */
   floorInputTokens: number;
   /** Compacts to the given budget and returns the rebuilt prompt. `null` when this run cannot compact. */
-  compact: ((budgetInputTokens: number) => Promise<AiMessage[]>) | null;
+  compact: ((budgetInputTokens: number) => Promise<RunPromptMessage[]>) | null;
   /** Called when the provider answered as a different model than the alias last resolved to. */
   onAliasDrift: ((actualModel: string) => void) | null;
   /** The agent profile's routing keys (issue #143), sent with every request. */
@@ -52,7 +52,8 @@ export interface RunExecutionInput {
   maxOutputTokens: number;
   maxToolIterations: number;
   budgetMicroUsd: number;
-  messages: AiMessage[];
+  /** The prompt, with chat pictures as pixels where the model sees them (ADR-097). */
+  messages: RunPromptMessage[];
   routing: RunRoutingInput;
   /**
    * Whether the workspace brought its own OpenRouter key (ADR-023). Whether it
@@ -73,4 +74,6 @@ export interface RunOutcome {
   toolCalls: number;
   /** What the run was offered and what that weighed (issue #121); `null` without tools. */
   toolContext: ToolContext | null;
+  /** Chat pictures sent as pixels in the last turn (ADR-097); 0 after falling back to descriptions. */
+  imageInputs: number;
 }

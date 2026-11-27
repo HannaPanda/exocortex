@@ -53,6 +53,7 @@
       "write_mode": "Mode d’écriture",
       "tool_offer": "Outils proposés",
       "images": "Descriptions d’images",
+      "chat_images": "Images du chat, envoyées en tant qu’images",
       "conversation_summary": "Résumé des messages précédents",
       "conversation_user": "Tes messages",
       "conversation_assistant": "Réponses précédentes",

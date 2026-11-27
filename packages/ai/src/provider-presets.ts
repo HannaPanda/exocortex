@@ -27,7 +27,9 @@ export interface ProviderPreset {
  * itself, about 145 tokens/s, cache reads reported and billed at the cache
  * price. Its terms allow scripts, apps and automation explicitly. A streamed
  * answer is plain OpenAI SSE with usage on request; an unstreamed one comes
- * wrapped in `{ "data": …, "success": true }`.
+ * wrapped in `{ "data": …, "success": true }`. Measured 2026-11-27 (issue
+ * #223): it takes a picture as an `image_url` data URI on a user message and
+ * read the word in it correctly.
  */
 const CLINE: ProviderPreset = {
   dialect: {
@@ -36,7 +38,7 @@ const CLINE: ProviderPreset = {
     keyName: 'CLINE_API_KEY',
     capabilities: {
       textGeneration: true,
-      vision: false,
+      vision: true,
       toolCalling: true,
       structuredOutput: true,
       streaming: true,

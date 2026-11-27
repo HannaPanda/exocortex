@@ -1,4 +1,5 @@
 import { type AiToolCall } from '@exocortex/ai';
+import { AI_RUN_PHASE_MIN_INTERVAL_MS, type AiRunPhase } from '@exocortex/contracts';
 
 import { type RunExecutionInput } from './execution-types';
 import { toolCallSubject } from './wire';
@@ -29,4 +30,32 @@ export async function publishToolCallEvent(
       subject: toolCallSubject(call.call.name, call.call.argumentsJson),
     },
   });
+}
+
+/**
+ * Names a phase that produces no text of its own, so a legitimate silence
+ * (three minutes of it are allowed by `ai.timeoutMs`) is distinguishable from
+ * a stall. Throttled per phase: reasoning arrives as a stream of tiny
+ * fragments, and repeating "still thinking" for each one says nothing the
+ * first one did not.
+ */
+export class PhasePublisher {
+  private readonly lastPublishedAt = new Map<AiRunPhase, number>();
+
+  constructor(private readonly input: Pick<RunExecutionInput, 'bus' | 'run' | 'payload'>) {}
+
+  async publish(phase: AiRunPhase): Promise<void> {
+    const { bus, run, payload } = this.input;
+    const now = Date.now();
+    const previous = this.lastPublishedAt.get(phase);
+    if (previous !== undefined && now - previous < AI_RUN_PHASE_MIN_INTERVAL_MS) return;
+    this.lastPublishedAt.set(phase, now);
+    await bus.publish({
+      type: 'ai.run.phase',
+      workspaceId: run.workspaceId,
+      correlationId: payload.correlationId,
+      emittedAt: new Date().toISOString(),
+      payload: { runId: run.id, phase },
+    });
+  }
 }

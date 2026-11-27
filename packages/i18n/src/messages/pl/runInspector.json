@@ -53,6 +53,7 @@
       "write_mode": "Tryb pisania",
       "tool_offer": "Dostępne narzędzia",
       "images": "Opisy obrazów",
+      "chat_images": "Obrazy z czatu, wysłane jako obraz",
       "conversation_summary": "Podsumowanie wcześniejszych wiadomości",
       "conversation_user": "Twoje wiadomości",
       "conversation_assistant": "Wcześniejsze odpowiedzi",

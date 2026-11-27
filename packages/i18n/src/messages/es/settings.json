@@ -99,6 +99,10 @@
         "label": "Imágenes por solicitud",
         "help": "Límite superior para la cantidad de imágenes descritas por ejecución."
       },
+      "sendImagesToModel": {
+        "label": "Enviar imágenes del chat directamente al modelo",
+        "help": "Activado: un modelo con capacidades visuales recibe las imágenes del chat como tales en cada respuesta mientras sigan en el historial. Es más preciso y cuesta más por respuesta. Desactivado: lee la descripción guardada como cualquier otro modelo. Las imágenes se describen en ambos casos, tanto para modelos sin visión como alternativa de reserva."
+      },
       "pageContextEnabled": {
         "label": "Incluir el texto de la página abierta",
         "help": "Desactivado: la IA solo conoce el título y la ruta de la página abierta y carga el texto ella misma si una pregunta lo necesita. Activado: el texto se envía con cada pregunta, aunque no tenga nada que ver con ella. Necesario para modelos sin herramientas; de lo contrario, supone una salida adicional de datos hacia el proveedor."

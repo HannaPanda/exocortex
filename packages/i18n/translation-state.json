@@ -12301,8 +12301,8 @@
       "output": "1452fbbfacc6462e"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "9cc005a1f164db7d"
+      "source": "943f05d7d9f89a3e",
+      "output": "491b0ee896505234"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -16672,6 +16672,10 @@
       "source": "199124ef04ad5492",
       "output": "05c30a6db8a846d7"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "6ab23f02ed16cac6"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "2cf159378153ae8b"
@@ -18403,6 +18407,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "88145d88bd086b76"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "9dbe3815e294fc73"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "0cc332c509aca869"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -36799,8 +36811,8 @@
       "output": "8d671526ea770efe"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "b1fef014ac4517fb"
+      "source": "943f05d7d9f89a3e",
+      "output": "89cbf4e16e75ab40"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -41170,6 +41182,10 @@
       "source": "199124ef04ad5492",
       "output": "071c1966251a8e80"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "f0fb421b16d1dd5f"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "dadee99b599ce221"
@@ -42901,6 +42917,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "ec9514749d439064"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "0c80512c440c5508"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "43df492499aa375d"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -61297,8 +61321,8 @@
       "output": "59fc873c2f43aa6e"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "680720ff157be67e"
+      "source": "943f05d7d9f89a3e",
+      "output": "c7815ba4a2318477"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -65668,6 +65692,10 @@
       "source": "199124ef04ad5492",
       "output": "e55beb0891f24bd0"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "54cbc46f39579895"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "e2bc247ab8d53efd"
@@ -67399,6 +67427,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "49b58d8f9f87d287"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "e31f93e2b845552b"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "d7fe8c01cbea2cce"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -85795,8 +85831,8 @@
       "output": "2bcf26702545a172"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "a29e03ec396a0eb4"
+      "source": "943f05d7d9f89a3e",
+      "output": "8928eea4e87a752d"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -90166,6 +90202,10 @@
       "source": "199124ef04ad5492",
       "output": "d8349ab54acfa9fc"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "1a2884936fcaa2ad"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "5526112202db7976"
@@ -91897,6 +91937,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "1c435e1e8d4a5aeb"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "195c834d9942f5d2"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "3330de2275fe7ad7"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -110293,8 +110341,8 @@
       "output": "9ca5ea2c799ddb47"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "ce6d0c2fb3496e61"
+      "source": "943f05d7d9f89a3e",
+      "output": "599adeba8e47abec"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -114664,6 +114712,10 @@
       "source": "199124ef04ad5492",
       "output": "395cec63e1021626"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "b05ee11a7a6e4f5f"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "3d68291b938ad640"
@@ -116395,6 +116447,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "cd5c0d0f68a260ab"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "e6d2a1959f8dc456"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "bae31eecbf046b06"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -134791,8 +134851,8 @@
       "output": "fe4ac2a00eeb1731"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "26f159d07455dd48"
+      "source": "943f05d7d9f89a3e",
+      "output": "c82f7e229b79e9c7"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -139162,6 +139222,10 @@
       "source": "199124ef04ad5492",
       "output": "47bebef94fdeaa19"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "26bb399e09df8e75"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "25d170e98006c545"
@@ -140893,6 +140957,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "faafbf96a7abb829"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "2d8c2fdaa42c5f2a"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "709adfa1e320efa0"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -159289,8 +159361,8 @@
       "output": "9722f67aa09f074f"
     },
     "features.bilder-im-chat.details.p2": {
-      "source": "4d30f65de5639f67",
-      "output": "ba913b1805b76a55"
+      "source": "943f05d7d9f89a3e",
+      "output": "48337a6841b96d40"
     },
     "features.bilder-im-chat.details.p3": {
       "source": "ac7e82662e07c1f8",
@@ -163660,6 +163732,10 @@
       "source": "199124ef04ad5492",
       "output": "5f9b45ee3e3064ea"
     },
+    "runInspector.context.sections.chat_images": {
+      "source": "9985b08332fece42",
+      "output": "bbeea07254f56d8d"
+    },
     "runInspector.context.sections.closing": {
       "source": "fb9904803b200c61",
       "output": "ad3d48e991c5329f"
@@ -165391,6 +165467,14 @@
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
       "output": "1fbb8e94a939ee3c"
+    },
+    "settings.keys.ai.sendImagesToModel.help": {
+      "source": "594d4d0b1dac6f08",
+      "output": "87e7323157f82348"
+    },
+    "settings.keys.ai.sendImagesToModel.label": {
+      "source": "0498c785e9239666",
+      "output": "2f4b8ed70d7e31b1"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",

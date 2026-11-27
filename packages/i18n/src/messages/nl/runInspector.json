@@ -53,6 +53,7 @@
       "write_mode": "Schrijfmodus",
       "tool_offer": "Beschikbare tools",
       "images": "Afbeeldingsbeschrijvingen",
+      "chat_images": "Afbeeldingen uit de chat, verzonden als afbeelding",
       "conversation_summary": "Samenvatting van eerdere berichten",
       "conversation_user": "Je berichten",
       "conversation_assistant": "Eerdere antwoorden",

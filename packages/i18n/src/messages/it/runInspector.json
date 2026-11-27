@@ -53,6 +53,7 @@
       "write_mode": "Modalità di scrittura",
       "tool_offer": "Strumenti disponibili",
       "images": "Descrizioni delle immagini",
+      "chat_images": "Immagini della chat, inviate come immagine",
       "conversation_summary": "Riepilogo dei messaggi precedenti",
       "conversation_user": "I tuoi messaggi",
       "conversation_assistant": "Risposte precedenti",

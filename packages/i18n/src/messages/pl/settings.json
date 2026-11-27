@@ -99,6 +99,10 @@
         "label": "Obrazy na zapytanie",
         "help": "Górny limit liczby opisywanych obrazów na uruchomienie."
       },
+      "sendImagesToModel": {
+        "label": "Obrazy na czacie bezpośrednio do modelu",
+        "help": "Włączone: model obsługujący obrazy otrzymuje obraz z czatu w formie graficznej przy każdej odpowiedzi, dopóki znajduje się on w historii. Jest to dokładniejsze i kosztuje więcej przy każdej odpowiedzi. Wyłączone: model czyta zapisany opis, tak jak każdy inny model. Opis obrazu jest generowany w obu przypadkach – dla modeli bez obsługi obrazów oraz jako rozwiązanie zapasowe."
+      },
       "pageContextEnabled": {
         "label": "Dołączaj tekst otwartej strony",
         "help": "Wyłączone: SI otrzymuje tylko tytuł i ścieżkę otwartej strony i pobiera tekst samodzielnie, jeśli pytanie tego wymaga. Włączone: Tekst jest przesyłany przy każdym pytaniu, nawet jeśli nie ma z nim związku. Wymagane w przypadku modeli bez narzędzi, w przeciwnym razie powoduje dodatkowy transfer danych do dostawcy."

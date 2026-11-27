@@ -1,4 +1,8 @@
-import { CHARS_PER_TOKEN_ESTIMATE, estimateTokens } from '@exocortex/ai';
+import {
+  CHARS_PER_TOKEN_ESTIMATE,
+  estimateTokens,
+  IMAGE_INPUT_TOKEN_ESTIMATE,
+} from '@exocortex/ai';
 import {
   type AiMessage,
   type AiRunContextSection,
@@ -8,6 +12,8 @@ import {
 
 import { type PromptSection } from '../../system-prompt';
 import { type ToolContext } from '../../tool-runner';
+
+import { imageInputCount, type RunPromptMessage } from './chat-images';
 
 const CONVERSATION_SECTION: Record<AiMessage['role'], AiRunContextSectionKey> = {
   system: 'conversation_summary',
@@ -50,7 +56,7 @@ export function contextEvent(input: {
   notes: readonly RunNote[];
   imageContext: AiMessage | null;
   documentId: string | null;
-  conversation: readonly AiMessage[];
+  conversation: readonly RunPromptMessage[];
   tools: ToolContext | null;
 }): AiRunEventData {
   const sections: AiRunContextSection[] = input.promptSections.map((section) =>
@@ -94,6 +100,20 @@ export function contextEvent(input: {
     sections.push(measured(key, entry.text, { items: entry.items }));
   }
 
+  // Pictures that go as pixels have no characters, only tokens, and those
+  // are an estimate until the provider reports the turn (ADR-097).
+  const pictures = imageInputCount(input.conversation);
+  if (pictures > 0) {
+    sections.push({
+      key: 'chat_images',
+      chars: 0,
+      estimatedTokens: pictures * IMAGE_INPUT_TOKEN_ESTIMATE,
+      items: pictures,
+      truncated: false,
+      sources: [],
+    });
+  }
+
   if (input.tools !== null && input.tools.schemaChars > 0) {
     sections.push({
       key: 'tool_schemas',
@@ -105,5 +125,10 @@ export function contextEvent(input: {
     });
   }
 
-  return { kind: 'context', data: { sections: sections.filter((section) => section.chars > 0) } };
+  return {
+    kind: 'context',
+    data: {
+      sections: sections.filter((section) => section.chars > 0 || section.estimatedTokens > 0),
+    },
+  };
 }
