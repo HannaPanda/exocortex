@@ -30,6 +30,7 @@ import {
   DatePickerExample,
   InputTypesExample,
   ProviderRoutingEditorExample,
+  TimeInputExample,
   TimeZonePickerExample,
 } from './input-types';
 
@@ -203,6 +204,7 @@ export function FormsSection() {
       <InputTypesExample />
 
       <DatePickerExample />
+      <TimeInputExample />
       <TimeZonePickerExample />
       <ProviderRoutingEditorExample />
 

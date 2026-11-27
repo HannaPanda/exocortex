@@ -2,13 +2,15 @@
 
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
-import { useFormatter, useTranslations } from 'use-intl';
+import { useFormatter, useLocale, useTranslations } from 'use-intl';
 
+import { formatTimeOfDay } from '../lib/time-of-day';
 import { cn } from '../lib/utils';
 
+import { useHourCycle } from './hour-cycle';
+import { TimeInput } from './time-input';
 import { Button } from './ui/button';
 import { Calendar } from './ui/calendar';
-import { Input } from './ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 /**
@@ -213,9 +215,10 @@ export interface DateTimePickerProps extends Omit<DatePickerProps, 'value' | 'on
 }
 
 /**
- * A day and a time: the picker above, and the browser's time field beside it.
- * The time stays native because it is typed, not browsed, and it is disabled
- * until there is a day for it to belong to.
+ * A day and a time: the picker above, and `TimeInput` beside it. The time is
+ * typed rather than browsed, and written on the reader's clock rather than
+ * the operating system's (issue #255); it is disabled until there is a day
+ * for it to belong to.
  */
 export function DateTimePicker({
   value,
@@ -231,6 +234,8 @@ export function DateTimePicker({
   ...rest
 }: DateTimePickerProps) {
   const t = useTranslations('ui.datePicker');
+  const locale = useLocale();
+  const cycle = useHourCycle();
   const [day = null, time = null] = value === null ? [] : value.split('T');
   const timeLabel = ariaLabel === undefined ? t('time') : t('labelledTime', { label: ariaLabel });
 
@@ -238,7 +243,7 @@ export function DateTimePicker({
     return (
       <span className={cn('flex items-center gap-1 text-sm', className)}>
         <DatePicker value={day} onChange={() => undefined} readOnly />
-        {time}
+        {formatTimeOfDay(time, locale, cycle)}
       </span>
     );
   }
@@ -255,22 +260,15 @@ export function DateTimePicker({
         data-testid={testId}
         onChange={(next) => onChange(next === null ? null : `${next}T${time ?? defaultTime}`)}
       />
-      <Input
-        type="time"
+      <TimeInput
         aria-label={timeLabel}
         disabled={disabled === true || day === null}
-        value={time ?? ''}
+        value={time}
+        size={size}
+        variant={variant}
         data-testid={testId === undefined ? undefined : `${testId}-time`}
-        className={cn(
-          'w-auto shrink-0 tabular-nums',
-          size === 'sm' && 'h-8',
-          variant === 'ghost' &&
-            'border-transparent bg-transparent px-1.5 shadow-none hover:border-input',
-        )}
-        onChange={(event) => {
-          if (day !== null && event.target.value.length > 0) {
-            onChange(`${day}T${event.target.value}`);
-          }
+        onChange={(next) => {
+          if (day !== null && next !== null) onChange(`${day}T${next}`);
         }}
       />
     </div>

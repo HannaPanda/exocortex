@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { DatePicker, DateTimePicker, Input, Label } from '@exocortex/ui';
+import { DatePicker, DateTimePicker, Input, Label, TimeInput } from '@exocortex/ui';
 
 import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
 import { TimeZonePicker } from '@/components/time-zone-picker';
@@ -13,11 +13,13 @@ import { DsExample, DsState, DsStates } from '../showcase';
 /**
  * Every `type` the product gives an `<input>`, drawn through the same `Input`.
  *
- * The browser owns most of what these look like: the date and time pickers,
- * the spin buttons of a number, the reveal of a password. What the product
- * owns is the frame around them, and `color-scheme: dark` in `tokens.css`,
- * which is what turns the native popups dark. A date is not among them: since
- * 2026-09-24 it is `DatePicker`, drawn in its own example below. The file
+ * The browser owns most of what these look like: the spin buttons of a
+ * number, the reveal of a password. What the product owns is the frame around
+ * them, and `color-scheme: dark` in `tokens.css`, which is what turns the
+ * native popups dark. A date is not among them: since 2026-09-24 it is
+ * `DatePicker`, drawn in its own example below, and since issue #255 a time
+ * is `TimeInput`, because the browser's time field follows the operating
+ * system rather than the reader's language and clock. The file
  * inputs are left out on purpose: the product never shows one, every upload is
  * a button that opens a hidden input.
  */
@@ -37,12 +39,6 @@ const INPUT_TYPES: readonly InputType[] = [
     label: 'Zahl',
     usedIn: 'Datenbankzellen, Einstellungen, Modelle',
     value: '2400',
-  },
-  {
-    type: 'time',
-    label: 'Uhrzeit',
-    usedIn: 'Zeitpläne, und neben dem Tag im DateTimePicker',
-    value: '07:30',
   },
   {
     type: 'email',
@@ -72,7 +68,7 @@ export function InputTypesExample() {
       id="feld-typen"
       title="Eingabetypen"
       source="packages/ui/src/components/ui/input.tsx"
-      note="Alle Typen, die die Anwendung einem Feld gibt. Den Aufklapper der Uhrzeit, die Pfeile der Zahl und das Auge am Passwort zeichnet der Browser; dunkel sind sie über color-scheme, amber über accent-color. Ein Datum ist kein Feld des Browsers mehr, sondern der Datumswähler darunter. Dateifelder zeigt die Anwendung nie, jeder Upload ist ein Knopf."
+      note="Alle Typen, die die Anwendung einem Feld gibt. Die Pfeile der Zahl und das Auge am Passwort zeichnet der Browser; dunkel sind sie über color-scheme, amber über accent-color. Datum und Uhrzeit sind keine Felder des Browsers mehr, sondern der Datumswähler und das Uhrzeitfeld darunter. Dateifelder zeigt die Anwendung nie, jeder Upload ist ein Knopf."
     >
       <div className="grid gap-6 sm:grid-cols-2">
         {INPUT_TYPES.map((entry) => {
@@ -162,6 +158,68 @@ export function DatePickerExample() {
             variant="ghost"
             size="sm"
             aria-label="Zelle Datum"
+          />
+        </DsState>
+      </DsStates>
+    </DsExample>
+  );
+}
+
+/**
+ * `TimeInput`, the one way a time of day is entered (issue #255): a typed
+ * field on the reader's clock. Both clocks are drawn side by side, because
+ * the account chooses between them and the language decides when it did not.
+ */
+export function TimeInputExample() {
+  const [h24, setH24] = React.useState<string | null>('14:30');
+  const [h12, setH12] = React.useState<string | null>('14:30');
+  const [empty, setEmpty] = React.useState<string | null>(null);
+  const [cell, setCell] = React.useState<string | null>('09:00');
+  return (
+    <DsExample
+      id="feld-uhrzeit"
+      title="Uhrzeit"
+      source="packages/ui/src/components/time-input.tsx"
+      note="Ein Textfeld auf der Uhr der lesenden Person: 24 oder 12 Stunden nach ihrer Einstellung, sonst wie ihre Sprache. Getippt wird frei (14:30, 1430, 2:30 pm, 9), übernommen beim Verlassen oder mit Enter; was keine Uhrzeit ist, setzt den alten Wert zurück, Escape ebenso. Pfeil hoch und runter springen um eine Viertelstunde, mit Umschalt um eine Stunde."
+    >
+      <DsStates>
+        <DsState label="24 Stunden">
+          <TimeInput value={h24} onChange={setH24} hourCycle="h23" aria-label="Beginn" />
+        </DsState>
+        <DsState label="12 Stunden">
+          <TimeInput
+            value={h12}
+            onChange={setH12}
+            hourCycle="h12"
+            aria-label="Beginn, 12 Stunden"
+          />
+        </DsState>
+        <DsState label="Leer, entfernbar">
+          <TimeInput
+            value={empty}
+            onChange={setEmpty}
+            clearable
+            hourCycle="h23"
+            aria-label="Erinnern um"
+          />
+        </DsState>
+        <DsState label="Deaktiviert">
+          <TimeInput
+            value="07:30"
+            onChange={() => undefined}
+            disabled
+            hourCycle="h23"
+            aria-label="Täglich um"
+          />
+        </DsState>
+        <DsState label="In der Tabelle · ghost, sm">
+          <TimeInput
+            value={cell}
+            onChange={setCell}
+            variant="ghost"
+            size="sm"
+            hourCycle="h23"
+            aria-label="Zelle Uhrzeit"
           />
         </DsState>
       </DsStates>

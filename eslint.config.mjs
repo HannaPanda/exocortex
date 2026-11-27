@@ -186,14 +186,16 @@ export default [
       // components, and that is the point: it is what says so.
       'react/no-deprecated': 'error',
       '@next/next/no-location-assign-relative-destination': 'error',
-      // A date is entered with `DatePicker` (decided 2026-09-24). Only the
-      // literal form is caught; a computed `type` is rare enough to review.
+      // A date is entered with `DatePicker` (decided 2026-09-24), a time with
+      // `TimeInput` (issue #255: the native field follows the operating system,
+      // not the reader's language and clock). Only the literal form is caught;
+      // a computed `type` is rare enough to review.
       'no-restricted-syntax': [
         'error',
         {
-          selector: "JSXAttribute[name.name='type'][value.value=/^(?:date|datetime-local)$/]",
+          selector: "JSXAttribute[name.name='type'][value.value=/^(?:date|datetime-local|time)$/]",
           message:
-            'A date is entered with DatePicker or DateTimePicker from @exocortex/ui, not a native date field (DESIGN.md §5, "Inputs / Fields").',
+            'A date is entered with DatePicker or DateTimePicker, a time with TimeInput, all from @exocortex/ui, not a native field (DESIGN.md §5, "Inputs / Fields").',
         },
       ],
     },

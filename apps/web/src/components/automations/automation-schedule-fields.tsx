@@ -13,6 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  TimeInput,
 } from '@exocortex/ui';
 
 import { TimeZonePicker } from '@/components/time-zone-picker';
@@ -131,13 +132,11 @@ export function AutomationScheduleFields({
       {kind === 'DAILY' || kind === 'WEEKLY' || kind === 'MONTHLY' ? (
         <div className="flex flex-col gap-2">
           <Label htmlFor="automation-schedule-time">{t('time')}</Label>
-          <Input
+          <TimeInput
             id="automation-schedule-time"
             data-testid="automation-schedule-time"
-            type="time"
-            value={draft.scheduleTime}
-            onChange={(event) => onChange({ scheduleTime: event.target.value })}
-            className="max-w-32"
+            value={draft.scheduleTime === '' ? null : draft.scheduleTime}
+            onChange={(scheduleTime) => onChange({ scheduleTime: scheduleTime ?? '' })}
           />
         </div>
       ) : null}
