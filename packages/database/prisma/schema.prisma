@@ -90,6 +90,7 @@ model User {
   createdSnapshots            DocumentSnapshot[]
   createdAttachments          Attachment[]
   correctedAttachmentTexts    Attachment[]               @relation("AttachmentTextCorrectedBy")
+  databasePropertyAiWrites    DatabasePropertyAi[]       @relation("DatabasePropertyAiUpdatedBy")
   auditEntries                AuditLog[]
   aiRuns                      AiRun[]
   apiTokens                   ApiToken[]
@@ -1046,6 +1047,9 @@ model Document {
   databaseViews           DatabaseView[]            @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
   propertyValues          DocumentPropertyValue[]   @relation("RowPropertyValues")
+  /// AI fills of this database's columns, and of this row's cells (issue #237).
+  aiFillRuns              DatabaseAiFillRun[]       @relation("DatabaseAiFillRuns")
+  aiFillCells             DatabaseAiFillCell[]      @relation("DatabaseAiFillCells")
   /// Page a conversation was opened from. Context only.
   aiConversations         AiConversation[]          @relation("AiConversationDocument")
   /// Conversations that pinned this page as a context source (issue #75).
@@ -1565,10 +1569,150 @@ model DatabaseProperty {
 
   options DatabasePropertyOption[]
   values  DocumentPropertyValue[]
+  /// The column's AI instruction, when it has one (issue #237, ADR-099).
+  ai      DatabasePropertyAi?
+  aiFills DatabaseAiFillRun[]
+  aiCells DatabaseAiFillCell[]
 
   @@unique([documentId, name])
   @@index([documentId, orderKey])
   @@map("database_property")
+}
+
+/// What a column's AI fill asks of the model (issue #237).
+enum DatabaseAiFillPreset {
+  SUMMARY
+  KEY_POINTS
+  TAGS
+  TRANSLATE
+  DOCUMENT_DATE
+  SENDER
+  RECIPIENT
+  CUSTOM
+}
+
+/// When a column fills itself without anybody asking (issue #237). Off by
+/// default: a run nobody started has to be a decision somebody made.
+enum DatabaseAiAutoFill {
+  OFF
+  /// When a row is created.
+  ON_CREATE
+  /// When a row is created and whenever its text changes afterwards.
+  ON_CHANGE
+}
+
+/// Which cells a batch may write (issue #237). Nothing overwrites a value
+/// without saying so in the request that started it.
+enum DatabaseAiFillMode {
+  /// Only cells without a value.
+  EMPTY_ONLY
+  /// Empty cells and cells whose value an AI fill wrote and nobody changed.
+  REPLACE_AI
+  /// Every cell, a person's value included.
+  REPLACE_ALL
+}
+
+enum DatabaseAiFillOrigin {
+  /// A person or an agent asked for it.
+  MANUAL
+  /// The column's own `autoFill`, from a row being created or edited.
+  AUTOMATIC
+}
+
+enum DatabaseAiFillCellStatus {
+  QUEUED
+  RUNNING
+  FILLED
+  /// The model found nothing to put in the cell; nothing was written.
+  EMPTY
+  /// The cell was not written: it had a value the mode may not replace.
+  SKIPPED
+  FAILED
+  CANCELLED
+}
+
+/// A column's AI instruction (issue #237, ADR-099). Columns rather than a key
+/// in `DatabaseProperty.config`, because that bag is replaced whole by every
+/// config write and a DATE column's editor would drop the instruction with it.
+model DatabasePropertyAi {
+  propertyId      String               @id
+  property        DatabaseProperty     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  preset          DatabaseAiFillPreset
+  /// The whole instruction for CUSTOM; for a preset, what is added to it.
+  instruction     String?
+  /// TRANSLATE only: the language to translate into, in the person's words.
+  targetLanguage  String?
+  /// SELECT and MULTI_SELECT only: whether an answer may add an option.
+  allowNewOptions Boolean              @default(false)
+  useContent      Boolean              @default(true)
+  useProperties   Boolean              @default(true)
+  useAttachments  Boolean              @default(true)
+  autoFill        DatabaseAiAutoFill   @default(OFF)
+  /// Who wrote the instruction last. An automatic fill runs as this account,
+  /// the way an automation runs as its owner: it reads what they may read.
+  updatedById     String?
+  updatedBy       User?                @relation("DatabasePropertyAiUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@map("database_property_ai")
+}
+
+/// What one run of kind FILL fills, and the instruction it was started with
+/// (issue #237). A copy rather than a pointer at `database_property_ai`, so an
+/// instruction edited while the batch runs does not change it halfway.
+model DatabaseAiFillRun {
+  aiRunId         String               @id
+  aiRun           AiRun                @relation(fields: [aiRunId], references: [id], onDelete: Cascade)
+  databaseId      String
+  database        Document             @relation("DatabaseAiFillRuns", fields: [databaseId], references: [id], onDelete: Cascade)
+  propertyId      String
+  property        DatabaseProperty     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  mode            DatabaseAiFillMode
+  origin          DatabaseAiFillOrigin @default(MANUAL)
+  preset          DatabaseAiFillPreset
+  instruction     String?
+  targetLanguage  String?
+  allowNewOptions Boolean
+  useContent      Boolean
+  useProperties   Boolean
+  useAttachments  Boolean
+  createdAt       DateTime             @default(now())
+
+  cells DatabaseAiFillCell[]
+
+  @@index([databaseId, createdAt])
+  @@index([propertyId])
+  @@map("database_ai_fill_run")
+}
+
+/// One cell of one batch (issue #237): what was asked of it and how it ended.
+/// The latest one per row and column is what a cell shows as pending or failed;
+/// a value an AI fill wrote is marked on the value itself (`aiRunId`).
+model DatabaseAiFillCell {
+  id              String                   @id @default(cuid(2))
+  aiRunId         String
+  run             DatabaseAiFillRun        @relation(fields: [aiRunId], references: [aiRunId], onDelete: Cascade)
+  rowId           String
+  row             Document                 @relation("DatabaseAiFillCells", fields: [rowId], references: [id], onDelete: Cascade)
+  propertyId      String
+  property        DatabaseProperty         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  /// The order the batch works through, from the request.
+  position        Int
+  status          DatabaseAiFillCellStatus @default(QUEUED)
+  /// Why the cell failed or was skipped: one of `AI_FILL_CELL_ERROR_CODES`.
+  errorCode       String?
+  /// Whether everything the model read for this cell was trusted (ADR-096):
+  /// only then may an answer add an option. Null until the material was read.
+  materialTrusted Boolean?
+  createdAt       DateTime                 @default(now())
+  startedAt       DateTime?
+  finishedAt      DateTime?
+
+  @@index([aiRunId, position])
+  @@index([rowId, propertyId, createdAt])
+  @@index([propertyId])
+  @@map("database_ai_fill_cell")
 }
 
 model DatabasePropertyOption {
@@ -1645,6 +1789,11 @@ model DocumentPropertyValue {
   /// Arrays only: MULTI_SELECT (option ids), PERSON (user ids), FILES
   /// (attachment ids). Never used for the scalar types above.
   jsonValue    Json?
+  /// The AI fill that wrote this value (issue #237, ADR-099), cleared by any
+  /// other write: what marks a cell as a model's answer rather than a
+  /// person's. A plain id like `attachment.propertyId`, not a relation: the
+  /// mark says where the value came from and needs no cascade.
+  aiRunId      String?
 
   updatedAt DateTime @updatedAt
 
@@ -1797,7 +1946,7 @@ model Attachment {
   /// sweep collects such a file once no value of that column names it any
   /// more. A plain column, not a relation, so the mark outlives a deleted
   /// column, which is exactly when its files have to go.
-  propertyId     String?
+  propertyId String?
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -2251,6 +2400,9 @@ enum AiRunStatus {
 enum AiRunKind {
   CHAT
   IMAGE
+  /// One batch of database cells filled by a column's AI instruction (issue
+  /// #237, ADR-099): one row per batch, its cells in `database_ai_fill_cell`.
+  FILL
 }
 
 model AiRun {
@@ -2403,6 +2555,8 @@ model AiRun {
   evalAttemptId          String?
   evalAttempt            EvalAttempt?            @relation("EvalAttemptRun")
   workflowNodeExecutions WorkflowNodeExecution[]
+  /// What a run of kind FILL fills (issue #237).
+  aiFill                 DatabaseAiFillRun?
 
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
