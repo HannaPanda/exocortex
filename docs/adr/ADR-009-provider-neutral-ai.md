@@ -1,6 +1,7 @@
 # ADR-009: Provider-neutral AI architecture
 
-- Status: accepted
+- Status: accepted; amended by ADR-097 (a chat picture goes as pixels to a model
+  that sees)
 - Date: 2026-08-04
 
 ## Context

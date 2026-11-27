@@ -1,6 +1,7 @@
 # ADR-095: A chat picture belongs to its conversation and is described once
 
-- Status: accepted
+- Status: accepted, amended by ADR-096 (own uploads) and ADR-097 (pixels for a
+  model that sees)
 - Date: 2026-11-27
 - Relates to: ADR-009 and ADR-012 (the loop stays text, pictures arrive as a
   description), ADR-030 (foreign content closes writing), ADR-064 and ADR-088

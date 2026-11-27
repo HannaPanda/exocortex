@@ -137,6 +137,26 @@ screened right after it is written. The cap
 for one message is `ai.visionMaxImagesPerRun`. A compaction summary is built
 from message text and does not carry the descriptions.
 
+A model whose row has `supportsVision` gets the pictures themselves
+([ADR-097](adr/ADR-097-a-model-that-sees-gets-the-chat-picture-itself.md)),
+while `ai.sendImagesToModel` is on (the default). `ChatImagePixels`
+(`apps/worker/src/processors/ai-run/chat-images.ts`) reads the newest
+`ai.visionMaxImagesPerRun` pictures of the active transcript from storage,
+scales them like `exo_attachment_read_image` does, and keeps them for the run;
+`loadConversationMessages` puts them on their user message as
+`AiPromptMessage.images`, which `ChatCompletionsProvider` sends as `image_url`
+parts after the text, on every turn the message is in the context. The note
+in front of the message then says the picture is in the message itself, and
+carries the described form in `withoutImages`. A turn refused with 400, 404,
+413, 415 or 422 before any answer while it carried pixels is asked once more
+with the descriptions (`withoutImages`), because the endpoint snapshot does
+not say which provider takes images. Pictures are still described and
+screened first: the description is what a text-only model, a compaction, the
+fallback and the trust decision read. `ai_run.imageInputs` counts the
+pictures the answering turn carried, and the inspector's context names them
+as `chat_images` with an estimate of 1600 tokens each
+(`IMAGE_INPUT_TOKEN_ESTIMATE`), which the route planner counts as well.
+
 ### Pictures a tool returns
 
 `exo_attachment_read_image` answers an MCP client with an `image` content
@@ -150,7 +170,8 @@ The describer comes from `resolveToolImageDescriber`
 row names, and nobody when `ai.visionEnabled` is off or the companion is
 switched off. Nobody to ask turns the call into an error that says so. Unlike
 the page images above, a model that sees images is used here rather than
-skipped, because the main path still sends text only.
+skipped, because a tool result is text: only a picture on a chat message goes
+as pixels (ADR-097).
 
 ## Image generation (page covers)
 

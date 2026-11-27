@@ -936,8 +936,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   capped by `ai.visionMaxImagesPerRun`. The first run that sees it stores a
   vision description on the row, and every turn reads that text fenced as
   attachment content, which closes writing like the page's pictures unless
-  ADR-096 trusts it; the loop stays text. Deleting the chat deletes the
-  objects, and an unsent picture is collected after a day.
+  ADR-096 trusts it; a model that sees gets the pixels too (ADR-097).
+  Deleting the chat deletes the objects, and an unsent picture is collected
+  after a day.
 - ADR-096: a person's own upload, screened clean, does not close writing.
   `attachmentTrustFor` trusts a file only for the reader who uploaded it, when
   nobody else corrected it, it was not fetched from the web and its
@@ -948,6 +949,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   goes. The tool runner learns it from the API's `trust` answer
   (`ownScreenedSource`), never from arguments or text. Page pictures described
   per run stay foreign.
+- ADR-097: a model that sees gets the chat picture itself. `AiPromptMessage`
+  adds request-only `images` to a user message, sent as `image_url` parts;
+  `AiMessage` and everything stored stay text. Pixels go when
+  `ai.sendImagesToModel` is on, the row has `supportsVision` and the run has a
+  conversation, for the newest `ai.visionMaxImagesPerRun` pictures on every
+  turn they are in the context. Pictures are still described and screened
+  first; a turn refused with a request error before answering is resent with
+  the descriptions, because endpoints do not say who takes images.
+  `ai_run.imageInputs` counts what the answering turn carried.
 
 Full list: `docs/adr/`.
 
