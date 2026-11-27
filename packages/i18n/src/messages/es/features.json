@@ -83,10 +83,10 @@
   },
   "zeile-nach-dem-letzten-block": {
     "title": "Seguir escribiendo después del último bloque",
-    "summary": "Si una página termina con una imagen, una tabla, un bloque de código, una base de datos o un PDF, queda una línea vacía debajo. Al hacer clic en ella o pulsar Flecha abajo al final de la página, se crea un párrafo allí y puedes seguir escribiendo sin más.",
+    "summary": "Si una página termina con una imagen, una tabla, un bloque de código, una base de datos, un PDF, un encabezado o un párrafo con texto o enlace, queda una línea vacía debajo. Haz clic en ella o pulsa Flecha abajo al final de la página para crear allí un párrafo y seguir escribiendo sin complicaciones.",
     "details": {
-      "p1": "Haz clic debajo del último bloque de la página. El cursor se situará en una nueva línea vacía. Con el teclado funciona igual: selecciona una imagen o un elemento incrustado al final de la página, sitúate en la última línea de un bloque de código o en la última fila de una tabla, y luego pulsa Flecha abajo.",
-      "p2": "La línea solo se crea cuando la usas. El simple hecho de abrir una página no escribe nada en ella y, si la página ya termina con un párrafo, no se añade una segunda línea vacía. Si encima de la imagen hay una lista con viñetas, la nueva línea ofrece continuarla con Tabulador como de costumbre."
+      "p1": "Haz clic debajo del último bloque de la página. El cursor se situará en una nueva línea vacía. Con el teclado funciona igual: selecciona una imagen o incrustación al final de la página, la última línea de un bloque de código, la última fila de una tabla o el final del último párrafo, y pulsa Flecha abajo.",
+      "p2": "La línea solo se crea cuando la usas. El simple hecho de abrir una página no escribe nada en ella, y si la página ya termina con una línea vacía, no se añade una segunda. Si encima de la imagen hay una lista, la nueva línea te permite continuarla con Tab como de costumbre."
     },
     "where": "En el editor, haz clic debajo del último bloque de la página o pulsa Flecha abajo al final de la página."
   },

@@ -83,10 +83,10 @@
   },
   "zeile-nach-dem-letzten-block": {
     "title": "Pisanie po ostatnim bloku",
-    "summary": "Gdy strona kończy się obrazem, tabelą, blokiem kodu, bazą danych lub plikiem PDF, poniżej pozostaje pusty wiersz. Kliknięcie w niego lub naciśnięcie Strzałki w dół na końcu strony tworzy tam akapit, dzięki czemu możesz po prostu pisać dalej.",
+    "summary": "Gdy strona kończy się obrazem, tabelą, blokiem kodu, bazą danych, plikiem PDF, nagłówkiem lub akapitem z tekstem albo linkiem, poniżej pozostaje pusty wiersz. Kliknięcie w niego lub naciśnięcie strzałki w dół na końcu strony tworzy tam akapit, dzięki czemu możesz po prostu pisać dalej.",
     "details": {
-      "p1": "Kliknij pod ostatnim blokiem strony. Kursor znajdzie się wtedy w nowym, pustym wierszu. Z klawiatury działa to tak samo: zaznaczony obraz lub osadzony element na końcu strony, ostatni wiersz bloku kodu lub ostatni wiersz tabeli, a potem Strzałka w dół.",
-      "p2": "Wiersz ten powstaje dopiero wtedy, gdy go użyjesz. Samo otwarcie strony nic do niej nie dopisuje, a jeśli strona już kończy się akapitem, nie pojawi się żaden drugi pusty wiersz. Jeśli nad obrazem znajduje się lista wypunktowana, nowy wiersz jak zwykle umożliwia kontynuowanie jej za pomocą klawisza Tab."
+      "p1": "Kliknij pod ostatnim blokiem strony. Kursor ustawi się wtedy w nowym, pustym wierszu. Z klawiatury działa to tak samo: zaznaczony obraz lub osadzenie na końcu strony, ostatni wiersz bloku kodu, ostatni wiersz tabeli lub koniec ostatniego akapitu, a potem strzałka w dół.",
+      "p2": "Wiersz pojawia się dopiero wtedy, gdy go użyjesz. Samo otwarcie strony nic w niej nie zapisuje, a jeśli strona kończy się już pustym wierszem, nie pojawi się kolejny. Jeśli nad obrazem znajduje się lista wypunktowana, nowy wiersz jak zwykle umożliwia jej kontynuowanie za pomocą klawisza Tab."
     },
     "where": "W edytorze kliknij pod ostatnim blokiem strony lub naciśnij Strzałkę w dół na końcu strony."
   },

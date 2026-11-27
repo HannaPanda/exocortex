@@ -83,10 +83,10 @@
   },
   "zeile-nach-dem-letzten-block": {
     "title": "Continuar escrevendo após o último bloco",
-    "summary": "Se uma página terminar com uma imagem, tabela, bloco de código, banco de dados ou PDF, uma linha vazia ficará disponível abaixo. Um clique nela ou a seta para baixo no final da página cria um parágrafo ali, e você pode simplesmente continuar escrevendo.",
+    "summary": "Se uma página terminar com uma imagem, tabela, bloco de código, banco de dados, PDF, título ou parágrafo com texto ou link, uma linha em branco permanecerá livre abaixo. Um clique nela ou a tecla Seta para baixo no final da página cria um parágrafo ali, e você pode simplesmente continuar escrevendo.",
     "details": {
-      "p1": "Clique abaixo do último bloco da página. O cursor ficará então em uma linha nova e vazia. Pelo teclado funciona do mesmo jeito: com uma imagem ou incorporação selecionada no final da página, na última linha de um bloco de código ou na última linha de uma tabela, basta pressionar a seta para baixo.",
-      "p2": "A linha só é criada quando você a utiliza. Apenas abrir uma página não insere nada nela, e se a página já terminar com um parágrafo, nenhuma segunda linha vazia será adicionada. Se houver uma lista acima da imagem, a nova linha permitirá continuá-la usando Tab, como de costume."
+      "p1": "Clique abaixo do último bloco da página. O cursor ficará então em uma linha nova e vazia. Funciona da mesma forma pelo teclado: com uma imagem selecionada ou uma incorporação no final da página, na última linha de um bloco de código, na última linha de uma tabela ou no final do último parágrafo, basta pressionar Seta para baixo.",
+      "p2": "A linha só é criada quando você a utiliza. Apenas abrir uma página não escreve nada nela e, se a página já terminar com uma linha em branco, nenhuma segunda linha será adicionada. Se houver uma lista acima da imagem, a nova linha permitirá continuar essa lista usando Tab, como de costume."
     },
     "where": "No editor, clique abaixo do último bloco da página ou pressione a seta para baixo no final da página."
   },

@@ -83,10 +83,10 @@
   },
   "zeile-nach-dem-letzten-block": {
     "title": "Keep writing after the last block",
-    "summary": "If a page ends with an image, a table, a code block, a database, or a PDF, an empty line remains below it. Clicking into it or pressing Down Arrow at the end of the page creates a paragraph there, and you simply keep writing.",
+    "summary": "If a page ends with an image, table, code block, database, PDF, heading, or a paragraph with text or a link, an empty line remains free below it. Clicking into it or pressing Down arrow at the end of the page creates a paragraph there, and you can just keep writing.",
     "details": {
-      "p1": "Click below the last block on the page. The cursor then sits in a new, empty line. It works just the same with the keyboard: select an image or an embed at the end of the page, the last line of a code block, or the last table row, then press Down Arrow.",
-      "p2": "The line is only created once you use it. Simply opening a page writes nothing into it, and if the page already ends with a paragraph, no second empty line is added. If there is a list above the image, the new line offers to continue it with Tab as usual."
+      "p1": "Click below the last block on the page. The cursor then sits in a new, empty line. It works just the same with the keyboard: a selected image or embed at the bottom of the page, the last line of a code block, the last table row, or the end of the last paragraph, then Down arrow.",
+      "p2": "The line is only created once you use it. Simply opening a page does not write anything into it, and if the page already ends with an empty line, a second one is not added. If there is a list above the image, the new line offers to continue it with Tab as usual."
     },
     "where": "In the editor, click below the last block on the page, or press Down Arrow at the end of the page."
   },

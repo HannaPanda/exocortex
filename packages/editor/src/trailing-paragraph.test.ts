@@ -14,8 +14,8 @@ import {
 import { YJS_DOCUMENT_FIELD } from './yjs';
 
 /**
- * Issue #257: below a last block that is not a paragraph there is a line to
- * write in. It is drawn, not stored, and the paragraph is made on use: a click
+ * Issues #257 and #303: below a last block that is not an empty paragraph
+ * there is a line to write in. It is drawn, not stored, and the paragraph is made on use: a click
  * below the block or arrow down from the bottom of the page. What only a
  * browser proves (the space is there, the real click and key) is in
  * `e2e/tests/editor.spec.ts`.
@@ -76,11 +76,22 @@ describe('needsTrailingParagraph', () => {
       needsTrailingParagraph(createEditor('<table><tr><td>a</td></tr></table>').state.doc),
     ).toBe(true);
     expect(needsTrailingParagraph(createEditor('<ul><li>Punkt</li></ul>').state.doc)).toBe(true);
+    expect(needsTrailingParagraph(createEditor('<h2>Quellen</h2>').state.doc)).toBe(true);
   });
 
-  it('leaves a page alone that ends in a paragraph, empty or not', () => {
-    expect(needsTrailingParagraph(createEditor(`${IMAGE}<p>Text</p>`).state.doc)).toBe(false);
+  it('asks for it after a paragraph with something in it, a link included (#303)', () => {
+    expect(needsTrailingParagraph(createEditor(`${IMAGE}<p>Text</p>`).state.doc)).toBe(true);
+    expect(
+      needsTrailingParagraph(
+        createEditor('<h2>Quellen</h2><p><a href="https://example.org">https://example.org</a></p>')
+          .state.doc,
+      ),
+    ).toBe(true);
+  });
+
+  it('leaves a page alone that already ends in an empty paragraph', () => {
     expect(needsTrailingParagraph(createEditor(`${IMAGE}<p></p>`).state.doc)).toBe(false);
+    expect(needsTrailingParagraph(createEditor('<p>Text</p><p></p>').state.doc)).toBe(false);
   });
 });
 
@@ -196,10 +207,26 @@ describe('arrow down', () => {
     expect(arrowDownLeavesPage(editor.state, true)).toBe(false);
   });
 
-  it('never acts on a page that already ends in a paragraph', () => {
-    const editor = createEditor('<pre><code>x</code></pre><p>danach</p>');
-    caretAfter(editor, 'danach');
+  it('never acts on a page that already ends in an empty paragraph', () => {
+    const editor = createEditor('<pre><code>x</code></pre><p></p>');
+    const end = editor.state.doc.content.size - 1;
+    editor.view.dispatch(editor.state.tr.setSelection(TextSelection.create(editor.state.doc, end)));
     expect(arrowDownLeavesPage(editor.state, true)).toBe(false);
+  });
+
+  it('leaves the paragraph a page ends in from its end, not from inside it (#303)', () => {
+    const editor = createEditor(
+      '<h2>Quellen</h2><p><a href="https://example.org">https://example.org</a></p>',
+    );
+    caretAfter(editor, 'https://example.org');
+    expect(arrowDownLeavesPage(editor.state, true)).toBe(true);
+    // Inside the last line the browser first moves the caret to its end.
+    editor.view.dispatch(editor.state.tr.setSelection(TextSelection.create(editor.state.doc, 12)));
+    expect(arrowDownLeavesPage(editor.state, true)).toBe(false);
+    // A paragraph above another block is not the end of the page.
+    const above = createEditor('<p>oben</p><h2>Quellen</h2>');
+    caretAfter(above, 'oben');
+    expect(arrowDownLeavesPage(above.state, true)).toBe(false);
   });
 });
 
@@ -220,6 +247,19 @@ describe('a click below the last block', () => {
     editor.view.someProp('handleDOMEvents', (handlers) => handlers.mousedown?.(editor.view, event));
     return event;
   }
+
+  it('makes the line below a paragraph with a link, not a caret behind the link (#303)', () => {
+    const editor = createEditor(
+      '<h2>Quellen</h2><p><a href="https://example.org">https://example.org</a></p>',
+    );
+    const event = mousedown(editor, editor.view.dom, 40);
+    expect(event.defaultPrevented).toBe(true);
+    expect(editor.state.doc.childCount).toBe(3);
+    expect(editor.state.doc.lastChild?.content.size).toBe(0);
+    expect(editor.state.selection.$head.parent).toBe(editor.state.doc.lastChild);
+    // The new line carries no link mark into what is typed next.
+    expect(editor.state.storedMarks ?? []).toHaveLength(0);
+  });
 
   it('makes the line and puts the caret into it', () => {
     const editor = createEditor(`<p>Text</p>${IMAGE}`);

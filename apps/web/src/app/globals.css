@@ -166,12 +166,13 @@
     @apply mt-3;
   }
 
-  /* A line to write in after the last block (issue #257,
+  /* A line to write in after the last block (issues #257 and #303,
      `trailing-paragraph.ts` in `packages/editor`). While the page ends in a
-     picture, a table, a code block or anything else that is not a paragraph,
-     one paragraph's worth of space stays below it: the gap a paragraph would
-     keep plus its line. A click there makes the paragraph; until then nothing
-     is stored. Only while writing: a page being read keeps its length. */
+     picture, a table, a code block, a paragraph with text in it or anything
+     else that is not an empty paragraph, one paragraph's worth of space stays
+     below it: the gap a paragraph would keep plus its line. A click there
+     makes the paragraph; until then nothing is stored. Only while writing: a
+     page being read keeps its length. */
   .exocortex-editor .ProseMirror[contenteditable='true'][data-trailing-line] {
     padding-block-end: calc(var(--spacing) * 3 + 1lh);
   }

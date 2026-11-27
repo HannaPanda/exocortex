@@ -462,9 +462,11 @@ keymap they had.
 
 ## A line after the last block
 
-A page that ends in a block other than a paragraph (a picture, a table, a code
-block, a database, a PDF, a list) keeps a line below it to write in (issue
-#257). `TrailingParagraph` (`trailing-paragraph.ts`, registry entry
+A page that does not end in an empty paragraph (a picture, a table, a code
+block, a database, a PDF, a list, a heading, or a paragraph with text in it,
+such as a link or a bare address) keeps a line below it to write in (issues
+#257 and #303; before #303 a page ending in a paragraph with text only got a
+caret behind its last character). `TrailingParagraph` (`trailing-paragraph.ts`, registry entry
 `trailing-paragraph`, behaviour only) makes the paragraph there **on use and
 never in advance**:
 
@@ -485,11 +487,13 @@ never in advance**:
 - **Arrow down** does the same from the bottom of the page
   (`arrowDownLeavesPage`): from a selected picture or embed, from any cell of a
   table's last row, or from the last line of the text the page ends in, as long
-  as nothing selectable follows. It runs after the suggestion menus' keys and
+  as nothing selectable follows. In a paragraph the page ends in, only from its
+  end: on its last line arrow down first moves the caret to the end of that
+  line, as it always did. It runs after the suggestion menus' keys and
   before the table's own arrow handling.
 
-One transaction, one undo step. Once the page ends in a paragraph there is
-nothing left to do, so a second click never makes a second empty line; a line
+One transaction, one undo step. Once the page ends in an empty paragraph there
+is nothing left to do, so a second click never makes a second empty line; a line
 made and left empty stays, as one made with `Enter` would. Covered by
 `trailing-paragraph.test.ts` (including that opening a page writes nothing to
 the Yjs state) and `e2e/tests/editor.spec.ts`.

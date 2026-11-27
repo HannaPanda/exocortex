@@ -11,13 +11,15 @@ import {
 } from '@tiptap/pm/state';
 
 /**
- * A line to write in after the last block (issue #257).
+ * A line to write in after the last block (issues #257 and #303).
  *
  * A page that ends in a picture, a table, a code block, a database, a PDF or
  * any other block that is not a paragraph left no place to keep writing: a
  * click below it selected the block or landed inside it, and the arrow keys
- * stopped there. Now the space below the last block is a line, and using it
- * makes the paragraph there.
+ * stopped there. A page that ends in a paragraph with text in it, a link or a
+ * bare address for instance, left none either: a click below it only put the
+ * caret behind the last character (issue #303). Now the space below the last
+ * block is a line, and using it makes the paragraph there.
  *
  * The paragraph is made on use, never in advance. A plugin that keeps an empty
  * paragraph at the end of every document (Tiptap's `TrailingNode`) writes it
@@ -30,31 +32,36 @@ import {
  * is where the list's continuation is offered (issue #240), which needs a
  * real paragraph for the caret to stand in.
  *
- * So the line is drawn, not stored: while the last block is not a paragraph,
- * the editor gets `data-trailing-line` and the web app's stylesheet reserves
- * one line of space below the last block. Two ways in, both one transaction
- * that appends one paragraph and puts the caret into it:
+ * So the line is drawn, not stored: while the page does not end in an empty
+ * paragraph, the editor gets `data-trailing-line` and the web app's
+ * stylesheet reserves one line of space below the last block. Two ways in,
+ * both one transaction that appends one paragraph and puts the caret into it:
  *
  * - **A click** into the space below the last block, on the editor's own
  *   surface. On a short page that is all the empty canvas below the text.
  * - **Arrow down** from the bottom of the page: from a selected picture, embed
- *   or table cell in the last row, or from the last line of the text the page
- *   ends in (a code block, a callout, a quote, the last point of a list), as
- *   long as nothing selectable follows.
+ *   or table cell in the last row, from the last line of the text the page
+ *   ends in (a code block, a callout, a quote, the last point of a list), or
+ *   from the end of the paragraph the page ends in, as long as nothing
+ *   selectable follows.
  *
- * Once the page ends in a paragraph there is nothing left to do, so a second
- * click never makes a second line. A line made and left empty stays, as one
- * made with `Enter` would: it is a write somebody made.
+ * Once the page ends in an empty paragraph there is nothing left to do, so a
+ * second click never makes a second line. A line made and left empty stays,
+ * as one made with `Enter` would: it is a write somebody made.
  */
 export const trailingParagraphKey = new PluginKey('trailingParagraph');
 
 /** The attribute the editor carries while the page needs the line. */
 export const TRAILING_LINE_ATTRIBUTE = 'data-trailing-line';
 
-/** Whether the page ends in a block that is not a paragraph. */
+/**
+ * Whether the page lacks an empty line at its end: it ends in a block that is
+ * not a paragraph, or in a paragraph with something in it.
+ */
 export function needsTrailingParagraph(doc: PmNode): boolean {
   const last = doc.lastChild;
-  return last !== null && last.type.name !== 'paragraph';
+  if (last === null) return false;
+  return last.type.name !== 'paragraph' || last.content.size > 0;
 }
 
 /** Whether nothing selectable follows `pos`: below it is the end of the page. */
@@ -85,6 +92,16 @@ export function arrowDownLeavesPage(state: EditorState, atBottomOfTextblock: boo
     return (
       $head.index(depth - 1) === table.childCount - 1 && nothingAfter(doc, $head.after(depth - 1))
     );
+  }
+  // In the paragraph the page ends in, arrow down on its last line first
+  // does what it always did: it moves the caret to the end of that line. Only
+  // from the end does it leave the paragraph (issue #303).
+  if (
+    $head.depth === 1 &&
+    $head.parent.type.name === 'paragraph' &&
+    $head.parentOffset < $head.parent.content.size
+  ) {
+    return false;
   }
   return nothingAfter(doc, $head.after());
 }

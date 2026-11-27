@@ -83,10 +83,10 @@
   },
   "zeile-nach-dem-letzten-block": {
     "title": "Continuer à écrire après le dernier bloc",
-    "summary": "Si une page se termine par une image, un tableau, un bloc de code, une base de données ou un PDF, une ligne vide reste disponible en dessous. Un clic dessus ou la flèche vers le bas à la fin de la page y crée un paragraphe, et tu peux simplement continuer à écrire.",
+    "summary": "Si une page se termine par une image, un tableau, un bloc de code, une base de données, un PDF, un titre ou un paragraphe avec du texte ou un lien, une ligne vide reste disponible en dessous. Un clic dedans ou Flèche bas en fin de page y crée un paragraphe, et tu continues simplement à écrire.",
     "details": {
-      "p1": "Clique sous le dernier bloc de la page. Le curseur se place alors dans une nouvelle ligne vide. Cela fonctionne de la même manière au clavier : sélectionne une image ou une intégration en bas de page, place-toi sur la dernière ligne d’un bloc de code ou d’un tableau, puis appuie sur Flèche bas.",
-      "p2": "La ligne n’est réellement créée que lorsque tu l’utilises. Le simple fait d’ouvrir une page n’y écrit rien, et si la page se termine déjà par un paragraphe, aucune seconde ligne vide ne s’ajoute. Si une liste à puces se trouve au-dessus de l’image, la nouvelle ligne propose comme d’habitude de la poursuivre avec Tab."
+      "p1": "Clique sous le dernier bloc de la page. Le curseur se place alors sur une nouvelle ligne vide. C’est tout aussi simple au clavier : une image ou une intégration sélectionnée en bas de page, la dernière ligne d’un bloc de code, la dernière ligne d’un tableau ou la fin du dernier paragraphe, puis Flèche bas.",
+      "p2": "La ligne n’est créée que lorsque tu l’utilises. Le simple fait d’ouvrir une page n’y écrit rien, et si la page se termine déjà par une ligne vide, aucune seconde ligne ne s’ajoute. Si une liste à puces précède l’image, la nouvelle ligne propose comme d’habitude de la continuer avec Tab."
     },
     "where": "Dans l’éditeur, cliquer sous le dernier bloc de la page, ou appuyer sur Flèche bas en fin de page."
   },
