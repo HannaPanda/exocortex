@@ -56,10 +56,20 @@
     "summary": "Una barra diagonale in mezzo al testo apre l’elenco dei blocchi: intestazioni, elenchi di attività, riquadri informativi, colonne, codice, formule, tabelle, elementi incorporati, sommario e sezioni comprimibili. Un blocco esistente può essere convertito in un altro tramite il suo menu.",
     "details": {
       "p1": "Digiti \"/\" e poi due o tre lettere di ciò che desideri; l’elenco si filtra man mano e premendo Invio si inserisce il blocco. La selezione comprende testo, tre livelli di intestazione, citazione, blocco di codice, linea divisoria, elenco puntato, elenco numerato, elenco di attività con caselle di controllo, tabella, immagine, video, audio, file arbitrari, segnalibri, pagine web incorporate, formule in LaTeX, due colonne affiancate, sezioni comprimibili, sommario, percorso della pagina, riferimenti ad altre pagine e database incorporati.",
-      "p2": "I riquadri informativi sono disponibili in cinque colori con significati specifici: Info, Nota, Successo, Avviso e Pericolo. Sono il modo consueto per scrivere un avviso in modo che risalti a una rapida lettura.",
+      "p2": "I riquadri di avviso sono un blocco chiamato «Avviso»: un’icona davanti, una piccola intestazione sopra e un bordo attorno in un colore a tua scelta. Sono il modo consueto di inserire un avvertimento che risalti a colpo d’occhio.",
       "p3": "Un blocco già presente non deve essere eliminato e riscritto da capo. Tramite la maniglia a sinistra del blocco accedi a \"Converti in un altro blocco\": tre paragrafi diventano un elenco puntato, un elenco puntato un elenco di attività, un paragrafo un’intestazione. Lo stesso elenco alimenta il menu a barra diagonale, il menu di conversione e le azioni del blocco, affinché non divergano."
     },
     "where": "Nell’editor digita \"/\", oppure apri il menu a sinistra di un blocco."
+  },
+  "hinweisbox": {
+    "title": "Riquadri di avviso con icona, intestazione e colore",
+    "summary": "Un avviso è un riquadro con un’icona davanti, una piccola intestazione e un bordo colorato. Il suo significato è indicato dall’icona e dall’intestazione, non solo dal colore, così da rimanere comprensibile anche in caso di daltonismo.",
+    "details": {
+      "p1": "Digita «/Avviso» o trasforma un blocco in un avviso tramite la maniglia. Inizia con la lampadina. Un clic sull’icona apre la selezione: cerca e scegli un’altra emoji, digita liberamente un’intestazione o usa un suggerimento come «Attenzione», «Suggerimento» o «Importante», e imposta il colore del bordo. Un clic sull’intestazione apre la stessa selezione.",
+      "p2": "Senza mouse: premendo Tab nel testo dell’avviso passi alla sua icona, Invio apre la selezione, Escape o Maiusc+Tab riportano al testo. Ogni modifica si annulla con Strg+Z.",
+      "p3": "I cinque tipi di avviso precedenti sono stati mantenuti: Info ha ora il simbolo di informazione e un bordo blu, Nota il taccuino, Successo la spunta verde, Avvertimento il segnale di pericolo in giallo e Pericolo la luce lampeggiante in rosso. Le intestazioni restano invariate. Nell’esportazione Markdown un avviso appare come «> [!warning] ⚠️ Achtung», nel formato riconosciuto da Obsidian, e la vecchia sintassi senza icona continua a essere letta."
+    },
+    "where": "Nell’editor tramite «/Avviso» o «Trasforma in un altro blocco»; la selezione si apre cliccando sull’icona del riquadro."
   },
   "bloecke-verschieben": {
     "title": "Spostare blocchi e voci di elenco",

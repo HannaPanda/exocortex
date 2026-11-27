@@ -39,6 +39,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/seite/:x'] },
   }),
   defineFeature({
+    id: 'hinweisbox',
+    area: 'seiten',
+    since: '2026-11-27',
+    references: ['#306'],
+    ui: {},
+    shortcuts: [
+      'Tab im Text eines Hinweises springt zu seinem Symbol, Eingabe öffnet Symbol, Überschrift und Farbe, Escape geht zurück in den Text',
+    ],
+  }),
+  defineFeature({
     id: 'bloecke-verschieben',
     area: 'seiten',
     since: '2026-11-26',

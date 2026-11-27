@@ -83,6 +83,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
 | `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
 | `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`, including where the popup goes and how far its list may grow                                                                                                                           |
+| `callout-menu.tsx`              | symbol, heading and frame colour of a callout, opened from its symbol or heading, or with `Tab` from its text (issue #306)                                                                                                            |
 | `code-block-toolbar.tsx`        | language picker and copy, in the block's top right corner while the pointer rests on it or the caret is in it, one `Tab` stop after the text (issue #304)                                                                             |
 | `table-toolbar.tsx`             | rows, columns, header, merge, and the confirmed "Tabelle löschen"                                                                                                                                                                     |
 | `block-prompt.tsx`              | value and file collection for catalog entries                                                                                                                                                                                         |
@@ -92,9 +93,24 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `saved-query-embed-context.tsx` | the same ref bridge for the query block, so "Suche wechseln" reaches the picker (issue #74)                                                                                                                                           |
 | `transclusion-node-view.tsx`    | React node view for `transclusion`: the header, the five states a reference can be in, and the read-only editor that renders the fragment (issue #78)                                                                                 |
 
-Node views that render _inside_ the document (table of contents, breadcrumb, media)
-live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
-keeps working without a DOM on the server.
+Node views that render _inside_ the document (table of contents, breadcrumb, media,
+the callout) live in `packages/editor` and are plain DOM, not React, so
+`getExocortexSchema()` keeps working without a DOM on the server.
+
+The callout (issue #306) is the reference for such a node view with editable
+content and controls of its own around it. Its symbol is a `button` and its
+heading a pressable label, both outside `contentDOM`; `stopEvent` keeps
+ProseMirror from placing a caret on a press there and `ignoreMutation` from
+reading their DOM. A press sends `CALLOUT_EDIT_EVENT` with the callout's
+position and the symbol as anchor, and `callout-menu.tsx` opens the React menu
+against it, because the menu needs the design system and the emoji palette.
+A change of symbol, heading or colour is painted in place (`update` returns
+`true` when nothing else changed), so the anchor survives the change the menu
+makes. From the keyboard, `Tab` in a callout's text focuses its symbol (the
+same contract as the code block's bar), `Enter` opens the menu, `Escape` and
+`Shift + Tab` go back to the text. The symbol's accessible name says which
+symbol it is (`EditorWords.callout.edit`), because the symbol carries the
+box's meaning.
 
 **Four exceptions:** `databaseEmbed` (`database-embed.ts`), `pageLink`
 (`page-link.ts`), `savedQueryEmbed` (`saved-query-embed.ts`) and `transclusion`
@@ -564,14 +580,25 @@ put the source's text in place of the reference
 (`?transclusions=text`, `DocumentMarkdownService.applyTransclusions`), which is
 what a file that leaves this deployment needs.
 
-Callout syntax (Obsidian-compatible):
+Callout syntax (Obsidian-compatible, issue #306):
 
 ```markdown
-> [!warning] Optionaler Titel
+> [!warning] ⚠️ Optionale Überschrift
 > Inhalt der Box
 ```
 
-Variants: `info`, `note`, `success`, `warning`, `danger`.
+The keyword between `[!` and `]` is the frame colour, the emoji at the start of
+the line the symbol, the rest the heading. Export writes the keyword other
+tools colour the same way where there is one (`note` for the plain frame,
+`info` blue, `success` green, `warning` yellow, `danger` red) and the colour's
+own name otherwise (`gray`, `brown`, `orange`, `purple`, `pink`), and it always
+writes the symbol. Import also reads a header without a symbol, which is how
+every callout before #306 was written: the keyword then supplies the symbol too
+(`warning` the warning sign, `note` the memo). GitHub's alerts (`[!NOTE]`,
+`[!TIP]`, `[!IMPORTANT]`, `[!CAUTION]`), Obsidian's further types and aliases,
+its fold marker (`[!note]-`) and its metadata (`[!note|wide]`) are read as well;
+an unknown keyword is the plain frame with the light bulb. The table is
+`CALLOUT_KEYWORDS` in `packages/editor/src/callout.ts`.
 
 Block ids are written only with `{ includeBlockIds: true }`, as an Obsidian-style
 `^id` suffix. Raw HTML is not accepted on import: HTML is never canonical and
@@ -659,9 +686,9 @@ never dropped — it is shown as unresolved and offers to create the page.
 ## Document migrations
 
 `EXOCORTEX_SCHEMA_VERSION` is stored on every `DocumentContent` and
-`DocumentSnapshot` row. It is at **5**: version 2 added the full block set,
+`DocumentSnapshot` row. It is at **6**: version 2 added the full block set,
 version 3 the database embed, version 4 the page link's identity, version 5 the
-link mark's.
+link mark's, version 6 the callout's symbol, heading and colour.
 
 `SCHEMA_V2_MIGRATION` and `SCHEMA_V3_MIGRATION` are identity migrations — those
 steps were purely additive. They exist because `migrateDocument` requires
@@ -677,12 +704,38 @@ that needs a workspace and a database — so old references keep resolving throu
 their title until someone edits them or the document passes the Markdown
 boundary, where `bindPageLinkIdentities` binds them.
 
+`SCHEMA_V6_MIGRATION` (`packages/editor/src/schema-v6.ts`, issue #306) is the
+first that changes what a stored node _is_, and the first applied to the
+canonical state rather than only to derived JSON. A callout's `variant`
+becomes the `emoji` and `color` it stood for; a heading stays as it was and
+none is invented. It runs in three places:
+
+- `migrateCalloutsInYjsDoc` (`callout-yjs.ts`) sets and removes the attributes
+  on the stored Yjs elements in one transaction, so the page keeps its history
+  and nothing is rebuilt from Markdown. The collaboration server calls it in
+  `afterLoadDocument` for every page it opens (an open page is its to write,
+  ADR-016), and `pnpm --filter @exocortex/api documents:migrate-callouts`
+  for every stored page at once, after a deploy; both are idempotent, so the
+  two meeting on an open page store a migrated page whichever writes last.
+- `currentContentOfState` (`migrations.ts`) derives a stored state and runs
+  `migrateDocument` on it. Restoring a snapshot from an older schema goes
+  through it and is applied as an edit like any other restore (before #306
+  such a snapshot was put back byte for byte); the snapshot comparison derives
+  both sides through it, so a migration does not show as a change.
+- `resolveCallout` reads the old attribute wherever a callout is drawn or
+  written out. `variant` stays in the schema, read only, for exactly that: a
+  state a migration has not reached yet (a snapshot restored byte for byte, a
+  browser that has not reloaded) still shows its symbol and colour.
+
 To add one:
 
 1. bump `EXOCORTEX_SCHEMA_VERSION` in `packages/editor/src/contract.ts`,
 2. add a `DocumentMigration` (`fromVersion`, `toVersion`, `description`, `migrate`)
    to the `migrations` array of the extension that changed,
-3. call `migrateDocument(json, storedVersion)` where stored content is read.
+3. call `migrateDocument(json, storedVersion)` where stored content is read
+   (`currentContentOfState` does both steps for a stored Yjs state),
+4. if the change alters stored nodes rather than adding defaults, migrate the
+   canonical state too, the way `callout-yjs.ts` does.
 
 `migrateDocument` refuses to downgrade a document written by a newer build, and
 requires exactly one migration per version step, so the path is deterministic.

@@ -56,10 +56,20 @@
     "summary": "Een schuine streep midden in de tekst opent de blokkenlijst: koppen, takenlijsten, infoblokken, kolommen, code, formules, tabellen, insluitingen, inhoudsopgave en inklapbare secties. Een bestaand blok kan via het menu worden omgezet in een ander blok.",
     "details": {
       "p1": "Je typt \"/\" en daarna twee of drie letters van wat je zoekt; de lijst filtert mee en Enter plaatst het blok. De keuze bestaat uit tekst, drie kopniveaus, citaat, codeblok, scheidingslijn, opsomming, genummerde lijst, takenlijst met selectievakjes, tabel, afbeelding, video, audio, willekeurige bestanden, bladwijzers, ingesloten webpagina’s, formules in LaTeX, twee kolommen naast elkaar, inklapbare secties, inhoudsopgave, paginapad, verwijzingen naar andere pagina’s en ingesloten databases.",
-      "p2": "Infoblokken zijn er in vijf kleuren met een eigen betekenis: info, notitie, succes, waarschuwing en gevaar. Ze zijn de gebruikelijke manier om een waarschuwing zo te plaatsen dat deze direct opvalt bij het scannen van de tekst.",
+      "p2": "Informatieblokken zijn een blok met de naam „Opmerking”: vooraan een pictogram, daarboven een kleine kop, eromheen een kader in een kleur naar keuze. Ze zijn de gebruikelijke manier om een waarschuwing zo op te schrijven dat deze bij het scannen meteen opvalt.",
       "p3": "Een blok dat er al staat, hoef je niet te wissen en opnieuw te typen. Via de greep links naast het blok kom je bij \"Omzetten naar ander blok\": van drie alinea’s maak je een opsomming, van een opsomming een takenlijst, van een alinea een kop. Dezelfde lijst bedient het slash-menu, het omzetmenu en de blokacties, zodat ze niet uit elkaar gaan lopen."
     },
     "where": "Typ in de editor \"/\", of open het menu links naast een blok."
+  },
+  "hinweisbox": {
+    "title": "Opmerkingvakken met pictogram, kop en kleur",
+    "summary": "Een opmerking is een kader met een pictogram vooraan, een kleine kop en een gekleurde rand. Wat het betekent, blijkt uit het pictogram en de kop, niet alleen uit de kleur, zodat het ook bij kleurenblindheid leesbaar blijft.",
+    "details": {
+      "p1": "Typ „/Opmerking” of zet een blok via de greep om in een opmerking. Deze begint met het gloeilampje. Een klik op het pictogram opent de selectie: een ander emoji zoeken en kiezen, zelf een kop typen of een suggestie kiezen zoals „Let op”, „Tip” of „Belangrijk”, en de kaderkleur bepalen. Een klik op de kop opent dezelfde selectie.",
+      "p2": "Zonder muis: Tab in de tekst van de opmerking springt naar het pictogram, Enter opent de selectie, Escape of Shift+Tab brengt je terug naar de tekst. Elke wijziging maak je ongedaan met Strg+Z.",
+      "p3": "De vijf eerdere opmerkingtypes zijn overgenomen: Info heeft nu het info-teken en een blauw kader, Notitie het notitieblok, Succes het vinkje in groen, Waarschuwing het waarschuwingsteken in geel en Gevaar het zwaailicht in rood. Koppen blijven zoals ze waren. In de Markdown-export staat een opmerking als „> [!warning] ⚠️ Let op”, zoals Obsidian die kent, en de oude notatie zonder pictogram wordt nog steeds herkend."
+    },
+    "where": "In de editor via „/Opmerking” of „Omzetten in ander blok”; de selectie opent met een klik op het pictogram van het kader."
   },
   "bloecke-verschieben": {
     "title": "Blokken en lijstitems verplaatsen",

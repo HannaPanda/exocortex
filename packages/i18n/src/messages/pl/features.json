@@ -56,10 +56,20 @@
     "summary": "Ukośnik w trakcie pisania otwiera listę bloków: nagłówki, listy zadań, ramki wyróżnienia, kolumny, kod, formuły, tabele, osadzenia, spis treści i sekcje zwijane. Istniejący blok można przekształcić w inny za pomocą jego menu.",
     "details": {
       "p1": "Wpisujesz „/”, a potem dwie lub trzy litery tego, czego szukasz; lista filtruje wyniki na bieżąco, a Enter wstawia blok. Wybór obejmuje tekst, trzy poziomy nagłówków, cytat, blok kodu, linię podziału, listę punktowaną, listę numerowaną, listę zadań z polami wyboru, tabelę, obraz, wideo, audio, dowolne pliki, zakładki, osadzone strony internetowe, formuły LaTeX, dwie kolumny obok siebie, sekcje zwijane, spis treści, ścieżkę strony, odnośniki do innych stron i osadzone bazy danych.",
-      "p2": "Ramki wyróżnienia są dostępne w pięciu kolorach o konkretnym znaczeniu: Informacja, Notatka, Sukces, Ostrzeżenie i Niebezpieczeństwo. To standardowy sposób na umieszczenie uwagi tak, by rzucała się w oczy przy pobieżnym czytaniu.",
+      "p2": "Wyróżnienia to blok o nazwie „Wyróżnienie”: z przodu ikona, nad nim mały nagłówek, a dookoła ramka w wybranym przez ciebie kolorze. To standardowy sposób na umieszczenie ostrzeżenia tak, aby rzucało się w oczy podczas szybkiego czytania.",
       "p3": "Bloku, który już istnieje, nie trzeba usuwać i pisać od nowa. Za pomocą uchwytu po lewej stronie bloku przejdziesz do opcji „Przekształć w inny blok”: trzy akapity staną się listą punktowaną, lista punktowana listą zadań, a akapit nagłówkiem. To samo menu zasila menu ukośnika, menu przekształcania i akcje bloku, dzięki czemu działają one spójnie."
     },
     "where": "Wpisz „/” w edytorze lub otwórz menu po lewej stronie bloku."
+  },
+  "hinweisbox": {
+    "title": "Wyróżnienia z ikoną, nagłówkiem i kolorem",
+    "summary": "Wyróżnienie to ramka z ikoną z przodu, małym nagłówkiem i kolorowym obramowaniem. O jego znaczeniu decydują ikona i nagłówek, a nie sam kolor – dzięki temu pozostaje czytelne także dla osób ze ślepotą barw.",
+    "details": {
+      "p1": "Wpisz „/Wyróżnienie” lub przekształć blok w wyróżnienie za pomocą uchwytu. Zaczyna się ono od żarówki. Kliknięcie ikony otwiera okno wyboru: możesz wyszukać i wybrać inne emoji, wpisać własny nagłówek lub wybrać podpowiedź, taką jak „Uwaga”, „Wskazówka” lub „Ważne”, a także ustalić kolor ramki. Kliknięcie nagłówka otwiera to samo okno wyboru.",
+      "p2": "Bez myszy: klawisz Tab w tekście wyróżnienia przenosi kursor do jego ikony, Enter otwiera okno wyboru, a Escape lub Shift+Tab prowadzi z powrotem do tekstu. Każdą zmianę można cofnąć za pomocą Ctrl+Z.",
+      "p3": "Pięć wcześniejszych rodzajów wyróżnień zostało zachowanych: Informacja ma teraz symbol informacji i niebieską ramkę, Notatka – notes, Sukces – zielony znacznik wyboru, Ostrzeżenie – żółty znak ostrzegawczy, a Niebezpieczeństwo – czerwone światło sygnalizacyjne. Nagłówki pozostają bez zmian. W eksporcie Markdown wyróżnienie zapisuje się jako „> [!warning] ⚠️ Uwaga”, tak jak w Obsidianie, a stary zapis bez ikony jest nadal odczytywany."
+    },
+    "where": "W edytorze przez „/Wyróżnienie” lub „Przekształć w inny blok”; okno wyboru otwiera kliknięcie ikony ramki."
   },
   "bloecke-verschieben": {
     "title": "Przenoszenie bloków i elementów listy",

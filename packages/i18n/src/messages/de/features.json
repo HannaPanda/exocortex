@@ -56,10 +56,20 @@
     "summary": "Ein Schrägstrich mitten im Text öffnet die Blockliste: Überschriften, Aufgabenlisten, Hinweiskästen, Spalten, Code, Formeln, Tabellen, Einbettungen, Inhaltsverzeichnis und einklappbare Abschnitte. Ein vorhandener Block lässt sich über sein Menü in einen anderen umwandeln.",
     "details": {
       "p1": "Du tippst \"/\" und danach zwei, drei Buchstaben dessen, was du willst; die Liste filtert mit, und Eingabe setzt den Block. Die Auswahl umfasst Text, drei Überschriftenebenen, Zitat, Codeblock, Trennlinie, Aufzählung, nummerierte Liste, Aufgabenliste mit Kontrollkästchen, Tabelle, Bild, Video, Audio, beliebige Dateien, Lesezeichen, eingebettete Webseiten, Formeln in LaTeX, zwei Spalten nebeneinander, einklappbare Abschnitte, Inhaltsverzeichnis, Seitenpfad, Verweise auf andere Seiten und eingebettete Datenbanken.",
-      "p2": "Hinweiskästen gibt es in fünf Farben mit eigener Bedeutung: Info, Notiz, Erfolg, Warnung und Gefahr. Sie sind der übliche Weg, eine Warnung so hinzuschreiben, dass sie beim Überfliegen auffällt.",
+      "p2": "Hinweiskästen sind ein Block namens „Hinweis“: vorne ein Symbol, darüber eine kleine Überschrift, außen ein Rahmen in einer Farbe deiner Wahl. Sie sind der übliche Weg, eine Warnung so hinzuschreiben, dass sie beim Überfliegen auffällt.",
       "p3": "Ein Block, der schon dasteht, muss nicht gelöscht und neu getippt werden. Über den Griff links neben dem Block kommst du an \"In anderen Block umwandeln\": aus drei Absätzen wird eine Aufzählung, aus einer Aufzählung eine Aufgabenliste, aus einem Absatz eine Überschrift. Dieselbe Liste bedient das Schrägstrich-Menü, das Umwandeln-Menü und die Blockaktionen, damit sie nicht auseinanderlaufen."
     },
     "where": "Im Editor \"/\" tippen, oder das Menü links neben einem Block öffnen."
+  },
+  "hinweisbox": {
+    "title": "Hinweisboxen mit Symbol, Überschrift und Farbe",
+    "summary": "Ein Hinweis ist ein Kasten mit einem Symbol vorne, einer kleinen Überschrift und einem farbigen Rahmen. Was er bedeutet, sagen Symbol und Überschrift, nicht die Farbe allein, damit er auch bei Farbsehschwäche lesbar bleibt.",
+    "details": {
+      "p1": "Tippe „/Hinweis“ oder wandle einen Block über den Griff in einen Hinweis um. Er beginnt mit der Glühbirne. Ein Klick auf das Symbol öffnet die Auswahl: ein anderes Emoji suchen und wählen, eine Überschrift frei tippen oder einen Vorschlag wie „Achtung“, „Tipp“ oder „Wichtig“ nehmen, und die Rahmenfarbe festlegen. Ein Klick auf die Überschrift öffnet dieselbe Auswahl.",
+      "p2": "Ohne Maus: Tab im Text des Hinweises springt zu seinem Symbol, Eingabe öffnet die Auswahl, Escape oder Umschalt+Tab führen zurück in den Text. Jede Änderung nimmt Strg+Z zurück.",
+      "p3": "Die fünf früheren Hinweisarten sind übernommen: Info hat jetzt das Info-Zeichen und einen blauen Rahmen, Notiz den Notizblock, Erfolg den Haken in Grün, Warnung das Warnzeichen in Gelb und Gefahr das Signallicht in Rot. Überschriften bleiben, wie sie waren. Im Markdown-Export steht ein Hinweis als „> [!warning] ⚠️ Achtung“, so wie Obsidian ihn kennt, und die alte Schreibweise ohne Symbol wird weiter gelesen."
+    },
+    "where": "Im Editor über „/Hinweis“ oder „In anderen Block umwandeln“; die Auswahl öffnet ein Klick auf das Symbol des Kastens."
   },
   "bloecke-verschieben": {
     "title": "Blöcke und Listenpunkte verschieben",

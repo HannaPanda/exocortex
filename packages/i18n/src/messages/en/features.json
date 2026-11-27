@@ -56,10 +56,20 @@
     "summary": "A slash in the middle of text opens the block list: headings, task lists, callout boxes, columns, code, formulas, tables, embeds, table of contents, and collapsible sections. An existing block can be turned into another one via its menu.",
     "details": {
       "p1": "You type “/” and then two or three letters of what you want; the list filters along, and Enter inserts the block. The selection includes text, three heading levels, quote, code block, divider, bullet list, numbered list, task list with checkboxes, table, image, video, audio, arbitrary files, bookmarks, embedded web pages, formulas in LaTeX, two columns side by side, collapsible sections, table of contents, breadcrumbs, links to other pages, and embedded databases.",
-      "p2": "Callout boxes come in five colors with their own meaning: info, note, success, warning, and danger. They are the usual way to write down a warning so that it catches the eye when skimming.",
+      "p2": "Callout boxes are a block called “Callout”: an icon at the front, a small heading above it, and a border in a color of your choice around the outside. They are the usual way to write a warning so that it stands out when skimming.",
       "p3": "A block that is already there does not need to be deleted and typed again. Via the handle to the left of the block, you reach “Turn into another block”: three paragraphs become a bullet list, a bullet list becomes a task list, a paragraph becomes a heading. The same list powers the slash menu, the transform menu, and block actions so they do not drift apart."
     },
     "where": "Type “/” in the editor, or open the menu to the left of a block."
+  },
+  "hinweisbox": {
+    "title": "Callout boxes with icon, heading, and color",
+    "summary": "A callout is a box with an icon at the front, a small heading, and a colored border. What it means is conveyed by the icon and heading, not color alone, so it stays readable even with color vision deficiency.",
+    "details": {
+      "p1": "Type “/Callout” or turn a block into a callout using its handle. It starts with the lightbulb. Clicking the icon opens the selector: search and choose a different emoji, freely type a heading or pick a suggestion like “Warning”, “Tip”, or “Important”, and set the border color. Clicking the heading opens the same selector.",
+      "p2": "Without a mouse: pressing Tab in the callout’s text jumps to its icon, Enter opens the selector, and Escape or Shift+Tab takes you back to the text. Every change can be undone with Strg+Z.",
+      "p3": "The five previous callout types have been adopted: Info now has the info symbol and a blue border, Note has the notepad, Success has the green checkmark, Warning has the yellow warning sign, and Danger has the red beacon light. Headings remain as they were. In Markdown export, a callout appears as “> [!warning] ⚠️ Warning”, just as Obsidian knows it, and the old notation without an icon continues to be read."
+    },
+    "where": "In the editor via “/Callout” or “Turn into another block”; clicking the box’s icon opens the selector."
   },
   "bloecke-verschieben": {
     "title": "Move blocks and list items",

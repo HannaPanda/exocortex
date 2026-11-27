@@ -56,10 +56,20 @@
     "summary": "Una barra diagonal en mitad del texto abre la lista de bloques: encabezados, listas de tareas, cuadros de aviso, columnas, código, fórmulas, tablas, incrustaciones, tabla de contenidos y secciones desplegables. Un bloque existente se puede convertir en otro desde su menú.",
     "details": {
       "p1": "Escribes «/» y a continuación dos o tres letras de lo que quieres; la lista se va filtrando y pulsar Intro inserta el bloque. La selección incluye texto, tres niveles de encabezado, cita, bloque de código, línea divisoria, lista con viñetas, lista numerada, lista de tareas con casillas de verificación, tabla, imagen, vídeo, audio, archivos de cualquier tipo, marcadores, páginas web incrustadas, fórmulas en LaTeX, dos columnas en paralelo, secciones desplegables, tabla de contenidos, ruta de página, enlaces a otras páginas y bases de datos incrustadas.",
-      "p2": "Los cuadros de aviso están disponibles en cinco colores con significado propio: información, nota, éxito, advertencia y peligro. Son la forma habitual de redactar un aviso para que llame la atención a simple vista.",
+      "p2": "Los cuadros de aviso son un bloque llamado «Aviso»: un icono delante, un pequeño encabezado encima y un borde alrededor en el color que elijas. Son la forma habitual de destacar una advertencia para que salte a la vista al ojear la página.",
       "p3": "Un bloque que ya está ahí no necesita borrarse ni escribirse de nuevo. Mediante el tirador a la izquierda del bloque accedes a «Convertir en otro bloque»: tres párrafos se convierten en una lista con viñetas; una lista con viñetas, en una lista de tareas; un párrafo, en un encabezado. La misma lista alimenta el menú de barra diagonal, el menú de conversión y las acciones de bloque para que no difieran entre sí."
     },
     "where": "En el editor, escribe «/» o abre el menú a la izquierda de un bloque."
+  },
+  "hinweisbox": {
+    "title": "Cuadros de aviso con icono, encabezado y color",
+    "summary": "Un aviso es un cuadro con un icono delante, un encabezado pequeño y un borde de color. Su significado lo transmiten el icono y el encabezado, no solo el color, para que siga siendo legible incluso con daltonismo.",
+    "details": {
+      "p1": "Escribe «/Aviso» o convierte un bloque en aviso mediante su tirador. Empieza con la bombilla. Al hacer clic en el icono se abre la selección: puedes buscar y elegir otro emoji, escribir libremente un encabezado o elegir una sugerencia como «Atención», «Consejo» o «Importante», así como definir el color del borde. Al hacer clic en el encabezado se abre la misma selección.",
+      "p2": "Sin ratón: pulsar Tab en el texto del aviso salta a su icono, Intro abre la selección y Escape o Mayús+Tab vuelven al texto. Cualquier cambio se deshace con Ctrl+Z.",
+      "p3": "Se mantienen los cinco tipos de aviso anteriores: Información tiene ahora el icono de información y un borde azul, Nota la libreta, Éxito la marca de verificación en verde, Advertencia el signo de advertencia en amarillo y Peligro la luz de señal en rojo. Los encabezados se quedan como estaban. En la exportación a Markdown, un aviso aparece como «> [!warning] ⚠️ Atención», tal y como lo reconoce Obsidian, y la sintaxis antigua sin icono se sigue reconociendo."
+    },
+    "where": "En el editor mediante «/Aviso» o «Convertir en otro bloque»; al hacer clic en el icono del cuadro se abre la selección."
   },
   "bloecke-verschieben": {
     "title": "Mover bloques y elementos de lista",

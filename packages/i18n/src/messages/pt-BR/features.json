@@ -56,10 +56,20 @@
     "summary": "Uma barra inclinada no meio do texto abre a lista de blocos: títulos, listas de tarefas, caixas de destaque, colunas, código, fórmulas, tabelas, incorporações, sumário e seções recolhíveis. Um bloco existente pode ser transformado em outro pelo seu menu.",
     "details": {
       "p1": "Você digita \"/\" e depois duas ou três letras do que procura; a lista filtra junto, e Enter insere o bloco. A seleção inclui texto, três níveis de títulos, citação, bloco de código, linha divisória, lista com marcadores, lista numerada, lista de tarefas com caixas de seleção, tabela, imagem, vídeo, áudio, arquivos diversos, favoritos, páginas da web incorporadas, fórmulas em LaTeX, duas colunas lado a lado, seções recolhíveis, sumário, caminho da página, links para outras páginas e bancos de dados incorporados.",
-      "p2": "As caixas de destaque vêm em cinco cores com significados próprios: informação, nota, sucesso, aviso e perigo. Elas são a forma comum de destacar um alerta para que chame a atenção em uma leitura rápida.",
+      "p2": "Caixas de destaque são um bloco chamado „Destaque”: um ícone na frente, um pequeno título acima e uma borda externa na cor da sua escolha. Elas são a forma comum de destacar um aviso para que chame a atenção ao passar os olhos.",
       "p3": "Um bloco já existente não precisa ser apagado e digitado novamente. Pela alça à esquerda do bloco, você acessa \"Transformar em outro bloco\": três parágrafos viram uma lista com marcadores, uma lista com marcadores vira uma lista de tarefas, um parágrafo vira um título. A mesma lista abastece o menu de barra, o menu de transformação e as ações de bloco para manter tudo consistente."
     },
     "where": "No editor, digite \"/\" ou abra o menu à esquerda de um bloco."
+  },
+  "hinweisbox": {
+    "title": "Caixas de destaque com ícone, título e cor",
+    "summary": "Um destaque é uma caixa com um ícone na frente, um pequeno título e uma borda colorida. O significado vem do ícone e do título, não apenas da cor, garantindo que continue legível mesmo para quem tem daltonismo.",
+    "details": {
+      "p1": "Digite „/Destaque” ou transforme um bloco em destaque pela alça. Ele começa com a lâmpada. Clicar no ícone abre a seleção: busque e escolha outro emoji, digite um título livremente ou use uma sugestão como „Atenção”, „Dica” ou „Importante”, e defina a cor da borda. Clicar no título abre a mesma seleção.",
+      "p2": "Sem o mouse: Tab dentro do texto do destaque pula para o ícone, Enter abre a seleção, Escape ou Shift+Tab voltam para o texto. Qualquer alteração pode ser desfeita com Ctrl+Z.",
+      "p3": "Os cinco tipos anteriores de destaque foram mantidos: Informação agora tem o símbolo de info e borda azul, Nota tem o bloco de notas, Sucesso tem o visto verde, Aviso tem o sinal de alerta amarelo e Perigo tem a luz de sinalização vermelha. Os títulos continuam como estavam. Na exportação em Markdown, o destaque aparece como „> [!warning] ⚠️ Atenção”, no formato conhecido do Obsidian, e a sintaxe antiga sem ícone continua sendo reconhecida."
+    },
+    "where": "No editor via „/Destaque” ou „Transformar em outro bloco”; um clique no ícone da caixa abre a seleção."
   },
   "bloecke-verschieben": {
     "title": "Mover blocos e itens de lista",

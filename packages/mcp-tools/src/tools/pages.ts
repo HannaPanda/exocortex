@@ -367,6 +367,12 @@ const WRITE_MARKDOWN_DESCRIPTION =
   'der Oberfläche an, die Seite anzulegen. ' +
   HOW_TO_LINK_A_SECTION +
   ' ' +
+  // The callout's notation (issue #306): an agent writes the same box a
+  // person makes, symbol and colour included.
+  'Ein Hinweiskasten ist ein Zitat mit Kopfzeile: "> [!warning] ⚠️ Achtung", der Inhalt in ' +
+  'den folgenden "> "-Zeilen. Das Emoji ist das Symbol, der Text danach die Überschrift (darf ' +
+  'fehlen); das Schlüsselwort wählt die Rahmenfarbe: note ohne Farbe, info blau, success grün, ' +
+  'warning gelb, danger rot, sonst gray, brown, orange, purple oder pink. ' +
   // The one thing an agent could not know and had no way to find out (issue
   // #117). It belongs in the parameter description rather than only in the
   // attachment tools: the mistake is made while writing Markdown, by a caller

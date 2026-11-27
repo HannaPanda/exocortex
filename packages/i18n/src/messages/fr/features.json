@@ -56,10 +56,20 @@
     "summary": "Une barre oblique au milieu du texte ouvre la liste des blocs : titres, listes de tâches, encadrés, colonnes, code, formules, tableaux, intégrations, table des matières et sections repliables. Un bloc existant peut être transformé en un autre via son menu.",
     "details": {
       "p1": "Tu tapes « / » suivi de deux ou trois lettres de ce que tu souhaites ; la liste filtre au fur et à mesure, et Entrée insère le bloc. La sélection comprend : texte, trois niveaux de titres, citation, bloc de code, séparateur, liste à puces, liste numérotée, liste de tâches avec cases à cocher, tableau, image, vidéo, audio, fichiers quelconques, signets, pages web intégrées, formules en LaTeX, deux colonnes côte à côte, sections repliables, table des matières, fil d’Ariane, liens vers d’autres pages et bases de données intégrées.",
-      "p2": "Les encadrés existent en cinq couleurs avec chacune leur signification : info, note, succès, avertissement et danger. C’est la méthode courante pour formuler un avertissement afin qu’il ressorte immédiatement à la lecture.",
+      "p2": "Les encadrés sont un bloc appelé « Remarque » : un symbole au début, un petit titre au-dessus, et une bordure dans la couleur de ton choix. C’est la manière habituelle d’indiquer un avertissement pour qu’il attire l’attention lors d’un survol rapide.",
       "p3": "Un bloc déjà présent n’a pas besoin d’être supprimé puis retapé. La poignée située à gauche du bloc permet d’accéder à « Transformer en un autre bloc » : trois paragraphes deviennent une liste à puces, une liste à puces devient une liste de tâches, un paragraphe devient un titre. La même liste alimente le menu barre oblique, le menu de transformation et les actions de bloc, évitant ainsi toute divergence."
     },
     "where": "Dans l’éditeur, taper « / » ou ouvrir le menu à gauche d’un bloc."
+  },
+  "hinweisbox": {
+    "title": "Encadrés avec symbole, titre et couleur",
+    "summary": "Un encadré est un bloc doté d’un symbole au début, d’un petit titre et d’une bordure colorée. Sa signification est donnée par le symbole et le titre, et non par la seule couleur, afin de rester lisible même en cas de daltonisme.",
+    "details": {
+      "p1": "Tape « /Remarque » ou transforme un bloc en encadré via sa poignée. Il commence avec l’ampoule. Un clic sur le symbole ouvre la sélection : chercher et choisir un autre émoji, saisir librement un titre ou choisir une suggestion comme « Attention », « Astuce » ou « Important », et définir la couleur de la bordure. Un clic sur le titre ouvre la même sélection.",
+      "p2": "Sans souris : Tab dans le texte de l’encadré passe à son symbole, Entrée ouvre la sélection, Échap ou Maj+Tab ramènent dans le texte. Chaque modification s’annule avec Strg+Z.",
+      "p3": "Les cinq anciens types d’encadrés sont conservés : Info a maintenant le symbole info et un cadre bleu, Note le bloc-notes, Succès la coche en vert, Avertissement le symbole d’alerte en jaune et Danger le gyrophare en rouge. Les titres restent inchangés. Dans l’export Markdown, un encadré apparaît sous la forme « > [!warning] ⚠️ Achtung », telle qu’Obsidian la gère, et l’ancienne notation sans symbole reste reconnue."
+    },
+    "where": "Dans l’éditeur via « /Remarque » ou « Transformer en un autre bloc » ; un clic sur le symbole de l’encadré ouvre la sélection."
   },
   "bloecke-verschieben": {
     "title": "Déplacer des blocs et des éléments de liste",

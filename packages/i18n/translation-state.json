@@ -8456,10 +8456,6 @@
       "source": "8f27347e109a5090",
       "output": "0e35f6e9742e074d"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "e7aae9333ef2b0c7"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "308d5a0903f2c571"
@@ -8596,45 +8592,13 @@
       "source": "cb89f0146c279232",
       "output": "a2b5baef0f36f6b9"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "1232ea478b11253c"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "eff0d9c9981c487d"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "8412c07002430421"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "775e70d05760dcb0"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "170322a32f3c35b2"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "5c761a079fecf3f5"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "d8da2c49df39d91d"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "c75581768f810fea"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "c88a0b907419a70c"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "ae8940190d2d2f18"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "e981ddae45d8f4ca"
+      "output": "14bfdc0e32aa60d3"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -8803,6 +8767,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "d534be829e32196b"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "c3645e9dd4a2518d"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "4e38382a22586745"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "2d9624d76c6a1514"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "c64f1534fc99802a"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "2e178e6c65f95e64"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "ddca9a57e6760d26"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "d8da2c49df39d91d"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "a4245a3c4f566cab"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "e981ddae45d8f4ca"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "9cc4ed59a8458e5d"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "7e8cd2056da73a7f"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "30a3b02cbee402e6"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -9023,6 +9035,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "a9b1755c9576923f"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "62b5f5a190d8baf2"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -12473,8 +12489,8 @@
       "output": "c06396217d731d3d"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "11a9991c453354af"
+      "source": "6694454a3718ed74",
+      "output": "2c6a1272274b50c2"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -13223,6 +13239,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "1727b5f1efb7fc34"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "0123499dd91c79d9"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "d80f26341de7e17e"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "5d31c22acd9f285d"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "456ea219ddafe57d"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "999263422c1acf91"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "c5211cec34e15b48"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -33282,10 +33322,6 @@
       "source": "8f27347e109a5090",
       "output": "71e56827321ba805"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "ebfa2d046fba5461"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "f4cf0cb709e90dad"
@@ -33422,45 +33458,13 @@
       "source": "cb89f0146c279232",
       "output": "c2418ab9a89c5321"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "8402750ef7e95010"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "b8b1920716f5598a"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "b9c7a6dbb5007df5"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "25a316cb8b6b2647"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "7263ec8c2d08c2c0"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "96e18abc5de8f743"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "ecef8a87fff05ec5"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "d15c3322b2eaeed1"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "253723d504074d48"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "f66aa801969f61e8"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "4b98ab3bc8924464"
+      "output": "3e1da47705789333"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -33629,6 +33633,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "bc10c86c24b5ba44"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "e4b73747211a5c95"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "8754573994fbf473"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "c7b1588207973c7f"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "9f1bd029cfb862af"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "411bf79d5de4a1f5"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "3e7223731a5c7857"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "ecef8a87fff05ec5"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "b18dd065ae9f1f7e"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "4b98ab3bc8924464"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "f9998e9c86c0aadd"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "4c08a5d5feb22ce2"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "30d1a8cd45b235e9"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -33849,6 +33901,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "21bee151fbaa82f2"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "4f5867539bda4657"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -37299,8 +37355,8 @@
       "output": "d782cf220870c180"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "af345b10e5825cd6"
+      "source": "6694454a3718ed74",
+      "output": "7313893b76164773"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -38049,6 +38105,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "6d89f5e33a1d8a85"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "d18895612d8888a0"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "7320e8cd2af17387"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "da4c8d1f574bc3e3"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "ba85524fe4317599"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "a011f66a41859499"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "74bf75d69e499834"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -58108,10 +58188,6 @@
       "source": "8f27347e109a5090",
       "output": "c2f7de55e237eb25"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "90785bfc9ceb2702"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "56ad398c5c56d7f5"
@@ -58248,45 +58324,13 @@
       "source": "cb89f0146c279232",
       "output": "6eb3559a159a7df0"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "bd636abbd0988434"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "95ccd57c90d47f2c"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "8412c07002430421"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "13b5cdc5dc645203"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "170322a32f3c35b2"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "3bf94f49b555376c"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "d8da2c49df39d91d"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "8e77fc1d9878b19f"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "c9ad3c32c42e834b"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "b2c85a732447a61e"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "f3bf7f3e9c66489f"
+      "output": "e7b1a212567b9959"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -58455,6 +58499,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "ffda1e938e473fa2"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "b06bb4c76506cfe6"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "a4980adeb817d1a3"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "1734b8f0bf72923a"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "bff7f9babcf6db0e"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "c2eb8cd9d9564314"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "ddca9a57e6760d26"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "469402cc0c30613e"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "243523315019ef01"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "f3bf7f3e9c66489f"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "12b4f9d596e4f104"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "78e7920010aa1ff0"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "2c847c1c25d59e21"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -58675,6 +58767,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "729d5d0dea80f0a8"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "6c2ee4ccca2ff6d7"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -62125,8 +62221,8 @@
       "output": "535fe93c27a3ee9b"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "7f62e0ad880e710f"
+      "source": "6694454a3718ed74",
+      "output": "d7db64e34b525687"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -62875,6 +62971,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "1f96320789a375ec"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "b23cdf7d16feadc4"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "9a8f6771a27f792b"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "2d775ac37b26e061"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "a9ffc26f37f56a93"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "ae54014906bb9045"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "a33cbe52e7c80ab4"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -82934,10 +83054,6 @@
       "source": "8f27347e109a5090",
       "output": "5ec810ac766adf73"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "ac69bd52a521e624"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "34f7ae4c268ffa63"
@@ -83074,44 +83190,12 @@
       "source": "cb89f0146c279232",
       "output": "ee2081c88b3b5229"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "b0282f441ba70a8d"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "89d7118c5c784448"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "b9b7ac814441377c"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "de0d5e918258e23e"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "170322a32f3c35b2"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "69547b3cbb1cb7aa"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "ecef8a87fff05ec5"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "eb7bb1423011c350"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "7d11a885b6493cca"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "0378af395ad169ed"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
       "output": "ccb28847f2b38c7b"
     },
     "editor.blocks.code-block.description": {
@@ -83281,6 +83365,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "d534be829e32196b"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "5f378a05db70246d"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "f5643509c4ba30e8"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "73b1e36945ee9495"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "2bfae1362090c686"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "1e3da1418a1b4e64"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "3e7223731a5c7857"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "ecef8a87fff05ec5"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "ba4ca05d1d1223cf"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "3324f939eec0977f"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "90651f39bcc481e4"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "d8f4eedefb37e7ff"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "83d73b84023600c3"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -83501,6 +83633,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "856a94b5fd77514c"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "a724cfa68c6b108d"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -86951,8 +87087,8 @@
       "output": "0b9420e5891644ac"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "fd3c575e6cce783f"
+      "source": "6694454a3718ed74",
+      "output": "187ff80216232dbc"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -87701,6 +87837,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "0c5ae0c161293904"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "3207a9a23c9adf5a"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "9b1f648d6436d29c"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "33a89c66bbbfc45e"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "74a0608d2f3e9fe2"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "c26048490f3011b1"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "9223045634085061"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -107760,10 +107920,6 @@
       "source": "8f27347e109a5090",
       "output": "cb8d295f1603859a"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "2e77b1195cbb8f40"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "b8b81699a5346085"
@@ -107900,45 +108056,13 @@
       "source": "cb89f0146c279232",
       "output": "dd6bf89c3480eb99"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "7fed3bee20819f42"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "057e2892d5e49685"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "2f68e3ff8d4be67c"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "20767902c26c2b6d"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "170322a32f3c35b2"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "0d1c617cee5521ee"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "d90cda6bdf6411e9"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "25bf96bc10345e26"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "fc43ebef8e2aba39"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "955c2655c079440b"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "8992b90a64d04dc3"
+      "output": "14bfdc0e32aa60d3"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -108107,6 +108231,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "d534be829e32196b"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "222ec61ab5c5fd39"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "5956e6075eae01cd"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "c059bb580ce6daff"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "5691de98800b43e4"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "c4812765ec23a978"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "4285c70ebfe456db"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "838b422fb117c20a"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "a4245a3c4f566cab"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "8992b90a64d04dc3"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "07f111d30948aa2b"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "47a53d3e03d86645"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "6925853d78f1441b"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -108327,6 +108499,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "c00c64d8cfa1f8a2"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "1edc95f31cb4ffee"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -111777,8 +111953,8 @@
       "output": "80998f04c421cfb9"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "8beb4466b6426e90"
+      "source": "6694454a3718ed74",
+      "output": "3c799e88f2478294"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -112527,6 +112703,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "f27897f6d46b04ef"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "331952e6c15b142a"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "415a4fe08f7d6c57"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "efaa02d6be385bdd"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "46327e12ddc0605e"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "8837f0fbf937ac8f"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "73783637d9bcd1e3"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -132586,10 +132786,6 @@
       "source": "8f27347e109a5090",
       "output": "982c97ad3cacb224"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "417aa287549ff155"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "985fec1c5ce2067f"
@@ -132726,45 +132922,13 @@
       "source": "cb89f0146c279232",
       "output": "ef5c67a781e5e589"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "3857c94fb6b0dd6f"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "c02f8523a55b4bec"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "2edca9752632b8a8"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "9d0fe0ec28f10e05"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "8fcbd2b189eeac27"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "4639f1520704d259"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "a2db53fb98a78ef5"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "ce30a55daacb0b70"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "8cefef2b633d482a"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "b6325022ac41b25e"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "98d7ca2fbecf7fd4"
+      "output": "3b99475574457e69"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -132933,6 +133097,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "3f1a6b107394daa9"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "c1f53634bc640c2a"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "e1787cfb367f9933"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "5c870f6e260e8474"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "c7810fe0c6c00c9c"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "87d05f4d6bc17dc4"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "86a1d0abbf92aac9"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "a1c739bec3637b20"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "6c4762baf77fbd9a"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "98d7ca2fbecf7fd4"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "dc05676dc595138d"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "bfaf4f97ffc17ca3"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "88eefd1921d09966"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -133153,6 +133365,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "bd513e2620ec3fc5"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "7e1d9690661d1374"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -136603,8 +136819,8 @@
       "output": "6c8797508644e1c9"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "1905ff5ec5ea0035"
+      "source": "6694454a3718ed74",
+      "output": "8a6ca96c72802f4d"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -137353,6 +137569,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "4d0dad6eefd61fbb"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "e5521b7e808b2ded"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "80ae707c805e048c"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "f8912c210981fb5a"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "aa358f54cbfae823"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "0b8bfbe8944739cd"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "6af9ee07a6567af2"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
@@ -157412,10 +157652,6 @@
       "source": "8f27347e109a5090",
       "output": "668c2ac7ae548c2e"
     },
-    "editor.blockGroups.callout": {
-      "source": "b791a5686bab4aa0",
-      "output": "ebfa2d046fba5461"
-    },
     "editor.blockGroups.lists": {
       "source": "225d29f6201e1a63",
       "output": "f4cf0cb709e90dad"
@@ -157552,45 +157788,13 @@
       "source": "cb89f0146c279232",
       "output": "b49c4630cb871ece"
     },
-    "editor.blocks.callout-danger.description": {
-      "source": "fc3f09f52c217867",
-      "output": "da44753caddf1dd4"
+    "editor.blocks.callout.description": {
+      "source": "2cfd4266cbdc98e9",
+      "output": "8534f96c0891d049"
     },
-    "editor.blocks.callout-danger.label": {
-      "source": "c723c10a631c1221",
-      "output": "50c9eb3e9e1b43ee"
-    },
-    "editor.blocks.callout-info.description": {
-      "source": "6778ee8925836d31",
-      "output": "04f9ea55b400028f"
-    },
-    "editor.blocks.callout-info.label": {
+    "editor.blocks.callout.label": {
       "source": "2e2011d96a411698",
-      "output": "20be5de55beb69b7"
-    },
-    "editor.blocks.callout-note.description": {
-      "source": "719960d4af64b74c",
-      "output": "69de10c9d789c47e"
-    },
-    "editor.blocks.callout-note.label": {
-      "source": "74b487d9d2235bde",
-      "output": "ecef8a87fff05ec5"
-    },
-    "editor.blocks.callout-success.description": {
-      "source": "dfbb3e03b1c6075e",
-      "output": "7957b7ae25d1f1ab"
-    },
-    "editor.blocks.callout-success.label": {
-      "source": "f7f13860460ac3ff",
-      "output": "29bf2da0617d4954"
-    },
-    "editor.blocks.callout-warning.description": {
-      "source": "bdc313322a542dc4",
-      "output": "da9252fa685153b6"
-    },
-    "editor.blocks.callout-warning.label": {
-      "source": "48078085b7270fe8",
-      "output": "3e1da47705789333"
+      "output": "994e28758cb71495"
     },
     "editor.blocks.code-block.description": {
       "source": "e712da22ee7ec303",
@@ -157759,6 +157963,54 @@
     "editor.blocks.video.label": {
       "source": "d534be829e32196b",
       "output": "bc10c86c24b5ba44"
+    },
+    "editor.callout.color": {
+      "source": "a737098fb0f24938",
+      "output": "8db760e72e6b40fd"
+    },
+    "editor.callout.emoji": {
+      "source": "2ab6897f27c8323e",
+      "output": "3192d7d714d559b7"
+    },
+    "editor.callout.emojiSearch": {
+      "source": "91a73ba7e569c815",
+      "output": "3ad241dc30c6c42c"
+    },
+    "editor.callout.menuTitle": {
+      "source": "173fe5898bd49d17",
+      "output": "6ce186c44242a75f"
+    },
+    "editor.callout.suggestions.caution": {
+      "source": "4783261a96028bf9",
+      "output": "b0f8a4c6147a77ca"
+    },
+    "editor.callout.suggestions.important": {
+      "source": "dbfb3483db3b77fc",
+      "output": "3e7223731a5c7857"
+    },
+    "editor.callout.suggestions.note": {
+      "source": "2e2011d96a411698",
+      "output": "ecef8a87fff05ec5"
+    },
+    "editor.callout.suggestions.tip": {
+      "source": "accc9c6fbe77ecfa",
+      "output": "03e1b89d335a1a91"
+    },
+    "editor.callout.suggestions.warning": {
+      "source": "48078085b7270fe8",
+      "output": "3e1da47705789333"
+    },
+    "editor.callout.suggestionsLabel": {
+      "source": "b80d633139927b2a",
+      "output": "f9998e9c86c0aadd"
+    },
+    "editor.callout.title": {
+      "source": "fb039458a3350cb1",
+      "output": "4c08a5d5feb22ce2"
+    },
+    "editor.callout.titlePlaceholder": {
+      "source": "480d864163236a15",
+      "output": "9469c6553b7543ea"
     },
     "editor.codeBlock.copied": {
       "source": "9d6c69d0ce47f683",
@@ -157979,6 +158231,10 @@
     "editor.nodeViews.breadcrumb.label": {
       "source": "35156900c7a9ad77",
       "output": "acd2bcae904ba8e7"
+    },
+    "editor.nodeViews.callout.edit": {
+      "source": "83a732b3508b841f",
+      "output": "12064c3d050169b0"
     },
     "editor.nodeViews.commentCount": {
       "source": "7841c5a1e2bd7b6e",
@@ -161429,8 +161685,8 @@
       "output": "1c152c48c5cf806f"
     },
     "features.bloecke.details.p2": {
-      "source": "c4d7397ede4b68fd",
-      "output": "0c1c55707edc92a4"
+      "source": "6694454a3718ed74",
+      "output": "ea0323bbef125642"
     },
     "features.bloecke.details.p3": {
       "source": "449c340977dee971",
@@ -162179,6 +162435,30 @@
     "features.grosse-seiten-karte-und-auslagern.title": {
       "source": "bd53d92e29279bfd",
       "output": "db12bb1363df5a75"
+    },
+    "features.hinweisbox.details.p1": {
+      "source": "2caa870b79dc358b",
+      "output": "ba5c51ef730bcd34"
+    },
+    "features.hinweisbox.details.p2": {
+      "source": "4bd188d0b9e0d125",
+      "output": "e937cbdf06c0eac9"
+    },
+    "features.hinweisbox.details.p3": {
+      "source": "cf449c460ce27108",
+      "output": "84a23076bc95a5f6"
+    },
+    "features.hinweisbox.summary": {
+      "source": "1532744754736ec3",
+      "output": "8603fcd14b798fb3"
+    },
+    "features.hinweisbox.title": {
+      "source": "dc4a5ec4124c9cb5",
+      "output": "f620ff8c2775c8b3"
+    },
+    "features.hinweisbox.where": {
+      "source": "e6fa2bf5c44440df",
+      "output": "124bf3c6be19bdb7"
     },
     "features.kalenderansicht.details.p1": {
       "source": "2ab436070d9db53a",
