@@ -427,6 +427,53 @@ test.describe('databases', () => {
     ).toHaveValue('7', { timeout: 15_000 });
   });
 
+  /**
+   * Issue #254: a row opened as a page shows its values under its title, edits
+   * them through the table's own cells, and the table and the header follow
+   * each other without a reload (the realtime events of the database).
+   */
+  test("shows a row's properties under its title, in step with the table", async ({
+    page,
+    context,
+  }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const title = `Kopfzeile ${Date.now().toString(36)}`;
+    await createDatabase(page, title);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addProperty(page, 'Priorität', 'Zahl');
+    await page.getByTestId('add-row').click();
+    const tableRow = page.locator('[data-testid^="database-row-"]').first();
+    await expect(tableRow).toBeVisible({ timeout: 15_000 });
+    const databaseUrl = page.url();
+
+    await tableRow.getByRole('link').click();
+    await expect(page.getByTestId('document-title')).toBeVisible({ timeout: 15_000 });
+    const header = page.getByTestId('row-properties-header');
+    await expect(header).toBeVisible({ timeout: 15_000 });
+    await expect(header.getByRole('group', { name: 'Priorität' })).toBeVisible();
+
+    // Written in the header, read in the table of a second tab.
+    const headerNumber = header.locator('input[type="number"]');
+    await headerNumber.fill('7');
+    await headerNumber.blur();
+
+    const tablePage = await context.newPage();
+    await tablePage.goto(databaseUrl);
+    const tableNumber = tablePage
+      .locator('[data-testid^="database-row-"]')
+      .first()
+      .locator('input[type="number"]');
+    await expect(tableNumber).toHaveValue('7', { timeout: 15_000 });
+
+    // Written in the table, arriving in the open header without a reload.
+    await tableNumber.fill('9');
+    await tableNumber.blur();
+    await expect(headerNumber).toHaveValue('9', { timeout: 15_000 });
+    await tablePage.close();
+  });
+
   test('shows one appointment in every calendar mode and remembers the mode', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
