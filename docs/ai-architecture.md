@@ -908,7 +908,8 @@ does not ask ADR-032's question:
 2. The claim is a conditional update of `AiConversation.compactRequestedAt`.
    For `AI_CONVERSATION_COMPACTION_LEASE_MS` (two minutes) a new message or
    command is refused with `ai_conversation_compacting` (409), `/compact`
-   itself excepted, and the panel's composer waits. A request is refused while
+   itself excepted, and the panel's send button waits (the field still takes
+   text, issue #301). A request is refused while
    a run is open (`ai_conversation_locked`). Past the lease the request reads
    as `compactionError: 'abandoned'` and the conversation is free again.
 3. The job goes to the `conversation-compaction` queue with the model the next
@@ -1307,6 +1308,18 @@ screen has to be taken back once it is over (issue #242):
   the reader went there, because the room ends exactly where the view does.
   The jump buttons stay; "Zum Ende des Chats" hides while there is nothing
   below.
+- **The cursor stays where the next question goes (issue #301).** The
+  composer (`chat-composer.tsx`) is never disabled while a run answers or a
+  `/compact` summary is written: a disabled field drops its focus, which is
+  what used to leave the cursor nowhere after every message. Only sending
+  waits (the send button, and Enter, which then keeps the text in the field),
+  so a follow-up can be typed while the answer streams. After Enter or a click
+  on the send button the field keeps the cursor (`keepsFocusAfter`); a finger
+  on the send button lets it go on purpose, because on a phone the focused
+  field is what holds the on-screen keyboard over half the answer, and tapping
+  send is where reading starts. A question begun on the start page carries
+  that decision along (`PendingChatStart.focus`), and the panel puts the
+  cursor into its own field (`focusRequest`).
 
 The panel never relies on that channel alone. For as long as it believes a run
 is in flight it polls `GET /api/ai/runs/:runId` every

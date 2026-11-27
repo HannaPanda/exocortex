@@ -448,8 +448,10 @@ test.describe('AI side panel', () => {
     const boundary = page.getByTestId('ai-context-boundary');
     await expect(boundary).toHaveCount(1, { timeout: AI_RUN_FINISH_TIMEOUT_MS });
     await expect(boundary).toContainText('Älterer Verlauf zusammengefasst');
-    // And the composer, held while the summary was written, is free again.
-    await expect(page.getByTestId('ai-input')).toBeEnabled({ timeout: 30_000 });
+    // And the message, held while the summary was written, can go out again.
+    // The field took text all along (issue #301); the send button is what waits.
+    await page.getByTestId('ai-input').fill('Danke.');
+    await expect(page.getByTestId('ai-send')).toBeEnabled({ timeout: 30_000 });
   });
 
   /**

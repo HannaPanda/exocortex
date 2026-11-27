@@ -70,8 +70,10 @@ export function ChatStarter({ workspaceId }: { workspaceId: string }) {
       )}
       <ChatComposer
         variant="start"
-        disabled={false}
-        onSubmit={(text) => start({ workspaceId, text, files: local.take() })}
+        waiting={false}
+        onSubmit={(text, { keepFocus }) =>
+          start({ workspaceId, text, files: local.take(), focus: keepFocus })
+        }
         files={{ onFiles: local.add, ready: local.pending.length > 0, uploading: false }}
       />
     </div>

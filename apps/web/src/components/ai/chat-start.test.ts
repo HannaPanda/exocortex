@@ -6,6 +6,7 @@ const pending: PendingChatStart = {
   workspaceId: 'ws',
   text: 'Hallo',
   files: [],
+  focus: true,
   requestId: 1,
   askedAt: 1000,
 };

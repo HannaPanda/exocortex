@@ -8,6 +8,11 @@ export interface PendingChatStart {
   text: string;
   /** Pictures and documents picked on the start page, uploaded once the chat exists (issue #223). */
   files: readonly File[];
+  /**
+   * Whether the cursor goes along into the chat's field (issue #301): it does
+   * when it stayed in the start page's field, and not after a tap on a phone.
+   */
+  focus: boolean;
   /** Bumped on every start, so the shell and the panel each act on it exactly once. */
   requestId: number;
   /** When it was asked for. A start nobody picked up soon is dropped, never sent later. */
@@ -19,9 +24,16 @@ const PENDING_MS = 10_000;
 
 interface ChatStartContextValue {
   pending: PendingChatStart | null;
-  start: (input: { workspaceId: string; text: string; files?: readonly File[] }) => void;
+  start: (input: ChatStartInput) => void;
   /** Takes the start out of the queue; true only for the one caller that got it. */
   take: (requestId: number) => boolean;
+}
+
+interface ChatStartInput {
+  workspaceId: string;
+  text: string;
+  files?: readonly File[];
+  focus?: boolean;
 }
 
 const ChatStartContext = React.createContext<ChatStartContextValue | null>(null);
@@ -53,20 +65,18 @@ export function ChatStartProvider({
     latestOnStart.current = onStart;
   });
 
-  const start = React.useCallback(
-    (input: { workspaceId: string; text: string; files?: readonly File[] }) => {
-      counter.current += 1;
-      setPending({
-        workspaceId: input.workspaceId,
-        text: input.text,
-        files: input.files ?? [],
-        requestId: counter.current,
-        askedAt: Date.now(),
-      });
-      latestOnStart.current();
-    },
-    [],
-  );
+  const start = React.useCallback((input: ChatStartInput) => {
+    counter.current += 1;
+    setPending({
+      workspaceId: input.workspaceId,
+      text: input.text,
+      files: input.files ?? [],
+      focus: input.focus ?? false,
+      requestId: counter.current,
+      askedAt: Date.now(),
+    });
+    latestOnStart.current();
+  }, []);
 
   const take = React.useCallback((requestId: number): boolean => {
     if (taken.current === requestId) return false;
@@ -104,12 +114,12 @@ export function isChatStartFor(
  */
 export function useStartedChat(
   workspaceId: string,
-  send: (text: string, files: readonly File[]) => void,
+  send: (text: string, files: readonly File[], focus: boolean) => void,
 ): void {
   const { pending, take } = useChatStart();
   const sendLatest = React.useEffectEvent(send);
   React.useEffect(() => {
     if (!isChatStartFor(pending, workspaceId, Date.now())) return;
-    if (take(pending.requestId)) sendLatest(pending.text, pending.files);
+    if (take(pending.requestId)) sendLatest(pending.text, pending.files, pending.focus);
   }, [pending, take, workspaceId]);
 }

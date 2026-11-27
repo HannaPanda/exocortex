@@ -215,6 +215,7 @@ export function AiPanelFooter({
   onPinRemove,
   busy,
   onSubmit,
+  focusRequest,
   attachments,
   dragging,
 }: {
@@ -232,6 +233,8 @@ export function AiPanelFooter({
   onPinRemove: (source: AiConversationSource) => void;
   busy: boolean;
   onSubmit: (content: string) => Promise<void>;
+  /** Bumped to put the cursor into the field (issue #301). */
+  focusRequest: number;
   /** The pictures waiting for the next message (issue #223). */
   attachments: ChatAttachments;
   /** Files are being dragged over the panel: the footer says where they go. */
@@ -278,8 +281,9 @@ export function AiPanelFooter({
         </div>
       )}
       <ChatComposer
-        disabled={busy}
+        waiting={busy}
         onSubmit={onSubmit}
+        focusRequest={focusRequest}
         files={{
           onFiles: attachments.add,
           ready: attachments.readyIds.length > 0,

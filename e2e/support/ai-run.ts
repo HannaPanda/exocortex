@@ -57,8 +57,9 @@ export function recordAiRun(label: string, milliseconds: number): void {
 
 /**
  * Waits for the run that was just sent to start and to finish, and answers with
- * how long the finish took. The composer stays disabled for the whole run, so
- * this is also the gate that keeps the next message from being swallowed.
+ * how long the finish took. The send button stays disabled for the whole run
+ * (the field takes text, issue #301), so this is also the gate that keeps the
+ * next message from being swallowed.
  */
 export async function waitForAiRun(page: Page, label: string): Promise<number> {
   const activity = page.getByTestId('ai-run-activity');

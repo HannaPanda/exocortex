@@ -407,7 +407,12 @@ function AiPanelBody({
 
   // A question typed on the workspace's start page (issue #288) begins a new
   // chat here, because this is where its answer is streamed.
-  useStartedChat(workspaceId, (text, files) => void handleSubmit(text, true, files));
+  // The cursor comes along when it stayed in the start page's field (#301).
+  const [focusRequest, setFocusRequest] = React.useState(0);
+  useStartedChat(workspaceId, (text, files, focus) => {
+    if (focus) setFocusRequest((current) => current + 1);
+    void handleSubmit(text, true, files);
+  });
 
   return (
     <div
@@ -493,7 +498,9 @@ function AiPanelBody({
         onPinModeChange={pinnedSources.setMode}
         onPinRemove={pinnedSources.remove}
         busy={busy}
-        onSubmit={handleSubmit}
+        // Only the words: the composer's second argument is not `fresh`.
+        onSubmit={(content) => handleSubmit(content)}
+        focusRequest={focusRequest}
         attachments={attachments}
         dragging={fileDrop.dragging}
       />
