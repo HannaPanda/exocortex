@@ -229,6 +229,22 @@ describe('exo_attachment_upload', () => {
     expect(calls[0]?.contentType).toBe('application/octet-stream');
   });
 
+  it('sends the database cell beside the page, and says the file is in it (issue #245)', async () => {
+    const { client, calls } = createFakeClient(uploadResponse);
+
+    const result = await attachmentUploadTool.run(client, {
+      workspaceId: 'workspace1',
+      documentId: 'doc123456',
+      filename: 'zahlen.csv',
+      contentBase64: Buffer.from('a,b\n').toString('base64'),
+      propertyId: 'files123456',
+    });
+
+    expect(calls[0]?.fields).toEqual({ documentId: 'doc123456', propertyId: 'files123456' });
+    expect(result.text).toContain('in die Zelle der Spalte files123456 gelegt');
+    expect(result.text).not.toContain('Einbetten mit');
+  });
+
   it('sends the page the file belongs to', async () => {
     const { client, calls } = createFakeClient(uploadResponse);
 
@@ -278,6 +294,7 @@ const ticket = {
   workspaceId: 'ws1234567',
   documentId: 'doc123456',
   filename: null,
+  propertyId: null,
   state: 'open' as const,
   expiresAt: '2026-09-25T12:10:00.000Z',
   usedAt: null,
@@ -306,7 +323,7 @@ describe('exo_attachment_upload_ticket', () => {
       {
         method: 'POST',
         path: '/api/workspaces/ws1234567/attachments/upload-tickets',
-        body: { documentId: 'doc123456', filename: null },
+        body: { documentId: 'doc123456', filename: null, propertyId: null },
       },
     ]);
     expect(result.text).toContain(`curl -sS -F "file=@/pfad/zur/datei" '${uploadUrl}'`);

@@ -499,6 +499,15 @@ Two steps:
    `/api/attachments/<id>/download`, it is stable, and it is checked against the
    session on every request, so the picture stays as private as the page.
 
+A file for a database's files column skips step 2 (issue #245,
+[ADR-098](adr/ADR-098-a-cell-file-hangs-on-its-row.md)): all three upload tools
+take an optional `propertyId`, the FILES column, with `documentId` set to the
+row. The file then lands in that cell and not in the page's text, and the
+answer says so instead of offering an embed. Removing or reordering is
+`exo_database_row_update` with the list of ids; it accepts an id the cell does
+not hold yet only when the file hangs on that row. `exo_database_row_get` and
+`exo_database_query` name a cell's files with their file names.
+
 ### Looking at a picture, and taking a file home
 
 The other direction ([issue #204](https://github.com/HannaPanda/exocortex/issues/204),

@@ -17,6 +17,7 @@ import {
   idSchema,
   uploadAttachmentFromUrlRequestSchema,
   uploadAttachmentResponseSchema,
+  uploadPropertyTargetSchema,
   type UploadTicket,
   uploadTicketResponseSchema,
 } from '@exocortex/contracts';
@@ -102,10 +103,29 @@ const attachmentUploadInputSchema = z.object({
   documentId: uploadOwnerSchema,
   filename: z.string().min(1).max(255),
   contentBase64: z.string().max(35_000_000),
+  propertyId: uploadPropertyTargetSchema,
 });
 
-/** One line both upload tools answer with, so an embed can be written from it. */
-function uploadedText(result: { attachment: { filename: string; id: string }; embedUrl: string }) {
+/**
+ * The sentence for a file put into a database cell (issue #245), shared by
+ * every upload tool: it is in the cell already and must not be embedded too.
+ */
+const CELL_RECIPE =
+  'Für eine Dateien-Spalte einer Datenbank (Typ FILES) propertyId mitgeben und documentId auf die ' +
+  'Zeile setzen: dann landet die Datei in dieser Zelle und nicht im Text der Seite. Entfernen und ' +
+  'Umsortieren geht danach mit exo_database_row_update über die Liste der Kennungen.';
+
+/** One line every upload tool answers with, so an embed can be written from it. */
+function uploadedText(
+  result: { attachment: { filename: string; id: string }; embedUrl: string },
+  propertyId: string | null = null,
+) {
+  if (propertyId !== null) {
+    return (
+      `Datei hochgeladen: ${result.attachment.filename} (id: ${result.attachment.id}), ` +
+      `in die Zelle der Spalte ${propertyId} gelegt. Nicht zusätzlich in die Seite einbetten.`
+    );
+  }
   return (
     `Datei hochgeladen: ${result.attachment.filename} (id: ${result.attachment.id}).\n` +
     `Einbetten mit: ![Beschreibung](${result.embedUrl})`
@@ -119,7 +139,9 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
     'Nur für kleine Inhalte, die du selbst erzeugt hast: du musst jedes Byte als Base64 in den ' +
     'Aufruf schreiben, für ein Foto oder ein PDF ist das zu viel. Liegt die Datei bei dir lokal, ' +
     'nimm exo_attachment_upload_ticket. ' +
-    EMBED_RECIPE,
+    EMBED_RECIPE +
+    ' ' +
+    CELL_RECIPE,
   inputSchema: attachmentUploadInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'attachments',
@@ -135,10 +157,14 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
       // have no magic bytes to sniff (see DECLARED_TYPE_BY_EXTENSION).
       contentType: declaredTypeFor(input.filename),
       bytes,
-      fields: { documentId: input.documentId },
+      // The page before the file part, and the cell beside it (issue #245).
+      fields:
+        input.propertyId === null
+          ? { documentId: input.documentId }
+          : { documentId: input.documentId, propertyId: input.propertyId },
       responseSchema: uploadAttachmentResponseSchema,
     });
-    return { text: uploadedText(result), data: result };
+    return { text: uploadedText(result, input.propertyId), data: result };
   },
 });
 
@@ -163,7 +189,9 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
     'erreichbar sein (kein localhost, keine internen Netze). Eine Datei, die bei dir lokal liegt, ' +
     'nicht erst auf einem Server veröffentlichen, um sie hiermit zu holen: dafür ist ' +
     'exo_attachment_upload_ticket da. ' +
-    EMBED_RECIPE,
+    EMBED_RECIPE +
+    ' ' +
+    CELL_RECIPE,
   inputSchema: z
     .object({ workspaceId: idSchema })
     .extend(uploadAttachmentFromUrlRequestSchema.shape)
@@ -182,7 +210,7 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: uploadAttachmentResponseSchema,
     });
-    return { text: uploadedText(result), data: result };
+    return { text: uploadedText(result, input.propertyId), data: result };
   },
 });
 
@@ -214,7 +242,9 @@ export const attachmentUploadTicketTool: AnyToolDefinition = defineTool({
     'Projekt, in das sie kommt. Mit filename bekommt sie einen eigenen Namen. Die Adresse ist ein Geheimnis für genau einen Upload: nicht in Seiten, Commits oder ' +
     'Nachrichten schreiben. Siehst du die Ausgabe des Skripts nicht, nennt ' +
     'exo_attachment_upload_ticket_get Stand und embedUrl. ' +
-    EMBED_RECIPE,
+    EMBED_RECIPE +
+    ' ' +
+    CELL_RECIPE,
   inputSchema: z
     .object({ workspaceId: idSchema })
     .extend(createUploadTicketRequestSchema.shape)
@@ -236,8 +266,11 @@ export const attachmentUploadTicketTool: AnyToolDefinition = defineTool({
       'für genau einen Upload.\n' +
       'Datei hochladen (eine Datei, als multipart/form-data):\n' +
       `curl -sS -F "file=@/pfad/zur/datei" '${result.uploadUrl}'\n` +
-      'Die Antwort ist JSON mit embedUrl. Einbetten mit: ![Beschreibung](embedUrl) über ' +
-      'exo_page_write.\n' +
+      (result.ticket.propertyId === null
+        ? 'Die Antwort ist JSON mit embedUrl. Einbetten mit: ![Beschreibung](embedUrl) über ' +
+          'exo_page_write.\n'
+        : `Die Datei landet in der Zelle der Spalte ${result.ticket.propertyId}; nicht ` +
+          'zusätzlich in die Seite einbetten.\n') +
       `Stand abfragen: exo_attachment_upload_ticket_get mit workspaceId ${result.ticket.workspaceId} ` +
       `und ticketId ${result.ticket.id}.\n` +
       'Die Adresse ist ein Geheimnis: nirgends hinschreiben. Schlägt der Upload fehl, gilt das ' +

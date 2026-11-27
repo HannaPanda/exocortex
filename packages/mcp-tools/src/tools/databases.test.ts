@@ -111,6 +111,37 @@ describe('databaseRowGetTool', () => {
     expect(result.text).toContain('- Status (prop1234567): Erledigt');
   });
 
+  it('names the files of a FILES cell, and says which one is gone (issue #245)', async () => {
+    const { client } = createFakeClient({
+      row: {
+        document: rowDocument,
+        values: [{ propertyId: 'files123456', value: ['attach12345', 'attach99999'] }],
+        files: [
+          { id: 'attach12345', filename: 'beleg.pdf', mimeType: 'application/pdf', byteSize: 10 },
+        ],
+      },
+      properties: [
+        {
+          id: 'files123456',
+          documentId: 'coll1234567',
+          type: 'FILES',
+          name: 'Belege',
+          orderKey: 'a0',
+          config: null,
+          options: [],
+          createdAt: '2026-11-27T10:00:00.000Z',
+          updatedAt: '2026-11-27T10:00:00.000Z',
+        },
+      ],
+    });
+
+    const result = await databaseRowGetTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain(
+      '- Belege (files123456): beleg.pdf (id: attach12345), (gelöscht, id: attach99999)',
+    );
+  });
+
   it('says so, not an error, when the document is not a row', async () => {
     const { client } = createFakeClient({ row: null });
 
