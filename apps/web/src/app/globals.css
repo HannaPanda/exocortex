@@ -560,7 +560,7 @@
   }
 
   .exocortex-editor button.exocortex-callout-emoji:not(:disabled) {
-    @apply cursor-pointer hover:bg-accent-solid;
+    @apply cursor-pointer hover:bg-accent;
   }
 
   .exocortex-editor .exocortex-callout-body {
