@@ -38,6 +38,8 @@ import {
   REASONING_LEVEL_TO_CONTRACT,
   REASONING_LEVEL_TO_PRISMA,
 } from './ai-model-resolver.service';
+import { loadMessageAttachments } from './chat-attachments';
+import { ChatAttachmentsService } from './chat-attachments.service';
 import { runChatCommand } from './chat-command-runner';
 import { parseChatCommand, type ParsedChatCommand } from './chat-commands';
 import { requestConversationCompaction } from './conversation-compaction';
@@ -153,6 +155,7 @@ export class ConversationsService {
     private readonly access: WorkspaceAccessService,
     private readonly modelResolver: AiModelResolverService,
     private readonly settings: SettingsService,
+    private readonly chatAttachments: ChatAttachmentsService,
   ) {}
 
   async get(
@@ -175,7 +178,13 @@ export class ConversationsService {
     const runIds = [
       ...new Set(messages.flatMap((message) => (message.runId === null ? [] : [message.runId]))),
     ];
-    const runWrites = await readRunWrites(this.prisma, userId, runIds);
+    const [runWrites, attachments] = await Promise.all([
+      readRunWrites(this.prisma, userId, runIds),
+      loadMessageAttachments(
+        this.prisma,
+        messages.filter((message) => message.role === 'USER').map((message) => message.id),
+      ),
+    ]);
 
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
     // The detail response already carries the transcript, so the preview costs
@@ -187,7 +196,9 @@ export class ConversationsService {
         fallbackContextWindow,
         firstUserMessage === null ? '' : previewOf(firstUserMessage.content),
       ),
-      messages: messages.map((message) => conversationMessageToContract(message)),
+      messages: messages.map((message) =>
+        conversationMessageToContract(message, attachments.get(message.id)),
+      ),
       lastRun:
         lastRun === null
           ? null
@@ -397,6 +408,15 @@ export class ConversationsService {
       userId: input.userId,
     });
 
+    // Before anything is written, so a refused file leaves no message behind.
+    const attachmentIds = input.request.attachmentIds ?? [];
+    await this.chatAttachments.assertSendable({
+      conversationId: conversation.id,
+      workspaceId: conversation.workspaceId,
+      userId: input.userId,
+      attachmentIds,
+    });
+
     // Two different questions, deliberately kept apart: `documentId` records
     // where the user is standing, `pageContextEnabled` decides whether that is
     // disclosed. Removing the context chip must not make the panel forget which
@@ -472,6 +492,12 @@ export class ConversationsService {
       },
     });
 
+    const attachments = await this.chatAttachments.bind({
+      conversationId: conversation.id,
+      messageId: userMessage.id,
+      attachmentIds,
+    });
+
     const preludeTokens = preludeMessages.reduce(
       (sum, message) => sum + message.estimatedTokens,
       0,
@@ -537,7 +563,7 @@ export class ConversationsService {
     return {
       run: mapAiRunRow(run),
       command: null,
-      userMessage: conversationMessageToContract(userMessage),
+      userMessage: conversationMessageToContract(userMessage, attachments),
     };
   }
 

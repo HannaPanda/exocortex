@@ -469,12 +469,15 @@ export class DocumentsService {
   private async assertUsableCover(attachmentId: string, workspaceId: string): Promise<void> {
     const attachment = await this.prisma.attachment.findUnique({
       where: { id: attachmentId },
-      select: { workspaceId: true, mimeType: true, deletedAt: true },
+      select: { workspaceId: true, mimeType: true, deletedAt: true, conversationId: true },
     });
+    // A file on a chat message belongs to its conversation and goes with it
+    // (issue #223), so it cannot become a page's cover.
     if (
       attachment === null ||
       attachment.deletedAt !== null ||
-      attachment.workspaceId !== workspaceId
+      attachment.workspaceId !== workspaceId ||
+      attachment.conversationId !== null
     ) {
       throw AppError.notFound('Attachment');
     }

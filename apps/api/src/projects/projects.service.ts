@@ -451,9 +451,21 @@ export class ProjectsService {
     const context = await this.access.requireDocumentContext(input.projectId, input.userId);
     const attachment = await this.prisma.attachment.findUnique({
       where: { id: input.request.attachmentId },
-      select: { id: true, workspaceId: true, byteSize: true, mimeType: true, deletedAt: true },
+      select: {
+        id: true,
+        workspaceId: true,
+        byteSize: true,
+        mimeType: true,
+        deletedAt: true,
+        conversationId: true,
+      },
     });
-    if (attachment === null || attachment.deletedAt !== null) {
+    // A chat file is private to its conversation and goes with it (issue #223).
+    if (
+      attachment === null ||
+      attachment.deletedAt !== null ||
+      attachment.conversationId !== null
+    ) {
       throw AppError.notFound('Attachment');
     }
     if (attachment.workspaceId !== context.workspaceId) {

@@ -54,7 +54,13 @@ function renderMessage(message: AiConversationMessage): string {
     const name = message.toolName ?? 'unbekannt';
     return `**${label} · ${name}**${suffix}\n\n${fence(message.content, '')}`;
   }
-  return `**${label}**${suffix}\n\n${message.content}`;
+  // Named, never embedded: a chat file is private to its conversation and is
+  // deleted with it (issue #223), so a picture on the page would break.
+  const attached =
+    message.attachments.length === 0
+      ? ''
+      : `\n\n_Angehängt: ${message.attachments.map((file) => file.filename).join(', ')}_`;
+  return `**${label}**${suffix}\n\n${message.content}${attached}`;
 }
 
 export interface TranscriptMarkdownInput {

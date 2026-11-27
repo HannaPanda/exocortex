@@ -16,6 +16,7 @@ import { SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AiModelResolverService } from './ai-model-resolver.service';
+import { ChatAttachmentsService } from './chat-attachments.service';
 import { ConversationsService } from './conversations.service';
 
 /**
@@ -120,7 +121,23 @@ beforeAll(async () => {
     process.env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
     settings,
   );
-  conversations = new ConversationsService(prisma, queues, logger, access, modelResolver, settings);
+  conversations = new ConversationsService(
+    prisma,
+    queues,
+    logger,
+    access,
+    modelResolver,
+    settings,
+    new ChatAttachmentsService(
+      prisma,
+      // Nothing in this suite uploads a chat file or holds one in storage.
+      {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[1],
+      logger,
+      access,
+      {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[4],
+      settings,
+    ),
+  );
   documents = new DocumentsService(
     prisma,
     queues,

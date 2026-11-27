@@ -28,6 +28,7 @@ function message(
     isSummary: false,
     superseded: false,
     runId,
+    attachments: [],
     createdAt: '2026-11-26T00:00:00.000Z',
   };
 }

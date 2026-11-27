@@ -2186,6 +2186,63 @@ describe('maintenance', () => {
     ).toBeNull();
   }, 60_000);
 
+  it('collects a chat picture nobody sent within a day, and keeps sent and fresh ones', async () => {
+    const keyPrefix = `test/chat-${Date.now().toString(36)}`;
+    const conversation = await prisma.aiConversation.create({
+      data: { workspaceId, createdById: userId, title: 'Bilder' },
+    });
+    const message = await prisma.aiConversationMessage.create({
+      data: { conversationId: conversation.id, role: 'USER', content: 'Schau' },
+    });
+    const dayAgo = new Date(Date.now() - 25 * 60 * 60 * 1000);
+    const chatFile = (name: string, extra: { createdAt: Date; conversationMessageId?: string }) =>
+      prisma.attachment.create({
+        data: {
+          workspaceId,
+          conversationId: conversation.id,
+          filename: name,
+          mimeType: 'image/png',
+          byteSize: 3,
+          storageKey: `${keyPrefix}/${name}`,
+          createdById: userId,
+          ...extra,
+        },
+      });
+    const abandoned = await chatFile('liegen-geblieben.png', { createdAt: dayAgo });
+    const sent = await chatFile('gesendet.png', {
+      createdAt: dayAgo,
+      conversationMessageId: message.id,
+    });
+    const fresh = await chatFile('gerade-eben.png', { createdAt: new Date() });
+
+    const deleted: string[] = [];
+    const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
+      search,
+      prisma,
+      queues,
+      storage: recordingStorage(deleted),
+      bus,
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor<'maintenance'>({
+        correlationId: 'test-chat-files',
+        task: 'collect-orphaned-covers',
+        workspaceId,
+        documentId: null,
+      }).context,
+    );
+
+    expect(deleted).toEqual([`${keyPrefix}/liegen-geblieben.png`]);
+    const deletedAt = async (id: string) =>
+      (await prisma.attachment.findUniqueOrThrow({ where: { id } })).deletedAt;
+    expect(await deletedAt(abandoned.id)).not.toBeNull();
+    expect(await deletedAt(sent.id)).toBeNull();
+    expect(await deletedAt(fresh.id)).toBeNull();
+  }, 60_000);
+
   it('reaps a RUNNING run whose heartbeat has gone stale, as ai_run_abandoned', async () => {
     const staleHeartbeat = new Date(Date.now() - 5 * 60_000);
     const runId = await createAiRunRow('RUNNING', {
@@ -3021,6 +3078,12 @@ function fakeStorage(bytes: Buffer): ObjectStorage {
   };
 }
 
+/** A 1x1 PNG: a picture the image pipeline can decode and scale. */
+const ONE_PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
 function fakeVisionPreprocessor(description: string): VisionPreprocessor {
   return { describeImage: async () => description } as unknown as VisionPreprocessor;
 }
@@ -3093,6 +3156,78 @@ describe('ai runs', () => {
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
     expect(run.resultText).toBe('ok');
+  }, 60_000);
+
+  it('describes a picture on a chat message once and hands it to the model, fenced', async () => {
+    const conversationId = await createConversation();
+    const message = await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Was steht da?', estimatedTokens: 5 },
+    });
+    const picture = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        conversationId,
+        conversationMessageId: message.id,
+        filename: 'fehler.png',
+        mimeType: 'image/png',
+        byteSize: ONE_PIXEL_PNG.byteLength,
+        storageKey: `test/chat-${Date.now().toString(36)}.png`,
+        createdById: userId,
+      },
+    });
+    const describe = vi.fn(async () => 'Ein Dialog: „Speichern fehlgeschlagen“.');
+    const runFor = async (correlationId: string): Promise<CapturingAiProvider> => {
+      const run = await prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: userId,
+          status: 'PENDING',
+          provider: 'capturing-test-provider',
+          model: 'test-model',
+          messages: [{ role: 'user', content: 'Was steht da?' }],
+          conversationId,
+        },
+      });
+      const provider = new CapturingAiProvider();
+      const processor = createAiRunProcessor({
+        search: { hybrid: search, keyword: keywordSearch },
+        prisma,
+        providerFor: providerFor(provider),
+        bus,
+        storage: fakeStorage(ONE_PIXEL_PNG),
+        settings: stubSettings(),
+        toolRunnerFactory: null,
+        visionPreprocessorFor: () => ({ describeImage: describe }) as unknown as VisionPreprocessor,
+        queues,
+        modelRegistry: async () => null,
+      });
+      await processor(
+        contextFor<'ai'>({ correlationId, runId: run.id, workspaceId, userId }).context,
+      );
+      return provider;
+    };
+
+    const provider = await runFor('test-chat-picture-1');
+
+    const messages = provider.lastRequest?.messages ?? [];
+    const question = messages.findIndex((entry) => entry.content === 'Was steht da?');
+    expect(question).toBeGreaterThan(0);
+    const context = messages[question - 1];
+    expect(context?.role).toBe('system');
+    expect(context?.content).toContain('<<<FREMDINHALT aus einem hochgeladenen Dokument');
+    expect(context?.content).toContain('fehler.png: Ein Dialog: „Speichern fehlgeschlagen“.');
+    const stored = await prisma.attachment.findUniqueOrThrow({ where: { id: picture.id } });
+    expect(stored.imageDescription).toBe('Ein Dialog: „Speichern fehlgeschlagen“.');
+    expect(stored.imageDescribedAt).not.toBeNull();
+
+    // The next turn reads the stored description instead of paying again.
+    const second = await runFor('test-chat-picture-2');
+    expect(describe).toHaveBeenCalledTimes(1);
+    expect(
+      (second.lastRequest?.messages ?? []).some((entry) =>
+        entry.content.includes('Speichern fehlgeschlagen'),
+      ),
+    ).toBe(true);
   }, 60_000);
 
   /**

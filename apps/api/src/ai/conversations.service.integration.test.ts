@@ -21,6 +21,7 @@ import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AiModelResolverService } from './ai-model-resolver.service';
+import { ChatAttachmentsService } from './chat-attachments.service';
 import { ConversationArchiveService } from './conversation-archive.service';
 import { ConversationSearchService } from './conversation-search';
 import { ConversationsService } from './conversations.service';
@@ -43,6 +44,7 @@ const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 let prisma: PrismaClient;
 let queues: QueueRegistry;
 let service: ConversationsService;
+let chatAttachments: ChatAttachmentsService;
 let workspaceId: string;
 /** A workspace `ownerId` is deliberately not a member of, for the access tests. */
 let foreignWorkspaceId: string;
@@ -63,7 +65,24 @@ beforeAll(async () => {
   const settings = new SettingsService(prisma, logger, outbox);
   const envDefaultModel = process.env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5';
   const modelResolver = new AiModelResolverService(prisma, envDefaultModel, settings);
-  service = new ConversationsService(prisma, queues, logger, access, modelResolver, settings);
+  chatAttachments = new ChatAttachmentsService(
+    prisma,
+    // Nothing in this suite uploads a chat file or holds one in storage.
+    {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[1],
+    logger,
+    access,
+    {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[4],
+    settings,
+  );
+  service = new ConversationsService(
+    prisma,
+    queues,
+    logger,
+    access,
+    modelResolver,
+    settings,
+    chatAttachments,
+  );
 
   const noThinkingModel = await prisma.aiModel.findFirst({
     where: { enabled: true, reasoningLevels: { equals: ['NONE'] } },
@@ -1156,6 +1175,7 @@ describe('ConversationArchiveService', () => {
       new ConversationSearchService(prisma),
       documents,
       content,
+      chatAttachments,
     );
   });
 

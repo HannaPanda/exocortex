@@ -1,6 +1,7 @@
 import { assertPolicy, canReadWorkspace, type WorkspaceAccessService } from '@exocortex/auth';
 import {
   AI_CONVERSATION_COMPACTION_LEASE_MS,
+  type AiChatAttachment,
   type AiConversation,
   type AiConversationCompactionError,
   aiConversationCompactionErrorSchema,
@@ -189,6 +190,7 @@ export function conversationToContract(
 
 export function conversationMessageToContract(
   message: ConversationMessageRow,
+  attachments: AiChatAttachment[] = [],
 ): AiConversationMessage {
   return {
     id: message.id,
@@ -200,6 +202,7 @@ export function conversationMessageToContract(
     isSummary: message.isSummary,
     superseded: message.supersededAt !== null,
     runId: message.runId,
+    attachments,
     createdAt: message.createdAt.toISOString(),
   };
 }

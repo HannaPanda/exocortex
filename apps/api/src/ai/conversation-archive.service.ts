@@ -22,6 +22,8 @@ import { DocumentsService } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
 
 import { AiModelResolverService } from './ai-model-resolver.service';
+import { loadMessageAttachments } from './chat-attachments';
+import { ChatAttachmentsService } from './chat-attachments.service';
 import {
   CONVERSATION_SELECT,
   conversationMessageToContract,
@@ -95,6 +97,7 @@ export class ConversationArchiveService {
     private readonly search: ConversationSearchService,
     private readonly documents: DocumentsService,
     private readonly content: DocumentContentService,
+    private readonly chatAttachments: ChatAttachmentsService,
   ) {}
 
   /**
@@ -199,6 +202,13 @@ export class ConversationArchiveService {
     userId: string,
   ): Promise<AiConversationDeleteResponse> {
     const conversation = await this.loadOwned(conversationId, userId);
+    // The files on its messages go with it (issue #223): their rows by the
+    // foreign key's cascade, their bytes right after, so a deleted chat
+    // leaves nothing behind in the bucket.
+    const attachmentCount = await this.prisma.attachment.count({
+      where: { conversationId: conversation.id },
+    });
+    const attachmentKeys = await this.chatAttachments.storageKeysOf(conversation.id);
 
     const [messages, runs] = await this.prisma.$transaction([
       this.prisma.aiConversationMessage.deleteMany({ where: { conversationId: conversation.id } }),
@@ -214,13 +224,26 @@ export class ConversationArchiveService {
       this.prisma.aiConversation.delete({ where: { id: conversation.id } }),
     ]);
 
+    const objects = await this.chatAttachments.deleteObjects({
+      conversationId: conversation.id,
+      keys: attachmentKeys,
+    });
+
     this.logger.info('AI conversation deleted permanently', {
       conversationId: conversation.id,
       workspaceId: conversation.workspaceId,
       messagesDeleted: messages.count,
       runsPruned: runs.count,
+      attachmentsDeleted: attachmentCount,
+      objectsRemoved: objects.removed,
+      objectsFailed: objects.failed,
     });
-    return { deleted: true, messagesDeleted: messages.count, runsPruned: runs.count };
+    return {
+      deleted: true,
+      messagesDeleted: messages.count,
+      runsPruned: runs.count,
+      attachmentsDeleted: attachmentCount,
+    };
   }
 
   /**
@@ -251,6 +274,10 @@ export class ConversationArchiveService {
       }),
     ]);
 
+    const attachments = await loadMessageAttachments(
+      this.prisma,
+      messages.map((message) => message.id),
+    );
     const title = input.request.title ?? conversation.title;
     const created = await this.documents.create({
       workspaceId: conversation.workspaceId,
@@ -270,7 +297,9 @@ export class ConversationArchiveService {
           modelSlug: conversation.model?.slug ?? null,
           createdAt: conversation.createdAt.toISOString(),
           lastMessageAt: conversation.lastMessageAt.toISOString(),
-          messages: messages.map((message) => conversationMessageToContract(message)),
+          messages: messages.map((message) =>
+            conversationMessageToContract(message, attachments.get(message.id)),
+          ),
         }),
         mode: 'replace',
       },

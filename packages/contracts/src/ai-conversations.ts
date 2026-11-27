@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { aiRunSchema } from './ai';
 import { aiReasoningLevelSchema } from './ai-models';
 import { aiRunWrittenPagesSchema } from './ai-run-changes';
+import { isAttachmentImageSource } from './attachments';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 export const aiConversationRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
@@ -107,6 +108,54 @@ export function contextUsagePercentOf(tokens: number, windowTokens: number | nul
   return Math.min(100, Math.max(0.1, percent));
 }
 
+/**
+ * A file somebody put on a chat message (issue #223).
+ *
+ * It belongs to the conversation, never to a page: only the conversation's
+ * owner can read it, and deleting the conversation deletes it. Pictures only
+ * for now; the built-in AI reads one through a vision model's description
+ * (ADR-088), which is stored here once and fenced as attachment content
+ * every time it reaches a prompt (ADR-030).
+ */
+export const aiChatAttachmentSchema = z.object({
+  id: idSchema,
+  filename: z.string(),
+  mimeType: z.string(),
+  byteSize: z.number().int().nonnegative(),
+  /**
+   * What a vision model saw, in the words the assistant was given. Null until
+   * a run described the picture, and while nobody could: vision switched off,
+   * no model to ask, or the call failed (the next run tries again).
+   */
+  description: z.string().nullable(),
+  createdAt: isoDateTimeSchema,
+});
+export type AiChatAttachment = z.infer<typeof aiChatAttachmentSchema>;
+
+/**
+ * Whether a file of this type can go on a chat message (issue #223).
+ *
+ * The raster images the image read accepts (ADR-088): the assistant sees a
+ * picture through a vision model, and an SVG is a document that can carry
+ * script rather than a picture. Other files are the next step.
+ */
+export function isChatAttachmentMimeType(mimeType: string): boolean {
+  return isAttachmentImageSource(mimeType);
+}
+
+/**
+ * The most attachments one message may name, whatever the workspace allows.
+ * The limit that applies is `ai.visionMaxImagesPerRun`, because no run
+ * describes more pictures than that; this only bounds the request.
+ */
+export const AI_CHAT_ATTACHMENTS_MAX_PER_MESSAGE = 20;
+
+/** The answer to `POST /api/ai/conversations/:id/attachments`. */
+export const uploadChatAttachmentResponseSchema = z.object({
+  attachment: aiChatAttachmentSchema,
+});
+export type UploadChatAttachmentResponse = z.infer<typeof uploadChatAttachmentResponseSchema>;
+
 export const aiConversationMessageSchema = z.object({
   id: idSchema,
   conversationId: idSchema,
@@ -117,6 +166,8 @@ export const aiConversationMessageSchema = z.object({
   isSummary: z.boolean(),
   superseded: z.boolean(),
   runId: idSchema.nullable(),
+  /** The files sent with this message (issue #223); empty for every other. */
+  attachments: z.array(aiChatAttachmentSchema).default([]),
   createdAt: isoDateTimeSchema,
 });
 export type AiConversationMessage = z.infer<typeof aiConversationMessageSchema>;
@@ -200,16 +251,31 @@ export const messageSelectionSchema = z.object({
 });
 export type MessageSelection = z.infer<typeof messageSelectionSchema>;
 
-export const postConversationMessageRequestSchema = z.object({
-  content: z.string().trim().min(1).max(20_000),
-  documentId: idSchema.nullable().optional(),
-  /** The open view, when `documentId` is a collection. Ignored for ordinary pages. */
-  databaseViewId: idSchema.nullable().optional(),
-  selection: messageSelectionSchema.nullable().optional(),
-  /** Overrides the conversation setting for this turn only. */
-  reasoningLevel: aiReasoningLevelSchema.optional(),
-  toolsEnabled: z.boolean().optional(),
-});
+export const postConversationMessageRequestSchema = z
+  .object({
+    /** May be empty only when the message carries attachments: a picture can be the question. */
+    content: z.string().trim().max(20_000),
+    documentId: idSchema.nullable().optional(),
+    /** The open view, when `documentId` is a collection. Ignored for ordinary pages. */
+    databaseViewId: idSchema.nullable().optional(),
+    selection: messageSelectionSchema.nullable().optional(),
+    /**
+     * Files uploaded to this conversation beforehand and not sent yet
+     * (issue #223), in the order they were added.
+     */
+    attachmentIds: z.array(idSchema).max(AI_CHAT_ATTACHMENTS_MAX_PER_MESSAGE).optional(),
+    /** Overrides the conversation setting for this turn only. */
+    reasoningLevel: aiReasoningLevelSchema.optional(),
+    toolsEnabled: z.boolean().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.content.length > 0 || (value.attachmentIds?.length ?? 0) > 0) return;
+    ctx.addIssue({
+      code: 'custom',
+      path: ['content'],
+      message: 'A message needs text or at least one attachment',
+    });
+  });
 export type PostConversationMessageRequest = z.infer<typeof postConversationMessageRequestSchema>;
 
 // ---------------------------------------------------------------------------
@@ -443,6 +509,8 @@ export const aiConversationDeleteResponseSchema = z.object({
   deleted: z.literal(true),
   messagesDeleted: z.number().int().nonnegative(),
   runsPruned: z.number().int().nonnegative(),
+  /** Files on its messages, rows and stored objects alike (issue #223). */
+  attachmentsDeleted: z.number().int().nonnegative().default(0),
 });
 export type AiConversationDeleteResponse = z.infer<typeof aiConversationDeleteResponseSchema>;
 

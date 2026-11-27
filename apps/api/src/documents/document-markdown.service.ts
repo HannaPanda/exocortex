@@ -421,12 +421,14 @@ export class DocumentMarkdownService {
 
     const attachment = await this.prisma.attachment.findUnique({
       where: { id: cover },
-      select: { workspaceId: true, mimeType: true, deletedAt: true },
+      select: { workspaceId: true, mimeType: true, deletedAt: true, conversationId: true },
     });
     if (
       attachment === null ||
       attachment.deletedAt !== null ||
       attachment.workspaceId !== workspaceId ||
+      // A chat file is its conversation's (issue #223), never a cover.
+      attachment.conversationId !== null ||
       !attachment.mimeType.startsWith('image/')
     ) {
       return {};

@@ -36,6 +36,8 @@
     "ai_conversation_locked": "In diesem Chat läuft noch eine Antwort.",
     "ai_conversation_compacting": "Der Verlauf dieses Chats wird gerade zusammengefasst. Gleich kannst du weiterschreiben.",
     "ai_conversation_cursor_invalid": "Die Liste konnte nicht weitergeblättert werden.",
+    "ai_chat_attachment_invalid": "Ein Anhang ist nicht mehr da. Entferne ihn und füge ihn neu hinzu.",
+    "ai_chat_attachments_limit": "So viele Bilder gehen mit einer Nachricht nicht mit.",
     "document_content_conflict": "Die Seite wurde zwischenzeitlich geändert.",
     "document_content_lossy": "Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.",
     "document_page_oversized": "Diese Seite ist zu groß geworden, um noch etwas anzuhängen. Verschiebe einen Abschnitt auf eine eigene Seite.",

@@ -1710,8 +1710,31 @@ model Attachment {
   /// Download tickets for this file (issue #204); they end with it.
   downloadTickets   AttachmentDownloadTicket[]
 
+  /// Set when the file was put on a chat message rather than on a page
+  /// (issue #223). The conversation is its owner: only its creator may read
+  /// it, and deleting the conversation deletes it, row and objects alike
+  /// (`ConversationArchiveService.deletePermanently`). `documentId` is always
+  /// null on such a row (check constraint `attachment_chat_not_on_page`).
+  conversationId        String?
+  conversation          AiConversation?        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  /// The message that carried it. Null between the upload and the send; a
+  /// chat file still unsent after a day is collected by
+  /// `collect-orphaned-covers`, the sweep for uploads nothing points at.
+  conversationMessageId String?
+  conversationMessage   AiConversationMessage? @relation(fields: [conversationMessageId], references: [id], onDelete: SetNull)
+  /// What a vision model saw in the picture (issue #223, ADR-088): written
+  /// once by the first run that describes it, so a conversation does not pay
+  /// for the same picture on every turn. Fenced as attachment content
+  /// wherever it reaches a prompt. Null until then, and while nobody could.
+  imageDescription      String?
+  imageDescribedAt      DateTime?
+  /// The model that wrote `imageDescription`.
+  imageDescriptionModel String?
+
   @@index([workspaceId, createdAt])
   @@index([documentId])
+  @@index([conversationId])
+  @@index([conversationMessageId])
   /// Covers are a small minority of all attachments, and the maintenance sweep
   /// asks for exactly them.
   @@index([isCover])
@@ -2032,9 +2055,11 @@ model AiConversation {
   updatedAt           DateTime         @updatedAt
   archivedAt          DateTime?
 
-  messages AiConversationMessage[]
-  runs     AiRun[]
-  sources  AiConversationSource[]
+  messages    AiConversationMessage[]
+  runs        AiRun[]
+  sources     AiConversationSource[]
+  /// Files put on its messages (issue #223); they go with it.
+  attachments Attachment[]
 
   @@index([workspaceId, createdById, lastMessageAt])
   /// The `/chats` listing spans every workspace the person is a member of and
@@ -2122,6 +2147,8 @@ model AiConversationMessage {
   /// Prisma has no native tsvector type -- same arrangement as
   /// `DocumentSearchIndex.searchVector`.
   searchVector    Unsupported("tsvector")?
+  /// Files sent with this message (issue #223).
+  attachments     Attachment[]
 
   @@index([conversationId, createdAt])
   @@index([conversationId, supersededAt])

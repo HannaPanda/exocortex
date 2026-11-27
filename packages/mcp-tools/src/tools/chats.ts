@@ -7,6 +7,7 @@ import {
   type AiConversationDetailResponse,
   aiConversationDetailResponseSchema,
   aiConversationListResponseSchema,
+  type AiConversationMessage,
   aiConversationSearchResponseSchema,
   aiConversationSourcesResponseSchema,
   idSchema,
@@ -149,7 +150,8 @@ export const chatReadTool: AnyToolDefinition = defineTool({
   name: 'exo_chat_read',
   description:
     'Liest den Verlauf einer eigenen KI-Unterhaltung: alle Nachrichten in ihrer Reihenfolge, ' +
-    'inklusive der Nachrichten, die eine Verdichtung aus dem Kontext genommen hat.',
+    'inklusive der Nachrichten, die eine Verdichtung aus dem Kontext genommen hat, und mit den ' +
+    'Bildern, die eine Nachricht mitgebracht hat (lesbar mit exo_attachment_read_image).',
   inputSchema: z.object({
     conversationId: idSchema,
   }),
@@ -171,7 +173,7 @@ export const chatReadTool: AnyToolDefinition = defineTool({
       .map((message) => {
         const retired = message.superseded ? ' (nicht mehr im Kontext)' : '';
         const tool = message.toolName === null ? '' : ` ${message.toolName}`;
-        return `**${message.role}${tool}**${retired}\n${message.content}`;
+        return `**${message.role}${tool}**${retired}\n${message.content}${attachmentLines(message)}`;
       })
       .join('\n\n');
     const cut =
@@ -181,6 +183,21 @@ export const chatReadTool: AnyToolDefinition = defineTool({
     return { text: `${header}\n\n${body}${cut}${lastRunLine(result.lastRun)}`, data: result };
   },
 });
+
+/**
+ * The pictures a person sent with a message (issue #223): named with their
+ * id, so the picture itself is one `exo_attachment_read_image` away, and with
+ * what the vision model told the built-in assistant about it.
+ */
+function attachmentLines(message: AiConversationMessage): string {
+  return message.attachments
+    .map((file) => {
+      const seen =
+        file.description === null ? 'noch nicht beschrieben' : `Beschreibung: ${file.description}`;
+      return `\n- Anhang ${file.filename} (${file.mimeType}, id ${file.id}); ${seen}`;
+    })
+    .join('');
+}
 
 /** How a requested compaction ended, for a reader of the conversation. */
 const COMPACTION_ERROR_LINE: Record<AiConversationCompactionError, string> = {

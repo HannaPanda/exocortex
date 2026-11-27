@@ -1,9 +1,28 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { type VerifiedSession } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   type AddAiConversationSourceRequest,
   addAiConversationSourceRequestSchema,
@@ -39,12 +58,17 @@ import {
   updateAiConversationRequestSchema,
   type UpdateAiConversationSourceRequest,
   updateAiConversationSourceRequestSchema,
+  type UploadChatAttachmentResponse,
+  uploadChatAttachmentResponseSchema,
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
+import { API_ENV } from '../common/logger.provider';
+import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { ChatAttachmentsService } from './chat-attachments.service';
 import { ConversationArchiveService } from './conversation-archive.service';
 import { ConversationSourcesService } from './conversation-sources.service';
 import { ConversationsService } from './conversations.service';
@@ -97,6 +121,8 @@ export class ConversationsController {
     private readonly conversations: ConversationsService,
     private readonly conversationArchive: ConversationArchiveService,
     private readonly conversationSources: ConversationSourcesService,
+    private readonly chatAttachments: ChatAttachmentsService,
+    @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
 
   @Get()
@@ -278,6 +304,30 @@ export class ConversationsController {
     return this.conversations.compact({
       conversationId,
       userId: session.userId,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * A picture for the next message (issue #223), uploaded as soon as it is
+   * pasted, dropped or chosen and sent with the message that names it.
+   * Multipart like every upload, under the same size limit.
+   */
+  @Post(':conversationId/attachments')
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({ schema: openApiResponseSchema(uploadChatAttachmentResponseSchema) })
+  async uploadAttachment(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+    @Req() request: FastifyRequest,
+  ): Promise<UploadChatAttachmentResponse> {
+    const file = await readUploadedFile(request, this.env.MAX_UPLOAD_BYTES);
+    return this.chatAttachments.upload({
+      conversationId,
+      userId: session.userId,
+      filename: file.filename,
+      declaredMimeType: file.declaredMimeType,
+      body: file.body,
       correlationId: currentCorrelationId(),
     });
   }

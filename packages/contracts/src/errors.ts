@@ -52,6 +52,13 @@ export const API_ERROR_CODES = [
   'ai_conversation_compacting',
   /** The pagination cursor of a conversation listing is not one this API issued. */
   'ai_conversation_cursor_invalid',
+  /**
+   * A message named an attachment that is not an unsent file of this
+   * conversation: gone, sent already, or somebody else's (issue #223).
+   */
+  'ai_chat_attachment_invalid',
+  /** More pictures on one message than one run describes (`ai.visionMaxImagesPerRun`, issue #223). */
+  'ai_chat_attachments_limit',
   'document_content_conflict',
   /**
    * A narrow write named a block that is not on the page (issue #111). Its own
@@ -348,6 +355,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   ai_conversation_locked: 409,
   ai_conversation_compacting: 409,
   ai_conversation_cursor_invalid: 400,
+  ai_chat_attachment_invalid: 409,
+  ai_chat_attachments_limit: 422,
   document_content_conflict: 409,
   document_block_not_found: 404,
   document_block_range_invalid: 422,

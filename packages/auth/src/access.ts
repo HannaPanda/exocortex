@@ -407,6 +407,8 @@ export class WorkspaceAccessService {
       mimeType: string;
       byteSize: number;
       documentId: string | null;
+      /** Set on a file put on a chat message (issue #223); readable by its uploader alone. */
+      conversationId: string | null;
       textStatus: 'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED';
       extractedText: string | null;
       textExtractedAt: Date | null;
@@ -433,6 +435,7 @@ export class WorkspaceAccessService {
         id: true,
         workspaceId: true,
         documentId: true,
+        conversationId: true,
         createdById: true,
         deletedAt: true,
         storageKey: true,
@@ -468,6 +471,12 @@ export class WorkspaceAccessService {
 
     if (isRestricted(this.currentRestriction())) return null;
     if (this.outsideConfinement(attachment.workspaceId)) return null;
+    // A file on a chat message is as private as the conversation it was sent
+    // in (issue #223): a conversation is personal even inside a shared
+    // workspace, so another member must not reach it by its id. Only the
+    // conversation's owner can upload into it, which makes the uploader the
+    // owner. Answered like a file that does not exist, as a page is.
+    if (attachment.conversationId !== null && attachment.createdById !== userId) return null;
     const role = await this.findMembershipRole(attachment.workspaceId, userId);
     if (role === null) return null;
     return { attachment, role };

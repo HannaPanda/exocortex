@@ -46,6 +46,7 @@ export function buildStreamingMessages(input: {
     isSummary: false,
     superseded: false,
     runId: null,
+    attachments: [],
     createdAt: new Date().toISOString(),
   }));
 }
@@ -83,6 +84,7 @@ export function buildCommandNotice(conversationId: string, content: string): AiC
     isSummary: false,
     superseded: false,
     runId: null,
+    attachments: [],
     createdAt: new Date().toISOString(),
   };
 }

@@ -154,6 +154,11 @@ const EXEMPT = [
       'Posts a message into a conversation. From inside a tool loop this is the assistant writing into its own transcript. Its `selection` (issue #249) is the browser naming a passage by its block ids, which an agent already does directly: `exo_page_block_read` reads exactly those blocks, and `exo_chat_read` shows the selection a person sent.',
   },
   {
+    route: 'POST /api/ai/conversations/:x/attachments',
+    reason:
+      "Uploads a picture for the next message of a conversation (issue #223), so the browser can show it before it is sent. It only exists for the message post above, which an agent does not make: from inside a tool loop that is the assistant writing into its own transcript. An agent's file goes on a page instead (`exo_attachment_upload_ticket`, ADR-064), and a picture a person sent is read with `exo_chat_read` and `exo_attachment_read_image`.",
+  },
+  {
     route: 'POST /api/ai/conversations/:x/sources',
     reason:
       'Pins a source to a conversation. Deciding what a conversation carries with it is the person saying what leaves their workspace, so a run that could pin a page would be widening its own context from inside itself -- the same argument that keeps `ai.untrustedContentPolicy` out of a request parameter (ADR-030). Reading the list is the opposite and is `exo_chat_context` (issue #75).',

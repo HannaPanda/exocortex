@@ -57,6 +57,17 @@ export interface UploadInput {
   declaredMimeType: string | undefined;
   body: Buffer;
   correlationId: string;
+  /**
+   * The conversation a chat file is put on (issue #223). Such a file hangs on
+   * no page, so `documentId` must be null with it; whether the caller owns the
+   * conversation is the caller's question, asked before this one.
+   */
+  conversationId?: string;
+  /**
+   * Narrows the allowed types for one route, checked against the type read
+   * from the bytes. The chat takes pictures only.
+   */
+  accept?: (mimeType: string) => boolean;
 }
 
 /**
@@ -107,7 +118,8 @@ export class AttachmentsService {
     const detected = detectMimeType(input.body, input.declaredMimeType);
     if (
       detected === null ||
-      !(ALLOWED_ATTACHMENT_MIME_TYPES as readonly string[]).includes(detected.mimeType)
+      !(ALLOWED_ATTACHMENT_MIME_TYPES as readonly string[]).includes(detected.mimeType) ||
+      (input.accept !== undefined && !input.accept(detected.mimeType))
     ) {
       throw new AppError(
         'unsupported_media_type',
@@ -139,6 +151,7 @@ export class AttachmentsService {
         byteSize: input.body.byteLength,
         storageKey: 'pending',
         createdById: input.userId,
+        conversationId: input.conversationId ?? null,
         ...(extractionEnabled ? { textStatus: 'PENDING' } : {}),
       },
     });

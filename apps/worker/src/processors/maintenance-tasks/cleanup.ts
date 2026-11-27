@@ -15,9 +15,21 @@ import {
  */
 const INVITATION_RETENTION_MS = 30 * DAY_MS;
 
-/** Removes cover images that no page points at any more. */
+/**
+ * How long a file put on a chat message may wait for its message (issue
+ * #223). Long enough for somebody who pasted a screenshot and went to lunch,
+ * short enough that a chat nobody finished does not keep pictures for good.
+ */
+const UNSENT_CHAT_ATTACHMENT_GRACE_MS = DAY_MS;
+
+/**
+ * Removes uploads nothing points at any more: cover images no page uses, and
+ * files put on a chat message that was never sent (issue #223). One task,
+ * because both are the same question about the same table.
+ */
 export const collectOrphanedCovers: MaintenanceTask = async (context) => {
   const { prisma, storage, payload, logger, reportProgress } = context;
+  await collectUnsentChatAttachments(context);
   await reportProgress(10, 'pruningCovers');
   // Only files uploaded *as* a cover are collected. Replacing a cover
   // leaves the previous image behind with nothing pointing at it, and
@@ -61,6 +73,46 @@ export const collectOrphanedCovers: MaintenanceTask = async (context) => {
   await reportProgress(100, 'done');
   logger.info('Orphaned covers collected', { removed, candidates: orphans.length });
 };
+
+/**
+ * Deletes chat files whose message was never sent (issue #223). Row first,
+ * then the objects, like the attachment delete route: a failed object delete
+ * leaves a row already marked deleted, which is the harmless direction.
+ */
+async function collectUnsentChatAttachments(context: MaintenanceContext): Promise<void> {
+  const { prisma, storage, payload, logger } = context;
+  const unsent = await prisma.attachment.findMany({
+    where: {
+      conversationId: { not: null },
+      conversationMessageId: null,
+      deletedAt: null,
+      createdAt: { lt: new Date(Date.now() - UNSENT_CHAT_ATTACHMENT_GRACE_MS) },
+      ...(payload.workspaceId === null ? {} : { workspaceId: payload.workspaceId }),
+    },
+    select: { id: true, storageKey: true, previewKey: true },
+    take: 500,
+  });
+
+  let removed = 0;
+  for (const file of unsent) {
+    await prisma.attachment.update({ where: { id: file.id }, data: { deletedAt: new Date() } });
+    let failed = false;
+    for (const key of [file.storageKey, file.previewKey]) {
+      if (key === null) continue;
+      try {
+        await storage.deleteObject({ key });
+      } catch (error) {
+        failed = true;
+        logger.error('Failed to delete an unsent chat attachment object', error, {
+          attachmentId: file.id,
+          storageKey: key,
+        });
+      }
+    }
+    if (!failed) removed += 1;
+  }
+  logger.info('Unsent chat attachments collected', { removed, candidates: unsent.length });
+}
 
 /**
  * Closes out AI runs whose worker never came back.

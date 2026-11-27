@@ -27,6 +27,7 @@ import { compactIfNeeded, estimateFloorInputTokens } from '../../compaction';
 import { buildSystemPrompt, type PromptSection } from '../../system-prompt';
 import { type ToolImageDescriber } from '../../tool-images';
 
+import { chatAttachmentContext, loadChatAttachmentsForPrompt } from './chat-attachments';
 import { type ResolvedModelRow } from './contract';
 import { type RunTimeline } from './timeline';
 
@@ -282,13 +283,23 @@ export async function loadConversationMessages(
     where: { conversationId, supersededAt: null },
     orderBy: { createdAt: 'asc' },
   });
-  return activeMessages.map((message) => ({
-    role: CONVERSATION_ROLE_TO_LOWER[message.role],
-    content: message.content,
-    toolCallId: message.toolCallId ?? undefined,
-    toolName: message.toolName ?? undefined,
-    toolCalls: message.toolCalls ?? undefined,
-  }));
+  // Pictures on a message stand right before it, as what the vision model
+  // saw (issue #223); the message itself stays what the person typed.
+  const attachments = await loadChatAttachmentsForPrompt(
+    prisma,
+    activeMessages.filter((message) => message.role === 'USER').map((message) => message.id),
+  );
+  return activeMessages.flatMap((message) => {
+    const context = chatAttachmentContext(attachments.get(message.id) ?? []);
+    const own: AiMessage = {
+      role: CONVERSATION_ROLE_TO_LOWER[message.role],
+      content: message.content,
+      toolCallId: message.toolCallId ?? undefined,
+      toolName: message.toolName ?? undefined,
+      toolCalls: message.toolCalls ?? undefined,
+    };
+    return context === null ? [own] : [context, own];
+  });
 }
 
 /**
@@ -353,6 +364,22 @@ export function resolveToolImageDescriber(input: {
   visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
   correlationId: string;
 }): ToolImageDescriber | null {
+  return resolveImageDescriber(input)?.describe ?? null;
+}
+
+/**
+ * `resolveToolImageDescriber`, together with the model it asks: a picture on
+ * a chat message keeps the name of whoever described it (issue #223). Null
+ * where the slug is, because a companion left to the deployment default has
+ * no name here.
+ */
+export function resolveImageDescriber(input: {
+  settings: Settings;
+  modelRow: ResolvedModelRow;
+  conversationCompanionSlug: string | null;
+  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
+  correlationId: string;
+}): { describe: ToolImageDescriber; model: string | null } | null {
   if (!input.settings['ai.visionEnabled']) return null;
   let slug: string | null;
   // The describer speaks to OpenRouter. A subscription preset's slug
@@ -370,14 +397,17 @@ export function resolveToolImageDescriber(input: {
   }
   const preprocessor = input.visionPreprocessorFor(slug);
   if (preprocessor === null) return null;
-  return async (image, label) =>
-    preprocessor.describeImage({
-      data: Buffer.from(image.data, 'base64'),
-      mimeType: image.mimeType,
-      label,
-      correlationId: input.correlationId,
-      timeoutMs: 30_000,
-    });
+  return {
+    model: slug,
+    describe: async (image, label) =>
+      preprocessor.describeImage({
+        data: Buffer.from(image.data, 'base64'),
+        mimeType: image.mimeType,
+        label,
+        correlationId: input.correlationId,
+        timeoutMs: 30_000,
+      }),
+  };
 }
 
 /**

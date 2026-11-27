@@ -16,6 +16,7 @@ function message(input: Partial<AiConversationMessage>): AiConversationMessage {
     isSummary: false,
     superseded: false,
     runId: null,
+    attachments: [],
     createdAt: '2026-09-17T09:00:00.000Z',
     ...input,
   };

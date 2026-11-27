@@ -13,6 +13,7 @@ import { SettingsService } from '../platform/settings.service';
 
 import { AiService } from './ai.service';
 import { AiModelResolverService } from './ai-model-resolver.service';
+import { ChatAttachmentsService } from './chat-attachments.service';
 import { ConversationsService } from './conversations.service';
 
 /**
@@ -55,6 +56,15 @@ beforeAll(async () => {
     access,
     modelResolver,
     settings,
+    new ChatAttachmentsService(
+      prisma,
+      // Nothing in this suite uploads a chat file or holds one in storage.
+      {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[1],
+      logger,
+      access,
+      {} as unknown as ConstructorParameters<typeof ChatAttachmentsService>[4],
+      settings,
+    ),
   );
   service = new AiService(prisma, queues, provider, logger, access, modelResolver, conversations);
 

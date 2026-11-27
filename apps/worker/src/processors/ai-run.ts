@@ -32,6 +32,7 @@ import {
   resolveRunProfile,
   type RunProfile,
 } from './ai-run/agent-profile';
+import { describeChatAttachments, transcriptCarriesChatImages } from './ai-run/chat-attachments';
 import { writeOutcome } from './ai-run/completion';
 import { contextEvent } from './ai-run/context-record';
 import { type ResolvedModelRow } from './ai-run/contract';
@@ -47,6 +48,7 @@ import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
 import {
   buildRunMessages,
   loadConversationMessages,
+  resolveImageDescriber,
   resolveModelRow,
   resolveToolImageDescriber,
   resolveVisionPreprocessor,
@@ -341,6 +343,42 @@ async function prepareRunVision(input: {
 }
 
 /**
+ * Describes the pictures on this conversation's messages that nobody has
+ * described yet (issue #223), with the describer a tool's picture gets
+ * (ADR-088), and answers whether the prompt now carries any description.
+ */
+async function describeRunChatImages(input: {
+  dependencies: AiRunDependencies;
+  run: AiRun;
+  settings: Settings;
+  modelRow: ResolvedModelRow;
+  conversationCompanionSlug: string | null;
+  apiKey: string;
+  correlationId: string;
+  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
+}): Promise<boolean> {
+  const { dependencies, run, settings } = input;
+  if (run.conversationId === null) return false;
+  const describer = resolveImageDescriber({
+    settings,
+    modelRow: input.modelRow,
+    conversationCompanionSlug: input.conversationCompanionSlug,
+    visionPreprocessorFor: (modelSlug: string | null) =>
+      dependencies.visionPreprocessorFor(modelSlug, input.apiKey),
+    correlationId: input.correlationId,
+  });
+  await describeChatAttachments({
+    prisma: dependencies.prisma,
+    storage: dependencies.storage,
+    describer,
+    conversationId: run.conversationId,
+    maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
+    logger: input.logger,
+  });
+  return transcriptCarriesChatImages(dependencies.prisma, run.conversationId);
+}
+
+/**
  * The eval attempt (issue #146) and the agent profile (issue #143) a run
  * works under, and the provider keys both lay over the configuration. Null
  * when the run was refused, because an attempt that cannot hold its run must
@@ -542,6 +580,21 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     );
     const requiresReasoningEffort = run.reasoningLevel !== 'NONE';
 
+    // Pictures on the conversation's messages are described before the prompt
+    // is built, so the transcript it loads already carries what a vision
+    // model saw in them (issue #223).
+    const conversationCompanionSlug = conversation?.visionCompanionSlug ?? null;
+    const chatImagesDescribed = await describeRunChatImages({
+      dependencies,
+      run,
+      settings,
+      modelRow,
+      conversationCompanionSlug,
+      apiKey: key.apiKey,
+      correlationId: payload.correlationId,
+      logger,
+    });
+
     const { base, rest, floorInputTokens, promptSections } = await buildRunMessages({
       prisma,
       // Only a compaction asks the provider anything while the prompt is built.
@@ -567,7 +620,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       run,
       settings,
       modelRow,
-      conversationCompanionSlug: conversation?.visionCompanionSlug ?? null,
+      conversationCompanionSlug,
       apiKey: key.apiKey,
       correlationId: payload.correlationId,
       logger,
@@ -595,7 +648,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // The image descriptions were produced before the runner existed, and they
     // are text out of an uploaded file like any other (issue #56): the run has
     // already read foreign content by the time the first turn starts.
-    if (imageContext !== null) runner?.noteUntrustedContent('attachment');
+    // The same holds for a picture somebody put on a message in this
+    // conversation, for as long as its description is in the prompt (#223).
+    if (imageContext !== null || chatImagesDescribed) runner?.noteUntrustedContent('attachment');
 
     const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
     const messages: AiMessage[] = [
