@@ -8,6 +8,7 @@ import { activeTickIndex, railTicks } from '@/components/editor/page-outline/out
 import {
   OutlineHeader,
   OutlineList,
+  OutlinePinnedFrame,
   OutlinePinNote,
   OutlineRail,
   outlineRows,
@@ -49,6 +50,13 @@ const ENTRIES: readonly PageOutlineEntry[] = [
 ];
 const ACTIVE = 3;
 
+/** Text for the list to lie on: long enough to run under it in every state. */
+const COVERED_TEXT =
+  'Die Units starten in fester Reihenfolge, und der Broker hält als einziger den Docker-Socket. ' +
+  'Ein Build ist eine Anfrage an ihn, nie ein Container, den die Anwendung selbst startet. ' +
+  'So bleibt die Grenze an einer Stelle, und jede Zeile hier ist lang genug, um unter der ' +
+  'Gliederung weiterzulaufen, damit man sieht, was sie verdeckt und was durchscheint.';
+
 /**
  * The floating outline (issue #194), drawn by the product's own parts from a
  * fixture outline. The container that measures the page and runs the scroll
@@ -63,7 +71,7 @@ export function PageOutlinePattern() {
     <DsSection
       id="seitengliederung"
       title="Seitengliederung"
-      lead="Sobald eine Seite eine Überschrift hat, steht am rechten Rand eine Skala: ein Strich je Überschrift, die Länge sagt die Ebene, Bernstein sagt, wo du bist. Ein Klick öffnet die Liste daneben. Angepinnt nimmt sie sich in jeder Seitenbreite eine eigene Spalte, und der Text rückt zur Seite; ist das Fenster dafür zu schmal, sagt die Liste das an der Stelle der Nadel. Auf dem Handy wird die Skala zu einem kleinen Knopf unten rechts."
+      lead="Sobald eine Seite eine Überschrift hat, steht am rechten Rand eine Skala: ein Strich je Überschrift, die Länge sagt die Ebene, Bernstein sagt, wo du bist. Ein Klick öffnet die Liste daneben. Angepinnt nimmt sie sich in jeder Seitenbreite eine eigene Spalte, und der Text rückt zur Seite; ist das Fenster dafür zu schmal, sagt die Liste das an der Stelle der Nadel. Wer es in den eigenen Einstellungen wählt, bekommt sie stattdessen über dem Text: wo der Rand nicht reicht, liegt sie dann als schwebende Fläche darauf, auf Wunsch durchscheinend. Auf dem Handy wird die Skala zu einem kleinen Knopf unten rechts."
     >
       <DsExample
         id="seitengliederung-zustaende"
@@ -118,6 +126,46 @@ export function PageOutlinePattern() {
               />
             </nav>
           </DsState>
+        </DsStates>
+      </DsExample>
+      <DsExample
+        id="seitengliederung-ueber-dem-text"
+        title="Angepinnt über dem Text"
+        source="apps/web/src/components/editor/page-outline/outline-view.tsx"
+        note="Die Wahl der Person (Einstellungen → Editor, Issue #283): der Text bleibt stehen, die Liste liegt darüber. Nur wo sie wirklich Text verdeckt, wird sie zur schwebenden Fläche mit der Hülle des Popovers. Durchscheinend heißt Deckkraft der ganzen Fläche (75 % oder 45 %), nie Unschärfe; unter dem Zeiger und mit Tastaturfokus darin ist sie wieder voll da, und unter prefers-reduced-motion springt sie ohne Übergang."
+      >
+        <DsStates>
+          {(['none', 'light', 'strong'] as const).map((transparency) => (
+            <DsState
+              key={transparency}
+              label={
+                transparency === 'none'
+                  ? 'Deckend'
+                  : transparency === 'light'
+                    ? 'Leicht durchscheinend'
+                    : 'Stark durchscheinend'
+              }
+            >
+              <div className="relative h-72 w-80 overflow-hidden rounded-lg bg-background p-4">
+                <p className="text-sm text-foreground">{COVERED_TEXT}</p>
+                <OutlinePinnedFrame
+                  aria-label={`Gliederung über dem Text, ${transparency} (Beispiel)`}
+                  covering
+                  transparency={transparency}
+                  className="absolute top-4 right-2 max-h-64"
+                >
+                  <OutlineHeader pinned canPin onPinnedChange={() => undefined} />
+                  <div className="min-h-0 overflow-y-auto">
+                    <OutlineList
+                      rows={rows.slice(0, 5)}
+                      activeIndex={active}
+                      onJump={(row) => setActive(row.index)}
+                    />
+                  </div>
+                </OutlinePinnedFrame>
+              </div>
+            </DsState>
+          ))}
         </DsStates>
       </DsExample>
     </DsSection>

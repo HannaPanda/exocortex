@@ -85,6 +85,14 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     shortcuts: ['Pfeiltasten wandern durch die Gliederung, Enter springt, Escape schließt'],
   }),
   defineFeature({
+    id: 'gliederung-ueber-dem-text',
+    area: 'seiten',
+    since: '2026-11-27',
+    references: ['#283', '#267'],
+    ui: { path: '/einstellungen/editor' },
+    claims: { screens: ['/einstellungen/editor'] },
+  }),
+  defineFeature({
     id: 'seiten-layout',
     area: 'seiten',
     since: '2026-08-05',

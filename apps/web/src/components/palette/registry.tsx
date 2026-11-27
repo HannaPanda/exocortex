@@ -12,6 +12,7 @@ import { useChatScrollCommands } from './chat-scroll-commands';
 import { usePaletteContributions } from './contributions';
 import { useCreateCommands } from './create-commands';
 import { navigationCommands } from './navigation-commands';
+import { useOutlinePreferenceCommands } from './outline-preference-commands';
 import { type PaletteCommand, type PaletteContext } from './palette-command';
 import { settingsCommands, settingsMenu } from './settings-commands';
 import { workspaceCommands } from './workspace-commands';
@@ -53,6 +54,7 @@ export function usePaletteCommands({
   const groupLabel = useSettingGroupLabel();
   const create = useCreateCommands(workspaceId, open);
   const chatScroll = useChatScrollCommands();
+  const outline = useOutlinePreferenceCommands();
   const contributed = usePaletteContributions();
   const workspaces = useWorkspaces();
   // Usually in the cache already: the workspace switcher and the settings
@@ -72,6 +74,7 @@ export function usePaletteCommands({
       ...workspaceCommands(context, workspaces.data ?? [], tWorkspace),
       ...settings,
       ...chatScroll,
+      ...outline,
       ...settingsMenu(navigation, settings, tSettings, groupLabel),
     ];
   }, [
@@ -80,6 +83,7 @@ export function usePaletteCommands({
     create,
     documentId,
     groupLabel,
+    outline,
     role,
     shell,
     tNavigation,

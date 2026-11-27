@@ -21,6 +21,27 @@
     "loading": "Carregando configurações…",
     "loadError": "Não foi possível carregar as configurações"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "Como as páginas se comportam para você ao ler e escrever. A escolha vale para a sua conta, ou seja, em qualquer dispositivo em que você tiver iniciado sessão.",
+    "outlineHeading": "Estrutura fixada",
+    "outlineIntro": "A estrutura de uma página pode ser fixada com o alfinete no topo da lista. Aqui você define como ela fica posicionada ao lado do texto.",
+    "pinnedLegend": "Espaço para a estrutura",
+    "pinnedColumn": "O texto se afasta",
+    "pinnedOverlay": "Sobrepor ao texto",
+    "pinnedColumnHint": "A estrutura ganha uma coluna própria à direita, e o texto se desloca para o lado. Assim, nada fica coberto.",
+    "pinnedOverlayHint": "O texto permanece onde está e a estrutura fica sobre ele. Se a margem ao lado do texto for suficiente, nada fica coberto; caso contrário, ela sobrepõe a borda direita do texto, e você rola para ler.",
+    "transparencyLegend": "Transparência na sobreposição",
+    "transparencyNone": "Opaca",
+    "transparencyLight": "Levemente translúcida",
+    "transparencyStrong": "Muito translúcida",
+    "transparencyHint": "Se a estrutura sobrepuser o texto, ele transparece. Ao passar o mouse sobre a estrutura ou focar nela com o teclado, ela fica totalmente visível novamente.",
+    "transparencyNoneHint": "A estrutura cobre totalmente o texto abaixo.",
+    "transparencyColumnHint": "Só tem efeito quando a estrutura estiver sobreposta ao texto.",
+    "saveFailed": "Não foi possível salvar a configuração. Tente novamente em instantes.",
+    "loading": "Carregando configurações…",
+    "loadError": "Não foi possível carregar as configurações"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Memória",

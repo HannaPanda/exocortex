@@ -34,6 +34,7 @@
     "notifications": "Notifications",
     "language": "Langue",
     "aiChat": "Chat IA",
+    "editor": "Éditeur",
     "admin": "Administration",
     "menuLabel": "Compte et espaces",
     "menuLabelWithNew": "{count, plural, one {Compte et espaces (# nouvelle fonctionnalité)} many {Compte et espaces (# nouvelles fonctionnalités)} other {Compte et espaces (# nouvelles fonctionnalités)}}",
@@ -174,6 +175,12 @@
       "hint": "S’applique à ton compte",
       "keywords": "ia chat défilement suivre réponse début lire rester autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Plan épinglé : superposer au texte",
+      "column": "Plan épinglé : décaler le texte",
+      "hint": "S’applique à ton compte",
+      "keywords": "plan sommaire épingler épinglé superposer recouvrir décaler colonne texte déplacer espace"
+    },
     "contextOpen": "Ouvrir le panneau contextuel",
     "contextOpenPlaceholder": "Quel onglet ?",
     "contextOpenKeywords": "contexte panneau onglet volet barre latérale droite",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "Paramètres du chat IA",
         "keywords": "ia chat assistant paramètres défilement suivre début réponse"
+      },
+      "editorSettings": {
+        "label": "Paramètres de l’éditeur",
+        "keywords": "éditeur paramètres plan sommaire épingler superposer transparence translucide décaler"
       },
       "workspaces": {
         "label": "Afficher tous les espaces de travail",

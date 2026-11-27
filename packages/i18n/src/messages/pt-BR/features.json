@@ -106,9 +106,19 @@
     "details": {
       "p1": "A escala mostra a estrutura da página, com traços mais longos para níveis superiores. O traço âmbar indica a seção onde você está agora e acompanha a rolagem. Uma página sem títulos não tem estrutura.",
       "p2": "Uma seção recolhida aparece uma vez na estrutura, acompanhada da contagem de títulos contidos nela. Pular para ela não a expande: o recolhimento de uma seção faz parte da página, e navegar por ela não altera a página.",
-      "p3": "Com o alfinete no topo, você pode fixar o sumário em qualquer largura de página: ele ganha uma coluna própria à direita, o texto se ajusta para o lado e ele permanece aberto até você desafixá-lo. Se a janela for estreita demais para isso, haverá um aviso no próprio sumário. No celular, a barra vira um pequeno botão no canto inferior direito, que desaparece ao escrever. Pela paleta de comandos também dá para navegar sem mouse: „Pular para seção“."
+      "p3": "Com o alfinete na parte superior, você pode fixar o sumário em qualquer largura de página: ele ganha uma coluna própria à direita, o texto se desloca para o lado e ele permanece aberto até você desafixá-lo. Em Configurações → Editor, você pode optar por sobrepô-lo ao texto. Se a janela for estreita demais para isso, haverá um aviso no sumário. No celular, a escala vira um pequeno botão no canto inferior direito, que desaparece ao digitar. Pela paleta de comandos, também funciona sem mouse: „Pular para seção“."
     },
     "where": "Em uma página com títulos, clique na escala na borda direita, ou pressione Strg + K e selecione “Ir para a seção”."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Sumário fixado sobre o texto",
+    "summary": "Em vez de deslocar o texto para o lado ao fixar o sumário, ele pode ficar sobreposto ao texto. Em telas largas, o texto permanece onde está; onde a margem não for suficiente, o sumário cobre parte dele, com transparência opcional.",
+    "details": {
+      "p1": "Em Configurações → Editor, você escolhe como o sumário fixado se posiciona ao lado do texto. „Texto se desloca“ é o padrão: ele ganha uma coluna própria e o texto se move para o lado. „Sobrepor ao texto“ mantém o texto no lugar; se a margem ao lado do texto for larga o suficiente, o sumário fica ali sem cobrir nada; caso contrário, paira sobre a borda direita do texto.",
+      "p2": "Para a sobreposição, há opções de transparência: opaco, ligeiramente ou fortemente translúcido. Assim, o texto coberto transparece e, assim que você passa o mouse sobre o sumário ou navega nele pelo teclado, ele volta a ficar totalmente visível. O navegador lembra se o sumário está fixado; a forma de exibição é vinculada à sua conta e vale em qualquer dispositivo. No celular não há fixação, permanecendo apenas o pequeno botão no canto inferior direito.",
+      "p3": "Com Strg + K você alterna entre os dois modos („Sumário fixado: sobrepor ao texto“). Agentes leem e definem a configuração via exo_me_preferences e exo_me_preferences_set, como outlinePinned (column ou overlay) e outlineTransparency (none, light ou strong)."
+    },
+    "where": "Configurações, Editor. Também na paleta de comandos."
   },
   "seiten-editor": {
     "title": "Escrever páginas em colaboração simultânea",

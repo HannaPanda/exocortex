@@ -10,11 +10,19 @@ import { cn, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
 import { useLatest, usePaletteContribution } from '@/components/palette/contributions';
 import { keywordsOf, type PaletteCommand } from '@/components/palette/palette-command';
+import { useOutlinePreferences } from '@/lib/api/preferences-queries';
 
-import { activeTickIndex, OUTLINE_GAP, PINNED_LANE, railTicks } from './outline-geometry';
+import {
+  activeTickIndex,
+  OUTLINE_GAP,
+  overlayCovers,
+  PINNED_LANE,
+  railTicks,
+} from './outline-geometry';
 import {
   OutlineHeader,
   OutlineList,
+  OutlinePinnedFrame,
   OutlinePinNote,
   OutlineRail,
   type OutlineRow,
@@ -54,7 +62,10 @@ function writePinned(pinned: boolean): void {
  * The list and the scale start below the page head (cover, its menu, title)
  * and rise with it to the top edge while the reader scrolls (issue #266).
  * Pinned, the list takes a column of the page area for itself, whatever the
- * page width, and the page is laid out in what is left (issue #267).
+ * page width, and the page is laid out in what is left (issue #267), unless
+ * the reader chose to have it lie over the text instead (`outlinePinned:
+ * 'overlay'`, issue #283): then the text stays where it is, and the list only
+ * covers it where the margin is too narrow to hold it.
  */
 export const PageOutline = React.memo(function PageOutline({ editor }: { editor: Editor }) {
   const t = useTranslations('editor.pageOutline');
@@ -62,7 +73,10 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   // server render this could disagree with.
   const [pinRequested, setPinRequested] = React.useState(readPinned);
   const tracking = useOutlineTracking(editor, pinRequested);
-  const { entries, activeIndex, wanted, placement, canPin, host, scrollbarWidth, jump } = tracking;
+  const { entries, activeIndex, wanted, placement, canPin, host, scrollbarWidth, free, jump } =
+    tracking;
+  const preferences = useOutlinePreferences();
+  const overlay = preferences.pinned === 'overlay';
   const [open, setOpen] = React.useState(false);
   const activeRowRef = React.useRef<HTMLButtonElement>(null);
   const pinnedListRef = React.useRef<HTMLDivElement>(null);
@@ -73,7 +87,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   const activeRow = rows.find((row) => row.index === activeIndex) ?? null;
 
   useOutlineCommands(rows, jump);
-  useOutlineLane(host, wanted && placement === 'pinned');
+  useOutlineLane(host, wanted && placement === 'pinned' && !overlay);
 
   const setPinned = (pinned: boolean): void => {
     writePinned(pinned);
@@ -121,13 +135,18 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
 
   if (placement === 'pinned') {
     return createPortal(
-      <nav
+      <OutlinePinnedFrame
         aria-label={t('label')}
         data-testid="page-outline-pinned"
+        data-mode={overlay ? 'overlay' : 'column'}
+        // Over the text only where the margin cannot hold the list; in a
+        // margin wide enough it lies on nothing and stays flat (issue #283).
+        covering={overlay && overlayCovers(free)}
+        transparency={preferences.transparency}
         style={edge}
         // `--outline-top` follows the page head (issue #266, `placeTop` in
         // `use-outline-tracking.ts`); the list ends 1.5rem above the bottom.
-        className="pointer-events-auto absolute top-[var(--outline-top,1.5rem)] flex max-h-[calc(100%-var(--outline-top,1.5rem)-1.5rem)] w-60 flex-col gap-1"
+        className="pointer-events-auto absolute top-[var(--outline-top,1.5rem)] max-h-[calc(100%-var(--outline-top,1.5rem)-1.5rem)]"
       >
         {header}
         <div ref={pinnedListRef} className="min-h-0 overflow-y-auto">
@@ -138,7 +157,7 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
             activeRef={activeRowRef}
           />
         </div>
-      </nav>,
+      </OutlinePinnedFrame>,
       host,
     );
   }

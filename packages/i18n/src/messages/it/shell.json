@@ -34,6 +34,7 @@
     "notifications": "Notifiche",
     "language": "Lingua",
     "aiChat": "Chat IA",
+    "editor": "Editor",
     "admin": "Amministrazione",
     "menuLabel": "Account e aree",
     "menuLabelWithNew": "{count, plural, one {Account e aree (# nuova funzione)} many {Account e aree (# nuove funzioni)} other {Account e aree (# nuove funzioni)}}",
@@ -174,6 +175,12 @@
       "hint": "Vale per il tuo account",
       "keywords": "ia chat scorrere seguire risposta inizio leggere fermo autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Struttura fissata: sovrapponi al testo",
+      "column": "Struttura fissata: sposta il testo",
+      "hint": "Vale per il tuo account",
+      "keywords": "struttura indice sommario fissare fissata sovrapponi coprire spostare colonna testo spazio"
+    },
     "contextOpen": "Apri pannello contestuale",
     "contextOpenPlaceholder": "Quale scheda?",
     "contextOpenKeywords": "contesto pannello contestuale scheda tab pannello barra laterale destra",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "Impostazioni chat IA",
         "keywords": "ia chat assistente impostazioni scorrere seguire inizio risposta"
+      },
+      "editorSettings": {
+        "label": "Impostazioni editor",
+        "keywords": "editor impostazioni struttura indice sommario fissare sovrapponi trasparenza semitrasparente spostare"
       },
       "workspaces": {
         "label": "Mostra tutte le aree di lavoro",

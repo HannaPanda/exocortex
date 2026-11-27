@@ -21,6 +21,27 @@
     "loading": "Loading settings…",
     "loadError": "Could not load settings"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "How pages behave for you when reading and writing. This choice applies to your account, across every device you are signed in on.",
+    "outlineHeading": "Pinned outline",
+    "outlineIntro": "A page’s outline can be pinned using the pin at the top of its list. Choose here how it sits next to the text.",
+    "pinnedLegend": "Space for the outline",
+    "pinnedColumn": "Text makes room",
+    "pinnedOverlay": "Overlay on top of text",
+    "pinnedColumnHint": "The outline gets its own column on the right, and the text shifts to make room. That way, nothing is ever covered.",
+    "pinnedOverlayHint": "The text stays where it is, and the outline floats above it. If there is enough margin beside the text, nothing is covered; otherwise, it overlays the right edge of the text, and you scroll to read it.",
+    "transparencyLegend": "Overlay transparency",
+    "transparencyNone": "Opaque",
+    "transparencyLight": "Slightly translucent",
+    "transparencyStrong": "Highly translucent",
+    "transparencyHint": "When the outline overlays the text, the text shines through. When you hover over the outline or focus it with the keyboard, it becomes fully opaque again.",
+    "transparencyNoneHint": "The outline completely covers the text underneath.",
+    "transparencyColumnHint": "Only applies when the outline overlays the text.",
+    "saveFailed": "Could not save setting. Please try again in a moment.",
+    "loading": "Loading settings…",
+    "loadError": "Could not load settings"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Memory",

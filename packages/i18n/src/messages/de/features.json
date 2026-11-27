@@ -106,9 +106,19 @@
     "details": {
       "p1": "Die Skala zeigt die Struktur der Seite, längere Striche für höhere Ebenen. Der amberfarbene Strich ist der Abschnitt, in dem du gerade bist, und wandert beim Scrollen mit. Eine Seite ohne Überschrift hat keine Gliederung.",
       "p2": "Ein eingeklappter Abschnitt steht einmal in der Gliederung, mit der Zahl der Überschriften darin. Ein Sprung dorthin klappt ihn nicht auf: ob ein Abschnitt eingeklappt ist, gehört zur Seite, und Navigieren ändert an der Seite nichts.",
-      "p3": "Mit der Nadel oben lässt sich die Gliederung anpinnen, in jeder Seitenbreite: dann bekommt sie eine eigene Spalte rechts, der Text rückt zur Seite, und sie bleibt offen stehen, bis du sie wieder löst. Ist das Fenster dafür zu schmal, steht das in der Gliederung. Auf dem Handy wird aus der Skala ein kleiner Knopf unten rechts, der beim Schreiben verschwindet. Über die Befehlspalette geht es auch ohne Maus: „Zu Abschnitt springen“."
+      "p3": "Mit der Nadel oben lässt sich die Gliederung anpinnen, in jeder Seitenbreite: dann bekommt sie eine eigene Spalte rechts, der Text rückt zur Seite, und sie bleibt offen stehen, bis du sie wieder löst. Unter Einstellungen → Editor kannst du sie stattdessen über den Text legen. Ist das Fenster dafür zu schmal, steht das in der Gliederung. Auf dem Handy wird aus der Skala ein kleiner Knopf unten rechts, der beim Schreiben verschwindet. Über die Befehlspalette geht es auch ohne Maus: „Zu Abschnitt springen“."
     },
     "where": "Auf einer Seite mit Überschriften die Skala am rechten Rand anklicken, oder Strg + K und „Zu Abschnitt springen“."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Angepinnte Gliederung über dem Text",
+    "summary": "Statt dass der Text für die angepinnte Gliederung zur Seite rückt, kann sie über dem Text liegen. Auf einem breiten Bildschirm bleibt der Text dann, wo er ist; wo der Rand nicht reicht, verdeckt die Gliederung ein Stück davon, auf Wunsch durchscheinend.",
+    "details": {
+      "p1": "Unter Einstellungen → Editor wählst du, wie die angepinnte Gliederung neben dem Text steht. „Text weicht aus“ ist der Standard: sie bekommt eine eigene Spalte, und der Text rückt dafür zur Seite. „Über dem Text liegen“ lässt den Text stehen; ist der Rand neben dem Text breit genug, liegt die Gliederung dort und verdeckt nichts, sonst liegt sie als schwebende Fläche über dem rechten Rand des Textes.",
+      "p2": "Für das Überlagern gibt es eine Transparenz: deckend, leicht oder stark durchscheinend. Dann scheint der verdeckte Text durch, und sobald du mit der Maus auf die Gliederung zeigst oder mit der Tastatur darin bist, ist sie wieder voll sichtbar. Ob die Gliederung angepinnt ist, merkt sich dein Browser; wie sie angepinnt steht, gehört zu deinem Konto und gilt auf jedem Gerät. Auf dem Handy gibt es kein Anpinnen, dort bleibt es beim kleinen Knopf unten rechts.",
+      "p3": "Mit Strg + K wechselst du zwischen den beiden Arten („Angepinnte Gliederung: über dem Text liegen“). Agenten lesen und setzen die Einstellung über exo_me_preferences und exo_me_preferences_set, als outlinePinned (column oder overlay) und outlineTransparency (none, light oder strong)."
+    },
+    "where": "Einstellungen, Editor. Außerdem in der Befehlspalette."
   },
   "seiten-editor": {
     "title": "Seiten schreiben, zu zweit gleichzeitig",

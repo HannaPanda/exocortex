@@ -34,6 +34,7 @@
     "notifications": "Powiadomienia",
     "language": "Język",
     "aiChat": "Czat AI",
+    "editor": "Edytor",
     "admin": "Administracja",
     "menuLabel": "Konto i obszary",
     "menuLabelWithNew": "{count, plural, one {Konto i obszary (# nowa funkcja)} few {Konto i obszary (# nowe funkcje)} many {Konto i obszary (# nowych funkcji)} other {Konto i obszary (# nowej funkcji)}}",
@@ -174,6 +175,12 @@
       "hint": "Dotyczy twojego konta",
       "keywords": "ai czat przewijanie śledzenie odpowiedź początek czytanie autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Przypięty spis treści: nachodzenie na tekst",
+      "column": "Przypięty spis treści: odsuwanie tekstu",
+      "hint": "Dotyczy twojego konta",
+      "keywords": "spis treści konspekt przypnij przypięty nakładka przesłaniać odsuwanie kolumna tekst przesuń miejsce"
+    },
     "contextOpen": "Otwórz panel kontekstowy",
     "contextOpenPlaceholder": "Która zakładka?",
     "contextOpenKeywords": "kontekst panel kontekstowy zakładka tab panel pasek boczny po prawej",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "Ustawienia czatu AI",
         "keywords": "ai czat asystent ustawienia przewijanie początek odpowiedzi"
+      },
+      "editorSettings": {
+        "label": "Ustawienia edytora",
+        "keywords": "edytor ustawienia spis treści konspekt przypnij nakładka przezroczystość prześwitujący odsuwanie"
       },
       "workspaces": {
         "label": "Pokaż wszystkie obszary robocze",

@@ -321,6 +321,93 @@ test.describe('page outline pinned in every page width', () => {
   });
 });
 
+// Issue #283: a reader may choose that the pinned list lies over the text
+// instead of the text moving aside, and that it lets the covered text
+// through. A preference on the account, so it is set back after every test.
+test.describe('page outline laid over the text', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test.afterEach(async ({ request, baseURL }) => {
+    await request.patch('/api/me/preferences', {
+      data: { outlinePinned: 'column', outlineTransparency: 'none' },
+      headers: { origin: baseURL as string },
+    });
+  });
+
+  test('is chosen in the settings and leaves the text where it is', async ({ page }) => {
+    await page.goto('/einstellungen/editor');
+    await page.getByTestId('outline-pinned').click();
+    await page.getByRole('option', { name: 'Über dem Text liegen' }).click();
+    await expect(page.getByTestId('outline-transparency')).toBeEnabled();
+    await page.getByTestId('outline-transparency').click();
+    await page.getByRole('option', { name: 'Stark durchscheinend' }).click();
+    await expect
+      .poll(async () => (await page.request.get('/api/me/preferences')).json())
+      .toMatchObject({ outlinePinned: 'overlay', outlineTransparency: 'strong' });
+
+    const marker = Date.now().toString(36);
+    const id = await importPage(page, `Darüber ${marker}`, longMarkdown(marker));
+    const changed = await page.request.patch(`/api/documents/${id}`, { data: { layout: 'full' } });
+    expect(changed.ok(), await changed.text()).toBe(true);
+    await page.reload();
+    await expect(page.getByTestId('editor-surface')).toBeVisible();
+    const textBefore = await page.locator('.ProseMirror').boundingBox();
+
+    await page.getByTestId('page-outline-rail').click();
+    await page.getByTestId('page-outline-pin').click();
+    const pinned = page.getByTestId('page-outline-pinned');
+    await expect(pinned).toBeVisible();
+    await expect(pinned).toHaveAttribute('data-mode', 'overlay');
+    await expect(pinned).toHaveAttribute('data-covering', 'true');
+
+    // The text did not move, and the list lies on it.
+    const textAfter = await page.locator('.ProseMirror').boundingBox();
+    expect(textAfter?.width).toBe(textBefore?.width);
+    expect(textAfter?.x).toBe(textBefore?.x);
+    const box = await pinned.boundingBox();
+    expect(box !== null && textAfter !== null && box.x < textAfter.x + textAfter.width).toBe(true);
+
+    // Let through at rest, whole under the pointer and with the keyboard in it.
+    await page.locator('.exocortex-page-title').hover();
+    await expect(pinned).toHaveCSS('opacity', '0.45');
+    await pinned.hover();
+    await expect(pinned).toHaveCSS('opacity', '1');
+    await page.locator('.exocortex-page-title').hover();
+    await expect(pinned).toHaveCSS('opacity', '0.45');
+    await page.getByTestId('page-outline-pin').focus();
+    await page.keyboard.press('Tab');
+    await expect(pinned.getByTestId('page-outline-entry').first()).toBeFocused();
+    await expect(pinned).toHaveCSS('opacity', '1');
+    // No trap: the keyboard leaves the list the way it came in.
+    await page.keyboard.press('Shift+Tab');
+    await expect(page.getByTestId('page-outline-pin')).toBeFocused();
+
+    // Unpinned, the scale is back and nothing was taken from the page.
+    await page.getByTestId('page-outline-pin').click();
+    await expect(page.getByTestId('page-outline-rail')).toBeVisible();
+  });
+
+  test('stays flat where the margin holds it', async ({ page, request, baseURL }) => {
+    await page.setViewportSize({ width: 1920, height: 1000 });
+    await request.patch('/api/me/preferences', {
+      data: { outlinePinned: 'overlay', outlineTransparency: 'strong' },
+      headers: { origin: baseURL as string },
+    });
+    const marker = Date.now().toString(36);
+    await importPage(page, `Rand ${marker}`, longMarkdown(marker));
+    await page.getByTestId('page-outline-rail').click();
+    await page.getByTestId('page-outline-pin').click();
+    const pinned = page.getByTestId('page-outline-pinned');
+    await expect(pinned).toBeVisible();
+    await expect(pinned).not.toHaveAttribute('data-covering', 'true');
+    await expect(pinned).toHaveCSS('opacity', '1');
+    const text = await page.locator('.ProseMirror').boundingBox();
+    const box = await pinned.boundingBox();
+    expect(box !== null && text !== null && box.x >= text.x + text.width).toBe(true);
+    await page.getByTestId('page-outline-pin').click();
+  });
+});
+
 test.describe('page outline on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 

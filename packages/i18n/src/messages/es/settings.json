@@ -21,6 +21,27 @@
     "loading": "Cargando ajustes…",
     "loadError": "No se han podido cargar los ajustes"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "Cómo se comportan las páginas al leer y escribir. Esta preferencia se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión.",
+    "outlineHeading": "Esquema fijado",
+    "outlineIntro": "Puedes fijar el esquema de una página con la chincheta situada arriba en su lista. Aquí decides cómo se sitúa junto al texto.",
+    "pinnedLegend": "Espacio para el esquema",
+    "pinnedColumn": "El texto se desplaza",
+    "pinnedOverlay": "Superponer al texto",
+    "pinnedColumnHint": "El esquema obtiene su propia columna a la derecha y el texto se desplaza hacia un lado. Así nunca se oculta nada.",
+    "pinnedOverlayHint": "El texto permanece donde está y el esquema flota por encima. Si el margen junto al texto es suficiente, no tapará nada; si no, cubrirá el margen derecho del texto y deberás desplazarte para leerlo.",
+    "transparencyLegend": "Transparencia al superponer",
+    "transparencyNone": "Opaco",
+    "transparencyLight": "Ligeramente transparente",
+    "transparencyStrong": "Muy transparente",
+    "transparencyHint": "Si el esquema se superpone al texto, este se vislumbra por debajo. Si pasas el ratón por encima del esquema o te sitúas en él con el teclado, vuelve a ser totalmente visible.",
+    "transparencyNoneHint": "El esquema cubre por completo el texto que tiene debajo.",
+    "transparencyColumnHint": "Solo tiene efecto cuando el esquema se superpone al texto.",
+    "saveFailed": "No se ha podido guardar la preferencia. Inténtalo de nuevo en unos instantes.",
+    "loading": "Cargando ajustes…",
+    "loadError": "No se han podido cargar los ajustes"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Memoria",

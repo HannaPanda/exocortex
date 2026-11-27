@@ -34,6 +34,7 @@
     "notifications": "Meldingen",
     "language": "Taal",
     "aiChat": "AI-chat",
+    "editor": "Editor",
     "admin": "Beheer",
     "menuLabel": "Account en ruimtes",
     "menuLabelWithNew": "{count, plural, one {Account en ruimtes (# nieuwe functie)} other {Account en ruimtes (# nieuwe functies)}}",
@@ -174,6 +175,12 @@
       "hint": "Geldt voor je account",
       "keywords": "ai chat scrollen meescrollen volgen antwoord begin lezen blijven staan autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Vastgezette overzichtsweergave: over de tekst heen",
+      "column": "Vastgezette overzichtsweergave: tekst laten wijken",
+      "hint": "Geldt voor je account",
+      "keywords": "overzicht inhoudsopgave vastzetten vastgezet overlappen bedekken wijken kolom tekst verplaatsen ruimte"
+    },
     "contextOpen": "Contextpaneel openen",
     "contextOpenPlaceholder": "Welk tabblad?",
     "contextOpenKeywords": "context contextpaneel tabblad tab paneel zijbalk rechts",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "AI-chatinstellingen",
         "keywords": "ai chat assistent instellingen scrollen meescrollen begin van antwoord"
+      },
+      "editorSettings": {
+        "label": "Editor-instellingen",
+        "keywords": "editor instellingen overzicht inhoudsopgave vastzetten overlappen transparantie doorschijnend wijken"
       },
       "workspaces": {
         "label": "Alle werkruimten weergeven",

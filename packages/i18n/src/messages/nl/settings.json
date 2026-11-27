@@ -21,6 +21,27 @@
     "loading": "Instellingen worden geladen …",
     "loadError": "De instellingen konden niet worden geladen"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "Hoe pagina’s zich voor jou gedragen tijdens het lezen en schrijven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd.",
+    "outlineHeading": "Vastgezette inhoudsopgave",
+    "outlineIntro": "De inhoudsopgave van een pagina kun je vastzetten met de speld bovenaan de lijst. Hier bepaal je hoe deze naast de tekst staat.",
+    "pinnedLegend": "Ruimte voor de inhoudsopgave",
+    "pinnedColumn": "Tekst maakt ruimte",
+    "pinnedOverlay": "Over de tekst heen",
+    "pinnedColumnHint": "De inhoudsopgave krijgt een eigen kolom aan de rechterkant en de tekst schuift opzij. Zo wordt er nooit iets bedekt.",
+    "pinnedOverlayHint": "De tekst blijft waar hij is en de inhoudsopgave ligt erbovenop. Als de marge naast de tekst breed genoeg is, bedekt ze niets; anders ligt ze over de rechterrand van de tekst en scrol je om het te lezen.",
+    "transparencyLegend": "Transparantie bij overlapping",
+    "transparencyNone": "Dekkend",
+    "transparencyLight": "Licht doorschijnend",
+    "transparencyStrong": "Sterk doorschijnend",
+    "transparencyHint": "Als de inhoudsopgave over de tekst ligt, schijnt deze door. Wijs je de inhoudsopgave aan met de muis of navigeer je er met het toetsenbord in, dan is ze weer volledig zichtbaar.",
+    "transparencyNoneHint": "De inhoudsopgave dekt de tekst eronder volledig af.",
+    "transparencyColumnHint": "Werkt alleen als de inhoudsopgave over de tekst ligt.",
+    "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog eens.",
+    "loading": "Instellingen laden …",
+    "loadError": "De instellingen konden niet worden geladen"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Geheugen",

@@ -21,6 +21,27 @@
     "loading": "Einstellungen werden geladen …",
     "loadError": "Die Einstellungen konnten nicht geladen werden"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "Wie sich Seiten beim Lesen und Schreiben für dich verhalten. Die Wahl gilt für dein Konto, also auf jedem Gerät, auf dem du angemeldet bist.",
+    "outlineHeading": "Angepinnte Gliederung",
+    "outlineIntro": "Die Gliederung einer Seite lässt sich mit der Nadel oben in ihrer Liste anpinnen. Hier legst du fest, wie sie dann neben dem Text steht.",
+    "pinnedLegend": "Platz für die Gliederung",
+    "pinnedColumn": "Text weicht aus",
+    "pinnedOverlay": "Über dem Text liegen",
+    "pinnedColumnHint": "Die Gliederung bekommt eine eigene Spalte rechts, und der Text rückt dafür zur Seite. So wird nie etwas verdeckt.",
+    "pinnedOverlayHint": "Der Text bleibt, wo er ist, und die Gliederung liegt darüber. Reicht der Rand neben dem Text für sie, verdeckt sie nichts; sonst liegt sie über dem rechten Rand des Textes, und du scrollst, um ihn zu lesen.",
+    "transparencyLegend": "Transparenz beim Überlagern",
+    "transparencyNone": "Deckend",
+    "transparencyLight": "Leicht durchscheinend",
+    "transparencyStrong": "Stark durchscheinend",
+    "transparencyHint": "Liegt die Gliederung über dem Text, scheint er durch. Zeigst du mit der Maus auf die Gliederung oder bist du mit der Tastatur darin, ist sie wieder voll sichtbar.",
+    "transparencyNoneHint": "Die Gliederung deckt den Text darunter ganz ab.",
+    "transparencyColumnHint": "Wirkt nur, wenn die Gliederung über dem Text liegt.",
+    "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
+    "loading": "Einstellungen werden geladen …",
+    "loadError": "Die Einstellungen konnten nicht geladen werden"
+  },
   "groups": {
     "ai": "KI",
     "memory": "Gedächtnis",

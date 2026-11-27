@@ -34,6 +34,7 @@
     "notifications": "Notifications",
     "language": "Language",
     "aiChat": "AI Chat",
+    "editor": "Editor",
     "admin": "Administration",
     "menuLabel": "Account and areas",
     "menuLabelWithNew": "{count, plural, one {Account and areas (# new feature)} other {Account and areas (# new features)}}",
@@ -174,6 +175,12 @@
       "hint": "Applies to your account",
       "keywords": "ai chat scroll follow response answer start read stay autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Pinned outline: overlay text",
+      "column": "Pinned outline: shift text aside",
+      "hint": "Applies to your account",
+      "keywords": "outline table of contents pin pinned overlay cover shift column text move space"
+    },
     "contextOpen": "Open context panel",
     "contextOpenPlaceholder": "Which tab?",
     "contextOpenKeywords": "context context panel tab tab panel sidebar right",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "AI Chat settings",
         "keywords": "ai chat assistant settings scroll follow response start"
+      },
+      "editorSettings": {
+        "label": "Editor settings",
+        "keywords": "editor settings outline table of contents pin overlay transparency translucent shift"
       },
       "workspaces": {
         "label": "Show all workspaces",

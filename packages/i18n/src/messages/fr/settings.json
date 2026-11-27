@@ -21,6 +21,27 @@
     "loading": "Chargement des paramètres…",
     "loadError": "Impossible de charger les paramètres"
   },
+  "editor": {
+    "title": "Éditeur",
+    "intro": "Comportement des pages lors de la lecture et de l’écriture. Ce choix s’applique à ton compte, sur chaque appareil où tu te connectes.",
+    "outlineHeading": "Plan épinglé",
+    "outlineIntro": "Le plan d’une page peut être épinglé grâce à l’épingle située en haut de sa liste. Définis ici comment il se positionne à côté du texte.",
+    "pinnedLegend": "Disposition du plan",
+    "pinnedColumn": "Décaler le texte",
+    "pinnedOverlay": "Superposer au texte",
+    "pinnedColumnHint": "Le plan dispose de sa propre colonne à droite et le texte s’écarte pour lui faire de la place. Ainsi, rien n’est jamais masqué.",
+    "pinnedOverlayHint": "Le texte reste à sa place et le plan se superpose à lui. Si la marge à côté du texte suffit, rien n’est masqué ; sinon, le plan recouvre le bord droit du texte, et il suffit de faire défiler pour lire.",
+    "transparencyLegend": "Transparence en superposition",
+    "transparencyNone": "Opaque",
+    "transparencyLight": "Légèrement transparent",
+    "transparencyStrong": "Fortement transparent",
+    "transparencyHint": "Quand le plan recouvre le texte, celui-ci transparaît. Dès que tu le survoles à la souris ou y navigues au clavier, il redevient pleinement visible.",
+    "transparencyNoneHint": "Le plan masque entièrement le texte situé en dessous.",
+    "transparencyColumnHint": "S’applique uniquement lorsque le plan est superposé au texte.",
+    "saveFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
+    "loading": "Chargement des paramètres…",
+    "loadError": "Impossible de charger les paramètres"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Mémoire",

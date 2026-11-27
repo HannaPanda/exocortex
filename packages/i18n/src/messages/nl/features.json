@@ -106,9 +106,19 @@
     "details": {
       "p1": "De schaal toont de structuur van de pagina, met langere streepjes voor hogere niveaus. Het amberkleurige streepje geeft het gedeelte aan waar je je nu bevindt en beweegt mee tijdens het scrollen. Een pagina zonder koppen heeft geen overzicht.",
       "p2": "Een ingeklapte sectie staat eenmaal in het overzicht, met het aantal koppen erin. Ernaartoe springen klapt de sectie niet uit: of een sectie ingeklapt is, hoort bij de pagina, en navigeren verandert niets aan de pagina.",
-      "p3": "Met de speld bovenaan kun je het overzicht vastpinnen, bij elke paginabreedte: het krijgt dan een eigen kolom aan de rechterkant, de tekst schuift opzij en het blijft openstaan tot je het weer losmaakt. Als het venster daarvoor te smal is, staat dat in het overzicht aangegeven. Op mobiel verandert de schaal in een kleine knop rechtsonder die verdwijnt tijdens het typen. Via het opdrachtpalet kan het ook zonder muis: „Naar sectie springen”."
+      "p3": "Met de speld bovenaan kun je het overzicht vastpinnen, bij elke paginabreedte: dan krijgt het een eigen kolom rechts, schuift de tekst opzij en blijft het openstaan tot je het weer losmaakt. Onder Instellingen → Editor kun je het in plaats daarvan over de tekst heen leggen. Is het venster daarvoor te smal, dan wordt dat in het overzicht vermeld. Op je mobiel verandert de schaal in een kleine knop rechtsonder, die tijdens het schrijven verdwijnt. Via het opdrachtpalet kan het ook zonder muis: „Naar sectie springen”."
     },
     "where": "Klik op een pagina met koppen op de schaal aan de rechterrand, of gebruik Strg + K en „Naar sectie springen”."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Vastgepind overzicht over de tekst",
+    "summary": "In plaats van dat de tekst opzijschuift voor het vastgepinde overzicht, kan het over de tekst heen liggen. Op een breed scherm blijft de tekst dan waar hij is; waar de marge niet breed genoeg is, bedekt het overzicht een stukje ervan, desgewenst doorschijnend.",
+    "details": {
+      "p1": "Onder Instellingen → Editor kies je hoe het vastgepinde overzicht naast de tekst staat. „Tekst wijkt uit” is de standaard: het krijgt een eigen kolom en de tekst schuift daarvoor opzij. „Over de tekst liggen” laat de tekst staan; is de marge naast de tekst breed genoeg, dan ligt het overzicht daar en bedekt het niets, anders ligt het als een zwevend vlak over de rechterrand van de tekst.",
+      "p2": "Voor het overlappen is er een transparantie: dekkend, licht of sterk doorschijnend. Dan schijnt de bedekte tekst erdoorheen, en zodra je met de muis op het overzicht wijst of er met het toetsenbord in zit, is het weer volledig zichtbaar. Of het overzicht is vastgepind, onthoudt je browser; hoe het vastgepind staat, hoort bij je account en geldt op elk apparaat. Op je mobiel kun je niet vastpinnen, daar blijft het bij de kleine knop rechtsonder.",
+      "p3": "Met Strg + K wissel je tussen de twee manieren („Vastgepind overzicht: over de tekst liggen”). Agenten lezen en wijzigen de instelling via exo_me_preferences en exo_me_preferences_set, als outlinePinned (column of overlay) en outlineTransparency (none, light of strong)."
+    },
+    "where": "Instellingen, Editor. Ook in het opdrachtpalet."
   },
   "seiten-editor": {
     "title": "Pagina’s schrijven, tegelijkertijd met twee personen",

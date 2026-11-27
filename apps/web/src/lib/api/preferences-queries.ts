@@ -5,6 +5,10 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 import {
   type ChatScrollMode,
   DEFAULT_CHAT_SCROLL_MODE,
+  DEFAULT_OUTLINE_PINNED_MODE,
+  DEFAULT_OUTLINE_TRANSPARENCY,
+  type OutlinePinnedMode,
+  type OutlineTransparency,
   type UpdateUserPreferencesRequest,
   type UserPreferences,
 } from '@exocortex/contracts';
@@ -12,7 +16,7 @@ import {
 import { apiRequest } from './client';
 import { queryKeys } from './query-keys';
 
-/** The account's personal settings: the interface language (#98), how the chat scrolls (#282). */
+/** The account's personal settings: language (#98), chat scrolling (#282), the outline (#283). */
 export const preferenceKeys = {
   preferences: ['me', 'preferences'] as const,
 };
@@ -87,6 +91,64 @@ export function useChatScrollPreference(): ChatScrollPreference {
   return {
     mode: query.data?.chatScroll ?? DEFAULT_CHAT_SCROLL_MODE,
     change: (mode, options) => mutation.mutate(mode, { onError: options?.onError }),
+    pending: mutation.isPending,
+  };
+}
+
+/** What `useOutlinePreferences` can change; every field one of `UserPreferences`. */
+export type OutlinePreferenceChange = Partial<
+  Pick<UserPreferences, 'outlinePinned' | 'outlineTransparency'>
+>;
+
+export interface OutlinePreferences {
+  pinned: OutlinePinnedMode;
+  transparency: OutlineTransparency;
+  change: (change: OutlinePreferenceChange, options?: { onError?: () => void }) => void;
+  pending: boolean;
+}
+
+/**
+ * How a pinned page outline behaves (issue #283), read by the outline itself
+ * and changed from the settings page and the palette.
+ *
+ * Optimistic like the chat's scrolling: the outline moves the moment the
+ * choice is made and moves back if saving fails. Until the preferences have
+ * loaded, the defaults are today's behaviour, so a slow request never shows
+ * the text jumping under a list that then moves aside.
+ */
+export function useOutlinePreferences(): OutlinePreferences {
+  const client = useQueryClient();
+  const query = useUserPreferences();
+  const mutation = useMutation({
+    mutationFn: (change: OutlinePreferenceChange) =>
+      apiRequest<UserPreferences>('/api/me/preferences', {
+        method: 'PATCH',
+        body: change satisfies UpdateUserPreferencesRequest,
+      }),
+    onMutate: async (change) => {
+      await client.cancelQueries({ queryKey: preferenceKeys.preferences });
+      const before = client.getQueryData<UserPreferences>(preferenceKeys.preferences);
+      if (before !== undefined) {
+        client.setQueryData<UserPreferences>(preferenceKeys.preferences, {
+          ...before,
+          ...change,
+        });
+      }
+      return { before };
+    },
+    onError: (_error, _change, context) => {
+      if (context?.before !== undefined) {
+        client.setQueryData(preferenceKeys.preferences, context.before);
+      }
+    },
+    onSuccess: (result) => {
+      client.setQueryData(preferenceKeys.preferences, result);
+    },
+  });
+  return {
+    pinned: query.data?.outlinePinned ?? DEFAULT_OUTLINE_PINNED_MODE,
+    transparency: query.data?.outlineTransparency ?? DEFAULT_OUTLINE_TRANSPARENCY,
+    change: (change, options) => mutation.mutate(change, { onError: options?.onError }),
     pending: mutation.isPending,
   };
 }

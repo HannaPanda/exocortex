@@ -155,11 +155,25 @@ export function canPinOutline(room: number): boolean {
 }
 
 /**
+ * Whether a pinned list laid over the page (`outlinePinned: 'overlay'`, issue
+ * #283) lies on text. It needs the same column as a list beside the text, so
+ * a margin (`free`) at least that wide holds it and nothing is covered; a
+ * narrower one leaves part of the text under it.
+ */
+export function overlayCovers(free: number): boolean {
+  return free < PINNED_LANE;
+}
+
+/**
  * `free` is the room between the right edge of the text and the right edge of
  * the visible scroll area, `room` the visible width of the scroll area. The
- * outline is never drawn over the text: a pinned list takes a column of its
- * own, the scale needs a lane in the margin, and where there is neither a
- * phone gets a compact button that floats like every other floating control.
+ * outline is not drawn over the text unless the reader asked for that: a
+ * pinned list takes a column of its own (or, chosen in the preferences, lies
+ * over the text, issue #283), the scale needs a lane in the margin, and where
+ * there is neither a phone gets a compact button that floats like every other
+ * floating control. The same width decides whether a list can be pinned in
+ * either mode: on a window too narrow for the column, a list laid over the
+ * text would cover most of what is left of it.
  */
 export function outlinePlacement(
   free: number,

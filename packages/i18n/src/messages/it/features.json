@@ -106,9 +106,19 @@
     "details": {
       "p1": "La scala mostra la struttura della pagina, con tratti più lunghi per i livelli superiori. Il tratto color ambra indica la sezione in cui ti trovi attualmente e si sposta mentre scorri. Una pagina senza intestazioni non ha alcuna struttura.",
       "p2": "Una sezione compressa compare una sola volta nella struttura, insieme al numero di intestazioni al suo interno. Raggiungerla con un salto non la espande: lo stato compresso fa parte della pagina e la navigazione non modifica i contenuti della pagina.",
-      "p3": "Con la puntina in alto puoi fissare la struttura, con qualsiasi larghezza della pagina: otterrà una colonna dedicata a destra, il testo si sposterà lateralmente e rimarrà aperta finché non la sblocchi. Se la finestra è troppo stretta per questo, viene indicato nella struttura. Sul telefono, la scala diventa un piccolo pulsante in basso a destra, che scompare durante la scrittura. Puoi farlo anche senza mouse tramite la tavolozza dei comandi: «Vai alla sezione»."
+      "p3": "Con lo spillo in alto puoi fissare la struttura, a qualsiasi larghezza di pagina: ottiene così una colonna dedicata a destra, il testo si sposta di lato e rimane aperta finché non la sblocchi. Sotto Impostazioni → Editor puoi invece sovrapporla al testo. Se la finestra è troppo stretta, la struttura stessa te lo segnala. Su smartphone, la scala diventa un piccolo pulsante in basso a destra che scompare durante la scrittura. Tramite la tavolozza dei comandi puoi usarla anche senza mouse: «Vai alla sezione»."
     },
     "where": "Su una pagina con intestazioni fai clic sulla scala sul bordo destro, oppure premi Strg + K e seleziona «Vai alla sezione»."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Struttura fissata sovrapposta al testo",
+    "summary": "Invece di far spostare il testo per fare spazio alla struttura fissata, questa può sovrapporsi al testo. Su uno schermo largo il testo rimane al suo posto; dove il margine non basta, la struttura ne copre una parte, se vuoi anche in semitrasparenza.",
+    "details": {
+      "p1": "Sotto Impostazioni → Editor scegli come posizionare la struttura fissata rispetto al testo. «Il testo si sposta» è l’impostazione predefinita: la struttura ottiene una colonna dedicata e il testo si sposta di lato. «Sovrapponi al testo» lascia il testo fermo; se il margine accanto al testo è abbastanza largo, la struttura si posiziona lì senza coprire nulla, altrimenti si posiziona come superficie fluttuante sopra il bordo destro del testo.",
+      "p2": "Per la sovrapposizione è disponibile un’opzione di trasparenza: opaca, leggermente o fortemente semitrasparente. In questo modo il testo coperto traspare e, non appena passi con il mouse sopra la struttura o ci entri con la tastiera, torna completamente visibile. Il browser ricorda se la struttura è fissata; il modo in cui è fissata è invece legato al tuo account e vale su ogni dispositivo. Su smartphone non è possibile fissarla: rimane il piccolo pulsante in basso a destra.",
+      "p3": "Con Strg + K puoi passare da una modalità all’altra («Struttura fissata: sovrapponi al testo»). Gli agenti leggono e impostano questa preferenza tramite exo_me_preferences ed exo_me_preferences_set, come outlinePinned (column o overlay) e outlineTransparency (none, light o strong)."
+    },
+    "where": "Impostazioni, Editor. Anche nella tavolozza dei comandi."
   },
   "seiten-editor": {
     "title": "Scrivere pagine, a quattro mani in contemporanea",

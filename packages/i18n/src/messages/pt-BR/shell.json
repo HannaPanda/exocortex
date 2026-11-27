@@ -34,6 +34,7 @@
     "notifications": "Notificações",
     "language": "Idioma",
     "aiChat": "Chat de IA",
+    "editor": "Editor",
     "admin": "Administração",
     "menuLabel": "Conta e áreas",
     "menuLabelWithNew": "{count, plural, one {Conta e áreas (# novo recurso)} many {Conta e áreas (# novos recursos)} other {Conta e áreas (# novos recursos)}}",
@@ -174,6 +175,12 @@
       "hint": "Aplica-se à sua conta",
       "keywords": "ia chat rolar acompanhar seguir resposta início ler ficar parado rolagem automática autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Sumário fixado: sobrepor ao texto",
+      "column": "Sumário fixado: ajustar texto ao lado",
+      "hint": "Aplica-se à sua conta",
+      "keywords": "sumário estrutura índice fixar fixado sobrepor cobrir ajustar coluna texto mover espaço"
+    },
     "contextOpen": "Abrir painel de contexto",
     "contextOpenPlaceholder": "Qual aba?",
     "contextOpenKeywords": "contexto painel de contexto aba guia painel barra lateral direita",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "Configurações do chat de IA",
         "keywords": "ia chat assistente configurações rolar acompanhar início da resposta"
+      },
+      "editorSettings": {
+        "label": "Configurações do editor",
+        "keywords": "editor configurações sumário estrutura índice fixar sobrepor transparência translúcido ajustar"
       },
       "workspaces": {
         "label": "Mostrar todos os espaços de trabalho",

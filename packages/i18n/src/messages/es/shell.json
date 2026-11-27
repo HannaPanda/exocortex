@@ -34,6 +34,7 @@
     "notifications": "Notificaciones",
     "language": "Idioma",
     "aiChat": "Chat de IA",
+    "editor": "Editor",
     "admin": "Administración",
     "menuLabel": "Cuenta y espacios",
     "menuLabelWithNew": "{count, plural, one {Cuenta y espacios (# función nueva)} many {Cuenta y espacios (# funciones nuevas)} other {Cuenta y espacios (# funciones nuevas)}}",
@@ -174,6 +175,12 @@
       "hint": "Se aplica a tu cuenta",
       "keywords": "ia chat desplazar desplazamiento seguir respuesta inicio leer detenerse autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Esquema fijado: superponer al texto",
+      "column": "Esquema fijado: desplazar el texto",
+      "hint": "Se aplica a tu cuenta",
+      "keywords": "esquema índice fijar fijado superponer tapar desplazar columna texto mover espacio"
+    },
     "contextOpen": "Abrir panel de contexto",
     "contextOpenPlaceholder": "¿Qué pestaña?",
     "contextOpenKeywords": "contexto panel pestaña tab barra lateral derecha",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "Ajustes del chat de IA",
         "keywords": "ia chat asistente ajustes configuracion desplazar seguir inicioderespuesta"
+      },
+      "editorSettings": {
+        "label": "Ajustes del editor",
+        "keywords": "editor ajustes esquema índice fijar superponer transparencia translúcido desplazar"
       },
       "workspaces": {
         "label": "Mostrar todos los espacios de trabajo",

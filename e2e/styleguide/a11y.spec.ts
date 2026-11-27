@@ -31,6 +31,15 @@ const EXCEPTIONS: readonly { rule: string; exclude: string; reason: string }[] =
     // screen, for browsers that already do it. Safari is the gap this accepts.
     reason: 'page scroller, focusable by the browser',
   },
+  {
+    rule: 'color-contrast',
+    exclude: '[data-transparency]',
+    // A pinned outline laid over the text and let through (issue #283) is a
+    // reader's own choice in their settings, off by default, and comes back
+    // to full contrast under the pointer and with the keyboard focus in it.
+    // Lowering it is what the setting is for.
+    reason: 'translucent outline over the text, chosen by the reader',
+  },
 ];
 
 interface Finding {

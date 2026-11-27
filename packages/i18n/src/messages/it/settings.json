@@ -21,6 +21,27 @@
     "loading": "Caricamento delle impostazioni…",
     "loadError": "Impossibile caricare le impostazioni"
   },
+  "editor": {
+    "title": "Editor",
+    "intro": "Come si comportano le pagine per te durante la lettura e la scrittura. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso.",
+    "outlineHeading": "Struttura appuntata",
+    "outlineIntro": "La struttura di una pagina si può appuntare con la puntina in cima al suo elenco. Qui decidi come posizionarla accanto al testo.",
+    "pinnedLegend": "Spazio per la struttura",
+    "pinnedColumn": "Il testo si sposta",
+    "pinnedOverlay": "Sovrapposta al testo",
+    "pinnedColumnHint": "La struttura ottiene una colonna dedicata a destra e il testo si sposta di lato. In questo modo nulla viene mai coperto.",
+    "pinnedOverlayHint": "Il testo rimane dov’è e la struttura vi si sovrappone. Se il margine accanto al testo è sufficiente, non copre nulla; altrimenti si sovrappone al bordo destro del testo e puoi scorrere per leggerlo.",
+    "transparencyLegend": "Trasparenza in sovrapposizione",
+    "transparencyNone": "Coprente",
+    "transparencyLight": "Leggermente trasparente",
+    "transparencyStrong": "Molto trasparente",
+    "transparencyHint": "Se la struttura è sovrapposta al testo, questo traspare. Se passi sopra la struttura con il mouse o ci entri con la tastiera, torna del tutto opaca.",
+    "transparencyNoneHint": "La struttura copre del tutto il testo sottostante.",
+    "transparencyColumnHint": "Ha effetto solo quando la struttura è sovrapposta al testo.",
+    "saveFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
+    "loading": "Caricamento delle impostazioni…",
+    "loadError": "Impossibile caricare le impostazioni"
+  },
   "groups": {
     "ai": "IA",
     "memory": "Memoria",

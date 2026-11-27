@@ -10,6 +10,7 @@ import {
   outlinePlacement,
   outlineTop,
   outlineWanted,
+  overlayCovers,
   PINNED_LANE,
   PINNED_MIN_PAGE,
   railTicks,
@@ -98,6 +99,15 @@ describe('canPinOutline', () => {
     // A phone never pins; a tablet held upright does.
     expect(canPinOutline(390)).toBe(false);
     expect(canPinOutline(768)).toBe(true);
+  });
+});
+
+describe('overlayCovers (issue #283)', () => {
+  it('lies on text only where the margin is narrower than the column', () => {
+    expect(overlayCovers(0)).toBe(true);
+    expect(overlayCovers(PINNED_LANE - 1)).toBe(true);
+    expect(overlayCovers(PINNED_LANE)).toBe(false);
+    expect(overlayCovers(900)).toBe(false);
   });
 });
 

@@ -21,6 +21,27 @@
     "loading": "Ładowanie ustawień…",
     "loadError": "Nie udało się załadować ustawień"
   },
+  "editor": {
+    "title": "Edytor",
+    "intro": "Jak strony zachowują się podczas czytania i pisania. Wybór dotyczy twojego konta, czyli każdego urządzenia, na którym się logujesz.",
+    "outlineHeading": "Przypięty spis treści",
+    "outlineIntro": "Spis treści strony można przypiąć za pomocą pinezki na górze listy. Tutaj określasz, jak ma być widoczny obok tekstu.",
+    "pinnedLegend": "Miejsce na spis treści",
+    "pinnedColumn": "Tekst ustępuje miejsca",
+    "pinnedOverlay": "Nakładanie na tekst",
+    "pinnedColumnHint": "Spis treści otrzymuje osobną kolumnę po prawej stronie, a tekst przesuwa się w bok. Dzięki temu nic nie jest zasłonięte.",
+    "pinnedOverlayHint": "Tekst pozostaje na swoim miejscu, a spis treści jest na niego nałożony. Jeśli margines obok tekstu wystarcza, nic nie zostanie zasłonięte; w przeciwnym razie spis nakłada się na prawą krawędź tekstu i trzeba przewinąć, aby go przeczytać.",
+    "transparencyLegend": "Przezroczystość nakładania",
+    "transparencyNone": "Nieprzezroczysty",
+    "transparencyLight": "Lekko przezroczysty",
+    "transparencyStrong": "Mocno przezroczysty",
+    "transparencyHint": "Gdy spis treści leży na tekście, tekst prześwituje. Po najechaniu myszą na spis treści lub przejściu do niego za pomocą klawiatury staje się on znów w pełni widoczny.",
+    "transparencyNoneHint": "Spis treści całkowicie zasłania tekst pod spodem.",
+    "transparencyColumnHint": "Działa tylko wtedy, gdy spis treści nakłada się na tekst.",
+    "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
+    "loading": "Wczytywanie ustawień…",
+    "loadError": "Nie udało się wczytać ustawień"
+  },
   "groups": {
     "ai": "AI",
     "memory": "Pamięć",

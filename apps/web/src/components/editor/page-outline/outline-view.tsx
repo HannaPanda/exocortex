@@ -4,6 +4,7 @@ import { ChevronRight, Pin, PinOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type OutlineTransparency } from '@exocortex/contracts';
 import { type PageOutlineEntry } from '@exocortex/editor';
 import { Button, cn, SectionRule } from '@exocortex/ui';
 
@@ -99,6 +100,56 @@ export function OutlineRail({
         />
       ))}
     </button>
+  );
+}
+
+/**
+ * How far an overlaid list lets the text through (issue #283). Opacity of the
+ * whole panel, never a blur (the No-Glass Rule in DESIGN.md) and never a
+ * colour of its own: the covered text shows through the panel's own surface.
+ */
+const TRANSPARENCY_CLASS: Record<OutlineTransparency, string | null> = {
+  none: null,
+  light: 'opacity-75',
+  strong: 'opacity-45',
+};
+
+/**
+ * The frame of the pinned list. In its own column (issue #267) or in a margin
+ * wide enough to hold it, it is flat like the text beside it. Laid over the
+ * text (`covering`, issue #283) it becomes a floating surface, the popover's
+ * own (`popover`, `border-strong`, `shadow-md`), so it reads as lying on the
+ * page rather than as part of it, and with a transparency chosen it lets the
+ * covered text show through until the pointer is on it or the keyboard is in
+ * it. The fade is a state change (the list is being used), so it follows
+ * `prefers-reduced-motion` like every other transition.
+ */
+export function OutlinePinnedFrame({
+  covering,
+  transparency,
+  className,
+  ...props
+}: React.ComponentProps<'nav'> & {
+  covering: boolean;
+  transparency: OutlineTransparency;
+}) {
+  const faded = covering ? TRANSPARENCY_CLASS[transparency] : null;
+  return (
+    <nav
+      data-covering={covering ? 'true' : undefined}
+      data-transparency={faded === null ? undefined : transparency}
+      className={cn(
+        'flex w-60 flex-col gap-1',
+        covering && 'rounded-lg border border-border-strong bg-popover p-1.5 shadow-md',
+        faded !== null &&
+          cn(
+            faded,
+            'hover:opacity-100 has-focus-visible:opacity-100 motion-safe:transition-opacity',
+          ),
+        className,
+      )}
+      {...props}
+    />
   );
 }
 

@@ -54,6 +54,11 @@ export interface OutlineTracking {
   host: HTMLElement | null;
   /** Pixels between the visible scroll area and the host's right edge. */
   scrollbarWidth: number;
+  /**
+   * Pixels between the text's right edge and the visible area's: the margin a
+   * list laid over the page has before it covers text (issue #283).
+   */
+  free: number;
   jump: (entry: PageOutlineEntry, index: number) => void;
 }
 
@@ -307,6 +312,7 @@ export function useOutlineTracking(editor: Editor, pinRequested: boolean): Outli
     canPin: canPinOutline(layout.room),
     host: elements?.host ?? null,
     scrollbarWidth: layout.scrollbarWidth,
+    free: layout.free,
     jump,
   };
 }

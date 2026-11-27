@@ -106,9 +106,19 @@
     "details": {
       "p1": "Podziałka pokazuje strukturę strony: dłuższe kreski oznaczają wyższe poziomy nagłówków. Bursztynowa kreska wskazuje sekcję, w której aktualnie się znajdujesz, i przesuwa się wraz z przewijaniem. Strona bez nagłówków nie ma spisu.",
       "p2": "Zwinięta sekcja pojawia się w spisie treści raz, z liczbą zawartych w niej nagłówków. Przejście do niej nie powoduje jej rozwinięcia: to, czy sekcja jest zwinięta, jest częścią strony, a nawigacja nie zmienia zawartości strony.",
-      "p3": "Za pomocą szpilki u góry możesz przypiąć spis treści przy dowolnej szerokości strony: zyskuje on wtedy osobną kolumnę po prawej stronie, tekst przesuwa się w bok, a spis pozostaje otwarty, dopóki go nie odepniesz. Jeśli okno jest na to zbyt wąskie, pojawi się o tym informacja w spisie treści. Na telefonie podziałka zamienia się w mały przycisk w prawym dolnym rogu, który znika podczas pisania. Za pomocą palety poleceń zrobisz to także bez myszy: „Przejdź do sekcji”."
+      "p3": "Ikonka pinezki na górze pozwala przypiąć spis treści przy dowolnej szerokości strony: zyskuje on wtedy osobną kolumnę po prawej stronie, tekst przesuwa się w bok, a spis pozostaje otwarty, dopóki go nie odepniesz. W sekcji Ustawienia → Edytor możesz zamiast tego nałożyć go na tekst. Jeśli okno jest na to zbyt wąskie, w spisie treści pojawi się odpowiednia informacja. Na telefonie skala zamienia się w mały przycisk w prawym dolnym rogu, który znika podczas pisania. Bez myszy zrobisz to przez paletę poleceń: „Przejdź do sekcji”."
     },
     "where": "Na stronie z nagłówkami kliknij podziałkę przy prawej krawędzi albo naciśnij Strg + K i wybierz „Przejdź do sekcji”."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Przypięty spis treści nad tekstem",
+    "summary": "Zamiast przesuwać tekst w bok dla przypiętego spisu treści, może on unosić się nad tekstem. Na szerokim ekranie tekst pozostaje wtedy na swoim miejscu; tam, gdzie margines nie wystarcza, spis treści zasłania jego fragment – opcjonalnie z przezroczystością.",
+    "details": {
+      "p1": "W sekcji Ustawienia → Edytor wybierasz sposób wyświetlania przypiętego spisu treści obok tekstu. „Tekst ustępuje miejsca” to ustawienie domyślne: spis otrzymuje osobną kolumnę, a tekst przesuwa się na bok. Opcja „Nad tekstem” pozostawia tekst na miejscu; jeśli margines obok tekstu jest wystarczająco szeroki, spis treści znajduje się na nim i niczego nie zasłania, w przeciwnym razie unosi się nad prawym brzegiem tekstu.",
+      "p2": "W przypadku nakładania możesz wybrać stopień przezroczystości: kryjący, lekko lub mocno przezroczysty. Wtedy zasłonięty tekst prześwituje, a gdy tylko najedziesz kursorem na spis treści lub przejdziesz do niego klawiaturą, staje się on znów w pełni widoczny. Informację o tym, czy spis treści jest przypięty, zapamiętuje twoja przeglądarka; sposób jego przypięcia jest powiązany z twoim kontem i obowiązuje na każdym urządzeniu. Na telefonie przypinanie nie jest dostępne – tam pozostaje mały przycisk w prawym dolnym rogu.",
+      "p3": "Za pomocą Strg+K możesz przełączać się między obydwoma trybami („Przypięty spis treści: nad tekstem”). Agenci odczytują i zmieniają to ustawienie za pomocą exo_me_preferences oraz exo_me_preferences_set jako outlinePinned (column lub overlay) i outlineTransparency (none, light lub strong)."
+    },
+    "where": "Ustawienia, Edytor. Także w palecie poleceń."
   },
   "seiten-editor": {
     "title": "Pisanie stron wspólnie w tym samym czasie",

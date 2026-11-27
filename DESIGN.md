@@ -764,7 +764,24 @@ Before that, pinning depended on the margin the text happened to leave, which
 a full-width page never leaves, so the pin came and went with the page width.
 The only window that cannot pin is one too narrow for the column and a 20rem
 measure beside it; its popover says so where the pin would be, rather than
-leaving the reader to look for a control that is not there. Where the margin cannot even hold the scale (a phone, or a narrow
+leaving the reader to look for a control that is not there.
+
+A person can choose instead that the pinned list lies over the text
+(`outlinePinned: 'overlay'` on the account, `/einstellungen/editor`, issue
+#283), because on a wide screen the moving text costs more than a covered
+line. The text then stays where it is. In a margin wide enough for the
+column the list lies on nothing and stays flat, exactly as in its column;
+where it would cover text it becomes a floating surface, the popover's own
+(`popover`, `border-strong`, `shadow-md`, radius `lg`), so it reads as lying
+on the page. The covering list may let the text through at two strengths
+(`opacity-75`, `opacity-45`, whole-panel opacity and never a blur, the
+No-Glass Rule); it returns to full strength under the pointer and with the
+keyboard focus in it, and the fade is a plain transition that
+`prefers-reduced-motion` drops. Whether a window can pin is the same width
+test in both modes: a list over a window too narrow for the column would
+cover most of the text left, so a phone keeps its button.
+
+Where the margin cannot even hold the scale (a phone, or a narrow
 window with a panel open), it becomes a compact button floating at the bottom
 edge, and that button steps aside while the editor has focus.
 
@@ -777,9 +794,10 @@ is at least 36rem wide; on a phone its four controls are icons, named by
 tooltip and accessible name, because the labelled row ran off the left edge.
 
 **The Outline-Is-Chrome Rule.** The outline is drawn into the document area
-beside the scroll container, never into the editor and never over the text,
-the cover or the title: pinned only in a column the page gives up for it,
-and otherwise collapsed to the margin. It
+beside the scroll container, never into the editor and never over the cover
+or the title: pinned in a column the page gives up for it, over the text
+only when the reader chose that in their own settings, and otherwise
+collapsed to the margin. It
 reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.

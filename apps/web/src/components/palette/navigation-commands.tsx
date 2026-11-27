@@ -20,6 +20,7 @@ import {
   NetworkIcon,
   OrbitIcon,
   PaletteIcon,
+  PenLineIcon,
   Settings2Icon,
   Share2Icon,
   ShieldIcon,
@@ -63,6 +64,7 @@ interface Place {
     | 'notifications'
     | 'language'
     | 'aiChat'
+    | 'editorSettings'
     | 'workspaces'
     | 'workspaceHome'
     | 'knowledgeMap'
@@ -122,6 +124,12 @@ const PLACES: readonly Place[] = [
   },
   { key: 'language', screen: '/einstellungen/sprache', audience: 'everyone', icon: LanguagesIcon },
   { key: 'aiChat', screen: '/einstellungen/ki-chat', audience: 'everyone', icon: SparklesIcon },
+  {
+    key: 'editorSettings',
+    screen: '/einstellungen/editor',
+    audience: 'everyone',
+    icon: PenLineIcon,
+  },
   { key: 'workspaces', screen: '/arbeitsbereich', audience: 'everyone', icon: LayoutGridIcon },
   { key: 'workspaceHome', screen: '/arbeitsbereich/:x', audience: 'workspace', icon: HouseIcon },
   {

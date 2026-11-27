@@ -34,6 +34,7 @@
     "notifications": "Benachrichtigungen",
     "language": "Sprache",
     "aiChat": "KI-Chat",
+    "editor": "Editor",
     "admin": "Verwaltung",
     "menuLabel": "Konto und Bereiche",
     "menuLabelWithNew": "{count, plural, one {Konto und Bereiche (# neue Funktion)} other {Konto und Bereiche (# neue Funktionen)}}",
@@ -174,6 +175,12 @@
       "hint": "Gilt für dein Konto",
       "keywords": "ki chat scrollen mitlaufen folgen antwort anfang lesen stehen bleiben autoscroll"
     },
+    "outlinePinned": {
+      "overlay": "Angepinnte Gliederung: über dem Text liegen",
+      "column": "Angepinnte Gliederung: Text ausweichen lassen",
+      "hint": "Gilt für dein Konto",
+      "keywords": "gliederung inhaltsverzeichnis anpinnen angepinnt überlagern verdecken ausweichen spalte text verschieben platz"
+    },
     "contextOpen": "Kontextbereich öffnen",
     "contextOpenPlaceholder": "Welcher Reiter?",
     "contextOpenKeywords": "kontext kontextbereich reiter tab panel seitenleiste rechts",
@@ -231,6 +238,10 @@
       "aiChat": {
         "label": "KI-Chat-Einstellungen",
         "keywords": "ki chat assistent einstellungen scrollen mitlaufen antwortanfang"
+      },
+      "editorSettings": {
+        "label": "Editor-Einstellungen",
+        "keywords": "editor einstellungen gliederung inhaltsverzeichnis anpinnen überlagern transparenz durchscheinend ausweichen"
       },
       "workspaces": {
         "label": "Alle Arbeitsbereiche anzeigen",

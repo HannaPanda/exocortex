@@ -106,9 +106,19 @@
     "details": {
       "p1": "The scale shows the structure of the page, with longer ticks for higher heading levels. The amber tick is the section you are currently in, moving along as you scroll. A page without headings has no outline.",
       "p2": "A collapsed section appears once in the outline, showing the number of headings inside it. Jumping there does not expand it: whether a section is collapsed belongs to the page, and navigating does not change the page.",
-      "p3": "Use the pin at the top to pin the outline at any page width: it then gets its own column on the right, the text shifts aside, and it stays open until you unpin it again. If the window is too narrow for this, a note appears in the outline. On mobile, the gauge turns into a small button at the bottom right that disappears while writing. You can also do it without a mouse via the command palette: “Jump to section”."
+      "p3": "Use the pin at the top to pin the outline at any page width: it then gets its own column on the right, the text shifts aside, and it stays open until you unpin it again. Under Settings → Editor, you can have it overlay the text instead. If the window is too narrow for this, the outline lets you know. On mobile, the scale becomes a small button at the bottom right that disappears while writing. You can also do it without a mouse via the command palette: “Jump to section”."
     },
     "where": "On a page with headings, click the scale on the right edge, or press Strg + K and “Jump to section”."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Pinned outline over text",
+    "summary": "Instead of having the text shift aside for the pinned outline, it can float over the text. On a wide screen, the text stays right where it is; where the margin is not wide enough, the outline covers part of it, translucent if desired.",
+    "details": {
+      "p1": "Under Settings → Editor, choose how the pinned outline appears alongside the text. “Text shifts aside” is the default: it gets its own column, and the text moves aside to make room. “Float over text” leaves the text in place; if the margin next to the text is wide enough, the outline sits there without covering anything, otherwise it floats as an overlay over the right edge of the text.",
+      "p2": "For overlaying, there is an opacity setting: opaque, slightly translucent, or heavily translucent. The covered text then shines through, and as soon as you hover over the outline with the mouse or navigate into it using the keyboard, it becomes fully visible again. Whether the outline is pinned is remembered by your browser; how it appears when pinned is part of your account and applies across all devices. On mobile, there is no pinning—it remains the small button at the bottom right.",
+      "p3": "Press Strg + K to toggle between both modes (“Pinned outline: float over text”). Agents read and update the setting via exo_me_preferences and exo_me_preferences_set, as outlinePinned (column or overlay) and outlineTransparency (none, light, or strong)."
+    },
+    "where": "Settings, Editor. Also in the command palette."
   },
   "seiten-editor": {
     "title": "Write pages, collaboratively in real time",

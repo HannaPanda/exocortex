@@ -10,6 +10,7 @@ import {
   LogOutIcon,
   MessagesSquareIcon,
   NetworkIcon,
+  PenLineIcon,
   Share2Icon,
   ShieldIcon,
   SparklesIcon,
@@ -158,6 +159,14 @@ function globalLinks(
       label: t('aiChat'),
       testId: 'open-ai-chat-settings',
       icon: SparklesIcon,
+      group: 'settings',
+    },
+    // How pages behave for this person while reading and writing (issue #283).
+    {
+      href: '/einstellungen/editor',
+      label: t('editor'),
+      testId: 'open-editor-settings',
+      icon: PenLineIcon,
       group: 'settings',
     },
   ];

@@ -106,9 +106,19 @@
     "details": {
       "p1": "L’échelle affiche la structure de la page, avec des traits plus longs pour les niveaux supérieurs. Le trait ambré correspond à la section où tu te trouves actuellement et se déplace lors du défilement. Une page sans titre n’a pas de plan.",
       "p2": "Une section repliée apparaît une seule fois dans le plan, accompagnée du nombre de titres qu’elle contient. Y accéder ne la déplie pas : l’état replié d’une section fait partie intégrante de la page, et naviguer ne modifie rien à la page.",
-      "p3": "Avec l’épingle en haut, le plan peut être épinglé, quelle que soit la largeur de la page : il obtient alors sa propre colonne à droite, le texte se décale sur le côté, et il reste ouvert jusqu’à ce que tu le détaches. Si la fenêtre est trop étroite pour cela, c’est indiqué dans le plan. Sur mobile, la règle devient un petit bouton en bas à droite qui disparaît pendant la saisie. Tu peux aussi t’en servir sans souris via la palette de commandes : « Aller à la section »."
+      "p3": "L’épingle en haut permet d’épingler le plan, quelle que soit la largeur de la page : il obtient alors sa propre colonne à droite, le texte se décale sur le côté, et il reste ouvert jusqu’à ce que tu le détaches. Dans Paramètres → Éditeur, tu peux plutôt le superposer au texte. Si la fenêtre est trop étroite pour cela, une mention l’indique dans le plan. Sur mobile, la règle devient un petit bouton en bas à droite qui disparaît lors de la frappe. La palette de commandes permet aussi d’y accéder sans souris : « Aller à la section »."
     },
     "where": "Sur une page avec des titres, clique sur l’échelle située sur le bord droit, ou fais Strg + K puis « Aller à la section »."
+  },
+  "gliederung-ueber-dem-text": {
+    "title": "Plan épinglé au-dessus du texte",
+    "summary": "Au lieu de décaler le texte lorsque le plan est épinglé, celui-ci peut se superposer au texte. Sur un écran large, le texte reste à sa place ; lorsque la marge ne suffit pas, le plan en masque une partie, avec un effet de transparence au choix.",
+    "details": {
+      "p1": "Dans Paramètres → Éditeur, tu choisis comment le plan épinglé se positionne à côté du texte. « Le texte s’écarte » est l’option par défaut : il obtient sa propre colonne, et le texte se décale pour lui faire de la place. « Superposé au texte » laisse le texte en place ; si la marge à côté du texte est assez large, le plan s’y installe sans rien masquer, sinon il apparaît comme une zone flottante au-dessus du bord droit du texte.",
+      "p2": "Pour la superposition, plusieurs niveaux de transparence existent : opaque, légèrement ou fortement translucide. Le texte masqué apparaît alors en transparence, et dès que tu survols le plan avec la souris ou que tu y navigues au clavier, il redevient pleinement visible. Ton navigateur mémorise si le plan est épinglé ; le mode d’affichage épinglé est quant à lui lié à ton compte et s’applique sur tous tes appareils. Sur mobile, il n’y a pas d’épinglage : le petit bouton en bas à droite reste de mise.",
+      "p3": "Avec Strg+K, tu passes d’un mode à l’autre (« Plan épinglé : superposé au texte »). Les agents lisent et modifient ce réglage via exo_me_preferences et exo_me_preferences_set, sous la forme outlinePinned (column ou overlay) et outlineTransparency (none, light ou strong)."
+    },
+    "where": "Paramètres, Éditeur. Également dans la palette de commandes."
   },
   "seiten-editor": {
     "title": "Rédiger des pages, à deux en simultané",
