@@ -385,6 +385,13 @@ export class DocumentsService {
           type: 'document.updated',
           payload: { documentId: input.documentId },
           correlationId: input.correlationId,
+          // So an AI run's rename can be taken back while the title is
+          // still the one it gave (issue #248).
+          structure: {
+            kind: 'renamed',
+            from: context.document.title,
+            to: input.request.title ?? context.document.title,
+          },
         });
         // The title itself has no other history (`Document` only stores the
         // current one), so a rename needs its own audit entry to be

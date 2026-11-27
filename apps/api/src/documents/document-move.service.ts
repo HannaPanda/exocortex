@@ -127,6 +127,17 @@ export class DocumentMoveService {
         type: 'document.moved',
         payload: { documentId: input.documentId },
         correlationId: input.correlationId,
+        // Where the page was and where it went, so an AI run's move can be
+        // taken back while the page still stands there (issue #248).
+        structure: {
+          kind: 'moved',
+          fromParentId: previousParentId,
+          toParentId: input.request.parentId,
+          fromWorkspaceId: context.workspaceId,
+          toWorkspaceId: context.workspaceId,
+          fromOrderKey: siblings.find((row) => row.id === input.documentId)?.orderKey ?? '',
+          toOrderKey: orderKey,
+        },
       });
 
       return document;
@@ -330,6 +341,18 @@ export class DocumentMoveService {
         type: 'document.moved',
         payload: { documentId: input.documentId },
         correlationId: input.correlationId,
+        // Recorded so the move is named for what it was (issue #248); an
+        // undo leaves a move between workspaces alone, because the whole
+        // subtree went along and may have grown since.
+        structure: {
+          kind: 'moved',
+          fromParentId: previousParentId,
+          toParentId: input.request.parentId,
+          fromWorkspaceId: previousWorkspaceId,
+          toWorkspaceId: targetWorkspaceId,
+          fromOrderKey: sourceRows.find((row) => row.id === input.documentId)?.orderKey ?? '',
+          toOrderKey: orderKey,
+        },
       });
 
       return document;

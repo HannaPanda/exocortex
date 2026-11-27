@@ -29,6 +29,14 @@ export interface WrittenBlock {
   after: string | null;
   /** The stretch of this write the block changed in; only meaningful within one write. */
   group: number;
+  /**
+   * The identified block standing right before it: in the state the write
+   * left for a block it kept, in the state before for one it removed, `''`
+   * at the start of the page. Where the block stood, for an undo that has to
+   * say what took its place once somebody rewrote it under a new identifier.
+   * Absent on rows written before it was recorded.
+   */
+  prev?: string;
 }
 
 /**
@@ -65,12 +73,16 @@ export function writtenTopLevelBlocks(
   walk(before);
   walk(after);
 
-  const written: { id: string; after: string | null }[] = [];
+  const laterPrev = predecessors(after);
+  const earlierPrev = predecessors(before);
+  const written: { id: string; after: string | null; prev: string }[] = [];
   for (const [id, fingerprint] of later) {
-    if (earlier.get(id) !== fingerprint) written.push({ id, after: fingerprint });
+    if (earlier.get(id) !== fingerprint) {
+      written.push({ id, after: fingerprint, prev: laterPrev.get(id) ?? '' });
+    }
   }
   for (const id of earlier.keys()) {
-    if (!later.has(id)) written.push({ id, after: null });
+    if (!later.has(id)) written.push({ id, after: null, prev: earlierPrev.get(id) ?? '' });
   }
 
   const numbers = new Map<string, number>();
@@ -83,6 +95,36 @@ export function writtenTopLevelBlocks(
     }
     return { ...block, group };
   });
+}
+
+/** For every identified top-level block, the identified block before it (`''` first). */
+function predecessors(document: ProseMirrorDocument): Map<string, string> {
+  const previous = new Map<string, string>();
+  let last = '';
+  for (const node of document.content ?? []) {
+    const id = blockIdOf(node);
+    if (id === null) continue;
+    previous.set(id, last);
+    last = id;
+  }
+  return previous;
+}
+
+/**
+ * One fingerprint for a whole page's content, for the question "has anybody
+ * touched this page since the run created it" (issue #248).
+ *
+ * Built from the blocks' own fingerprints, so it is as stable as they are, and
+ * blind to empty paragraphs: an editor that opens a page may add a line to
+ * type in (issue #257) without anybody having written anything.
+ */
+export function pageFingerprint(document: ProseMirrorDocument): string {
+  const parts: string[] = [];
+  for (const node of document.content ?? []) {
+    if (node.type === 'paragraph' && (node.content ?? []).length === 0) continue;
+    parts.push(blockFingerprint(node));
+  }
+  return hash53(parts.join('|'));
 }
 
 /** Every identified top-level block of a page and its fingerprint. */

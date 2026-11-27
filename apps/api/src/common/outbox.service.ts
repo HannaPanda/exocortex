@@ -6,7 +6,7 @@ import { type Logger } from '@exocortex/logger';
 
 import { PRISMA } from '../platform/platform-tokens';
 
-import { journalWrittenBlocks } from './agent-journal-blocks';
+import { type AgentWriteStructure, journalContent } from './agent-journal-blocks';
 import {
   currentAgentSession,
   currentAutomation,
@@ -131,6 +131,12 @@ export interface WriteOutboxInput {
    * which is the honest answer rather than a guess at an older snapshot.
    */
   snapshotBeforeId?: string;
+  /**
+   * What a rename or a move changed, for the journal (issue #248). Passed by
+   * the two services that make one, so an AI run's rename or move can be
+   * taken back while the page is still where the run left it.
+   */
+  structure?: AgentWriteStructure;
 }
 
 /**
@@ -148,6 +154,14 @@ const JOURNALLED_EVENT_TYPES = new Set<ApplicationEventType>([
   'document.archived',
   'document.restored',
   'document.deleted',
+]);
+
+/** The journalled events that may change a page's content (issue #248). */
+const CONTENT_EVENT_TYPES = new Set<ApplicationEventType>([
+  'document.created',
+  'document.updated',
+  'document.content.replaced',
+  'document.restored',
 ]);
 
 /**
@@ -239,11 +253,13 @@ export class OutboxService {
     });
 
     // Which blocks the write changed, so one run can later be taken back
-    // block by block without overwriting what somebody wrote since (#248).
-    const blocks =
-      input.snapshotBeforeId === undefined
-        ? null
-        : await journalWrittenBlocks(tx, documentId, input.snapshotBeforeId);
+    // block by block without overwriting what somebody wrote since (#248),
+    // and the page as the write left it, so a page the run created can tell
+    // whether anybody wrote in it since. Not for a rename or a move, which
+    // leave the content alone.
+    const { blocks, pageAfter } = CONTENT_EVENT_TYPES.has(input.type)
+      ? await journalContent(tx, documentId, input.snapshotBeforeId)
+      : { blocks: null, pageAfter: null };
 
     await tx.agentWriteJournal.create({
       data: {
@@ -256,6 +272,11 @@ export class OutboxService {
         snapshotBeforeId: input.snapshotBeforeId ?? null,
         writtenBlocks:
           blocks === null ? Prisma.DbNull : (blocks as unknown as Prisma.InputJsonArray),
+        structure:
+          input.structure === undefined
+            ? Prisma.DbNull
+            : (input.structure as unknown as Prisma.InputJsonObject),
+        pageAfter,
         correlationId: input.correlationId,
       },
     });

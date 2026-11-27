@@ -2925,6 +2925,19 @@ model AgentWriteJournal {
   /// column existed, and for a state that did not derive.
   writtenBlocks Json?
 
+  /// What a rename or a move changed, for the writes that change structure
+  /// rather than content (issue #248): `{ kind: 'renamed', from, to }` or
+  /// `{ kind: 'moved', fromParentId, toParentId, fromWorkspaceId,
+  /// toWorkspaceId, fromOrderKey, toOrderKey }`. Ids and titles, never
+  /// content. What lets an undo put a page back where it was, and only while
+  /// it is still where the run left it.
+  structure Json?
+  /// A fingerprint of the page's whole content as this write left it
+  /// (`pageFingerprint`), for a page the run created: equal to the page now
+  /// means nobody has written in it since. `NULL` where the content did not
+  /// derive, and for rows from before it was recorded.
+  pageAfter String?
+
   correlationId String
   createdAt     DateTime @default(now())
 

@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { BLOCK_ID_ATTRIBUTE } from './block-id';
 import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
-import { blockFingerprint, topLevelFingerprints, writtenTopLevelBlocks } from './written-blocks';
+import {
+  blockFingerprint,
+  pageFingerprint,
+  topLevelFingerprints,
+  writtenTopLevelBlocks,
+} from './written-blocks';
 
 function paragraph(id: string, text: string, extra: Record<string, unknown> = {}): ProseMirrorNode {
   return {
@@ -88,5 +93,29 @@ describe('blockFingerprint', () => {
     };
     expect(blockFingerprint(plain)).not.toBe(blockFingerprint(paragraph('paraaaaaaaa1', 'Äpfel')));
     expect(blockFingerprint(plain)).not.toBe(blockFingerprint(bold));
+  });
+});
+
+describe('where a written block stood', () => {
+  it('names the block before it, after the write for a kept one and before it for a removed one', () => {
+    const before = doc(paragraph('paraaaaaaaa1', 'Apfel'), paragraph('paraaaaaaaa2', 'Birne'));
+    const after = doc(paragraph('paraaaaaaaa3', 'Quitte'), paragraph('paraaaaaaaa1', 'Apfel'));
+    const written = writtenTopLevelBlocks(before, after);
+    expect(written.find((block) => block.id === 'paraaaaaaaa3')?.prev).toBe('');
+    expect(written.find((block) => block.id === 'paraaaaaaaa2')?.prev).toBe('paraaaaaaaa1');
+  });
+});
+
+describe('pageFingerprint', () => {
+  it('is blind to empty paragraphs and sees every written word', () => {
+    const page = doc(paragraph('paraaaaaaaa1', 'Apfel'));
+    const opened: ProseMirrorDocument = {
+      type: 'doc',
+      content: [...(page.content ?? []), { type: 'paragraph', attrs: {} }],
+    };
+    expect(pageFingerprint(opened)).toBe(pageFingerprint(page));
+    expect(pageFingerprint(doc(paragraph('paraaaaaaaa1', 'Äpfel')))).not.toBe(
+      pageFingerprint(page),
+    );
   });
 });
