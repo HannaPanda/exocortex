@@ -101,7 +101,8 @@
     "openRow": "Abrir fila",
     "newRow": "Nueva fila",
     "emptyTitle": "Aún no hay filas",
-    "emptyDescription": "Crea la primera fila para esta base de datos."
+    "emptyDescription": "Crea la primera fila para esta base de datos.",
+    "selectAll": "Seleccionar todas las filas"
   },
   "board": {
     "notGroupedTitle": "Aún sin agrupar",
@@ -111,7 +112,7 @@
     "loading": "Cargando tarjetas",
     "loadFailed": "Error al cargar las tarjetas",
     "noValue": "Sin valor",
-    "moveCard": "Mover tarjeta",
+    "moveCard": "Acciones para esta tarjeta",
     "moveTo": "Mover a «{column}»",
     "newCard": "Nueva tarjeta"
   },
@@ -305,5 +306,34 @@
     "fewer": "Menos propiedades",
     "unavailable": "No se han podido cargar las propiedades de esta fila.",
     "retry": "Reintentar"
+  },
+  "rowActions": {
+    "menu": "Acciones para la fila {title}",
+    "select": "Seleccionar la fila {title}",
+    "open": "Abrir",
+    "openAsPage": "Abrir como página",
+    "copyLink": "Copiar enlace",
+    "duplicate": "Duplicar",
+    "move": "Mover",
+    "trash": "Mover a la papelera",
+    "moveGroup": "Mover a",
+    "moveRoot": "Nivel superior del espacio de trabajo",
+    "movePlaceholder": "¿Adónde quieres mover «{title}»?",
+    "moveTypeToSearch": "Escribe para buscar una página",
+    "moveEmpty": "No se ha encontrado ninguna página coincidente",
+    "untitled": "Sin título"
+  },
+  "selection": {
+    "toolbar": "Filas seleccionadas",
+    "count": "{count, plural, one {# seleccionada} many {# seleccionadas} other {# seleccionadas}}",
+    "setValue": "Definir propiedad",
+    "setValueTitle": "Definir {name}",
+    "setValueDescription": "{count, plural, one {El valor se aplica a la fila seleccionada.} many {El valor se aplica a las # filas seleccionadas.} other {El valor se aplica a las # filas seleccionadas.}} Cualquier cambio se aplicará de inmediato.",
+    "done": "Listo",
+    "duplicate": "Duplicar",
+    "trash": "Mover a la papelera",
+    "clear": "Deseleccionar",
+    "trashConfirmTitle": "{count, plural, one {¿Mover una fila a la papelera?} many {¿Mover # filas a la papelera?} other {¿Mover # filas a la papelera?}}",
+    "trashConfirmDescription": "{count, plural, one {La fila se moverá a la papelera, incluidas las páginas que contiene.} many {Las # filas se moverán a la papelera, incluidas las páginas que contienen.} other {Las # filas se moverán a la papelera, incluidas las páginas que contienen.}} Podrás restaurar cada una de ellas por separado desde allí."
   }
 }

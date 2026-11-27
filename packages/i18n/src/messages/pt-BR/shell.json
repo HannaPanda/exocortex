@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Qual visualização?",
       "showViewKeywords": "visualização view alternar mostrar"
     },
+    "rowSelection": {
+      "selectAll": "Selecionar todas as linhas",
+      "selectAllKeywords": "linhas seleção selecionar todas tabela multisseleção",
+      "setValue": "{count, plural, one {Definir propriedade para a seleção} many {Definir propriedade para # linhas} other {Definir propriedade para # linhas}}",
+      "setValuePlaceholder": "Qual propriedade?",
+      "setValueKeywords": "seleção propriedade valor definir alterar todas linhas editar",
+      "duplicate": "{count, plural, one {Duplicar linha selecionada} many {Duplicar # linhas selecionadas} other {Duplicar # linhas selecionadas}}",
+      "duplicateKeywords": "seleção linhas duplicar copiar",
+      "trash": "{count, plural, one {Mover linha selecionada para a lixeira} many {Mover # linhas selecionadas para a lixeira} other {Mover # linhas selecionadas para a lixeira}}",
+      "trashKeywords": "seleção linhas excluir lixeira remover",
+      "clear": "Limpar seleção",
+      "clearKeywords": "limpar seleção desmarcar linhas"
+    },
     "knowledgeMap": {
       "appearance": "Aparência do mapa de conhecimento",
       "appearanceKeywords": "mapa cores brilho bloom luz estrelas halo visual design personalizar",

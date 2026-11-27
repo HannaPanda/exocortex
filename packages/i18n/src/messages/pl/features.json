@@ -375,6 +375,17 @@
     },
     "where": "W widoku tabeli kliknij nagłówek kolumny."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Zaznaczanie, duplikowanie i wspólna edycja wierszy",
+    "summary": "Gdy najedziesz kursorem na wiersz w tabeli, po lewej stronie pojawią się uchwyt i pole wyboru. Uchwyt otwiera menu z opcjami: Otwórz, Duplikuj, Kopiuj link, Przenieś i Kosz. Za pomocą pól wyboru zaznaczysz wiele wierszy, aby jednocześnie zmienić ich właściwość, zduplikować je lub przenieść do kosza.",
+    "details": {
+      "p1": "Gdy tylko jeden wiersz zostanie zaznaczony, wszystkie wiersze pokazują swoje pola wyboru, a nad tabelą wyświetla się liczba zaznaczonych elementów. Przytrzymując klawisz Shift, zaznaczysz wszystko między ostatnio klikniętym wierszem a bieżącym. Pole wyboru w nagłówku zaznacza wszystkie widoczne wiersze, a klawisz Escape usuwa zaznaczenie.",
+      "p2": "Opcja „Ustaw właściwość” zapisuje wartość we wszystkich zaznaczonych wierszach, na przykład status lub datę. Odbywa się to w jednym kroku: jeśli nie masz uprawnień do edycji któregoś z wierszy, żaden z nich nie zostanie zmieniony.",
+      "p3": "To, co trafi do kosza, można stamtąd przywrócić – wiersz po wierszu, tak jak każdą stronę. W przypadku wielu wierszy eXocortex pyta wcześniej o potwierdzenie. Duplikat pojawia się bezpośrednio pod swoim wierszem i zawiera tekst oraz wartości oryginału, ale nie jest z nim w żaden sposób połączony.",
+      "p4": "Na telefonie uchwyt i pole wyboru są widoczne cały czas. Za pomocą klawiatury przejdziesz do nich klawiszem Tab, a spacja zaznacza pole. Agenci mogą robić to samo za pomocą exo_database_rows_update, exo_database_rows_duplicate i exo_database_rows_trash."
+    },
+    "where": "W bazie danych w widoku tabeli: po lewej stronie obok nazwy wiersza."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Właściwości wiersza na górze jego strony",
     "summary": "Gdy otwierasz wiersz bazy danych jako stronę, jego właściwości znajdują się tuż pod tytułem: status, data, relacje, formuły. Zmieniasz je tam za pomocą tych samych pól, co w tabeli, a oba miejsca zawsze pokazują tę samą wartość.",

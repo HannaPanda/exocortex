@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Który widok?",
       "showViewKeywords": "widok view przełącz pokaż"
     },
+    "rowSelection": {
+      "selectAll": "Zaznacz wszystkie wiersze",
+      "selectAllKeywords": "wiersze zaznaczenie zaznacz wszystkie tabela wielokrotny wybór",
+      "setValue": "{count, plural, one {Ustaw właściwość dla zaznaczenia} few {Ustaw właściwość dla # wierszy} many {Ustaw właściwość dla # wierszy} other {Ustaw właściwość dla # wiersza}}",
+      "setValuePlaceholder": "Która właściwość?",
+      "setValueKeywords": "zaznaczenie właściwość wartość ustaw zmień wszystkie wiersze edytuj",
+      "duplicate": "{count, plural, one {Zduplikuj zaznaczony wiersz} few {Zduplikuj # zaznaczone wiersze} many {Zduplikuj # zaznaczonych wierszy} other {Zduplikuj # zaznaczonego wiersza}}",
+      "duplicateKeywords": "zaznaczenie wiersze duplikuj kopiuj",
+      "trash": "{count, plural, one {Przenieś zaznaczony wiersz do kosza} few {Przenieś # zaznaczone wiersze do kosza} many {Przenieś # zaznaczonych wierszy do kosza} other {Przenieś # zaznaczonego wiersza do kosza}}",
+      "trashKeywords": "zaznaczenie wiersze usuń kosz skasuj",
+      "clear": "Odznacz wszystko",
+      "clearKeywords": "odznacz zaznaczenie cofnij wiersze"
+    },
     "knowledgeMap": {
       "appearance": "Wygląd mapy wiedzy",
       "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj",

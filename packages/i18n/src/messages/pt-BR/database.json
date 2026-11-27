@@ -101,7 +101,8 @@
     "openRow": "Abrir linha",
     "newRow": "Nova linha",
     "emptyTitle": "Nenhuma linha ainda",
-    "emptyDescription": "Crie a primeira linha para este banco de dados."
+    "emptyDescription": "Crie a primeira linha para este banco de dados.",
+    "selectAll": "Selecionar todas as linhas"
   },
   "board": {
     "notGroupedTitle": "Ainda não agrupado",
@@ -111,7 +112,7 @@
     "loading": "Carregando cartões",
     "loadFailed": "Falha ao carregar cartões",
     "noValue": "Sem valor",
-    "moveCard": "Mover cartão",
+    "moveCard": "Ações para este cartão",
     "moveTo": "Mover para “{column}”",
     "newCard": "Novo cartão"
   },
@@ -305,5 +306,34 @@
     "fewer": "Menos propriedades",
     "unavailable": "Não foi possível carregar as propriedades desta linha.",
     "retry": "Tentar novamente"
+  },
+  "rowActions": {
+    "menu": "Ações para a linha {title}",
+    "select": "Selecionar linha {title}",
+    "open": "Abrir",
+    "openAsPage": "Abrir como página",
+    "copyLink": "Copiar link",
+    "duplicate": "Duplicar",
+    "move": "Mover",
+    "trash": "Mover para a lixeira",
+    "moveGroup": "Mover para",
+    "moveRoot": "Nível superior do espaço de trabalho",
+    "movePlaceholder": "Para onde mover „{title}“?",
+    "moveTypeToSearch": "Digite para buscar uma página",
+    "moveEmpty": "Nenhuma página correspondente encontrada",
+    "untitled": "Sem título"
+  },
+  "selection": {
+    "toolbar": "Linhas selecionadas",
+    "count": "{count, plural, one {# selecionada} many {# selecionadas} other {# selecionadas}}",
+    "setValue": "Definir propriedade",
+    "setValueTitle": "Definir {name}",
+    "setValueDescription": "{count, plural, one {O valor se aplica à linha selecionada.} many {O valor se aplica a todas as # linhas selecionadas.} other {O valor se aplica a todas as # linhas selecionadas.}} Cada alteração é aplicada imediatamente.",
+    "done": "Concluído",
+    "duplicate": "Duplicar",
+    "trash": "Mover para a lixeira",
+    "clear": "Limpar seleção",
+    "trashConfirmTitle": "{count, plural, one {Mover uma linha para a lixeira?} many {Mover # linhas para a lixeira?} other {Mover # linhas para a lixeira?}}",
+    "trashConfirmDescription": "{count, plural, one {A linha vai para a lixeira, junto com as páginas abaixo dela.} many {As # linhas vão para a lixeira, junto com as páginas abaixo delas.} other {As # linhas vão para a lixeira, junto com as páginas abaixo delas.}} De lá, você pode restaurar cada uma individualmente."
   }
 }

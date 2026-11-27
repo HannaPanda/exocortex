@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Einige Einträge haben ein Enddatum. Entferne die Enddaten, bevor du den Zeitraum abschaltest.",
     "database_files_target_invalid": "In diese Spalte lassen sich keine Dateien hochladen.",
     "database_files_foreign": "Eine Zelle nimmt nur Dateien auf, die in sie hochgeladen wurden.",
+    "database_rows_not_found": "Einige der ausgewählten Zeilen gibt es nicht mehr. Lade die Tabelle neu und wähle noch einmal.",
     "collaboration_ticket_invalid": "Die Verbindung zur Live-Bearbeitung wurde abgelehnt.",
     "collaboration_ticket_expired": "Die Verbindung zur Live-Bearbeitung ist abgelaufen.",
     "collaboration_read_only": "Diese Seite ist nur lesbar.",

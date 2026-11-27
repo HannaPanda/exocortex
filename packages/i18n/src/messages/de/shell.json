@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Welche Ansicht?",
       "showViewKeywords": "ansicht view wechseln zeigen"
     },
+    "rowSelection": {
+      "selectAll": "Alle Zeilen auswählen",
+      "selectAllKeywords": "zeilen auswahl markieren alle tabelle mehrfachauswahl",
+      "setValue": "{count, plural, one {Eigenschaft für die Auswahl setzen} other {Eigenschaft für # Zeilen setzen}}",
+      "setValuePlaceholder": "Welche Eigenschaft?",
+      "setValueKeywords": "auswahl eigenschaft wert setzen ändern alle zeilen bearbeiten",
+      "duplicate": "{count, plural, one {Ausgewählte Zeile duplizieren} other {# ausgewählte Zeilen duplizieren}}",
+      "duplicateKeywords": "auswahl zeilen duplizieren kopieren",
+      "trash": "{count, plural, one {Ausgewählte Zeile in den Papierkorb} other {# ausgewählte Zeilen in den Papierkorb}}",
+      "trashKeywords": "auswahl zeilen löschen papierkorb entfernen",
+      "clear": "Auswahl aufheben",
+      "clearKeywords": "auswahl aufheben abwählen zeilen"
+    },
     "knowledgeMap": {
       "appearance": "Aussehen der Wissenskarte",
       "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen",

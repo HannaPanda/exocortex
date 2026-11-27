@@ -116,6 +116,10 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_database_property_delete',
       'exo_database_property_update',
       'exo_database_row_update',
+      // A selection's values overwritten, or the selection in the trash (issue
+      // #244); both are restorable, neither is irreversible.
+      'exo_database_rows_trash',
+      'exo_database_rows_update',
       'exo_database_view_delete',
       'exo_database_view_update',
       'exo_entity_candidate_dismiss',

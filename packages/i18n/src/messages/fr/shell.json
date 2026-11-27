@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Quelle vue ?",
       "showViewKeywords": "vue view changer afficher"
     },
+    "rowSelection": {
+      "selectAll": "Sélectionner toutes les lignes",
+      "selectAllKeywords": "lignes sélection marquer tout tableau sélection multiple",
+      "setValue": "{count, plural, one {Définir la propriété pour la sélection} many {Définir la propriété pour # lignes} other {Définir la propriété pour # lignes}}",
+      "setValuePlaceholder": "Quelle propriété ?",
+      "setValueKeywords": "sélection propriété valeur définir modifier toutes lignes éditer",
+      "duplicate": "{count, plural, one {Dupliquer la ligne sélectionnée} many {Dupliquer # lignes sélectionnées} other {Dupliquer # lignes sélectionnées}}",
+      "duplicateKeywords": "sélection lignes dupliquer copier",
+      "trash": "{count, plural, one {Mettre la ligne sélectionnée à la corbeille} many {Mettre # lignes sélectionnées à la corbeille} other {Mettre # lignes sélectionnées à la corbeille}}",
+      "trashKeywords": "sélection lignes supprimer corbeille retirer",
+      "clear": "Désélectionner tout",
+      "clearKeywords": "sélection désélectionner annuler lignes"
+    },
     "knowledgeMap": {
       "appearance": "Apparence de la carte des connaissances",
       "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser",

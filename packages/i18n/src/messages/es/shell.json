@@ -472,6 +472,19 @@
       "showViewPlaceholder": "¿Qué vista?",
       "showViewKeywords": "vista view cambiar mostrar"
     },
+    "rowSelection": {
+      "selectAll": "Seleccionar todas las filas",
+      "selectAllKeywords": "filas selección marcar todas tabla selección múltiple",
+      "setValue": "{count, plural, one {Establecer propiedad para la selección} many {Establecer propiedad para # filas} other {Establecer propiedad para # filas}}",
+      "setValuePlaceholder": "¿Qué propiedad?",
+      "setValueKeywords": "selección propiedad valor establecer cambiar todas filas editar",
+      "duplicate": "{count, plural, one {Duplicar fila seleccionada} many {Duplicar # filas seleccionadas} other {Duplicar # filas seleccionadas}}",
+      "duplicateKeywords": "selección filas duplicar copiar",
+      "trash": "{count, plural, one {Mover la fila seleccionada a la papelera} many {Mover # filas seleccionadas a la papelera} other {Mover # filas seleccionadas a la papelera}}",
+      "trashKeywords": "selección filas eliminar papelera borrar quitar",
+      "clear": "Deseleccionar",
+      "clearKeywords": "selección deseleccionar cancelar filas"
+    },
     "knowledgeMap": {
       "appearance": "Aspecto del mapa de conocimiento",
       "appearanceKeywords": "mapa colores resplandor brillo destello estrellas halo look diseno personalizar",

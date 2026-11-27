@@ -101,7 +101,8 @@
     "openRow": "Open row",
     "newRow": "New row",
     "emptyTitle": "No rows yet",
-    "emptyDescription": "Create the first row for this database."
+    "emptyDescription": "Create the first row for this database.",
+    "selectAll": "Select all rows"
   },
   "board": {
     "notGroupedTitle": "Not grouped yet",
@@ -111,7 +112,7 @@
     "loading": "Loading cards",
     "loadFailed": "Cards not loaded",
     "noValue": "No value",
-    "moveCard": "Move card",
+    "moveCard": "Actions for this card",
     "moveTo": "Move to “{column}”",
     "newCard": "New card"
   },
@@ -305,5 +306,34 @@
     "fewer": "Fewer properties",
     "unavailable": "Couldn’t load the properties for this row.",
     "retry": "Try again"
+  },
+  "rowActions": {
+    "menu": "Actions for row {title}",
+    "select": "Select row {title}",
+    "open": "Open",
+    "openAsPage": "Open as page",
+    "copyLink": "Copy link",
+    "duplicate": "Duplicate",
+    "move": "Move",
+    "trash": "Move to trash",
+    "moveGroup": "Move to",
+    "moveRoot": "Top level of workspace",
+    "movePlaceholder": "Where should “{title}” go?",
+    "moveTypeToSearch": "Type to search for a page",
+    "moveEmpty": "No matching page found",
+    "untitled": "Untitled"
+  },
+  "selection": {
+    "toolbar": "Selected rows",
+    "count": "{count, plural, one {# selected} other {# selected}}",
+    "setValue": "Set property",
+    "setValueTitle": "Set {name}",
+    "setValueDescription": "{count, plural, one {The value applies to the selected row.} other {The value applies to all # selected rows.}} Every change takes effect immediately.",
+    "done": "Done",
+    "duplicate": "Duplicate",
+    "trash": "Move to trash",
+    "clear": "Clear selection",
+    "trashConfirmTitle": "{count, plural, one {Move one row to the trash?} other {Move # rows to the trash?}}",
+    "trashConfirmDescription": "{count, plural, one {The row will be moved to the trash, along with any pages inside it.} other {The # rows will be moved to the trash, along with any pages inside them.}} You can restore each one individually from there."
   }
 }

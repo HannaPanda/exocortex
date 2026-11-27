@@ -375,6 +375,17 @@
     },
     "where": "Dans la vue en tableau, cliquer sur l’en-tête de colonne."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Sélectionner, dupliquer et modifier des lignes ensemble",
+    "summary": "Lorsque tu survoles une ligne dans un tableau, une poignée et une case à cocher apparaissent sur la gauche. La poignée ouvre un menu avec Ouvrir, Dupliquer, Copier le lien, Déplacer et Corbeille. Avec les cases à cocher, tu sélectionnes plusieurs lignes pour définir une propriété pour toutes à la fois, les dupliquer ou les mettre à la corbeille.",
+    "details": {
+      "p1": "Dès qu’une ligne est sélectionnée, toutes les lignes affichent leur case à cocher, et le nombre de lignes sélectionnées s’affiche au-dessus du tableau. En maintenant la touche Maj enfoncée, tu sélectionnes tout ce qui se trouve entre la dernière ligne cliquée et celle-ci. La case dans l’en-tête sélectionne toutes les lignes visibles, Échap annule la sélection.",
+      "p2": "« Définir une propriété » applique une valeur à toutes les lignes sélectionnées, par exemple un statut ou une date. Cela se fait en une seule étape : si tu n’as pas le droit de modifier l’une des lignes, aucune n’est modifiée.",
+      "p3": "Ce qui part à la corbeille peut en être restauré, ligne par ligne comme n’importe quelle page. Pour plusieurs lignes, eXocortex te demande confirmation au préalable. Un duplicata se place juste sous sa ligne et reprend le texte et les valeurs de l’original, sans conserver de lien avec lui.",
+      "p4": "Sur smartphone, la poignée et la case sont toujours visibles ; au clavier, tu y accèdes avec Tab, et la barre d’espace coche la case. Les agents peuvent faire de même avec exo_database_rows_update, exo_database_rows_duplicate et exo_database_rows_trash."
+    },
+    "where": "Dans une base de données en vue tableau : à gauche du nom d’une ligne."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Propriétés d’une ligne en haut de sa page",
     "summary": "Si tu ouvres une ligne d’une base de données sous forme de page, ses propriétés apparaissent directement sous le titre : statut, date, relations, formules. Tu peux les modifier là avec les mêmes champs que dans le tableau, et les deux endroits affichent toujours la même valeur.",

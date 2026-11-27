@@ -101,7 +101,8 @@
     "openRow": "Zeile öffnen",
     "newRow": "Neue Zeile",
     "emptyTitle": "Noch keine Zeilen",
-    "emptyDescription": "Lege die erste Zeile für diese Datenbank an."
+    "emptyDescription": "Lege die erste Zeile für diese Datenbank an.",
+    "selectAll": "Alle Zeilen auswählen"
   },
   "board": {
     "notGroupedTitle": "Noch nicht gruppiert",
@@ -111,7 +112,7 @@
     "loading": "Karten werden geladen",
     "loadFailed": "Karten nicht geladen",
     "noValue": "Ohne Wert",
-    "moveCard": "Karte verschieben",
+    "moveCard": "Aktionen für diese Karte",
     "moveTo": "Verschieben nach „{column}“",
     "newCard": "Neue Karte"
   },
@@ -305,5 +306,34 @@
     "fewer": "Weniger Eigenschaften",
     "unavailable": "Die Eigenschaften dieser Zeile konnten nicht geladen werden.",
     "retry": "Erneut versuchen"
+  },
+  "rowActions": {
+    "menu": "Aktionen für Zeile {title}",
+    "select": "Zeile {title} auswählen",
+    "open": "Öffnen",
+    "openAsPage": "Als Seite öffnen",
+    "copyLink": "Link kopieren",
+    "duplicate": "Duplizieren",
+    "move": "Verschieben",
+    "trash": "In den Papierkorb",
+    "moveGroup": "Verschieben nach",
+    "moveRoot": "Oberste Ebene des Arbeitsbereichs",
+    "movePlaceholder": "Wohin soll „{title}“?",
+    "moveTypeToSearch": "Tippe, um eine Seite zu suchen",
+    "moveEmpty": "Keine passende Seite gefunden",
+    "untitled": "Unbenannt"
+  },
+  "selection": {
+    "toolbar": "Ausgewählte Zeilen",
+    "count": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
+    "setValue": "Eigenschaft setzen",
+    "setValueTitle": "{name} setzen",
+    "setValueDescription": "{count, plural, one {Der Wert gilt für die ausgewählte Zeile.} other {Der Wert gilt für alle # ausgewählten Zeilen.}} Jede Änderung wird sofort übernommen.",
+    "done": "Fertig",
+    "duplicate": "Duplizieren",
+    "trash": "In den Papierkorb",
+    "clear": "Auswahl aufheben",
+    "trashConfirmTitle": "{count, plural, one {Eine Zeile in den Papierkorb legen?} other {# Zeilen in den Papierkorb legen?}}",
+    "trashConfirmDescription": "{count, plural, one {Die Zeile kommt in den Papierkorb, samt den Seiten darunter.} other {Die # Zeilen kommen in den Papierkorb, samt den Seiten darunter.}} Von dort holst du jede einzeln zurück."
   }
 }

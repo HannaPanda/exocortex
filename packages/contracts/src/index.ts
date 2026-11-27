@@ -23,6 +23,7 @@ export * from './container-image';
 export * from './context';
 export * from './database-formula';
 export * from './database-relations';
+export * from './database-row-batch';
 export * from './database-views';
 export * from './documents';
 export * from './entities';

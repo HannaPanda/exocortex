@@ -375,6 +375,17 @@
     },
     "where": "Click the column header in the table view."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Select, duplicate, and bulk edit rows",
+    "summary": "When you hover over a row in a table, a handle and a checkbox appear on the left. The handle opens a menu with Open, Duplicate, Copy link, Move, and Trash. With the checkboxes, you select multiple rows to set a property for all of them at once, duplicate them, or move them to the trash.",
+    "details": {
+      "p1": "As soon as one row is selected, all rows show their checkbox, and above the table it shows how many are selected. Holding Shift selects everything between the last clicked row and this one. The checkbox in the header selects all visible rows, Escape clears the selection.",
+      "p2": "“Set property” writes a value to all selected rows, such as a status or a date. This happens in a single step: if you are not allowed to edit one of the rows, none of them are changed.",
+      "p3": "Anything moved to the trash can be restored from there, row by row just like any page. For multiple rows, eXocortex asks for confirmation first. A duplicate appears right below its original row and keeps the original’s text and values, but is no longer linked to it.",
+      "p4": "On mobile, the handle and checkbox are always visible; with the keyboard, you reach them via Tab, and Space toggles the checkbox. Agents can do the same with exo_database_rows_update, exo_database_rows_duplicate, and exo_database_rows_trash."
+    },
+    "where": "In a database in table view: to the left of a row’s name."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Row properties at the top of its page",
     "summary": "When you open a database row as a page, its properties appear directly beneath the title: status, date, relations, formulas. You can edit them there using the same fields as in the table, and both places always show the exact same value.",

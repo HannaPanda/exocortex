@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Some entries have an end date. Remove the end dates before turning off date ranges.",
     "database_files_target_invalid": "Files cannot be uploaded to this column.",
     "database_files_foreign": "A cell only accepts files that were uploaded to it.",
+    "database_rows_not_found": "Some of the selected rows no longer exist. Reload the table and select again.",
     "collaboration_ticket_invalid": "The connection for live collaboration was rejected.",
     "collaboration_ticket_expired": "The connection for live collaboration has expired.",
     "collaboration_read_only": "This page is read-only.",

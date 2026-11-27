@@ -375,6 +375,17 @@
     },
     "where": "En la vista de tabla, haz clic en el encabezado de la columna."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Seleccionar, duplicar y modificar filas de forma conjunta",
+    "summary": "Al pasar el cursor sobre una fila en una tabla, aparecen a la izquierda un controlador y una casilla. El controlador abre un menú con Abrir, Duplicar, Copiar enlace, Mover y Papelera. Con las casillas seleccionas varias filas y defines una propiedad para todas a la vez, las duplicas o las envías a la papelera.",
+    "details": {
+      "p1": "En cuanto se selecciona una fila, todas muestran su casilla y encima de la tabla aparece cuántas hay seleccionadas. Manteniendo pulsada la tecla Mayús seleccionas todo lo que haya entre la última fila en la que hiciste clic y esta. La casilla del encabezado selecciona todas las filas visibles y Escape anula la selección.",
+      "p2": "«Establecer propiedad» escribe un valor en todas las filas seleccionadas, por ejemplo un estado o una fecha. Esto ocurre en un único paso: si no tienes permiso para modificar alguna de las filas, ninguna cambiará.",
+      "p3": "Lo que va a la papelera puede recuperarse desde allí, fila por fila como cualquier página. Si hay varias filas, eXocortex pide confirmación antes. Un duplicado se sitúa justo debajo de su fila y conserva el texto y los valores del original, pero sin mantener ningún vínculo con él.",
+      "p4": "En el móvil, el controlador y la casilla se muestran siempre; con el teclado accedes a ellos con el tabulador y marcas la casilla con la barra espaciadora. Los agentes pueden hacer lo mismo con exo_database_rows_update, exo_database_rows_duplicate y exo_database_rows_trash."
+    },
+    "where": "En una base de datos en la vista de tabla: a la izquierda del nombre de una fila."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Propiedades de una fila en la cabecera de su página",
     "summary": "Si abres una fila de una base de datos como página, sus propiedades aparecen directamente bajo el título: estado, fecha, enlaces, fórmulas. Las modificas ahí con los mismos campos que en la tabla, y ambos lugares muestran siempre el mismo valor.",

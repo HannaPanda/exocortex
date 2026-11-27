@@ -33,6 +33,14 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'zeilen-auswaehlen-und-bearbeiten',
+    area: 'datenbanken',
+    since: '2026-11-27',
+    references: ['#244'],
+    ui: {},
+    tools: ['exo_database_rows_update', 'exo_database_rows_trash', 'exo_database_rows_duplicate'],
+  }),
+  defineFeature({
     id: 'zeilen-eigenschaften-im-seitenkopf',
     area: 'datenbanken',
     since: '2026-11-27',

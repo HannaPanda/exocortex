@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Niektóre wpisy mają datę końcową. Usuń daty końcowe przed wyłączeniem zakresu dat.",
     "database_files_target_invalid": "Do tej kolumny nie można przesyłać plików.",
     "database_files_foreign": "Komórka przyjmuje tylko pliki, które zostały przesłane bezpośrednio do niej.",
+    "database_rows_not_found": "Niektóre z wybranych wierszy już nie istnieją. Odśwież tabelę i wybierz ponownie.",
     "collaboration_ticket_invalid": "Połączenie do edycji na żywo zostało odrzucone.",
     "collaboration_ticket_expired": "Połączenie do edycji na żywo wygasło.",
     "collaboration_read_only": "Ta strona jest tylko do odczytu.",

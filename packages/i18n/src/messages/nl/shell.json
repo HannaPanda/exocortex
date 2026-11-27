@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Welke weergave?",
       "showViewKeywords": "weergave view wisselen tonen"
     },
+    "rowSelection": {
+      "selectAll": "Alle rijen selecteren",
+      "selectAllKeywords": "rijen selectie markeren alle tabel meervoudige selectie",
+      "setValue": "{count, plural, one {Eigenschap instellen voor de selectie} other {Eigenschap instellen voor # rijen}}",
+      "setValuePlaceholder": "Welke eigenschap?",
+      "setValueKeywords": "selectie eigenschap waarde instellen wijzigen alle rijen bewerken",
+      "duplicate": "{count, plural, one {Geselecteerde rij dupliceren} other {# geselecteerde rijen dupliceren}}",
+      "duplicateKeywords": "selectie rijen dupliceren kopiëren",
+      "trash": "{count, plural, one {Geselecteerde rij naar de prullenbak} other {# geselecteerde rijen naar de prullenbak}}",
+      "trashKeywords": "selectie rijen verwijderen prullenbak weggooien",
+      "clear": "Selectie opheffen",
+      "clearKeywords": "selectie opheffen deselecteren rijen"
+    },
     "knowledgeMap": {
       "appearance": "Uiterlijk van de kenniskaart",
       "appearanceKeywords": "kaart kleuren glow bloom gloeien sterren halo look design aanpassen",

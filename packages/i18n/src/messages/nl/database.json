@@ -101,7 +101,8 @@
     "openRow": "Rij openen",
     "newRow": "Nieuwe rij",
     "emptyTitle": "Nog geen rijen",
-    "emptyDescription": "Maak de eerste rij voor deze database aan."
+    "emptyDescription": "Maak de eerste rij voor deze database aan.",
+    "selectAll": "Alle rijen selecteren"
   },
   "board": {
     "notGroupedTitle": "Nog niet gegroepeerd",
@@ -111,7 +112,7 @@
     "loading": "Kaarten worden geladen",
     "loadFailed": "Kaarten niet geladen",
     "noValue": "Zonder waarde",
-    "moveCard": "Kaart verplaatsen",
+    "moveCard": "Acties voor deze kaart",
     "moveTo": "Verplaatsen naar “{column}”",
     "newCard": "Nieuwe kaart"
   },
@@ -305,5 +306,34 @@
     "fewer": "Minder eigenschappen",
     "unavailable": "De eigenschappen van deze rij konden niet worden geladen.",
     "retry": "Opnieuw proberen"
+  },
+  "rowActions": {
+    "menu": "Acties voor rij {title}",
+    "select": "Rij {title} selecteren",
+    "open": "Openen",
+    "openAsPage": "Als pagina openen",
+    "copyLink": "Link kopiëren",
+    "duplicate": "Dupliceren",
+    "move": "Verplaatsen",
+    "trash": "Naar de prullenbak",
+    "moveGroup": "Verplaatsen naar",
+    "moveRoot": "Hoogste niveau van de werkruimte",
+    "movePlaceholder": "Waar moet „{title}” naartoe?",
+    "moveTypeToSearch": "Typ om een pagina te zoeken",
+    "moveEmpty": "Geen passende pagina gevonden",
+    "untitled": "Naamloos"
+  },
+  "selection": {
+    "toolbar": "Geselecteerde rijen",
+    "count": "{count, plural, one {# geselecteerd} other {# geselecteerd}}",
+    "setValue": "Eigenschap instellen",
+    "setValueTitle": "{name} instellen",
+    "setValueDescription": "{count, plural, one {De waarde geldt voor de geselecteerde rij.} other {De waarde geldt voor alle # geselecteerde rijen.}} Elke wijziging wordt direct toegepast.",
+    "done": "Klaar",
+    "duplicate": "Dupliceren",
+    "trash": "Naar de prullenbak",
+    "clear": "Selectie opheffen",
+    "trashConfirmTitle": "{count, plural, one {Eén rij naar de prullenbak verplaatsen?} other {# rijen naar de prullenbak verplaatsen?}}",
+    "trashConfirmDescription": "{count, plural, one {De rij verhuist naar de prullenbak, inclusief de onderliggende pagina’s.} other {De # rijen verhuizen naar de prullenbak, inclusief de onderliggende pagina’s.}} Van daaruit kun je ze stuk voor stuk terugzetten."
   }
 }

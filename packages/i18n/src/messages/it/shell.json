@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Quale vista?",
       "showViewKeywords": "vista view cambia mostra"
     },
+    "rowSelection": {
+      "selectAll": "Seleziona tutte le righe",
+      "selectAllKeywords": "righe selezione seleziona tutte tabella selezione multipla",
+      "setValue": "{count, plural, one {Imposta proprietà per la selezione} many {Imposta proprietà per # righe} other {Imposta proprietà per # righe}}",
+      "setValuePlaceholder": "Quale proprietà?",
+      "setValueKeywords": "selezione proprietà valore imposta modifica tutte righe modificare",
+      "duplicate": "{count, plural, one {Duplica riga selezionata} many {Duplica # righe selezionate} other {Duplica # righe selezionate}}",
+      "duplicateKeywords": "selezione righe duplica copia",
+      "trash": "{count, plural, one {Sposta la riga selezionata nel cestino} many {Sposta # righe selezionate nel cestino} other {Sposta # righe selezionate nel cestino}}",
+      "trashKeywords": "selezione righe elimina cestino rimuovi",
+      "clear": "Deseleziona tutto",
+      "clearKeywords": "annulla selezione deseleziona righe"
+    },
     "knowledgeMap": {
       "appearance": "Aspetto della mappa della conoscenza",
       "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare",

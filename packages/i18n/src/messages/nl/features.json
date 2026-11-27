@@ -375,6 +375,17 @@
     },
     "where": "In de tabelweergave op de kolomkop klikken."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Rijen selecteren, dupliceren en samen bewerken",
+    "summary": "Beweeg je in een tabel over een rij, dan verschijnen links een handgreep en een selectievakje. De handgreep opent een menu met Openen, Dupliceren, Link kopiëren, Verplaatsen en Prullenbak. Met de selectievakjes selecteer je meerdere rijen en stel je voor alle rijen tegelijk een eigenschap in, dupliceer je ze of verplaats je ze naar de prullenbak.",
+    "details": {
+      "p1": "Zodra een rij geselecteerd is, tonen alle rijen hun selectievakje, en boven de tabel staat hoeveel rijen er geselecteerd zijn. Met Shift ingedrukt selecteer je alles tussen de laatst aangeklikte rij en deze rij. Het selectievakje in de kop selecteert alle zichtbare rijen, Escape heft de selectie op.",
+      "p2": "„Eigenschap instellen” schrijft een waarde naar alle geselecteerde rijen, bijvoorbeeld een status of een datum. Dat gebeurt in één stap: mag je een van de rijen niet bewerken, dan blijft geen enkele rij gewijzigd.",
+      "p3": "Wat naar de prullenbak gaat, kan van daaruit worden teruggezet, rij voor rij zoals elke pagina. Bij meerdere rijen vraagt eXocortex eerst om bevestiging. Een duplicaat staat direct onder de bijbehorende rij en bevat de tekst en waarden van het origineel, maar heeft er geen verbinding meer mee.",
+      "p4": "Op een telefoon zijn de handgreep en het selectievakje altijd zichtbaar; met het toetsenbord bereik je ze met Tab, en met de spatiebalk vink je ze aan. Agents kunnen hetzelfde doen met exo_database_rows_update, exo_database_rows_duplicate en exo_database_rows_trash."
+    },
+    "where": "In een database in de tabelweergave: links naast de naam van een rij."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Eigenschappen van een rij bovenaan de bijbehorende pagina",
     "summary": "Open je een rij van een database als pagina, dan staan de eigenschappen direct onder de titel: status, datum, koppelingen, formules. Je past ze daar aan met dezelfde velden als in de tabel, en beide plekken tonen altijd dezelfde waarde.",

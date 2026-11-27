@@ -6,13 +6,21 @@ import {
   type CreateDatabaseRowRequest,
   createDatabaseRowRequestSchema,
   type DatabaseRow,
+  type DatabaseRowIdsRequest,
+  databaseRowIdsRequestSchema,
   databaseRowSchema,
+  type DatabaseRowsResponse,
+  databaseRowsResponseSchema,
   type DocumentRowResponse,
   documentRowResponseSchema,
   type QueryDatabaseRowsRequest,
   queryDatabaseRowsRequestSchema,
   type QueryDatabaseRowsResponse,
   queryDatabaseRowsResponseSchema,
+  type TrashDatabaseRowsResponse,
+  trashDatabaseRowsResponseSchema,
+  type UpdateDatabaseRowsRequest,
+  updateDatabaseRowsRequestSchema,
   type UpdateDatabaseRowValuesRequest,
   updateDatabaseRowValuesRequestSchema,
 } from '@exocortex/contracts';
@@ -21,6 +29,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { DatabaseRowActionsService } from './database-row-actions.service';
 import { DatabaseRowsService } from './database-rows.service';
 
 /**
@@ -32,7 +41,10 @@ import { DatabaseRowsService } from './database-rows.service';
 @ApiTags('databases')
 @Controller('api/documents')
 export class DatabaseRowsController {
-  constructor(private readonly rows: DatabaseRowsService) {}
+  constructor(
+    private readonly rows: DatabaseRowsService,
+    private readonly rowActions: DatabaseRowActionsService,
+  ) {}
 
   @Post(':documentId/rows/query')
   @ApiBody({ schema: openApiSchema(queryDatabaseRowsRequestSchema) })
@@ -89,6 +101,60 @@ export class DatabaseRowsController {
   ): Promise<DatabaseRow> {
     return this.rows.updateValues({
       rowId: documentId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * The same values for several rows of this database (issue #244): one
+   * request, every row checked before any is written, all or nothing.
+   */
+  @Patch(':documentId/rows/values')
+  @ApiBody({ schema: openApiSchema(updateDatabaseRowsRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(databaseRowsResponseSchema) })
+  async updateMany(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(updateDatabaseRowsRequestSchema)) body: UpdateDatabaseRowsRequest,
+  ): Promise<DatabaseRowsResponse> {
+    return this.rows.updateMany({
+      collectionDocumentId: documentId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /** Puts several rows of this database in the trash, each restorable on its own. */
+  @Post(':documentId/rows/trash')
+  @ApiBody({ schema: openApiSchema(databaseRowIdsRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(trashDatabaseRowsResponseSchema) })
+  async trash(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(databaseRowIdsRequestSchema)) body: DatabaseRowIdsRequest,
+  ): Promise<TrashDatabaseRowsResponse> {
+    return this.rowActions.trash({
+      collectionDocumentId: documentId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /** A copy of each named row, directly below it. */
+  @Post(':documentId/rows/duplicate')
+  @ApiBody({ schema: openApiSchema(databaseRowIdsRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(databaseRowsResponseSchema) })
+  async duplicate(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(databaseRowIdsRequestSchema)) body: DatabaseRowIdsRequest,
+  ): Promise<DatabaseRowsResponse> {
+    return this.rowActions.duplicate({
+      collectionDocumentId: documentId,
       userId: session.userId,
       request: body,
       correlationId: currentCorrelationId(),

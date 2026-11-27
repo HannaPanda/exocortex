@@ -101,7 +101,8 @@
     "openRow": "Apri riga",
     "newRow": "Nuova riga",
     "emptyTitle": "Ancora nessuna riga",
-    "emptyDescription": "Crea la prima riga per questo database."
+    "emptyDescription": "Crea la prima riga per questo database.",
+    "selectAll": "Seleziona tutte le righe"
   },
   "board": {
     "notGroupedTitle": "Non ancora raggruppato",
@@ -111,7 +112,7 @@
     "loading": "Caricamento schede",
     "loadFailed": "Schede non caricate",
     "noValue": "Senza valore",
-    "moveCard": "Sposta scheda",
+    "moveCard": "Azioni per questa scheda",
     "moveTo": "Sposta in “{column}”",
     "newCard": "Nuova scheda"
   },
@@ -305,5 +306,34 @@
     "fewer": "Meno proprietà",
     "unavailable": "Impossibile caricare le proprietà di questa riga.",
     "retry": "Riprova"
+  },
+  "rowActions": {
+    "menu": "Azioni per la riga {title}",
+    "select": "Seleziona la riga {title}",
+    "open": "Apri",
+    "openAsPage": "Apri come pagina",
+    "copyLink": "Copia link",
+    "duplicate": "Duplica",
+    "move": "Sposta",
+    "trash": "Nel cestino",
+    "moveGroup": "Sposta in",
+    "moveRoot": "Livello principale dell’area di lavoro",
+    "movePlaceholder": "Dove vuoi spostare «{title}»?",
+    "moveTypeToSearch": "Scrivi per cercare una pagina",
+    "moveEmpty": "Nessuna pagina corrispondente trovata",
+    "untitled": "Senza titolo"
+  },
+  "selection": {
+    "toolbar": "Righe selezionate",
+    "count": "{count, plural, one {# selezionata} many {# selezionate} other {# selezionate}}",
+    "setValue": "Imposta proprietà",
+    "setValueTitle": "Imposta {name}",
+    "setValueDescription": "{count, plural, one {Il valore si applica alla riga selezionata.} many {Il valore si applica a tutte le # righe selezionate.} other {Il valore si applica a tutte le # righe selezionate.}} Ogni modifica viene applicata subito.",
+    "done": "Fine",
+    "duplicate": "Duplica",
+    "trash": "Nel cestino",
+    "clear": "Deseleziona",
+    "trashConfirmTitle": "{count, plural, one {Spostare una riga nel cestino?} many {Spostare # righe nel cestino?} other {Spostare # righe nel cestino?}}",
+    "trashConfirmDescription": "{count, plural, one {La riga finirà nel cestino, insieme alle pagine sottostanti.} many {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.} other {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.}} Da lì puoi ripristinare ciascuna singolarmente."
   }
 }

@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-312 routes are reachable from at least one client; 178 from all three.
+315 routes are reachable from at least one client; 181 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -192,6 +192,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/documents/:x` | ✓ | ✓ | ✓ | `exo_page_rename`, `exo_page_set_ai_rule`, `exo_page_set_cover`, `exo_page_set_layout`, `exo_page_set_overview` |
 | `PATCH /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_update` |
 | `PATCH /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_update` |
+| `PATCH /api/documents/:x/rows/values` | ✓ | ✓ | ✓ | `exo_database_rows_update` |
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
@@ -260,7 +261,9 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/render` | ✓ | ✓ | ✓ | `exo_render_start` |
 | `POST /api/documents/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore` |
 | `POST /api/documents/:x/rows` | ✓ | ✓ | ✓ | `exo_database_row_create` |
+| `POST /api/documents/:x/rows/duplicate` | ✓ | ✓ | ✓ | `exo_database_rows_duplicate` |
 | `POST /api/documents/:x/rows/query` | ✓ | ✓ | ✓ | `exo_database_query` |
+| `POST /api/documents/:x/rows/trash` | ✓ | ✓ | ✓ | `exo_database_rows_trash` |
 | `POST /api/documents/:x/shares` | ✓ | ✓ | ✓ | `exo_share_create` |
 | `POST /api/documents/:x/snapshots/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore_snapshot` |
 | `POST /api/documents/:x/snapshots/:x/restore-blocks` | ✓ | ✓ | ✓ | `exo_page_restore_blocks` |

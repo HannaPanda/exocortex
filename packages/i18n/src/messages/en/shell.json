@@ -472,6 +472,19 @@
       "showViewPlaceholder": "Which view?",
       "showViewKeywords": "view switch show"
     },
+    "rowSelection": {
+      "selectAll": "Select all rows",
+      "selectAllKeywords": "rows selection select all table multi-select",
+      "setValue": "{count, plural, one {Set property for selection} other {Set property for # rows}}",
+      "setValuePlaceholder": "Which property?",
+      "setValueKeywords": "selection property value set change all rows edit",
+      "duplicate": "{count, plural, one {Duplicate selected row} other {Duplicate # selected rows}}",
+      "duplicateKeywords": "selection rows duplicate copy",
+      "trash": "{count, plural, one {Move selected row to trash} other {Move # selected rows to trash}}",
+      "trashKeywords": "selection rows delete trash remove",
+      "clear": "Clear selection",
+      "clearKeywords": "clear selection deselect rows"
+    },
     "knowledgeMap": {
       "appearance": "Knowledge map appearance",
       "appearanceKeywords": "map colors glow bloom shine stars halo look design customize",

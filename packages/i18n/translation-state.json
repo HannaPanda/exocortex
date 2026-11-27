@@ -5333,8 +5333,8 @@
       "output": "ca4d769d1b90f3d8"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "57782454cc76ce1a"
+      "source": "5f24468b6a1b3464",
+      "output": "8a0d8b0e6ccb1e56"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -6152,6 +6152,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "dbf362d4f210c780"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "02cdaabfca805d6a"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "2f41ce08893f8f9e"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "6ecc3df6bffdd06c"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "8b47feba5b5521c0"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "beb8194bc458f28d"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "761fea68dbac2396"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "c15929f8b61e0f69"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "bb01d1778c1d0f73"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "ed077f3d8125d60d"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4027bd85e5e051b7"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "b05a7bed4d1cb72e"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "b250a454877d44a6"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "f59ab8d1331b7b16"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "e4b517497d67a555"
@@ -6175,6 +6231,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "f59ab8d1331b7b16"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "cea4d2e010b8fd52"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "5f13640072cd510d"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "11a6767d5674c7e4"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "02cdaabfca805d6a"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "d0e939e5a2816257"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "8e95c7b196ea12e7"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "38f65bf2957f3b90"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "2f1b6ecc77ce65d4"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "b250a454877d44a6"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "5931fc4b4bec767a"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "e2fb90093760f8dc"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -6219,6 +6319,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "99893d5ee8ae886a"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "9cf6c2bf95fb9747"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -10199,6 +10303,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "a9c1dcfdb1cb548e"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "51dd9f9bc12bce8e"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -14903,6 +15011,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "faf7e1a250e36363"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "b2e9b2215c4d9bed"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "26bc5f9db793dd3f"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "2d4e15c513fcfb0b"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "da1cea535e46f464"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "904c7ff92b6ed452"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "80390ac51a8f2659"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "b4b277d3f0ef15f6"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -21919,6 +22055,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "1378a1f4e54078a7"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "cea4d2e010b8fd52"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "cc63a6f284d19f3f"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "e81e712909ff9a7b"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "d719ff732ecb99e9"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "9cf6c2bf95fb9747"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "05a720e23449168f"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "f5706f1a17cf8508"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "1c60528f66253d85"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "d4bcbaea883c5ae9"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "10707a05e1b30595"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "ce22acd0f161fb5f"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -30411,8 +30591,8 @@
       "output": "6d8a2167867f8030"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "ec60bb6f0e2a159d"
+      "source": "5f24468b6a1b3464",
+      "output": "a7ebf53673f3bef4"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -31230,6 +31410,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "db164690a5469f43"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "e3206e585f5db1e0"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "6624c0d31888ecac"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "60bc5075040b58b2"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "a826399f90f9e1ae"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "6676c53cdcd65868"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "138755d2a979ae16"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "639378367c6d1f5b"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "a01a5fce396edb61"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4f708f422bfbb432"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "f0f8162e7928162a"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "b9a042ebc7a2c4fc"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "30d1a8cd45b235e9"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "9339f73c78002560"
@@ -31253,6 +31489,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "30d1a8cd45b235e9"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "85630e64570942dd"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "5dcdc9843d946c4f"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "b5fa51d564a9d880"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "1333e5c38ddb0628"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "e21f3a2d09245704"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "99ad1ec8aa13fb85"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "dcef9dc07d36bb2b"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "b9a042ebc7a2c4fc"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "88e812391fb18a53"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "9978c4409c7f33c6"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -31297,6 +31577,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "f80a81903edccf79"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "c0038ae3cc3c3d8e"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -35277,6 +35561,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "6e1df71fecc53d9d"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "e201576ed2bd761b"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -39981,6 +40269,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "df3cef5e3271d507"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "c96410657d0ffeb5"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "e7b23beedd3e3419"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "272913ecfa94adf6"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "b2c073774812b508"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "a60c4acfc86cd502"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "b0a19755422e0da9"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "4f0976f23f669d4a"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -46997,6 +47313,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "8dd62bf8245f13c8"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "85630e64570942dd"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "a50ec40e02e5ca08"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "dca4fcb7bdef69f1"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "cbc63957ca1de80d"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "c0038ae3cc3c3d8e"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "f654963e844604c9"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "b6b642c7c8c59dd7"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "0125bb295e3193d3"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "5977b8124d1ead2f"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "18ad62b9a31c8ef7"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "37b652e4e23add7d"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -55489,8 +55849,8 @@
       "output": "7c6469daf4f56136"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "2f63b64dfd439fd7"
+      "source": "5f24468b6a1b3464",
+      "output": "d6545d3fbe46812c"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -56308,6 +56668,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "b17133f7ab04c71b"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "9d726e2b316de2ac"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "20e97d0938caa1ad"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "96d83ee0e0803450"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "16e5811de8ff6a69"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "9cef0016142af091"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "bdc5d9ec4bdf36bc"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "5c633320dbde8116"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "98f8827f5df4516e"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "9fb440435a046647"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "e5ce49c75ac18c7f"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "ca75f8c2f2e48dac"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "a52f470c90ed05f1"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "2c847c1c25d59e21"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "ab98eefdb89cbb93"
@@ -56331,6 +56747,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "2c847c1c25d59e21"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "da559b62ea552c4b"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "1252728496c96c82"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "f28acc85bfcb0e7d"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "9d726e2b316de2ac"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "48c5ae57f65b31cb"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "90eb0c1b97847bed"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "24e4cc59c48b4e17"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "f373b6cbc15051b5"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "a52f470c90ed05f1"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "11f188eb93cbdb32"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "a480040991a292af"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -56375,6 +56835,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "e4a0749dad1aa469"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "365179483492f16e"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -60355,6 +60819,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "933a6262c54169cf"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "8fd8f3cfca2928fe"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -65059,6 +65527,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "a56b1f382a49467f"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "ca3f22e355f7030b"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "6d0e984e43b7ca72"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "d44e01bc5ef581d8"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "fbf94b6689b611af"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "4403ca477e895170"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "9e3f851ec3a281b2"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "43bfcc008b2ce366"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -72075,6 +72571,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "46058140ce3a5563"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "dada8eb20666dfb4"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "33f3dc672b4ce3a9"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "21bf999124949b3f"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "a00d13fd8808dd69"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "365179483492f16e"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "0d36ba8e72f0012b"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "0f6b60a06253621f"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "ff7204a378f80cb8"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "30d9a7edee15922e"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "837d15b9b2e535a1"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "8b796907c759b333"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -80567,8 +81107,8 @@
       "output": "08b19374ef8a2374"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "7f98d79d7d18efcd"
+      "source": "5f24468b6a1b3464",
+      "output": "24d5890102034594"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -81386,6 +81926,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "2810a10cf53b87f9"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "3b30f34b8e9b7d0d"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "491b1dd78760d67a"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "f44eb94f05e000af"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "85a8052f587b2009"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "8bb4441fbf56143b"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "6f022ac4c89c6dd5"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "3098a2bf73f18a07"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "b88c33f62602abb9"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "12abcf9ee7d648df"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "34988c9a8e86d0a4"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "6fded2454b938dd6"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "7d578cbe54d7665a"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "bc0274205537c131"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "8b7fb7fd9a91559b"
@@ -81409,6 +82005,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "bc0274205537c131"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "a4918611156f56b9"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "e2798e43d3eba7a7"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "fa67303aecdafbdd"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "3b30f34b8e9b7d0d"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "d72316c28951c0f6"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "4c001587965e9beb"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "bf08512c363a6cb8"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "e4274ffa8d955510"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "7d578cbe54d7665a"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "b1b9f8c7e08736c7"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "b83c10ac4ddcfca1"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -81453,6 +82093,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "8a811b2dc4386234"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "1c1e20eb72638156"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -85433,6 +86077,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "c1a00425f15c97e7"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "ba76c49351ef5bd0"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -90137,6 +90785,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "a0d05357c9c7016b"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "4b39d86118e55905"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "338d0f59cc5ffd46"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "72403a07e7588e9b"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "a12901d1e787b4f2"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "ca1825a3407399d2"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "b7dfb1591b46391a"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "411d49b074bffad7"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -97153,6 +97829,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "f865311a4e1906b7"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "db81f66d0297820a"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "c10f68748ed5d8bc"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "ce25af7855576c7a"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "380a455c6fd1742f"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "1c1e20eb72638156"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "846e32f50ce22f57"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "1a1a4b7b81136fb9"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "90025cfcf9bb2af9"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "cd71c1e849fb2df3"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "dee4e1a217f7d45e"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "25abd0e5cafb93e9"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -105645,8 +106365,8 @@
       "output": "d0169d1620b09249"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "8f00a75c68cf1908"
+      "source": "5f24468b6a1b3464",
+      "output": "6ed6c0dbeb775910"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -106464,6 +107184,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "97baac24beb8434c"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "92b14b074d5dc6a2"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "307e3edb45e7692a"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "879660784e0160b7"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "d2d2f302ab23a091"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "b2359a33d079b067"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "58d35bea0c2a80db"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "cd32301ca030fd86"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "c70481a5c1bdcc5b"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "5b1e5c22784e131f"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "0a6e150bca0101d6"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "586edf964cdc91cf"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "05a1a5c392b344cb"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "c8cede0af6281136"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "a3b5056e24a5bb90"
@@ -106487,6 +107263,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "c8cede0af6281136"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "c5388e7872812f98"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "417c514e8e7c6654"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "efddafdbf64a5a57"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "92b14b074d5dc6a2"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "e48237650a4e8cac"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "abe7d5807dcdd307"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "b19444c946902e6e"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "8f3b292555e9f0a2"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "05a1a5c392b344cb"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "f75e6de795face27"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "1a873d87d374e391"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -106531,6 +107351,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "ef6bfbca4e55ec89"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "71436f113976de99"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -110511,6 +111335,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "de12d9f017aacb86"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "8a7afa1f0c0822f7"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -115215,6 +116043,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "ad6860ecb7767d0f"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "335b2e0ca2e6085a"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "6417a88a387f3cd6"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "45e816559035021b"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "649694202ccff230"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "afe775d3ecad6589"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "e8feac8c164dc187"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "8c6db8f005c07745"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -122231,6 +123087,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "3f2092c037f44693"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "c5388e7872812f98"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "381f01dbb160cc16"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "6dfea677cc41b7ef"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "b49645f5d801f41e"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "71436f113976de99"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "7a6bdda930ce05ca"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "58d521afdffe0e8e"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "a555c6d1e967af71"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "580fd1e6c4b7f50f"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "76660e6801961c35"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "3ed8f49a316d41ef"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -130723,8 +131623,8 @@
       "output": "18650838925aa9f3"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "d439faf2f1cb468d"
+      "source": "5f24468b6a1b3464",
+      "output": "a6b53a1b192dfab0"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -131542,6 +132442,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "03586b9f754dcda5"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "a79453e5df831ab7"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "fde6cdaae0510b61"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "6777507fecba8221"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "81656491fe11184e"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "5d77f65b99873cfe"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "3bb107b3b1e0281e"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "25a4c84db5227dad"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "ce058708d8d7ad19"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "9488448fb288dbe9"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "1a45557677bb70b5"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "ec38101af698ecc9"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "d7b372fd3748e2fe"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "5604e5096a53eba8"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "95151b81871b3574"
@@ -131565,6 +132521,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "5604e5096a53eba8"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "47fc4f72ed64104f"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "506c33b75eb7a2ce"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "3d9d03d320f0465a"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "a79453e5df831ab7"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "cebd5cd16be79713"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "6311fe25aee1178a"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "271559135b247f87"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "4eac3b456f3dd241"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "d7b372fd3748e2fe"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "cc0bc644ae3ec4a3"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "3352b3d1f4dc9cea"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -131609,6 +132609,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "d8dda462cd6421e3"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "c35de6da11ffe661"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -135589,6 +136593,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "855700da91eecb99"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "21d287b8b14bb0bf"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -140293,6 +141301,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "ffedad561325ade8"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "e59532b526eced9c"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "f84d5a2ab426af2f"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "54f22042abd91cd4"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "f7fbce50cdb69975"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "3f24169d6e2c3adc"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "8bc6f4a64eb8da6e"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "b13c142e470c8b52"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -147309,6 +148345,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "a93a709c1fea6fcb"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "47fc4f72ed64104f"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "2b90be1a5138f72c"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "43cd2cb53220a34c"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "be0d64334797c0e3"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "c35de6da11ffe661"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "67f8e19fef77ab2b"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "06d7b29141b4a8d6"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "2a36e1b21a5bbc91"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "d352fb538e0d80bf"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "1d2ecea75fe53e61"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "208d6894979246ed"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",
@@ -155801,8 +156881,8 @@
       "output": "702ea4868a89fa6d"
     },
     "database.board.moveCard": {
-      "source": "304569e8c4076777",
-      "output": "ed8b33537aef4bfc"
+      "source": "5f24468b6a1b3464",
+      "output": "61b589a34f60d8e8"
     },
     "database.board.moveTo": {
       "source": "3da84fe5c7a25db0",
@@ -156620,6 +157700,62 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowActions.copyLink": {
+      "source": "6a752b442eff4efe",
+      "output": "c19488a055649c41"
+    },
+    "database.rowActions.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "database.rowActions.menu": {
+      "source": "4484de5b873721a4",
+      "output": "1dba576824cb1ffa"
+    },
+    "database.rowActions.move": {
+      "source": "22f50c5a8ee454ec",
+      "output": "6624c0d31888ecac"
+    },
+    "database.rowActions.moveEmpty": {
+      "source": "fd0e1dd09d501ea9",
+      "output": "b024e2eefb6a67fc"
+    },
+    "database.rowActions.moveGroup": {
+      "source": "d03fc294e0f7f6f5",
+      "output": "2f49ee3e00751b54"
+    },
+    "database.rowActions.movePlaceholder": {
+      "source": "7be8cb70800f231e",
+      "output": "6475993a73bfbc0d"
+    },
+    "database.rowActions.moveRoot": {
+      "source": "966d7e21937e63b2",
+      "output": "6e32b425d10c6935"
+    },
+    "database.rowActions.moveTypeToSearch": {
+      "source": "f0931ddd8c7f7886",
+      "output": "7678f86ce19bbdc6"
+    },
+    "database.rowActions.open": {
+      "source": "bc385a30b5378841",
+      "output": "a01a5fce396edb61"
+    },
+    "database.rowActions.openAsPage": {
+      "source": "c961fa113fb71924",
+      "output": "4f708f422bfbb432"
+    },
+    "database.rowActions.select": {
+      "source": "9d1e199cfdb76dfb",
+      "output": "2fa6670c668fbf0c"
+    },
+    "database.rowActions.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "a7192ca1ffa6fb16"
+    },
+    "database.rowActions.untitled": {
+      "source": "b6cdf93125700c82",
+      "output": "9469c6553b7543ea"
+    },
     "database.rowHeader.fewer": {
       "source": "7a3a172eab8a4620",
       "output": "7536e1c973f60702"
@@ -156643,6 +157779,50 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "9469c6553b7543ea"
+    },
+    "database.selection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "33a042c0fd071ccc"
+    },
+    "database.selection.count": {
+      "source": "b3f02863e6b1d1b8",
+      "output": "8c43b48afb7f0b5a"
+    },
+    "database.selection.done": {
+      "source": "25d52d7e86650364",
+      "output": "2801cb53f1fa6f08"
+    },
+    "database.selection.duplicate": {
+      "source": "9d400c3de6767a46",
+      "output": "88f77287cbdba827"
+    },
+    "database.selection.setValue": {
+      "source": "7fb9a6efbb4451ee",
+      "output": "4dc61716ccb14250"
+    },
+    "database.selection.setValueDescription": {
+      "source": "f743de4bae84ba6d",
+      "output": "f8d928505a3b9825"
+    },
+    "database.selection.setValueTitle": {
+      "source": "65a6256537e1e490",
+      "output": "99ad1ec8aa13fb85"
+    },
+    "database.selection.toolbar": {
+      "source": "28930908f0646cb9",
+      "output": "ed03f7ebfa2d762b"
+    },
+    "database.selection.trash": {
+      "source": "eca8b731e7cd38c6",
+      "output": "a7192ca1ffa6fb16"
+    },
+    "database.selection.trashConfirmDescription": {
+      "source": "8e9e55ccfe42d30d",
+      "output": "7b4c581bb8884439"
+    },
+    "database.selection.trashConfirmTitle": {
+      "source": "13c13a0fd4ba3717",
+      "output": "db9fa8d8acd86088"
     },
     "database.shell.creatingView": {
       "source": "45d924e7a76c4e7f",
@@ -156687,6 +157867,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "4111c41807355abd"
+    },
+    "database.table.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "6ba6507dc19d5a3c"
     },
     "database.viewOptions.columns": {
       "source": "b9d473f90e0b9347",
@@ -160667,6 +161851,10 @@
     "errors.codes.database_property_in_use": {
       "source": "01b147f1200b0fce",
       "output": "a1eac955f22d3f8c"
+    },
+    "errors.codes.database_rows_not_found": {
+      "source": "3812bc57fe08f67b",
+      "output": "5ff598464567990c"
     },
     "errors.codes.document_access_denied": {
       "source": "e84c5c50ecd18c20",
@@ -165371,6 +166559,34 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "187afd491c2e2927"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p1": {
+      "source": "4ffe30b0ffa6b62e",
+      "output": "3226acfdb75d2a93"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p2": {
+      "source": "1ace85d43a9c5f9e",
+      "output": "af3b352eb91e4cbd"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p3": {
+      "source": "094067e0efe9a852",
+      "output": "70cd1cfc4fde7bd2"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.details.p4": {
+      "source": "3071fb4665a18071",
+      "output": "7a94d39d5e48e849"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.summary": {
+      "source": "94749ff251f4e426",
+      "output": "55f65a1f4f41a3e4"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.title": {
+      "source": "40af98b4f3bdacff",
+      "output": "f4ed8d2c554d8bf2"
+    },
+    "features.zeilen-auswaehlen-und-bearbeiten.where": {
+      "source": "83085dd539e8b782",
+      "output": "9dc3260293d963e9"
     },
     "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
       "source": "e602e293f4dd5ae3",
@@ -172387,6 +173603,50 @@
     "shell.paletteCommands.page.uploadFileKeywords": {
       "source": "4b392d07c90dbb7d",
       "output": "5e95602e0c5709aa"
+    },
+    "shell.paletteCommands.rowSelection.clear": {
+      "source": "f4d1e48c718f8956",
+      "output": "33a042c0fd071ccc"
+    },
+    "shell.paletteCommands.rowSelection.clearKeywords": {
+      "source": "d1e19da6276d696b",
+      "output": "dc29ce408cba0819"
+    },
+    "shell.paletteCommands.rowSelection.duplicate": {
+      "source": "4c06d1960277d765",
+      "output": "9331248d6bc0bb3e"
+    },
+    "shell.paletteCommands.rowSelection.duplicateKeywords": {
+      "source": "c5c12412b8bcc57e",
+      "output": "06820f62fdbdc842"
+    },
+    "shell.paletteCommands.rowSelection.selectAll": {
+      "source": "9df12afccb399a97",
+      "output": "6ba6507dc19d5a3c"
+    },
+    "shell.paletteCommands.rowSelection.selectAllKeywords": {
+      "source": "b81199d913583699",
+      "output": "7cd9e8ed39baaa11"
+    },
+    "shell.paletteCommands.rowSelection.setValue": {
+      "source": "a5cd6cabb1b25a1d",
+      "output": "028774d37dd00023"
+    },
+    "shell.paletteCommands.rowSelection.setValueKeywords": {
+      "source": "cfb5689594f9e157",
+      "output": "dfc36c2c4ea2f483"
+    },
+    "shell.paletteCommands.rowSelection.setValuePlaceholder": {
+      "source": "503e245499e97745",
+      "output": "49b1aea48bebd2a4"
+    },
+    "shell.paletteCommands.rowSelection.trash": {
+      "source": "9d505f47cf8aac77",
+      "output": "4ffb51f76d5c1d3a"
+    },
+    "shell.paletteCommands.rowSelection.trashKeywords": {
+      "source": "6b160ce15eca10ff",
+      "output": "b19d90c0a65daeaf"
     },
     "shell.paletteCommands.settings.adminGroup": {
       "source": "d892d380260e6c87",

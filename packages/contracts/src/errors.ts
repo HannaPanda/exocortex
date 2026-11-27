@@ -35,6 +35,7 @@ export const API_ERROR_CODES = [
    * the row's own files, uploaded into it (issue #245).
    */
   'database_files_foreign',
+  'database_rows_not_found',
   'collaboration_ticket_invalid',
   'collaboration_ticket_expired',
   'collaboration_read_only',
@@ -345,6 +346,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   database_property_date_range_in_use: 409,
   database_files_target_invalid: 422,
   database_files_foreign: 422,
+  database_rows_not_found: 404,
   collaboration_ticket_invalid: 401,
   collaboration_ticket_expired: 401,
   collaboration_read_only: 403,

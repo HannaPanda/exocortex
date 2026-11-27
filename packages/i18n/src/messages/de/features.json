@@ -375,6 +375,17 @@
     },
     "where": "In der Tabellenansicht auf den Spaltenkopf klicken."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Zeilen auswählen, duplizieren und gemeinsam ändern",
+    "summary": "Fährst du in einer Tabelle über eine Zeile, erscheinen links ein Griff und ein Kästchen. Der Griff öffnet ein Menü mit Öffnen, Duplizieren, Link kopieren, Verschieben und Papierkorb. Mit den Kästchen wählst du mehrere Zeilen aus und setzt für alle auf einmal eine Eigenschaft, duplizierst sie oder legst sie in den Papierkorb.",
+    "details": {
+      "p1": "Sobald eine Zeile ausgewählt ist, zeigen alle Zeilen ihr Kästchen, und über der Tabelle steht, wie viele ausgewählt sind. Mit gedrückter Umschalttaste wählst du alles zwischen der zuletzt angeklickten Zeile und dieser aus. Das Kästchen im Kopf wählt alle sichtbaren Zeilen, Escape hebt die Auswahl auf.",
+      "p2": "„Eigenschaft setzen“ schreibt einen Wert in alle ausgewählten Zeilen, zum Beispiel einen Status oder ein Datum. Das passiert in einem Schritt: darfst du eine der Zeilen nicht ändern, bleibt keine verändert.",
+      "p3": "Was in den Papierkorb geht, kommt von dort zurück, Zeile für Zeile wie jede Seite. Bei mehreren Zeilen fragt eXocortex vorher nach. Ein Duplikat steht direkt unter seiner Zeile und hat Text und Werte des Originals, aber keine Verbindung mehr zu ihm.",
+      "p4": "Auf dem Telefon sind Griff und Kästchen immer zu sehen, mit der Tastatur erreichst du sie mit Tab, Leertaste setzt den Haken. Agenten können dasselbe mit exo_database_rows_update, exo_database_rows_duplicate und exo_database_rows_trash."
+    },
+    "where": "In einer Datenbank in der Tabellenansicht: links neben dem Namen einer Zeile."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Eigenschaften einer Zeile oben auf ihrer Seite",
     "summary": "Öffnest du eine Zeile einer Datenbank als Seite, stehen ihre Eigenschaften direkt unter dem Titel: Status, Datum, Verknüpfungen, Formeln. Du änderst sie dort mit denselben Feldern wie in der Tabelle, und beide Stellen zeigen immer denselben Wert.",

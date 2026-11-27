@@ -101,7 +101,8 @@
     "openRow": "Otwórz wiersz",
     "newRow": "Nowy wiersz",
     "emptyTitle": "Nie ma jeszcze wierszy",
-    "emptyDescription": "Dodaj pierwszy wiersz do tej bazy danych."
+    "emptyDescription": "Dodaj pierwszy wiersz do tej bazy danych.",
+    "selectAll": "Zaznacz wszystkie wiersze"
   },
   "board": {
     "notGroupedTitle": "Jeszcze niepogrupowane",
@@ -111,7 +112,7 @@
     "loading": "Ładowanie kart",
     "loadFailed": "Nie udało się wczytać kart",
     "noValue": "Bez wartości",
-    "moveCard": "Przenieś kartę",
+    "moveCard": "Działania dla tej karty",
     "moveTo": "Przenieś do „{column}”",
     "newCard": "Nowa karta"
   },
@@ -305,5 +306,34 @@
     "fewer": "Mniej właściwości",
     "unavailable": "Nie udało się załadować właściwości tego wiersza.",
     "retry": "Spróbuj ponownie"
+  },
+  "rowActions": {
+    "menu": "Działania dla wiersza {title}",
+    "select": "Zaznacz wiersz {title}",
+    "open": "Otwórz",
+    "openAsPage": "Otwórz jako stronę",
+    "copyLink": "Kopiuj link",
+    "duplicate": "Duplikuj",
+    "move": "Przenieś",
+    "trash": "Do kosza",
+    "moveGroup": "Przenieś do",
+    "moveRoot": "Główny poziom obszaru roboczego",
+    "movePlaceholder": "Gdzie przenieść „{title}”?",
+    "moveTypeToSearch": "Wpisz, aby wyszukać stronę",
+    "moveEmpty": "Nie znaleziono pasującej strony",
+    "untitled": "Bez tytułu"
+  },
+  "selection": {
+    "toolbar": "Zaznaczone wiersze",
+    "count": "{count, plural, one {# zaznaczony} few {# zaznaczone} many {# zaznaczonych} other {# zaznaczonych}}",
+    "setValue": "Ustaw właściwość",
+    "setValueTitle": "Ustaw {name}",
+    "setValueDescription": "{count, plural, one {Wartość zostanie zastosowana do zaznaczonego wiersza.} few {Wartość zostanie zastosowana do wszystkich # zaznaczonych wierszy.} many {Wartość zostanie zastosowana do wszystkich # zaznaczonych wierszy.} other {Wartość zostanie zastosowana do wszystkich # zaznaczonych wierszy.}} Każda zmiana jest wprowadzana natychmiast.",
+    "done": "Gotowe",
+    "duplicate": "Duplikuj",
+    "trash": "Do kosza",
+    "clear": "Odznacz wszystko",
+    "trashConfirmTitle": "{count, plural, one {Przenieść wiersz do kosza?} few {Przenieść # wiersze do kosza?} many {Przenieść # wierszy do kosza?} other {Przenieść # wiersza do kosza?}}",
+    "trashConfirmDescription": "{count, plural, one {Wiersz trafi do kosza wraz ze znajdującymi się pod nim stronami.} few {# wiersze trafią do kosza wraz ze znajdującymi się pod nimi stronami.} many {# wierszy trafi do kosza wraz ze znajdującymi się pod nimi stronami.} other {# wiersza trafi do kosza wraz ze znajdującymi się pod nimi stronami.}} Stamtąd możesz przywrócić każdy z nich pojedynczo."
   }
 }

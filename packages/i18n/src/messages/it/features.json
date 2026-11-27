@@ -375,6 +375,17 @@
     },
     "where": "Fai clic sull’intestazione della colonna nella vista tabella."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Selezionare, duplicare e modificare righe insieme",
+    "summary": "Se passi con il mouse su una riga in una tabella, a sinistra compaiono una maniglia e una casella. La maniglia apre un menu con Apri, Duplica, Copia link, Sposta e Cestino. Con le caselle selezioni più righe e imposti una proprietà per tutte contemporaneamente, le duplichi o le sposti nel cestino.",
+    "details": {
+      "p1": "Non appena una riga è selezionata, tutte le righe mostrano la propria casella e sopra la tabella compare il numero di quelle selezionate. Tenendo premuto Maiusc selezioni tutto ciò che si trova tra l’ultima riga cliccata e questa. La casella nell’intestazione seleziona tutte le righe visibili, Esc annulla la selezione.",
+      "p2": "«Imposta proprietà» scrive un valore in tutte le righe selezionate, ad esempio uno stato o una data. Questo avviene in un unico passaggio: se non puoi modificare una delle righe, nessuna viene modificata.",
+      "p3": "Ciò che finisce nel cestino può essere recuperato da lì, riga per riga come qualsiasi pagina. Con più righe, eXocortex chiede prima conferma. Un duplicato compare subito sotto la rispettiva riga e ha testo e valori dell’originale, ma nessun collegamento residuo con esso.",
+      "p4": "Sullo smartphone la maniglia e la casella sono sempre visibili; da tastiera puoi raggiungerle con Tab, mentre la barra spaziatrice applica il segno di spunta. Gli agenti possono fare lo stesso con exo_database_rows_update, exo_database_rows_duplicate ed exo_database_rows_trash."
+    },
+    "where": "In un database nella vista tabella: a sinistra del nome di una riga."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Proprietà di una riga in cima alla sua pagina",
     "summary": "Se apri una riga di un database come pagina, le sue proprietà si trovano direttamente sotto il titolo: stato, data, collegamenti, formule. Puoi modificarle lì usando gli stessi campi della tabella, ed entrambe le posizioni mostrano sempre lo stesso valore.",

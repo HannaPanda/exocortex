@@ -6,27 +6,24 @@ import {
   canCreateDocument,
   canEditDocument,
   canReadDocument,
+  type DocumentAccessContext,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
-  ARRAY_VALUED_PROPERTY_TYPES,
   type CreateDatabaseRowRequest,
-  databaseDateRangeValueSchema,
   type DatabaseFilterGroup,
   databaseFilterGroupSchema,
-  type DatabasePropertyType,
   type DatabaseRow,
   type DatabaseRowFile,
   type DatabaseRowPropertyValue,
+  type DatabaseRowsResponse,
   type DatabaseSort,
   databaseSortSchema,
   type DocumentRowResponse,
   EMPTY_DATABASE_FILTER_GROUP,
-  type FormulaValueType,
-  instantFromIsoInput,
-  parseDatePropertyConfig,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
+  type UpdateDatabaseRowsRequest,
   type UpdateDatabaseRowValuesRequest,
 } from '@exocortex/contracts';
 import {
@@ -40,7 +37,6 @@ import {
   InvalidDatabaseFilterError,
   isDerivedColumn,
   loadDatabaseScope,
-  Prisma,
   type PrismaClient,
   queryDatabaseRows,
   queryDerivedValues,
@@ -55,239 +51,20 @@ import { RealtimeService } from '../realtime/realtime.service';
 
 import { listDatabaseProperties } from './database-properties.service';
 import { normalizeRelationValue } from './derived-properties';
+import {
+  type ColumnData,
+  COMPUTED_TYPES,
+  computedValue,
+  decodeCursor,
+  derivedToResponseValue,
+  encodeCursor,
+  filesOfRow,
+  storedToResponseValue,
+  type StoredValueRow,
+  toColumnData,
+} from './row-values';
 
 const sortsArraySchema = z.array(databaseSortSchema);
-
-const COMPUTED_TYPES = new Set<DatabasePropertyType>([
-  'CREATED_TIME',
-  'UPDATED_TIME',
-  'CREATED_BY',
-  'UPDATED_BY',
-]);
-const ARRAY_TYPES = new Set<DatabasePropertyType>(ARRAY_VALUED_PROPERTY_TYPES);
-
-function computedValue(type: DatabasePropertyType, row: DatabaseQueryRowRecord): string {
-  switch (type) {
-    case 'CREATED_TIME':
-      return row.createdAt.toISOString();
-    case 'UPDATED_TIME':
-      return row.updatedAt.toISOString();
-    case 'CREATED_BY':
-      return row.createdById;
-    case 'UPDATED_BY':
-      return row.updatedById;
-    default:
-      throw new Error(`${type} is not a computed property type`);
-  }
-}
-
-interface StoredValueRow {
-  propertyId: string;
-  textValue: string | null;
-  numberValue: unknown;
-  boolValue: boolean | null;
-  dateValue: Date | null;
-  dateEndValue: Date | null;
-  dateAllDay: boolean | null;
-  jsonValue: unknown;
-}
-
-/**
- * Response shape of a DATE value is decided by the property, not by what
- * happens to be stored: `isRange: false` returns the bare ISO string every
- * client has always read, `isRange: true` returns the span object. Deriving it
- * from "is `dateEndValue` set?" instead would make the same property answer in
- * two different shapes depending on the row, which no client can type.
- */
-function storedToDateResponseValue(
-  property: DatabasePropertyRef,
-  stored: StoredValueRow,
-): DatabaseRowPropertyValue['value'] {
-  if (stored.dateValue === null) return null;
-  if (!parseDatePropertyConfig(property.config).isRange) return stored.dateValue.toISOString();
-  return {
-    start: stored.dateValue.toISOString(),
-    end: stored.dateEndValue === null ? null : stored.dateEndValue.toISOString(),
-    allDay: stored.dateAllDay ?? false,
-  };
-}
-
-/**
- * A derived value on its way out.
- *
- * PostgreSQL answers `numeric` as a string or a Decimal depending on the
- * driver, and the wire contract says number, so the conversion happens here
- * once rather than in every client. An empty aggregate stays `null`: "no
- * linked rows had a date" is not a date.
- */
-function derivedToResponseValue(
-  type: FormulaValueType,
-  raw: unknown,
-  wholeDay: boolean,
-): DatabaseRowPropertyValue['value'] {
-  if (raw === null || raw === undefined) return null;
-  if (type === 'number') {
-    const parsed = Number(raw);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  if (type === 'boolean') return Boolean(raw);
-  if (type === 'date') {
-    // A whole day travels as the day itself (issue #255): as an instant it
-    // is UTC midnight, which a reader west of Greenwich sees as the evening
-    // before. `derivedDateIsWholeDay` decides which dates are whole days.
-    const iso = raw instanceof Date ? raw.toISOString() : String(raw);
-    return wholeDay && /^\d{4}-\d{2}-\d{2}T/.test(iso) ? iso.slice(0, 10) : iso;
-  }
-  return String(raw);
-}
-
-function storedToResponseValue(
-  property: DatabasePropertyRef,
-  stored: StoredValueRow | undefined,
-): DatabaseRowPropertyValue['value'] {
-  if (stored === undefined) return null;
-  if (property.type === 'NUMBER')
-    return stored.numberValue === null ? null : Number(stored.numberValue);
-  if (property.type === 'CHECKBOX') return stored.boolValue;
-  if (property.type === 'DATE') return storedToDateResponseValue(property, stored);
-  if (ARRAY_TYPES.has(property.type)) return (stored.jsonValue as string[] | null) ?? null;
-  return stored.textValue;
-}
-
-interface ColumnData {
-  textValue: string | null;
-  numberValue: number | null;
-  boolValue: boolean | null;
-  dateValue: Date | null;
-  dateEndValue: Date | null;
-  dateAllDay: boolean | null;
-  // Prisma's Json column needs the `JsonNull` sentinel for an explicit null,
-  // not the plain JS value: a bare `null` there means "leave column unset".
-  jsonValue: Prisma.InputJsonValue | typeof Prisma.JsonNull;
-}
-
-/**
- * A written date as its instant. A date and time without a zone is read in
- * the column's own zone when it has one (`instantFromIsoInput`, issue #255).
- */
-function parseIsoOrThrow(property: DatabasePropertyRef, value: string): Date {
-  const date = instantFromIsoInput(value, parseDatePropertyConfig(property.config).timeZone);
-  if (date === null) {
-    throw AppError.validation(`Property ${property.id} received an invalid date`);
-  }
-  return date;
-}
-
-/**
- * A DATE write accepts the bare ISO string in both modes, so every existing
- * writer (the MCP catalogue, Hermes, the morning briefing) keeps working; the
- * span object is accepted only where the property actually is a span, because
- * silently dropping an `end` on a non-range property would look like a
- * successful write of data that is not there afterwards.
- */
-function toDateColumnData(
-  property: DatabasePropertyRef,
-  value: DatabaseRowPropertyValue['value'],
-  empty: ColumnData,
-): ColumnData {
-  if (typeof value === 'string') {
-    return { ...empty, dateValue: parseIsoOrThrow(property, value) };
-  }
-  if (typeof value !== 'object' || Array.isArray(value)) {
-    throw AppError.validation(`Property ${property.id} expects an ISO date string or a date span`);
-  }
-  if (!parseDatePropertyConfig(property.config).isRange) {
-    throw AppError.validation(
-      `Property ${property.id} is not a date span; pass an ISO date string`,
-    );
-  }
-  const span = databaseDateRangeValueSchema.safeParse(value);
-  if (!span.success) {
-    throw AppError.validation(`Property ${property.id} expects { start, end, allDay }`);
-  }
-  const start = parseIsoOrThrow(property, span.data.start);
-  const end = span.data.end === null ? null : parseIsoOrThrow(property, span.data.end);
-  if (end !== null && end < start) {
-    throw AppError.validation(`Property ${property.id} received a span that ends before it starts`);
-  }
-  return { ...empty, dateValue: start, dateEndValue: end, dateAllDay: span.data.allDay };
-}
-
-/** Converts one incoming `{propertyId, value}` write into the correct typed column. */
-function toColumnData(
-  property: DatabasePropertyRef,
-  value: DatabaseRowPropertyValue['value'],
-): ColumnData {
-  const empty: ColumnData = {
-    textValue: null,
-    numberValue: null,
-    boolValue: null,
-    dateValue: null,
-    dateEndValue: null,
-    dateAllDay: null,
-    jsonValue: Prisma.JsonNull,
-  };
-  if (value === null) return empty;
-
-  if (property.type === 'NUMBER') {
-    if (typeof value !== 'number')
-      throw AppError.validation(`Property ${property.id} expects a number`);
-    return { ...empty, numberValue: value };
-  }
-  if (property.type === 'CHECKBOX') {
-    if (typeof value !== 'boolean')
-      throw AppError.validation(`Property ${property.id} expects a boolean`);
-    return { ...empty, boolValue: value };
-  }
-  if (property.type === 'DATE') {
-    return toDateColumnData(property, value, empty);
-  }
-  if (ARRAY_TYPES.has(property.type)) {
-    if (!Array.isArray(value))
-      throw AppError.validation(`Property ${property.id} expects an array of ids`);
-    return { ...empty, jsonValue: value };
-  }
-  if (typeof value !== 'string')
-    throw AppError.validation(`Property ${property.id} expects a string`);
-  return { ...empty, textValue: value };
-}
-
-/**
- * The `files` of one row: every file its FILES values name that still
- * exists, once, in the order the cells name them. Left out entirely for a
- * database without a FILES column, so those rows answer as before.
- */
-function filesOfRow(
-  values: readonly DatabaseRowPropertyValue[],
-  scope: DatabaseQueryScope,
-  files: ReadonlyMap<string, DatabaseRowFile>,
-): { files?: DatabaseRowFile[] } {
-  const named: DatabaseRowFile[] = [];
-  const seen = new Set<string>();
-  let hasFilesColumn = false;
-  for (const entry of values) {
-    if (scope.properties.get(entry.propertyId)?.type !== 'FILES') continue;
-    hasFilesColumn = true;
-    if (!Array.isArray(entry.value)) continue;
-    for (const id of entry.value) {
-      const file = files.get(id);
-      if (file === undefined || seen.has(id)) continue;
-      seen.add(id);
-      named.push(file);
-    }
-  }
-  return hasFilesColumn ? { files: named } : {};
-}
-
-function encodeCursor(offset: number): string {
-  return Buffer.from(String(offset), 'utf8').toString('base64url');
-}
-
-function decodeCursor(cursor: string | undefined): number {
-  if (cursor === undefined) return 0;
-  const parsed = Number.parseInt(Buffer.from(cursor, 'base64url').toString('utf8'), 10);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
-}
 
 /**
  * Rows of a database. A row is an ordinary `Document` (`type: 'PAGE'`) child
@@ -463,7 +240,7 @@ export class DatabaseRowsService {
       // filled in afterwards.
       await this.writeValues({
         collectionDocumentId: input.collectionDocumentId,
-        rowId: row.id,
+        rowIds: [row.id],
         values: input.request.values,
         workspaceId: context.workspaceId,
         correlationId: input.correlationId,
@@ -533,7 +310,7 @@ export class DatabaseRowsService {
 
     await this.writeValues({
       collectionDocumentId,
-      rowId: input.rowId,
+      rowIds: [input.rowId],
       values: input.request.values,
       workspaceId: rowContext.workspaceId,
       correlationId: input.correlationId,
@@ -551,14 +328,104 @@ export class DatabaseRowsService {
   }
 
   /**
-   * Writes a row's property values, and records that they changed.
+   * One set of values for several rows of one database at once (issue #244):
+   * "Status: erledigt" for the twelve rows somebody selected.
+   *
+   * All or nothing. Every row is checked before anything is written -- that
+   * it is a live row of this database and that the caller may edit it, each on
+   * its own, because a share can reach one row and not its neighbour
+   * (ADR-044) -- and the values of all of them are written in one
+   * transaction, so a refusal on the ninth row leaves the first eight as they
+   * were instead of half the selection changed.
+   */
+  async updateMany(input: {
+    collectionDocumentId: string;
+    userId: string;
+    request: UpdateDatabaseRowsRequest;
+    correlationId: string;
+  }): Promise<DatabaseRowsResponse> {
+    const collection = await this.requireCollection(input.collectionDocumentId, input.userId);
+    const rowIds = [...new Set(input.request.rowIds)];
+    await this.requireRowsOf({
+      collectionDocumentId: input.collectionDocumentId,
+      rowIds,
+      userId: input.userId,
+      check: (context) => assertPolicy(canEditDocument(context.role, context.document)),
+    });
+
+    await this.writeValues({
+      collectionDocumentId: input.collectionDocumentId,
+      rowIds,
+      values: input.request.values,
+      workspaceId: collection.workspaceId,
+      correlationId: input.correlationId,
+    });
+    for (const rowId of rowIds) {
+      await this.realtime.emit(
+        'database.row.updated',
+        collection.workspaceId,
+        input.correlationId,
+        {
+          documentId: input.collectionDocumentId,
+          rowId,
+        },
+      );
+    }
+
+    return {
+      rows: await Promise.all(
+        rowIds.map((rowId) => this.toRowResponse(input.collectionDocumentId, rowId)),
+      ),
+    };
+  }
+
+  /**
+   * Refuses unless every id is a row of this database that is not in the
+   * trash, and `check` passes for each row's own access context.
+   *
+   * The rows are named in the refusal, so a client that sent a stale
+   * selection learns which of them is gone rather than that something was.
+   */
+  async requireRowsOf(input: {
+    collectionDocumentId: string;
+    rowIds: readonly string[];
+    userId: string;
+    check: (context: DocumentAccessContext) => void;
+  }): Promise<void> {
+    const found = await this.prisma.document.findMany({
+      where: {
+        id: { in: [...input.rowIds] },
+        parentId: input.collectionDocumentId,
+        type: 'PAGE',
+        archivedAt: null,
+      },
+      select: { id: true },
+    });
+    const live = new Set(found.map((row) => row.id));
+    const missing = input.rowIds.filter((id) => !live.has(id));
+    if (missing.length > 0) {
+      throw new AppError(
+        'database_rows_not_found',
+        'Not every id is a row of this database outside the trash',
+        { rowIds: missing },
+      );
+    }
+    for (const rowId of input.rowIds) {
+      input.check(await this.access.requireDocumentContext(rowId, input.userId));
+    }
+  }
+
+  /**
+   * Writes property values into one or more rows, and records that they
+   * changed.
    *
    * An interactive transaction rather than an array of upserts, because the
    * outbox row has to be written inside the same transaction as the values it
    * describes (ADR-010). Without that event nothing downstream can react to a
    * row changing: an automation scoped to a database would only ever see rows
    * being created and renamed, never filled in, which is most of what happens
-   * to a row (issue #50).
+   * to a row (issue #50). Several rows get one event each, because a rule
+   * reacts to a row, not to a request.
    *
    * `workspaceId` is threaded through rather than looked up here: every caller
    * has already resolved the row's access context, and a second lookup would be
@@ -566,7 +433,7 @@ export class DatabaseRowsService {
    */
   private async writeValues(input: {
     collectionDocumentId: string;
-    rowId: string;
+    rowIds: readonly string[];
     values: DatabaseRowPropertyValue[];
     workspaceId: string;
     correlationId: string;
@@ -578,55 +445,66 @@ export class DatabaseRowsService {
     // hold a connection for the length of the check. Relations are the one kind
     // that needs the database to check them, because the ids have to be rows of
     // the linked collection -- so that lookup happens here too, not inside.
+    // A FILES value is checked per row, since the files have to hang on it.
     const writes = await Promise.all(
-      input.values.map(async (entry) => {
-        const property = scope.properties.get(entry.propertyId);
-        if (property === undefined) {
-          throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
-        }
-        if (COMPUTED_TYPES.has(property.type)) {
-          throw AppError.validation(`${property.type} is computed and cannot be written directly`);
-        }
-        if (isDerivedColumn(property.type)) {
-          throw AppError.validation(
-            `${property.type} is computed from other rows and cannot be written`,
-          );
-        }
-        const value =
-          property.type === 'RELATION' && entry.value !== null
-            ? await normalizeRelationValue({ prisma: this.prisma, property, value: entry.value })
-            : property.type === 'FILES' && Array.isArray(entry.value)
-              ? await this.normalizeFilesValue({
-                  rowId: input.rowId,
-                  propertyId: property.id,
-                  value: entry.value,
-                })
-              : entry.value;
-        return { propertyId: entry.propertyId, columns: toColumnData(property, value) };
-      }),
+      input.rowIds.map(async (rowId) => ({
+        rowId,
+        columns: await Promise.all(
+          input.values.map((entry) => this.prepareWrite(scope, rowId, entry)),
+        ),
+      })),
     );
 
     await this.prisma.$transaction(async (tx) => {
-      for (const write of writes) {
-        await tx.documentPropertyValue.upsert({
-          where: {
-            documentId_propertyId: { documentId: input.rowId, propertyId: write.propertyId },
-          },
-          create: { documentId: input.rowId, propertyId: write.propertyId, ...write.columns },
-          update: write.columns,
+      for (const row of writes) {
+        for (const write of row.columns) {
+          await tx.documentPropertyValue.upsert({
+            where: {
+              documentId_propertyId: { documentId: row.rowId, propertyId: write.propertyId },
+            },
+            create: { documentId: row.rowId, propertyId: write.propertyId, ...write.columns },
+            update: write.columns,
+          });
+        }
+
+        await this.outbox.writeEvent(tx, {
+          workspaceId: input.workspaceId,
+          type: 'database.row.updated',
+          payload: { documentId: input.collectionDocumentId, rowId: row.rowId },
+          correlationId: input.correlationId,
         });
       }
-
-      await this.outbox.writeEvent(tx, {
-        workspaceId: input.workspaceId,
-        type: 'database.row.updated',
-        payload: { documentId: input.collectionDocumentId, rowId: input.rowId },
-        correlationId: input.correlationId,
-      });
     });
   }
 
-  private async toRowResponse(collectionDocumentId: string, rowId: string): Promise<DatabaseRow> {
+  /** One `{propertyId, value}` as the typed columns it is stored in, checked. */
+  private async prepareWrite(
+    scope: DatabaseQueryScope,
+    rowId: string,
+    entry: DatabaseRowPropertyValue,
+  ): Promise<{ propertyId: string; columns: ColumnData }> {
+    const property = scope.properties.get(entry.propertyId);
+    if (property === undefined) {
+      throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
+    }
+    if (COMPUTED_TYPES.has(property.type)) {
+      throw AppError.validation(`${property.type} is computed and cannot be written directly`);
+    }
+    if (isDerivedColumn(property.type)) {
+      throw AppError.validation(
+        `${property.type} is computed from other rows and cannot be written`,
+      );
+    }
+    const value =
+      property.type === 'RELATION' && entry.value !== null
+        ? await normalizeRelationValue({ prisma: this.prisma, property, value: entry.value })
+        : property.type === 'FILES' && Array.isArray(entry.value)
+          ? await this.normalizeFilesValue({ rowId, propertyId: property.id, value: entry.value })
+          : entry.value;
+    return { propertyId: entry.propertyId, columns: toColumnData(property, value) };
+  }
+
+  async toRowResponse(collectionDocumentId: string, rowId: string): Promise<DatabaseRow> {
     const [row, scope, values] = await Promise.all([
       this.documents.loadDocumentOrThrow(rowId),
       loadDatabaseScope(this.prisma, collectionDocumentId),
@@ -717,7 +595,7 @@ export class DatabaseRowsService {
     return ids;
   }
 
-  private async requireCollection(documentId: string, userId: string) {
+  async requireCollection(documentId: string, userId: string) {
     const context = await this.access.requireDocumentContext(documentId, userId);
     if (context.document.type !== 'COLLECTION') {
       throw AppError.validation('Document is not a database');

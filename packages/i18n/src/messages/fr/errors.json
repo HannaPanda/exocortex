@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Certaines entrées ont une date de fin. Supprime les dates de fin avant de désactiver la période.",
     "database_files_target_invalid": "Impossible de téléverser des fichiers dans cette colonne.",
     "database_files_foreign": "Une cellule n’accepte que les fichiers qui y ont été téléversés.",
+    "database_rows_not_found": "Certaines des lignes sélectionnées n’existent plus. Recharge le tableau et refais ta sélection.",
     "collaboration_ticket_invalid": "La connexion à l’édition en direct a été refusée.",
     "collaboration_ticket_expired": "La connexion à l’édition en direct a expiré.",
     "collaboration_read_only": "Cette page est en lecture seule.",

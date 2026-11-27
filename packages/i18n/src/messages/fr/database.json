@@ -101,7 +101,8 @@
     "openRow": "Ouvrir la ligne",
     "newRow": "Nouvelle ligne",
     "emptyTitle": "Pas encore de lignes",
-    "emptyDescription": "Crée la première ligne de cette base de données."
+    "emptyDescription": "Crée la première ligne de cette base de données.",
+    "selectAll": "Sélectionner toutes les lignes"
   },
   "board": {
     "notGroupedTitle": "Pas encore groupé",
@@ -111,7 +112,7 @@
     "loading": "Chargement des cartes",
     "loadFailed": "Cartes non chargées",
     "noValue": "Sans valeur",
-    "moveCard": "Déplacer la carte",
+    "moveCard": "Actions pour cette carte",
     "moveTo": "Déplacer vers « {column} »",
     "newCard": "Nouvelle carte"
   },
@@ -305,5 +306,34 @@
     "fewer": "Moins de propriétés",
     "unavailable": "Impossible de charger les propriétés de cette ligne.",
     "retry": "Réessayer"
+  },
+  "rowActions": {
+    "menu": "Actions pour la ligne {title}",
+    "select": "Sélectionner la ligne {title}",
+    "open": "Ouvrir",
+    "openAsPage": "Ouvrir comme page",
+    "copyLink": "Copier le lien",
+    "duplicate": "Dupliquer",
+    "move": "Déplacer",
+    "trash": "Mettre à la corbeille",
+    "moveGroup": "Déplacer vers",
+    "moveRoot": "Niveau supérieur de l’espace de travail",
+    "movePlaceholder": "Où déplacer « {title} » ?",
+    "moveTypeToSearch": "Tape pour rechercher une page",
+    "moveEmpty": "Aucune page correspondante trouvée",
+    "untitled": "Sans titre"
+  },
+  "selection": {
+    "toolbar": "Lignes sélectionnées",
+    "count": "{count, plural, one {# sélectionnée} many {# sélectionnées} other {# sélectionnées}}",
+    "setValue": "Définir la propriété",
+    "setValueTitle": "Définir {name}",
+    "setValueDescription": "{count, plural, one {La valeur s’applique à la ligne sélectionnée.} many {La valeur s’applique à toutes les # lignes sélectionnées.} other {La valeur s’applique à toutes les # lignes sélectionnées.}} Toute modification est immédiatement appliquée.",
+    "done": "Terminé",
+    "duplicate": "Dupliquer",
+    "trash": "Mettre à la corbeille",
+    "clear": "Désélectionner",
+    "trashConfirmTitle": "{count, plural, one {Mettre une ligne à la corbeille ?} many {Mettre # lignes à la corbeille ?} other {Mettre # lignes à la corbeille ?}}",
+    "trashConfirmDescription": "{count, plural, one {La ligne ira dans la corbeille, ainsi que ses sous-pages.} many {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.} other {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.}} Tu pourras les restaurer une par une depuis là-bas."
   }
 }

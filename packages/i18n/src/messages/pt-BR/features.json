@@ -375,6 +375,17 @@
     },
     "where": "Clicar no cabeçalho da coluna na visualização em tabela."
   },
+  "zeilen-auswaehlen-und-bearbeiten": {
+    "title": "Selecionar, duplicar e editar linhas em conjunto",
+    "summary": "Ao passar o cursor sobre uma linha em uma tabela, uma alça e uma caixa de seleção aparecem à esquerda. A alça abre um menu com Abrir, Duplicar, Copiar link, Mover e Lixeira. Com as caixas de seleção, você seleciona várias linhas e define uma propriedade para todas de uma vez, duplica-as ou as move para a lixeira.",
+    "details": {
+      "p1": "Assim que uma linha é selecionada, todas as linhas mostram sua caixa de seleção, e acima da tabela aparece quantas estão selecionadas. Mantendo Shift pressionado, você seleciona tudo entre a última linha clicada e a atual. A caixa de seleção no cabeçalho seleciona todas as linhas visíveis; Escape cancela a seleção.",
+      "p2": "„Definir propriedade“ grava um valor em todas as linhas selecionadas, como um status ou uma data. Isso acontece em uma única etapa: se você não tiver permissão para alterar uma das linhas, nenhuma será modificada.",
+      "p3": "O que vai para a lixeira pode ser recuperado de lá, linha por linha como qualquer página. Se forem várias linhas, o eXocortex pede confirmação antes. Uma duplicata fica logo abaixo da sua linha e tem o texto e os valores do original, mas sem qualquer vínculo com ele.",
+      "p4": "No celular, a alça e a caixa de seleção ficam sempre visíveis; com o teclado, você chega até elas com Tab, e a barra de espaço marca a seleção. Os agentes podem fazer o mesmo com exo_database_rows_update, exo_database_rows_duplicate e exo_database_rows_trash."
+    },
+    "where": "Em um banco de dados na visualização em tabela: à esquerda do nome de uma linha."
+  },
   "zeilen-eigenschaften-im-seitenkopf": {
     "title": "Propriedades de uma linha no topo da sua página",
     "summary": "Ao abrir uma linha de um banco de dados como página, as propriedades dela aparecem logo abaixo do título: status, data, relações, fórmulas. Você pode alterá-las ali usando os mesmos campos da tabela, e ambos os locais mostram sempre o mesmo valor.",
