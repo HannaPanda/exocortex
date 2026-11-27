@@ -249,7 +249,9 @@ export function DateTimePicker({
   }
 
   return (
-    <div className={cn('flex min-w-0 items-center gap-1.5', className)}>
+    // Wraps rather than spills: in a narrow table column the time goes under
+    // its day instead of over the next column (a 12-hour time is wider).
+    <div className={cn('flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5', className)}>
       <DatePicker
         {...rest}
         value={day}
