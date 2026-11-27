@@ -13,6 +13,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '
 
 import { BlockActionItems } from './block-actions';
 import { type BlockTarget } from './block-target';
+import { NESTED_TARGETS, noteHandleTarget, trackHandleHover } from './handle-hover';
 
 /**
  * Width of the inner lane of the interaction gutter, in pixels.
@@ -45,22 +46,6 @@ const HANDLE_POSITION: ComputePositionConfig = {
   strategy: 'absolute',
   middleware: [offset(COLLAPSE_LANE), shift()],
 };
-
-/**
- * Which block the handle belongs to when blocks are nested (issue #243).
- *
- * Tiptap's default also prefers the outer block when the pointer is near the
- * *top* edge of an inner one, by `500 × depth`. A list item sits two levels
- * deep, so that deduction excluded it outright, and a single-line item is so
- * short that its upper half is all top edge: hovering the first or last item
- * of a list left the handle on the block before, and dragging it moved that
- * block instead. Only the left edge is kept, which is still how a quote or a
- * callout is grabbed as a whole rather than its first paragraph.
- *
- * A module constant for the same reason as `HANDLE_POSITION`: `DragHandle`
- * normalises it inside an effect dependency.
- */
-const NESTED_TARGETS = { edgeDetection: { edges: ['left' as const] } };
 
 interface BlockHandleProps {
   editor: Editor;
@@ -131,7 +116,11 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
    * view, which took the suggestion menus with it.
    */
   const handleNodeChange = React.useCallback(
-    ({ node, pos }: { node: PmNode | null; pos: number }): void => {
+    ({ editor: owner, node, pos }: { editor: Editor; node: PmNode | null; pos: number }): void => {
+      // Where the handle stands, for the rules that keep it there while the
+      // pointer travels to it (issue #286). Also while the menu is open: the
+      // handle itself still moves with its block.
+      noteHandleTarget(owner.view, node === null ? null : pos);
       // Freeze the target while the menu is open: the pointer has to leave the
       // block to reach the menu, and the actions must still hit that block.
       if (menuOpen.current) return;
@@ -153,6 +142,14 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
     dragging.current = false;
   }, []);
 
+  /** The insert button; its parent is the plugin's handle element. */
+  const insertButton = React.useRef<HTMLButtonElement>(null);
+  React.useEffect(() => {
+    const handle = insertButton.current?.parentElement;
+    if (handle === null || handle === undefined || editor.isDestroyed) return undefined;
+    return trackHandleHover(editor.view, handle);
+  }, [editor]);
+
   const insertBelow = (): void => {
     if (target === null) return;
     editor
@@ -173,6 +170,7 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
       className="exocortex-block-handle flex items-center gap-0.5 pr-1"
     >
       <Button
+        ref={insertButton}
         variant="ghost"
         size="icon-sm"
         aria-label={t('insertBelow')}
