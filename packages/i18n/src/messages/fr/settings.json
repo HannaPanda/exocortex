@@ -38,6 +38,9 @@
     "transparencyHint": "Quand le plan recouvre le texte, celui-ci transparaît. Dès que tu le survoles à la souris ou y navigues au clavier, il redevient pleinement visible.",
     "transparencyNoneHint": "Le plan masque entièrement le texte situé en dessous.",
     "transparencyColumnHint": "S’applique uniquement lorsque le plan est superposé au texte.",
+    "dodgeLabel": "S’écarter de la ligne où tu écris",
+    "dodgeHint": "Si tu places le curseur sur une ligne que le plan masquerait, il s’écarte vers le haut ou vers le bas tant que tu y écris. Si tu survols le plan avec la souris, il reste en place.",
+    "dodgeColumnHint": "Ne s’applique que lorsque le plan se superpose au texte.",
     "saveFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
     "loading": "Chargement des paramètres…",
     "loadError": "Impossible de charger les paramètres"

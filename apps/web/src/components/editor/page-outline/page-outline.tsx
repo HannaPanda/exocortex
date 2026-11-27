@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 
+import { type OutlineTransparency } from '@exocortex/contracts';
 import { cn, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
 import { useLatest, usePaletteContribution } from '@/components/palette/contributions';
@@ -28,7 +29,8 @@ import {
   type OutlineRow,
   outlineRows,
 } from './outline-view';
-import { useOutlineTracking } from './use-outline-tracking';
+import { useOutlineDodge } from './use-outline-dodge';
+import { type OutlineTracking, useOutlineTracking } from './use-outline-tracking';
 
 /** A per-viewer convenience, so it lives in the browser and nowhere else. */
 const PIN_STORAGE_KEY = 'exocortex.outline.pinned';
@@ -73,13 +75,12 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   // server render this could disagree with.
   const [pinRequested, setPinRequested] = React.useState(readPinned);
   const tracking = useOutlineTracking(editor, pinRequested);
-  const { entries, activeIndex, wanted, placement, canPin, host, scrollbarWidth, free, jump } =
-    tracking;
-  const preferences = useOutlinePreferences();
-  const overlay = preferences.pinned === 'overlay';
+  const { entries, activeIndex, wanted, placement, canPin, host, scrollbarWidth, jump } = tracking;
   const [open, setOpen] = React.useState(false);
   const activeRowRef = React.useRef<HTMLButtonElement>(null);
   const pinnedListRef = React.useRef<HTMLDivElement>(null);
+  const pinnedFrameRef = React.useRef<HTMLElement>(null);
+  const pinnedMode = usePinnedMode(editor, tracking, pinnedFrameRef, pinnedListRef);
 
   const rows = React.useMemo(() => outlineRows(entries), [entries]);
   const ticks = React.useMemo(() => railTicks(entries), [entries]);
@@ -87,7 +88,6 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   const activeRow = rows.find((row) => row.index === activeIndex) ?? null;
 
   useOutlineCommands(rows, jump);
-  useOutlineLane(host, wanted && placement === 'pinned' && !overlay);
 
   const setPinned = (pinned: boolean): void => {
     writePinned(pinned);
@@ -136,17 +136,20 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
   if (placement === 'pinned') {
     return createPortal(
       <OutlinePinnedFrame
+        ref={pinnedFrameRef}
         aria-label={t('label')}
         data-testid="page-outline-pinned"
-        data-mode={overlay ? 'overlay' : 'column'}
+        data-mode={pinnedMode.overlay ? 'overlay' : 'column'}
         // Over the text only where the margin cannot hold the list; in a
         // margin wide enough it lies on nothing and stays flat (issue #283).
-        covering={overlay && overlayCovers(free)}
-        transparency={preferences.transparency}
+        covering={pinnedMode.covering}
+        transparency={pinnedMode.transparency}
         style={edge}
         // `--outline-top` follows the page head (issue #266, `placeTop` in
         // `use-outline-tracking.ts`); the list ends 1.5rem above the bottom.
-        className="pointer-events-auto absolute top-[var(--outline-top,1.5rem)] max-h-[calc(100%-var(--outline-top,1.5rem)-1.5rem)]"
+        // Laid over the text, it may step aside for the line being written
+        // on (`use-outline-dodge.ts`, issue #283), which wins while it lasts.
+        className="pointer-events-auto absolute top-[var(--outline-dodge-top,var(--outline-top,1.5rem))] max-h-[var(--outline-dodge-max,calc(100%-var(--outline-top,1.5rem)-1.5rem))]"
       >
         {header}
         <div ref={pinnedListRef} className="min-h-0 overflow-y-auto">
@@ -221,6 +224,33 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
     host,
   );
 });
+
+/**
+ * How the pinned list sits, from the reader's preferences (issue #283): in
+ * its own column (the lane, issue #267), or over the text, where it is
+ * `covering` when the margin cannot hold it and then steps aside for the
+ * line being written on if the reader left that on.
+ */
+function usePinnedMode(
+  editor: Editor,
+  tracking: OutlineTracking,
+  frame: React.RefObject<HTMLElement | null>,
+  list: React.RefObject<HTMLElement | null>,
+): { overlay: boolean; covering: boolean; transparency: OutlineTransparency } {
+  const preferences = useOutlinePreferences();
+  const pinned = tracking.wanted && tracking.placement === 'pinned';
+  const overlay = preferences.pinned === 'overlay';
+  const covering = overlay && overlayCovers(tracking.free);
+  useOutlineLane(tracking.host, pinned && !overlay);
+  useOutlineDodge({
+    editor,
+    host: tracking.host,
+    frame,
+    list,
+    enabled: pinned && covering && preferences.dodge,
+  });
+  return { overlay, covering, transparency: preferences.transparency };
+}
 
 /**
  * Takes the pinned list's column off the page area (issue #267): the host

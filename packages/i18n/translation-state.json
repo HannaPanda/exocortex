@@ -13149,12 +13149,12 @@
       "output": "c591e2e91c79f4d0"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "910b53731bc9509e"
+      "source": "5d9ec53730032bce",
+      "output": "51d001d5fcd10ad5"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "a93c52f21a0fac79"
+      "source": "ba187151f20495a9",
+      "output": "fe1c59673e9e42ee"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -17755,6 +17755,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "59a6f150348ce22c"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "23fe6dc3dc01f2ca"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "f76c1be18e0b839c"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "8fc149b6e9f43b08"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -37903,12 +37915,12 @@
       "output": "7692b5ccbbcff3f9"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "fbb60eea2e9d7ef6"
+      "source": "5d9ec53730032bce",
+      "output": "da5545cdf7148c07"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "3bcc12d6d77350c6"
+      "source": "ba187151f20495a9",
+      "output": "44f7dc6b862e1f87"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -42509,6 +42521,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "937ae0bdb191aa32"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "3798a4e23ec37cae"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "efdea2cb5c55adc9"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "d94edf280a84e27d"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -62657,12 +62681,12 @@
       "output": "682cfdff1529d8fb"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "1c405ea0f342a2c1"
+      "source": "5d9ec53730032bce",
+      "output": "1465fe5523a26540"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "a9f7da7e4d4cf344"
+      "source": "ba187151f20495a9",
+      "output": "f58912ebb9219d8c"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -67263,6 +67287,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "eb69a185efe315b1"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "0dae925284072411"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "3522de0dae9468e0"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "d1185c20094026bf"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -87411,12 +87447,12 @@
       "output": "1cb69dbf6627d2ef"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "3ca122582e570749"
+      "source": "5d9ec53730032bce",
+      "output": "33008a1914136966"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "d375cbdf34e0aaa3"
+      "source": "ba187151f20495a9",
+      "output": "501995bfbdd67ac4"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -92017,6 +92053,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "b10e7a7976e5092e"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "5ec982193d63ca6c"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "51a26810e1f13258"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "91c82bba2a6b289e"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -112165,12 +112213,12 @@
       "output": "d8d41d0681735680"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "398815a9a1aa239b"
+      "source": "5d9ec53730032bce",
+      "output": "505c9434deb7d88f"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "0f1d90c8b9fee727"
+      "source": "ba187151f20495a9",
+      "output": "4536cb2cc6403d91"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -116771,6 +116819,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "9540c62bdb88c0f1"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "f48f3f081a7d17b9"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "da19a301685b9066"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "28546bdb5db52800"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -136919,12 +136979,12 @@
       "output": "d296ca8f228f8dde"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "8a163bc29564b6d7"
+      "source": "5d9ec53730032bce",
+      "output": "3fbf9d8b025b5bf5"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "9bce0e4a92dc542a"
+      "source": "ba187151f20495a9",
+      "output": "2d37a318e68563fb"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -141525,6 +141585,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "da340171bde5e7d1"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "739c4a16dc381acd"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "1f86facefcea55df"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "c61d2c54a9154396"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",
@@ -161673,12 +161745,12 @@
       "output": "25d2bc1f83b14964"
     },
     "features.gliederung-ueber-dem-text.details.p2": {
-      "source": "4573bdaa1ce1b97e",
-      "output": "bfe37128c6be33b5"
+      "source": "5d9ec53730032bce",
+      "output": "0619ab3fab235691"
     },
     "features.gliederung-ueber-dem-text.details.p3": {
-      "source": "b6bafb47fdeb33b9",
-      "output": "7c7c0067c92d9341"
+      "source": "ba187151f20495a9",
+      "output": "953c1407eada9b1a"
     },
     "features.gliederung-ueber-dem-text.summary": {
       "source": "263e0c00b7e97043",
@@ -166279,6 +166351,18 @@
     "settings.credentials.unavailable": {
       "source": "aeeae94b85c9a18e",
       "output": "ad8879bd0470c2a9"
+    },
+    "settings.editor.dodgeColumnHint": {
+      "source": "1cda1bf03af4544e",
+      "output": "a670762964786b8c"
+    },
+    "settings.editor.dodgeHint": {
+      "source": "868f5da315a0459c",
+      "output": "7a30018bb821d234"
+    },
+    "settings.editor.dodgeLabel": {
+      "source": "334d32dcc4743c61",
+      "output": "113632534b9338a6"
     },
     "settings.editor.intro": {
       "source": "68f9f3c8b57dd4b3",

@@ -38,6 +38,9 @@
     "transparencyHint": "Liegt die Gliederung über dem Text, scheint er durch. Zeigst du mit der Maus auf die Gliederung oder bist du mit der Tastatur darin, ist sie wieder voll sichtbar.",
     "transparencyNoneHint": "Die Gliederung deckt den Text darunter ganz ab.",
     "transparencyColumnHint": "Wirkt nur, wenn die Gliederung über dem Text liegt.",
+    "dodgeLabel": "Der Zeile ausweichen, in der du schreibst",
+    "dodgeHint": "Setzt du den Cursor in eine Zeile, die die Gliederung verdecken würde, rückt sie nach oben oder unten weg, solange du dort schreibst. Zeigst du mit der Maus auf die Gliederung, bleibt sie stehen.",
+    "dodgeColumnHint": "Wirkt nur, wenn die Gliederung über dem Text liegt.",
     "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
     "loading": "Einstellungen werden geladen …",
     "loadError": "Die Einstellungen konnten nicht geladen werden"

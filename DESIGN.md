@@ -781,6 +781,15 @@ keyboard focus in it, and the fade is a plain transition that
 test in both modes: a list over a window too narrow for the column would
 cover most of the text left, so a phone keeps its button.
 
+A covering list steps aside for the line being written on (`outlineDodge`,
+on unless the reader turns it off): with the caret on a line under it, it
+either ends above that line, keeping its top below the page head and
+scrolling what no longer fits, or starts below it, whichever keeps more of
+the list in view (`dodgeCaret`). It moves at once, without a transition,
+because it follows the caret and the scroll position frame by frame; and it
+never moves while the pointer is on it, so a click on a heading cannot find
+the list gone from under it.
+
 Where the margin cannot even hold the scale (a phone, or a narrow
 window with a panel open), it becomes a compact button floating at the bottom
 edge, and that button steps aside while the editor has focus.

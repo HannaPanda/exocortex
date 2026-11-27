@@ -38,6 +38,9 @@
     "transparencyHint": "Se la struttura è sovrapposta al testo, questo traspare. Se passi sopra la struttura con il mouse o ci entri con la tastiera, torna del tutto opaca.",
     "transparencyNoneHint": "La struttura copre del tutto il testo sottostante.",
     "transparencyColumnHint": "Ha effetto solo quando la struttura è sovrapposta al testo.",
+    "dodgeLabel": "Evita la riga in cui stai scrivendo",
+    "dodgeHint": "Se posizioni il cursore su una riga che verrebbe coperta dalla struttura, quest’ultima si sposta verso l’alto o verso il basso mentre scrivi lì. Se passi il mouse sopra la struttura, rimane ferma.",
+    "dodgeColumnHint": "Ha effetto solo quando la struttura è sovrapposta al testo.",
     "saveFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
     "loading": "Caricamento delle impostazioni…",
     "loadError": "Impossibile caricare le impostazioni"

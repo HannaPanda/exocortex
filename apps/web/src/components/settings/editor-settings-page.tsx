@@ -22,6 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
 } from '@exocortex/ui';
 
 import {
@@ -40,13 +41,14 @@ function isOutlineTransparency(value: unknown): value is OutlineTransparency {
 
 /**
  * How pages behave for this account while it reads and writes (issue #283):
- * for now, how a pinned page outline sits beside the text.
+ * for now, how a pinned page outline sits beside the text, and whether a list
+ * laid over the text steps aside for the line being written on.
  *
  * Selects like the language and chat pages beside it, each with the chosen
  * option explained underneath, because "über dem Text liegen" only says what
  * happens once one has seen it. The transparency is only read for a list
- * laid over the text, so it is disabled, and says why, while the text moves
- * aside. The pin itself stays in the outline: whether it is pinned is a
+ * laid over the text, and so is stepping aside, so both are disabled, and say
+ * why, while the text moves aside. The pin itself stays in the outline: whether it is pinned is a
  * choice per browser, how it is pinned a choice per person.
  */
 export function EditorSettingsPage() {
@@ -160,6 +162,24 @@ export function EditorSettingsPage() {
             >
               {transparencyHint}
             </p>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Switch
+              id="outline-dodge"
+              checked={outline.dodge}
+              disabled={!overlay}
+              onCheckedChange={(checked) => change({ outlineDodge: checked })}
+              aria-describedby="outline-dodge-hint"
+              data-testid="outline-dodge"
+              className="mt-0.5"
+            />
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="outline-dodge">{t('dodgeLabel')}</Label>
+              <p id="outline-dodge-hint" className="max-w-measure text-xs text-muted-foreground">
+                {overlay ? t('dodgeHint') : t('dodgeColumnHint')}
+              </p>
+            </div>
           </div>
         </section>
       )}

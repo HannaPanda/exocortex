@@ -38,6 +38,9 @@
     "transparencyHint": "Si el esquema se superpone al texto, este se vislumbra por debajo. Si pasas el ratón por encima del esquema o te sitúas en él con el teclado, vuelve a ser totalmente visible.",
     "transparencyNoneHint": "El esquema cubre por completo el texto que tiene debajo.",
     "transparencyColumnHint": "Solo tiene efecto cuando el esquema se superpone al texto.",
+    "dodgeLabel": "Esquivar la línea en la que escribes",
+    "dodgeHint": "Si colocas el cursor en una línea que el esquema taparía, este se apartará hacia arriba o hacia abajo mientras escribas ahí. Si pasas el ratón por encima del esquema, se mantendrá en su sitio.",
+    "dodgeColumnHint": "Solo funciona cuando el esquema se superpone al texto.",
     "saveFailed": "No se ha podido guardar la preferencia. Inténtalo de nuevo en unos instantes.",
     "loading": "Cargando ajustes…",
     "loadError": "No se han podido cargar los ajustes"

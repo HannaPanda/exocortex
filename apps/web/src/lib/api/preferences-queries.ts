@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 import {
   type ChatScrollMode,
   DEFAULT_CHAT_SCROLL_MODE,
+  DEFAULT_OUTLINE_DODGE,
   DEFAULT_OUTLINE_PINNED_MODE,
   DEFAULT_OUTLINE_TRANSPARENCY,
   type OutlinePinnedMode,
@@ -97,12 +98,14 @@ export function useChatScrollPreference(): ChatScrollPreference {
 
 /** What `useOutlinePreferences` can change; every field one of `UserPreferences`. */
 export type OutlinePreferenceChange = Partial<
-  Pick<UserPreferences, 'outlinePinned' | 'outlineTransparency'>
+  Pick<UserPreferences, 'outlinePinned' | 'outlineTransparency' | 'outlineDodge'>
 >;
 
 export interface OutlinePreferences {
   pinned: OutlinePinnedMode;
   transparency: OutlineTransparency;
+  /** Whether an overlaid list steps aside for the line being written on. */
+  dodge: boolean;
   change: (change: OutlinePreferenceChange, options?: { onError?: () => void }) => void;
   pending: boolean;
 }
@@ -148,6 +151,7 @@ export function useOutlinePreferences(): OutlinePreferences {
   return {
     pinned: query.data?.outlinePinned ?? DEFAULT_OUTLINE_PINNED_MODE,
     transparency: query.data?.outlineTransparency ?? DEFAULT_OUTLINE_TRANSPARENCY,
+    dodge: query.data?.outlineDodge ?? DEFAULT_OUTLINE_DODGE,
     change: (change, options) => mutation.mutate(change, { onError: options?.onError }),
     pending: mutation.isPending,
   };

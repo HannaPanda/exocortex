@@ -118,6 +118,56 @@ export function outlineTop(contentTop: number, scrollTop: number): number {
   return Math.max(OUTLINE_TOP, Math.round(contentTop - scrollTop));
 }
 
+/** Air between the line being written on and a list that stepped aside for it, in pixels. */
+export const DODGE_GAP = 8;
+
+/** A vertical stretch in the outline's host, in pixels from its top edge. */
+export interface VerticalSpan {
+  top: number;
+  bottom: number;
+}
+
+/** Where a list that stepped aside sits: its top edge and how tall it may get. */
+export interface OutlineWindow {
+  top: number;
+  maxHeight: number;
+}
+
+/**
+ * Where a pinned list laid over the text goes when the caret is on a line it
+ * covers (issue #283), or `null` when the line is clear of it.
+ *
+ * `list` is where the list would sit with nothing in the way, `caret` the
+ * line being written on, `bottom` the lowest edge the list may reach. Two
+ * ways out: upwards, which keeps the list's top where it is (below the page
+ * head, issue #266, never over the title) and ends it above the line, so it
+ * gets shorter and scrolls; or downwards, below the line, as tall as the room
+ * there allows. The one that keeps more of the list in view wins, and when
+ * both keep all of it, the one that moves it less.
+ */
+export function dodgeCaret(
+  list: VerticalSpan,
+  caret: VerticalSpan,
+  bottom: number,
+): OutlineWindow | null {
+  if (caret.bottom + DODGE_GAP <= list.top || caret.top - DODGE_GAP >= list.bottom) return null;
+  const height = list.bottom - list.top;
+  const above: OutlineWindow = {
+    top: list.top,
+    maxHeight: Math.max(0, Math.min(height, caret.top - DODGE_GAP - list.top)),
+  };
+  const belowTop = caret.bottom + DODGE_GAP;
+  const below: OutlineWindow = {
+    top: belowTop,
+    maxHeight: Math.max(0, Math.min(height, bottom - belowTop)),
+  };
+  if (above.maxHeight !== below.maxHeight) {
+    return above.maxHeight > below.maxHeight ? above : below;
+  }
+  // Same height either way: upwards does not move the list at all.
+  return above;
+}
+
 /** How the outline is offered, decided by the room beside the text column. */
 export type OutlinePlacement = 'pinned' | 'rail' | 'compact';
 

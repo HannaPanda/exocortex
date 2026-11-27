@@ -38,6 +38,9 @@
     "transparencyHint": "Als de inhoudsopgave over de tekst ligt, schijnt deze door. Wijs je de inhoudsopgave aan met de muis of navigeer je er met het toetsenbord in, dan is ze weer volledig zichtbaar.",
     "transparencyNoneHint": "De inhoudsopgave dekt de tekst eronder volledig af.",
     "transparencyColumnHint": "Werkt alleen als de inhoudsopgave over de tekst ligt.",
+    "dodgeLabel": "De regel ontwijken waarin je typt",
+    "dodgeHint": "Plaats je de cursor in een regel die door het overzicht bedekt zou worden, dan schuift het naar boven of beneden weg zolang je daar typt. Wijs je met de muis naar het overzicht, dan blijft het staan.",
+    "dodgeColumnHint": "Werkt alleen wanneer het overzicht over de tekst heen ligt.",
     "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog eens.",
     "loading": "Instellingen laden …",
     "loadError": "De instellingen konden niet worden geladen"

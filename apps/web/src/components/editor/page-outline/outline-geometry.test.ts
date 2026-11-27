@@ -6,6 +6,8 @@ import {
   activeHeadingIndex,
   activeTickIndex,
   canPinOutline,
+  DODGE_GAP,
+  dodgeCaret,
   OUTLINE_TOP,
   outlinePlacement,
   outlineTop,
@@ -108,6 +110,40 @@ describe('overlayCovers (issue #283)', () => {
     expect(overlayCovers(PINNED_LANE - 1)).toBe(true);
     expect(overlayCovers(PINNED_LANE)).toBe(false);
     expect(overlayCovers(900)).toBe(false);
+  });
+});
+
+describe('dodgeCaret (issue #283)', () => {
+  const list = { top: 100, bottom: 400 };
+
+  it('leaves the list alone while the line being written on is clear of it', () => {
+    expect(dodgeCaret(list, { top: 420, bottom: 440 }, 876)).toBeNull();
+    expect(dodgeCaret(list, { top: 60, bottom: 80 }, 876)).toBeNull();
+  });
+
+  it('steps below a line near its top, whole, where there is room', () => {
+    expect(dodgeCaret(list, { top: 140, bottom: 160 }, 876)).toEqual({
+      top: 160 + DODGE_GAP,
+      maxHeight: 300,
+    });
+  });
+
+  it('ends above a line near the bottom of the window, keeping its own top', () => {
+    expect(dodgeCaret(list, { top: 380, bottom: 400 }, 500)).toEqual({
+      top: 100,
+      maxHeight: 380 - DODGE_GAP - 100,
+    });
+  });
+
+  it('takes whichever way keeps more of it in view', () => {
+    // Below the line there are 60px, above it 222px.
+    const placed = dodgeCaret(list, { top: 330, bottom: 350 }, 418);
+    expect(placed).toEqual({ top: 100, maxHeight: 222 });
+  });
+
+  it('counts the air around the line as part of it', () => {
+    expect(dodgeCaret(list, { top: 404, bottom: 420 }, 876)).not.toBeNull();
+    expect(dodgeCaret(list, { top: 400 + DODGE_GAP, bottom: 430 }, 876)).toBeNull();
   });
 });
 

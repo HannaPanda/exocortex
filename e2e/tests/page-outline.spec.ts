@@ -408,6 +408,84 @@ test.describe('page outline laid over the text', () => {
   });
 });
 
+// Issue #283, second part: a list laid over the text steps aside for the
+// line the caret is on, unless the reader switched that off.
+test.describe('page outline stepping aside for the caret', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test.afterEach(async ({ request, baseURL }) => {
+    await request.patch('/api/me/preferences', {
+      data: { outlinePinned: 'column', outlineTransparency: 'none', outlineDodge: true },
+      headers: { origin: baseURL as string },
+    });
+  });
+
+  test('moves off the line being written on, and stays when asked to', async ({
+    page,
+    request,
+    baseURL,
+  }) => {
+    await request.patch('/api/me/preferences', {
+      data: { outlinePinned: 'overlay', outlineDodge: true },
+      headers: { origin: baseURL as string },
+    });
+    const marker = Date.now().toString(36);
+    const id = await importPage(page, `Ausweichen ${marker}`, longMarkdown(marker));
+    const changed = await page.request.patch(`/api/documents/${id}`, { data: { layout: 'full' } });
+    expect(changed.ok(), await changed.text()).toBe(true);
+    await page.reload();
+    await expect(page.getByTestId('editor-surface')).toBeVisible();
+    await page.getByTestId('page-outline-rail').click();
+    await page.getByTestId('page-outline-pin').click();
+    const pinned = page.getByTestId('page-outline-pinned');
+    await expect(pinned).toHaveAttribute('data-covering', 'true');
+
+    // A line in the middle of the list, clicked left of it, where it is free.
+    const before = await pinned.boundingBox();
+    const text = await page.locator('.ProseMirror').boundingBox();
+    if (before === null || text === null) throw new Error('not laid out');
+    const lineY = before.y + Math.min(80, before.height / 2);
+    await page.mouse.click(text.x + 40, lineY);
+    await expect(pinned).toHaveAttribute('data-dodging', 'true');
+    const clear = async (): Promise<boolean> => {
+      const box = await pinned.boundingBox();
+      return box !== null && (box.y > lineY + 4 || box.y + box.height < lineY - 4);
+    };
+    await expect.poll(clear).toBe(true);
+
+    // Typing on keeps it off the line.
+    await page.keyboard.type(' weiter');
+    await expect.poll(clear).toBe(true);
+
+    // Under the pointer it stays where it is, even when the editor lets go.
+    await pinned.hover();
+    const held = await pinned.boundingBox();
+    await page.locator('.exocortex-page-title').evaluate((title) => {
+      (title.ownerDocument.activeElement as { blur?: () => void } | null)?.blur?.();
+    });
+    expect((await pinned.boundingBox())?.y).toBe(held?.y);
+
+    // Leaving the editor and the list, it goes back to its place.
+    await page.mouse.move(text.x + 10, text.y + 10);
+    await expect(pinned).not.toHaveAttribute('data-dodging', 'true');
+
+    // Switched off, the caret may sit under it.
+    await request.patch('/api/me/preferences', {
+      data: { outlineDodge: false },
+      headers: { origin: baseURL as string },
+    });
+    await page.reload();
+    await expect(pinned).toHaveAttribute('data-covering', 'true');
+    const still = await pinned.boundingBox();
+    if (still === null) throw new Error('not laid out');
+    await page.mouse.click(text.x + 40, still.y + Math.min(80, still.height / 2));
+    await page.keyboard.type(' x');
+    await expect(pinned).not.toHaveAttribute('data-dodging', 'true');
+    expect((await pinned.boundingBox())?.y).toBe(still.y);
+    await page.getByTestId('page-outline-pin').click();
+  });
+});
+
 test.describe('page outline on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 

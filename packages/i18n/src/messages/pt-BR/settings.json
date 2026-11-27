@@ -38,6 +38,9 @@
     "transparencyHint": "Se a estrutura sobrepuser o texto, ele transparece. Ao passar o mouse sobre a estrutura ou focar nela com o teclado, ela fica totalmente visível novamente.",
     "transparencyNoneHint": "A estrutura cobre totalmente o texto abaixo.",
     "transparencyColumnHint": "Só tem efeito quando a estrutura estiver sobreposta ao texto.",
+    "dodgeLabel": "Desviar da linha em que você escreve",
+    "dodgeHint": "Se você colocar o cursor em uma linha que cobriria o sumário, ele se afasta para cima ou para baixo enquanto você estiver escrevendo ali. Se você passar o mouse sobre o sumário, ele permanece no lugar.",
+    "dodgeColumnHint": "Só tem efeito quando o sumário estiver sobreposto ao texto.",
     "saveFailed": "Não foi possível salvar a configuração. Tente novamente em instantes.",
     "loading": "Carregando configurações…",
     "loadError": "Não foi possível carregar as configurações"

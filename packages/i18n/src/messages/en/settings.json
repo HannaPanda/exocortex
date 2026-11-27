@@ -38,6 +38,9 @@
     "transparencyHint": "When the outline overlays the text, the text shines through. When you hover over the outline or focus it with the keyboard, it becomes fully opaque again.",
     "transparencyNoneHint": "The outline completely covers the text underneath.",
     "transparencyColumnHint": "Only applies when the outline overlays the text.",
+    "dodgeLabel": "Dodge the line you are typing in",
+    "dodgeHint": "If you place the cursor on a line that the outline would cover, it moves up or down while you are typing there. If you hover over the outline, it stays put.",
+    "dodgeColumnHint": "Only applies when the outline floats over the text.",
     "saveFailed": "Could not save setting. Please try again in a moment.",
     "loading": "Loading settings…",
     "loadError": "Could not load settings"

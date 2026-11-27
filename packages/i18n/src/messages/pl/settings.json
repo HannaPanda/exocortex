@@ -38,6 +38,9 @@
     "transparencyHint": "Gdy spis treści leży na tekście, tekst prześwituje. Po najechaniu myszą na spis treści lub przejściu do niego za pomocą klawiatury staje się on znów w pełni widoczny.",
     "transparencyNoneHint": "Spis treści całkowicie zasłania tekst pod spodem.",
     "transparencyColumnHint": "Działa tylko wtedy, gdy spis treści nakłada się na tekst.",
+    "dodgeLabel": "Ustępowanie miejsca wierszowi, w którym piszesz",
+    "dodgeHint": "Gdy umieścisz kursor w wierszu, który zasłaniałby konspekt, odsunie się on w górę lub w dół na czas pisania. Po najechaniu kursorem myszy na konspekt pozostaje on w miejscu.",
+    "dodgeColumnHint": "Działa tylko wtedy, gdy konspekt leży na tekście.",
     "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
     "loading": "Wczytywanie ustawień…",
     "loadError": "Nie udało się wczytać ustawień"
