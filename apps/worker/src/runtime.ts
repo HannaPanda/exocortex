@@ -30,7 +30,11 @@ import { QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
 import { type AiKeyResolver, createAiKeyResolver, type ResolvedAiKey } from './ai-key';
-import { buildApiClientFactory, buildToolRunnerFactory } from './api-access';
+import {
+  buildApiClientFactory,
+  buildRunApiClientFactory,
+  buildToolRunnerFactory,
+} from './api-access';
 import {
   type CalendarAccountCredentialsRef,
   type CalendarCredentials,
@@ -102,6 +106,8 @@ export interface WorkerRuntime {
   toolRunnerFactory: ToolRunnerFactory | null;
   apiClientFor:
     ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
+  /** The same, with the run's id signed into the token (issue #237). */
+  runApiClientFor: ((userId: string, runId: string) => ExocortexApiClient) | null;
   resolveCalendarCredentials: (
     account: CalendarAccountCredentialsRef,
   ) => CalendarCredentials | null;
@@ -293,6 +299,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     readSettings,
     toolRunnerFactory: buildToolRunnerFactory(env, logger),
     apiClientFor: buildApiClientFactory(env),
+    runApiClientFor: buildRunApiClientFactory(env),
     resolveCalendarCredentials: createCalendarCredentialResolver({
       environment: process.env,
       defaultBaseUrl: env.MAILBOX_CALDAV_URL,

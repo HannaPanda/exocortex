@@ -286,6 +286,7 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
                 <div className="text-xs text-muted-foreground">
                   {row.model} · {row.provider}
                   {row.kind === 'image' ? ` · ${t('kindImage')}` : null}
+                  {row.kind === 'fill' ? ` · ${t('kindFill')}` : null}
                 </div>
               </TableCell>
               <TableCell label={t('runs')} className="text-right tabular-nums">

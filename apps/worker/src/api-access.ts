@@ -79,3 +79,28 @@ export function buildApiClientFactory(
       headers,
     });
 }
+
+/**
+ * An API client acting as one person for one AI run, its token carrying the
+ * run's id, signed (issue #237). The routes that hand a batch's material to
+ * the worker and take its answers check that claim, so a token minted for one
+ * run cannot read or write another's cells. Minted per call, like the factory
+ * above, so a batch longer than the token's lifetime never holds a stale one.
+ */
+export function buildRunApiClientFactory(
+  env: WorkerEnv,
+): ((userId: string, runId: string) => ExocortexApiClient) | null {
+  if (env.SERVICE_TOKEN_SECRET === undefined) return null;
+  const serviceTokenSecret = env.SERVICE_TOKEN_SECRET;
+  return (userId, runId) =>
+    createFetchApiClient({
+      baseUrl: env.API_URL,
+      token: issueServiceToken({
+        secret: serviceTokenSecret,
+        userId,
+        purpose: 'ai-tools',
+        runId,
+        ttlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
+      }).token,
+    });
+}

@@ -21,6 +21,7 @@ import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createAutomationProcessor } from './processors/automation';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createConversationCompactionProcessor } from './processors/conversation-compaction';
+import { createDatabaseAiFillProcessor } from './processors/database-ai-fill';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createDocumentOverviewProcessor } from './processors/document-overview';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
@@ -268,7 +269,26 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     }),
   });
 
-  return [materialization, indexing, ai, maintenance, conversationCompaction];
+  // A database column filled by its AI instruction (issue #237, ADR-099):
+  // one batch at a time per worker, because each batch already asks a few
+  // cells at once and a second would only meet the provider's rate limits.
+  // One attempt: a batch settles its own cells, and a retry is a new batch
+  // somebody asks for.
+  const databaseAiFill = createTypedWorker({
+    name: QUEUE_NAMES.databaseAiFill,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createDatabaseAiFillProcessor({
+      prisma,
+      bus,
+      settings: readSettings,
+      providerFor,
+      runApiClientFor: runtime.runApiClientFor,
+    }),
+  });
+
+  return [materialization, indexing, ai, maintenance, conversationCompaction, databaseAiFill];
 }
 
 /** Everything that turns a file, a page or a calendar into something else. */

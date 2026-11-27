@@ -54,6 +54,9 @@ export interface JobProgressEvent {
     // reports through `ai.conversation.compacted` or
     // `ai.conversation.compaction_failed` (issue #287).
     | typeof QUEUE_NAMES.conversationCompaction
+    // Nor does an AI fill: its cells are its progress, and each one reports
+    // as `database.ai_fill.changed` or as the row it wrote (issue #237).
+    | typeof QUEUE_NAMES.databaseAiFill
   >;
   workspaceId: string;
   correlationId: string;
