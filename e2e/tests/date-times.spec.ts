@@ -130,7 +130,7 @@ test.describe('times in a database (issue #255)', () => {
     expect(spaced(await summerStart.inputValue())).toBe('12:00 PM');
     // The wider 12-hour time wraps under its day instead of spilling over
     // the next column.
-    const cell = page.locator('td').filter({ has: winterStart });
+    const cell = winterStart.locator('xpath=ancestor::td[1]');
     const [cellBox, fieldBox] = await Promise.all([cell.boundingBox(), winterStart.boundingBox()]);
     expect(fieldBox!.x + fieldBox!.width).toBeLessThanOrEqual(cellBox!.x + cellBox!.width + 1);
 
