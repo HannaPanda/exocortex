@@ -139,7 +139,7 @@
     "failedDescription": "Inténtalo de nuevo. Las páginas no se han visto afectadas.",
     "nothingTitle": "Esta ejecución no modificó nada",
     "nothingDescription": "No hay nada que deshacer.",
-    "summary": "{revertible, plural, =0 {Ningún cambio sigue tal como lo dejó la IA.} one {Se puede revertir un cambio.} many {Se pueden revertir # cambios.} other {Se pueden revertir # cambios.}}{changedSince, plural, =0 {} one { Alguien ha modificado uno desde entonces; ese se mantendrá.} many { Alguien ha modificado # desde entonces; se mantendrán.} other { Alguien ha modificado # desde entonces; se mantendrán.}}",
+    "summary": "{revertible, plural, =0 {Ningún cambio sigue tal y como lo dejó la IA.} one {Se puede revertir un cambio.} many {Se pueden revertir # cambios.} other {Se pueden revertir # cambios.}}{changedSince, plural, =0 {} one { Uno se mantiene; se indica el motivo.} many { # se mantienen; se indica el motivo en cada caso.} other { # se mantienen; se indica el motivo en cada caso.}}",
     "states": {
       "revertible": "Se revertirá",
       "changed_since": "Modificado desde entonces, se mantiene",
@@ -152,13 +152,33 @@
     },
     "block": "Bloque",
     "excerpt": "«{text}»",
+    "standing": "Estado actual:",
+    "heldBadge": "Se mantiene",
+    "structure": {
+      "created": "Página creada. Al revertir, irá a la papelera.",
+      "moved": "Movida de {from} a {to}.",
+      "renamed": "Renombrada de «{from}» a «{to}».",
+      "topLevel": "nivel superior",
+      "hiddenPage": "una página que no puedes leer"
+    },
+    "held": {
+      "edited": "Desde entonces, alguien ha escrito en la página o ha cambiado una propiedad.",
+      "renamed": "El título ya no es el que le dio la IA.",
+      "moved": "La página ahora está en otro lugar.",
+      "trashed": "La página ya está en la papelera.",
+      "children": "Bajo la página hay contenido que no proviene de esta ejecución o que se mantiene. La papelera también se lo llevaría.",
+      "parent_gone": "La página bajo la que estaba antes ya no existe o está en la papelera.",
+      "other_workspace": "La página se movió a otro espacio de trabajo, junto con todo lo que cuelga de ella. Solo se indica, no se revierte.",
+      "not_a_page": "Las bases de datos o los proyectos solo se indican, no se envían a la papelera.",
+      "not_recorded": "Esta ejecución es anterior a este registro."
+    },
     "skipped": {
-      "no_snapshot": "No hay ninguna versión anterior a la ejecución, tal vez porque la página solo se renombró o se movió. Puedes encontrar versiones anteriores en el historial de la página.",
+      "no_snapshot": "No hay ningún estado previo a la ejecución. Encontrarás versiones anteriores en el historial de la página.",
       "not_recorded": "No se registraron los bloques individuales de esta página porque la ejecución es anterior a esta función. Puedes encontrar la versión previa a la ejecución en el historial de la página.",
       "unavailable": "Esta página ya no existe o no tienes permiso para leerla."
     },
     "done": "Revertido en {pages, plural, one {una página} many {# páginas} other {# páginas}}.",
-    "doneKept": "{count, plural, one {Se mantuvo un cambio porque alguien lo modificó desde entonces.} many {Se mantuvieron # cambios porque alguien los modificó desde entonces.} other {Se mantuvieron # cambios porque alguien los modificó desde entonces.}}",
+    "doneKept": "{count, plural, one {Se mantuvo un cambio; se indica el motivo.} many {Se mantuvieron # cambios; se indica el motivo en cada caso.} other {Se mantuvieron # cambios; se indica el motivo en cada caso.}}",
     "revertFailed": "No se ha podido deshacer.",
     "notYours": "Solo puede deshacer los cambios la persona para quien trabajó esta ejecución.",
     "close": "Cerrar",

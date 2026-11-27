@@ -9,6 +9,7 @@ import {
   type AiRunChangedBlock,
   type AiRunChangedPage,
   type AiRunRevertResponse,
+  type AiRunStructureChange,
 } from '@exocortex/contracts';
 import {
   Badge,
@@ -72,6 +73,52 @@ function ChangeRow({ blocks }: { blocks: AiRunChangedBlock[] }) {
           )}
         </p>
       ))}
+      {/* Rewritten since under identifiers of their own: this is the text
+          the undo leaves alone, so it is the text the preview shows. */}
+      {blocks
+        .flatMap((block) => block.standing)
+        .map((entry) => (
+          <p key={entry.blockId} className="text-sm break-words" data-testid="ai-run-standing">
+            <span className="text-muted-foreground">{t('standing')}</span>{' '}
+            {entry.excerpt === null ? null : t('excerpt', { text: entry.excerpt })}
+          </p>
+        ))}
+    </li>
+  );
+}
+
+/** A rename, a move or a new page, with where it stands (issue #248). */
+function StructureRow({ change }: { change: AiRunStructureChange }) {
+  const t = useTranslations('ai.runChanges');
+  const place = (id: string | null, title: string | null): string =>
+    id === null
+      ? t('structure.topLevel')
+      : title === null
+        ? t('structure.hiddenPage')
+        : t('pageTitle', { title });
+  const what =
+    change.kind === 'created'
+      ? t('structure.created')
+      : change.kind === 'renamed'
+        ? t('structure.renamed', { from: change.fromTitle ?? '', to: change.toTitle ?? '' })
+        : t('structure.moved', {
+            from: place(change.fromParentId, change.fromParentTitle),
+            to: place(change.toParentId, change.toParentTitle),
+          });
+  return (
+    <li
+      className="flex flex-col gap-1 rounded-md border border-border px-3 py-2"
+      data-testid="ai-run-change"
+      data-kind={change.kind}
+      data-state={change.state}
+    >
+      <Badge variant={STATE_BADGE[change.state]} className="w-fit">
+        {change.state === 'changed_since' ? t('heldBadge') : t(`states.${change.state}`)}
+      </Badge>
+      <p className="text-sm break-words">{what}</p>
+      {change.reason === null ? null : (
+        <p className="text-xs text-muted-foreground">{t(`held.${change.reason}`)}</p>
+      )}
     </li>
   );
 }
@@ -105,14 +152,18 @@ function PageSection({
           </Link>
         )}
       </h3>
-      {page.skipped !== null ? (
-        <p className="text-xs text-muted-foreground">{t(`skipped.${page.skipped}`)}</p>
-      ) : (
+      {page.structure.length > 0 || page.blocks.length > 0 ? (
         <ul className="flex flex-col gap-2">
+          {page.structure.map((change) => (
+            <StructureRow key={change.kind} change={change} />
+          ))}
           {groupsOf(page).map((blocks) => (
             <ChangeRow key={blocks[0]?.blockId ?? 'empty'} blocks={blocks} />
           ))}
         </ul>
+      ) : null}
+      {page.skipped === null ? null : (
+        <p className="text-xs text-muted-foreground">{t(`skipped.${page.skipped}`)}</p>
       )}
     </section>
   );

@@ -139,7 +139,7 @@
     "failedDescription": "Réessaie. Les pages elles-mêmes ne sont pas affectées.",
     "nothingTitle": "Cette exécution n’a rien modifié",
     "nothingDescription": "Il n’y a rien à annuler.",
-    "summary": "{revertible, plural, =0 {Plus aucune modification n’est telle que l’IA l’a laissée.} one {Une modification peut être annulée.} many {# modifications peuvent être annulées.} other {# modifications peuvent être annulées.}}{changedSince, plural, =0 {} one { Une a été modifiée depuis, elle reste intacte.} many { # ont été modifiées depuis, elles restent intactes.} other { # ont été modifiées depuis, elles restent intactes.}}",
+    "summary": "{revertible, plural, =0 {Aucune modification n’est restée telle que l’IA l’avait laissée.} one {Une modification peut être annulée.} many {# modifications peuvent être annulées.} other {# modifications peuvent être annulées.}}{changedSince, plural, =0 {} one { Une modification est conservée, la raison est indiquée.} many { # modifications sont conservées, la raison est indiquée à chaque fois.} other { # modifications sont conservées, la raison est indiquée à chaque fois.}}",
     "states": {
       "revertible": "Sera annulé",
       "changed_since": "Modifié depuis, reste intact",
@@ -152,13 +152,33 @@
     },
     "block": "Bloc",
     "excerpt": "« {text} »",
+    "standing": "État actuel :",
+    "heldBadge": "Conservé",
+    "structure": {
+      "created": "Nouvelle page créée. En annulant, elle ira dans la corbeille.",
+      "moved": "Déplacée de {from} vers {to}.",
+      "renamed": "Renommée de « {from} » en « {to} ».",
+      "topLevel": "premier niveau",
+      "hiddenPage": "une page que tu ne peux pas lire"
+    },
+    "held": {
+      "edited": "Depuis, quelqu’un a écrit dans la page ou modifié une propriété.",
+      "renamed": "Le titre n’est plus celui que l’IA avait donné.",
+      "moved": "La page a été déplacée entre-temps.",
+      "trashed": "La page est désormais dans la corbeille.",
+      "children": "La page contient des éléments qui ne proviennent pas de cette exécution ou qui sont conservés. La corbeille les emporterait.",
+      "parent_gone": "La page sous laquelle elle se trouvait n’existe plus ou se trouve dans la corbeille.",
+      "other_workspace": "La page a été déplacée dans un autre espace de travail, avec tout son contenu. C’est seulement mentionné, pas annulé.",
+      "not_a_page": "Une base de données ou un projet est seulement mentionné, pas mis à la corbeille.",
+      "not_recorded": "Cette exécution est antérieure à cet enregistrement."
+    },
     "skipped": {
-      "no_snapshot": "Il n’y a pas d’état antérieur à cette exécution, par exemple parce que la page a seulement été renommée ou déplacée. Tu trouveras les versions précédentes dans l’historique de la page.",
+      "no_snapshot": "Il n’y a aucun instantané avant cette exécution. Tu trouveras les versions antérieures dans l’historique de la page.",
       "not_recorded": "Les blocs de cette page n’ont pas été enregistrés individuellement, car cette exécution est antérieure à cette fonctionnalité. Tu trouveras l’état précédant l’exécution dans l’historique de la page.",
       "unavailable": "Cette page n’existe plus ou tu n’as pas le droit de la lire."
     },
     "done": "Annulé sur {pages, plural, one {une page} many {# pages} other {# pages}}.",
-    "doneKept": "{count, plural, one {Une modification a été conservée parce qu’elle a été modifiée depuis.} many {# modifications ont été conservées parce qu’elles ont été modifiées depuis.} other {# modifications ont été conservées parce qu’elles ont été modifiées depuis.}}",
+    "doneKept": "{count, plural, one {Une modification a été conservée, la raison est indiquée.} many {# modifications ont été conservées, la raison est indiquée à chaque fois.} other {# modifications ont été conservées, la raison est indiquée à chaque fois.}}",
     "revertFailed": "L’annulation a échoué.",
     "notYours": "Seule la personne pour qui cette exécution a tourné peut l’annuler.",
     "close": "Fermer",

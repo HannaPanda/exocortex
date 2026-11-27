@@ -139,7 +139,7 @@
     "failedDescription": "Riprova. Le pagine stesse non hanno subito conseguenze.",
     "nothingTitle": "Questa esecuzione non ha modificato nulla",
     "nothingDescription": "Non c’è nulla da annullare.",
-    "summary": "{revertible, plural, =0 {Nessuna modifica è rimasta come lasciata dall’IA.} one {Una modifica può essere annullata.} many {# modifiche possono essere annullate.} other {# modifiche possono essere annullate.}}{changedSince, plural, =0 {} one { Una è stata modificata da qualcuno nel frattempo e rimarrà invariata.} many { # sono state modificate da qualcuno nel frattempo e rimarranno invariate.} other { # sono state modificate da qualcuno nel frattempo e rimarranno invariate.}}",
+    "summary": "{revertible, plural, =0 {Nessuna modifica è più come l’IA l’aveva lasciata.} one {È possibile annullare una modifica.} many {È possibile annullare # modifiche.} other {È possibile annullare # modifiche.}}{changedSince, plural, =0 {} one { Ne viene mantenuta una, con il motivo specificato.} many { Ne vengono mantenute #, ciascuna con il rispettivo motivo.} other { Ne vengono mantenute #, ciascuna con il rispettivo motivo.}}",
     "states": {
       "revertible": "Verrà annullata",
       "changed_since": "Modificata nel frattempo, rimane invariata",
@@ -152,13 +152,33 @@
     },
     "block": "Blocco",
     "excerpt": "«{text}»",
+    "standing": "Stato attuale:",
+    "heldBadge": "Mantenuta",
+    "structure": {
+      "created": "Nuova pagina creata. Annullando l’operazione finirà nel cestino.",
+      "moved": "Spostata da {from} a {to}.",
+      "renamed": "Rinominata da «{from}» a «{to}».",
+      "topLevel": "livello principale",
+      "hiddenPage": "una pagina che non puoi leggere"
+    },
+    "held": {
+      "edited": "Da allora qualcuno ha scritto nella pagina o modificato una proprietà.",
+      "renamed": "Il titolo non è più quello assegnato dall’IA.",
+      "moved": "Nel frattempo la pagina è stata spostata altrove.",
+      "trashed": "Nel frattempo la pagina è finita nel cestino.",
+      "children": "Sotto questa pagina c’è qualcosa che non proviene da questa esecuzione o che viene mantenuto. Spostandola nel cestino verrebbe eliminato anche questo elemento.",
+      "parent_gone": "La pagina in cui si trovava prima non esiste più o è nel cestino.",
+      "other_workspace": "La pagina è stata spostata in un’altra area di lavoro insieme a tutto il suo contenuto. Viene solo indicata, non ripristinata.",
+      "not_a_page": "Un database o un progetto viene solo indicato, non spostato nel cestino.",
+      "not_recorded": "Questa esecuzione è precedente a questa registrazione."
+    },
     "skipped": {
-      "no_snapshot": "Non è presente alcuno stato precedente a questa esecuzione, ad esempio perché la pagina è stata solo rinominata o spostata. Puoi trovare le versioni precedenti nella cronologia della pagina.",
+      "no_snapshot": "Qui non è presente alcuna versione precedente all’esecuzione. Puoi trovare le versioni più vecchie nella cronologia della pagina.",
       "not_recorded": "Per questa pagina i singoli blocchi non sono stati registrati, poiché l’esecuzione è precedente a questa funzionalità. Puoi trovare lo stato precedente nella cronologia della pagina.",
       "unavailable": "Questa pagina non esiste più oppure non hai i permessi per leggerla."
     },
     "done": "Annullato su {pages, plural, one {una pagina} many {# pagine} other {# pagine}}.",
-    "doneKept": "{count, plural, one {Una modifica è rimasta invariata perché qualcuno l’ha modificata nel frattempo.} many {# modifiche sono rimaste invariate perché qualcuno le ha modificate nel frattempo.} other {# modifiche sono rimaste invariate perché qualcuno le ha modificate nel frattempo.}}",
+    "doneKept": "{count, plural, one {È stata mantenuta una modifica, con il motivo specificato.} many {Sono state mantenute # modifiche, ciascuna con il rispettivo motivo.} other {Sono state mantenute # modifiche, ciascuna con il rispettivo motivo.}}",
     "revertFailed": "L’annullamento non è andato a buon fine.",
     "notYours": "Solo chi ha avviato questa esecuzione può annullarla.",
     "close": "Chiudi",

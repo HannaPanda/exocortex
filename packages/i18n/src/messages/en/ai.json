@@ -139,7 +139,7 @@
     "failedDescription": "Try again. The pages themselves are not affected.",
     "nothingTitle": "This run didn’t change anything",
     "nothingDescription": "There is nothing to undo.",
-    "summary": "{revertible, plural, =0 {No changes are still as the AI left them.} one {One change can be undone.} other {# changes can be undone.}}{changedSince, plural, =0 {} one { One was changed since and will be kept.} other { # were changed since and will be kept.}}",
+    "summary": "{revertible, plural, =0 {No changes remain as the AI left them.} one {One change can be reverted.} other {# changes can be reverted.}}{changedSince, plural, =0 {} one { One will be kept; the reason is shown next to it.} other { # will be kept; the reason is shown next to each.}}",
     "states": {
       "revertible": "Will be undone",
       "changed_since": "Changed since, kept",
@@ -152,13 +152,33 @@
     },
     "block": "Block",
     "excerpt": "“{text}”",
+    "standing": "Currently says:",
+    "heldBadge": "Kept as is",
+    "structure": {
+      "created": "Page newly created. Reverting will move it to the trash.",
+      "moved": "Moved from {from} to {to}.",
+      "renamed": "Renamed from “{from}” to “{to}”.",
+      "topLevel": "top level",
+      "hiddenPage": "a page you cannot read"
+    },
+    "held": {
+      "edited": "Someone has written on the page or changed a property since then.",
+      "renamed": "The title is no longer the one the AI gave it.",
+      "moved": "The page has since been moved somewhere else.",
+      "trashed": "The page is now in the trash.",
+      "children": "There is something under the page that was not created by this run or is being kept. Trashing would take it along.",
+      "parent_gone": "The page it was previously under no longer exists or is in the trash.",
+      "other_workspace": "The page was moved to another workspace, along with everything under it. This is only noted, not reverted.",
+      "not_a_page": "A database or project is only noted, not moved to the trash.",
+      "not_recorded": "This run is older than this record."
+    },
     "skipped": {
-      "no_snapshot": "There is no version from before this run, for example because the page was only renamed or moved. You can find earlier versions in the page history.",
+      "no_snapshot": "There is no snapshot from before the run here. You can find older versions in the page’s history.",
       "not_recorded": "Individual blocks were not recorded for this page because the run is older than this feature. You can find the version from before the run in the page history.",
       "unavailable": "This page no longer exists, or you don’t have access to read it."
     },
     "done": "Undone on {pages, plural, one {one page} other {# pages}}.",
-    "doneKept": "{count, plural, one {One change was kept because someone changed it since.} other {# changes were kept because someone changed them since.}}",
+    "doneKept": "{count, plural, one {One change was kept; the reason is shown next to it.} other {# changes were kept; the reason is shown next to each.}}",
     "revertFailed": "Could not undo the changes.",
     "notYours": "Only the person who started this run can undo it.",
     "close": "Close",

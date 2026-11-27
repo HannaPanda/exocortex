@@ -139,7 +139,7 @@
     "failedDescription": "Spróbuj ponownie. Nie ma to wpływu na same strony.",
     "nothingTitle": "To uruchomienie nic nie zmieniło",
     "nothingDescription": "Nie ma nic do cofnięcia.",
-    "summary": "{revertible, plural, =0 {Żadna ze zmian nie jest już w stanie pozostawionym przez AI.} one {Można cofnąć jedną zmianę.} few {Można cofnąć # zmiany.} many {Można cofnąć # zmian.} other {Można cofnąć # zmiany.}}{changedSince, plural, =0 {} one { Jedna zmiana została później zmodyfikowana i zostanie zachowana.} few { # zmiany zostały później zmodyfikowane i zostaną zachowane.} many { # zmian zostało później zmodyfikowanych i zostanie zachowanych.} other { # zmiany zostało później zmodyfikowanych i zostanie zachowanych.}}",
+    "summary": "{revertible, plural, =0 {Żadna zmiana nie wygląda już tak, jak zostawiła ją sztuczna inteligencja.} one {Jedną zmianę można cofnąć.} few {# zmiany można cofnąć.} many {# zmian można cofnąć.} other {# zmiany można cofnąć.}}{changedSince, plural, =0 {} one { Jedna pozostaje bez zmian, powód podano obok.} few { # pozostają bez zmian, powód podano przy każdej z nich.} many { # pozostaje bez zmian, powód podano przy każdej z nich.} other { # pozostaje bez zmian, powód podano przy każdej z nich.}}",
     "states": {
       "revertible": "Zostanie cofnięte",
       "changed_since": "Zmieniono później, zostanie zachowane",
@@ -152,13 +152,33 @@
     },
     "block": "Blok",
     "excerpt": "„{text}”",
+    "standing": "Obecny stan:",
+    "heldBadge": "Pozostaje bez zmian",
+    "structure": {
+      "created": "Nowo utworzona strona. Po cofnięciu trafi do kosza.",
+      "moved": "Przeniesiono z: {from} do: {to}.",
+      "renamed": "Zmieniono nazwę z „{from}” na „{to}”.",
+      "topLevel": "poziom główny",
+      "hiddenPage": "strona, do której nie masz dostępu"
+    },
+    "held": {
+      "edited": "Od tamtej pory ktoś wprowadził zmiany na stronie lub zmodyfikował właściwość.",
+      "renamed": "Tytuł nie jest już taki, jaki nadała sztuczna inteligencja.",
+      "moved": "Strona znajduje się już w innym miejscu.",
+      "trashed": "Strona znajduje się już w koszu.",
+      "children": "Pod tą stroną znajduje się element, który nie pochodzi z tego uruchomienia lub pozostaje bez zmian. Trafiłby razem z nią do kosza.",
+      "parent_gone": "Strona nadrzędna już nie istnieje lub znajduje się w koszu.",
+      "other_workspace": "Strona została przeniesiona do innego obszaru roboczego wraz z całą zawartością podrzędną. Zostaje to tylko odnotowane, bez cofania.",
+      "not_a_page": "Baza danych lub projekt zostaje tylko wymieniony, nie trafia do kosza.",
+      "not_recorded": "To uruchomienie jest starsze niż ten zapis."
+    },
     "skipped": {
-      "no_snapshot": "Brak stanu sprzed tego uruchomienia, na przykład dlatego, że strona została tylko zmieniona lub przeniesiona. Starsze wersje znajdziesz w historii strony.",
+      "no_snapshot": "Brak stanu sprzed tego uruchomienia. Starsze wersje znajdziesz w historii strony.",
       "not_recorded": "Dla tej strony nie zarejestrowano poszczególnych bloków, ponieważ to uruchomienie jest starsze niż ta funkcja. Stan sprzed uruchomienia znajdziesz w historii strony.",
       "unavailable": "Ta strona już nie istnieje lub nie masz uprawnień do jej odczytu."
     },
     "done": "Cofnięto na {pages, plural, one {jednej stronie} few {# stronach} many {# stronach} other {# strony}}.",
-    "doneKept": "{count, plural, one {Jedna zmiana została zachowana, ponieważ później ktoś ją zmodyfikował.} few {# zmiany zostały zachowane, ponieważ później ktoś je zmodyfikował.} many {# zmian zostało zachowanych, ponieważ później ktoś je zmodyfikował.} other {# zmiany zostało zachowanych, ponieważ później ktoś je zmodyfikował.}}",
+    "doneKept": "{count, plural, one {Jedna zmiana pozostała bez zmian, powód podano obok.} few {# zmiany pozostały bez zmian, powód podano przy każdej z nich.} many {# zmian pozostało bez zmian, powód podano przy każdej z nich.} other {# zmiany pozostało bez zmian, powód podano przy każdej z nich.}}",
     "revertFailed": "Cofanie nie powiodło się.",
     "notYours": "Zmiany może cofnąć tylko osoba, dla której wykonano to uruchomienie.",
     "close": "Zamknij",

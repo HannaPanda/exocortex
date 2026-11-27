@@ -139,7 +139,7 @@
     "failedDescription": "Versuch es noch einmal. Die Seiten selbst sind davon nicht betroffen.",
     "nothingTitle": "Dieser Lauf hat nichts geändert",
     "nothingDescription": "Es gibt nichts zurückzunehmen.",
-    "summary": "{revertible, plural, =0 {Keine Änderung steht mehr so da, wie die KI sie hinterlassen hat.} one {Eine Änderung lässt sich zurücknehmen.} other {# Änderungen lassen sich zurücknehmen.}}{changedSince, plural, =0 {} one { Eine hat seitdem jemand geändert, sie bleibt stehen.} other { # hat seitdem jemand geändert, sie bleiben stehen.}}",
+    "summary": "{revertible, plural, =0 {Keine Änderung steht mehr so da, wie die KI sie hinterlassen hat.} one {Eine Änderung lässt sich zurücknehmen.} other {# Änderungen lassen sich zurücknehmen.}}{changedSince, plural, =0 {} one { Eine bleibt stehen, der Grund steht dabei.} other { # bleiben stehen, der Grund steht jeweils dabei.}}",
     "states": {
       "revertible": "Wird zurückgenommen",
       "changed_since": "Seitdem geändert, bleibt stehen",
@@ -152,13 +152,33 @@
     },
     "block": "Block",
     "excerpt": "„{text}“",
+    "standing": "Steht jetzt da:",
+    "heldBadge": "Bleibt stehen",
+    "structure": {
+      "created": "Seite neu angelegt. Beim Zurücknehmen kommt sie in den Papierkorb.",
+      "moved": "Verschoben von {from} nach {to}.",
+      "renamed": "Umbenannt von „{from}“ in „{to}“.",
+      "topLevel": "oberste Ebene",
+      "hiddenPage": "eine Seite, die du nicht lesen kannst"
+    },
+    "held": {
+      "edited": "Seitdem hat jemand in der Seite geschrieben oder eine Eigenschaft geändert.",
+      "renamed": "Der Titel ist nicht mehr der, den die KI gegeben hat.",
+      "moved": "Die Seite steht inzwischen woanders.",
+      "trashed": "Die Seite liegt inzwischen im Papierkorb.",
+      "children": "Unter der Seite liegt etwas, das nicht von diesem Lauf stammt oder stehen bleibt. Der Papierkorb würde es mitnehmen.",
+      "parent_gone": "Die Seite, unter der sie vorher stand, gibt es nicht mehr oder sie liegt im Papierkorb.",
+      "other_workspace": "Die Seite wurde in einen anderen Arbeitsbereich verschoben, samt allem darunter. Das wird nur genannt, nicht zurückgenommen.",
+      "not_a_page": "Eine Datenbank oder ein Projekt wird nur genannt, nicht in den Papierkorb gelegt.",
+      "not_recorded": "Dieser Lauf ist älter als diese Aufzeichnung."
+    },
     "skipped": {
-      "no_snapshot": "Hier gibt es keinen Stand von vor dem Lauf, etwa weil die Seite nur umbenannt oder verschoben wurde. Ältere Stände findest du im Verlauf der Seite.",
+      "no_snapshot": "Hier gibt es keinen Stand von vor dem Lauf. Ältere Stände findest du im Verlauf der Seite.",
       "not_recorded": "Für diese Seite wurden die einzelnen Blöcke nicht aufgezeichnet, weil der Lauf älter ist als diese Funktion. Den Stand von vor dem Lauf findest du im Verlauf der Seite.",
       "unavailable": "Diese Seite gibt es nicht mehr, oder du kannst sie nicht lesen."
     },
     "done": "Auf {pages, plural, one {einer Seite} other {# Seiten}} zurückgenommen.",
-    "doneKept": "{count, plural, one {Eine Änderung blieb stehen, weil sie seitdem jemand geändert hat.} other {# Änderungen blieben stehen, weil sie seitdem jemand geändert hat.}}",
+    "doneKept": "{count, plural, one {Eine Änderung blieb stehen, der Grund steht dabei.} other {# Änderungen blieben stehen, der Grund steht jeweils dabei.}}",
     "revertFailed": "Das Zurücknehmen hat nicht geklappt.",
     "notYours": "Zurücknehmen kann nur die Person, für die dieser Lauf gearbeitet hat.",
     "close": "Schließen",

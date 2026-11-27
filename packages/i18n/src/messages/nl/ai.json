@@ -139,7 +139,7 @@
     "failedDescription": "Probeer het opnieuw. De pagina’s zelf zijn hierdoor niet beïnvloed.",
     "nothingTitle": "Deze sessie heeft niets gewijzigd",
     "nothingDescription": "Er valt niets terug te draaien.",
-    "summary": "{revertible, plural, =0 {Geen enkele wijziging staat er nog precies zo als de AI deze heeft achtergelaten.} one {Eén wijziging kan worden teruggedraaid.} other {# wijzigingen kunnen worden teruggedraaid.}}{changedSince, plural, =0 {} one { Eén wijziging is sindsdien door iemand aangepast en blijft behouden.} other { # wijzigingen zijn sindsdien door iemand aangepast en blijven behouden.}}",
+    "summary": "{revertible, plural, =0 {Geen enkele wijziging staat er nog zoals de AI deze heeft achtergelaten.} one {Eén wijziging kan worden teruggedraaid.} other {# wijzigingen kunnen worden teruggedraaid.}}{changedSince, plural, =0 {} one { Eén blijft behouden, de reden staat erbij.} other { # blijven behouden, de reden staat er telkens bij.}}",
     "states": {
       "revertible": "Wordt teruggedraaid",
       "changed_since": "Sindsdien gewijzigd, blijft behouden",
@@ -152,13 +152,33 @@
     },
     "block": "Blok",
     "excerpt": "„{text}”",
+    "standing": "Huidige staat:",
+    "heldBadge": "Blijft behouden",
+    "structure": {
+      "created": "Pagina nieuw aangemaakt. Bij het terugdraaien wordt deze naar de prullenbak verplaatst.",
+      "moved": "Verplaatst van {from} naar {to}.",
+      "renamed": "Hernoemd van „{from}” naar „{to}”.",
+      "topLevel": "bovenste niveau",
+      "hiddenPage": "een pagina die je niet kunt lezen"
+    },
+    "held": {
+      "edited": "Sindsdien heeft iemand op de pagina geschreven of een eigenschap gewijzigd.",
+      "renamed": "De titel is niet meer degene die de AI heeft gegeven.",
+      "moved": "De pagina staat inmiddels ergens anders.",
+      "trashed": "De pagina bevindt zich inmiddels in de prullenbak.",
+      "children": "Onder de pagina bevindt zich iets dat niet uit deze run stamt of behouden blijft. De prullenbak zou dit meenemen.",
+      "parent_gone": "De pagina waar deze voorheen onder stond, bestaat niet meer of bevindt zich in de prullenbak.",
+      "other_workspace": "De pagina is verplaatst naar een andere werkruimte, inclusief alles eronder. Dit wordt alleen vermeld, niet teruggedraaid.",
+      "not_a_page": "Een database of een project wordt alleen vermeld, niet naar de prullenbak verplaatst.",
+      "not_recorded": "Deze run is ouder dan deze registratie."
+    },
     "skipped": {
-      "no_snapshot": "Er is hier geen versie van vóór deze sessie beschikbaar, bijvoorbeeld omdat de pagina alleen is hernoemd of verplaatst. Eerdere versies vind je in de paginageschiedenis.",
+      "no_snapshot": "Hier is geen versie van vóór de run beschikbaar. Oudere versies vind je in de geschiedenis van de pagina.",
       "not_recorded": "Voor deze pagina zijn de afzonderlijke blokken niet vastgelegd, omdat de sessie ouder is dan deze functie. De versie van vóór de sessie vind je in de paginageschiedenis.",
       "unavailable": "Deze pagina bestaat niet meer of je hebt geen leesrechten."
     },
     "done": "Op {pages, plural, one {één pagina} other {# pagina’s}} teruggedraaid.",
-    "doneKept": "{count, plural, one {Eén wijziging is behouden, omdat deze sindsdien door iemand is gewijzigd.} other {# wijzigingen zijn behouden, omdat ze sindsdien door iemand zijn gewijzigd.}}",
+    "doneKept": "{count, plural, one {Eén wijziging bleef behouden, de reden staat erbij.} other {# wijzigingen bleven behouden, de reden staat er telkens bij.}}",
     "revertFailed": "Het terugdraaien is mislukt.",
     "notYours": "Alleen degene voor wie deze sessie heeft gewerkt, kan dit terugdraaien.",
     "close": "Sluiten",

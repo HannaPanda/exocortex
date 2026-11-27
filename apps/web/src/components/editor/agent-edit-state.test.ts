@@ -103,6 +103,7 @@ describe('runHighlightEntries', () => {
     state: 'revertible',
     nodeType: 'paragraph',
     excerpt: null,
+    standing: [],
     ...overrides,
   });
 
@@ -115,6 +116,22 @@ describe('runHighlightEntries', () => {
     ).toEqual([
       { id: 'a', state: 'changed' },
       { id: 'b', state: 'conflict' },
+    ]);
+  });
+
+  it('marks a rewrite under a new identifier as the conflict it is', () => {
+    expect(
+      runHighlightEntries([
+        block({
+          blockId: 'a',
+          change: 'added',
+          state: 'changed_since',
+          standing: [{ blockId: 'c', nodeType: 'paragraph', excerpt: 'Neu' }],
+        }),
+      ]),
+    ).toEqual([
+      { id: 'a', state: 'conflict' },
+      { id: 'c', state: 'conflict' },
     ]);
   });
 

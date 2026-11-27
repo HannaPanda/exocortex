@@ -69,7 +69,16 @@ export function runHighlightEntries(
   blocks: readonly AiRunChangedBlock[],
 ): { id: string; state: AgentEditState }[] {
   return blocks.flatMap((block) => {
-    if (block.change === 'removed' || block.state === 'reverted') return [];
-    return [{ id: block.blockId, state: block.state === 'changed_since' ? 'conflict' : 'changed' }];
+    // What somebody rewrote under a new identifier stands where the run's
+    // block stood, and is the conflict the undo holds back (issue #248).
+    const standing = block.standing.map((entry) => ({
+      id: entry.blockId,
+      state: 'conflict' as const,
+    }));
+    if (block.change === 'removed' || block.state === 'reverted') return standing;
+    return [
+      { id: block.blockId, state: block.state === 'changed_since' ? 'conflict' : 'changed' },
+      ...standing,
+    ];
   });
 }
