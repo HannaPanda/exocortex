@@ -255,8 +255,9 @@ table cell and the row sheet, and like those two it is not a copy:
 - **One editor per type.** Every value is the table's `PropertyCell`, at the
   `tall` clamp: dates with `DatePicker`/`TimeInput` (#255), selections with
   their badges, relations with their picker, rollups and formulas read-only
-  through `ReadonlyCell` (ADR-041). PERSON and FILES are the table's raw id
-  editor, see the limitation below.
+  through `ReadonlyCell` (ADR-041), files with `FilesCell` (see "Files in a
+  FILES cell" below). PERSON is the table's raw id editor, see the limitation
+  below.
 - **Folding.** `layoutRowHeader` (`row-header-layout.ts`, unit-tested) decides
   what shows before "N weitere Eigenschaften": up to eight columns are shown
   whole to an editor; past that the first six and every filled one, at most
@@ -410,6 +411,46 @@ that database are rewritten through the tokenizer in the same transaction, so
 `prop("Preis")` follows the column it names — and a string literal that merely
 happens to read `"Preis"` is left alone.
 
+## Files in a FILES cell
+
+Issue #245, [ADR-098](adr/ADR-098-a-cell-file-hangs-on-its-row.md). A FILES
+value is a list of attachment ids; `FilesCell`
+(`apps/web/src/components/database/files-cell.tsx`) is the one editor for it,
+in the table, the row sheet, a row's page header and the properties panel,
+because all four render `PropertyCell` and pass it the row.
+
+- **The upload names the cell.** The ordinary upload route
+  (`POST /api/workspaces/:id/attachments`) takes a `propertyId` form field
+  beside `documentId` (the row); the URL upload and the upload ticket take it
+  in their bodies. `CellFilesService` (`apps/api/src/attachments`) checks that
+  the column is a FILES column of the row's database and that the caller may
+  edit the row, the upload stores the file on the row's page with
+  `Attachment.propertyId` set, and `appendPropertyFile` appends it to the value
+  under a transaction-scoped advisory lock, with the `database.row.updated`
+  outbox row and realtime event a value write carries. The browser never writes
+  the list after an upload, so two files dropped at once cannot race.
+- **Writing the list.** `PATCH /api/documents/:id/values` still takes the whole
+  list, which is how a file is removed or the order changed. Ids are kept once,
+  and an id the cell does not already hold must be a file on this row
+  (`database_files_foreign` otherwise); ids it holds may stay even if they hang
+  elsewhere, which is what a row made from a template holds (ADR-039).
+- **Reading the names.** Every row answer (`rows/query`, `/row`, a value write)
+  carries `files`: id, name, type and size of each file its FILES values name,
+  once. An id without an entry is a file that is gone; the cell says so and
+  offers to remove it. Board and gallery print the names, and the gallery's
+  cover is the first picture among the cover column's files.
+- **Who cleans up.** Deleting the row for good deletes its files with it, like
+  any page's. A file whose column no longer names it -- removed from the cell,
+  left by a deleted column, or uploaded by a request whose value write failed --
+  is collected by `collect-orphaned-covers` one day later
+  (`findUnreferencedPropertyFiles`); a file only on the page, without the mark,
+  is never collected.
+- **The target is said out loud.** Drag, drop and paste are native listeners on
+  the cell, so a table embedded in a page stops the event before the editor
+  puts the file into the page's text; while files are dragged over it, the cell
+  is outlined and names its column. Without the right to edit, the cell only
+  shows and downloads.
+
 ## Known limitations (deliberate, not bugs)
 
 - **Filters/sorts sent alongside a `viewId` are ignored.** When a request to
@@ -423,11 +464,11 @@ happens to read `"Preis"` is left alone.
   delete-and-recreate; there is no coercion path for existing values.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
-- **PERSON and FILES are edited as raw, comma-separated ids** in
-  `text-cells.tsx`'s `IdListCell`, in the table, the row sheet and a row's page
-  header alike — a member picker and a file browser are a separate, larger
-  feature; this is the honest minimal editor that still round-trips the array
-  completely through the API.
+- **PERSON is edited as raw, comma-separated ids** in `text-cells.tsx`'s
+  `IdListCell`, in the table, the row sheet and a row's page header alike — a
+  member picker is a separate, larger feature; this is the honest minimal
+  editor that still round-trips the array completely through the API. FILES
+  has had its own cell since issue #245.
 - **A database embed's Markdown export/import loses the reference.** Markdown
   is interchange-only (ADR-007) and never carries internal ids, so the
   `:::database-embed` container round-trips only the database's title, and

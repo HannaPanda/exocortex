@@ -81,6 +81,7 @@ export function RowPeekSheet({
                   // The sheet is where a long value must be readable in full,
                   // so it always uses the most generous clamp.
                   rowHeight="tall"
+                  row={row}
                   onChange={(next) => onChange(property.id, next)}
                 />
               </div>

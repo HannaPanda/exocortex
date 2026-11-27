@@ -496,6 +496,17 @@
     },
     "where": "Glisser un fichier dans l’éditeur."
   },
+  "datenbank-dateien": {
+    "title": "Téléverser des fichiers dans une colonne Fichiers d’une base de données",
+    "summary": "Une colonne de type Fichiers accueille des fichiers directement dans la cellule : via « Ajouter un fichier », par glisser-déposer sur la cellule ou en collant avec Strg+V. Les fichiers appartiennent à cette cellule de la ligne et ne finissent pas dans le texte de la page.",
+    "details": {
+      "p1": "Dans le tableau, dans l’en-tête d’une page de ligne, dans la vue de ligne et dans la section des propriétés, la cellule affiche ses fichiers avec leur nom. Un clic sur le nom télécharge le fichier, une image affiche un petit aperçu qu’il est possible d’agrandir, et la croix retire le fichier de la cellule. Il est également possible d’ajouter plusieurs fichiers à la fois.",
+      "p2": "Si tu glisses des fichiers au-dessus de la cellule, elle se colore et indique dans quelle colonne ils vont. Cela la distingue du texte de la page en dessous : ce que tu glisses sur la page elle-même atterrit toujours dans le texte. Pendant le téléversement, tu vois la progression, et si un fichier est trop volumineux ou si son type n’est pas autorisé, cela s’affiche directement sur la cellule.",
+      "p3": "Le fichier est rattaché à la ligne. Si la ligne est définitivement supprimée, le fichier l’est aussi. Si tu le retires de la cellule ou si tu supprimes la colonne, la maintenance nocturne le nettoie au bout d’un jour. Les personnes n’ayant qu’un accès en lecture à une page voient les fichiers et peuvent les télécharger, mais ne peuvent rien ajouter ni supprimer.",
+      "p4": "Les agents téléversent avec les mêmes outils que pour une page (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) en précisant en plus propertyId ; le retrait et la réorganisation se font avec exo_database_row_update. exo_database_row_get liste nommément les fichiers d’une cellule."
+    },
+    "where": "Une cellule d’une colonne Fichiers, dans le tableau ou en haut de la page d’une ligne."
+  },
   "agenten-bilder-ansehen": {
     "title": "Les agents examinent des images et récupèrent des fichiers",
     "summary": "Un agent peut récupérer une pièce jointe image sous forme d’image réelle et la regarder, par exemple une capture d’écran ou une comparaison avant/après. Il récupère les autres fichiers tels que les PDF via une URL de téléchargement valable dix minutes et une seule fois.",

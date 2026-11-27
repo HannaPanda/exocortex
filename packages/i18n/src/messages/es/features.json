@@ -496,6 +496,17 @@
     },
     "where": "Arrastrar un archivo al editor."
   },
+  "datenbank-dateien": {
+    "title": "Subir archivos a una columna de archivos de una base de datos",
+    "summary": "Una columna de tipo Archivos admite archivos directamente en la celda: mediante «Añadir archivo», arrastrándolos a la celda o pegándolos con Strg+V. Los archivos pertenecen a esa celda de la fila y no van a parar al texto de la página.",
+    "details": {
+      "p1": "En la tabla, en el encabezado de la página de una fila, en la vista de fila y en el panel de propiedades, la celda muestra sus archivos con sus nombres. Al hacer clic en el nombre se descarga el archivo; las imágenes muestran una pequeña miniatura que se puede abrir en grande, y el aspa elimina el archivo de la celda. También se pueden añadir varios archivos a la vez.",
+      "p2": "Si arrastras archivos sobre la celda, esta cambia de color e indica a qué columna van. Esto la diferencia del texto de la página que hay debajo: lo que arrastres a la propia página seguirá yendo al texto. Al subir verás el progreso y, si un archivo es demasiado grande o su tipo no está permitido, se indicará directamente en la celda.",
+      "p3": "El archivo está vinculado a la fila. Si la fila se elimina definitivamente, el archivo desaparece con ella. Si lo quitas de la celda o eliminas la columna, el mantenimiento nocturno lo limpiará tras un día. Quien solo tenga permiso de lectura en una página verá los archivos y podrá descargarlos, pero no podrá añadir ni eliminar nada.",
+      "p4": "Los agentes suben archivos con las mismas herramientas que para una página (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) indicando además propertyId; para eliminar y reordenar se utiliza exo_database_row_update. exo_database_row_get devuelve los archivos de una celda con sus nombres."
+    },
+    "where": "Una celda de una columna de archivos, en la tabla o en la parte superior de la página de una fila."
+  },
   "agenten-bilder-ansehen": {
     "title": "Los agentes ven imágenes y descargan archivos",
     "summary": "Un agente puede obtener un archivo adjunto de imagen como una imagen real y verla, por ejemplo una captura de pantalla o una comparación del antes y el después. Otros archivos, como los PDF, los descarga a través de una dirección de descarga válida durante diez minutos y de un solo uso.",

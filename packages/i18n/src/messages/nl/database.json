@@ -140,6 +140,25 @@
     "relationTargetEmpty": "De gekoppelde database heeft nog geen rijen.",
     "relationLimit": "Alleen de eerste {limit} rijen worden getoond."
   },
+  "files": {
+    "zone": "Bestanden in „{column}”",
+    "add": "Bestand toevoegen",
+    "addHint": "Bestanden voor „{column}”: selecteren, hierheen slepen of plakken met Ctrl+V. Ze horen bij deze cel, niet bij de tekst van de pagina.",
+    "dropHere": "Hier neerzetten: in „{column}”",
+    "download": "{name} downloaden",
+    "show": "{name} bekijken",
+    "remove": "{name} uit de cel verwijderen",
+    "missing": "Bestand niet meer beschikbaar",
+    "uploading": "{name} wordt geüpload…",
+    "percent": "{percent} %",
+    "dismiss": "Melding sluiten",
+    "tooLarge": "{name} is te groot. Maximaal {limit} MB toegestaan.",
+    "tooLargePlain": "{name} is te groot.",
+    "typeRefused": "{name}: dit bestandstype wordt niet ondersteund. Mogelijk zijn afbeeldingen, pdf, Office- en tekstbestanden, audio en video.",
+    "offline": "{name} is niet geüpload. De verbinding is verbroken.",
+    "failed": "{name} is niet geüpload: {reason}",
+    "failedPlain": "Onbekende fout"
+  },
   "addProperty": {
     "trigger": "Eigenschap toevoegen",
     "namePlaceholder": "Naam van eigenschap",

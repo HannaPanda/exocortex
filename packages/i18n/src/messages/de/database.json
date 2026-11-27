@@ -140,6 +140,25 @@
     "relationTargetEmpty": "Die verknüpfte Datenbank hat noch keine Zeilen.",
     "relationLimit": "Nur die ersten {limit} Zeilen werden angeboten."
   },
+  "files": {
+    "zone": "Dateien in „{column}“",
+    "add": "Datei hinzufügen",
+    "addHint": "Dateien für „{column}“: auswählen, hierher ziehen oder mit Strg+V einfügen. Sie gehören zu dieser Zelle, nicht zum Text der Seite.",
+    "dropHere": "Hier ablegen: in „{column}“",
+    "download": "{name} herunterladen",
+    "show": "{name} ansehen",
+    "remove": "{name} aus der Zelle entfernen",
+    "missing": "Datei nicht mehr vorhanden",
+    "uploading": "{name} wird hochgeladen…",
+    "percent": "{percent} %",
+    "dismiss": "Hinweis schließen",
+    "tooLarge": "{name} ist zu groß. Erlaubt sind höchstens {limit} MB.",
+    "tooLargePlain": "{name} ist zu groß.",
+    "typeRefused": "{name}: Dieser Dateityp wird nicht unterstützt. Möglich sind Bilder, PDF, Office- und Textdateien, Audio und Video.",
+    "offline": "{name} wurde nicht hochgeladen. Die Verbindung ist abgebrochen.",
+    "failed": "{name} wurde nicht hochgeladen: {reason}",
+    "failedPlain": "Unbekannter Fehler"
+  },
   "addProperty": {
     "trigger": "Eigenschaft hinzufügen",
     "namePlaceholder": "Name der Eigenschaft",

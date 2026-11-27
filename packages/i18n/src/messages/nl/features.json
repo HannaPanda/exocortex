@@ -496,6 +496,17 @@
     },
     "where": "Bestand naar de editor slepen."
   },
+  "datenbank-dateien": {
+    "title": "Bestanden uploaden naar een bestandenkolom van een database",
+    "summary": "Een kolom van het type Bestanden neemt bestanden direct in de cel op: via „Bestand toevoegen”, door naar de cel te slepen of door te plakken met Strg+V. De bestanden horen bij deze cel van de rij en komen niet in de tekst van de pagina terecht.",
+    "details": {
+      "p1": "In de tabel, in de kop van een rijpagina, in de rijweergave en in het eigenschappenpaneel toont de cel zijn bestanden met naam. Een klik op de naam downloadt het bestand, een afbeelding toont een kleine voorvertoning die je groot kunt openen, en het kruisje verwijdert het bestand uit de cel. Meerdere bestanden tegelijk kan ook.",
+      "p2": "Als je bestanden over de cel sleept, licht deze op en geeft aan in welke kolom ze terechtkomen. Dat verschilt van de tekst van de pagina eronder: wat je naar de pagina zelf sleept, belandt nog steeds in de tekst. Tijdens het uploaden zie je de voortgang, en als een bestand te groot is of het type niet is toegestaan, staat dat direct bij de cel.",
+      "p3": "Het bestand is gekoppeld aan de rij. Wordt de rij definitief verwijderd, dan verdwijnt het bestand ook. Haal je het uit de cel of verwijder je de kolom, dan ruimt het nachtelijke onderhoud het na een dag op. Wie een pagina alleen mag lezen, ziet de bestanden en kan ze downloaden, maar niets toevoegen of verwijderen.",
+      "p4": "Agents uploaden met dezelfde tools als voor een pagina (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) en geven daarnaast propertyId op; verwijderen en herschikken gaat met exo_database_row_update. exo_database_row_get noemt de bestanden van een cel bij naam."
+    },
+    "where": "Een cel van een bestandenkolom, in de tabel of bovenaan de pagina van een rij."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agents bekijken afbeeldingen en halen bestanden op",
     "summary": "Een agent kan een afbeeldingsbijlage als echte afbeelding ophalen en bekijken, bijvoorbeeld een screenshot of een voor-en-na-vergelijking. Andere bestanden zoals pdf’s haalt hij op via een download-URL die tien minuten en precies één keer geldig is.",

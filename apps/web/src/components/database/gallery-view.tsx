@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type DatabaseProperty, type DatabaseView } from '@exocortex/contracts';
+import {
+  type DatabaseProperty,
+  type DatabaseRowFile,
+  type DatabaseView,
+  isAttachmentImageSource,
+} from '@exocortex/contracts';
 import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useCreateDatabaseRow, useDatabaseRows } from '@/lib/api/database-queries';
@@ -21,10 +26,24 @@ interface GalleryViewProps {
 }
 
 /**
+ * The first picture among a FILES value's files (issue #245): a cell may hold
+ * a PDF before the photo, and a PDF is no cover. Without the row's `files`
+ * nothing is known about the ids, and the first one is tried.
+ */
+function coverImageOf(
+  ids: readonly string[],
+  files: readonly DatabaseRowFile[] | undefined,
+): string | undefined {
+  if (files === undefined) return ids[0];
+  const pictures = new Set(
+    files.filter((file) => isAttachmentImageSource(file.mimeType)).map((file) => file.id),
+  );
+  return ids.find((id) => pictures.has(id));
+}
+
+/**
  * Card grid. Cover comes from `view.config.coverPropertyId` (a FILES
- * property, one attachment id used as an image `src` via the existing
- * download route) — same "honest minimal editor" scope as the FILES cell in
- * `text-cells.tsx`: no dedicated file picker yet, just the round-trip.
+ * property): its first picture, shown through the attachment download route.
  */
 export function GalleryView({
   workspaceId,
@@ -56,7 +75,9 @@ export function GalleryView({
             coverProperty === undefined
               ? null
               : row.values.find((entry) => entry.propertyId === coverProperty.id)?.value;
-          const coverAttachmentId = Array.isArray(coverValue) ? coverValue[0] : undefined;
+          const coverAttachmentId = Array.isArray(coverValue)
+            ? coverImageOf(coverValue, row.files)
+            : undefined;
 
           return (
             <Link
@@ -84,7 +105,12 @@ export function GalleryView({
                   const value =
                     row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
                   return (
-                    <PropertyValueDisplay key={property.id} property={property} value={value} />
+                    <PropertyValueDisplay
+                      key={property.id}
+                      property={property}
+                      value={value}
+                      files={row.files}
+                    />
                   );
                 })}
               </div>

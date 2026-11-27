@@ -5,12 +5,15 @@ import { useTranslations } from 'next-intl';
 
 import {
   type DatabaseProperty,
+  type DatabaseRow,
+  type DatabaseRowFile,
   type DatabaseRowHeight,
   type DatabaseRowPropertyValue,
 } from '@exocortex/contracts';
 import { Checkbox } from '@exocortex/ui';
 
 import { DateCell, useDateValueFormat } from './date-cell';
+import { FilesCell } from './files-cell';
 import { MultiSelectCell, OptionBadge, SelectCell } from './option-cells';
 import {
   ARRAY_PROPERTY_TYPES,
@@ -30,6 +33,11 @@ export interface PropertyCellProps {
   readOnly: boolean;
   /** Row density of the table view showing this cell. Defaults to one line. */
   rowHeight?: DatabaseRowHeight;
+  /**
+   * The row the cell belongs to. A FILES cell uploads into it and reads its
+   * files' names from it (issue #245); the other cells do not need it.
+   */
+  row?: DatabaseRow;
 }
 
 /**
@@ -47,6 +55,7 @@ export function PropertyCell({
   onChange,
   readOnly,
   rowHeight = 'short',
+  row,
 }: PropertyCellProps) {
   const cellKey = JSON.stringify(value);
   const shared = { property, value, onChange, readOnly, rowHeight };
@@ -69,8 +78,12 @@ export function PropertyCell({
       return <SelectCell key={cellKey} {...shared} />;
     case 'MULTI_SELECT':
       return <MultiSelectCell key={cellKey} {...shared} />;
-    case 'PERSON':
     case 'FILES':
+      // Not keyed on the value: an upload in flight lives in the cell, and a
+      // second file arriving must not remount it away (issue #245). The cell
+      // holds no draft of the value that would need the remount.
+      return <FilesCell {...shared} row={row} />;
+    case 'PERSON':
       return <IdListCell key={cellKey} {...shared} />;
     default:
       return <TextCell key={cellKey} {...shared} />;
@@ -104,9 +117,12 @@ export function isArrayProperty(property: DatabaseProperty): boolean {
 export function PropertyValueDisplay({
   property,
   value,
+  files,
 }: {
   property: DatabaseProperty;
   value: CellValue;
+  /** The row's files, so a FILES value reads as names (issue #245). */
+  files?: readonly DatabaseRowFile[];
 }) {
   const t = useTranslations('database.cells');
   const formatDateValue = useDateValueFormat();
@@ -145,6 +161,19 @@ export function PropertyValueDisplay({
           <OptionBadge key={optionId} optionId={optionId} property={property} />
         ))}
       </div>
+    );
+  }
+  if (property.type === 'FILES' && Array.isArray(value)) {
+    const names = new Map((files ?? []).map((file) => [file.id, file.filename] as const));
+    const shown = value.flatMap((id) => {
+      const name = names.get(id);
+      return name === undefined ? [] : [name];
+    });
+    if (shown.length === 0) return null;
+    return (
+      <span className="truncate text-xs text-muted-foreground" title={shown.join(', ')}>
+        {shown.join(', ')}
+      </span>
     );
   }
   if (Array.isArray(value)) {

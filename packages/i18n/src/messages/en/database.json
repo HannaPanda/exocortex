@@ -140,6 +140,25 @@
     "relationTargetEmpty": "The related database has no rows yet.",
     "relationLimit": "Only the first {limit} rows are shown."
   },
+  "files": {
+    "zone": "Files in “{column}”",
+    "add": "Add file",
+    "addHint": "Files for “{column}”: select, drag here, or paste with Ctrl+V. They belong to this cell, not to the page’s text.",
+    "dropHere": "Drop here: into “{column}”",
+    "download": "Download {name}",
+    "show": "View {name}",
+    "remove": "Remove {name} from cell",
+    "missing": "File no longer available",
+    "uploading": "Uploading {name}…",
+    "percent": "{percent}%",
+    "dismiss": "Dismiss notice",
+    "tooLarge": "{name} is too large. The limit is {limit} MB.",
+    "tooLargePlain": "{name} is too large.",
+    "typeRefused": "{name}: This file type is not supported. Supported types are images, PDFs, Office and text files, audio, and video.",
+    "offline": "{name} was not uploaded. The connection was lost.",
+    "failed": "{name} was not uploaded: {reason}",
+    "failedPlain": "Unknown error"
+  },
   "addProperty": {
     "trigger": "Add property",
     "namePlaceholder": "Property name",

@@ -104,6 +104,13 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_attachment_upload', 'exo_attachment_upload_url'],
   }),
   defineFeature({
+    id: 'datenbank-dateien',
+    area: 'datenbanken',
+    since: '2026-11-27',
+    references: ['#245', 'ADR-098'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'agenten-datei-hochladen',
     area: 'dateien',
     since: '2026-09-25',

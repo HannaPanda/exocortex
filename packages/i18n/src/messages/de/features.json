@@ -496,6 +496,17 @@
     },
     "where": "Datei in den Editor ziehen."
   },
+  "datenbank-dateien": {
+    "title": "Dateien in eine Dateien-Spalte einer Datenbank hochladen",
+    "summary": "Eine Spalte vom Typ Dateien nimmt Dateien direkt in die Zelle auf: über „Datei hinzufügen“, durch Ziehen auf die Zelle oder durch Einfügen mit Strg+V. Die Dateien gehören zu dieser Zelle der Zeile und landen nicht im Text der Seite.",
+    "details": {
+      "p1": "In der Tabelle, im Kopf einer Zeilenseite, in der Zeilenansicht und im Eigenschaften-Bereich zeigt die Zelle ihre Dateien mit Namen. Ein Klick auf den Namen lädt die Datei herunter, ein Bild zeigt ein kleines Vorschaubild, das sich groß öffnen lässt, und das Kreuz nimmt die Datei aus der Zelle. Mehrere Dateien auf einmal gehen auch.",
+      "p2": "Ziehst du Dateien über die Zelle, färbt sie sich ein und sagt, in welche Spalte sie gehen. Das unterscheidet sie vom Text der Seite darunter: was du auf die Seite selbst ziehst, landet weiterhin im Text. Beim Hochladen siehst du den Fortschritt, und ist eine Datei zu groß oder ihr Typ nicht erlaubt, steht das direkt an der Zelle.",
+      "p3": "Die Datei hängt an der Zeile. Wird die Zeile endgültig gelöscht, geht die Datei mit. Nimmst du sie aus der Zelle oder löschst du die Spalte, räumt die nächtliche Wartung sie nach einem Tag weg. Wer eine Seite nur lesen darf, sieht die Dateien und kann sie herunterladen, aber nichts hinzufügen oder entfernen.",
+      "p4": "Agenten laden mit denselben Werkzeugen hoch wie für eine Seite (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) und geben zusätzlich propertyId an; entfernen und umsortieren geht mit exo_database_row_update. exo_database_row_get nennt die Dateien einer Zelle mit Namen."
+    },
+    "where": "Eine Zelle einer Dateien-Spalte, in der Tabelle oder oben auf der Seite einer Zeile."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agenten sehen sich Bilder an und holen Dateien ab",
     "summary": "Ein Agent kann einen Bildanhang als echtes Bild abrufen und ihn ansehen, zum Beispiel einen Screenshot oder einen Vorher-nachher-Vergleich. Andere Dateien wie PDFs holt er sich über eine Download-Adresse, die zehn Minuten und genau einmal gilt.",

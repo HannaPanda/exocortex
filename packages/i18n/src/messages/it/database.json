@@ -140,6 +140,25 @@
     "relationTargetEmpty": "Il database collegato non ha ancora nessuna riga.",
     "relationLimit": "Vengono mostrate solo le prime {limit} righe."
   },
+  "files": {
+    "zone": "File in «{column}»",
+    "add": "Aggiungi file",
+    "addHint": "File per «{column}»: selezionali, trascinali qui o incollali con tasto Ctrl+V. Appartengono a questa cella, non al testo della pagina.",
+    "dropHere": "Rilascia qui: in «{column}»",
+    "download": "Scarica {name}",
+    "show": "Visualizza {name}",
+    "remove": "Rimuovi {name} dalla cella",
+    "missing": "File non più disponibile",
+    "uploading": "Caricamento di {name} in corso…",
+    "percent": "{percent} %",
+    "dismiss": "Chiudi avviso",
+    "tooLarge": "{name} è troppo grande. Il limite massimo è di {limit} MB.",
+    "tooLargePlain": "{name} è troppo grande.",
+    "typeRefused": "{name}: questo tipo di file non è supportato. Sono consentiti immagini, PDF, file di testo e Office, audio e video.",
+    "offline": "{name} non è stato caricato. La connessione si è interrotta.",
+    "failed": "{name} non è stato caricato: {reason}",
+    "failedPlain": "Errore sconosciuto"
+  },
   "addProperty": {
     "trigger": "Aggiungi proprietà",
     "namePlaceholder": "Nome della proprietà",

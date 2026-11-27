@@ -74,7 +74,9 @@ What is deliberately still missing is listed under
 - Notion-style databases: a database is a page, its rows are pages (ADR-011),
   with typed properties and table, board, gallery and calendar views, inline
   or full-page; a row opened as a page shows and edits its properties under
-  its title with the table's own fields
+  its title with the table's own fields; a files column takes uploads straight
+  into the cell (picked, dropped or pasted, with progress), which belong to
+  the row and never to its page's text (ADR-098)
 - entities, their candidates and page links, in their own workspace-wide screen
 - a knowledge map: every page of a workspace as a glowing point in a 3D room,
   joined by references, similar content nobody linked, entity mentions and the

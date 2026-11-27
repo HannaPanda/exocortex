@@ -10,7 +10,7 @@ import { ROW_HEIGHT_LINE_CLAMP } from './table-columns';
 
 /**
  * The cells whose value is typed as text: free text, URL, e-mail, phone, the
- * id lists of PERSON and FILES, and numbers. Split out of `cells.tsx`
+ * id list of PERSON, and numbers. Split out of `cells.tsx`
  * (issue #97); they share the commit-on-close contract and the cell box.
  */
 
@@ -197,10 +197,10 @@ export function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
 }
 
 /**
- * PERSON and FILES store an array of ids (user ids / attachment ids). A
- * proper member picker or file browser is a separate feature; this is the
- * honest minimal editor for the array itself, entered as a comma-separated
- * list, so the property round-trips completely through the API.
+ * PERSON stores an array of user ids. A proper member picker is a separate
+ * feature; this is the honest minimal editor for the array itself, entered as
+ * a comma-separated list, so the property round-trips completely through the
+ * API. FILES has its own cell since issue #245 (`files-cell.tsx`).
  */
 export function IdListCell(props: PropertyCellProps) {
   const t = useTranslations('database.cells');

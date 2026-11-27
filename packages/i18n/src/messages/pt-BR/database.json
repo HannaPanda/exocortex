@@ -140,6 +140,25 @@
     "relationTargetEmpty": "O banco de dados relacionado ainda não tem linhas.",
     "relationLimit": "Apenas as primeiras {limit} linhas são exibidas."
   },
+  "files": {
+    "zone": "Arquivos em “{column}”",
+    "add": "Adicionar arquivo",
+    "addHint": "Arquivos para “{column}”: escolha, arraste para cá ou cole com Ctrl+V. Eles pertencem a esta célula, não ao texto da página.",
+    "dropHere": "Solte aqui: em “{column}”",
+    "download": "Baixar {name}",
+    "show": "Visualizar {name}",
+    "remove": "Remover {name} da célula",
+    "missing": "Arquivo não encontrado",
+    "uploading": "Enviando {name}…",
+    "percent": "{percent} %",
+    "dismiss": "Fechar aviso",
+    "tooLarge": "{name} é grande demais. O limite máximo é de {limit} MB.",
+    "tooLargePlain": "{name} é grande demais.",
+    "typeRefused": "{name}: este tipo de arquivo não é suportado. São aceitos imagens, PDFs, arquivos de texto e Office, áudio e vídeo.",
+    "offline": "{name} não foi enviado. A conexão caiu.",
+    "failed": "{name} não foi enviado: {reason}",
+    "failedPlain": "Erro desconhecido"
+  },
   "addProperty": {
     "trigger": "Adicionar propriedade",
     "namePlaceholder": "Nome da propriedade",

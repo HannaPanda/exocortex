@@ -140,6 +140,25 @@
     "relationTargetEmpty": "Powiązana baza danych nie ma jeszcze wierszy.",
     "relationLimit": "Dostępnych jest tylko pierwszych {limit} wierszy."
   },
+  "files": {
+    "zone": "Pliki w „{column}”",
+    "add": "Dodaj plik",
+    "addHint": "Pliki dla „{column}”: wybierz, przeciągnij tutaj lub wklej za pomocą Ctrl+V. Należą do tej komórki, a nie do tekstu strony.",
+    "dropHere": "Upuść tutaj: do „{column}”",
+    "download": "Pobierz {name}",
+    "show": "Zobacz {name}",
+    "remove": "Usuń {name} z komórki",
+    "missing": "Plik już nie istnieje",
+    "uploading": "Przesyłanie pliku {name}…",
+    "percent": "{percent} %",
+    "dismiss": "Zamknij powiadomienie",
+    "tooLarge": "Plik {name} jest za duży. Maksymalny dozwolony rozmiar to {limit} MB.",
+    "tooLargePlain": "Plik {name} jest za duży.",
+    "typeRefused": "{name}: Ten typ pliku nie jest obsługiwany. Dozwolone są obrazy, pliki PDF, dokumenty biurowe i tekstowe, audio oraz wideo.",
+    "offline": "Nie przesłano pliku {name}. Połączenie zostało przerwane.",
+    "failed": "Nie przesłano pliku {name}: {reason}",
+    "failedPlain": "Nieznany błąd"
+  },
   "addProperty": {
     "trigger": "Dodaj właściwość",
     "namePlaceholder": "Nazwa właściwości",

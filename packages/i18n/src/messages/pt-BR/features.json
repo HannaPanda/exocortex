@@ -496,6 +496,17 @@
     },
     "where": "Arrastar o arquivo para o editor."
   },
+  "datenbank-dateien": {
+    "title": "Fazer upload de arquivos em uma coluna de arquivos de um banco de dados",
+    "summary": "Uma coluna do tipo Arquivos aceita arquivos diretamente na célula: pelo botão „Adicionar arquivo”, arrastando para a célula ou colando com Strg+V. Os arquivos pertencem a essa célula da linha e não vão parar no texto da página.",
+    "details": {
+      "p1": "Na tabela, no cabeçalho da página de uma linha, na visualização de linha e no painel de propriedades, a célula mostra seus arquivos pelo nome. Clicar no nome baixa o arquivo, imagens exibem uma miniatura que pode ser expandida, e o xis remove o arquivo da célula. Também é possível incluir vários arquivos de uma vez.",
+      "p2": "Se você arrastar arquivos sobre a célula, ela muda de cor e indica em qual coluna eles entrarão. Isso a diferencia do texto da página abaixo: o que você arrasta para a página em si continua indo para o texto. Durante o upload, você vê o progresso e, se um arquivo for grande demais ou seu tipo não for permitido, isso é informado diretamente na célula.",
+      "p3": "O arquivo fica vinculado à linha. Se a linha for excluída permanentemente, o arquivo também vai embora. Se você removê-lo da célula ou excluir a coluna, a manutenção noturna o remove após um dia. Quem tem apenas permissão de leitura em uma página vê os arquivos e pode baixá-los, mas não pode adicionar nem remover nada.",
+      "p4": "Os agentes fazem upload usando as mesmas ferramentas que usam para uma página (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) e indicam adicionalmente propertyId; a remoção e reordenação são feitas com exo_database_row_update. exo_database_row_get lista os arquivos de uma célula por seus nomes."
+    },
+    "where": "Uma célula de uma coluna de arquivos, na tabela ou no topo da página de uma linha."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agentes visualizam imagens e baixam arquivos",
     "summary": "Um agente pode obter um anexo de imagem como uma imagem real e visualizá-lo, por exemplo, uma captura de tela ou uma comparação de antes e depois. Outros arquivos, como PDFs, ele baixa por meio de um endereço de download que vale por dez minutos e apenas uma vez.",

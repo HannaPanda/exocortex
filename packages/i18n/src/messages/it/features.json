@@ -496,6 +496,17 @@
     },
     "where": "Trascina il file nell’editor."
   },
+  "datenbank-dateien": {
+    "title": "Caricare file in una colonna File di un database",
+    "summary": "Una colonna di tipo File accoglie i file direttamente nella cella: tramite „Aggiungi file“, trascinandoli sulla cella o incollandoli con Strg+V. I file appartengono a questa cella della riga e non finiscono nel testo della pagina.",
+    "details": {
+      "p1": "Nella tabella, nell’intestazione della pagina di una riga, nella vista riga e nell’area delle proprietà, la cella mostra i propri file con il loro nome. Un clic sul nome scarica il file, un’immagine mostra una piccola anteprima che può essere aperta a schermo intero e la crocetta rimuove il file dalla cella. È possibile gestire anche più file contemporaneamente.",
+      "p2": "Se trascini dei file sopra la cella, questa cambia colore e indica in quale colonna andranno a finire. Questo la distingue dal testo della pagina sottostante: ciò che trascini sulla pagina stessa finisce comunque nel testo. Durante il caricamento puoi vedere l’avanzamento e, se un file è troppo grande o il suo tipo non è consentito, viene segnalato direttamente nella cella.",
+      "p3": "Il file è collegato alla riga. Se la riga viene eliminata definitivamente, anche il file viene rimosso. Se lo togli dalla cella o elimini la colonna, la manutenzione notturna lo elimina dopo un giorno. Chi ha permessi di sola lettura su una pagina può vedere i file e scaricarli, ma non può aggiungerne né rimuoverne alcuno.",
+      "p4": "Gli agenti caricano i file con gli stessi strumenti usati per una pagina (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) specificando in più propertyId; la rimozione e il riordinamento si effettuano con exo_database_row_update. exo_database_row_get elenca per nome i file di una cella."
+    },
+    "where": "Una cella di una colonna File, nella tabella o in cima alla pagina di una riga."
+  },
   "agenten-bilder-ansehen": {
     "title": "Gli agenti guardano le immagini e scaricano i file",
     "summary": "Un agente può recuperare un allegato immagine come immagine reale e visualizzarlo, ad esempio uno screenshot o un confronto prima e dopo. Altri file, come i PDF, vengono recuperati tramite un indirizzo di download valido per dieci minuti e utilizzabile una sola volta.",

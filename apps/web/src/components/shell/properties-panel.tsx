@@ -67,7 +67,8 @@ function RowPropertiesSection({
 
   // The columns come with the row rather than from the database's own list, so
   // a page shared on its own shows its values with their names (issue #254).
-  const values = row.data.row.values;
+  const current = row.data.row;
+  const values = current.values;
   const properties = row.data.properties;
 
   return (
@@ -85,6 +86,7 @@ function RowPropertiesSection({
                 value={values.find((entry) => entry.propertyId === property.id)?.value ?? null}
                 readOnly={readOnly}
                 rowHeight="tall"
+                row={current}
                 onChange={(next) => {
                   void updateValues.mutateAsync({
                     rowId,

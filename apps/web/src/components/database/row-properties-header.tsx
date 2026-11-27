@@ -140,6 +140,7 @@ function RowPropertiesList({
                 // A page has room the table cell does not: a long value is
                 // shown at the most generous clamp, as in the row sheet.
                 rowHeight="tall"
+                row={row}
                 onChange={(next) => {
                   void updateValues.mutateAsync({
                     rowId: row.document.id,

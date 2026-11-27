@@ -244,6 +244,7 @@ function BoardColumns({
                       key={property.id}
                       property={property}
                       value={propertyValue(row, property.id)}
+                      files={row.files}
                     />
                   ))}
                 </div>

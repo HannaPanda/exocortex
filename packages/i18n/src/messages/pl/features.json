@@ -496,6 +496,17 @@
     },
     "where": "Przeciągnij plik do edytora."
   },
+  "datenbank-dateien": {
+    "title": "Przesyłanie plików do kolumny typu Pliki w bazie danych",
+    "summary": "Kolumna typu Pliki przyjmuje pliki bezpośrednio w komórce: przez „Dodaj plik”, przeciągając je na komórkę lub wklejając za pomocą Strg+V. Pliki należą do tej komórki wiersza i nie trafiają do tekstu strony.",
+    "details": {
+      "p1": "W tabeli, w nagłówku strony wiersza, w widoku wiersza oraz w sekcji właściwości komórka wyświetla swoje pliki z nazwami. Kliknięcie nazwy pobiera plik, obraz wyświetla małą miniaturę, którą można powiększyć, a krzyżyk usuwa plik z komórki. Można też dodać wiele plików naraz.",
+      "p2": "Gdy przeciągasz pliki nad komórkę, zmienia ona kolor i informuje, do której kolumny trafią. To odróżnia ją od tekstu strony poniżej: to, co przeciągniesz na samą stronę, nadal trafia do tekstu. Podczas przesyłania widać postęp, a jeśli plik jest zbyt duży lub jego typ jest niedozwolony, informacja pojawia się bezpośrednio przy komórce.",
+      "p3": "Plik jest powiązany z wierszem. Jeśli wiersz zostanie trwale usunięty, plik zniknie wraz z nim. Jeśli usuniesz go z komórki lub skasujesz kolumnę, nocna konserwacja usunie go po jednym dniu. Osoby mające dostęp tylko do odczytu widzą pliki i mogą je pobierać, ale nie mogą niczego dodawać ani usuwać.",
+      "p4": "Agenci przesyłają pliki za pomocą tych samych narzędzi, co w przypadku strony (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket), podając dodatkowo propertyId; usuwanie i zmiana kolejności odbywa się za pomocą exo_database_row_update. exo_database_row_get wymienia pliki komórki z nazwy."
+    },
+    "where": "Komórka kolumny typu Pliki, w tabeli lub u góry strony wiersza."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agenci przeglądają obrazy i pobierają pliki",
     "summary": "Agent może pobrać załącznik graficzny jako prawdziwy obraz i go obejrzeć, na przykład zrzut ekranu lub porównanie przed i po. Inne pliki, takie jak PDF-y, pobiera przez adres URL ważny przez dziesięć minut i dokładnie na jedno użycie.",

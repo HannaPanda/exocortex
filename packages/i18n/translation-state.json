@@ -5640,6 +5640,74 @@
       "source": "63cabd69ac7667f1",
       "output": "53676e8f20ba4cb6"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "2c83c00f0e83b39c"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "e9912a5371eef008"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "a179917679701032"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "c807156b8e24f0a3"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "e9e7aec98c27f13d"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "bab189e1a8148b0e"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "27c2ccd962c2b8dc"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "e079f3da1785376e"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "a5a2f0c21659c1c6"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "02a35530e04af183"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "7a0d447d5175ea8a"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "4998bc2791a16746"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "2423e4d3c2b6bb0c"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "912c1ba1a25d77aa"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "d8b7b87054313c69"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "fea603abe2c784d5"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "b28be5683220ace6"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "e520df698000f85f"
@@ -10112,6 +10180,14 @@
       "source": "459ae76450e73744",
       "output": "92264cafc4ac5ae3"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "69f27d125bdfea17"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "5f7392cc5bceb183"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "f42b430f9577c58d"
@@ -12663,6 +12739,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "f502ff890a38de4a"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "22b1dc90a5d4540e"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "0e55ecae0376fc85"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "660806c998ad825d"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "0f65da770a529cd5"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "038c0aeedf66a46c"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "de1871c5a232c3b9"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "2772841064fdece4"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -30614,6 +30718,74 @@
       "source": "63cabd69ac7667f1",
       "output": "8b21de054dafbacf"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "c66ed96c23ebc35f"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "bdd9e1cfca38001f"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "a49387ee3efba412"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "47d80572f85d0532"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "8f86f857ae964f18"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "d4ba5c5343db429b"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "eb8f63562cac44b3"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "922d5ccd7030b109"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "a29af1510dca347c"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "027f7f18574d7257"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "95c028228ed83558"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "f7f62bd7c032a36a"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "9969e876df732cc1"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "af53823f02aee66d"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "0d483f51d4964e39"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "314b0fbba4d641f3"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "275565b4db1d5349"
@@ -35086,6 +35258,14 @@
       "source": "459ae76450e73744",
       "output": "8198b398c3da2ee9"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "75eab6ef5e915a39"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "8f45ff45d2fa52b7"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "552bf76c95dbf47f"
@@ -37637,6 +37817,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "c844036035bbe030"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "1cfd1bfbe33f7a79"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "85b0891db6020cf7"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "81c146cf628e558f"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "2963e1d36afbe36c"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "092e70079ba37d19"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "c23843afdb09dbcf"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "2a90952069a1247f"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -55588,6 +55796,74 @@
       "source": "63cabd69ac7667f1",
       "output": "c081d9632cbdd1ca"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "2974be2637862e81"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "abef31ce6e996c97"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "3ed122ecf93d63a6"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "f9fd0cbb92f3dc91"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "cc5e3eee1e748032"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "e6958bf963b8cf06"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "8f5d4150fc16d119"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "b9096fc4d9bec787"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "ce969e9453edd8e7"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "a2e4f507e76572fc"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "76e7e8b8533336bf"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "f6eda55b65c5d463"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "82b1b90e3a59d964"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "a24e0ecda6f92b9b"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "d4b7c4007c8164a3"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "3450b752b1dd412d"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "2f882b9a7b9104f2"
@@ -60060,6 +60336,14 @@
       "source": "459ae76450e73744",
       "output": "26d2517007a8a447"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "fe5ecf0b39230c52"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "6b91f83a3ca996b5"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "cdf4ca9630af5984"
@@ -62611,6 +62895,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "2b31ab4be8c99cd4"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "47b21c007088f3b3"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "94b7347092c983f4"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "77c39652168b1cc0"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "9f1ed108b8e9ce69"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "19f5e06895a78f08"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "c6ca6ed8c77ad67f"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "c9e22124a62bfb63"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -80562,6 +80874,74 @@
       "source": "63cabd69ac7667f1",
       "output": "f88a53261529a619"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "d3ae5443939ad53c"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "0bf7f786023a5932"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "892129a2f0d9b29e"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "35e378196c80ff0d"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "d8a1175a41bd3eb0"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "724514ee3a7d1701"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "ceaa4ca16e098f79"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "a862754299c48947"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "ce30e5981d8aed5c"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "2398039337b80f21"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "94e54477dd8df0f1"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "cdcb9e779315a43c"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "4da4ec8ccb461c34"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "6b3cd2aae3f132a1"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "9874ea4170186e83"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "1228d81ad61d74bb"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "b8a53064d4e85f42"
@@ -85034,6 +85414,14 @@
       "source": "459ae76450e73744",
       "output": "1baee10121a3218b"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "abf3b8b37c8ce427"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "8770e5b60050fae5"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "275c36e83a82e7bc"
@@ -87585,6 +87973,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "39f397bcc0dadad1"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "ad887c26d3408e4c"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "f8b7c62238100f2c"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "90288fdb5136f6e2"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "16f320995d030b27"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "29586379bd2900a9"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "b6a24587c87b68c4"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "b7c6c80545c5a5b2"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -105536,6 +105952,74 @@
       "source": "63cabd69ac7667f1",
       "output": "f24d61dace268da0"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "6ff46c0ffad4a24c"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "e291df9833021aa3"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "c7f0efbc268249d8"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "c472153cd78d673e"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "6eb13ed6800a671b"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "d3e7cc4975e029e8"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "083c6d3b3c4b1b24"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "3d752fded917bac0"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "0feddcf7b92dce39"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "78238a76a4eccad5"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "8f0d0e6310e67461"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "d1d8e7bd3e1cce32"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "c38e87ad474854dc"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "c9d669c86c4e98e1"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "0395bbbf2c373d5e"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "9a061217ad0666ca"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "73a3ab0c88e53ddf"
@@ -110008,6 +110492,14 @@
       "source": "459ae76450e73744",
       "output": "97bcf6cf28682b8d"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "c66157e0c9d98331"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "2cb2471187478974"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "f3baa2896a58cf91"
@@ -112559,6 +113051,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "73c3b7a2ab34a3c8"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "e38c57eafbc2e79e"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "2f60a03ec047e271"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "4214cd68c1193961"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "466fef837e00e485"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "2242756868f5d95d"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "0086506d036642d1"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "a8ac4785ae9e1f75"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -130510,6 +131030,74 @@
       "source": "63cabd69ac7667f1",
       "output": "fc96131f89e86537"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "61e2dec459ff4798"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "f2bd5e809472beaa"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "07da159c03e55aec"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "5e082161161da9c3"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "1e7c1dc2c31a08c9"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "0015c964cbb8ece8"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "798462b7fcef8c63"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "b30ec4f7e1808480"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "daa922c7bb98cc65"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "9c4a5329a7338d47"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "4fac265c7174e248"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "e306b9a9293ffea6"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "80ae49c2f6c8f873"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "7e2a161b8adccd38"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "4dfb20d9549b5f1f"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "62d58e4802c0356e"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "a125da12cec272ff"
@@ -134982,6 +135570,14 @@
       "source": "459ae76450e73744",
       "output": "e6c02eaa613e1063"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "403a7b079bd8079f"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "c56c61a46685f7bb"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "c4aa82d923cf33ed"
@@ -137533,6 +138129,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "d2678b6a436b504d"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "f6e69d5736594dc7"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "0e533c50510a1f57"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "c6ffaad8c2bc31ea"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "4c3340095e8826cb"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "d000029cc318b7bc"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "1bafeb2e4a2fe12b"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "feadd8c1a3bf8f21"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",
@@ -155484,6 +156108,74 @@
       "source": "63cabd69ac7667f1",
       "output": "f7b9498a8c038e77"
     },
+    "database.files.add": {
+      "source": "83dbfce1f15c36c5",
+      "output": "5aa8dfeadbb454ae"
+    },
+    "database.files.addHint": {
+      "source": "eda0be7c096dac92",
+      "output": "45d1506062f773e7"
+    },
+    "database.files.dismiss": {
+      "source": "d4481ff49f3394e7",
+      "output": "f39dd9babf20effb"
+    },
+    "database.files.download": {
+      "source": "b6ce719c8309cdcb",
+      "output": "b14b214054d06826"
+    },
+    "database.files.dropHere": {
+      "source": "599a05596c9821f5",
+      "output": "758a3b6a73af8cb1"
+    },
+    "database.files.failed": {
+      "source": "51097e05ea7995e4",
+      "output": "5cf70c69e7d2ff46"
+    },
+    "database.files.failedPlain": {
+      "source": "617580f0f7efd75f",
+      "output": "3d3197555df7a27c"
+    },
+    "database.files.missing": {
+      "source": "c22b45dc44a2c741",
+      "output": "28b661023613b583"
+    },
+    "database.files.offline": {
+      "source": "bbe96bdd86977eca",
+      "output": "3203ae9d148cab59"
+    },
+    "database.files.percent": {
+      "source": "64f7870ae8ff78c1",
+      "output": "64f7870ae8ff78c1"
+    },
+    "database.files.remove": {
+      "source": "1db6bc140ced169c",
+      "output": "a5fb736bb4824b3b"
+    },
+    "database.files.show": {
+      "source": "2de0b42a12fa0c4e",
+      "output": "a0e4fd0f7ba5f65b"
+    },
+    "database.files.tooLarge": {
+      "source": "d5273f562a9910e8",
+      "output": "5fa6eedc7379eab5"
+    },
+    "database.files.tooLargePlain": {
+      "source": "2254c0496413d3e9",
+      "output": "8aba431a66787415"
+    },
+    "database.files.typeRefused": {
+      "source": "e9128dba6d470307",
+      "output": "100e0ef39fd611cf"
+    },
+    "database.files.uploading": {
+      "source": "5d7dece245df510c",
+      "output": "51a25b6392516728"
+    },
+    "database.files.zone": {
+      "source": "b9d621ff443aa3c5",
+      "output": "0c023d5da51d38ce"
+    },
     "database.filters.addFilter": {
       "source": "0ebbc437d9f377d3",
       "output": "90086102a30daaeb"
@@ -159956,6 +160648,14 @@
       "source": "459ae76450e73744",
       "output": "33fcd2c3fe34bac5"
     },
+    "errors.codes.database_files_foreign": {
+      "source": "1ce85e708de6df07",
+      "output": "4bc2939aa9563fd3"
+    },
+    "errors.codes.database_files_target_invalid": {
+      "source": "84a18a6e2e3cc480",
+      "output": "11f5d60065f668dd"
+    },
     "errors.codes.database_property_config_invalid": {
       "source": "719ccb55550c6e13",
       "output": "d8313a95213381ca"
@@ -162507,6 +163207,34 @@
     "features.datenbank-ansichten.where": {
       "source": "eb9752b4090c7a01",
       "output": "fbda716d7cc06740"
+    },
+    "features.datenbank-dateien.details.p1": {
+      "source": "f677e5ccd43b4ce2",
+      "output": "1ac90454b2adc9df"
+    },
+    "features.datenbank-dateien.details.p2": {
+      "source": "45c376c3c6e2d14b",
+      "output": "1a0383f960f852d6"
+    },
+    "features.datenbank-dateien.details.p3": {
+      "source": "4223cf20cd36a5d6",
+      "output": "9e8fc4b10abde524"
+    },
+    "features.datenbank-dateien.details.p4": {
+      "source": "7c7d6f64e41b488b",
+      "output": "6eb9615283b78772"
+    },
+    "features.datenbank-dateien.summary": {
+      "source": "80a000a189bc0740",
+      "output": "209c75616b60d23e"
+    },
+    "features.datenbank-dateien.title": {
+      "source": "7ea959183fcbda40",
+      "output": "54943bbf6b18ad5f"
+    },
+    "features.datenbank-dateien.where": {
+      "source": "f33ce5fa21b61937",
+      "output": "7c3793b5fc9042bd"
     },
     "features.datenbank-eigenschaften.details.p1": {
       "source": "2e5376112b7e920b",

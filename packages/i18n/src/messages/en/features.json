@@ -496,6 +496,17 @@
     },
     "where": "Drag a file into the editor."
   },
+  "datenbank-dateien": {
+    "title": "Upload files into a files column of a database",
+    "summary": "A column of type files accepts files directly into the cell: via “Add file”, by dragging onto the cell, or by pasting with Ctrl+V. The files belong to this cell of the row and do not end up in the page text.",
+    "details": {
+      "p1": "In the table, in the header of a row page, in the row view, and in the properties section, the cell displays its files with names. Clicking the name downloads the file, an image shows a small thumbnail that can be opened in full size, and the cross removes the file from the cell. Multiple files at once also work.",
+      "p2": "When you drag files over the cell, it changes color and indicates which column they are going into. This sets it apart from the page text below: anything you drag onto the page itself still lands in the text. During upload you see the progress, and if a file is too large or its type is not allowed, this is shown directly on the cell.",
+      "p3": "The file is attached to the row. If the row is permanently deleted, the file is deleted with it. If you remove it from the cell or delete the column, nightly maintenance clears it away after one day. Anyone with read-only access to a page can view and download the files, but cannot add or remove anything.",
+      "p4": "Agents upload using the same tools as for a page (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) and additionally specify propertyId; removing and reordering is done with exo_database_row_update. exo_database_row_get lists the files of a cell by name."
+    },
+    "where": "A cell of a files column, in the table or at the top of a row’s page."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agents view images and retrieve files",
     "summary": "An agent can retrieve an image attachment as an actual image and view it, such as a screenshot or a before-and-after comparison. For other files like PDFs, it retrieves them via a download address that is valid for ten minutes and exactly once.",

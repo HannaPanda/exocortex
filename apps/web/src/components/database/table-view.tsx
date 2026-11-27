@@ -256,6 +256,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                       value={cellValue}
                       readOnly={readOnly}
                       rowHeight={rowHeight}
+                      row={row}
                       onChange={(next) => setValue(row, property.id, next)}
                     />
                   </TableCell>
