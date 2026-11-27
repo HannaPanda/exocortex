@@ -67,10 +67,11 @@ describe('block catalog execution', () => {
       instance.destroy();
       editor = null;
     }
-    // One real jsdom editor per catalog entry: under a second alone, but past
-    // the default 5 s when build.sh runs every workspace's tests at once on a
-    // loaded host, which made the gate red for no reason in the code.
-  }, 30_000);
+    // One real jsdom editor per catalog entry, under a second. It once carried
+    // a 30 s limit because build.sh ran every workspace's tests at once on a
+    // loaded host; the parallelism is bounded now (scripts/run-tests.mjs,
+    // issue #313), so the default limit is the one to answer to.
+  });
 
   it('inserts a toggle with a summary and a content child', () => {
     const instance = createEditor();

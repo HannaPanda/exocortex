@@ -65,7 +65,7 @@ describe('renderImageForAgent', () => {
     expect(image).toMatchObject({ mimeType: 'image/png', resized: true, width: 100, height: 50 });
   });
 
-  it('halves the edge until the bytes fit', { timeout: 30_000 }, async () => {
+  it('halves the edge until the bytes fit', async () => {
     const original = await noisyPng(1_200, 1_200);
     const image = await renderImageForAgent(original, 'image/png', {
       maxEdge: 1_568,
