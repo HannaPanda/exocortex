@@ -60,25 +60,9 @@
       "label": "Tabel",
       "description": "Tabel met koprij"
     },
-    "callout-info": {
-      "label": "Info",
-      "description": "Uitgelicht kader (info)"
-    },
-    "callout-note": {
-      "label": "Notitie",
-      "description": "Uitgelicht kader (notitie)"
-    },
-    "callout-success": {
-      "label": "Succes",
-      "description": "Uitgelicht kader (succes)"
-    },
-    "callout-warning": {
-      "label": "Waarschuwing",
-      "description": "Uitgelicht kader (waarschuwing)"
-    },
-    "callout-danger": {
-      "label": "Gevaar",
-      "description": "Uitgelicht kader (gevaar)"
+    "callout": {
+      "label": "Callout",
+      "description": "Uitgelicht kader met pictogram, kop en kleur"
     },
     "file": {
       "label": "Bestand",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Basis",
     "lists": "Lijsten",
-    "callout": "Aandachtskaders",
     "media": "Media",
     "advanced": "Geavanceerd"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Zonder markering",
     "copy": "Code kopiëren",
     "copied": "Code gekopieerd"
+  },
+  "callout": {
+    "menuTitle": "Callout aanpassen",
+    "title": "Koptekst",
+    "titlePlaceholder": "Geen koptekst",
+    "suggestionsLabel": "Voorgestelde koppen",
+    "suggestions": {
+      "note": "Opmerking",
+      "tip": "Tip",
+      "important": "Belangrijk",
+      "caution": "Let op",
+      "warning": "Waarschuwing"
+    },
+    "color": "Randkleur: {name}",
+    "emoji": "Pictogram {emoji}",
+    "emojiSearch": "Pictogram zoeken …"
   },
   "emojiMenu": {
     "search": "Emoji zoeken",
@@ -444,7 +443,10 @@
       "hint": "Tab: lijst voortzetten, of typ ‘/’ voor opdrachten …",
       "taskHint": "Tab: takenlijst voortzetten, of typ ‘/’ voor opdrachten …"
     },
-    "commentCount": "{count, plural, one {reactie} other {reacties}}"
+    "commentCount": "{count, plural, one {reactie} other {reacties}}",
+    "callout": {
+      "edit": "Pictogram {emoji}, callout aanpassen"
+    }
   },
   "agentEdits": {
     "changed": "Gewijzigd door {name}",

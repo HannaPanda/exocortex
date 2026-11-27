@@ -73,6 +73,7 @@ export function useEditorWords(): EditorWords {
         hint: t('listContinuation.hint'),
         taskHint: t('listContinuation.taskHint'),
       },
+      callout: { edit: (emoji) => t('callout.edit', { emoji }) },
     };
   }, [t, format]);
 }

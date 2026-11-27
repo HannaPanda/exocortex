@@ -52,6 +52,12 @@ export interface EditorWords {
    * (issue #240): one for a list with bullets or numbers, one for tasks.
    */
   listContinuation: { hint: string; taskHint: string };
+  /**
+   * The callout's symbol button (issue #306): its name says which symbol the
+   * box shows, because the symbol carries the box's meaning, and what pressing
+   * it does.
+   */
+  callout: { edit: (emoji: string) => string };
 }
 
 /** `2026-04-26T11:56:10.000Z` as `26.04.2026`, read in UTC. */
@@ -111,4 +117,5 @@ export const GERMAN_EDITOR_WORDS: EditorWords = {
     hint: 'Tab: Aufzählung fortsetzen, oder tippe „/“ für Befehle …',
     taskHint: 'Tab: Aufgabenliste fortsetzen, oder tippe „/“ für Befehle …',
   },
+  callout: { edit: (emoji) => `Symbol ${emoji}, Hinweis anpassen` },
 };

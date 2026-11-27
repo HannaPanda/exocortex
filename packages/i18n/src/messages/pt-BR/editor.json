@@ -60,25 +60,9 @@
       "label": "Tabela",
       "description": "Tabela com cabeçalho"
     },
-    "callout-info": {
-      "label": "Informação",
-      "description": "Caixa de destaque (informação)"
-    },
-    "callout-note": {
-      "label": "Nota",
-      "description": "Caixa de destaque (nota)"
-    },
-    "callout-success": {
-      "label": "Sucesso",
-      "description": "Caixa de destaque (sucesso)"
-    },
-    "callout-warning": {
-      "label": "Aviso",
-      "description": "Caixa de destaque (aviso)"
-    },
-    "callout-danger": {
-      "label": "Perigo",
-      "description": "Caixa de destaque (perigo)"
+    "callout": {
+      "label": "Destaque",
+      "description": "Caixa destacada com ícone, título e cor"
     },
     "file": {
       "label": "Arquivo",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Básico",
     "lists": "Listas",
-    "callout": "Avisos",
     "media": "Mídia",
     "advanced": "Avançado"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Sem realce",
     "copy": "Copiar código",
     "copied": "Código copiado"
+  },
+  "callout": {
+    "menuTitle": "Personalizar destaque",
+    "title": "Título",
+    "titlePlaceholder": "Sem título",
+    "suggestionsLabel": "Títulos sugeridos",
+    "suggestions": {
+      "note": "Nota",
+      "tip": "Dica",
+      "important": "Importante",
+      "caution": "Atenção",
+      "warning": "Aviso"
+    },
+    "color": "Cor da borda: {name}",
+    "emoji": "Ícone {emoji}",
+    "emojiSearch": "Buscar ícone…"
   },
   "emojiMenu": {
     "search": "Buscar emoji",
@@ -444,7 +443,10 @@
       "hint": "Tab: continuar lista, ou digite „/” para comandos…",
       "taskHint": "Tab: continuar lista de tarefas, ou digite „/” para comandos…"
     },
-    "commentCount": "{count, plural, one {comentário} many {comentários} other {comentários}}"
+    "commentCount": "{count, plural, one {comentário} many {comentários} other {comentários}}",
+    "callout": {
+      "edit": "Ícone {emoji}, personalizar destaque"
+    }
   },
   "agentEdits": {
     "changed": "Alterado por {name}",

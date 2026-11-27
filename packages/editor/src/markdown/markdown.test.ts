@@ -144,11 +144,13 @@ describe('markdown import', () => {
     expect(serializePlainText(document)).toContain('Noch offen');
   });
 
-  it('imports callouts with variant and title', () => {
+  it('imports callouts with symbol, colour and title', () => {
     const { document } = parseMarkdown(CALLOUT_MARKDOWN);
     const callout = document.content?.[0];
     expect(callout?.type).toBe('callout');
-    expect(callout?.attrs?.variant).toBe('info');
+    // `[!info]` without a symbol is the old notation: its symbol and colour.
+    expect(callout?.attrs?.emoji).toBe('ℹ️');
+    expect(callout?.attrs?.color).toBe('blue');
     expect(callout?.attrs?.title).toBe('Wichtig');
     expect(serializePlainText(document)).toContain('Erste Zeile.');
   });
@@ -232,7 +234,7 @@ describe('markdown export', () => {
 
   it('re-emits callouts using the eXocortex syntax', () => {
     const { document } = parseMarkdown(CALLOUT_MARKDOWN);
-    expect(serializeMarkdown(document)).toContain('> [!info] Wichtig');
+    expect(serializeMarkdown(document)).toContain('> [!info] ℹ️ Wichtig');
   });
 
   it('re-emits task list markers', () => {

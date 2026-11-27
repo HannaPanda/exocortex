@@ -4,6 +4,7 @@ import {
   type ProseMirrorDocument,
 } from './contract';
 import { collectMigrations } from './extensions';
+import { yjsStateToProseMirrorJson } from './yjs';
 
 export class DocumentMigrationError extends Error {
   constructor(message: string) {
@@ -23,9 +24,8 @@ export interface MigrationResult {
  * Applies every registered migration needed to bring a stored document up to
  * `EXOCORTEX_SCHEMA_VERSION`.
  *
- * There are no migrations yet (the schema is at version 1). The machinery exists
- * so the first schema change is a data change, not an architecture change; see
- * docs/editor-extensions.md for the workflow.
+ * One migration per version step, registered by the extension that changed;
+ * see docs/editor-extensions.md for the workflow.
  */
 export function migrateDocument(
   document: ProseMirrorDocument,
@@ -62,4 +62,21 @@ export function migrateDocument(
 /** `true` when a stored document needs migration before being used. */
 export function needsMigration(schemaVersion: number): boolean {
   return schemaVersion < EXOCORTEX_SCHEMA_VERSION;
+}
+
+/**
+ * The content of a stored state, upgraded to this build's schema.
+ *
+ * For every place that reads a state written by an older build as content: a
+ * snapshot being restored or compared, above all. The binary state itself is
+ * not touched (ADR-005); what comes back is the derived JSON, migrated, which
+ * is what the caller then applies or compares. A state from a newer build is
+ * refused by `migrateDocument`, the same as everywhere else.
+ */
+export function currentContentOfState(
+  state: Uint8Array,
+  schemaVersion: number,
+): ProseMirrorDocument {
+  const content = yjsStateToProseMirrorJson(state);
+  return needsMigration(schemaVersion) ? migrateDocument(content, schemaVersion).document : content;
 }

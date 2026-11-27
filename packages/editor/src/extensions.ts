@@ -111,6 +111,7 @@ import { SCHEMA_V2_MIGRATION } from './schema-v2';
 import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
 import { SCHEMA_V5_MIGRATION } from './schema-v5';
+import { SCHEMA_V6_MIGRATION } from './schema-v6';
 import { ScopedSelectAll } from './scoped-select-all';
 import { ShiftArrowSelection } from './shift-arrow-selection';
 import {
@@ -375,10 +376,12 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
   },
   {
     name: 'callout',
-    schemaVersion: 1,
+    // Introduced in 1, changed in 6 (symbol, heading and colour, issue #306).
+    schemaVersion: 6,
     extensions: [Callout],
     markdown: calloutMarkdownAdapter,
     blocks: calloutBlocks,
+    migrations: [SCHEMA_V6_MIGRATION],
   },
   {
     name: 'block-id',
@@ -474,6 +477,7 @@ const WORDED_NODE_NAMES = new Set([
   'tableOfContents',
   'embed',
   'listContinuation',
+  'callout',
 ]);
 
 /** Hands the reader's words to the extension that shows them, if it shows any. */

@@ -411,6 +411,6 @@ describe('schema 5 migration', () => {
   it('is part of the registered upgrade path', () => {
     const result = migrateDocument(doc({ type: 'paragraph' }), 4);
     expect(result.toVersion).toBe(EXOCORTEX_SCHEMA_VERSION);
-    expect(result.applied).toEqual(['schema 5: link marks carry the identity of their target']);
+    expect(result.applied[0]).toBe('schema 5: link marks carry the identity of their target');
   });
 });

@@ -140,7 +140,7 @@ describe('block catalog', () => {
       'blockquote',
       'code-block',
       'horizontal-rule',
-      'callout-info',
+      'callout',
       'table',
       'columns',
       'block-math',

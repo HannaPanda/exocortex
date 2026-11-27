@@ -60,25 +60,9 @@
       "label": "Tabela",
       "description": "Tabela z nagłówkiem"
     },
-    "callout-info": {
-      "label": "Informacja",
-      "description": "Wyróżniona ramka (informacja)"
-    },
-    "callout-note": {
-      "label": "Notatka",
-      "description": "Wyróżniona ramka (notatka)"
-    },
-    "callout-success": {
-      "label": "Sukces",
-      "description": "Wyróżniona ramka (sukces)"
-    },
-    "callout-warning": {
-      "label": "Ostrzeżenie",
-      "description": "Wyróżniona ramka (ostrzeżenie)"
-    },
-    "callout-danger": {
-      "label": "Niebezpieczeństwo",
-      "description": "Wyróżniona ramka (niebezpieczeństwo)"
+    "callout": {
+      "label": "Wyróżnienie",
+      "description": "Wyróżniona ramka z ikoną, nagłówkiem i kolorem"
     },
     "file": {
       "label": "Plik",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Podstawowe",
     "lists": "Listy",
-    "callout": "Wyróżnienia",
     "media": "Multimedia",
     "advanced": "Zaawansowane"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Bez wyróżniania",
     "copy": "Kopiuj kod",
     "copied": "Skopiowano kod"
+  },
+  "callout": {
+    "menuTitle": "Dostosuj wyróżnienie",
+    "title": "Nagłówek",
+    "titlePlaceholder": "Brak nagłówka",
+    "suggestionsLabel": "Sugerowane nagłówki",
+    "suggestions": {
+      "note": "Uwaga",
+      "tip": "Wskazówka",
+      "important": "Ważne",
+      "caution": "Ostrożnie",
+      "warning": "Ostrzeżenie"
+    },
+    "color": "Kolor obramowania: {name}",
+    "emoji": "Ikona {emoji}",
+    "emojiSearch": "Szukaj ikony…"
   },
   "emojiMenu": {
     "search": "Szukaj emoji",
@@ -444,7 +443,10 @@
       "hint": "Tab: kontynuuj listę lub wpisz „/”, aby wyświetlić polecenia…",
       "taskHint": "Tab: kontynuuj listę zadań lub wpisz „/”, aby wyświetlić polecenia…"
     },
-    "commentCount": "{count, plural, one {komentarz} few {komentarze} many {komentarzy} other {komentarza}}"
+    "commentCount": "{count, plural, one {komentarz} few {komentarze} many {komentarzy} other {komentarza}}",
+    "callout": {
+      "edit": "Ikona {emoji}, dostosuj wyróżnienie"
+    }
   },
   "agentEdits": {
     "changed": "Zmieniono przez: {name}",

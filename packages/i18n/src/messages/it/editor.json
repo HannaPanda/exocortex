@@ -60,25 +60,9 @@
       "label": "Tabella",
       "description": "Tabella con riga di intestazione"
     },
-    "callout-info": {
-      "label": "Info",
-      "description": "Riquadro in evidenza (info)"
-    },
-    "callout-note": {
-      "label": "Nota",
-      "description": "Riquadro in evidenza (nota)"
-    },
-    "callout-success": {
-      "label": "Successo",
-      "description": "Riquadro in evidenza (successo)"
-    },
-    "callout-warning": {
+    "callout": {
       "label": "Avviso",
-      "description": "Riquadro in evidenza (avviso)"
-    },
-    "callout-danger": {
-      "label": "Pericolo",
-      "description": "Riquadro in evidenza (pericolo)"
+      "description": "Riquadro in evidenza con icona, titolo e colore"
     },
     "file": {
       "label": "File",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Di base",
     "lists": "Elenchi",
-    "callout": "Avvisi",
     "media": "Elementi multimediali",
     "advanced": "Avanzate"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Nessuna evidenziazione",
     "copy": "Copia codice",
     "copied": "Codice copiato"
+  },
+  "callout": {
+    "menuTitle": "Personalizza avviso",
+    "title": "Titolo",
+    "titlePlaceholder": "Nessun titolo",
+    "suggestionsLabel": "Titoli suggeriti",
+    "suggestions": {
+      "note": "Nota",
+      "tip": "Suggerimento",
+      "important": "Importante",
+      "caution": "Attenzione",
+      "warning": "Avvertenza"
+    },
+    "color": "Colore del bordo: {name}",
+    "emoji": "Icona {emoji}",
+    "emojiSearch": "Cerca un’icona…"
   },
   "emojiMenu": {
     "search": "Cerca emoji",
@@ -444,7 +443,10 @@
       "hint": "Tab: continua l’elenco, oppure digita «/» per i comandi…",
       "taskHint": "Tab: continua l’elenco di attività, oppure digita «/» per i comandi…"
     },
-    "commentCount": "{count, plural, one {commento} many {commenti} other {commenti}}"
+    "commentCount": "{count, plural, one {commento} many {commenti} other {commenti}}",
+    "callout": {
+      "edit": "Icona {emoji}, personalizza avviso"
+    }
   },
   "agentEdits": {
     "changed": "Modificato da {name}",

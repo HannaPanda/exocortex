@@ -60,25 +60,9 @@
       "label": "Tableau",
       "description": "Tableau avec ligne d’en-tête"
     },
-    "callout-info": {
-      "label": "Info",
-      "description": "Encadré mis en valeur (info)"
-    },
-    "callout-note": {
-      "label": "Note",
-      "description": "Encadré mis en valeur (note)"
-    },
-    "callout-success": {
-      "label": "Succès",
-      "description": "Encadré mis en valeur (succès)"
-    },
-    "callout-warning": {
-      "label": "Avertissement",
-      "description": "Encadré mis en valeur (avertissement)"
-    },
-    "callout-danger": {
-      "label": "Danger",
-      "description": "Encadré mis en avant (danger)"
+    "callout": {
+      "label": "Encadré",
+      "description": "Encadré mis en valeur avec icône, titre et couleur"
     },
     "file": {
       "label": "Fichier",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Éléments de base",
     "lists": "Listes",
-    "callout": "Encadrés",
     "media": "Médias",
     "advanced": "Avancé"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Sans coloration",
     "copy": "Copier le code",
     "copied": "Code copié"
+  },
+  "callout": {
+    "menuTitle": "Personnaliser l’encadré",
+    "title": "Titre",
+    "titlePlaceholder": "Sans titre",
+    "suggestionsLabel": "Suggestions de titres",
+    "suggestions": {
+      "note": "Remarque",
+      "tip": "Astuce",
+      "important": "Important",
+      "caution": "Attention",
+      "warning": "Avertissement"
+    },
+    "color": "Couleur de bordure : {name}",
+    "emoji": "Icône {emoji}",
+    "emojiSearch": "Rechercher une icône…"
   },
   "emojiMenu": {
     "search": "Rechercher un émoji",
@@ -444,7 +443,10 @@
       "hint": "Tab : continuer la liste, ou tape « / » pour les commandes…",
       "taskHint": "Tab : continuer la liste de tâches, ou tape « / » pour les commandes…"
     },
-    "commentCount": "{count, plural, one {commentaire} many {commentaires} other {commentaires}}"
+    "commentCount": "{count, plural, one {commentaire} many {commentaires} other {commentaires}}",
+    "callout": {
+      "edit": "Icône {emoji}, personnaliser l’encadré"
+    }
   },
   "agentEdits": {
     "changed": "Modifié par {name}",

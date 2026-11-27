@@ -376,11 +376,12 @@ describe('turnBlockInto another block, on a list item (issue #284)', () => {
     quoted.destroy();
 
     const boxed = createEditor(BULLETS);
-    expect(turnItem(boxed, 'Drei', 'callout-warning')).toBe(true);
+    expect(turnItem(boxed, 'Drei', 'callout')).toBe(true);
     expect(shape(boxed.state.doc)).toBe(
       'paragraph:Oben bulletList[listItem[paragraph:Eins],listItem[paragraph:Zwei]] callout[paragraph:Drei]',
     );
-    expect(boxed.state.doc.lastChild?.attrs.variant).toBe('warning');
+    // A new box starts with the light bulb and no heading (issue #306).
+    expect(boxed.state.doc.lastChild?.attrs.emoji).toBe('💡');
   });
 
   it('takes a conversion back in one undo step', () => {

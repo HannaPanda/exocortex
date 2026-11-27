@@ -6,7 +6,7 @@ import {
   createBlockId,
   isValidBlockId,
 } from '../block-id';
-import { CALLOUT_VARIANTS, DEFAULT_CALLOUT_VARIANT } from '../callout';
+import { calloutAttributesFromHeader } from '../callout';
 import {
   type MarkdownToken,
   type ProseMirrorDocument,
@@ -82,7 +82,9 @@ export interface ParsedDocument {
   title: string | null;
 }
 
-const CALLOUT_HEADER_PATTERN = /^\[!([A-Za-z]+)\][ \t]*([^\n]*)/;
+// Obsidian's fold marker (`[!note]-`) and metadata (`[!note|wide]`) are
+// accepted and dropped: neither has a meaning here.
+const CALLOUT_HEADER_PATTERN = /^\[!([A-Za-z]+)(?:\|[^\]\n]*)?\][+-]?[ \t]*([^\n]*)/;
 const TASK_MARKER_PATTERN = /^\[([ xX])\][ \t]+/;
 
 function createMarkdownIt(): MarkdownItInstance {
@@ -228,7 +230,11 @@ function openBlockquote(
     builder.openNode('blockquote');
     return;
   }
-  const attrs: Record<string, unknown> = { variant: callout.variant, title: callout.title };
+  const attrs: Record<string, unknown> = {
+    emoji: callout.emoji,
+    title: callout.title,
+    color: callout.color,
+  };
   if (callout.blockId !== null) attrs[BLOCK_ID_ATTRIBUTE] = callout.blockId;
   builder.openNode('callout', attrs);
   if (callout.emptyParagraph) builder.skipNextParagraph();
@@ -467,8 +473,9 @@ function isTaskList(tokens: readonly MarkdownItToken[], listOpenIndex: number): 
 }
 
 interface CalloutDetection {
-  variant: string;
+  emoji: string;
   title: string | null;
+  color: string | null;
   blockId: string | null;
   emptyParagraph: boolean;
 }
@@ -493,21 +500,22 @@ function detectCallout(
   const match = CALLOUT_HEADER_PATTERN.exec(inlineToken.content);
   if (match === null) return null;
 
-  const rawVariant = (match[1] ?? '').toLowerCase();
-  const variant = (CALLOUT_VARIANTS as readonly string[]).includes(rawVariant)
-    ? rawVariant
-    : DEFAULT_CALLOUT_VARIANT;
-  const titleSource = (match[2] ?? '').trim();
-  const blockIdMatch = BLOCK_ID_SUFFIX_PATTERN.exec(titleSource);
-  const title =
-    blockIdMatch === null ? titleSource : titleSource.slice(0, blockIdMatch.index).trim();
+  const headerSource = (match[2] ?? '').trim();
+  const blockIdMatch = BLOCK_ID_SUFFIX_PATTERN.exec(headerSource);
+  const header =
+    blockIdMatch === null ? headerSource : headerSource.slice(0, blockIdMatch.index).trim();
+  // The keyword gives the colour (and a symbol when the line names none), the
+  // line the symbol and the heading: `[!warning] ⚠️ Achtung` (issue #306), and
+  // the older `[!warning] Achtung` alike.
+  const { emoji, title, color } = calloutAttributesFromHeader(match[1] ?? '', header);
 
   const consumed = match[0].length;
   const emptyParagraph = stripLeadingText(inlineToken, consumed);
 
   return {
-    variant,
-    title: title.length > 0 ? title : null,
+    emoji,
+    title,
+    color,
     blockId: blockIdMatch === null ? null : (blockIdMatch[1] as string),
     emptyParagraph,
   };

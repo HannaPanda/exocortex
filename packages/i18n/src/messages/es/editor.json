@@ -60,25 +60,9 @@
       "label": "Tabla",
       "description": "Tabla con fila de encabezado"
     },
-    "callout-info": {
-      "label": "Información",
-      "description": "Cuadro destacado (información)"
-    },
-    "callout-note": {
-      "label": "Nota",
-      "description": "Cuadro destacado (nota)"
-    },
-    "callout-success": {
-      "label": "Éxito",
-      "description": "Cuadro destacado (éxito)"
-    },
-    "callout-warning": {
-      "label": "Advertencia",
-      "description": "Cuadro destacado (advertencia)"
-    },
-    "callout-danger": {
-      "label": "Peligro",
-      "description": "Cuadro destacado (peligro)"
+    "callout": {
+      "label": "Aviso",
+      "description": "Recuadro destacado con icono, título y color"
     },
     "file": {
       "label": "Archivo",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Básicos",
     "lists": "Listas",
-    "callout": "Avisos",
     "media": "Multimedia",
     "advanced": "Avanzado"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "Sin resaltado",
     "copy": "Copiar código",
     "copied": "Código copiado"
+  },
+  "callout": {
+    "menuTitle": "Personalizar aviso",
+    "title": "Título",
+    "titlePlaceholder": "Sin título",
+    "suggestionsLabel": "Títulos sugeridos",
+    "suggestions": {
+      "note": "Nota",
+      "tip": "Consejo",
+      "important": "Importante",
+      "caution": "Atención",
+      "warning": "Advertencia"
+    },
+    "color": "Color del borde: {name}",
+    "emoji": "Icono {emoji}",
+    "emojiSearch": "Buscar icono…"
   },
   "emojiMenu": {
     "search": "Buscar emoji",
@@ -444,7 +443,10 @@
       "hint": "Tab: continuar la lista o escribe «/» para ver comandos…",
       "taskHint": "Tab: continuar la lista de tareas o escribe «/» para ver comandos…"
     },
-    "commentCount": "{count, plural, one {comentario} many {comentarios} other {comentarios}}"
+    "commentCount": "{count, plural, one {comentario} many {comentarios} other {comentarios}}",
+    "callout": {
+      "edit": "Icono {emoji}, personalizar aviso"
+    }
   },
   "agentEdits": {
     "changed": "Modificado por {name}",

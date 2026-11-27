@@ -60,25 +60,9 @@
       "label": "Table",
       "description": "Table with header row"
     },
-    "callout-info": {
-      "label": "Info",
-      "description": "Callout box (info)"
-    },
-    "callout-note": {
-      "label": "Note",
-      "description": "Callout box (note)"
-    },
-    "callout-success": {
-      "label": "Success",
-      "description": "Callout box (success)"
-    },
-    "callout-warning": {
-      "label": "Warning",
-      "description": "Callout box (warning)"
-    },
-    "callout-danger": {
-      "label": "Danger",
-      "description": "Callout box (danger)"
+    "callout": {
+      "label": "Callout",
+      "description": "Highlighted box with icon, title, and color"
     },
     "file": {
       "label": "File",
@@ -144,7 +128,6 @@
   "blockGroups": {
     "basic": "Basic",
     "lists": "Lists",
-    "callout": "Callouts",
     "media": "Media",
     "advanced": "Advanced"
   },
@@ -284,6 +267,22 @@
     "noHighlighting": "No highlighting",
     "copy": "Copy code",
     "copied": "Code copied"
+  },
+  "callout": {
+    "menuTitle": "Customize callout",
+    "title": "Title",
+    "titlePlaceholder": "No title",
+    "suggestionsLabel": "Suggested titles",
+    "suggestions": {
+      "note": "Note",
+      "tip": "Tip",
+      "important": "Important",
+      "caution": "Caution",
+      "warning": "Warning"
+    },
+    "color": "Border color: {name}",
+    "emoji": "Icon {emoji}",
+    "emojiSearch": "Search icon …"
   },
   "emojiMenu": {
     "search": "Search emoji",
@@ -444,7 +443,10 @@
       "hint": "Tab: continue list, or type “/” for commands …",
       "taskHint": "Tab: continue task list, or type “/” for commands …"
     },
-    "commentCount": "{count, plural, one {comment} other {comments}}"
+    "commentCount": "{count, plural, one {comment} other {comments}}",
+    "callout": {
+      "edit": "Icon {emoji}, customize callout"
+    }
   },
   "agentEdits": {
     "changed": "Changed by {name}",

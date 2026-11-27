@@ -1,7 +1,5 @@
 import { type Editor } from '@tiptap/core';
 
-import { CALLOUT_VARIANTS, type CalloutVariant } from './callout';
-
 /**
  * The block catalog: one description of every block a writer can insert or
  * convert into.
@@ -56,7 +54,7 @@ export const BLOCK_ICON_NAMES = [
 export type BlockIconName = (typeof BLOCK_ICON_NAMES)[number];
 
 /** Menu sections, in the order they are shown. */
-export const BLOCK_GROUPS = ['basic', 'lists', 'callout', 'media', 'advanced'] as const;
+export const BLOCK_GROUPS = ['basic', 'lists', 'media', 'advanced'] as const;
 
 export type BlockGroup = (typeof BLOCK_GROUPS)[number];
 
@@ -64,7 +62,6 @@ export type BlockGroup = (typeof BLOCK_GROUPS)[number];
 export const BLOCK_GROUP_LABELS: Readonly<Record<BlockGroup, string>> = {
   basic: 'Grundlagen',
   lists: 'Listen',
-  callout: 'Hinweise',
   media: 'Medien',
   advanced: 'Erweitert',
 };
@@ -123,23 +120,6 @@ export interface BlockCatalogEntry {
   /** Whether the current selection already is this block. */
   isActive?: (editor: Editor) => boolean;
 }
-
-/** German labels for the callout variants, used by the catalog and the menus. */
-export const CALLOUT_LABELS: Readonly<Record<CalloutVariant, string>> = {
-  info: 'Hinweis',
-  note: 'Notiz',
-  success: 'Erfolg',
-  warning: 'Warnung',
-  danger: 'Gefahr',
-};
-
-const CALLOUT_ICONS: Readonly<Record<CalloutVariant, BlockIconName>> = {
-  info: 'Info',
-  note: 'Lightbulb',
-  success: 'CircleCheck',
-  warning: 'TriangleAlert',
-  danger: 'OctagonAlert',
-};
 
 /** Blocks contributed by the `core-structure` unit. */
 export const coreStructureBlocks: readonly BlockCatalogEntry[] = [
@@ -282,19 +262,49 @@ export const tableBlocks: readonly BlockCatalogEntry[] = [
   },
 ];
 
-/** Blocks contributed by the `callout` unit. */
-export const calloutBlocks: readonly BlockCatalogEntry[] = CALLOUT_VARIANTS.map((variant) => ({
-  id: `callout-${variant}`,
-  label: CALLOUT_LABELS[variant],
-  description: `Hervorgehobener Kasten (${CALLOUT_LABELS[variant].toLowerCase()})`,
-  keywords: ['hinweis', 'callout', 'kasten', 'box', 'admonition', variant],
-  group: 'callout' as const,
-  icon: CALLOUT_ICONS[variant],
-  prompt: 'none' as const,
-  turnInto: true,
-  run: (editor: Editor) => editor.chain().focus().setCallout({ variant }).run(),
-  isActive: (editor: Editor) => editor.isActive('callout', { variant }),
-}));
+/**
+ * Blocks contributed by the `callout` unit: one entry (issue #306).
+ *
+ * There used to be one per variant, five entries for one box in five colours.
+ * Now a callout starts with the light bulb and no heading, and its symbol,
+ * heading and colour are chosen on the box itself.
+ */
+export const calloutBlocks: readonly BlockCatalogEntry[] = [
+  {
+    id: 'callout',
+    label: 'Hinweis',
+    description: 'Hervorgehobener Kasten mit Symbol, Überschrift und Farbe',
+    // Every name the five old variants and their usual synonyms went by, so
+    // the word somebody typed for the box they meant still finds it.
+    keywords: [
+      'hinweis',
+      'callout',
+      'kasten',
+      'box',
+      'admonition',
+      'alert',
+      'info',
+      'notiz',
+      'note',
+      'tipp',
+      'tip',
+      'wichtig',
+      'important',
+      'warning',
+      'caution',
+      'gefahr',
+      'danger',
+      'erfolg',
+      'success',
+    ],
+    group: 'basic',
+    icon: 'Lightbulb',
+    prompt: 'none',
+    turnInto: true,
+    run: (editor: Editor) => editor.chain().focus().setCallout().run(),
+    isActive: (editor: Editor) => editor.isActive('callout'),
+  },
+];
 
 /** Groups a flat catalog into the menu sections, dropping empty ones. */
 export function groupBlockCatalog(

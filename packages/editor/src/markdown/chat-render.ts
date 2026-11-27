@@ -38,8 +38,8 @@ const ALLOWED_MARK_TYPES: ReadonlySet<string> = new Set(['bold', 'italic', 'code
  * A `taskList`/`taskItem` degrades to a plain `bulletList`/`listItem`: the
  * parser already moved the `[ ]` / `[x]` marker into an attribute this module
  * does not carry over, so the remaining text is ordinary list content. A
- * `callout` degrades to a `blockquote` the same way, dropping its title and
- * variant.
+ * `callout` degrades to a `blockquote` the same way, dropping its symbol,
+ * heading and colour.
  */
 const TYPE_FALLBACKS: Readonly<Record<string, string>> = {
   taskList: 'bulletList',
