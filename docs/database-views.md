@@ -603,6 +603,15 @@ The value is an ordinary stored value, never a formula (ADR-041).
   write. Every row answer carries `aiCells` (`aiCellsOfRows` in
   `apps/api/src/databases/ai-fill/ai-cells.ts`): `pending`, `failed` with its
   code, `empty`, or `filled` with the time, for the table to draw.
+- **Filling itself.** `autoFill` `on_create` fills a new row's cell,
+  `on_change` also renews it when the row's title or text changes (never on a
+  value write). The outbox dispatcher queues a debounced `auto` job per row;
+  the worker asks `POST /api/documents/:id/ai-fills/auto`, answered only to its
+  own service token, as the account that wrote the instruction last
+  (`updatedById`), and `AiFillService.startAutomatic` starts a batch of that
+  row in `replace_ai` with origin `automatic`, so a person's value is never
+  overwritten and the author's rights bound what is read and written. Not an
+  automation rule: ADR-099 says why.
 - **In the browser.** `apps/web/src/components/database/ai-fill.tsx`.
   `useAiFillControls` holds the two dialogs the column menu, a cell, the
   selection bar and the palette all open: the instruction (preset, own words,

@@ -4,6 +4,7 @@ import { withSpan } from '@exocortex/logger';
 
 import { startMatchingWorkflows } from '../../workflows/triggers';
 
+import { scheduleAiAutoFills } from './ai-auto-fill';
 import { fireMatchingAutomations } from './automations';
 import { scheduleCommentNotifications } from './comment-notifications';
 import { isMissingRow, type MaintenanceTask } from './context';
@@ -145,6 +146,23 @@ async function dispatchEvent(
       enabledFor: async (workspaceId) => (await context.settings(workspaceId))['overview.enabled'],
       debounceSecondsFor: async (workspaceId) =>
         (await context.settings(workspaceId))['overview.debounceSeconds'],
+    },
+    {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+    },
+  );
+  // A database column that fills itself hangs off the outbox too (issue
+  // #237, ADR-099), and deliberately not off the automations above: it is a
+  // property of the column, paid like a run and written as the instruction's
+  // author. A database without such a column pays for one indexed read.
+  await scheduleAiAutoFills(
+    {
+      prisma,
+      queues,
+      enabledFor: async (workspaceId) => (await context.settings(workspaceId))['ai.enabled'],
     },
     {
       workspaceId: event.workspaceId,

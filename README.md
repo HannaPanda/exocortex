@@ -82,7 +82,8 @@ What is deliberately still missing is listed under
   request; a column can carry an AI instruction (a preset such as summary,
   tags or the document's date, or its own words), and a batch fills its cells
   from each row's page, values and files, type-checked and marked as the AI's,
-  never over a person's value unless asked, paid and counted as a run
+  never over a person's value unless asked, paid and counted as a run, and
+  on the column's say-so by itself for new or changed rows
   (ADR-099; from a column's menu, a cell, a selection, the palette and
   the agents' tools)
 - entities, their candidates and page links, in their own workspace-wide screen

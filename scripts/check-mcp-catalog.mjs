@@ -316,6 +316,11 @@ const EXEMPT = [
       "What the model may read for one cell of an AI fill (issue #237, ADR-099). Answered only to the worker's service token of that very batch, whose run id is signed into it; any other caller is refused (`ai_fill_worker_only`). Machinery of the batch, like a tool loop's own turns: an agent reads a cell's row with `exo_database_row_get` and a batch with `exo_database_ai_fill_status`.",
   },
   {
+    route: 'POST /api/documents/:x/ai-fills/auto',
+    reason:
+      "The automatic fill of one row (issue #237, ADR-099), started by the worker after the outbox saw a row of a database with a self-filling column created or changed. Answered only to the worker's own service token, as the column's instruction author; a person's session, an `exo_` token and a run's tool loop are refused (`ai_fill_worker_only`). A column fills itself because `autoFill` says so, which an agent sets with `exo_database_property_ai_set`; filling a row on request is `exo_database_ai_fill_start`.",
+  },
+  {
     route: 'POST /api/ai-fills/:x/cells/:x/result',
     reason:
       "The model's answer for one cell of an AI fill (issue #237, ADR-099), checked and written by the API. Reserved to the worker's service token of that batch for the same reason as the material route: a tool that wrote here would be a way to write a cell under a batch's name. An agent writes a cell with `exo_database_row_update`.",

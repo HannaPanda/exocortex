@@ -468,4 +468,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 57 documented route exemptions.
+Counted against 58 documented route exemptions.

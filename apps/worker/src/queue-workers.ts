@@ -285,6 +285,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       settings: readSettings,
       providerFor,
       runApiClientFor: runtime.runApiClientFor,
+      apiClientFor: runtime.apiClientFor,
     }),
   });
 

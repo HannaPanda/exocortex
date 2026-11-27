@@ -6,8 +6,10 @@ import {
   aiFillCellResultResponseSchema,
   type AiFillMaterial,
   aiFillMaterialSchema,
+  aiFillStartResponseSchema,
   type AiRunStatus,
   type AiUsage,
+  type DatabaseAiFillJob,
   parseAiFillAnswerText,
   type QUEUE_NAMES,
   type Settings,
@@ -22,6 +24,7 @@ import { type ResolvedAiKey, WorkspaceKeyUnreadableError } from '../ai-key';
 import { estimateCostMicroUsd } from './ai-run/completion';
 import { keyRefusalReason, ownKeyPays } from './ai-run/provider-refusal';
 import { buildAiFillPrompt } from './database-ai-fill-prompt';
+import { columnValuesFor } from './maintenance-tasks/ai-auto-fill';
 
 /** Cells asked at the same time. Small: a batch is not meant to race a chat for the provider. */
 const CELL_CONCURRENCY = 3;
@@ -43,6 +46,8 @@ export interface DatabaseAiFillDependencies {
   ) => Promise<{ provider: AiProvider; key: ResolvedAiKey; openRouter?: AiProvider }>;
   /** A client for the person who started the batch, its token carrying the batch's id. */
   runApiClientFor: ((userId: string, runId: string) => ExocortexApiClient) | null;
+  /** A client for a column's instruction author, to start its automatic fill. */
+  apiClientFor: ((userId: string) => ExocortexApiClient) | null;
 }
 
 /** Why a batch stopped before its last cell, as the cells left over record it. */
@@ -68,11 +73,8 @@ export function createDatabaseAiFillProcessor(
   dependencies: DatabaseAiFillDependencies,
 ): JobHandler<typeof QUEUE_NAMES.databaseAiFill> {
   return async ({ payload, logger }) => {
-    if (payload.kind !== 'run') {
-      // The column-driven trigger arrives in a later stage of #237; a job of
-      // that kind enqueued by a newer build is dropped, not failed.
-      logger.info('AI fill trigger skipped: not handled by this build', { kind: payload.kind });
-      return { outcome: 'skipped' };
+    if (payload.kind === 'auto') {
+      return { outcome: await startAutomaticFills(dependencies, payload, logger) };
     }
     const run = await loadBatch(dependencies.prisma, payload.runId);
     if (run === null) {
@@ -84,6 +86,58 @@ export function createDatabaseAiFillProcessor(
     const batch = new FillBatch(dependencies, run, logger, payload.correlationId);
     return { outcome: await batch.run() };
   };
+}
+
+type AutoJob = Extract<DatabaseAiFillJob, { kind: 'auto' }>;
+
+/**
+ * A row of a database with a self-filling column was created or changed
+ * (queued by the outbox dispatcher, debounced per row): asks the API to start
+ * one batch per column that answers this trigger, each as the account that
+ * wrote that column's instruction. The API decides the rest exactly as for a
+ * batch somebody started, in `replace_ai`; a refusal (the author may no
+ * longer change the row, the AI was switched off, the column changed since)
+ * is an answer, not a failure, so the job never retries into a loop.
+ */
+async function startAutomaticFills(
+  dependencies: DatabaseAiFillDependencies,
+  payload: AutoJob,
+  logger: Logger,
+): Promise<'started' | 'skipped'> {
+  const clientFor = dependencies.apiClientFor;
+  if (clientFor === null) {
+    logger.warn('Automatic AI fill skipped: SERVICE_TOKEN_SECRET is not configured');
+    return 'skipped';
+  }
+  const columns = await dependencies.prisma.databaseProperty.findMany({
+    where: {
+      documentId: payload.databaseId,
+      ai: { autoFill: { in: columnValuesFor(payload.trigger) }, updatedById: { not: null } },
+    },
+    select: { id: true, ai: { select: { updatedById: true } } },
+  });
+  let started = 0;
+  for (const column of columns) {
+    const authorId = column.ai?.updatedById;
+    if (authorId === null || authorId === undefined) continue;
+    try {
+      const answer = await clientFor(authorId).request({
+        method: 'POST',
+        path: `/api/documents/${payload.databaseId}/ai-fills/auto`,
+        body: { propertyId: column.id, rowId: payload.rowId, trigger: payload.trigger },
+        responseSchema: aiFillStartResponseSchema,
+      });
+      if (answer.run !== null) started += 1;
+    } catch (error) {
+      if (!(error instanceof ExocortexApiError)) throw error;
+      logger.info('Automatic AI fill not started', {
+        propertyId: column.id,
+        rowId: payload.rowId,
+        code: error.code,
+      });
+    }
+  }
+  return started > 0 ? 'started' : 'skipped';
 }
 
 type BatchRow = NonNullable<Awaited<ReturnType<typeof loadBatch>>>;
