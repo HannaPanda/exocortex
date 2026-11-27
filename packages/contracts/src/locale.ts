@@ -80,6 +80,16 @@ export type OutlineTransparency = z.infer<typeof outlineTransparencySchema>;
 export const DEFAULT_OUTLINE_TRANSPARENCY: OutlineTransparency = 'none';
 
 /**
+ * Whether an overlaid outline steps aside for the line being written on
+ * (issue #283): with the caret on a line the list covers, the list moves up
+ * or down out of the way. On by default, because it only acts on a list the
+ * reader already chose to lay over the text, and a hidden caret is the one
+ * thing that choice should not cost. Only read while `outlinePinned` is
+ * `overlay`.
+ */
+export const DEFAULT_OUTLINE_DODGE = true;
+
+/**
  * The account's own settings that belong to the person rather than to a
  * workspace or a device: the interface language, how the AI chat scrolls and
  * how a pinned page outline behaves.
@@ -92,6 +102,7 @@ export const userPreferencesSchema = z.object({
   chatScroll: chatScrollModeSchema,
   outlinePinned: outlinePinnedModeSchema,
   outlineTransparency: outlineTransparencySchema,
+  outlineDodge: z.boolean(),
 });
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
@@ -107,6 +118,7 @@ export const updateUserPreferencesRequestSchema = z
     chatScroll: chatScrollModeSchema.optional(),
     outlinePinned: outlinePinnedModeSchema.optional(),
     outlineTransparency: outlineTransparencySchema.optional(),
+    outlineDodge: z.boolean().optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: 'At least one field must be provided',

@@ -58,6 +58,8 @@ function renderPreferences(result: UserPreferences): string {
     `Angepinnte Gliederung: ${describeOutlinePinned(result.outlinePinned)}.`,
     `Transparenz der überlagernden Gliederung: ${TRANSPARENCY_WORDS[result.outlineTransparency]}` +
       (result.outlinePinned === 'overlay' ? '.' : ', wirkt nur beim Überlagern.'),
+    `Ausweichen für die Schreibzeile: ${result.outlineDodge ? 'an' : 'aus'}` +
+      (result.outlinePinned === 'overlay' ? '.' : ', wirkt nur beim Überlagern.'),
   ].join('\n');
 }
 
@@ -70,7 +72,7 @@ export const userPreferencesTool: AnyToolDefinition = defineTool({
     'gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. chatScroll ist follow ' +
     '(mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben). outlinePinned ist ' +
     'column (eigene Spalte, der Text weicht aus, Standard) oder overlay (über dem Text), ' +
-    'outlineTransparency none, light oder strong.',
+    'outlineTransparency none, light oder strong, outlineDodge true oder false.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
@@ -98,7 +100,9 @@ export const userPreferencesSetTool: AnyToolDefinition = defineTool({
     'weicht aus, Standard) oder overlay (sie liegt über dem Text und verdeckt ihn, wo der Rand ' +
     'nicht reicht). outlineTransparency: none (deckend, Standard), light oder strong (der ' +
     'verdeckte Text scheint durch; unter der Maus oder mit Tastaturfokus wird die Gliederung ' +
-    'wieder voll sichtbar); wirkt nur bei overlay.',
+    'wieder voll sichtbar); wirkt nur bei overlay. outlineDodge: true (Standard) lässt die ' +
+    'überlagernde Gliederung nach oben oder unten ausweichen, sobald der Cursor in einer Zeile ' +
+    'steht, die sie verdecken würde; false lässt sie stehen; wirkt nur bei overlay.',
   inputSchema: updateUserPreferencesRequestSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',

@@ -223,6 +223,7 @@ describe('user preferences contract (issue #282)', () => {
         chatScroll: 'follow',
         outlinePinned: 'column',
         outlineTransparency: 'none',
+        outlineDodge: true,
       }).chatScroll,
     ).toBe('follow');
   });
@@ -238,6 +239,13 @@ describe('outline preferences contract (issue #283)', () => {
     });
     expect(() => updateUserPreferencesRequestSchema.parse({ outlinePinned: 'beside' })).toThrow();
     expect(() => updateUserPreferencesRequestSchema.parse({ outlineTransparency: 0.5 })).toThrow();
+  });
+
+  it('switches stepping aside for the caret on and off, and nothing else', () => {
+    expect(updateUserPreferencesRequestSchema.parse({ outlineDodge: false })).toEqual({
+      outlineDodge: false,
+    });
+    expect(() => updateUserPreferencesRequestSchema.parse({ outlineDodge: 'yes' })).toThrow();
   });
 });
 

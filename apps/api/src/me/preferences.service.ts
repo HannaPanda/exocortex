@@ -66,6 +66,7 @@ export class PreferencesService {
         chatScroll: true,
         outlinePinned: true,
         outlineTransparency: true,
+        outlineDodge: true,
       },
     });
     if (user === null)
@@ -75,6 +76,7 @@ export class PreferencesService {
       chatScroll: CHAT_SCROLL_FROM_ROW[user.chatScroll],
       outlinePinned: OUTLINE_PINNED_FROM_ROW[user.outlinePinned],
       outlineTransparency: OUTLINE_TRANSPARENCY_FROM_ROW[user.outlineTransparency],
+      outlineDodge: user.outlineDodge,
     };
   }
 
@@ -93,6 +95,7 @@ export class PreferencesService {
         ...(body.outlineTransparency === undefined
           ? {}
           : { outlineTransparency: OUTLINE_TRANSPARENCY_TO_ROW[body.outlineTransparency] }),
+        ...(body.outlineDodge === undefined ? {} : { outlineDodge: body.outlineDodge }),
       },
     });
     return this.get(userId);
