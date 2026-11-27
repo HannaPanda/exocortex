@@ -145,11 +145,31 @@ export type UploadAttachmentFields = z.infer<typeof uploadAttachmentFieldsSchema
  * performs on somebody else's behalf (`checkPublicAddress`, ADR-033), before
  * the request is made and again after each redirect.
  */
+/**
+ * A FILES column of the row `documentId` is (issue #245). With it the file
+ * goes into that cell: it hangs on the row's page like any of its files, but
+ * it is not part of the page's text, and it is collected once the cell stops
+ * naming it. Without it a file only hangs on the page.
+ *
+ * One optional field on every upload rather than a route per target, so the
+ * browser's cell, an agent's Base64 or URL upload and an upload ticket all
+ * take the same path through the same checks.
+ */
+export const uploadPropertyTargetSchema = idSchema
+  .nullable()
+  .default(null)
+  .describe(
+    'Optional: die Kennung einer Dateien-Spalte (Typ FILES) der Datenbank, deren Zeile documentId ist. ' +
+      'Dann landet die Datei in dieser Zelle der Zeile, nicht im Text der Seite; mehrere Uploads ' +
+      'hängen sich hinten an. documentId muss dann die Zeile sein.',
+  );
+
 export const uploadAttachmentFromUrlRequestSchema = z.object({
   url: z.string().url().max(2048),
   documentId: idSchema.nullable().default(null),
   /** Overrides the name derived from the address. The extension is still the file's. */
   filename: z.string().min(1).max(255).nullable().default(null),
+  propertyId: uploadPropertyTargetSchema,
 });
 export type UploadAttachmentFromUrlRequest = z.infer<typeof uploadAttachmentFromUrlRequestSchema>;
 
@@ -176,6 +196,7 @@ export const createUploadTicketRequestSchema = z.object({
   documentId: idSchema,
   /** Overrides the name the upload carries. The extension is still the file's. */
   filename: z.string().min(1).max(255).nullable().default(null),
+  propertyId: uploadPropertyTargetSchema,
 });
 export type CreateUploadTicketRequest = z.infer<typeof createUploadTicketRequestSchema>;
 
@@ -193,6 +214,8 @@ export const uploadTicketSchema = z.object({
   workspaceId: idSchema,
   documentId: idSchema.nullable(),
   filename: z.string().nullable(),
+  /** The FILES column the file goes into, when the ticket names one (issue #245). */
+  propertyId: idSchema.nullable(),
   state: uploadTicketStateSchema,
   expiresAt: z.string(),
   usedAt: z.string().nullable(),

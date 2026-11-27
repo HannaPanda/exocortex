@@ -48,6 +48,7 @@ import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { projectAttachmentText } from './attachment-text-projection';
+import { CellFilesService } from './cell-files.service';
 import { fetchRemoteFile } from './remote-file';
 
 export interface UploadInput {
@@ -74,6 +75,13 @@ export interface UploadInput {
    * the web's, so it never counts as the uploader's own (ADR-096).
    */
   fetchedFromUrl?: boolean;
+  /**
+   * A FILES column of the row `documentId` is (issue #245): the file goes
+   * into that cell. It still hangs on the row's page, so it ends with the row,
+   * and it is marked as the cell's, so the sweep collects it once no value
+   * names it any more.
+   */
+  propertyId?: string | null;
 }
 
 /**
@@ -97,6 +105,7 @@ export class AttachmentsService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly settings: SettingsService,
+    private readonly cellFiles: CellFilesService,
   ) {}
 
   async upload(input: UploadInput): Promise<UploadAttachmentResponse> {
@@ -118,6 +127,7 @@ export class AttachmentsService {
       throw new AppError(
         'payload_too_large',
         `The file exceeds the maximum upload size of ${this.env.MAX_UPLOAD_BYTES} bytes`,
+        { maxBytes: this.env.MAX_UPLOAD_BYTES },
       );
     }
 
@@ -135,6 +145,10 @@ export class AttachmentsService {
     }
 
     await this.assertAttachTarget(input.workspaceId, input.documentId);
+    // A file for a database cell (issue #245). Asked only when one is named,
+    // so an ordinary upload never reaches the cell's checks.
+    const cell =
+      (input.propertyId ?? null) === null ? null : await this.cellFiles.resolveTarget(input);
 
     const filename = sanitizeFilename(input.filename, detected.extension);
 
@@ -161,6 +175,7 @@ export class AttachmentsService {
         createdById: input.userId,
         conversationId: input.conversationId ?? null,
         fetchedFromUrl: input.fetchedFromUrl ?? false,
+        propertyId: cell?.propertyId ?? null,
         ...(extractionEnabled ? { textStatus: 'PENDING' } : {}),
       },
     });
@@ -215,6 +230,15 @@ export class AttachmentsService {
         attachmentId: attachment.id,
         workspaceId: input.workspaceId,
         reason: 'upload',
+      });
+    }
+
+    if (cell !== null) {
+      await this.cellFiles.putIntoCell({
+        cell,
+        attachmentId: stored.id,
+        workspaceId: input.workspaceId,
+        correlationId: input.correlationId,
       });
     }
 
@@ -294,6 +318,14 @@ export class AttachmentsService {
       input.request.documentId,
     );
     assertPolicy(canUploadFile(role));
+    // A wrong cell is refused before anything is fetched, too (issue #245).
+    if (input.request.propertyId !== null) {
+      await this.cellFiles.resolveTarget({
+        userId: input.userId,
+        documentId: input.request.documentId,
+        propertyId: input.request.propertyId,
+      });
+    }
 
     const fetched = await fetchRemoteFile(input.request.url, {
       maxBytes: this.env.MAX_UPLOAD_BYTES,
@@ -317,6 +349,7 @@ export class AttachmentsService {
       body: fetched.body,
       correlationId: input.correlationId,
       fetchedFromUrl: true,
+      propertyId: input.request.propertyId,
     });
   }
 

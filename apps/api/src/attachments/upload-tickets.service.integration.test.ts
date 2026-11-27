@@ -7,9 +7,11 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
 import { currentPageScopeRestriction, runWithRequestContext } from '../common/correlation';
-import { type OutboxService } from '../common/outbox.service';
+import { OutboxService } from '../common/outbox.service';
+import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AttachmentsService } from './attachments.service';
+import { CellFilesService } from './cell-files.service';
 import { type TicketMinter, UploadTicketsService } from './upload-tickets.service';
 
 /**
@@ -108,6 +110,10 @@ beforeAll(async () => {
     putObject: async () => undefined,
     createDownloadUrl: async () => 'https://storage.test/object',
   };
+  // A real one: a ticket may name a database cell (issue #245).
+  const cellFiles = new CellFilesService(prisma, access, new OutboxService(prisma, logger), {
+    emit: async () => undefined,
+  } as unknown as RealtimeService);
   const attachments = new AttachmentsService(
     prisma,
     storage as unknown as ConstructorParameters<typeof AttachmentsService>[1],
@@ -117,10 +123,11 @@ beforeAll(async () => {
     // settings are reached by these uploads.
     {} as unknown as ConstructorParameters<typeof AttachmentsService>[4],
     access,
-    {} as unknown as OutboxService,
+    new OutboxService(prisma, logger),
     { getKey: async () => false } as unknown as ConstructorParameters<typeof AttachmentsService>[7],
+    cellFiles,
   );
-  tickets = new UploadTicketsService(prisma, env, logger, access, attachments);
+  tickets = new UploadTicketsService(prisma, env, logger, access, attachments, cellFiles);
 
   const suffix = Date.now().toString(36);
   const [owner, stranger] = await Promise.all([
@@ -184,7 +191,7 @@ describe('minting and redeeming', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(token.id),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     expect(minted.ticket.state).toBe('open');
@@ -210,12 +217,68 @@ describe('minting and redeeming', () => {
     ).rejects.toMatchObject({ code: 'upload_ticket_invalid' });
   });
 
+  it('puts the file into a database cell when the ticket names its column (issue #245)', async () => {
+    const collection = await prisma.document.create({
+      data: {
+        workspaceId,
+        type: 'COLLECTION',
+        title: 'Belege',
+        orderKey: 'a0',
+        createdById: ownerId,
+        updatedById: ownerId,
+      },
+    });
+    const row = await prisma.document.create({
+      data: {
+        workspaceId,
+        parentId: collection.id,
+        type: 'PAGE',
+        title: 'Zeile',
+        orderKey: 'a0',
+        createdById: ownerId,
+        updatedById: ownerId,
+      },
+    });
+    const files = await prisma.databaseProperty.create({
+      data: { documentId: collection.id, name: 'Dateien', type: 'FILES', orderKey: 'a0' },
+    });
+    const text = await prisma.databaseProperty.create({
+      data: { documentId: collection.id, name: 'Text', type: 'TEXT', orderKey: 'a1' },
+    });
+
+    await expect(
+      inRequest(() =>
+        tickets.mint({
+          workspaceId,
+          minter: minterFor(undefined),
+          request: { propertyId: text.id, documentId: row.id, filename: null },
+        }),
+      ),
+    ).rejects.toMatchObject({ code: 'database_files_target_invalid' });
+
+    const minted = await inRequest(() =>
+      tickets.mint({
+        workspaceId,
+        minter: minterFor(undefined),
+        request: { propertyId: files.id, documentId: row.id, filename: null },
+      }),
+    );
+    expect(minted.ticket.propertyId).toBe(files.id);
+    const uploaded = await inRequest(() =>
+      tickets.redeem(secretOf(minted.uploadUrl), multipartRequest('Beleg')),
+    );
+    const value = await prisma.documentPropertyValue.findUniqueOrThrow({
+      where: { documentId_propertyId: { documentId: row.id, propertyId: files.id } },
+    });
+    expect(value.jsonValue).toEqual([uploaded.attachment.id]);
+  });
+
   it('takes the filename from the ticket when it names one', async () => {
     const minted = await inRequest(() =>
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: pageId, filename: 'bericht' },
+        request: { propertyId: null, documentId: pageId, filename: 'bericht' },
       }),
     );
     const uploaded = await inRequest(() =>
@@ -229,7 +292,7 @@ describe('minting and redeeming', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     await prisma.attachmentUploadTicket.update({
@@ -252,7 +315,7 @@ describe('minting and redeeming', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     const secret = secretOf(minted.uploadUrl);
@@ -274,7 +337,7 @@ describe('acting as the credential that minted it', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(token.id),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     await prisma.apiToken.update({ where: { id: token.id }, data: { revokedAt: new Date() } });
@@ -289,7 +352,7 @@ describe('acting as the credential that minted it', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(token.id),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     await prisma.apiToken.update({ where: { id: token.id }, data: { scopes: ['read'] } });
@@ -307,7 +370,7 @@ describe('acting as the credential that minted it', () => {
           tickets.mint({
             workspaceId,
             minter: minterFor(token.id),
-            request: { documentId: otherPageId, filename: null },
+            request: { propertyId: null, documentId: otherPageId, filename: null },
           }),
         token.restriction,
       ),
@@ -318,7 +381,7 @@ describe('acting as the credential that minted it', () => {
         tickets.mint({
           workspaceId,
           minter: minterFor(token.id),
-          request: { documentId: pageId, filename: null },
+          request: { propertyId: null, documentId: pageId, filename: null },
         }),
       token.restriction,
     );
@@ -334,7 +397,7 @@ describe('acting as the credential that minted it', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: ownerId } });
@@ -357,7 +420,7 @@ describe('acting as the credential that minted it', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined, soon),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     expect(new Date(minted.ticket.expiresAt).getTime()).toBe(soon.getTime());
@@ -370,7 +433,7 @@ describe('reading a ticket', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: pageId, filename: null },
+        request: { propertyId: null, documentId: pageId, filename: null },
       }),
     );
     const own = await inRequest(() => tickets.get(minted.ticket.id, ownerId));
@@ -400,7 +463,7 @@ describe('reading a ticket', () => {
           tickets.mint({
             workspaceId,
             minter: minterFor(undefined),
-            request: { documentId: foreign.id, filename: null },
+            request: { propertyId: null, documentId: foreign.id, filename: null },
           }),
         ),
       ).rejects.toMatchObject({ code: 'document_cross_workspace' });

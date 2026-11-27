@@ -17,6 +17,8 @@
     "database_property_config_invalid": "Esta columna no se puede calcular así. Comprueba la relación, el Rollup o la fórmula.",
     "database_property_in_use": "Una columna de Rollup o de fórmula todavía está usando esta columna.",
     "database_property_date_range_in_use": "Algunas entradas tienen fecha de finalización. Elimina las fechas de finalización antes de desactivar el intervalo de fechas.",
+    "database_files_target_invalid": "No se pueden subir archivos a esta columna.",
+    "database_files_foreign": "Una celda solo admite archivos que se hayan subido directamente a ella.",
     "collaboration_ticket_invalid": "Se ha rechazado la conexión para la edición en directo.",
     "collaboration_ticket_expired": "La conexión para la edición en directo ha caducado.",
     "collaboration_read_only": "Esta página es de solo lectura.",

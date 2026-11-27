@@ -1792,8 +1792,16 @@ model Attachment {
   /// (`uploadFromUrl`): its text is the web's, so it is never the person's own.
   fetchedFromUrl Boolean              @default(false)
 
+  /// Set when the file was uploaded into a FILES column of the row it hangs
+  /// on (issue #245): it belongs to the cell, not to the page's text. The
+  /// sweep collects such a file once no value of that column names it any
+  /// more. A plain column, not a relation, so the mark outlives a deleted
+  /// column, which is exactly when its files have to go.
+  propertyId     String?
+
   @@index([workspaceId, createdAt])
   @@index([documentId])
+  @@index([propertyId])
   @@index([conversationId])
   @@index([conversationMessageId])
   /// Covers are a small minority of all attachments, and the maintenance sweep
@@ -1830,6 +1838,9 @@ model AttachmentUploadTicket {
   document    Document? @relation(fields: [documentId], references: [id], onDelete: Cascade)
   /// Overrides the name the upload carries. The extension is still the file's.
   filename    String?
+  /// A FILES column of the row `documentId` is (issue #245): the file goes
+  /// into that cell instead of only onto the page.
+  propertyId  String?
 
   createdById String
   createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)

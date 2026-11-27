@@ -16,6 +16,7 @@ import {
   databaseFilterGroupSchema,
   type DatabasePropertyType,
   type DatabaseRow,
+  type DatabaseRowFile,
   type DatabaseRowPropertyValue,
   type DatabaseSort,
   databaseSortSchema,
@@ -251,6 +252,33 @@ function toColumnData(
   return { ...empty, textValue: value };
 }
 
+/**
+ * The `files` of one row: every file its FILES values name that still
+ * exists, once, in the order the cells name them. Left out entirely for a
+ * database without a FILES column, so those rows answer as before.
+ */
+function filesOfRow(
+  values: readonly DatabaseRowPropertyValue[],
+  scope: DatabaseQueryScope,
+  files: ReadonlyMap<string, DatabaseRowFile>,
+): { files?: DatabaseRowFile[] } {
+  const named: DatabaseRowFile[] = [];
+  const seen = new Set<string>();
+  let hasFilesColumn = false;
+  for (const entry of values) {
+    if (scope.properties.get(entry.propertyId)?.type !== 'FILES') continue;
+    hasFilesColumn = true;
+    if (!Array.isArray(entry.value)) continue;
+    for (const id of entry.value) {
+      const file = files.get(id);
+      if (file === undefined || seen.has(id)) continue;
+      seen.add(id);
+      named.push(file);
+    }
+  }
+  return hasFilesColumn ? { files: named } : {};
+}
+
 function encodeCursor(offset: number): string {
   return Buffer.from(String(offset), 'utf8').toString('base64url');
 }
@@ -323,16 +351,21 @@ export class DatabaseRowsService {
     }
 
     const propertyList = [...scope.properties.values()];
-    const result: DatabaseRow[] = rows.map((row) => ({
-      document: toSummary(row),
-      values: propertyList.map((property) =>
+    const files = await this.filesNamedBy(values, scope);
+    const result: DatabaseRow[] = rows.map((row) => {
+      const rowValues = propertyList.map((property) =>
         this.toValue(property, scope, {
           row,
           stored: valuesByRow.get(row.id)?.find((entry) => entry.propertyId === property.id),
           derived: derived.get(row.id)?.get(property.id),
         }),
-      ),
-    }));
+      );
+      return {
+        document: toSummary(row),
+        values: rowValues,
+        ...filesOfRow(rowValues, scope, files),
+      };
+    });
 
     return {
       rows: result,
@@ -562,7 +595,13 @@ export class DatabaseRowsService {
         const value =
           property.type === 'RELATION' && entry.value !== null
             ? await normalizeRelationValue({ prisma: this.prisma, property, value: entry.value })
-            : entry.value;
+            : property.type === 'FILES' && Array.isArray(entry.value)
+              ? await this.normalizeFilesValue({
+                  rowId: input.rowId,
+                  propertyId: property.id,
+                  value: entry.value,
+                })
+              : entry.value;
         return { propertyId: entry.propertyId, columns: toColumnData(property, value) };
       }),
     );
@@ -593,18 +632,89 @@ export class DatabaseRowsService {
       loadDatabaseScope(this.prisma, collectionDocumentId),
       this.prisma.documentPropertyValue.findMany({ where: { documentId: rowId } }),
     ]);
-    const derived = (await this.readDerivedValues([rowId], scope)).get(rowId);
+    const [derivedValues, files] = await Promise.all([
+      this.readDerivedValues([rowId], scope),
+      this.filesNamedBy(values, scope),
+    ]);
+    const derived = derivedValues.get(rowId);
 
-    return {
-      document: toSummary(row),
-      values: [...scope.properties.values()].map((property) =>
-        this.toValue(property, scope, {
-          row: row as unknown as DatabaseQueryRowRecord,
-          stored: values.find((entry) => entry.propertyId === property.id),
-          derived: derived?.get(property.id),
-        }),
-      ),
-    };
+    const rowValues = [...scope.properties.values()].map((property) =>
+      this.toValue(property, scope, {
+        row: row as unknown as DatabaseQueryRowRecord,
+        stored: values.find((entry) => entry.propertyId === property.id),
+        derived: derived?.get(property.id),
+      }),
+    );
+    return { document: toSummary(row), values: rowValues, ...filesOfRow(rowValues, scope, files) };
+  }
+
+  /**
+   * Name, type and size of every file the FILES values among `values` name
+   * (issue #245), by id. A file that was deleted is simply not in the map,
+   * which is how a cell learns that it is gone.
+   */
+  private async filesNamedBy(
+    values: readonly StoredValueRow[],
+    scope: DatabaseQueryScope,
+  ): Promise<Map<string, DatabaseRowFile>> {
+    const ids = new Set<string>();
+    for (const value of values) {
+      if (scope.properties.get(value.propertyId)?.type !== 'FILES') continue;
+      if (!Array.isArray(value.jsonValue)) continue;
+      for (const id of value.jsonValue) if (typeof id === 'string') ids.add(id);
+    }
+    if (ids.size === 0) return new Map();
+    const rows = await this.prisma.attachment.findMany({
+      where: { id: { in: [...ids] }, deletedAt: null },
+      select: { id: true, filename: true, mimeType: true, byteSize: true },
+    });
+    return new Map(rows.map((row) => [row.id, row] as const));
+  }
+
+  /**
+   * A FILES value as written, checked (issue #245): ids once each, and every
+   * id the cell does not already hold must be a file uploaded onto this row.
+   * Ids it already holds may stay even when they hang elsewhere, which is
+   * what a row made from a template holds (ADR-039), so removing one of
+   * several files never fails on the others.
+   */
+  private async normalizeFilesValue(input: {
+    rowId: string;
+    propertyId: string;
+    value: string[];
+  }): Promise<string[] | null> {
+    const ids = [...new Set(input.value)];
+    if (ids.length === 0) return null;
+    const stored = await this.prisma.documentPropertyValue.findUnique({
+      where: { documentId_propertyId: { documentId: input.rowId, propertyId: input.propertyId } },
+      select: { jsonValue: true },
+    });
+    const held = new Set(
+      Array.isArray(stored?.jsonValue)
+        ? stored.jsonValue.filter((id): id is string => typeof id === 'string')
+        : [],
+    );
+    const added = ids.filter((id) => !held.has(id));
+    if (added.length === 0) return ids;
+    const own = await this.prisma.attachment.findMany({
+      where: {
+        id: { in: added },
+        documentId: input.rowId,
+        deletedAt: null,
+        conversationId: null,
+      },
+      select: { id: true },
+    });
+    const ownIds = new Set(own.map((row) => row.id));
+    const foreign = added.filter((id) => !ownIds.has(id));
+    if (foreign.length > 0) {
+      throw new AppError(
+        'database_files_foreign',
+        'A FILES value may only add files uploaded onto this row; upload with documentId set to the row and propertyId set to the column',
+        { attachmentIds: foreign },
+      );
+    }
+    return ids;
   }
 
   private async requireCollection(documentId: string, userId: string) {

@@ -15,6 +15,7 @@ export * from './order-key';
 export * from './overview-source';
 export * from './passage-search';
 export * from './project-source';
+export * from './property-files';
 export * from './render-source';
 export * from './saved-query';
 export * from './search';

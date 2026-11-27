@@ -17,6 +17,8 @@
     "database_property_config_invalid": "Diese Spalte lässt sich so nicht berechnen. Prüfe Verknüpfung, Rollup oder Formel.",
     "database_property_in_use": "Eine Rollup- oder Formelspalte benutzt diese Spalte noch.",
     "database_property_date_range_in_use": "Einige Einträge haben ein Enddatum. Entferne die Enddaten, bevor du den Zeitraum abschaltest.",
+    "database_files_target_invalid": "In diese Spalte lassen sich keine Dateien hochladen.",
+    "database_files_foreign": "Eine Zelle nimmt nur Dateien auf, die in sie hochgeladen wurden.",
     "collaboration_ticket_invalid": "Die Verbindung zur Live-Bearbeitung wurde abgelehnt.",
     "collaboration_ticket_expired": "Die Verbindung zur Live-Bearbeitung ist abgelaufen.",
     "collaboration_read_only": "Diese Seite ist nur lesbar.",

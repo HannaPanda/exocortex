@@ -103,6 +103,8 @@ beforeAll(async () => {
     access,
     outbox,
     settings,
+    // Only a file put into a database cell reaches it (issue #245).
+    {} as unknown as ConstructorParameters<typeof AttachmentsService>[8],
   );
   chatAttachments = new ChatAttachmentsService(
     prisma,

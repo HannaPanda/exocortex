@@ -65,11 +65,15 @@ export class AttachmentsController {
   ): Promise<UploadAttachmentResponse> {
     const file = await readUploadedFile(request, this.env.MAX_UPLOAD_BYTES);
     const documentId = file.fields.documentId ?? '';
+    // A FILES column of the row `documentId` is (issue #245). Like the page,
+    // a form field sent before the file part.
+    const propertyId = file.fields.propertyId ?? '';
 
     return this.attachments.upload({
       workspaceId,
       userId: session.userId,
       documentId: documentId.length > 0 ? documentId : null,
+      propertyId: propertyId.length > 0 ? propertyId : null,
       filename: file.filename,
       declaredMimeType: file.declaredMimeType,
       body: file.body,

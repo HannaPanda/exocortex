@@ -2,16 +2,20 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv } from '@exocortex/config';
 import {
   CONFIGURED_PROPERTY_TYPES,
   type DatabasePropertyType,
   IMPLEMENTED_PROPERTY_TYPES,
 } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import { findUnreferencedPropertyFiles } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { AttachmentsService } from '../attachments/attachments.service';
+import { CellFilesService } from '../attachments/cell-files.service';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { DocumentMoveService } from '../documents/document-move.service';
@@ -41,6 +45,7 @@ let documents: DocumentsService;
 let properties: DatabasePropertiesService;
 let views: DatabaseViewsService;
 let rows: DatabaseRowsService;
+let attachments: AttachmentsService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -83,6 +88,21 @@ beforeAll(async () => {
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   views = new DatabaseViewsService(prisma, access, realtime);
   rows = new DatabaseRowsService(prisma, access, documents, outbox, realtime);
+  attachments = new AttachmentsService(
+    prisma,
+    {
+      putObject: async () => undefined,
+      createDownloadUrl: async () => 'https://storage.test/object',
+    } as unknown as ObjectStorage,
+    { MAX_UPLOAD_BYTES: 1024 * 1024 } as ApiEnv,
+    logger,
+    // A plain-text file has no text engine, so the queue is never reached.
+    {} as unknown as QueueRegistry,
+    access,
+    outbox,
+    { getKey: async () => false } as unknown as ConstructorParameters<typeof AttachmentsService>[7],
+    new CellFilesService(prisma, access, outbox, realtime),
+  );
 
   const suffix = Date.now().toString(36);
   const [owner, guest] = await Promise.all([
@@ -1521,5 +1541,172 @@ describe('linked and computed properties', () => {
     await expect(
       properties.delete({ propertyId: basis, userId: ownerId, correlationId }),
     ).rejects.toMatchObject({ code: 'database_property_in_use' });
+  });
+});
+
+describe('files in a FILES cell (issue #245)', () => {
+  async function uploadText(input: {
+    rowId: string;
+    propertyId?: string | null;
+    name?: string;
+    userId?: string;
+  }) {
+    return attachments.upload({
+      workspaceId,
+      userId: input.userId ?? ownerId,
+      documentId: input.rowId,
+      propertyId: input.propertyId ?? null,
+      filename: input.name ?? 'notiz.txt',
+      declaredMimeType: 'text/plain',
+      body: Buffer.from('Inhalt der Datei'),
+      correlationId,
+    });
+  }
+
+  async function setUp() {
+    const collectionId = await createCollection('Dateien-Datenbank');
+    const filesId = await createProperty(collectionId, 'FILES', 'Belege');
+    const textId = await createProperty(collectionId, 'TEXT', 'Notiz');
+    const row = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Zeile mit Datei', values: [] },
+      correlationId,
+    });
+    return { collectionId, filesId, textId, rowId: row.document.id };
+  }
+
+  it('puts every upload into the cell, hanging on the row and marked for the column', async () => {
+    const { filesId, rowId } = await setUp();
+    emitted.length = 0;
+
+    const [first, second] = await Promise.all([
+      uploadText({ rowId, propertyId: filesId, name: 'eins.txt' }),
+      uploadText({ rowId, propertyId: filesId, name: 'zwei.txt' }),
+    ]);
+
+    const detail = await rows.describeDocumentRow(rowId, ownerId);
+    const value = detail.row?.values.find((entry) => entry.propertyId === filesId)?.value;
+    expect(Array.isArray(value) ? [...value].sort() : value).toEqual(
+      [first.attachment.id, second.attachment.id].sort(),
+    );
+    expect(detail.row?.files?.map((file) => file.filename).sort()).toEqual([
+      'eins.txt',
+      'zwei.txt',
+    ]);
+    const stored = await prisma.attachment.findUniqueOrThrow({
+      where: { id: first.attachment.id },
+    });
+    expect(stored.documentId).toBe(rowId);
+    expect(stored.propertyId).toBe(filesId);
+    expect(emitted.filter((event) => event.type === 'database.row.updated')).toHaveLength(2);
+  });
+
+  it('refuses a column that is no FILES column of the row, and a page that is no row', async () => {
+    const { textId, rowId } = await setUp();
+    await expect(uploadText({ rowId, propertyId: textId })).rejects.toMatchObject({
+      code: 'database_files_target_invalid',
+    });
+
+    const plain = await documents.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Gewöhnliche Seite', type: 'PAGE', parentId: null },
+      correlationId,
+    });
+    const other = await setUp();
+    await expect(uploadText({ rowId: plain.id, propertyId: other.filesId })).rejects.toMatchObject({
+      code: 'database_files_target_invalid',
+    });
+    // A column of another database is not this row's column either.
+    await expect(uploadText({ rowId, propertyId: other.filesId })).rejects.toMatchObject({
+      code: 'database_files_target_invalid',
+    });
+  });
+
+  it('lets a guest neither upload into a cell nor write one', async () => {
+    const { filesId, rowId } = await setUp();
+    await expect(
+      uploadText({ rowId, propertyId: filesId, userId: guestId }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('adds only files of the row to a value, and removes any', async () => {
+    const { filesId, rowId } = await setUp();
+    const inCell = await uploadText({ rowId, propertyId: filesId });
+    const onPage = await uploadText({ rowId });
+    const elsewhere = await setUp();
+    const foreign = await uploadText({ rowId: elsewhere.rowId });
+
+    await expect(
+      rows.updateValues({
+        rowId,
+        userId: ownerId,
+        request: {
+          values: [{ propertyId: filesId, value: [inCell.attachment.id, foreign.attachment.id] }],
+        },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'database_files_foreign' });
+
+    // A file already on the row's page may join the cell.
+    const joined = await rows.updateValues({
+      rowId,
+      userId: ownerId,
+      request: {
+        values: [
+          {
+            propertyId: filesId,
+            value: [onPage.attachment.id, inCell.attachment.id, inCell.attachment.id],
+          },
+        ],
+      },
+      correlationId,
+    });
+    expect(joined.values.find((entry) => entry.propertyId === filesId)?.value).toEqual([
+      onPage.attachment.id,
+      inCell.attachment.id,
+    ]);
+
+    const emptied = await rows.updateValues({
+      rowId,
+      userId: ownerId,
+      request: { values: [{ propertyId: filesId, value: [] }] },
+      correlationId,
+    });
+    expect(emptied.values.find((entry) => entry.propertyId === filesId)?.value).toBeNull();
+    expect(emptied.files).toEqual([]);
+  });
+
+  it('leaves a removed cell file to the sweep, and keeps one a cell still names', async () => {
+    const { filesId, rowId } = await setUp();
+    const kept = await uploadText({ rowId, propertyId: filesId, name: 'bleibt.txt' });
+    const removed = await uploadText({ rowId, propertyId: filesId, name: 'weg.txt' });
+    const pageFile = await uploadText({ rowId, name: 'seite.txt' });
+    await rows.updateValues({
+      rowId,
+      userId: ownerId,
+      request: { values: [{ propertyId: filesId, value: [kept.attachment.id] }] },
+      correlationId,
+    });
+
+    const candidates = await findUnreferencedPropertyFiles(prisma, {
+      before: new Date(Date.now() + 60_000),
+      workspaceId,
+      limit: 500,
+    });
+    const ids = candidates.map((file) => file.id);
+    expect(ids).toContain(removed.attachment.id);
+    expect(ids).not.toContain(kept.attachment.id);
+    // A file only on the page is the page's, and nothing here collects it.
+    expect(ids).not.toContain(pageFile.attachment.id);
+
+    // The grace period protects a fresh one.
+    const fresh = await findUnreferencedPropertyFiles(prisma, {
+      before: new Date(Date.now() - 60_000),
+      workspaceId,
+      limit: 500,
+    });
+    expect(fresh.map((file) => file.id)).not.toContain(removed.attachment.id);
   });
 });

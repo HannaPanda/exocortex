@@ -17,6 +17,8 @@
     "database_property_config_invalid": "Impossible de calculer cette colonne ainsi. Vérifie la relation, le Rollup ou la formule.",
     "database_property_in_use": "Une colonne Rollup ou de formule utilise encore cette colonne.",
     "database_property_date_range_in_use": "Certaines entrées ont une date de fin. Supprime les dates de fin avant de désactiver la période.",
+    "database_files_target_invalid": "Impossible de téléverser des fichiers dans cette colonne.",
+    "database_files_foreign": "Une cellule n’accepte que les fichiers qui y ont été téléversés.",
     "collaboration_ticket_invalid": "La connexion à l’édition en direct a été refusée.",
     "collaboration_ticket_expired": "La connexion à l’édition en direct a expiré.",
     "collaboration_read_only": "Cette page est en lecture seule.",

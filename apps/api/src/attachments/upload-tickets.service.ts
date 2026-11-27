@@ -43,6 +43,7 @@ import { readUploadedFile } from '../common/multipart';
 import { PRISMA } from '../platform/platform.module';
 
 import { AttachmentsService } from './attachments.service';
+import { CellFilesService } from './cell-files.service';
 
 /** Who is minting a ticket, as `SessionGuard` resolved them. */
 export interface TicketMinter {
@@ -59,6 +60,7 @@ const TICKET_SELECT = {
   workspaceId: true,
   documentId: true,
   filename: true,
+  propertyId: true,
   expiresAt: true,
   usedAt: true,
   attachmentId: true,
@@ -90,6 +92,7 @@ export class UploadTicketsService {
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
     private readonly attachments: AttachmentsService,
+    private readonly cellFiles: CellFilesService,
   ) {}
 
   async mint(input: {
@@ -107,6 +110,13 @@ export class UploadTicketsService {
     );
     assertPolicy(canUploadFile(role));
     await this.attachments.assertAttachTarget(input.workspaceId, input.request.documentId);
+    if (input.request.propertyId !== null) {
+      await this.cellFiles.resolveTarget({
+        userId: input.minter.userId,
+        documentId: input.request.documentId,
+        propertyId: input.request.propertyId,
+      });
+    }
 
     const now = Date.now();
     const generated = generateUploadTicket();
@@ -116,6 +126,7 @@ export class UploadTicketsService {
         workspaceId: input.workspaceId,
         documentId: input.request.documentId,
         filename: input.request.filename,
+        propertyId: input.request.propertyId,
         createdById: input.minter.userId,
         apiTokenId: input.minter.apiTokenId ?? null,
         expiresAt: ticketExpiry(input.minter, now),
@@ -170,6 +181,7 @@ export class UploadTicketsService {
         workspaceId: true,
         documentId: true,
         filename: true,
+        propertyId: true,
         createdById: true,
         createdBy: { select: { disabledAt: true } },
         apiToken: { select: API_TOKEN_CREDENTIAL_SELECT },
@@ -191,6 +203,7 @@ export class UploadTicketsService {
         declaredMimeType: file.declaredMimeType,
         body: file.body,
         correlationId: currentCorrelationId(),
+        propertyId: ticket.propertyId,
       });
 
       await this.prisma.attachmentUploadTicket.update({
@@ -290,6 +303,7 @@ function toContract(row: TicketRow, now: number): UploadTicket {
     workspaceId: row.workspaceId,
     documentId: row.documentId,
     filename: row.filename,
+    propertyId: row.propertyId,
     state: ticketState(row, now),
     expiresAt: row.expiresAt.toISOString(),
     usedAt: row.usedAt?.toISOString() ?? null,

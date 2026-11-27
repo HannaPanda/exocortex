@@ -17,6 +17,8 @@
     "database_property_config_invalid": "Deze kolom kan zo niet worden berekend. Controleer de koppeling, Rollup of formule.",
     "database_property_in_use": "Een Rollup- of formulekolom maakt nog gebruik van deze kolom.",
     "database_property_date_range_in_use": "Sommige items hebben een einddatum. Verwijder de einddatums voordat je de periode uitschakelt.",
+    "database_files_target_invalid": "Je kunt geen bestanden uploaden naar deze kolom.",
+    "database_files_foreign": "Een cel accepteert alleen bestanden die direct erin zijn geüpload.",
     "collaboration_ticket_invalid": "De verbinding met live bewerken is geweigerd.",
     "collaboration_ticket_expired": "De verbinding met live bewerken is verlopen.",
     "collaboration_read_only": "Deze pagina is alleen-lezen.",

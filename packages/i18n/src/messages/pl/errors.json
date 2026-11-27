@@ -17,6 +17,8 @@
     "database_property_config_invalid": "Nie można obliczyć tej kolumny. Sprawdź relację, Rollup lub formułę.",
     "database_property_in_use": "Ta kolumna jest jeszcze używana przez kolumnę Rollup lub formułę.",
     "database_property_date_range_in_use": "Niektóre wpisy mają datę końcową. Usuń daty końcowe przed wyłączeniem zakresu dat.",
+    "database_files_target_invalid": "Do tej kolumny nie można przesyłać plików.",
+    "database_files_foreign": "Komórka przyjmuje tylko pliki, które zostały przesłane bezpośrednio do niej.",
     "collaboration_ticket_invalid": "Połączenie do edycji na żywo zostało odrzucone.",
     "collaboration_ticket_expired": "Połączenie do edycji na żywo wygasło.",
     "collaboration_read_only": "Ta strona jest tylko do odczytu.",

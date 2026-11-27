@@ -491,9 +491,27 @@ export const databaseRowPropertyValueSchema = z.object({
 });
 export type DatabaseRowPropertyValue = z.infer<typeof databaseRowPropertyValueSchema>;
 
+/**
+ * What a FILES cell shows about one of its files (issue #245): the value
+ * itself is a list of attachment ids, which no person and no model can read.
+ * An id the list does not answer for is a file that is gone.
+ */
+export const databaseRowFileSchema = z.object({
+  id: idSchema,
+  filename: z.string(),
+  mimeType: z.string(),
+  byteSize: z.number().int().nonnegative(),
+});
+export type DatabaseRowFile = z.infer<typeof databaseRowFileSchema>;
+
 export const databaseRowSchema = z.object({
   document: documentSummarySchema,
   values: z.array(databaseRowPropertyValueSchema),
+  /**
+   * The files the row's FILES values name, once each, whichever column names
+   * them (issue #245). Absent where a row is answered without them.
+   */
+  files: z.array(databaseRowFileSchema).optional(),
 });
 export type DatabaseRow = z.infer<typeof databaseRowSchema>;
 

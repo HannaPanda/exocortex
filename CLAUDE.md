@@ -970,7 +970,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the descriptions, because endpoints do not say who takes images.
   `ai_run.imageInputs` counts what the answering turn carried.
 
-Full list: `docs/adr/`.
+- ADR-098: a file in a database cell hangs on its row and is marked as the
+  cell's. The upload is the ordinary one with `documentId` = row and a
+  `propertyId` naming a FILES column; the server checks the column and the
+  right to edit the row, then appends the id to the value under an advisory
+  lock, so the browser never writes the list after an upload. A value may only
+  add files of its own row; `Attachment.propertyId` is a plain column so the
+  mark outlives a deleted column, and the daily sweep collects a marked file a
+  day after no value of its column names it.
+  Full list: `docs/adr/`.
 
 ## How to extend the system
 

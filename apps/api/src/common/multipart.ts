@@ -38,7 +38,8 @@ export async function readUploadedFile(
     throw new AppError(
       'payload_too_large',
       `The file exceeds the maximum upload size of ${maxUploadBytes} bytes`,
-      { reason: error instanceof Error ? error.message : String(error) },
+      // The limit as a number, so a client can name it (issue #245).
+      { reason: error instanceof Error ? error.message : String(error), maxBytes: maxUploadBytes },
     );
   }
 

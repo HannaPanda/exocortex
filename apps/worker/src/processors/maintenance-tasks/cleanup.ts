@@ -1,5 +1,5 @@
 import { AI_RUN_PICKUP_GRACE_MS, deriveAiRunTimeouts } from '@exocortex/contracts';
-import { type Prisma } from '@exocortex/database';
+import { findUnreferencedPropertyFiles, type Prisma } from '@exocortex/database';
 
 import {
   DAY_MS,
@@ -23,13 +23,24 @@ const INVITATION_RETENTION_MS = 30 * DAY_MS;
 const UNSENT_CHAT_ATTACHMENT_GRACE_MS = DAY_MS;
 
 /**
- * Removes uploads nothing points at any more: cover images no page uses, and
- * files put on a chat message that was never sent (issue #223). One task,
- * because both are the same question about the same table.
+ * How long a file uploaded into a database cell may go unnamed by its column
+ * (issue #245). A day, like an unsent chat file: it covers the window
+ * between an upload and its value write, and a file removed by mistake can be
+ * written back into its cell by id until then.
+ */
+const UNREFERENCED_PROPERTY_FILE_GRACE_MS = DAY_MS;
+
+/**
+ * Removes uploads nothing points at any more: cover images no page uses,
+ * files put on a chat message that was never sent (issue #223), and files
+ * uploaded into a database cell that no value of their column names any more
+ * (issue #245). One task, because all three are the same question about the
+ * same table.
  */
 export const collectOrphanedCovers: MaintenanceTask = async (context) => {
   const { prisma, storage, payload, logger, reportProgress } = context;
   await collectUnsentChatAttachments(context);
+  await collectUnreferencedPropertyFiles(context);
   await reportProgress(10, 'pruningCovers');
   // Only files uploaded *as* a cover are collected. Replacing a cover
   // leaves the previous image behind with nothing pointing at it, and
@@ -112,6 +123,41 @@ async function collectUnsentChatAttachments(context: MaintenanceContext): Promis
     if (!failed) removed += 1;
   }
   logger.info('Unsent chat attachments collected', { removed, candidates: unsent.length });
+}
+
+/**
+ * Deletes files uploaded into a database cell that no value of their column
+ * names any more (issue #245): removed from the cell, left by a deleted
+ * column, or uploaded by a request whose value write never happened. Row
+ * first, then the objects, like the attachment delete route.
+ */
+async function collectUnreferencedPropertyFiles(context: MaintenanceContext): Promise<void> {
+  const { prisma, storage, payload, logger } = context;
+  const unnamed = await findUnreferencedPropertyFiles(prisma, {
+    before: new Date(Date.now() - UNREFERENCED_PROPERTY_FILE_GRACE_MS),
+    workspaceId: payload.workspaceId,
+    limit: 500,
+  });
+
+  let removed = 0;
+  for (const file of unnamed) {
+    await prisma.attachment.update({ where: { id: file.id }, data: { deletedAt: new Date() } });
+    let failed = false;
+    for (const key of [file.storageKey, file.previewKey]) {
+      if (key === null) continue;
+      try {
+        await storage.deleteObject({ key });
+      } catch (error) {
+        failed = true;
+        logger.error('Failed to delete an unreferenced property file object', error, {
+          attachmentId: file.id,
+          storageKey: key,
+        });
+      }
+    }
+    if (!failed) removed += 1;
+  }
+  logger.info('Unreferenced property files collected', { removed, candidates: unnamed.length });
 }
 
 /**

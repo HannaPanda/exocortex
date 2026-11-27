@@ -82,6 +82,8 @@ beforeAll(async () => {
     access,
     outbox,
     {} as unknown as ConstructorParameters<typeof AttachmentsService>[7],
+    // Only a file put into a database cell reaches it (issue #245).
+    {} as unknown as ConstructorParameters<typeof AttachmentsService>[8],
   );
 
   const suffix = Date.now().toString(36);

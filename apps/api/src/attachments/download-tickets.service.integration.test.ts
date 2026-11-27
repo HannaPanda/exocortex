@@ -167,6 +167,8 @@ beforeAll(async () => {
     access,
     {} as unknown as OutboxService,
     {} as unknown as ConstructorParameters<typeof AttachmentsService>[7],
+    // Only a file put into a database cell reaches it (issue #245).
+    {} as unknown as ConstructorParameters<typeof AttachmentsService>[8],
   );
   tickets = new DownloadTicketsService(prisma, env, logger, access, attachments);
 
