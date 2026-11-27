@@ -10,6 +10,7 @@ import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
   type PrismaClient,
 } from '@exocortex/database';
+import { escapeInlineText } from '@exocortex/editor';
 import { type serverTranslator } from '@exocortex/i18n/catalog';
 import { toolsFor } from '@exocortex/mcp-tools';
 
@@ -285,7 +286,14 @@ const pageContext: ChatCommandHandler = async (context) => {
   return answer(context, 'context', [where, what, how, sources].join(' '));
 };
 
-/** Lists the workspace's active AI rule pages. */
+/**
+ * Lists the workspace's active AI rule pages.
+ *
+ * `/rules`, `/tools` and `/help` answer in the chat's Markdown subset, one
+ * list item per entry (issue #300): the panel renders them like an answer.
+ * Everything a person or the catalogue wrote is escaped, so a title with an
+ * asterisk stays a title.
+ */
 const listRules: ChatCommandHandler = async (context) => {
   const rules = await context.prisma.document.findMany({
     where: {
@@ -305,8 +313,9 @@ const listRules: ChatCommandHandler = async (context) => {
               rule.aiRuleMode === 'ALWAYS'
                 ? context.t('rules.always')
                 : context.t('rules.onRequest');
-            const trigger = rule.aiRuleTrigger !== null ? `: ${rule.aiRuleTrigger}` : '';
-            return `- ${rule.title} (${kind})${trigger}`;
+            const trigger =
+              rule.aiRuleTrigger !== null ? `: ${escapeInlineText(rule.aiRuleTrigger)}` : '';
+            return `- **${escapeInlineText(rule.title)}** (${kind})${trigger}`;
           })
           .join('\n');
   return answer(context, 'rules', message);
@@ -333,13 +342,18 @@ const listTools: ChatCommandHandler = async (context) => {
       : [
           // The description is the model-facing text of the catalogue, and
           // stays as the catalogue writes it (docs/i18n.md).
-          ...tools.map((tool) => `- ${tool.name} — ${tool.description}`),
+          // One line per tool, escaped, so its backticks and `[[…]]` read as
+          // the model reads them instead of turning into code and links.
+          ...tools.map(
+            (tool) =>
+              `- \`${tool.name}\`: ${escapeInlineText(tool.description.replace(/\s+/gu, ' ').trim())}`,
+          ),
           '',
-          context.t(MUTATION_POLICY_LINE[policy]),
+          escapeInlineText(context.t(MUTATION_POLICY_LINE[policy])),
           // The whole list is what the AI *may* call; a single run is offered
           // the domains its task needs, and opens the rest itself with
           // exo_toolbox (issue #121, ADR-060).
-          context.t('tools.subset'),
+          escapeInlineText(context.t('tools.subset')),
         ].join('\n');
   return answer(context, 'tools', message);
 };
@@ -356,7 +370,8 @@ const help: ChatCommandHandler = (context) =>
           entry.argument === null
             ? ''
             : ` <${entry.name === 'new' ? context.t('help.titleArgument') : entry.argument}>`;
-        return `/${entry.name}${argument} — ${context.t(`help.descriptions.${entry.name}`)}`;
+        const description = escapeInlineText(context.t(`help.descriptions.${entry.name}`));
+        return `- \`/${entry.name}${argument}\`: ${description}`;
       }).join('\n'),
     ),
   );

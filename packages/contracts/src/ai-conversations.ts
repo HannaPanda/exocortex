@@ -419,7 +419,9 @@ export const chatCommandResultSchema = z.object({
   command: chatCommandNameSchema,
   /**
    * Rendered as a system bubble in the chat, in the language of whoever typed
-   * the command (`commands` namespace, ADR-062).
+   * the command (`commands` namespace, ADR-062). The listing commands
+   * (`/help`, `/tools`, `/rules`) answer in the chat's Markdown subset, one
+   * list item per entry (issue #300); the others in plain text.
    */
   message: z.string(),
   /** Set when the command created or switched conversations. */
