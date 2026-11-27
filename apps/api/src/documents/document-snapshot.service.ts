@@ -10,9 +10,9 @@ import { type DocumentSnapshot, QUEUE_NAMES } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import {
   applyProseMirrorDocumentToState,
+  currentContentOfState,
   EXOCORTEX_SCHEMA_VERSION,
   type ProseMirrorDocument,
-  yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
@@ -138,10 +138,13 @@ export class DocumentSnapshotService {
    * The state a restore stores: the snapshot's content applied to what the
    * document holds now, or the snapshot's bytes when that is not possible.
    *
-   * See `restore` for why the edit is the one that holds. The fallback covers
-   * a snapshot from an older schema, whose content may have nodes this schema
-   * no longer knows, and a state that cannot be derived at all -- in both cases
-   * putting the bytes back is the restore that is still available.
+   * See `restore` for why the edit is the one that holds. A snapshot from an
+   * older schema is migrated first (`currentContentOfState`), so it comes back
+   * in the form this build writes: a callout from before #306 returns with its
+   * symbol and colour rather than its variant. The fallback covers content
+   * that still does not apply (a node this schema no longer knows) and a state
+   * that cannot be derived at all -- in both cases putting the bytes back is
+   * the restore that is still available.
    */
   private restoredState(input: {
     snapshot: { id: string; documentId: string; yjsState: Uint8Array; schemaVersion: number };
@@ -161,8 +164,8 @@ export class DocumentSnapshotService {
       asEdit: false,
       content: null,
     };
-    if (snapshot.schemaVersion !== EXOCORTEX_SCHEMA_VERSION) {
-      this.logger.warn('Restoring a snapshot from an older schema byte for byte', {
+    if (snapshot.schemaVersion > EXOCORTEX_SCHEMA_VERSION) {
+      this.logger.warn('Restoring a snapshot from a newer schema byte for byte', {
         documentId: snapshot.documentId,
         snapshotId: snapshot.id,
         snapshotSchemaVersion: snapshot.schemaVersion,
@@ -171,7 +174,7 @@ export class DocumentSnapshotService {
       return bytes;
     }
     try {
-      const content = yjsStateToProseMirrorJson(snapshot.yjsState);
+      const content = currentContentOfState(snapshot.yjsState, snapshot.schemaVersion);
       const applied = applyProseMirrorDocumentToState(input.currentState, content, 'replace');
       return {
         yjsState: applied.yjsState,

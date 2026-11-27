@@ -15,11 +15,11 @@ import { type PrismaClient } from '@exocortex/database';
 import {
   applyBlocksFromDocument,
   applyProseMirrorDocumentToState,
+  currentContentOfState,
   describeBlockType,
   diffDocuments,
   EXOCORTEX_SCHEMA_VERSION,
   type ProseMirrorDocument,
-  yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 
@@ -104,7 +104,10 @@ export class DocumentDiffService {
    */
   private derive(state: ComparableState, documentId: string): ProseMirrorDocument {
     try {
-      return yjsStateToProseMirrorJson(state.yjsState);
+      // An older state is compared in this build's form, so a migration
+      // (the callouts of #306) does not show as a change of every block it
+      // touched.
+      return currentContentOfState(state.yjsState, state.schemaVersion);
     } catch (error) {
       this.logger.warn('A state could not be derived for a diff', {
         documentId,

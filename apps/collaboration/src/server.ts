@@ -10,6 +10,7 @@ import {
 } from '@exocortex/auth';
 import { type CollaborationAccess } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { migrateCalloutsInYjsDoc } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
@@ -210,6 +211,25 @@ export function createCollaborationServer(
         roots: roots.join(','),
       });
       throw new ForeignHistoryError(roots);
+    },
+
+    /**
+     * Brings a page written before the callouts of #306 up to date as it
+     * opens: the variant becomes a symbol and a colour, attribute by
+     * attribute, in this living document. Done here rather than only in the
+     * database because an open page is this server's to write (ADR-016), and
+     * every page is opened through here; the change then reaches the browsers
+     * and the store like any other edit. Idempotent, so a page that is already
+     * migrated costs one walk over its callouts.
+     */
+    async afterLoadDocument({ document, documentName }) {
+      const migrated = migrateCalloutsInYjsDoc(document);
+      if (migrated > 0) {
+        logger.info('Migrated callouts of a loaded document', {
+          documentId: documentName,
+          callouts: migrated,
+        });
+      }
     },
 
     extensions: [
