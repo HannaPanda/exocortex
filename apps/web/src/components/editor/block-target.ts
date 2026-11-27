@@ -2,7 +2,12 @@ import { type Node as PmNode } from '@tiptap/pm/model';
 import { Selection } from '@tiptap/pm/state';
 import { type Editor } from '@tiptap/react';
 
-import { BLOCK_ID_ATTRIBUTE, runOnBlock } from '@exocortex/editor';
+import {
+  BLOCK_ID_ATTRIBUTE,
+  type BlockCatalogEntry,
+  runOnBlock,
+  turnBlockInto,
+} from '@exocortex/editor';
 
 /** A block and where it starts, which is all any block action needs. */
 export interface BlockTarget {
@@ -56,6 +61,25 @@ export function runOnTarget(
   const range = currentRangeOf(editor, target);
   if (range === null) return false;
   return runOnBlock(editor, range.from, action);
+}
+
+/**
+ * Turns the menu's block into a catalog entry's block (issues #229, #284).
+ *
+ * Like `runOnTarget`, but a list item is taken out of its list first rather
+ * than converted as a selection spanning its sub-items (`turnBlockInto`), so
+ * "Absatz" makes it an ordinary line. Without a target the toolbar's
+ * selection is converted as it is.
+ */
+export function turnTargetInto(
+  editor: Editor,
+  target: BlockTarget | null,
+  entry: BlockCatalogEntry,
+): boolean {
+  if (target === null) return entry.run(editor);
+  const range = currentRangeOf(editor, target);
+  if (range === null) return false;
+  return turnBlockInto(editor, range.from, entry);
 }
 
 /**

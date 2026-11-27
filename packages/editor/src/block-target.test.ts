@@ -5,8 +5,13 @@ import { type Node as PmNode } from '@tiptap/pm/model';
 import { NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { type BlockCatalogEntry, coreStructureBlocks, listBlocks } from './block-catalog';
-import { blockContentSelection, runOnBlock } from './block-target';
+import {
+  type BlockCatalogEntry,
+  calloutBlocks,
+  coreStructureBlocks,
+  listBlocks,
+} from './block-catalog';
+import { blockContentSelection, runOnBlock, turnBlockInto } from './block-target';
 import { buildEditorExtensions } from './extensions';
 
 /**
@@ -42,7 +47,9 @@ afterEach(() => {
 });
 
 function entry(id: string): BlockCatalogEntry {
-  const found = [...coreStructureBlocks, ...listBlocks].find((candidate) => candidate.id === id);
+  const found = [...coreStructureBlocks, ...listBlocks, ...calloutBlocks].find(
+    (candidate) => candidate.id === id,
+  );
   if (found === undefined) throw new Error(`no catalog entry ${id}`);
   return found;
 }
@@ -222,5 +229,205 @@ describe('runOnBlock', () => {
       }),
     ).toBe(false);
     expect(ran).toBe(false);
+  });
+});
+
+/** The document's structure, text blocks as `type:text`. */
+function shape(node: PmNode): string {
+  if (node.isTextblock) return `${node.type.name}:${node.textContent}`;
+  const children: string[] = [];
+  node.forEach((child) => children.push(shape(child)));
+  return node.type.name === 'doc' ? children.join(' ') : `${node.type.name}[${children.join(',')}]`;
+}
+
+/** Where the list item whose own text is `text` starts. */
+function itemOf(doc: PmNode, text: string): number {
+  const $pos = doc.resolve(textBlock(doc, text).pos);
+  return $pos.before($pos.depth);
+}
+
+/** Turns the item with the text `text` the way the handle's menu does. */
+function turnItem(instance: Editor, text: string, id: string): boolean {
+  return turnBlockInto(instance, itemOf(instance.state.doc, text), entry(id));
+}
+
+function expectCaretAtEndOf(instance: Editor, text: string, type = 'paragraph'): void {
+  const { selection } = instance.state;
+  expect(selection.empty).toBe(true);
+  expect(selection.$from.parent.type.name).toBe(type);
+  expect(selection.$from.parent.textContent).toBe(text);
+  expect(selection.$from.parentOffset).toBe(text.length);
+}
+
+const BULLETS = '<p>Oben</p><ul><li><p>Eins</p></li><li><p>Zwei</p></li><li><p>Drei</p></li></ul>';
+const WITH_SUB_ITEMS =
+  '<p>Oben</p><ul><li><p>Eins</p></li><li><p>Zwei</p><ul><li><p>Unter</p></li></ul></li><li><p>Drei</p></li></ul>';
+
+describe('turnBlockInto a paragraph, on a list item (issue #284)', () => {
+  it('takes the first item out above the rest of the list', () => {
+    const instance = createEditor(BULLETS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Eins', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben paragraph:Eins bulletList[listItem[paragraph:Zwei],listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(instance, 'Eins');
+  });
+
+  it('splits the list around an item in the middle', () => {
+    const instance = createEditor(BULLETS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Zwei', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] paragraph:Zwei bulletList[listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(instance, 'Zwei');
+  });
+
+  it('takes the last item out below the list', () => {
+    const instance = createEditor(BULLETS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Drei', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins],listItem[paragraph:Zwei]] paragraph:Drei',
+    );
+    expectCaretAtEndOf(instance, 'Drei');
+  });
+
+  it('keeps the sub-items as a list directly underneath', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Zwei', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] paragraph:Zwei bulletList[listItem[paragraph:Unter]] bulletList[listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(instance, 'Zwei');
+  });
+
+  it('turns a sub-item into a paragraph of the item above it', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Unter', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins],listItem[paragraph:Zwei,paragraph:Unter],listItem[paragraph:Drei]]',
+    );
+  });
+
+  it('starts the second half of a numbered list again at one', () => {
+    const instance = createEditor(
+      '<ol start="4"><li><p>Eins</p></li><li><p>Zwei</p></li><li><p>Drei</p></li></ol>',
+    );
+    expect(turnItem(instance, 'Zwei', 'paragraph')).toBe(true);
+    const { doc } = instance.state;
+    expect(shape(doc)).toBe(
+      'orderedList[listItem[paragraph:Eins]] paragraph:Zwei orderedList[listItem[paragraph:Drei]]',
+    );
+    expect(doc.child(0).attrs.start).toBe(4);
+    expect(doc.child(2).attrs.start).toBe(1);
+  });
+
+  it('turns a task into a line without its tick', () => {
+    const instance = createEditor(
+      '<ul data-type="taskList"><li data-type="taskItem" data-checked="true"><p>Eins</p></li><li data-type="taskItem" data-checked="true"><p>Zwei</p></li><li data-type="taskItem"><p>Drei</p></li></ul>',
+    );
+    expect(turnItem(instance, 'Zwei', 'paragraph')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'taskList[taskItem[paragraph:Eins]] paragraph:Zwei taskList[taskItem[paragraph:Drei]]',
+    );
+    expect(instance.state.doc.child(0).child(0).attrs.checked).toBe(true);
+  });
+
+  it('is taken back in one undo step', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    caretIn(instance, 'Oben');
+    const before = shape(instance.state.doc);
+    turnItem(instance, 'Zwei', 'paragraph');
+    undoOnce(instance);
+    expect(shape(instance.state.doc)).toBe(before);
+  });
+});
+
+describe('turnBlockInto another block, on a list item (issue #284)', () => {
+  it('makes a heading of the item and keeps its sub-items under it', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    caretIn(instance, 'Oben');
+    expect(turnItem(instance, 'Zwei', 'heading-2')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] heading:Zwei bulletList[listItem[paragraph:Unter]] bulletList[listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(instance, 'Zwei', 'heading');
+  });
+
+  it('makes a code block of the item', () => {
+    const instance = createEditor(BULLETS);
+    expect(turnItem(instance, 'Zwei', 'code-block')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] codeBlock:Zwei bulletList[listItem[paragraph:Drei]]',
+    );
+  });
+
+  it('puts the item in a quote or a callout, which did nothing before', () => {
+    const quoted = createEditor(WITH_SUB_ITEMS);
+    expect(turnItem(quoted, 'Zwei', 'blockquote')).toBe(true);
+    expect(shape(quoted.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] blockquote[paragraph:Zwei] bulletList[listItem[paragraph:Unter]] bulletList[listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(quoted, 'Zwei');
+    quoted.destroy();
+
+    const boxed = createEditor(BULLETS);
+    expect(turnItem(boxed, 'Drei', 'callout-warning')).toBe(true);
+    expect(shape(boxed.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins],listItem[paragraph:Zwei]] callout[paragraph:Drei]',
+    );
+    expect(boxed.state.doc.lastChild?.attrs.variant).toBe('warning');
+  });
+
+  it('takes a conversion back in one undo step', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    caretIn(instance, 'Oben');
+    const before = shape(instance.state.doc);
+    turnItem(instance, 'Zwei', 'blockquote');
+    undoOnce(instance);
+    expect(shape(instance.state.doc)).toBe(before);
+  });
+
+  it('toggles the list off for an item of that kind', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    expect(turnItem(instance, 'Zwei', 'bullet-list')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] paragraph:Zwei bulletList[listItem[paragraph:Unter]] bulletList[listItem[paragraph:Drei]]',
+    );
+  });
+
+  it('still numbers the whole list a bullet item stands in', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    expect(turnItem(instance, 'Zwei', 'ordered-list')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben orderedList[listItem[paragraph:Eins],listItem[paragraph:Zwei,bulletList[listItem[paragraph:Unter]]],listItem[paragraph:Drei]]',
+    );
+  });
+
+  it('makes an item with sub-items a task of its own, and back', () => {
+    const instance = createEditor(WITH_SUB_ITEMS);
+    expect(turnItem(instance, 'Zwei', 'task-list')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] taskList[taskItem[paragraph:Zwei,bulletList[listItem[paragraph:Unter]]]] bulletList[listItem[paragraph:Drei]]',
+    );
+    expectCaretAtEndOf(instance, 'Zwei');
+
+    expect(turnItem(instance, 'Zwei', 'ordered-list')).toBe(true);
+    expect(shape(instance.state.doc)).toBe(
+      'paragraph:Oben bulletList[listItem[paragraph:Eins]] orderedList[listItem[paragraph:Zwei,bulletList[listItem[paragraph:Unter]]]] bulletList[listItem[paragraph:Drei]]',
+    );
+  });
+
+  it('leaves a block that is no list item to runOnBlock', () => {
+    const instance = createEditor('<p>Alpha</p><p>Beta</p>');
+    caretIn(instance, 'Alpha');
+    expect(
+      turnBlockInto(instance, textBlock(instance.state.doc, 'Beta').pos, entry('heading-1')),
+    ).toBe(true);
+    expect(blocks(instance)).toEqual(['paragraph:Alpha', 'heading:Beta']);
   });
 });

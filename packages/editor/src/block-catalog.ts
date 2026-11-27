@@ -111,6 +111,13 @@ export interface BlockCatalogEntry {
    * (a divider, a table) are excluded from the "turn into" menu.
    */
   turnInto: boolean;
+  /**
+   * The list node a list entry makes (`bulletList`, `orderedList`,
+   * `taskList`). Turning a list item into a block reads it to tell a change of
+   * list kind from a conversion that takes the item out of its list
+   * (`turnBlockInto`, issue #284).
+   */
+  makesList?: string;
   /** Performs the insertion or the conversion. Returns whether it applied. */
   run: (editor: Editor, value?: string) => boolean;
   /** Whether the current selection already is this block. */
@@ -208,6 +215,7 @@ export const listBlocks: readonly BlockCatalogEntry[] = [
     icon: 'List',
     prompt: 'none',
     turnInto: true,
+    makesList: 'bulletList',
     run: (editor) => editor.chain().focus().toggleBulletList().run(),
     isActive: (editor) => editor.isActive('bulletList'),
   },
@@ -220,6 +228,7 @@ export const listBlocks: readonly BlockCatalogEntry[] = [
     icon: 'ListOrdered',
     prompt: 'none',
     turnInto: true,
+    makesList: 'orderedList',
     run: (editor) => editor.chain().focus().toggleOrderedList().run(),
     isActive: (editor) => editor.isActive('orderedList'),
   },
@@ -232,6 +241,7 @@ export const listBlocks: readonly BlockCatalogEntry[] = [
     icon: 'ListChecks',
     prompt: 'none',
     turnInto: true,
+    makesList: 'taskList',
     run: (editor) => editor.chain().focus().toggleTaskList().run(),
     isActive: (editor) => editor.isActive('taskList'),
   },

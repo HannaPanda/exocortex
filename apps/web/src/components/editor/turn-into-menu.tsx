@@ -16,7 +16,7 @@ import {
 
 import { BlockIcon } from './block-icon';
 import { useBlockGroupLabel } from './block-labels';
-import { type BlockTarget, runOnTarget } from './block-target';
+import { type BlockTarget, turnTargetInto } from './block-target';
 
 /**
  * The menu items of "in anderen Block umwandeln".
@@ -24,7 +24,8 @@ import { type BlockTarget, runOnTarget } from './block-target';
  * Split out from the menu shell so the same list can be a standalone dropdown in
  * the selection toolbar and a submenu in the block handle, without duplicating
  * the entries. In the block handle it converts the handle's block, never the
- * one holding the caret (issue #229).
+ * one holding the caret (issue #229), and a list item leaves its list for
+ * anything but another list (issue #284).
  */
 export function TurnIntoItems({
   editor,
@@ -51,7 +52,7 @@ export function TurnIntoItems({
             <DropdownMenuItem
               key={entry.id}
               data-testid={`turn-into-${entry.id}`}
-              onClick={() => runOnTarget(editor, target, () => entry.run(editor))}
+              onClick={() => turnTargetInto(editor, target, entry)}
             >
               <BlockIcon name={entry.icon} />
               {entry.label}

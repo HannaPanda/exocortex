@@ -325,8 +325,8 @@ every press. Columns, table cells, toggles and the page stop the key at their
 edge, and inside a list item nothing moves above the item's own text.
 
 `liftListItemOut` turns an item anywhere in its list into blocks, splitting
-the list around it; that is also what "Absatz" in the handle's menu needs for
-a list item (issue #284).
+the list around it; "Umwandeln in" in the handle's menu uses it for a list
+item too (issue #284, next section).
 
 In the web app the handle belongs to the block under the pointer, a nested
 one included (`NESTED_TARGETS` in `handle-hover.ts`, docs/deviations.md 17,
@@ -365,6 +365,23 @@ one step. In the web app `runOnTarget` finds the block again by its id first,
 because the document may have moved since the handle picked it; the selection
 toolbar passes no target and keeps working on the selection the person made.
 Covered by `block-target.test.ts` and `e2e/tests/block-menu.spec.ts`.
+
+A list item is the exception for "Umwandeln in" (issue #284). Selected as a
+whole it spans its sub-items, so "Absatz" changed nothing (the text already
+is a paragraph), a quote or a callout could not wrap the paragraph that has to
+stay the item's first child, and a heading or a code block landed on the last
+sub-item. `turnBlockInto` (`block-target.ts`, in the web app `turnTargetInto`)
+takes the item out of its list first with `liftListItemOut`: its text becomes
+a paragraph where it stood, its sub-items stay a list directly underneath, and
+the items before and after stay lists of their own (a numbered second half
+starts again at one, a task's tick is not kept). Then the entry runs on that
+paragraph alone, so a heading, a quote or a callout holds the item's text and
+the sub-items stay below it. A list entry of the item's own kind just takes it
+out; one whose items are of another type (a task list from a bullet list, or
+back) makes it an item of a list of that kind, sub-items still nested; bullet
+and numbered keep changing the whole list the item stands in. The caret ends
+after the item's text, and the lift and the conversion go back with one
+`Strg+Z`. Which list an entry makes is its `makesList` in the catalog.
 
 "Löschen" in the same menu leaves the caret where the block stood (issue #285).
 It used to run `chain().focus().deleteRange()`: the focus is in the menu, so
