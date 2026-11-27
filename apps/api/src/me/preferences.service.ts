@@ -3,11 +3,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   type ChatScrollMode,
   isLocale,
+  type OutlinePinnedMode,
+  type OutlineTransparency,
   type UpdateUserPreferencesRequest,
   type UserPreferences,
 } from '@exocortex/contracts';
 import {
   type ChatScrollMode as StoredChatScrollMode,
+  type OutlinePinnedMode as StoredOutlinePinnedMode,
+  type OutlineTransparency as StoredOutlineTransparency,
   type PrismaClient,
 } from '@exocortex/database';
 
@@ -24,10 +28,30 @@ const CHAT_SCROLL_TO_ROW: Record<ChatScrollMode, StoredChatScrollMode> = {
   answerStart: 'ANSWER_START',
 };
 
+/** The same for the pinned outline (issue #283). */
+const OUTLINE_PINNED_FROM_ROW: Record<StoredOutlinePinnedMode, OutlinePinnedMode> = {
+  COLUMN: 'column',
+  OVERLAY: 'overlay',
+};
+const OUTLINE_PINNED_TO_ROW: Record<OutlinePinnedMode, StoredOutlinePinnedMode> = {
+  column: 'COLUMN',
+  overlay: 'OVERLAY',
+};
+const OUTLINE_TRANSPARENCY_FROM_ROW: Record<StoredOutlineTransparency, OutlineTransparency> = {
+  NONE: 'none',
+  LIGHT: 'light',
+  STRONG: 'strong',
+};
+const OUTLINE_TRANSPARENCY_TO_ROW: Record<OutlineTransparency, StoredOutlineTransparency> = {
+  none: 'NONE',
+  light: 'LIGHT',
+  strong: 'STRONG',
+};
+
 /**
  * The person's own settings that follow them from device to device: the
- * interface language (issue #98) and how the AI chat scrolls while an answer
- * arrives (issue #282). The row they live on is the account itself, because
+ * interface language (issue #98), how the AI chat scrolls while an answer
+ * arrives (issue #282) and how a pinned page outline behaves (issue #283). The row they live on is the account itself, because
  * a preference that belongs to the person has no better owner.
  */
 @Injectable()
@@ -37,13 +61,20 @@ export class PreferencesService {
   async get(userId: string): Promise<UserPreferences> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { locale: true, chatScroll: true },
+      select: {
+        locale: true,
+        chatScroll: true,
+        outlinePinned: true,
+        outlineTransparency: true,
+      },
     });
     if (user === null)
       throw AppError.unauthenticated('Session references a user that no longer exists');
     return {
       locale: isLocale(user.locale) ? user.locale : null,
       chatScroll: CHAT_SCROLL_FROM_ROW[user.chatScroll],
+      outlinePinned: OUTLINE_PINNED_FROM_ROW[user.outlinePinned],
+      outlineTransparency: OUTLINE_TRANSPARENCY_FROM_ROW[user.outlineTransparency],
     };
   }
 
@@ -56,6 +87,12 @@ export class PreferencesService {
         ...(body.chatScroll === undefined
           ? {}
           : { chatScroll: CHAT_SCROLL_TO_ROW[body.chatScroll] }),
+        ...(body.outlinePinned === undefined
+          ? {}
+          : { outlinePinned: OUTLINE_PINNED_TO_ROW[body.outlinePinned] }),
+        ...(body.outlineTransparency === undefined
+          ? {}
+          : { outlineTransparency: OUTLINE_TRANSPARENCY_TO_ROW[body.outlineTransparency] }),
       },
     });
     return this.get(userId);

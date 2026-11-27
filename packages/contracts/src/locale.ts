@@ -56,8 +56,33 @@ export type ChatScrollMode = z.infer<typeof chatScrollModeSchema>;
 export const DEFAULT_CHAT_SCROLL_MODE: ChatScrollMode = 'follow';
 
 /**
+ * Where a pinned page outline sits (issue #283).
+ *
+ * `column` gives the list a column of the page area and the text moves aside
+ * (issue #267), and is the default. `overlay` leaves the text where it is and
+ * lays the list over it, covering what lies underneath where the margin is
+ * too narrow to hold it.
+ */
+export const OUTLINE_PINNED_MODES = ['column', 'overlay'] as const;
+export const outlinePinnedModeSchema = z.enum(OUTLINE_PINNED_MODES);
+export type OutlinePinnedMode = z.infer<typeof outlinePinnedModeSchema>;
+export const DEFAULT_OUTLINE_PINNED_MODE: OutlinePinnedMode = 'column';
+
+/**
+ * How much of the text an overlaid outline lets through (issue #283): `none`
+ * is opaque, `light` and `strong` let the covered text show through, and the
+ * list comes back to full strength under the pointer or the keyboard focus.
+ * Only read while `outlinePinned` is `overlay`.
+ */
+export const OUTLINE_TRANSPARENCIES = ['none', 'light', 'strong'] as const;
+export const outlineTransparencySchema = z.enum(OUTLINE_TRANSPARENCIES);
+export type OutlineTransparency = z.infer<typeof outlineTransparencySchema>;
+export const DEFAULT_OUTLINE_TRANSPARENCY: OutlineTransparency = 'none';
+
+/**
  * The account's own settings that belong to the person rather than to a
- * workspace or a device: the interface language and how the AI chat scrolls.
+ * workspace or a device: the interface language, how the AI chat scrolls and
+ * how a pinned page outline behaves.
  *
  * `locale: null` means the account never chose. It is a different answer from
  * `'de'`: an undecided account follows its browser, a decided one does not.
@@ -65,20 +90,25 @@ export const DEFAULT_CHAT_SCROLL_MODE: ChatScrollMode = 'follow';
 export const userPreferencesSchema = z.object({
   locale: localeSchema.nullable(),
   chatScroll: chatScrollModeSchema,
+  outlinePinned: outlinePinnedModeSchema,
+  outlineTransparency: outlineTransparencySchema,
 });
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
 /**
  * A change to some of them: a field left out stays as it is, so a client
- * that only knows the language cannot reset the scrolling, and the reverse.
+ * that only knows the language cannot reset the scrolling or the outline,
+ * and the reverse.
  * `locale: null` is not "leave it", it clears the choice.
  */
 export const updateUserPreferencesRequestSchema = z
   .object({
     locale: localeSchema.nullable().optional(),
     chatScroll: chatScrollModeSchema.optional(),
+    outlinePinned: outlinePinnedModeSchema.optional(),
+    outlineTransparency: outlineTransparencySchema.optional(),
   })
-  .refine((value) => value.locale !== undefined || value.chatScroll !== undefined, {
+  .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: 'At least one field must be provided',
   });
 export type UpdateUserPreferencesRequest = z.infer<typeof updateUserPreferencesRequestSchema>;

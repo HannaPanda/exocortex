@@ -217,9 +217,27 @@ describe('user preferences contract (issue #282)', () => {
 
   it('knows exactly the two ways the chat scrolls', () => {
     expect(() => updateUserPreferencesRequestSchema.parse({ chatScroll: 'bottom' })).toThrow();
-    expect(userPreferencesSchema.parse({ locale: 'de', chatScroll: 'follow' }).chatScroll).toBe(
-      'follow',
-    );
+    expect(
+      userPreferencesSchema.parse({
+        locale: 'de',
+        chatScroll: 'follow',
+        outlinePinned: 'column',
+        outlineTransparency: 'none',
+      }).chatScroll,
+    ).toBe('follow');
+  });
+});
+
+describe('outline preferences contract (issue #283)', () => {
+  it('knows where a pinned outline sits and how much it lets through', () => {
+    expect(updateUserPreferencesRequestSchema.parse({ outlinePinned: 'overlay' })).toEqual({
+      outlinePinned: 'overlay',
+    });
+    expect(updateUserPreferencesRequestSchema.parse({ outlineTransparency: 'strong' })).toEqual({
+      outlineTransparency: 'strong',
+    });
+    expect(() => updateUserPreferencesRequestSchema.parse({ outlinePinned: 'beside' })).toThrow();
+    expect(() => updateUserPreferencesRequestSchema.parse({ outlineTransparency: 0.5 })).toThrow();
   });
 });
 

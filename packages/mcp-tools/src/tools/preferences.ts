@@ -8,6 +8,8 @@ import {
   type KnowledgeMapAppearanceResponse,
   knowledgeMapAppearanceResponseSchema,
   LOCALE_ENDONYMS,
+  type OutlinePinnedMode,
+  type OutlineTransparency,
   updateUserPreferencesRequestSchema,
   type UserPreferences,
   userPreferencesSchema,
@@ -17,8 +19,8 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 /**
  * The account's personal settings: the interface language (issue #98), how
- * the AI chat scrolls while an answer arrives (issue #282), and how the
- * knowledge map looks (issue #189).
+ * the AI chat scrolls while an answer arrives (issue #282), how a pinned page
+ * outline behaves (issue #283), and how the knowledge map looks (issue #189).
  *
  * On both agent surfaces like everything a person can set in the browser
  * (ADR-025). An agent answering "stell mir die Oberfläche auf Englisch" needs
@@ -37,10 +39,25 @@ function describeChatScroll(mode: ChatScrollMode): string {
     : 'mitlaufen (follow): die Ansicht folgt der wachsenden Antwort, bis man hochscrollt';
 }
 
+function describeOutlinePinned(mode: OutlinePinnedMode): string {
+  return mode === 'overlay'
+    ? 'über dem Text (overlay): der Text bleibt stehen, die Gliederung liegt darüber und verdeckt ihn, wo der Rand nicht reicht'
+    : 'eigene Spalte (column): der Text weicht zur Seite aus und wird nie verdeckt';
+}
+
+const TRANSPARENCY_WORDS: Record<OutlineTransparency, string> = {
+  none: 'deckend (none)',
+  light: 'leicht durchscheinend (light)',
+  strong: 'stark durchscheinend (strong)',
+};
+
 function renderPreferences(result: UserPreferences): string {
   return [
     `Sprache der Oberfläche: ${describeLocale(result.locale)}.`,
     `Scrollen im KI-Chat: ${describeChatScroll(result.chatScroll)}.`,
+    `Angepinnte Gliederung: ${describeOutlinePinned(result.outlinePinned)}.`,
+    `Transparenz der überlagernden Gliederung: ${TRANSPARENCY_WORDS[result.outlineTransparency]}` +
+      (result.outlinePinned === 'overlay' ? '.' : ', wirkt nur beim Überlagern.'),
   ].join('\n');
 }
 
@@ -48,9 +65,12 @@ export const userPreferencesTool: AnyToolDefinition = defineTool({
   name: 'exo_me_preferences',
   description:
     'Zeigt die persönlichen Einstellungen dieses Kontos, die auf jedem Gerät gelten: die ' +
-    'Sprache der Oberfläche und wie der KI-Chat scrollt, während eine Antwort entsteht. locale ' +
-    'null heißt, dass nie eine gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. ' +
-    'chatScroll ist follow (mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben).',
+    'Sprache der Oberfläche, wie der KI-Chat scrollt, während eine Antwort entsteht, und wie ' +
+    'sich die angepinnte Gliederung einer Seite verhält. locale null heißt, dass nie eine ' +
+    'gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. chatScroll ist follow ' +
+    '(mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben). outlinePinned ist ' +
+    'column (eigene Spalte, der Text weicht aus, Standard) oder overlay (über dem Text), ' +
+    'outlineTransparency none, light oder strong.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
@@ -73,7 +93,12 @@ export const userPreferencesSetTool: AnyToolDefinition = defineTool({
     'löschen und wieder dem Browser zu folgen; übersetzt wird nur die Oberfläche, nie die ' +
     'Inhalte der Seiten. chatScroll: follow (der KI-Chat läuft mit der wachsenden Antwort mit, ' +
     'Standard) oder answerStart (die Frage rückt beim Start einer Antwort einmal nach oben, ' +
-    'danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter).',
+    'danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter). ' +
+    'outlinePinned: column (die angepinnte Gliederung bekommt eine eigene Spalte, der Text ' +
+    'weicht aus, Standard) oder overlay (sie liegt über dem Text und verdeckt ihn, wo der Rand ' +
+    'nicht reicht). outlineTransparency: none (deckend, Standard), light oder strong (der ' +
+    'verdeckte Text scheint durch; unter der Maus oder mit Tastaturfokus wird die Gliederung ' +
+    'wieder voll sichtbar); wirkt nur bei overlay.',
   inputSchema: updateUserPreferencesRequestSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',

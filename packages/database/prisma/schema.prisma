@@ -30,14 +30,14 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id                     String         @id @default(cuid(2))
+  id                     String              @id @default(cuid(2))
   name                   String
-  email                  String         @unique
-  emailVerified          Boolean        @default(false)
+  email                  String              @unique
+  emailVerified          Boolean             @default(false)
   image                  String?
   /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
   /// administers the deployment, a workspace ADMIN administers one workspace.
-  role                   UserRole       @default(USER)
+  role                   UserRole            @default(USER)
   /// When set, the account exists but may not act: sign-in is refused and every
   /// credential is rejected. Deliberately not a deletion -- documents point at
   /// their author through `createdById`/`updatedById`, so removing the row would
@@ -60,9 +60,16 @@ model User {
   /// it follows the newest line (`FOLLOW`, the behaviour of #242), or it
   /// brings the question to the top once and then stays put
   /// (`ANSWER_START`). The reader's habit, not a workspace's, hence here.
-  chatScroll             ChatScrollMode @default(FOLLOW)
-  createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
+  chatScroll             ChatScrollMode      @default(FOLLOW)
+  /// Where a pinned page outline sits (issue #283): in a column of its own
+  /// with the text moved aside (`COLUMN`, the behaviour of #267), or over the
+  /// text (`OVERLAY`). The reader's habit, not a page's, hence here.
+  outlinePinned          OutlinePinnedMode   @default(COLUMN)
+  /// How much of the covered text an overlaid outline lets through (issue
+  /// #283). Only read while `outlinePinned` is `OVERLAY`.
+  outlineTransparency    OutlineTransparency @default(NONE)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
 
   sessions                    Session[]
   accounts                    Account[]
@@ -146,6 +153,19 @@ enum UserRole {
 enum ChatScrollMode {
   FOLLOW
   ANSWER_START
+}
+
+/// See `User.outlinePinned` (issue #283).
+enum OutlinePinnedMode {
+  COLUMN
+  OVERLAY
+}
+
+/// See `User.outlineTransparency` (issue #283).
+enum OutlineTransparency {
+  NONE
+  LIGHT
+  STRONG
 }
 
 model Session {
