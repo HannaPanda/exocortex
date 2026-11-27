@@ -6084,6 +6084,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "e4b517497d67a555"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "9d3ab526717e7ec6"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "34d8460c194fcb44"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "d8b8392e2c542950"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "1a439e4001a9f7ac"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "f59ab8d1331b7b16"
@@ -14779,6 +14799,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "faf7e1a250e36363"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "8b2c8c2b53356f83"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "8676f05a4144bab5"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "58175216d311c2a8"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "81e29d7e92abfabf"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "f096a8e537a8370f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "114613b9f5fc507d"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -31014,6 +31058,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "9339f73c78002560"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "9acf46e977e89f3b"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "f7d60b283bcbed95"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "a9254c5f812829af"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "9c167e034171e188"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "30d1a8cd45b235e9"
@@ -39709,6 +39773,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "df3cef5e3271d507"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "0d2b57f01d7af400"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "5193e0111f5f16d3"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "91631f5ccc168f42"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "e90ccb8030ed1e7f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "58da7efa540dfd60"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "933619a32764bb76"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -55944,6 +56032,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "ab98eefdb89cbb93"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "dfff3db983c481d2"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "1ba54ff087e5f41e"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "af273d956b5bec8d"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "9689b779e45afb70"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "2c847c1c25d59e21"
@@ -64639,6 +64747,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "a56b1f382a49467f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "282cc98091b711d5"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "c8596adb17320ac2"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "4ae50472e3d3641d"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "e2e89e7fe94abe66"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "0181cf03196d62e7"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "de3b5efc6df06c05"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -80874,6 +81006,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "8b7fb7fd9a91559b"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "58421758dadd34f3"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "050e7083a44402db"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "20b5f4b8bfd56e4f"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "111c09cf9ce29d09"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "bc0274205537c131"
@@ -89569,6 +89721,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "a0d05357c9c7016b"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "b715fe99d32b0a7f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "f4b26d25d5e9b167"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "dfc1f15d954a6b31"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "6bc5cf4cd0a3c535"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "9c01e60a6598d797"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "3920918137f33eab"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -105804,6 +105980,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "a3b5056e24a5bb90"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "453dc2630202a3d7"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "da877a70434bd9a6"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "576434df7a00aeae"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "654b1d7e0a1f92c4"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "c8cede0af6281136"
@@ -114499,6 +114695,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "ad6860ecb7767d0f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "e04fa3f4dc8c412e"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "a8b3de9b5f0e35be"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "c861a20710ac11f5"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "3d16ce092f522849"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "01aac0558276e395"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "b13d8d1feff30033"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -130734,6 +130954,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "95151b81871b3574"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "c8e897ba05c994f3"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "dbab1e05f1b342d7"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "7237b73bc691a25b"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "77d670366c2713bf"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "5604e5096a53eba8"
@@ -139429,6 +139669,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "ffedad561325ade8"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "9bd07864bb8d062f"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "44a842a706a678b6"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "c92e7c77be09eee5"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "fde626e60f3e82ff"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "ef254daf4dd73770"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "45475ed6ec9b771e"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",
@@ -155664,6 +155928,26 @@
       "source": "e7a241debad56609",
       "output": "e7a241debad56609"
     },
+    "database.rowHeader.fewer": {
+      "source": "7a3a172eab8a4620",
+      "output": "7536e1c973f60702"
+    },
+    "database.rowHeader.label": {
+      "source": "2eeaa158fc643741",
+      "output": "567a4b7f35a76674"
+    },
+    "database.rowHeader.more": {
+      "source": "c471bdf324459294",
+      "output": "f02a184f8d1dbe7e"
+    },
+    "database.rowHeader.retry": {
+      "source": "948643cb59e8274f",
+      "output": "b9e10688be012d8b"
+    },
+    "database.rowHeader.unavailable": {
+      "source": "55c6144d698db5d5",
+      "output": "e937ab43ebb8e8f5"
+    },
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "9469c6553b7543ea"
@@ -164359,6 +164643,30 @@
     "features.zeile-nach-dem-letzten-block.where": {
       "source": "1f6326a231ec05d4",
       "output": "187afd491c2e2927"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p1": {
+      "source": "e602e293f4dd5ae3",
+      "output": "64ad4f4e7146ba59"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p2": {
+      "source": "84b4c090cb3a44a0",
+      "output": "abb687a6f86ce2e0"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.details.p3": {
+      "source": "3969579d87674339",
+      "output": "56f5d0f9bc02ab71"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.summary": {
+      "source": "b82e3f6b1a426b5d",
+      "output": "572017b15e019e69"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.title": {
+      "source": "c0bfd820eb453eeb",
+      "output": "60e52a5cf87d1ee9"
+    },
+    "features.zeilen-eigenschaften-im-seitenkopf.where": {
+      "source": "4ee0255fbab35baf",
+      "output": "226e140d35ef32ea"
     },
     "features.zeitplaene.details.p1": {
       "source": "b38b40f592f8800e",

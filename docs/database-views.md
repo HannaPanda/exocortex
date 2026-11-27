@@ -236,6 +236,46 @@ neighbours. The pinned title cell is opaque in every state, hover and an open
 cell menu included, with the row's tint mixed into the page colour, because
 the columns scroll underneath it.
 
+## A row's page header
+
+A row opened as a page shows its values under its title (issue #254,
+`row-properties-header.tsx`, mounted in `document-view.tsx` for a `PAGE` whose
+parent is a `COLLECTION`). It is the third place a row is edited, beside the
+table cell and the row sheet, and like those two it is not a copy:
+
+- **One read, one write.** The header reads `GET /api/documents/:id/row`, which
+  answers the row _and_ the columns of its database (`DocumentRowResponse.properties`,
+  in the database's order), and writes `PATCH /api/documents/:id/values`, the
+  same route the table writes. Nothing goes into the page's Yjs state. The
+  columns ride along with the row because a page can be shared on its own
+  (ADR-044): the reader may read the row and not its database, and a value
+  without its column's name, type and options cannot be read (`docs/sharing.md`).
+- **One editor per type.** Every value is the table's `PropertyCell`, at the
+  `tall` clamp: dates with `DatePicker`/`TimeInput` (#255), selections with
+  their badges, relations with their picker, rollups and formulas read-only
+  through `ReadonlyCell` (ADR-041). PERSON and FILES are the table's raw id
+  editor, see the limitation below.
+- **Folding.** `layoutRowHeader` (`row-header-layout.ts`, unit-tested) decides
+  what shows before "N weitere Eigenschaften": up to eight columns are shown
+  whole to an editor; past that the first six and every filled one, at most
+  twelve, always in the database's order; a reader without write access sees
+  only filled values, because an empty field they cannot fill says nothing. A
+  fold that would hide one line shows it instead. Whether it is unfolded is
+  remembered per database in the browser (`exocortex.rowHeader.expanded.<id>`).
+  Notion's per-column "hide when empty" is deliberately not a schema setting
+  here: it would be one decision for every reader of the database, and the
+  rule above already folds exactly the empty tail.
+- **Live.** `useDatabaseRealtime` (`apps/web/src/components/shell/database-realtime.ts`)
+  answers `database.row.updated`, `database.property.changed` and
+  `database.view.changed` by invalidating the database's rows, its columns or
+  views and every cached single row, so an edit in the table reaches an open
+  row page and the other way round, across tabs, members and agents. The row
+  queries are invalidated across the board rather than by id because a rollup
+  on one row is computed from rows of another database.
+
+The context panel's "Eigenschaften" tab reads the same answer, so it too shows
+the values on a page shared on its own.
+
 ## Inline embed
 
 A database can also appear as a live view inside another page (Notion's
@@ -382,9 +422,10 @@ happens to read `"Preis"` is left alone.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
 - **PERSON and FILES are edited as raw, comma-separated ids** in
-  `text-cells.tsx`'s `IdListCell` — a member picker and a file browser are a
-  separate, larger feature; this is the honest minimal editor that still
-  round-trips the array completely through the API.
+  `text-cells.tsx`'s `IdListCell`, in the table, the row sheet and a row's page
+  header alike — a member picker and a file browser are a separate, larger
+  feature; this is the honest minimal editor that still round-trips the array
+  completely through the API.
 - **A database embed's Markdown export/import loses the reference.** Markdown
   is interchange-only (ADR-007) and never carries internal ids, so the
   `:::database-embed` container round-trips only the database's title, and

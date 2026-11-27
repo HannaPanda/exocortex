@@ -39,6 +39,7 @@ import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
 import { ContextPanel, type ContextPanelProps, type ContextTab } from './context-panel';
+import { useDatabaseRealtime } from './database-realtime';
 import { useDelegatedWorkRealtime } from './delegated-work-realtime';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
@@ -254,6 +255,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   // Delegated work, what waits on somebody, and proposals (issues #138, #139, #141).
   useDelegatedWorkRealtime();
+
+  // A row, a column or a view of a database changed elsewhere (issue #254).
+  useDatabaseRealtime();
 
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
   // The text itself arrives through the collaboration socket (ADR-016); what

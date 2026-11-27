@@ -8,6 +8,7 @@ import { type DocumentDetail } from '@exocortex/contracts';
 import { cn, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
+import { RowPropertiesHeader } from '@/components/database/row-properties-header';
 import { PageCover, PageCoverAddButton } from '@/components/document/page-cover';
 import { PageIconAddButton, PageIconButton } from '@/components/document/page-icon-picker';
 import { PageOverview } from '@/components/document/page-overview';
@@ -221,6 +222,18 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
               data-gutter="editor"
             >
               {pageHead}
+
+              {/* A row of a database carries its values under its title, read
+                and written as the table's own cells (issue #254). */}
+              {detail.type === 'PAGE' &&
+              detail.parentId !== null &&
+              detail.parentType === 'COLLECTION' ? (
+                <RowPropertiesHeader
+                  collectionDocumentId={detail.parentId}
+                  rowId={documentId}
+                  readOnly={readOnly}
+                />
+              ) : null}
 
               {/* Between the title and the body: the overview is about the page's
                 sub-pages, and a reader looking for one of them should not have

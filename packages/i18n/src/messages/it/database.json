@@ -279,5 +279,12 @@
       "rollup_incomplete": "La colonna Rollup «{name}» è incompleta.",
       "rollup_no_relation": "La colonna Rollup «{name}» non punta ad alcuna relazione."
     }
+  },
+  "rowHeader": {
+    "label": "Proprietà di questa riga",
+    "more": "{count, plural, one {# altra proprietà} many {# altre proprietà} other {# altre proprietà}}",
+    "fewer": "Meno proprietà",
+    "unavailable": "Impossibile caricare le proprietà di questa riga.",
+    "retry": "Riprova"
   }
 }

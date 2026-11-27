@@ -375,6 +375,16 @@
     },
     "where": "Fai clic sull’intestazione della colonna nella vista tabella."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Proprietà di una riga in cima alla sua pagina",
+    "summary": "Se apri una riga di un database come pagina, le sue proprietà si trovano direttamente sotto il titolo: stato, data, collegamenti, formule. Puoi modificarle lì usando gli stessi campi della tabella, ed entrambe le posizioni mostrano sempre lo stesso valore.",
+    "details": {
+      "p1": "Sotto il titolo si trova una riga per ogni colonna del database, con il relativo nome e valore. Una data riceve il calendario e il campo dell’ora, una selezione le sue opzioni colorate, un collegamento la selezione delle righe collegate. I Rollup e le formule vengono calcolati e mostrati in sola lettura; si modificano attraverso le righe o la formula stessa.",
+      "p2": "Se il database ha molte colonne, l’intestazione mostra le prime sei e tutte quelle che hanno già un valore. Il resto, ovvero quelle vuote, si trova sotto „altre proprietà“. Il browser ricorda per ogni database se questa sezione è stata espansa. Chi ha accesso alla pagina in sola lettura vede solo i valori compilati e non può modificare nulla.",
+      "p3": "Non esiste una seconda posizione di salvataggio: l’intestazione e la tabella leggono e scrivono gli stessi valori, e una modifica apportata in un punto appare nell’altro senza ricaricare la pagina, anche se proviene da un’altra scheda, da un’altra persona o da un agente. Il testo della pagina rimane invariato."
+    },
+    "where": "Fai clic su una riga in un database: le proprietà si trovano sotto il titolo della pagina."
+  },
   "eingang": {
     "title": "Posta in arrivo e acquisizione rapida",
     "summary": "Ctrl+E apre un piccolo campo in cui annotare subito un pensiero, senza dover decidere dove collocarlo. Finisce nella pagina della posta in arrivo e verrà organizzato più tardi con i suggerimenti di archiviazione.",

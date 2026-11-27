@@ -33,6 +33,13 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'zeilen-eigenschaften-im-seitenkopf',
+    area: 'datenbanken',
+    since: '2026-11-27',
+    references: ['#254'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'datenbank-verknuepfungen',
     area: 'datenbanken',
     since: '2026-09-19',

@@ -375,6 +375,16 @@
     },
     "where": "Dans la vue en tableau, cliquer sur l’en-tête de colonne."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Propriétés d’une ligne en haut de sa page",
+    "summary": "Si tu ouvres une ligne d’une base de données sous forme de page, ses propriétés apparaissent directement sous le titre : statut, date, relations, formules. Tu peux les modifier là avec les mêmes champs que dans le tableau, et les deux endroits affichent toujours la même valeur.",
+    "details": {
+      "p1": "Sous le titre se trouve, pour chaque colonne de la base de données, une ligne avec son nom et sa valeur. Une date dispose du calendrier et du champ horaire, une sélection de ses options colorées, une relation du choix des lignes associées. Les Rollups et formules sont calculés et affichés en lecture seule ; pour les modifier, il faut intervenir sur les lignes ou sur la formule elle-même.",
+      "p2": "Si la base de données comporte beaucoup de colonnes, l’en-tête affiche les six premières ainsi que toutes celles qui ont déjà une valeur. Le reste, c’est-à-dire les champs vides, se trouve sous « plus de propriétés ». Ton navigateur mémorise pour chaque base de données si tu as déplié cette section. Les personnes qui ont seulement accès en lecture à la page ne voient que les valeurs renseignées et ne peuvent rien modifier.",
+      "p3": "Il n’y a pas de second emplacement de stockage : l’en-tête et le tableau lisent et écrivent les mêmes valeurs, et une modification apportée d’un côté apparaît de l’autre sans rechargement, même si elle provient d’un autre onglet, d’une autre personne ou d’un agent. Le texte de la page n’en est pas affecté."
+    },
+    "where": "Cliquer sur une ligne dans une base de données : les propriétés figurent sous le titre de la page."
+  },
   "eingang": {
     "title": "Boîte de réception et saisie rapide",
     "summary": "Ctrl+E ouvre un petit champ pour noter instantanément une idée, sans devoir décider où la ranger. Elle atterrit sur la page de boîte de réception, et le classement se fait plus tard avec la suggestion de rangement.",

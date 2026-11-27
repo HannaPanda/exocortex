@@ -375,6 +375,16 @@
     },
     "where": "Click the column header in the table view."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Row properties at the top of its page",
+    "summary": "When you open a database row as a page, its properties appear directly beneath the title: status, date, relations, formulas. You can edit them there using the same fields as in the table, and both places always show the exact same value.",
+    "details": {
+      "p1": "Beneath the title, there is a line for every column of the database showing its name and its value. A date gets the calendar and time field, a select property gets its colored options, and a relation gets the picker for linked rows. Rollups and formulas are calculated and display-only; they are modified via the rows or the formula itself.",
+      "p2": "If the database has many columns, the header displays the first six along with any that already have a value. The rest, meaning the empty ones, are tucked behind “more properties”. Your browser remembers whether you expanded this for each database. Anyone with read-only access to the page sees only the filled-in values and cannot edit anything.",
+      "p3": "There is no separate storage location: the header and the table read and write the exact same values, and an edit made in one place appears in the other without reloading—even if it comes from another tab, another person, or an agent. The body text of the page remains untouched."
+    },
+    "where": "Click a row in a database: the properties appear beneath the page’s title."
+  },
   "eingang": {
     "title": "Inbox and quick capture",
     "summary": "Ctrl+E opens a small field where a thought can be captured immediately, without having to decide where it belongs. It lands on the inbox page, and sorting it out happens later with filing suggestions.",

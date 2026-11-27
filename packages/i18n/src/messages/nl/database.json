@@ -279,5 +279,12 @@
       "rollup_incomplete": "De Rollup-kolom „{name}” is onvolledig.",
       "rollup_no_relation": "De Rollup-kolom „{name}” verwijst niet naar een relatie."
     }
+  },
+  "rowHeader": {
+    "label": "Eigenschappen van deze rij",
+    "more": "{count, plural, one {# extra eigenschap} other {# extra eigenschappen}}",
+    "fewer": "Minder eigenschappen",
+    "unavailable": "De eigenschappen van deze rij konden niet worden geladen.",
+    "retry": "Opnieuw proberen"
   }
 }

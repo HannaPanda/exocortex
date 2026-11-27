@@ -330,21 +330,43 @@ export function useUpdateDatabaseRowValues(documentId: string) {
 
 /**
  * A single row by the id of the document it is (not by its collection): "is
- * this document a database row, and if so what are its values?" Used by the
- * context panel's properties tab (issue #17), which has an open document's id
- * and no reason to already know its collection.
+ * this document a database row, and if so what are its values?", answered
+ * together with the columns of its database. Used by the page header (issue
+ * #254) and the context panel's properties tab (issue #17), which have an open
+ * document's id and no reason to already know its collection -- and, on a page
+ * shared on its own, no right to read that collection either.
  */
 export function useDocumentRow(documentId: string | undefined) {
   return useQuery({
     queryKey: databaseQueryKeys.row(documentId ?? 'none'),
-    queryFn: async () => {
-      const response = await apiRequest<DocumentRowResponse>(
-        `/api/documents/${documentId ?? ''}/row`,
-      );
-      return response.row;
-    },
+    queryFn: () => apiRequest<DocumentRowResponse>(`/api/documents/${documentId ?? ''}/row`),
     enabled: documentId !== undefined,
   });
+}
+
+/**
+ * Keeps every open table, board, calendar and row header current while
+ * somebody else changes the same database (issue #254).
+ *
+ * The API announces a changed row, column or view on the workspace channel;
+ * this answers by marking what the browser holds about that database stale.
+ * Only what is on screen is fetched again. A single row is invalidated across
+ * the board rather than by id, because a rollup on one row is computed from
+ * rows of another database, and an open page has exactly one of them.
+ */
+export function invalidateDatabaseAfterEvent(
+  client: ReturnType<typeof useQueryClient>,
+  event: { kind: 'row' | 'property' | 'view'; documentId: string },
+): void {
+  void client.invalidateQueries({ queryKey: ['database', event.documentId, 'rows'] });
+  if (event.kind === 'view') {
+    void client.invalidateQueries({ queryKey: databaseQueryKeys.views(event.documentId) });
+    return;
+  }
+  if (event.kind === 'property') {
+    void client.invalidateQueries({ queryKey: databaseQueryKeys.properties(event.documentId) });
+  }
+  void client.invalidateQueries({ queryKey: ['database', 'row'] });
 }
 
 /**

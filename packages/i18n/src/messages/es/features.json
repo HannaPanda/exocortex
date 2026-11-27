@@ -375,6 +375,16 @@
     },
     "where": "En la vista de tabla, haz clic en el encabezado de la columna."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Propiedades de una fila en la cabecera de su página",
+    "summary": "Si abres una fila de una base de datos como página, sus propiedades aparecen directamente bajo el título: estado, fecha, enlaces, fórmulas. Las modificas ahí con los mismos campos que en la tabla, y ambos lugares muestran siempre el mismo valor.",
+    "details": {
+      "p1": "Bajo el título aparece una fila para cada columna de la base de datos con su nombre y su valor. Una fecha tiene el calendario y el campo de hora, una selección sus opciones de colores, un enlace la selección de las filas enlazadas. Los Rollup y las fórmulas se calculan y solo se muestran; se modifican a través de las filas o de la propia fórmula.",
+      "p2": "Si la base de datos tiene muchas columnas, la cabecera muestra las primeras seis y todas las que ya tengan un valor. El resto, es decir, las vacías, se encuentran tras «más propiedades». Tu navegador recuerda para cada base de datos si has desplegado esta sección. Quien solo tenga permisos de lectura en la página solo ve los valores completados y no puede cambiar nada.",
+      "p3": "No hay una segunda ubicación de guardado: la cabecera y la tabla leen y escriben los mismos valores, y un cambio en un lugar aparece en el otro sin recargar, incluso si procede de otra pestaña, de otra persona o de un agente. El texto de la página no se ve afectado."
+    },
+    "where": "Haz clic en una fila dentro de una base de datos: las propiedades se encuentran bajo el título de la página."
+  },
   "eingang": {
     "title": "Bandeja de entrada y captura rápida",
     "summary": "Ctrl+E abre un pequeño campo para anotar una idea al instante, sin tener que decidir a dónde pertenece. Aterriza en la página de la bandeja de entrada y se organiza más tarde con la sugerencia de archivado.",

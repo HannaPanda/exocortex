@@ -279,5 +279,12 @@
       "rollup_incomplete": "The Rollup column “{name}” is incomplete.",
       "rollup_no_relation": "The Rollup column “{name}” does not point to a relation."
     }
+  },
+  "rowHeader": {
+    "label": "Properties of this row",
+    "more": "{count, plural, one {# more property} other {# more properties}}",
+    "fewer": "Fewer properties",
+    "unavailable": "Couldn’t load the properties for this row.",
+    "retry": "Try again"
   }
 }

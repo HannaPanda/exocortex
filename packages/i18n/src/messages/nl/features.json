@@ -375,6 +375,16 @@
     },
     "where": "In de tabelweergave op de kolomkop klikken."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Eigenschappen van een rij bovenaan de bijbehorende pagina",
+    "summary": "Open je een rij van een database als pagina, dan staan de eigenschappen direct onder de titel: status, datum, koppelingen, formules. Je past ze daar aan met dezelfde velden als in de tabel, en beide plekken tonen altijd dezelfde waarde.",
+    "details": {
+      "p1": "Onder de titel staat voor elke kolom van de database een rij met de naam en de waarde ervan. Een datum krijgt de kalender en het tijdveld, een selectie zijn gekleurde opties, een koppeling de selectie van gekoppelde rijen. Rollups en formules worden berekend en alleen weergegeven; aanpassen doe je via de rijen of de formule zelf.",
+      "p2": "Heeft de database veel kolommen, dan toont de koptekst de eerste zes en alle kolommen die al een waarde hebben. De rest, oftewel de lege, zit achter „meer eigenschappen”. Of je dit hebt uitgeklapt, onthoudt je browser voor elke database. Wie de pagina alleen mag lezen, ziet alleen de ingevulde waarden en kan niets wijzigen.",
+      "p3": "Er is geen tweede opslaglocatie: koptekst en tabel lezen en schrijven dezelfde waarden, en een wijziging op de ene plek verschijnt zonder herladen op de andere, zelfs als deze uit een ander tabblad, van iemand anders of van een agent komt. De tekst van de pagina blijft hierdoor onaangeraakt."
+    },
+    "where": "Klik op een rij in een database: de eigenschappen staan onder de titel van de pagina."
+  },
   "eingang": {
     "title": "Inbox en snelle invoer",
     "summary": "Ctrl+E opent een klein veld waarin een gedachte direct kan worden ingevoerd, zonder dat je hoeft te beslissen waar hij thuishoort. Hij belandt op de inboxpagina, en ordenen doe je later met het plaatsingsvoorstel.",

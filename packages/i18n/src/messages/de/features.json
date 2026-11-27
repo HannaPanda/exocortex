@@ -375,6 +375,16 @@
     },
     "where": "In der Tabellenansicht auf den Spaltenkopf klicken."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Eigenschaften einer Zeile oben auf ihrer Seite",
+    "summary": "Öffnest du eine Zeile einer Datenbank als Seite, stehen ihre Eigenschaften direkt unter dem Titel: Status, Datum, Verknüpfungen, Formeln. Du änderst sie dort mit denselben Feldern wie in der Tabelle, und beide Stellen zeigen immer denselben Wert.",
+    "details": {
+      "p1": "Unter dem Titel steht für jede Spalte der Datenbank eine Zeile mit ihrem Namen und ihrem Wert. Ein Datum bekommt den Kalender und das Zeitfeld, eine Auswahl ihre farbigen Optionen, eine Verknüpfung die Auswahl der verknüpften Zeilen. Rollups und Formeln werden berechnet und nur angezeigt, geändert werden sie über die Zeilen oder die Formel selbst.",
+      "p2": "Hat die Datenbank viele Spalten, zeigt der Kopf die ersten sechs und alle, die schon einen Wert haben. Der Rest, also die leeren, liegt hinter „weitere Eigenschaften“. Ob du das aufgeklappt hast, merkt sich dein Browser für jede Datenbank. Wer die Seite nur lesen darf, sieht nur die ausgefüllten Werte und kann nichts ändern.",
+      "p3": "Es gibt keinen zweiten Speicherort: Kopf und Tabelle lesen und schreiben dieselben Werte, und eine Änderung an einer Stelle erscheint an der anderen ohne Neuladen, auch wenn sie in einem anderen Tab, von einer anderen Person oder von einem Agenten kommt. Der Text der Seite bleibt davon unberührt."
+    },
+    "where": "In einer Datenbank eine Zeile anklicken: die Eigenschaften stehen unter dem Titel der Seite."
+  },
   "eingang": {
     "title": "Eingang und Schnellerfassung",
     "summary": "Strg+E öffnet ein kleines Feld, in das ein Gedanke sofort hineingeht, ohne dass du entscheiden musst, wohin er gehört. Er landet auf der Eingangsseite, und einsortiert wird später mit dem Ablagevorschlag.",

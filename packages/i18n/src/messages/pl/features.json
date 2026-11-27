@@ -375,6 +375,16 @@
     },
     "where": "W widoku tabeli kliknij nagłówek kolumny."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Właściwości wiersza na górze jego strony",
+    "summary": "Gdy otwierasz wiersz bazy danych jako stronę, jego właściwości znajdują się tuż pod tytułem: status, data, relacje, formuły. Zmieniasz je tam za pomocą tych samych pól, co w tabeli, a oba miejsca zawsze pokazują tę samą wartość.",
+    "details": {
+      "p1": "Pod tytułem dla każdej kolumny bazy danych znajduje się wiersz z jej nazwą i wartością. Data otrzymuje kalendarz i pole godziny, pole wyboru – swoje kolorowe opcje, a relacja – wybór powiązanych wierszy. Wartości Rollup i formuły są przeliczane i tylko wyświetlane; zmienia się je poprzez powiązane wiersze lub samą formułę.",
+      "p2": "Jeśli baza danych ma wiele kolumn, nagłówek wyświetla pierwszych sześć oraz wszystkie, które mają już przypisaną wartość. Reszta, czyli te puste, kryje się pod „więcej właściwości”. To, czy sekcja jest rozwinięta, twoja przeglądarka zapamiętuje dla każdej bazy danych. Osoby z uprawnieniami tylko do odczytu widzą wyłącznie wypełnione wartości i nie mogą niczego zmieniać.",
+      "p3": "Nie ma drugiego miejsca zapisu: nagłówek i tabela odczytują oraz zapisują te same wartości, a zmiana wprowadzona w jednym miejscu pojawia się w drugim bez konieczności odświeżania strony – nawet jeśli pochodzi z innej karty, od innej osoby lub od agenta. Treść strony pozostaje nienaruszona."
+    },
+    "where": "Kliknij wiersz w bazie danych: właściwości znajdują się pod tytułem strony."
+  },
   "eingang": {
     "title": "Skrzynka odbiorcza i szybkie rejestrowanie",
     "summary": "Skrót Ctrl+E otwiera małe pole, w którym natychmiast zapiszesz myśl, bez zastanawiania się, gdzie powinna trafić. Ląduje ona na stronie skrzynki odbiorczej, a uporządkować ją można później za pomocą sugestii miejsca zapisu.",

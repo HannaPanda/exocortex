@@ -49,18 +49,11 @@ function RowPropertiesSection({
   readOnly: boolean;
 }) {
   const t = useTranslations('document.propertiesPanel');
-  const properties = useDatabaseProperties(collectionDocumentId);
   const row = useDocumentRow(rowId);
   const updateValues = useUpdateDatabaseRowValues(collectionDocumentId);
 
-  if (properties.isPending) {
-    return <LoadingState variant="skeleton" rows={3} label={t('loading')} />;
-  }
   if (row.isPending) {
     return <LoadingState variant="skeleton" rows={3} label={t('loading')} />;
-  }
-  if (properties.isError) {
-    return <ErrorState title={t('unavailable')} onRetry={() => void properties.refetch()} />;
   }
   if (row.isError) {
     return <ErrorState title={t('unavailable')} onRetry={() => void row.refetch()} />;
@@ -69,17 +62,20 @@ function RowPropertiesSection({
   // moved out from under it, between the detail load that decided to render
   // this section and this query's own answer; both settle to "nothing to show"
   // rather than an error, the same way `getForDocument` on the API answers null.
-  if (row.data === null) return null;
+  if (row.data.row === null) return null;
 
-  const values = row.data.values;
+  // The columns come with the row rather than from the database's own list, so
+  // a page shared on its own shows its values with their names (issue #254).
+  const values = row.data.row.values;
+  const properties = row.data.properties;
 
   return (
     <section className="flex flex-col gap-2" data-testid="row-properties">
       <SectionRule as="h3">{t('properties')}</SectionRule>
-      {properties.data.length === 0 ? (
+      {properties.length === 0 ? (
         <p className="text-xs text-muted-foreground">{t('noDatabaseProperties')}</p>
       ) : (
-        properties.data.map((property) => (
+        properties.map((property) => (
           <div key={property.id} className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">{property.name}</span>
             <div className="rounded-md border border-border">

@@ -279,5 +279,12 @@
       "rollup_incomplete": "Die Rollup-Spalte „{name}“ ist unvollständig.",
       "rollup_no_relation": "Die Rollup-Spalte „{name}“ zeigt auf keine Verknüpfung."
     }
+  },
+  "rowHeader": {
+    "label": "Eigenschaften dieser Zeile",
+    "more": "{count, plural, one {# weitere Eigenschaft} other {# weitere Eigenschaften}}",
+    "fewer": "Weniger Eigenschaften",
+    "unavailable": "Die Eigenschaften dieser Zeile konnten nicht geladen werden.",
+    "retry": "Erneut versuchen"
   }
 }

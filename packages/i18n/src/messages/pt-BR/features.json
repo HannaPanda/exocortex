@@ -375,6 +375,16 @@
     },
     "where": "Clicar no cabeçalho da coluna na visualização em tabela."
   },
+  "zeilen-eigenschaften-im-seitenkopf": {
+    "title": "Propriedades de uma linha no topo da sua página",
+    "summary": "Ao abrir uma linha de um banco de dados como página, as propriedades dela aparecem logo abaixo do título: status, data, relações, fórmulas. Você pode alterá-las ali usando os mesmos campos da tabela, e ambos os locais mostram sempre o mesmo valor.",
+    "details": {
+      "p1": "Abaixo do título, há uma linha para cada coluna do banco de dados com seu nome e valor. Uma data recebe o calendário e o campo de horário, uma seleção exibe suas opções coloridas, e uma relação traz a seleção das linhas vinculadas. Rollups e fórmulas são calculados e apenas exibidos; alterações neles são feitas por meio das linhas ou da própria fórmula.",
+      "p2": "Se o banco de dados tiver muitas colunas, o cabeçalho mostrará as seis primeiras e todas as que já possuem um valor. O restante, ou seja, as que estão vazias, fica oculto em „mais propriedades”. O seu navegador lembra se você deixou essa seção expandida para cada banco de dados. Quem tem permissão apenas de leitura na página vê apenas os valores preenchidos e não pode alterar nada.",
+      "p3": "Não existe um segundo local de armazenamento: o cabeçalho e a tabela leem e gravam os mesmos valores, e uma alteração feita em um lugar aparece no outro sem precisar recarregar, mesmo que venha de outra aba, de outra pessoa ou de um agente. O texto da página permanece inalterado."
+    },
+    "where": "Clique em uma linha em um banco de dados: as propriedades aparecem abaixo do título da página."
+  },
   "eingang": {
     "title": "Caixa de entrada e captura rápida",
     "summary": "Ctrl+E abre um pequeno campo onde um pensamento entra imediatamente, sem que você precise decidir a onde ele pertence. Ele vai para a página da caixa de entrada, e a organização fica para depois com a sugestão de arquivamento.",

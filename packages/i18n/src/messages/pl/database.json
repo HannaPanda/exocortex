@@ -279,5 +279,12 @@
       "rollup_incomplete": "Kolumna typu Rollup „{name}” jest niekompletna.",
       "rollup_no_relation": "Kolumna typu Rollup „{name}” nie wskazuje na żadną relację."
     }
+  },
+  "rowHeader": {
+    "label": "Właściwości tego wiersza",
+    "more": "{count, plural, one {# dodatkowa właściwość} few {# dodatkowe właściwości} many {# dodatkowych właściwości} other {# dodatkowej właściwości}}",
+    "fewer": "Mniej właściwości",
+    "unavailable": "Nie udało się załadować właściwości tego wiersza.",
+    "retry": "Spróbuj ponownie"
   }
 }
