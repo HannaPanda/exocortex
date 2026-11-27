@@ -79,7 +79,7 @@ function codeBlockElementAt(view: EditorView, pos: number): HTMLElement | null {
  * that throws on `dom`, and the chrome may render before the editor's element
  * has taken the view.
  */
-function useMountedView(editor: Editor): EditorView | null {
+export function useMountedView(editor: Editor): EditorView | null {
   const [view, setView] = React.useState<EditorView | null>(null);
   React.useEffect(() => {
     const take = (): void => {

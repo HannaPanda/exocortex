@@ -34,6 +34,7 @@ import { AiSelectionReporter } from '@/components/editor/ai-selection-reporter';
 import { BlockHandle } from '@/components/editor/block-handle';
 import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
+import { CalloutMenu } from '@/components/editor/callout-menu';
 import { CodeBlockToolbar } from '@/components/editor/code-block-toolbar';
 import { renderCaret, renderCaretSelection } from '@/components/editor/collaboration-caret-render';
 import {
@@ -711,6 +712,7 @@ function EditorChrome({
           />
           <LinkBubble editor={editor} workspaceId={workspaceId} />
           <CodeBlockToolbar editor={editor} />
+          <CalloutMenu editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />
           {destructive.element}

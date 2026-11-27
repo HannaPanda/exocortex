@@ -506,29 +506,85 @@
     @apply bg-muted text-left font-medium;
   }
 
+  /* Callout (issue #306): the symbol, then the heading and the content.
+     The frame takes one of the content colours by name; the meaning is in the
+     symbol and the heading, never in the colour alone (WCAG 1.4.1). Without a
+     colour the box is the plain card. The node view (`callout.ts`) and the
+     static rendering share these classes, so a copied box and an exported one
+     look alike. */
   .exocortex-editor .exocortex-callout {
-    @apply rounded-md border border-border bg-card p-3;
+    @apply flex items-start gap-2 rounded-md border border-border bg-card p-3;
   }
 
-  .exocortex-editor .exocortex-callout[data-variant='warning'] {
-    @apply border-warning/50;
+  .exocortex-editor .exocortex-callout[data-color='gray'] {
+    @apply border-content-gray;
   }
 
-  .exocortex-editor .exocortex-callout[data-variant='danger'] {
-    @apply border-destructive/50;
+  .exocortex-editor .exocortex-callout[data-color='brown'] {
+    @apply border-content-brown;
   }
 
-  .exocortex-editor .exocortex-callout[data-variant='success'] {
-    @apply border-success/50;
+  .exocortex-editor .exocortex-callout[data-color='orange'] {
+    @apply border-content-orange;
   }
 
-  .exocortex-editor .exocortex-callout[data-variant='info'] {
-    @apply border-info/50;
+  .exocortex-editor .exocortex-callout[data-color='yellow'] {
+    @apply border-content-yellow;
   }
 
-  .exocortex-editor .exocortex-callout::before {
-    content: attr(data-title);
-    @apply mb-1 block text-xs font-semibold tracking-wide uppercase text-muted-foreground;
+  .exocortex-editor .exocortex-callout[data-color='green'] {
+    @apply border-content-green;
+  }
+
+  .exocortex-editor .exocortex-callout[data-color='blue'] {
+    @apply border-content-blue;
+  }
+
+  .exocortex-editor .exocortex-callout[data-color='purple'] {
+    @apply border-content-purple;
+  }
+
+  .exocortex-editor .exocortex-callout[data-color='pink'] {
+    @apply border-content-pink;
+  }
+
+  .exocortex-editor .exocortex-callout[data-color='red'] {
+    @apply border-content-red;
+  }
+
+  /* One line of text high, so the symbol sits on the first line whether that
+     is the heading or the content. A button in the editor, a plain span in a
+     copy or an export. */
+  .exocortex-editor .exocortex-callout-emoji {
+    @apply -my-0.5 grid h-[1.75em] min-w-[1.75em] shrink-0 place-items-center rounded-sm px-0.5 leading-none select-none;
+  }
+
+  .exocortex-editor button.exocortex-callout-emoji:not(:disabled) {
+    @apply cursor-pointer hover:bg-accent-solid;
+  }
+
+  .exocortex-editor .exocortex-callout-body {
+    @apply min-w-0 flex-1;
+  }
+
+  .exocortex-editor .exocortex-callout-title {
+    @apply mb-1 block font-semibold;
+  }
+
+  .exocortex-editor [data-callout-title] {
+    @apply cursor-pointer select-none;
+  }
+
+  .exocortex-editor .exocortex-callout-title[hidden] {
+    display: none;
+  }
+
+  .exocortex-editor .exocortex-callout-content > :first-child {
+    @apply mt-0;
+  }
+
+  .exocortex-editor .exocortex-callout-content > :last-child {
+    @apply mb-0;
   }
 
   /* Toggle list.

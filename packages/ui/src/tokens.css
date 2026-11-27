@@ -252,7 +252,12 @@
          change the text colour too.
      A stored document only ever references these names, never a CSS value
      (packages/editor/src/inline-styling.ts), which is what keeps documents
-     theme-independent. */
+     theme-independent.
+     The same nine colours paint a callout's frame (issue #306). As a 1px boundary on
+     --card they measure 4.5:1 (red) to 5.4:1 (green), on --background 5.5:1 to
+     6.5:1, so every frame clears WCAG 1.4.11's 3:1 by a wide margin; the
+     plain frame is --border, the card's own seam. The colour is emphasis
+     only: what a callout means is its symbol and heading. */
   --content-gray: oklch(0.865 0.008 240);
   --content-brown: oklch(0.865 0.05 55);
   --content-orange: oklch(0.865 0.12 52);

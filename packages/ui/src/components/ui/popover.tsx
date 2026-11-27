@@ -22,11 +22,18 @@ function PopoverContent({
   align = 'center',
   side = 'bottom',
   sideOffset = 6,
+  anchor,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Popup> & {
   align?: 'start' | 'center' | 'end';
   side?: 'top' | 'right' | 'bottom' | 'left';
   sideOffset?: number;
+  /**
+   * What the popover is placed against when that is not its trigger: a part
+   * of the document drawn outside React, such as a callout's symbol in the
+   * editor (issue #306). Passed straight to the positioner.
+   */
+  anchor?: React.ComponentProps<typeof PopoverPrimitive.Positioner>['anchor'];
 }) {
   return (
     <PopoverPrimitive.Portal>
@@ -34,6 +41,7 @@ function PopoverContent({
         align={align}
         side={side}
         sideOffset={sideOffset}
+        anchor={anchor}
         className="z-50 outline-none"
       >
         <PopoverPrimitive.Popup

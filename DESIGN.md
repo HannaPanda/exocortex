@@ -832,6 +832,20 @@ above an outline laid over the text (issue #283), because a covered control
 is one nobody can reach, and it wears the block's own `sunken`: on the block
 it has no edge, and over the list the list's words do not show through it.
 
+### A callout
+
+A callout (issue #306) is one block, „Hinweis“: a symbol in front, an optional
+small heading above the content, and a frame in one of the nine content
+colours or the plain card's own. What it means is said by the symbol and the
+heading, both text, and never by the colour alone (WCAG 1.4.1); every frame
+clears 3:1 against the card (`tokens.css`). The whole frame is coloured, never
+a left stripe (§6). Its controls are not a corner bar but its own symbol: the
+symbol is the box's handle in Notion's sense, so pressing it (or its heading)
+opens one popover with the heading field and its suggestions, the colour as a
+group of named swatches with the chosen name written out, and the emoji
+search. From the keyboard it is the next `Tab` stop after the text, like the
+code block's bar, and `Escape` goes back.
+
 ### The workflow canvas
 
 The workflow editor is a workbench, not a form with a graph behind it (issue
