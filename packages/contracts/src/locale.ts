@@ -98,9 +98,23 @@ export const DEFAULT_OUTLINE_DODGE = true;
 export const DEFAULT_OUTLINE_HOVER_EXPAND = false;
 
 /**
+ * How a time of day is written for this person (issue #255).
+ *
+ * `auto` follows the interface language, the way `Intl` writes it: German
+ * 14:30, English 2:30 PM. `24h` and `12h` hold the clock whatever the
+ * language, for a person who reads English with a European clock or the
+ * reverse. Only the rendering: an instant is stored and exchanged as UTC, and
+ * a date without a time has no clock at all.
+ */
+export const TIME_FORMATS = ['auto', '24h', '12h'] as const;
+export const timeFormatSchema = z.enum(TIME_FORMATS);
+export type TimeFormat = z.infer<typeof timeFormatSchema>;
+export const DEFAULT_TIME_FORMAT: TimeFormat = 'auto';
+
+/**
  * The account's own settings that belong to the person rather than to a
- * workspace or a device: the interface language, how the AI chat scrolls and
- * how a pinned page outline behaves.
+ * workspace or a device: the interface language, how a time of day is
+ * written, how the AI chat scrolls and how a pinned page outline behaves.
  *
  * `locale: null` means the account never chose. It is a different answer from
  * `'de'`: an undecided account follows its browser, a decided one does not.
@@ -112,6 +126,7 @@ export const userPreferencesSchema = z.object({
   outlineTransparency: outlineTransparencySchema,
   outlineDodge: z.boolean(),
   outlineHoverExpand: z.boolean(),
+  timeFormat: timeFormatSchema,
 });
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
@@ -129,6 +144,7 @@ export const updateUserPreferencesRequestSchema = z
     outlineTransparency: outlineTransparencySchema.optional(),
     outlineDodge: z.boolean().optional(),
     outlineHoverExpand: z.boolean().optional(),
+    timeFormat: timeFormatSchema.optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {
     message: 'At least one field must be provided',

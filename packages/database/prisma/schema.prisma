@@ -74,6 +74,11 @@ model User {
   /// Whether the outline's scale opens its list when the pointer rests on it
   /// (issue #283) rather than on a click.
   outlineHoverExpand     Boolean             @default(false)
+  /// How a time of day is written for this person (issue #255): as their
+  /// interface language writes it (`AUTO`, the behaviour before), or always
+  /// on a 24-hour (`H24`) or 12-hour (`H12`) clock. Only the rendering:
+  /// every stored instant stays UTC.
+  timeFormat             TimeFormat          @default(AUTO)
   createdAt              DateTime            @default(now())
   updatedAt              DateTime            @updatedAt
 
@@ -165,6 +170,13 @@ enum ChatScrollMode {
 enum OutlinePinnedMode {
   COLUMN
   OVERLAY
+}
+
+/// See `User.timeFormat` (issue #255).
+enum TimeFormat {
+  AUTO
+  H24
+  H12
 }
 
 /// See `User.outlineTransparency` (issue #283).

@@ -225,6 +225,7 @@ describe('user preferences contract (issue #282)', () => {
         outlineTransparency: 'none',
         outlineDodge: true,
         outlineHoverExpand: false,
+        timeFormat: 'auto',
       }).chatScroll,
     ).toBe('follow');
   });
@@ -254,6 +255,16 @@ describe('outline preferences contract (issue #283)', () => {
       outlineHoverExpand: true,
     });
     expect(() => updateUserPreferencesRequestSchema.parse({ outlineHoverExpand: 1 })).toThrow();
+  });
+});
+
+describe('time format preference contract (issue #255)', () => {
+  it('knows the clock of the language and the two fixed ones, and nothing else', () => {
+    for (const timeFormat of ['auto', '24h', '12h'] as const) {
+      expect(updateUserPreferencesRequestSchema.parse({ timeFormat })).toEqual({ timeFormat });
+    }
+    expect(() => updateUserPreferencesRequestSchema.parse({ timeFormat: 'h23' })).toThrow();
+    expect(() => updateUserPreferencesRequestSchema.parse({ timeFormat: 24 })).toThrow();
   });
 });
 

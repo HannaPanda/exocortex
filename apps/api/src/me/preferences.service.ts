@@ -5,6 +5,7 @@ import {
   isLocale,
   type OutlinePinnedMode,
   type OutlineTransparency,
+  type TimeFormat,
   type UpdateUserPreferencesRequest,
   type UserPreferences,
 } from '@exocortex/contracts';
@@ -13,6 +14,7 @@ import {
   type OutlinePinnedMode as StoredOutlinePinnedMode,
   type OutlineTransparency as StoredOutlineTransparency,
   type PrismaClient,
+  type TimeFormat as StoredTimeFormat,
 } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
@@ -48,9 +50,22 @@ const OUTLINE_TRANSPARENCY_TO_ROW: Record<OutlineTransparency, StoredOutlineTran
   strong: 'STRONG',
 };
 
+/** The clock a time of day is written on (issue #255). */
+const TIME_FORMAT_FROM_ROW: Record<StoredTimeFormat, TimeFormat> = {
+  AUTO: 'auto',
+  H24: '24h',
+  H12: '12h',
+};
+const TIME_FORMAT_TO_ROW: Record<TimeFormat, StoredTimeFormat> = {
+  auto: 'AUTO',
+  '24h': 'H24',
+  '12h': 'H12',
+};
+
 /**
  * The person's own settings that follow them from device to device: the
- * interface language (issue #98), how the AI chat scrolls while an answer
+ * interface language (issue #98), the clock a time is written on (issue
+ * #255), how the AI chat scrolls while an answer
  * arrives (issue #282) and how a pinned page outline behaves (issue #283). The row they live on is the account itself, because
  * a preference that belongs to the person has no better owner.
  */
@@ -68,6 +83,7 @@ export class PreferencesService {
         outlineTransparency: true,
         outlineDodge: true,
         outlineHoverExpand: true,
+        timeFormat: true,
       },
     });
     if (user === null)
@@ -79,6 +95,7 @@ export class PreferencesService {
       outlineTransparency: OUTLINE_TRANSPARENCY_FROM_ROW[user.outlineTransparency],
       outlineDodge: user.outlineDodge,
       outlineHoverExpand: user.outlineHoverExpand,
+      timeFormat: TIME_FORMAT_FROM_ROW[user.timeFormat],
     };
   }
 
@@ -101,6 +118,9 @@ export class PreferencesService {
         ...(body.outlineHoverExpand === undefined
           ? {}
           : { outlineHoverExpand: body.outlineHoverExpand }),
+        ...(body.timeFormat === undefined
+          ? {}
+          : { timeFormat: TIME_FORMAT_TO_ROW[body.timeFormat] }),
       },
     });
     return this.get(userId);

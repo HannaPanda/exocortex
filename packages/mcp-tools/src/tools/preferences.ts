@@ -10,6 +10,7 @@ import {
   LOCALE_ENDONYMS,
   type OutlinePinnedMode,
   type OutlineTransparency,
+  type TimeFormat,
   updateUserPreferencesRequestSchema,
   type UserPreferences,
   userPreferencesSchema,
@@ -45,6 +46,12 @@ function describeOutlinePinned(mode: OutlinePinnedMode): string {
     : 'eigene Spalte (column): der Text weicht zur Seite aus und wird nie verdeckt';
 }
 
+const TIME_FORMAT_WORDS: Record<TimeFormat, string> = {
+  auto: 'wie die Sprache der Oberfläche es schreibt (auto), etwa 14:30 auf Deutsch und 2:30 PM auf Englisch',
+  '24h': 'immer 24 Stunden (24h), etwa 14:30',
+  '12h': 'immer 12 Stunden (12h), etwa 2:30 PM',
+};
+
 const TRANSPARENCY_WORDS: Record<OutlineTransparency, string> = {
   none: 'deckend (none)',
   light: 'leicht durchscheinend (light)',
@@ -54,6 +61,7 @@ const TRANSPARENCY_WORDS: Record<OutlineTransparency, string> = {
 function renderPreferences(result: UserPreferences): string {
   return [
     `Sprache der Oberfläche: ${describeLocale(result.locale)}.`,
+    `Uhrzeit: ${TIME_FORMAT_WORDS[result.timeFormat]}.`,
     `Scrollen im KI-Chat: ${describeChatScroll(result.chatScroll)}.`,
     `Angepinnte Gliederung: ${describeOutlinePinned(result.outlinePinned)}.`,
     `Transparenz der überlagernden Gliederung: ${TRANSPARENCY_WORDS[result.outlineTransparency]}` +
@@ -68,9 +76,10 @@ export const userPreferencesTool: AnyToolDefinition = defineTool({
   name: 'exo_me_preferences',
   description:
     'Zeigt die persönlichen Einstellungen dieses Kontos, die auf jedem Gerät gelten: die ' +
-    'Sprache der Oberfläche, wie der KI-Chat scrollt, während eine Antwort entsteht, und wie ' +
+    'Sprache der Oberfläche, wie Uhrzeiten geschrieben werden, wie der KI-Chat scrollt, während eine Antwort entsteht, und wie ' +
     'sich die angepinnte Gliederung einer Seite verhält. locale null heißt, dass nie eine ' +
-    'gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. chatScroll ist follow ' +
+    'gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. timeFormat ist auto ' +
+    '(wie die Sprache es schreibt, Standard), 24h oder 12h. chatScroll ist follow ' +
     '(mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben). outlinePinned ist ' +
     'column (eigene Spalte, der Text weicht aus, Standard) oder overlay (über dem Text), ' +
     'outlineTransparency none, light oder strong, outlineDodge und outlineHoverExpand true ' +
@@ -95,7 +104,9 @@ export const userPreferencesSetTool: AnyToolDefinition = defineTool({
     'Ändert persönliche Einstellungen dieses Kontos, auf allen Geräten. Nur was genannt ist, ' +
     'ändert sich. locale: de, en, es, fr, it, nl, pl, pt-BR, oder null, um die eigene Wahl zu ' +
     'löschen und wieder dem Browser zu folgen; übersetzt wird nur die Oberfläche, nie die ' +
-    'Inhalte der Seiten. chatScroll: follow (der KI-Chat läuft mit der wachsenden Antwort mit, ' +
+    'Inhalte der Seiten. timeFormat: auto (Uhrzeiten so, wie die Sprache der Oberfläche sie ' +
+    'schreibt, Standard), 24h (immer 14:30) oder 12h (immer 2:30 PM); gespeicherte Zeitpunkte ' +
+    'bleiben UTC, ein Datum ohne Uhrzeit hat keine. chatScroll: follow (der KI-Chat läuft mit der wachsenden Antwort mit, ' +
     'Standard) oder answerStart (die Frage rückt beim Start einer Antwort einmal nach oben, ' +
     'danach bleibt die Ansicht stehen und die Antwort wächst nach unten weiter). ' +
     'outlinePinned: column (die angepinnte Gliederung bekommt eine eigene Spalte, der Text ' +
