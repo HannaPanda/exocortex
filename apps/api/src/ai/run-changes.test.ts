@@ -7,7 +7,16 @@ import {
   writtenTopLevelBlocks,
 } from '@exocortex/editor';
 
-import { countChanges, foldRunWrites, judgeRunBlocks, type RunJournalRow } from './run-changes';
+import {
+  countChanges,
+  foldRunWrites,
+  judgeCreated,
+  judgeMove,
+  judgeRename,
+  judgeRunBlocks,
+  type PageNow,
+  type RunJournalRow,
+} from './run-changes';
 
 function paragraph(id: string, text: string): ProseMirrorNode {
   return {
@@ -109,5 +118,137 @@ describe('judgeRunBlocks', () => {
   it('marks a page whose writes were not recorded block by block', () => {
     const [page] = foldRunWrites([{ ...row(ORIGINAL, AFTER_RUN), writtenBlocks: null }]);
     expect(page?.unrecorded).toBe(true);
+  });
+});
+
+describe('what stands where a held-back block stood', () => {
+  it('shows the rewrite under a new identifier, not the run’s text', () => {
+    const blocks = judge(
+      doc(
+        paragraph('aaaaaaaaaaa1', 'Apfel'),
+        paragraph('aaaaaaaaaaa2', 'Kirsche'),
+        QUINCE,
+        paragraph('ccccccccccc3', 'Zwetschgen'),
+      ),
+    );
+    const replacement = blocks.find((block) => block.blockId === 'bbbbbbbbbbb3');
+    expect(replacement?.state).toBe('changed_since');
+    expect(replacement?.excerpt).toBeNull();
+    const standing = blocks.flatMap((block) => block.standing);
+    expect(standing.map((entry) => entry.excerpt)).toEqual(['Zwetschgen']);
+  });
+
+  it('finds the place of a block the run added from the journal', () => {
+    const added = doc(...(ORIGINAL.content ?? []), paragraph('bbbbbbbbbbb9', 'Neu'));
+    const rows = [row(ORIGINAL, added)];
+    const [page] = foldRunWrites(rows);
+    if (page === undefined) throw new Error('no page');
+    const blocks = judgeRunBlocks(
+      ORIGINAL,
+      doc(...(ORIGINAL.content ?? []), paragraph('ccccccccccc9', 'Umgeschrieben')),
+      page,
+    );
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]?.standing.map((entry) => entry.excerpt)).toEqual(['Umgeschrieben']);
+  });
+
+  it('claims nothing for a change that goes back', () => {
+    expect(judge(AFTER_RUN).every((block) => block.standing.length === 0)).toBe(true);
+  });
+});
+
+const NOW: PageNow = {
+  title: 'Neu',
+  parentId: 'parent2',
+  workspaceId: 'ws1',
+  orderKey: 'b',
+  archived: false,
+  type: 'PAGE',
+};
+
+describe('judging a page’s structure', () => {
+  it('takes a rename back only while the run’s title stands', () => {
+    const rename = { from: 'Alt', to: 'Neu' };
+    expect(judgeRename(rename, NOW).state).toBe('revertible');
+    expect(judgeRename(rename, { ...NOW, title: 'Alt' }).state).toBe('reverted');
+    expect(judgeRename(rename, { ...NOW, title: 'Anders' })).toEqual({
+      state: 'changed_since',
+      reason: 'renamed',
+    });
+  });
+
+  const move = {
+    fromParentId: 'parent1',
+    toParentId: 'parent2',
+    fromWorkspaceId: 'ws1',
+    toWorkspaceId: 'ws1',
+    fromOrderKey: 'a',
+    toOrderKey: 'b',
+  };
+
+  it('takes a move back while the page stands where the run put it', () => {
+    expect(judgeMove(move, NOW, true).state).toBe('revertible');
+    expect(judgeMove(move, { ...NOW, parentId: 'parent1' }, true).state).toBe('reverted');
+    expect(judgeMove(move, { ...NOW, parentId: 'parent3' }, true).reason).toBe('moved');
+    expect(judgeMove(move, NOW, false).reason).toBe('parent_gone');
+    expect(judgeMove(move, { ...NOW, archived: true }, true).reason).toBe('trashed');
+  });
+
+  it('names a move between workspaces without undoing it', () => {
+    const across = { ...move, toWorkspaceId: 'ws2' };
+    expect(judgeMove(across, { ...NOW, workspaceId: 'ws2' }, true).reason).toBe('other_workspace');
+  });
+
+  it('compares the place among siblings for a move under the same parent', () => {
+    const reorder = { ...move, fromParentId: 'parent2' };
+    expect(judgeMove(reorder, NOW, true).state).toBe('revertible');
+    expect(judgeMove(reorder, { ...NOW, orderKey: 'c' }, true).reason).toBe('moved');
+  });
+
+  const created = { pageAfter: 'fp1', titleAfter: 'Neu' };
+  const facts = {
+    now: NOW,
+    contentNow: 'fp1',
+    propertiesTouched: false,
+    children: 'none' as const,
+  };
+
+  it('sends a new page to the trash only while nobody has been in it', () => {
+    expect(judgeCreated(created, facts).state).toBe('revertible');
+    expect(judgeCreated(created, { ...facts, now: { ...NOW, archived: true } }).state).toBe(
+      'reverted',
+    );
+    expect(judgeCreated(created, { ...facts, contentNow: 'fp2' }).reason).toBe('edited');
+    expect(judgeCreated(created, { ...facts, propertiesTouched: true }).reason).toBe('edited');
+    expect(judgeCreated(created, { ...facts, now: { ...NOW, title: 'X' } }).reason).toBe('renamed');
+    expect(judgeCreated(created, { ...facts, children: 'foreign' }).reason).toBe('children');
+    expect(judgeCreated(created, { ...facts, now: { ...NOW, type: 'COLLECTION' } }).reason).toBe(
+      'not_a_page',
+    );
+    expect(judgeCreated({ ...created, pageAfter: null }, facts).reason).toBe('not_recorded');
+  });
+
+  it('folds several renames and moves to the first before and the last after', () => {
+    const base = { documentId: 'page1', documentTitle: 'Neu', snapshotBeforeId: null };
+    const [page] = foldRunWrites([
+      { ...base, writtenBlocks: null, structure: { kind: 'renamed', from: 'Alt', to: 'Mitte' } },
+      { ...base, writtenBlocks: null, structure: { kind: 'renamed', from: 'Mitte', to: 'Neu' } },
+      { ...base, writtenBlocks: null, structure: { kind: 'moved', ...move } },
+      {
+        ...base,
+        writtenBlocks: null,
+        structure: {
+          kind: 'moved',
+          ...move,
+          fromParentId: 'parent2',
+          toParentId: 'parent1',
+          fromOrderKey: 'b',
+          toOrderKey: 'a',
+        },
+      },
+    ]);
+    expect(page?.rename).toEqual({ from: 'Alt', to: 'Neu' });
+    // Moved away and back to the same place: nothing to take back.
+    expect(page?.move).toBeNull();
   });
 });

@@ -108,6 +108,31 @@ async function createPage(title: string, markdown: string): Promise<string> {
   return document.id;
 }
 
+async function createChild(title: string, parentId: string | null, userId = requesterId) {
+  const document = await documents.create({
+    workspaceId,
+    userId,
+    request: { title, type: 'PAGE', parentId },
+    correlationId,
+  });
+  return document.id;
+}
+
+async function write(documentId: string, userId: string, markdown: string) {
+  await content.write({
+    documentId,
+    userId,
+    request: { markdown, mode: 'replace' },
+    correlationId,
+    source: userId === requesterId ? 'ai' : 'api',
+    growth: 'guarded',
+  });
+}
+
+async function finishRun(runId: string) {
+  await prisma.aiRun.update({ where: { id: runId }, data: { finishedAt: new Date() } });
+}
+
 async function patch(documentId: string, userId: string, oldText: string, newText: string) {
   await edits.patch({
     documentId,
@@ -187,6 +212,7 @@ beforeAll(async () => {
     logger,
     access,
     new DocumentDiffService(prisma, logger, access, snapshots),
+    documents,
   );
 
   const suffix = Date.now().toString(36);
@@ -258,6 +284,12 @@ describe('taking one AI run back', () => {
     // beside the new one.
     const named = before.pages[0]?.blocks.filter((block) => block.state === 'changed_since');
     expect(named?.map((block) => block.excerpt)).toContain('Pflaume');
+    // The person's rewrite has an identifier of its own; it is what the
+    // undo holds back, so it is what the preview shows, not the run's text.
+    expect(named?.flatMap((block) => block.standing.map((entry) => entry.excerpt))).toEqual([
+      'Zwetschgen',
+    ]);
+    expect(named?.map((block) => block.excerpt)).not.toContain('Pflaumen');
 
     const result = await runChanges.revert({ runId, userId: requesterId, correlationId });
     expect(result.restored).toHaveLength(1);
@@ -303,5 +335,109 @@ describe('taking one AI run back', () => {
       runChanges.revert({ runId, userId: otherId, correlationId }),
     ).rejects.toMatchObject({ status: 403 });
     expect(await textOf(documentId)).toContain('Tschüss');
+  });
+
+  it('takes back a rename, a move and a new page while each stands as the run left it', async () => {
+    const home = await createChild('Zuhause', null);
+    const elsewhere = await createChild('Woanders', null);
+    const moved = await createChild('Umzug', home);
+    const renamed = await createChild('Alter Name', null);
+    const runId = await createRun();
+    const [fresh, edited] = await asRun(runId, async () => {
+      await documents.move({
+        documentId: moved,
+        userId: requesterId,
+        request: { parentId: elsewhere },
+        correlationId,
+      });
+      await documents.update({
+        documentId: renamed,
+        userId: requesterId,
+        request: { title: 'Neuer Name' },
+        correlationId,
+      });
+      const created = await createChild('Neu von der KI', null);
+      await write(created, requesterId, 'Von der KI geschrieben');
+      const other = await createChild('Auch neu', null);
+      await write(other, requesterId, 'Auch von der KI');
+      return [created, other];
+    });
+    await finishRun(runId);
+    // Somebody writes in one of the new pages afterwards.
+    await write(edited, otherId, 'Von Hand weitergeschrieben');
+
+    const reading = await runChanges.changes(runId, requesterId);
+    const structureOf = (documentId: string) =>
+      reading.pages.find((page) => page.documentId === documentId)?.structure ?? [];
+    expect(structureOf(moved)).toMatchObject([
+      { kind: 'moved', state: 'revertible', fromParentId: home, fromParentTitle: 'Zuhause' },
+    ]);
+    expect(structureOf(renamed)).toMatchObject([
+      { kind: 'renamed', state: 'revertible', fromTitle: 'Alter Name', toTitle: 'Neuer Name' },
+    ]);
+    expect(structureOf(fresh)).toMatchObject([{ kind: 'created', state: 'revertible' }]);
+    expect(structureOf(edited)).toMatchObject([
+      { kind: 'created', state: 'changed_since', reason: 'edited' },
+    ]);
+
+    const result = await runChanges.revert({ runId, userId: requesterId, correlationId });
+    const rows = await prisma.document.findMany({
+      where: { id: { in: [moved, renamed, fresh, edited] } },
+      select: { id: true, parentId: true, title: true, archivedAt: true },
+    });
+    const row = (id: string) => rows.find((entry) => entry.id === id);
+    expect(row(moved)?.parentId).toBe(home);
+    expect(row(renamed)?.title).toBe('Alter Name');
+    // Into the trash, not deleted for good.
+    expect(row(fresh)?.archivedAt).not.toBeNull();
+    expect(row(edited)?.archivedAt).toBeNull();
+    expect(result.after.revertible).toBe(0);
+    expect(result.after.changedSince).toBe(1);
+  });
+
+  it('holds back a new page somebody put a page of their own under', async () => {
+    const runId = await createRun();
+    const created = await asRun(runId, () => createChild('Neue Sammlung', null));
+    await finishRun(runId);
+    await createChild('Meine Unterseite', created, otherId);
+
+    const reading = await runChanges.changes(runId, requesterId);
+    expect(reading.pages[0]?.structure).toMatchObject([
+      { kind: 'created', state: 'changed_since', reason: 'children' },
+    ]);
+    await runChanges.revert({ runId, userId: requesterId, correlationId });
+    const row = await prisma.document.findUniqueOrThrow({
+      where: { id: created },
+      select: { archivedAt: true },
+    });
+    expect(row.archivedAt).toBeNull();
+  });
+
+  it('leaves a move alone once the page stands somewhere else', async () => {
+    const first = await createChild('Erster Ort', null);
+    const second = await createChild('Zweiter Ort', null);
+    const page = await createChild('Wandert', null);
+    const runId = await createRun();
+    await asRun(runId, () =>
+      documents.move({
+        documentId: page,
+        userId: requesterId,
+        request: { parentId: first },
+        correlationId,
+      }),
+    );
+    await finishRun(runId);
+    await documents.move({
+      documentId: page,
+      userId: otherId,
+      request: { parentId: second },
+      correlationId,
+    });
+
+    const reading = await runChanges.changes(runId, requesterId);
+    expect(reading.pages[0]?.structure).toMatchObject([
+      { kind: 'moved', state: 'changed_since', reason: 'moved' },
+    ]);
+    expect(reading.revertible).toBe(0);
   });
 });
