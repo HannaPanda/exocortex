@@ -73,6 +73,12 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.conversationCompaction]: {
     attempts: 1,
   },
+  // An AI fill settles its own cells (issue #237): a second attempt would ask
+  // the model again for cells the first one paid for. Asking again is a retry
+  // somebody starts, which is a new batch.
+  [QUEUE_NAMES.databaseAiFill]: {
+    attempts: 1,
+  },
   // A notification ages out of usefulness faster than anything else in this
   // list (issue #30, ADR-048): three quick attempts are worth it because a
   // push service does have bad minutes, but the fourth would arrive long

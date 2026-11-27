@@ -49,6 +49,7 @@ import { DocumentsService, toSummary } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { aiCellsOfRows } from './ai-fill/ai-cells';
 import { listDatabaseProperties } from './database-properties.service';
 import { normalizeRelationValue } from './derived-properties';
 import {
@@ -128,7 +129,10 @@ export class DatabaseRowsService {
     }
 
     const propertyList = [...scope.properties.values()];
-    const files = await this.filesNamedBy(values, scope);
+    const [files, aiCells] = await Promise.all([
+      this.filesNamedBy(values, scope),
+      aiCellsOfRows(this.prisma, rowIds, values),
+    ]);
     const result: DatabaseRow[] = rows.map((row) => {
       const rowValues = propertyList.map((property) =>
         this.toValue(property, scope, {
@@ -137,10 +141,12 @@ export class DatabaseRowsService {
           derived: derived.get(row.id)?.get(property.id),
         }),
       );
+      const marks = aiCells.get(row.id);
       return {
         document: toSummary(row),
         values: rowValues,
         ...filesOfRow(rowValues, scope, files),
+        ...(marks === undefined ? {} : { aiCells: marks }),
       };
     });
 
@@ -437,6 +443,12 @@ export class DatabaseRowsService {
     values: DatabaseRowPropertyValue[];
     workspaceId: string;
     correlationId: string;
+    /**
+     * The AI fill writing these values (issue #237). Every other write clears
+     * the mark, which is what makes a value a model's until somebody else
+     * touches the cell.
+     */
+    aiRunId?: string;
   }): Promise<void> {
     const scope = await loadDatabaseScope(this.prisma, input.collectionDocumentId);
 
@@ -458,12 +470,13 @@ export class DatabaseRowsService {
     await this.prisma.$transaction(async (tx) => {
       for (const row of writes) {
         for (const write of row.columns) {
+          const columns = { ...write.columns, aiRunId: input.aiRunId ?? null };
           await tx.documentPropertyValue.upsert({
             where: {
               documentId_propertyId: { documentId: row.rowId, propertyId: write.propertyId },
             },
-            create: { documentId: row.rowId, propertyId: write.propertyId, ...write.columns },
-            update: write.columns,
+            create: { documentId: row.rowId, propertyId: write.propertyId, ...columns },
+            update: columns,
           });
         }
 
@@ -474,6 +487,34 @@ export class DatabaseRowsService {
           correlationId: input.correlationId,
         });
       }
+    });
+  }
+
+  /**
+   * One value an AI fill arrived at (issue #237, ADR-099), written like any
+   * other -- the same checks, the same outbox event, the same realtime news --
+   * and marked with the run that wrote it. The caller has checked the batch,
+   * the requester's right to edit the row and the mode; this only writes.
+   */
+  async writeAiValue(input: {
+    collectionDocumentId: string;
+    rowId: string;
+    value: DatabaseRowPropertyValue;
+    aiRunId: string;
+    workspaceId: string;
+    correlationId: string;
+  }): Promise<void> {
+    await this.writeValues({
+      collectionDocumentId: input.collectionDocumentId,
+      rowIds: [input.rowId],
+      values: [input.value],
+      workspaceId: input.workspaceId,
+      correlationId: input.correlationId,
+      aiRunId: input.aiRunId,
+    });
+    await this.realtime.emit('database.row.updated', input.workspaceId, input.correlationId, {
+      documentId: input.collectionDocumentId,
+      rowId: input.rowId,
     });
   }
 
@@ -510,11 +551,13 @@ export class DatabaseRowsService {
       loadDatabaseScope(this.prisma, collectionDocumentId),
       this.prisma.documentPropertyValue.findMany({ where: { documentId: rowId } }),
     ]);
-    const [derivedValues, files] = await Promise.all([
+    const [derivedValues, files, aiCells] = await Promise.all([
       this.readDerivedValues([rowId], scope),
       this.filesNamedBy(values, scope),
+      aiCellsOfRows(this.prisma, [rowId], values),
     ]);
     const derived = derivedValues.get(rowId);
+    const marks = aiCells.get(rowId);
 
     const rowValues = [...scope.properties.values()].map((property) =>
       this.toValue(property, scope, {
@@ -523,7 +566,12 @@ export class DatabaseRowsService {
         derived: derived?.get(property.id),
       }),
     );
-    return { document: toSummary(row), values: rowValues, ...filesOfRow(rowValues, scope, files) };
+    return {
+      document: toSummary(row),
+      values: rowValues,
+      ...filesOfRow(rowValues, scope, files),
+      ...(marks === undefined ? {} : { aiCells: marks }),
+    };
   }
 
   /**

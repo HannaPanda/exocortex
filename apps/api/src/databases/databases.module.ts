@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 
+import { AiModule } from '../ai/ai.module';
 import { OutboxService } from '../common/outbox.service';
 import { DocumentsModule } from '../documents/documents.module';
 import { RealtimeModule } from '../realtime/realtime.module';
 
+import { AiFillController } from './ai-fill/ai-fill.controller';
+import { AiFillService } from './ai-fill/ai-fill.service';
+import { AiFillConfigService } from './ai-fill/ai-fill-config.service';
+import { AiFillWorkerService } from './ai-fill/ai-fill-worker.service';
 import { DatabasePropertiesController } from './database-properties.controller';
 import { DatabasePropertiesService } from './database-properties.service';
 import { DatabaseRowActionsService } from './database-row-actions.service';
@@ -13,9 +18,18 @@ import { DatabaseViewsController } from './database-views.controller';
 import { DatabaseViewsService } from './database-views.service';
 
 @Module({
-  imports: [RealtimeModule, DocumentsModule],
-  controllers: [DatabasePropertiesController, DatabaseViewsController, DatabaseRowsController],
+  // `AiModule` for the model a column's AI fill is started with (issue #237).
+  imports: [RealtimeModule, DocumentsModule, AiModule],
+  controllers: [
+    DatabasePropertiesController,
+    DatabaseViewsController,
+    DatabaseRowsController,
+    AiFillController,
+  ],
   providers: [
+    AiFillConfigService,
+    AiFillService,
+    AiFillWorkerService,
     DatabasePropertiesService,
     DatabaseViewsService,
     DatabaseRowsService,

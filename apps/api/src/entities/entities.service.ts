@@ -321,7 +321,8 @@ export class EntitiesService {
     await this.prisma.documentPropertyValue.upsert({
       where: { documentId_propertyId: { documentId: rowId, propertyId } },
       create: { documentId: rowId, propertyId, textValue: value },
-      update: { textValue: value },
+      // A person's write: whatever an AI fill wrote here before is no longer its (#237).
+      update: { textValue: value, aiRunId: null },
     });
   }
 

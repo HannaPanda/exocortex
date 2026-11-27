@@ -36,6 +36,7 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { toPropertyAiResponse } from './ai-fill/ai-fill-mapper';
 import {
   assertDerivedPropertiesCompile,
   normalizeDerivedConfig,
@@ -43,7 +44,7 @@ import {
   toDerivedRef,
 } from './derived-properties';
 
-const PROPERTY_INCLUDE = { options: true } as const;
+const PROPERTY_INCLUDE = { options: true, ai: true } as const;
 
 type PropertyWithOptions = Prisma.DatabasePropertyGetPayload<{ include: typeof PROPERTY_INCLUDE }>;
 type OptionRow = Prisma.DatabasePropertyOptionGetPayload<object>;
@@ -82,6 +83,7 @@ function toResponse(row: PropertyWithOptions): DatabaseProperty {
       .slice()
       .sort((a, b) => (a.orderKey < b.orderKey ? -1 : 1))
       .map(toOptionResponse),
+    ai: row.ai === null ? null : toPropertyAiResponse(row.ai),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
