@@ -2,7 +2,7 @@ import * as Y from 'yjs';
 
 import { calloutAttributes } from './callout';
 import { needsCalloutMigration } from './schema-v6';
-import { YJS_DOCUMENT_FIELD,yjsStateToDocument } from './yjs';
+import { YJS_DOCUMENT_FIELD, yjsStateToDocument } from './yjs';
 
 /*
  * Schema version 6 (issue #306) applied to the canonical Yjs state itself.
