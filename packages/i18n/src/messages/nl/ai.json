@@ -139,6 +139,7 @@
     "failedDescription": "Probeer het opnieuw. De pagina’s zelf zijn hierdoor niet beïnvloed.",
     "nothingTitle": "Deze sessie heeft niets gewijzigd",
     "nothingDescription": "Er valt niets terug te draaien.",
+    "nothingToUndo": "In deze chat heeft nog geen voltooide AI-uitvoering een pagina gewijzigd.",
     "summary": "{revertible, plural, =0 {Geen enkele wijziging staat er nog zoals de AI deze heeft achtergelaten.} one {Eén wijziging kan worden teruggedraaid.} other {# wijzigingen kunnen worden teruggedraaid.}}{changedSince, plural, =0 {} one { Eén blijft behouden, de reden staat erbij.} other { # blijven behouden, de reden staat er telkens bij.}}",
     "states": {
       "revertible": "Wordt teruggedraaid",

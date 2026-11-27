@@ -139,6 +139,7 @@
     "failedDescription": "Inténtalo de nuevo. Las páginas no se han visto afectadas.",
     "nothingTitle": "Esta ejecución no modificó nada",
     "nothingDescription": "No hay nada que deshacer.",
+    "nothingToUndo": "En este chat, ninguna ejecución completada de la IA ha modificado aún una página.",
     "summary": "{revertible, plural, =0 {Ningún cambio sigue tal y como lo dejó la IA.} one {Se puede revertir un cambio.} many {Se pueden revertir # cambios.} other {Se pueden revertir # cambios.}}{changedSince, plural, =0 {} one { Uno se mantiene; se indica el motivo.} many { # se mantienen; se indica el motivo en cada caso.} other { # se mantienen; se indica el motivo en cada caso.}}",
     "states": {
       "revertible": "Se revertirá",

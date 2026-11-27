@@ -223,6 +223,7 @@ describe('shellCommands', () => {
     onToggleContext: vi.fn(),
     onOpenContextTab: vi.fn(),
     onNewChat: vi.fn(),
+    onUndoLastRun: vi.fn(),
     chatExpanded: false,
     onToggleChatExpanded: vi.fn(),
     onFocus: vi.fn(),
@@ -247,6 +248,19 @@ describe('shellCommands', () => {
 
   it('starts no chat outside a workspace', () => {
     expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain('command-new-chat');
+  });
+
+  it('offers to take the chat’s newest run back wherever a chat can run (issue #248)', () => {
+    const onUndoLastRun = vi.fn();
+    const command = shellCommands({ ...base, onUndoLastRun }).find(
+      (entry) => entry.id === 'command-undo-last-run',
+    );
+    expect(command?.label).toBe('undoLastRun');
+    if (command !== undefined && 'run' in command) command.run();
+    expect(onUndoLastRun).toHaveBeenCalledOnce();
+    expect(ids(shellCommands({ ...base, hasWorkspace: false }))).not.toContain(
+      'command-undo-last-run',
+    );
   });
 
   it('names the chat toggle by what it does next (issue #288)', () => {

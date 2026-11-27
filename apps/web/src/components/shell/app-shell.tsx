@@ -275,6 +275,11 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           if (!contextOpen) setContextOpen(true);
           askPalette('new-chat');
         },
+        onUndoLastRun: () => {
+          setContextTab('ai');
+          if (!contextOpen) setContextOpen(true);
+          askPalette('undo-last-run');
+        },
         onFocus: () => {
           setSidebar({ ...sidebar, open: false });
           setContext({ ...context, open: false });

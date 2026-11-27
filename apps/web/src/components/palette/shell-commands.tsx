@@ -15,6 +15,7 @@ import {
   SettingsIcon,
   SparklesIcon,
   Trash2Icon,
+  Undo2Icon,
 } from 'lucide-react';
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -54,6 +55,8 @@ export interface ShellCommandInput {
   onToggleContext: () => void;
   onOpenContextTab: (tab: ContextTab) => void;
   onNewChat: () => void;
+  /** Opens the chat and asks it for the undo preview of its newest run (issue #248). */
+  onUndoLastRun: () => void;
   /** Whether the chat has the screen and the page is folded away (issue #288). */
   chatExpanded: boolean;
   onToggleChatExpanded: () => void;
@@ -156,6 +159,14 @@ function panelCommands(input: ShellCommandInput): PaletteCommand[] {
       icon: <MessageSquarePlusIcon className={ICON} />,
       keywords: keywordsOf(t('newChatKeywords')),
       run: input.onNewChat,
+    });
+    commands.push({
+      id: 'command-undo-last-run',
+      group: 'actions',
+      label: t('undoLastRun'),
+      icon: <Undo2Icon className={ICON} />,
+      keywords: keywordsOf(t('undoLastRunKeywords')),
+      run: input.onUndoLastRun,
     });
     // Named by what the press does, like the panel toggles above. On a phone
     // this is how a chat stops being a narrow strip beside the page.

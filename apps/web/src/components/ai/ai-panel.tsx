@@ -48,6 +48,7 @@ import { useActiveConversation } from './use-active-conversation';
 import { useAiRunTracker, useLastRunFailure } from './use-ai-run-tracker';
 import { useChatAttachments, useChatFileUpload, useFileDrop } from './use-chat-attachments';
 import { useConversationSettings } from './use-conversation-settings';
+import { useLastRunUndo, useSharedChatRoom } from './use-last-run-undo';
 import { usePinnedSources } from './use-pinned-sources';
 import { useTranscriptFollow } from './use-transcript-follow';
 
@@ -312,6 +313,14 @@ function AiPanelBody({
 
   // "Neuer Chat" from the palette, which also opens the panel this is in.
   usePaletteRequest('new-chat', () => void startNewConversation(), true);
+  // "Letzten KI-Lauf rückgängig machen", the same preview as under the answer.
+  const lastRunUndo = useLastRunUndo({
+    conversationId: activeConversationId,
+    detail: conversationQuery.data,
+    activeRunId,
+    onNothing: setNotice,
+  });
+  useSharedChatRoom(workspaceId, shared);
 
   const pinnedSources = usePinnedSources({
     conversationId: activeConversationId,
@@ -498,6 +507,7 @@ function AiPanelBody({
         onOpenChange={setSourcePickerOpen}
         onPick={pinnedSources.add}
       />
+      {lastRunUndo}
     </div>
   );
 }

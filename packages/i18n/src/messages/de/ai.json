@@ -139,6 +139,7 @@
     "failedDescription": "Versuch es noch einmal. Die Seiten selbst sind davon nicht betroffen.",
     "nothingTitle": "Dieser Lauf hat nichts geändert",
     "nothingDescription": "Es gibt nichts zurückzunehmen.",
+    "nothingToUndo": "In diesem Chat hat noch kein abgeschlossener KI-Lauf eine Seite geändert.",
     "summary": "{revertible, plural, =0 {Keine Änderung steht mehr so da, wie die KI sie hinterlassen hat.} one {Eine Änderung lässt sich zurücknehmen.} other {# Änderungen lassen sich zurücknehmen.}}{changedSince, plural, =0 {} one { Eine bleibt stehen, der Grund steht dabei.} other { # bleiben stehen, der Grund steht jeweils dabei.}}",
     "states": {
       "revertible": "Wird zurückgenommen",

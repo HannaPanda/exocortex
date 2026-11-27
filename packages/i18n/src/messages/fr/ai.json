@@ -139,6 +139,7 @@
     "failedDescription": "Réessaie. Les pages elles-mêmes ne sont pas affectées.",
     "nothingTitle": "Cette exécution n’a rien modifié",
     "nothingDescription": "Il n’y a rien à annuler.",
+    "nothingToUndo": "Dans ce chat, aucune exécution terminée de l’IA n’a encore modifié de page.",
     "summary": "{revertible, plural, =0 {Aucune modification n’est restée telle que l’IA l’avait laissée.} one {Une modification peut être annulée.} many {# modifications peuvent être annulées.} other {# modifications peuvent être annulées.}}{changedSince, plural, =0 {} one { Une modification est conservée, la raison est indiquée.} many { # modifications sont conservées, la raison est indiquée à chaque fois.} other { # modifications sont conservées, la raison est indiquée à chaque fois.}}",
     "states": {
       "revertible": "Sera annulé",

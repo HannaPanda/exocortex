@@ -139,6 +139,7 @@
     "failedDescription": "Spróbuj ponownie. Nie ma to wpływu na same strony.",
     "nothingTitle": "To uruchomienie nic nie zmieniło",
     "nothingDescription": "Nie ma nic do cofnięcia.",
+    "nothingToUndo": "W tym czacie żaden ukończony przebieg AI nie zmienił jeszcze żadnej strony.",
     "summary": "{revertible, plural, =0 {Żadna zmiana nie wygląda już tak, jak zostawiła ją sztuczna inteligencja.} one {Jedną zmianę można cofnąć.} few {# zmiany można cofnąć.} many {# zmian można cofnąć.} other {# zmiany można cofnąć.}}{changedSince, plural, =0 {} one { Jedna pozostaje bez zmian, powód podano obok.} few { # pozostają bez zmian, powód podano przy każdej z nich.} many { # pozostaje bez zmian, powód podano przy każdej z nich.} other { # pozostaje bez zmian, powód podano przy każdej z nich.}}",
     "states": {
       "revertible": "Zostanie cofnięte",

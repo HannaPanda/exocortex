@@ -14,7 +14,13 @@ import * as React from 'react';
  * that it is dropped, so a stale request never fires on some later visit.
  */
 export type PaletteRequest =
-  'rename' | 'change-icon' | 'upload-cover' | 'generate-cover' | 'upload-file' | 'new-chat';
+  | 'rename'
+  | 'change-icon'
+  | 'upload-cover'
+  | 'generate-cover'
+  | 'upload-file'
+  | 'new-chat'
+  | 'undo-last-run';
 
 type Listener = () => void;
 

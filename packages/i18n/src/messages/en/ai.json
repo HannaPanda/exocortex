@@ -139,6 +139,7 @@
     "failedDescription": "Try again. The pages themselves are not affected.",
     "nothingTitle": "This run didn’t change anything",
     "nothingDescription": "There is nothing to undo.",
+    "nothingToUndo": "In this chat, no completed AI run has modified a page yet.",
     "summary": "{revertible, plural, =0 {No changes remain as the AI left them.} one {One change can be reverted.} other {# changes can be reverted.}}{changedSince, plural, =0 {} one { One will be kept; the reason is shown next to it.} other { # will be kept; the reason is shown next to each.}}",
     "states": {
       "revertible": "Will be undone",
