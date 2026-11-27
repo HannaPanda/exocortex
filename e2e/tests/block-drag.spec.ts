@@ -142,6 +142,75 @@ test.describe('moving blocks', () => {
     await expect.poll(() => outline(page)).toEqual(['Eins', 'Zwei', '  Drei']);
   });
 
+  test('splits a list where a paragraph is carried between two of its items', async ({ page }) => {
+    await pageWith(page, ['Absatz', '1. Eins\n2. Zwei\n3. Drei', 'Unten'].join('\n\n'));
+    await expect(paragraph(page, 'Zwei')).toBeVisible({ timeout: 30_000 });
+
+    const handle = await grabHandle(page, paragraph(page, 'Absatz'));
+    await page.mouse.move(handle.x, handle.y);
+    await page.mouse.down();
+    const eins = await paragraph(page, 'Eins').boundingBox();
+    const absatz = await paragraph(page, 'Absatz').boundingBox();
+    if (eins === null || absatz === null) throw new Error('no layout');
+    // Straight down into the lower half of "Eins", not moved sideways: the
+    // paragraph stays at page level, so the line starts where it starts.
+    await page.mouse.move(handle.x, eins.y + eins.height - 4, { steps: 12 });
+    const line = page.getByTestId('block-drop-line');
+    await expect(line).toBeVisible();
+    await expect
+      .poll(async () => {
+        const solid = await line.locator('span').boundingBox();
+        return solid === null ? Number.POSITIVE_INFINITY : Math.abs(solid.x - absatz.x);
+      })
+      .toBeLessThan(3);
+    await page.mouse.up();
+
+    // Two numbered lists with the paragraph between them, counting afresh.
+    await expect
+      .poll(() => page.locator('.exocortex-editor p').allTextContents())
+      .toEqual(['Eins', 'Absatz', 'Zwei', 'Drei', 'Unten']);
+    await expect(page.locator('.exocortex-editor ol')).toHaveCount(2);
+    await expect(page.locator('.exocortex-editor > ol + p + ol')).toHaveCount(1);
+
+    await page.waitForTimeout(800);
+    await paragraph(page, 'Unten').click();
+    await page.keyboard.press('Control+z');
+    await expect(page.locator('.exocortex-editor ol')).toHaveCount(1);
+    await expect
+      .poll(() => page.locator('.exocortex-editor p').allTextContents())
+      .toEqual(['Absatz', 'Eins', 'Zwei', 'Drei', 'Unten']);
+  });
+
+  test('moves a list item out of its list with Strg+Umschalt+Pfeil, and a quote line out of the quote', async ({
+    page,
+  }) => {
+    await pageWith(page, ['Oben', '- Eins\n- Zwei', '> Zitat eins\n>\n> Zitat zwei'].join('\n\n'));
+    await expect(paragraph(page, 'Eins')).toBeVisible({ timeout: 30_000 });
+
+    // At the top of its list the item leaves it and becomes a paragraph.
+    await paragraph(page, 'Eins').click();
+    await page.keyboard.press('Control+Shift+ArrowUp');
+    await expect.poll(() => outline(page)).toEqual(['Zwei']);
+    await expect(page.locator('.exocortex-editor > p', { hasText: /^Eins$/ })).toHaveCount(1);
+    // The caret came along: the next press passes the paragraph above.
+    await page.keyboard.press('Control+Shift+ArrowUp');
+    await expect
+      .poll(() => page.locator('.exocortex-editor > p').allTextContents())
+      .toEqual(['Eins', 'Oben']);
+
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await page.waitForTimeout(300);
+    await page.keyboard.press('Control+z');
+    await expect.poll(() => outline(page)).toEqual(['Eins', 'Zwei']);
+
+    // The last line of a quote leaves it downwards, and the quote stays.
+    await paragraph(page, 'Zitat zwei').click();
+    await page.keyboard.press('Control+Shift+ArrowDown');
+    await expect(page.locator('.exocortex-editor blockquote p')).toHaveText(['Zitat eins']);
+    await expect(page.locator('.exocortex-editor > p').last()).toHaveText('Zitat zwei');
+  });
+
   /*
    * Issue #268: the menu opens when the handle is let go without moving, the
    * way Notion does it, never on the press that may start a drag. Before, it
